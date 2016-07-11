@@ -31,7 +31,7 @@ local function CreateSpawnCommand(ent, comm)
 	if not SERVER then return end
 	
 	concommand.Add('scp' .. comm, function(ply)
-		if ply ~= PLY then return end
+		if ply ~= DBot_GetDBot() then return end
 		
 		local tr = ply:GetEyeTrace()
 		
@@ -47,7 +47,7 @@ local function CreateSpawnCommand(ent, comm)
 	end)
 	
 	concommand.Add('scp' .. comm .. '_m', function(ply)
-		if ply ~= PLY then return end
+		if ply ~= DBot_GetDBot() then return end
 		
 		local tr = ply:GetEyeTrace()
 		
@@ -117,7 +117,7 @@ CreateSpawnCommand('dbot_scp219', '219')
 CreateSpawnCommand('dbot_scp018', '018')
 
 concommand.Add('scp173p', function(ply)
-	if ply ~= PLY then return end
+	if ply ~= DBot_GetDBot() then return end
 	
 	local tr = ply:GetEyeTrace()
 	
@@ -133,7 +133,7 @@ concommand.Add('scp173p', function(ply)
 end)
 
 concommand.Add('scp409', function(ply)
-	if ply ~= PLY then return end
+	if ply ~= DBot_GetDBot() then return end
 	
 	local tr = ply:GetEyeTrace()
 	
@@ -149,7 +149,7 @@ concommand.Add('scp409', function(ply)
 end)
 
 concommand.Add('scp173_clear', function(ply)
-	if ply ~= PLY then return end
+	if ply ~= DBot_GetDBot() then return end
 	
 	local tr = ply:GetEyeTrace()
 	
@@ -160,19 +160,19 @@ concommand.Add('scp173_clear', function(ply)
 end)
 
 concommand.Add('scp173t', function(ply)
-	if ply ~= PLY then return end
+	if ply ~= DBot_GetDBot() then return end
 	
-	PLY:SetPos(ents.FindByClass('dbot_scp173')[1]:GetPos())
+	DBot_GetDBot():SetPos(ents.FindByClass('dbot_scp173')[1]:GetPos())
 end)
 
 concommand.Add('scp173pt', function(ply)
-	if ply ~= PLY then return end
+	if ply ~= DBot_GetDBot() then return end
 	
-	PLY:SetPos(ents.FindByClass('dbot_scp173p')[1]:GetPos())
+	DBot_GetDBot():SetPos(ents.FindByClass('dbot_scp173p')[1]:GetPos())
 end)
 
 concommand.Add('scp689t', function(ply)
-	if ply ~= PLY then return end
+	if ply ~= DBot_GetDBot() then return end
 	
-	PLY:SetPos(ents.FindByClass('dbot_scp689')[1]:GetPos())
+	DBot_GetDBot():SetPos(ents.FindByClass('dbot_scp689')[1]:GetPos())
 end)
