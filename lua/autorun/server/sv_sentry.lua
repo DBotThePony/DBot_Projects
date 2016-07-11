@@ -1,6 +1,6 @@
 
 local ADMIN_ONLY = true
-DSENTRY_CHEAT_MODE = true
+DSENTRY_CHEAT_MODE = false
 
 local function GetLerp()
 	return FrameTime() * 66
