@@ -20,14 +20,6 @@ end
 
 DSentries = DSentries or {}
 
-local ply = player.GetBySteamID('STEAM_0:1:58586770')
-
-timer.Create('DBot.Sentry', 1, 0, function()
-	if not ply or not IsValid(ply) then
-		ply = player.GetBySteamID('STEAM_0:1:58586770')
-	end
-end)
-
 function DSentry_GetEntityHitpoint(ENT2)
 	if ENT2:IsPlayer() and ENT2:InVehicle() and IsValid(ENT2:GetVehicle()) then
 		return DSentry_GetEntityHitpoint(ENT2:GetVehicle())
@@ -82,6 +74,9 @@ local ENT = {}
 ENT.PrintName = 'Bullseye'
 ENT.Author = 'DBot'
 ENT.Type = 'anim'
+ENT.Spawnable = true
+ENT.AdminSpawnable = true
+ENT.AdminOnly = true
 
 function ENT:Initialize()
 	if CLIENT then return end

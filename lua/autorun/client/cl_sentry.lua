@@ -7,7 +7,6 @@ language.Add('dbot_sentry_r', 'DBot Rocket Sentry')
 
 local function PostDrawOpaqueRenderables(a, b)
 	if a or b then return end
-	--if true then return end
 	
 	local lpos = LocalPlayer():GetPos()
 	

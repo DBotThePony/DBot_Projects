@@ -1,11 +1,9 @@
 
-local PLY = player.GetBySteamID('STEAM_0:1:58586770')
-
 local RED = Color(255, 0, 0)
 
+--This hook shows for /me/ what entity is being attacked by SCP
 hook.Add('PostDrawTranslucentRenderables', 'dbot_scp173', function()
-	--if not (PLY == LocalPlayer() or LocalPlayer():IsSuperAdmin()) then return end
-	if PLY ~= LocalPlayer() then return end
+	if DBot_GetDBot() ~= LocalPlayer() then return end
 	
 	for k, v in pairs(ents.FindByClass('dbot_scp173')) do
 		local see = v:GetNWEntity('SeeMe')
