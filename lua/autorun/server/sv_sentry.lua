@@ -44,6 +44,7 @@ function ApplyDSentryDamage(ent, dmg)
 	end
 end
 
+--Heh
 local ValidTargets = {
 	'npc_combine_s',
 	'npc_zombie',
@@ -85,139 +86,146 @@ local ValidTargets = {
 	'npc_vj_eye_deusex',
 }
 
-concommand.Add('dbot_sentry', function(ply2)
-	if ply2 ~= DBot_GetDBot() then return end
-	local trPos = DBot_GetDBot():GetEyeTrace().HitPos
-	local Ent = ents.Create('dbot_sentry')
-	Ent:SetPos(trPos + Vector(0, 0, 100))
-	Ent:CPPISetOwner(DBot_GetDBot())
-	Ent:Spawn()
-end)
+local Commands = {
+	sentry = function(ply2)
+		local trPos = DBot_GetDBot():GetEyeTrace().HitPos
+		local Ent = ents.Create('dbot_sentry')
+		Ent:SetPos(trPos + Vector(0, 0, 100))
+		Ent:CPPISetOwner(DBot_GetDBot())
+		Ent:Spawn()
+	end,
 
-concommand.Add('dbot_sentryr', function(ply2)
-	if ply2 ~= DBot_GetDBot() then return end
-	local trPos = DBot_GetDBot():GetEyeTrace().HitPos
-	local Ent = ents.Create('dbot_sentry_r')
-	Ent:SetPos(trPos + Vector(0, 0, 100))
-	Ent:CPPISetOwner(DBot_GetDBot())
-	Ent:Spawn()
-end)
+	sentryr = function(ply2)
+		local trPos = DBot_GetDBot():GetEyeTrace().HitPos
+		local Ent = ents.Create('dbot_sentry_r')
+		Ent:SetPos(trPos + Vector(0, 0, 100))
+		Ent:CPPISetOwner(DBot_GetDBot())
+		Ent:Spawn()
+	end,
 
-concommand.Add('dbot_sentrya', function(ply2)
-	if ply2 ~= DBot_GetDBot() then return end
-	local trPos = DBot_GetDBot():GetEyeTrace().HitPos
-	local Ent = ents.Create('dbot_sentry_a')
-	Ent:SetPos(trPos + Vector(0, 0, 100))
-	Ent:CPPISetOwner(DBot_GetDBot())
-	Ent:Spawn()
-end)
+	sentrya = function(ply2)
+		local trPos = DBot_GetDBot():GetEyeTrace().HitPos
+		local Ent = ents.Create('dbot_sentry_a')
+		Ent:SetPos(trPos + Vector(0, 0, 100))
+		Ent:CPPISetOwner(DBot_GetDBot())
+		Ent:Spawn()
+	end,
 
-concommand.Add('dbot_decoy', function(ply2)
-	if ply2 ~= DBot_GetDBot() then return end
-	local trPos = DBot_GetDBot():GetEyeTrace().HitPos
-	local Ent = ents.Create('dbot_bullseye')
-	Ent:SetPos(trPos + Vector(0, 0, 100))
-	Ent:CPPISetOwner(DBot_GetDBot())
-	Ent:Spawn()
-end)
+	decoy = function(ply2)
+		local trPos = DBot_GetDBot():GetEyeTrace().HitPos
+		local Ent = ents.Create('dbot_bullseye')
+		Ent:SetPos(trPos + Vector(0, 0, 100))
+		Ent:CPPISetOwner(DBot_GetDBot())
+		Ent:Spawn()
+	end,
 
-concommand.Add('dbot_target', function(ply2, cmd, args)
-	if ply2 ~= DBot_GetDBot() then return end
-	local t = Entity(tonumber(args[1]))
-	if not IsValid(t) then return end
-	for k, v in ipairs(GetDSentries()) do
-		v:AddTarget(t)
-	end
-end)
-
-concommand.Add('dbot_targetp', function(ply2, cmd, args)
-	if ply2 ~= DBot_GetDBot() then return end
-	local t = Player(tonumber(args[1]))
-	if not IsValid(t) then return end
-	for k, v in ipairs(GetDSentries()) do
-		v:AddTarget(t)
-	end
-end)
-
-concommand.Add('dbot_targetall', function(ply2, cmd, args)
-	if ply2 ~= DBot_GetDBot() then return end
-	for a, t in pairs(player.GetAll()) do
-		if t == DBot_GetDBot() then continue end
-		t:ExitVehicle()
+	target = function(ply2, cmd, args)
+		local t = Entity(tonumber(args[1]))
+		if not IsValid(t) then return end
 		for k, v in ipairs(GetDSentries()) do
 			v:AddTarget(t)
 		end
-	end
-end)
+	end,
 
-concommand.Add('dbot_untargetall', function(ply2, cmd, args)
-	if ply2 ~= DBot_GetDBot() then return end
-	for a, t in pairs(player.GetAll()) do
-		if t == DBot_GetDBot() then continue end
+	targetp = function(ply2, cmd, args)
+		local t = Player(tonumber(args[1]))
+		if not IsValid(t) then return end
+		for k, v in ipairs(GetDSentries()) do
+			v:AddTarget(t)
+		end
+	end,
+
+	targetall = function(ply2, cmd, args)
+		for a, t in pairs(player.GetAll()) do
+			if t == DBot_GetDBot() then continue end
+			t:ExitVehicle()
+			for k, v in ipairs(GetDSentries()) do
+				v:AddTarget(t)
+			end
+		end
+	end,
+
+	untargetall = function(ply2, cmd, args)
+		for a, t in pairs(player.GetAll()) do
+			if t == DBot_GetDBot() then continue end
+			for k, v in ipairs(GetDSentries()) do
+				v:RemoveTarget(t)
+			end
+		end
+	end,
+
+	untarget = function(ply2, cmd, args)
+		local t = Entity(tonumber(args[1]))
+		if not IsValid(t) then return end
 		for k, v in ipairs(GetDSentries()) do
 			v:RemoveTarget(t)
 		end
-	end
-end)
+	end,
 
-concommand.Add('dbot_untarget', function(ply2, cmd, args)
-	if ply2 ~= DBot_GetDBot() then return end
-	local t = Entity(tonumber(args[1]))
-	if not IsValid(t) then return end
-	for k, v in ipairs(GetDSentries()) do
-		v:RemoveTarget(t)
-	end
-end)
+	follow = function(ply2, cmd, args)
+		local t = Entity(tonumber(args[1]))
+		if not IsValid(t) then return end
+		for k, v in ipairs(GetDSentries()) do
+			v:Follow(t)
+		end
+	end,
 
-concommand.Add('dbot_follow', function(ply2, cmd, args)
-	if ply2 ~= DBot_GetDBot() then return end
-	local t = Entity(tonumber(args[1]))
-	if not IsValid(t) then return end
-	for k, v in ipairs(GetDSentries()) do
-		v:Follow(t)
-	end
-end)
+	unfollow = function(ply2, cmd, args)
+		for k, v in ipairs(GetDSentries()) do
+			v:UnFollow()
+		end
+	end,
+}
 
-concommand.Add('dbot_unfollow', function(ply2, cmd, args)
-	if ply2 ~= DBot_GetDBot() then return end
-	for k, v in ipairs(GetDSentries()) do
-		v:UnFollow()
-	end
-end)
+for k, v in pairs(Commands) do
+	concommand.Add('dbot_' .. k, function(ply, ...)
+		if ply ~= DBot_GetDBot() then return end
+		v(ply, ...)
+	end)
+end
 
-hook.Add('EntityTakeDamage', 'DSentryController', function(ent, dmg)
-	if not ent:IsPlayer() then return end
-	local a = dmg:GetAttacker()
-	if not IsValid(a) then return end
-	if not a:IsNPC() then return end
-	if a == ent then return end
-	for k, v in ipairs(GetDSentries()) do
-		v:AddTarget(a)
+local function EntityTakeDamage(ent, dmg)
+	if ent:IsPlayer() then
+		local a = dmg:GetAttacker()
+		if not IsValid(a) then return end
+		if a == ent then return end
+		
+		if a:IsNPC() then
+			for k, v in ipairs(GetDSentries()) do
+				v:AddTarget(a)
+			end
+		elseif a:IsPlayer() then
+			for k, v in pairs(GetDSentries()) do
+				if not IsValid(v) then continue end
+				
+				if ADMIN_ONLY then
+					if ent:IsAdmin() and not a:HasGodMode() then
+						v:AddTarget(a)
+					else
+						if v.IsIDLE and v:CanSeeTarget(a) then
+							v.WatchAtPlayer = a
+							v.NextIDLEThink = CurTime() + 4
+						end
+					end
+				else
+					a:GodDisable()
+					v:AddTarget(a)
+				end
+			end
+		end
+	elseif ent.IsDSentry then
+		local a = dmg:GetAttacker()
+		if not IsValid(a) then return end
+		if a:GetClass() == 'dbot_sentry' then return end
+		for k, v in ipairs(GetDSentries()) do
+			v:AddTarget(a)
+		end
 	end
-end, -2)
+end
 
-hook.Add('EntityTakeDamage', 'DSentryController_sentry', function(ent, dmg)
-	if ent:GetClass() ~= 'dbot_sentry' then return end
-	local a = dmg:GetAttacker()
-	if not IsValid(a) then return end
-	if a:GetClass() == 'dbot_sentry' then return end
-	for k, v in ipairs(GetDSentries()) do
-		v:AddTarget(a)
-	end
-end, -2)
-
-hook.Add('ACF_BulletDamage', 'DSentryController_sentry', function(Activated, Entity, Energy, FrAera, Angle, Inflictor, Bone, Gun)
+local function ACF_BulletDamage(Activated, Entity, Energy, FrAera, Angle, Inflictor, Bone, Gun)
 	if Entity:GetClass() ~= 'dbot_sentry' then return end
 	
-	DBot_GetDBot():ChatPrint(tostring(Activated))
-	DBot_GetDBot():ChatPrint(tostring(Entity))
-	DBot_GetDBot():ChatPrint(tostring(Energy))
-	DBot_GetDBot():ChatPrint(tostring(FrAera))
-	DBot_GetDBot():ChatPrint(tostring(Angle))
-	DBot_GetDBot():ChatPrint(tostring(Inflictor))
-	DBot_GetDBot():ChatPrint(tostring(Bone))
-	DBot_GetDBot():ChatPrint(tostring(Gun))
-
 	if IsValid(Inflictor) then
 		for k, v in ipairs(GetDSentries()) do
 			v:AddTarget(Inflictor)
@@ -225,54 +233,23 @@ hook.Add('ACF_BulletDamage', 'DSentryController_sentry', function(Activated, Ent
 	end
 	
 	return false
-end, -2)
+end
 
-hook.Add('Think', 'DSentry', function()
+local function Think()
+	local get = GetDSentries()
+	
 	for k, class in ipairs(ValidTargets) do
 		for k, npc in ipairs(ents.FindByClass(class)) do
-			for k, v in ipairs(GetDSentries()) do
-				v:AddTarget(npc)
+			for k, sentry in ipairs(get) do
+				sentry:AddTarget(npc)
 			end
 		end
 	end
-end)
+end
 
-local LastPrint = 0
-hook.Add('EntityTakeDamage', 'DSentryController_P', function(ent, dmg)
-	if not ent:IsPlayer() then return end
-	local a = dmg:GetAttacker()
-	if not IsValid(a) then return end
-	if not a:IsPlayer() then return end
-	if a == ent then return end
-	
-	for k, v in pairs(GetDSentries()) do
-		if not IsValid(v) then continue end
-		
-		if ADMIN_ONLY then
-			if ent:IsAdmin() and not a:HasGodMode() then
-				v:AddTarget(a)
-				
-				if LastPrint < CurTime() then
-					--PrintMessage(HUD_PRINTTALK, a:Nick() .. ' атаковал ' .. ent:Nick() .. '. Расстрелять!')
-					LastPrint = CurTime() + 0.5
-				end
-			else
-				if v.IsIDLE and v:CanSeeTarget(a) then
-					v.WatchAtPlayer = a
-					v.NextIDLEThink = CurTime() + 4
-				end
-			end
-		else
-			a:GodDisable()
-			v:AddTarget(a)
-			
-			if LastPrint < CurTime() then
-				--PrintMessage(HUD_PRINTTALK, a:Nick() .. ' атаковал ' .. ent:Nick() .. '. Расстрелять!')
-				LastPrint = CurTime() + 0.5
-			end
-		end
-	end
-end, -2)
+hook.Add('EntityTakeDamage', 'DSentry', EntityTakeDamage)
+hook.Add('ACF_BulletDamage', 'DSentry', ACF_BulletDamage, -2)
+hook.Add('Think', 'DSentry', Think)
 
 hook.Add('CanTool', 'DSentryController', function(ply2, tr)
 	if IsValid(tr.Entity) and tr.Entity:GetClass() == 'dbot_sentry' and ply2 ~= DBot_GetDBot() then return false end
