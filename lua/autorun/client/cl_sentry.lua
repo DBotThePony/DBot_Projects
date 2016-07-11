@@ -5,14 +5,52 @@ language.Add('dbot_sentry', 'DBot Sentry')
 language.Add('dbot_srocket', 'DBot Rocket')
 language.Add('dbot_sentry_r', 'DBot Rocket Sentry')
 
+local Sentries = {
+	['dbot_sentry_a'] = true,
+	['dbot_sentry'] = true,
+}
+
+local Valid = {
+	['dbot_sentry_a'] = true,
+	['dbot_sentry'] = true,
+	['dbot_srocket'] = true,
+	['dbot_sentry_r'] = true,
+}
+
 local function PostDrawOpaqueRenderables(a, b)
 	if a or b then return end
 	
 	local lpos = LocalPlayer():GetPos()
 	
+	local find = {}
+	find.dbot_srocket = {}
+	find.dbot_sentry_r = {}
+	find.sentries = {}
+	
+	for k, ent in ipairs(ents.GetAll()) do
+		local class = ent:GetClass()
+		if not Valid[class] then continue end
+		
+		if class == 'dbot_srocket' then
+			table.insert(find.dbot_srocket, ent)
+			continue
+		end
+		
+		if class == 'dbot_sentry_r' then
+			table.insert(find.dbot_sentry_r, ent)
+			table.insert(find.sentries, ent)
+			continue
+		end
+		
+		if Sentries[class] then
+			table.insert(find.sentries, ent)
+			continue
+		end
+	end
+	
 	draw.NoTexture()
 	
-	for k, ent in ipairs(ents.FindByClass('dbot_srocket')) do
+	for k, ent in ipairs(find.dbot_srocket) do
 		local target = ent:GetCurTarget()
 		if not IsValid(target) then continue end
 		
@@ -40,7 +78,7 @@ local function PostDrawOpaqueRenderables(a, b)
 		cam.End3D2D()
 	end
 	
-	for k, ent in ipairs(ents.FindByClass('dbot_sentry_r')) do
+	for k, ent in ipairs(find.dbot_sentry_r) do
 		if not ent.GetIsLocking then continue end
 		if not ent:GetIsLocking() then continue end
 		local target = ent:GetLockTarget()
@@ -68,7 +106,7 @@ local function PostDrawOpaqueRenderables(a, b)
 		cam.End3D2D()
 	end
 	
-	for k, self in ipairs(GetDSentries()) do
+	for k, self in ipairs(find.sentries) do
 		local p = self:GetPos()
 		local f = self:GetAngles():Forward()
 		
