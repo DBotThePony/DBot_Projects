@@ -19,6 +19,9 @@ ENT.Base = 'dbot_scp173'
 ENT.Type = 'anim'
 ENT.PrintName = 'Pony'
 ENT.Author = 'DBot'
+ENT.Spawnable = true
+ENT.AdminSpawnable = true
+ENT.AdminOnly = true
 
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)

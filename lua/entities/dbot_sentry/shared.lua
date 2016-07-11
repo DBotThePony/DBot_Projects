@@ -20,3 +20,6 @@ ENT.Author = 'DBot'
 ENT.PrintName = 'Sentry'
 ENT.RenderGroup = RENDERGROUP_BOTH
 ENT.IsDSentry = true
+ENT.Spawnable = true
+ENT.AdminSpawnable = true
+ENT.AdminOnly = true

@@ -22,5 +22,7 @@ end
 ENT.Type = 'anim'
 ENT.PrintName = 'SCP-173'
 ENT.Author = 'DBot'
-ENT.Spawnable = false
+ENT.Spawnable = true
+ENT.AdminSpawnable = true
+ENT.AdminOnly = true
 ENT.Category = 'DBot'

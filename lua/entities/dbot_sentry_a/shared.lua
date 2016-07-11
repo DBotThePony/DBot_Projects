@@ -15,6 +15,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
+--It meant to be altirely
+--But i didn't finished it
 ENT.PrintName = 'DBot Artilery Sentry'
 ENT.Author = 'DBot'
 ENT.Type = 'anim'
