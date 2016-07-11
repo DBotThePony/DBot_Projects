@@ -17,8 +17,13 @@ limitations under the License.
 
 ENT.PrintName = 'DBot Rocket Sentry'
 ENT.Author = 'DBot'
+ENT.Category = 'DBot'
 ENT.Type = 'anim'
 ENT.Base = 'dbot_sentry'
+ENT.Spawnable = true
+ENT.AdminSpawnable = true
+ENT.AdminOnly = true
+
 
 function ENT:SetupDataTables()
 	self:NetworkVar('Bool', 0, 'IsLocking')

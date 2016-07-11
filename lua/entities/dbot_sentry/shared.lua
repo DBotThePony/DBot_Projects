@@ -17,6 +17,7 @@ limitations under the License.
 
 ENT.Type = 'anim'
 ENT.Author = 'DBot'
+ENT.Category = 'DBot'
 ENT.PrintName = 'Sentry'
 ENT.RenderGroup = RENDERGROUP_BOTH
 ENT.IsDSentry = true
