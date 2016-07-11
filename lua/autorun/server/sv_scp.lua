@@ -23,14 +23,15 @@ SCP_HaveZeroHP = {
 	npc_rollermine = true,
 }
 
-SCP_ATTACK_PLAYERS = false
+local dbot_scp_player = CreateConVar('dbot_scp_player', '1', FCVAR_ARCHIVE, 'Whatever attack players')
+SCP_ATTACK_PLAYERS = dbot_scp_player:GetBool()
 
 local VALID_NPCS = {}
 
 local function CreateSpawnCommand(ent, comm)
 	if not SERVER then return end
 	
-	concommand.Add('scp' .. comm, function(ply)
+	concommand.Add('dbot_scp' .. comm, function(ply)
 		if ply ~= DBot_GetDBot() then return end
 		
 		local tr = ply:GetEyeTrace()
@@ -46,7 +47,7 @@ local function CreateSpawnCommand(ent, comm)
 		undo.Finish()
 	end)
 	
-	concommand.Add('scp' .. comm .. '_m', function(ply)
+	concommand.Add('dbot_scp' .. comm .. '_m', function(ply)
 		if ply ~= DBot_GetDBot() then return end
 		
 		local tr = ply:GetEyeTrace()
@@ -71,7 +72,8 @@ local function CreateSpawnCommand(ent, comm)
 	end)
 end
 
-timer.Create('SCP173_UpdateNPCs', 1, 0, function()
+timer.Create('dbot_SCP_UpdateNPCs', 1, 0, function()
+	SCP_ATTACK_PLAYERS = dbot_scp_player:GetBool()
 	VALID_NPCS = {}
 	
 	for k, v in pairs(ents.GetAll()) do
@@ -85,14 +87,14 @@ function SCP_GetTargets()
 	local reply = {}
 	
 	if SCP_ATTACK_PLAYERS then
-		for k, v in pairs(player.GetAll()) do
+		for k, v in ipairs(player.GetAll()) do
 			if v:HasGodMode() then continue end
 			if v == PLY then continue end
 			table.insert(reply, v)
 		end
 	end
 	
-	for k, v in pairs(VALID_NPCS) do
+	for k, v in ipairs(VALID_NPCS) do
 		if not IsValid(v) then continue end
 		if v.SCP_SLAYED then continue end
 		if SCP_Ignore[v:GetClass()] then continue end
@@ -116,7 +118,7 @@ CreateSpawnCommand('dbot_scp689', '689')
 CreateSpawnCommand('dbot_scp219', '219')
 CreateSpawnCommand('dbot_scp018', '018')
 
-concommand.Add('scp173p', function(ply)
+concommand.Add('dbot_scp173p', function(ply)
 	if ply ~= DBot_GetDBot() then return end
 	
 	local tr = ply:GetEyeTrace()
@@ -132,7 +134,7 @@ concommand.Add('scp173p', function(ply)
 	undo.Finish()
 end)
 
-concommand.Add('scp409', function(ply)
+concommand.Add('dbot_scp409', function(ply)
 	if ply ~= DBot_GetDBot() then return end
 	
 	local tr = ply:GetEyeTrace()
@@ -148,30 +150,30 @@ concommand.Add('scp409', function(ply)
 	undo.Finish()
 end)
 
-concommand.Add('scp173_clear', function(ply)
+concommand.Add('dbot_scp173_clear', function(ply)
 	if ply ~= DBot_GetDBot() then return end
 	
 	local tr = ply:GetEyeTrace()
 	
-	for k, v in pairs(ents.FindByClass('dbot_scp173')) do
+	for k, v in ipairs(ents.FindByClass('dbot_scp173')) do
 		v.REAL_REMOVE = true
 		v:Remove()
 	end
 end)
 
-concommand.Add('scp173t', function(ply)
+concommand.Add('dbot_scp173t', function(ply)
 	if ply ~= DBot_GetDBot() then return end
 	
 	DBot_GetDBot():SetPos(ents.FindByClass('dbot_scp173')[1]:GetPos())
 end)
 
-concommand.Add('scp173pt', function(ply)
+concommand.Add('dbot_scp173pt', function(ply)
 	if ply ~= DBot_GetDBot() then return end
 	
 	DBot_GetDBot():SetPos(ents.FindByClass('dbot_scp173p')[1]:GetPos())
 end)
 
-concommand.Add('scp689t', function(ply)
+concommand.Add('dbot_scp689t', function(ply)
 	if ply ~= DBot_GetDBot() then return end
 	
 	DBot_GetDBot():SetPos(ents.FindByClass('dbot_scp689')[1]:GetPos())
