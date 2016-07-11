@@ -224,7 +224,7 @@ local function EntityTakeDamage(ent, dmg)
 end
 
 local function ACF_BulletDamage(Activated, Entity, Energy, FrAera, Angle, Inflictor, Bone, Gun)
-	if Entity:GetClass() ~= 'dbot_sentry' then return end
+	if not Entity.IsDSentry then return end
 	
 	if IsValid(Inflictor) then
 		for k, v in ipairs(GetDSentries()) do
@@ -247,14 +247,18 @@ local function Think()
 	end
 end
 
+local function CanTool(ply, tr)
+	if not IsValid(DBot_GetDBot()) then return end
+	if IsValid(tr.Entity) and tr.Entity.IsDSentry and ply ~= DBot_GetDBot() then return false end
+end
+
+local function CanProperty(ply, str, ent)
+	if not IsValid(DBot_GetDBot()) then return end
+	if IsValid(ent) and ent.IsDSentry and ply ~= DBot_GetDBot() then return false end
+end
+
 hook.Add('EntityTakeDamage', 'DSentry', EntityTakeDamage)
 hook.Add('ACF_BulletDamage', 'DSentry', ACF_BulletDamage, -2)
 hook.Add('Think', 'DSentry', Think)
-
-hook.Add('CanTool', 'DSentryController', function(ply2, tr)
-	if IsValid(tr.Entity) and tr.Entity:GetClass() == 'dbot_sentry' and ply2 ~= DBot_GetDBot() then return false end
-end)
-
-hook.Add('CanProperty', 'DSentryController', function(ply2, str, ent)
-	if IsValid(ent) and ent:GetClass() == 'dbot_sentry' and ply2 ~= DBot_GetDBot() then return false end
-end)
+hook.Add('CanTool', 'DSentry', CanTool)
+hook.Add('CanProperty', 'DSentry', CanProperty)
