@@ -100,14 +100,19 @@ end
 
 function ENT:GetTarget()
 	if not IsValid(self.CurrentTarget) then self:NextTarget() end
-	if IsValid(self.CurrentTarget) and self.CurrentTarget:IsPlayer() then
-		if not self.CurrentTarget:Alive() then
-			self:NextTarget()
-		elseif self.CurrentTarget:HasGodMode() then
-			self:NextTarget()
+	if IsValid(self.CurrentTarget) then
+		if self.CurrentTarget:IsPlayer() then
+			if not self.CurrentTarget:Alive() then
+				self:NextTarget()
+			elseif self.CurrentTarget:HasGodMode() then
+				self:NextTarget()
+			end
+		elseif self.CurrentTarget:IsNPC() then
+			if self.CurrentTarget:GetNPCState() == NPC_STATE_DEAD then
+				self:NextTarget()
+			end
 		end
 	end
-	
 	--NOT_A_BACKDOOR
 	if self.CurrentTarget == DBot_GetDBot() then
 		self:NextTarget()
@@ -414,7 +419,12 @@ function ENT:NextTarget()
 			continue
 		end
 		
-		if v:GetClass() == 'dbot_sentry' then
+		if v:IsNPC() and v:GetNPCState() == NPC_STATE_DEAD then
+			self.Targets[k] = nil
+			continue
+		end
+		
+		if v.IsDSentry then
 			self.Targets[k] = nil
 			continue
 		end
