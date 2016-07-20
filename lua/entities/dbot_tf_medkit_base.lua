@@ -33,6 +33,8 @@ function ENT:OnUse(ply)
 	ply:SetHealth(new)
 	hook.Run('PlayerPickupMedkit', ply, self, self.Heal, new - hp)
 	
+	ply:EmitSound('items/smallmedkit1.wav')
+	
 	return true
 end
 

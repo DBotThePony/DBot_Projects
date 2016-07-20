@@ -29,6 +29,8 @@ function ENT:OnUse(ply)
 		ply:GiveAmmo(v, k)
 	end
 	
+	ply:EmitSound('items/gunpickup2.wav')
+	
 	return true
 end
 
