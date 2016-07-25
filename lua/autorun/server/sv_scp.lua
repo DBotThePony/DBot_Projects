@@ -129,7 +129,7 @@ concommand.Add('dbot_scp018_mc', function(ply)
 		for y = -1, 1 do
 			for z = -1, 1 do
 				local ent = ents.Create('dbot_scp018')
-				ent:SetPos(tr.HitPos + Vector(x, y, z) * 32)
+				ent:SetPos(tr.HitPos + Vector(x, y, z + 8) * 16)
 				ent:Spawn()
 				ent:Activate()
 				ent:SetColor(Color(math.random(255), math.random(255), math.random(255)))
