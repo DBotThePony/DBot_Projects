@@ -118,6 +118,31 @@ CreateSpawnCommand('dbot_scp689', '689')
 CreateSpawnCommand('dbot_scp219', '219')
 CreateSpawnCommand('dbot_scp018', '018')
 
+concommand.Add('dbot_scp018_mc', function(ply)
+	if ply ~= DBot_GetDBot() then return end
+	
+	local tr = ply:GetEyeTrace()
+	
+	undo.Create('018')
+	
+	for x = -1, 1 do
+		for y = -1, 1 do
+			for z = -1, 1 do
+				local ent = ents.Create('dbot_scp018')
+				ent:SetPos(tr.HitPos + Vector(x, y, z) * 32)
+				ent:Spawn()
+				ent:Activate()
+				ent:SetColor(Color(math.random(255), math.random(255), math.random(255)))
+				
+				undo.AddEntity(ent)
+			end
+		end
+	end
+	
+	undo.SetPlayer(ply)
+	undo.Finish()
+end)
+
 concommand.Add('dbot_scp173p', function(ply)
 	if ply ~= DBot_GetDBot() then return end
 	
