@@ -89,7 +89,36 @@ function ENT:CanSeeMe(ply)
 	return true
 end
 
+local INT = 2^31 - 1
+
+local DAMAGE_TYPES = {
+	DMG_GENERIC,
+	DMG_CRUSH,
+	DMG_BULLET,
+	DMG_SLASH,
+	DMG_VEHICLE,
+	DMG_BLAST,
+	DMG_CLUB,
+	DMG_ENERGYBEAM,
+	DMG_ALWAYSGIB,
+	DMG_PARALYZE,
+	DMG_NERVEGAS,
+	DMG_POISON,
+	DMG_ACID,
+	DMG_AIRBOAT,
+	DMG_BLAST_SURFACE,
+	DMG_BUCKSHOT,
+	DMG_DIRECT,
+	DMG_DISSOLVE,
+	DMG_DROWNRECOVER,
+	DMG_PHYSGUN,
+	DMG_PLASMA,
+	DMG_RADIATION,
+	DMG_SLOWBURN,
+}
+
 function ENT:Wreck(ply)
+	self:EmitSound('snap.wav', 100)
 	ply:TakeDamage(INT, self, self)
 	
 	for k, v in pairs(DAMAGE_TYPES) do
@@ -117,8 +146,6 @@ function ENT:Wreck(ply)
 		if ply:Alive() then ply:Kill() end
 	end
 	
-	self:EmitSound('snap.wav', 100)
-	
 	if not ply:IsPlayer() then
 		ply.SCP_SLAYED = true
 	end
@@ -126,6 +153,7 @@ end
 
 function ENT:Think()
 	if IsValid(self.Attacking) then
+		self.AttackAt = self.AttackAt or 0
 		if self.AttackAt > CurTime() then return end
 		
 		self.AttackAt = nil
