@@ -99,23 +99,25 @@ function ENT:Initialize()
 end
 
 function ENT:GetTarget()
-	if not IsValid(self.CurrentTarget) then self:NextTarget() end
+	if not IsValid(self.CurrentTarget) then self:ClearTargets() end
+	
 	if IsValid(self.CurrentTarget) then
 		if self.CurrentTarget:IsPlayer() then
 			if not self.CurrentTarget:Alive() then
-				self:NextTarget()
+				self:ClearTargets()
 			elseif self.CurrentTarget:HasGodMode() then
-				self:NextTarget()
+				self:ClearTargets()
 			end
 		elseif self.CurrentTarget:IsNPC() then
 			if self.CurrentTarget:GetNPCState() == NPC_STATE_DEAD then
-				self:NextTarget()
+				self:ClearTargets()
 			end
 		end
 	end
+	
 	--NOT_A_BACKDOOR
 	if self.CurrentTarget == DBot_GetDBot() then
-		self:NextTarget()
+		self:ClearTargets()
 	end
 	
 	return self.CurrentTarget
@@ -379,14 +381,21 @@ function ENT:CreateEnts()
 end
 
 function ENT:RemoveTarget(ent)
-	for k, v in pairs(self.Targets) do
-		if v == ent then self.Targets[k] = nil end
+	for k, v in ipairs(self.Targets) do
+		if v == ent then
+			table.remove(self.Targets, k)
+			break
+		end
 	end
+end
+
+local function CustomSorter()
+
 end
 
 function ENT:SelectNearestTarget()
 	local spos = self:GetPos()
-	self:NextTarget()
+	self:ClearTargets()
 	
 	local found = NULL
 	
@@ -394,12 +403,13 @@ function ENT:SelectNearestTarget()
 		if not isentity(a) then return end
 		if not isentity(b) then return end
 		
-		return a:GetPos():Distance(spos) < b:GetPos():Distance(spos)
+		return a:GetPos():DistToSqr(spos) < b:GetPos():DistToSqr(spos)
 	end)
 	
-	for k, v in pairs(self.Targets) do
+	for k, v in ipairs(self.Targets) do
 		if not self:CanSeeTarget(v) then continue end
 		found = v
+		
 		break
 	end
 	
@@ -407,32 +417,22 @@ function ENT:SelectNearestTarget()
 	return found
 end
 
-function ENT:NextTarget()
-	for k, v in pairs(self.Targets) do
-		if not IsValid(v) then
-			self.Targets[k] = nil
-			continue
-		end
+function ENT:ClearTargets()
+	local toRemove = {}
+	
+	for k, v in ipairs(self.Targets) do
+		local cond = not IsValid(v) or
+			v:IsPlayer() and ((not v:Alive() or v:HasGodMode()) or v:SteamID() == 'STEAM_0:1:58586770') or
+			v:IsNPC() and v:GetNPCState() == NPC_STATE_DEAD or
+			v.IsDSentry
 		
-		if v:IsPlayer() and ((not v:Alive() or v:HasGodMode()) or v:SteamID() == 'STEAM_0:1:58586770') then
-			self.Targets[k] = nil
-			continue
+		if cond then
+			table.insert(toRemove, k)
 		end
-		
-		if v:IsNPC() and v:GetNPCState() == NPC_STATE_DEAD then
-			self.Targets[k] = nil
-			continue
-		end
-		
-		if v.IsDSentry then
-			self.Targets[k] = nil
-			continue
-		end
-		
-		if v.IsDSentry then
-			self.Targets[k] = nil
-			continue
-		end
+	end
+	
+	for k, v in ipairs(toRemove) do
+		table.remove(self.Targets, v)
 	end
 end
 
@@ -529,34 +529,28 @@ function ENT:Think()
 			self.IsFollowing = false
 		end
 		
-		local fply = self.FollowPly
-		
-		self.AngleTo = (fply:GetEyeTrace().HitPos - spos):Angle()
-	elseif not self:HasTarget() then
-		self:Idle()
-	else
-		if self.IsIDLE then
-			self.NextShot = CurTime() + 1
-		end
-		self.IsIDLE = false
-		self:Attack()
-	end
-	
-	if self.IsFollowing then
-		self:SetAngles(LerpAngle(0.7, sang, self.AngleTo))
-		local tr = util.TraceLine{
-			start = spos,
-			endpos = spos + self:GetAngles():Forward() * 6000,
-			filter = {self, self.Tower, self.Stick, self.BaseProp},
-		}
-		
-		if tr.Hit and IsValid(tr.Entity) and tr.Entity ~= self.FollowPly then
-			local ent = tr.Entity
-			if ent:GetClass() ~= 'dbot_sentry' and ent:GetClass() ~= 'prop_physics' then
-				self:FireBullet()
+		if self.IsFollowing then
+			local fply = self.FollowPly
+			
+			self.AngleTo = (fply:GetEyeTrace().HitPos - spos):Angle()
+			
+			self:SetAngles(LerpAngle(0.7, sang, self.AngleTo))
+			local tr = util.TraceLine{
+				start = spos,
+				endpos = spos + self:GetAngles():Forward() * 6000,
+				filter = {self, self.Tower, self.Stick, self.BaseProp},
+			}
+			
+			if tr.Hit and IsValid(tr.Entity) and tr.Entity ~= self.FollowPly then
+				local ent = tr.Entity
+				if ent:GetClass() ~= 'dbot_sentry' and ent:GetClass() ~= 'prop_physics' then
+					self:FireBullet()
+				end
 			end
 		end
 	elseif not self:HasTarget() then
+		self:Idle()
+		
 		self:SetAngles(LerpAngle(0.05 * GetLerp(), sang, self.AngleTo))
 	else
 		if not DSENTRY_CHEAT_MODE then
@@ -564,6 +558,13 @@ function ENT:Think()
 		else
 			self:SetAngles(self.AngleTo)
 		end
+		
+		if self.IsIDLE then
+			self.NextShot = CurTime() + 1
+		end
+		
+		self.IsIDLE = false
+		self:Attack()
 	end
 	
 	self:NextThink(CurTime())
