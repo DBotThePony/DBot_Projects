@@ -54,7 +54,7 @@ function ENT:Idle()
 		if not IsValid(self.WatchAtPlayer) then
 			local rand = AngleRand()
 			rand.r = 0
-			rand.p = 0
+			rand.p = math.random(-10, 10)
 			self.AngleTo = rand
 		end
 	end
@@ -389,10 +389,6 @@ function ENT:RemoveTarget(ent)
 	end
 end
 
-local function CustomSorter()
-
-end
-
 function ENT:SelectNearestTarget()
 	local spos = self:GetPos()
 	self:ClearTargets()
@@ -408,12 +404,19 @@ function ENT:SelectNearestTarget()
 	
 	for k, v in ipairs(self.Targets) do
 		if not self:CanSeeTarget(v) then continue end
+		--DBot_GetDBot():ChatPrint(tostring(self.TargedDistLimit < v:GetPos():Distance(spos)) .. ' ' .. tostring(v))
+		if IsValid(v) and self.TargedDistLimit and self.TargedDistLimit < v:GetPos():Distance(spos) then continue end
+		
 		found = v
 		
 		break
 	end
 	
-	self.CurrentTarget = found
+	if IsValid(found) then
+		self.TargedDistLimit = found:GetPos():Distance(spos) - 200
+	end
+	
+	self.CurrentTarget = IsValid(found) and found or self.CurrentTarget
 	return found
 end
 
@@ -428,6 +431,7 @@ function ENT:ClearTargets()
 		
 		if cond then
 			table.insert(toRemove, k)
+			self.CurrentTarget = NULL
 		end
 	end
 	
@@ -525,6 +529,7 @@ function ENT:Think()
 	end
 	
 	if self.IsFollowing then
+		self.TargedDistLimit = 99999
 		if not IsValid(self.FollowPly) then
 			self.IsFollowing = false
 		end
@@ -550,6 +555,7 @@ function ENT:Think()
 		end
 	elseif not self:HasTarget() then
 		self:Idle()
+		self.TargedDistLimit = 99999
 		
 		self:SetAngles(LerpAngle(0.05 * GetLerp(), sang, self.AngleTo))
 	else
