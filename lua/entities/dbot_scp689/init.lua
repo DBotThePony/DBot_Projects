@@ -52,6 +52,16 @@ function ENT:CanSeeMe(ply)
 		if cond then
 			return false
 		end
+	elseif ply:IsNPC() then
+		if ply:GetNPCState() == NPC_STATE_DEAD then
+			return false
+		end
+		
+		local cond = (not interval(diffYaw, -50, 50) or not interval(diffPith, -45, 45))
+		
+		if cond then
+			return false
+		end
 	else
 		local cond = (not interval(diffYaw, -50, 50) or not interval(diffPith, -45, 45))
 		
