@@ -60,9 +60,21 @@ function ENT:Idle()
 	end
 end
 
+local Recover = false
+
 function ENT:OnRemove()
 	SafeRemoveEntity(self.BaseProp)
 	SafeRemoveEntity(self.Stick)
+	
+	if Recover then
+		local newEnt = ents.Create('dbot_sentry')
+		newEnt:SetPos(self:GetPos())
+		newEnt:SetAngles(self:GetAngles())
+		newEnt:Spawn()
+		newEnt:Activate()
+		newEnt.Targets = self.Targets
+		newEnt.CurrentTarget = self.CurrentTarget
+	end
 end
 
 function ENT:OnTakeDamage(dmg)
@@ -94,6 +106,8 @@ function ENT:Initialize()
 	if IsValid(phys) then
 		phys:EnableMotion(false)
 	end
+	
+	self:SetColor(Color(math.random(0, 255), math.random(0, 255), math.random(0, 255)))
 	
 	timer.Simple(0, function() self:CreateEnts() end)
 end
@@ -147,6 +161,31 @@ function ENT:Attack()
 	if not self:HasTarget() then return end
 	
 	local t = self:GetTarget()
+	
+	local toCheck = {
+		self,
+		self.Stick,
+		self.Tower,
+		self.BaseProp,
+		self.Antennas,
+		self.Antennas2,
+	}
+	
+	for k, v in ipairs(toCheck) do
+		if t:GetParent() == v then
+			t:SetParent(NULL)
+			break
+		end
+		
+		local result = constraint.GetTable(t)
+		
+		for i, data in ipairs(result) do
+			if data.Ent1 == v or data.Ent2 == v then
+				data.Constraint:Remove()
+			end
+		end
+	end
+	
 	local hitpos = DSentry_GetEntityHitpoint(t)
 	t._DSentry_LastPos = t._DSentry_LastPos or hitpos
 	local Change = (t._DSentry_LastPos - hitpos) * (-1)
@@ -296,12 +335,16 @@ function ENT:CreateStick()
 	ent:Spawn()
 	ent:SetOwner(self)
 	ent:SetMoveType(MOVETYPE_NONE)
+	ent:SetColor(self:GetColor())
 	
 	self:SetNWEntity('stick', ent)
 end
 
 function ENT:CreateTower()
 	local spos = self:GetPos()
+	
+	local oldAng = self:GetAngles()
+	self:SetAngles(Angle(0, 0, 0))
 	
 	self.Tower = ents.Create('prop_physics')
 	local tower = self.Tower
@@ -319,10 +362,13 @@ function ENT:CreateTower()
 	tower:SetParent(self)
 	tower:SetModel('models/hunter/blocks/cube025x2x025.mdl')
 	tower:Spawn()
+	tower:SetColor(self:GetColor())
 	
 	tower:SetCollisionGroup(COLLISION_GROUP_PLAYER)
 	
 	self:SetNWEntity('tower', tower)
+	
+	self:SetAngles(oldAng)
 end
 
 function ENT:CreateBase()
@@ -337,6 +383,7 @@ function ENT:CreateBase()
 	ent:Spawn()
 	ent:SetOwner(self)
 	ent:SetMoveType(MOVETYPE_NONE)
+	ent:SetColor(self:GetColor())
 	
 	self:SetNWEntity('base', ent)
 end
@@ -354,6 +401,7 @@ function ENT:CreateAntennas()
 		e.IsSentryPart = true
 		
 		e:SetOwner(self)
+		e:SetColor(self:GetColor())
 		
 		self:SetNWEntity('antennas', e)
 	end
@@ -366,6 +414,7 @@ function ENT:CreateAntennas()
 		e:SetModel('models/sprops/cuboids/height06/size_2/cube_12x12x6.mdl')
 		e:Spawn()
 		e.IsSentryPart = true
+		e:SetColor(self:GetColor())
 		
 		e:SetOwner(self)
 		
