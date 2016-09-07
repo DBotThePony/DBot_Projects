@@ -127,6 +127,18 @@ local Commands = {
 		end
 	end,
 
+	targetpprops = function(ply2, cmd, args)
+		local t = Entity(tonumber(args[1]))
+		if not IsValid(t) then return end
+		local sentrys = GetDSentries()
+		
+		for k, ent in ipairs(DPP.GetEntsByUID(t:UniqueID())) do
+			for k, v in ipairs(sentrys) do
+				v:AddTarget(ent)
+			end
+		end
+	end,
+
 	targetp = function(ply2, cmd, args)
 		local t = Player(tonumber(args[1]))
 		if not IsValid(t) then return end
