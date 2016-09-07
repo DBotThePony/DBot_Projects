@@ -38,4 +38,12 @@ function ENT:Initialize()
 	end
 	
 	self.LastFrame = CurTime()
+	
+	if CLIENT then
+		timer.Simple(0.5, function()
+			for k, v in pairs(self:GetBodyGroups()) do
+				self:SetBodygroup(v.id, math.random(1, v.num))
+			end
+		end)
+	end
 end
