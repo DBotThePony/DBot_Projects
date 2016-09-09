@@ -279,6 +279,20 @@ local function CanProperty(ply, str, ent)
 	if IsValid(ent) and ent.IsDSentry and ply ~= DBot_GetDBot() then return false end
 end
 
+local function OnNPCKilled(npc, wep, attacker)
+	if not IsValid(attacker) then return end
+	if not attacker.IsDSentry then return end
+	attacker:SetFrags(attacker:GetFrags() + 1)
+end
+
+local function PlayerDeath(ply, wep, attacker)
+	if not IsValid(attacker) then return end
+	if not attacker.IsDSentry then return end
+	attacker:SetPFrags(attacker:GetPFrags() + 1)
+end
+
+hook.Add('OnNPCKilled', 'DSentry', OnNPCKilled)
+hook.Add('PlayerDeath', 'DSentry', PlayerDeath)
 hook.Add('EntityTakeDamage', 'DSentry', EntityTakeDamage)
 hook.Add('ACF_BulletDamage', 'DSentry', ACF_BulletDamage, -2)
 hook.Add('Think', 'DSentry', Think)

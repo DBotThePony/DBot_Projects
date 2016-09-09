@@ -24,3 +24,8 @@ ENT.IsDSentry = true
 ENT.Spawnable = true
 ENT.AdminSpawnable = true
 ENT.AdminOnly = true
+
+function ENT:SetupDataTables()
+	self:NetworkVar('Int', 0, 'Frags')
+	self:NetworkVar('Int', 1, 'PFrags')
+end
