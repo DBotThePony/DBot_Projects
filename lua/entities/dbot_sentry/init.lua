@@ -37,7 +37,7 @@ function ENT:Idle()
 		self.NextIDLEThink = CurTime() + 4
 	end
 	
-	if IsValid(self.WatchAtPlayer) then
+	if IsValid(self.WatchAtPlayer) and self:CanSeeTarget(self.WatchAtPlayer) then
 		self.AngleTo = (-self:GetPos() + DSentry_GetEntityHitpoint(self.WatchAtPlayer)):Angle()
 	end
 	
@@ -540,9 +540,9 @@ function ENT:Think()
 	if not IsValid(self.Antennas) then self:CreateAntennas() end
 	if not IsValid(self.Antennas2) then self:CreateAntennas() end
 	
-	self.Stick:SetPos(spos + Vector(-10, -6, -40))
+	self.Stick:SetPos(spos + Vector(-4, -6, -40))
 	self.Stick:SetAngles(Angle(0, -90, -90))
-	self.BaseProp:SetPos(spos + Vector(-7, -2, -88))
+	self.BaseProp:SetPos(spos + Vector(3, -2, -88))
 	self.BaseProp:SetAngles(Angle(0, 0, 0))
 	
 	local AntennasPos = Vector(0, 0, 30)
