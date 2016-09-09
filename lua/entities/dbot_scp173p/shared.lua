@@ -22,6 +22,13 @@ ENT.Author = 'DBot'
 ENT.Spawnable = true
 ENT.AdminSpawnable = true
 ENT.AdminOnly = true
+ENT.IsSCP173 = true
+ENT.RenderGroup = RENDERGROUP_BOTH
+
+function ENT:SetupDataTables()
+	self:NetworkVar('Int', 0, 'Frags')
+	self:NetworkVar('Int', 1, 'PFrags')
+end
 
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)

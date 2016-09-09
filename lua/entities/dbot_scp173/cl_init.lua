@@ -15,30 +15,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
-local debugwtite = Material('models/debug/debugwhite')
-
-function ENT:Draw()
-	render.SuppressEngineLighting(true)
-	render.ModelMaterialOverride(debugwtite)
-	render.ResetModelLighting(1, 1, 1)
-	render.SetColorModulation(0, 0, 0)
-	
-	self:DrawModel()
-	
-	render.ModelMaterialOverride()
-	render.SuppressEngineLighting(false)
-end
-
-function ENT:Think()
-	self:FrameAdvance(CurTime() - self.LastFrame)
-	self.LastFrame = CurTime()
-end
-
 --Same as DSentry
 
+function ENT:Draw()
+	self:DrawModel()
+end
+
 function ENT:DrawTranslucent()
-	self:Draw()
-	
 	local pos = self:GetPos()
 	local lpos = LocalPlayer():GetPos()
 	if lpos:Distance(pos) > 400 then return end

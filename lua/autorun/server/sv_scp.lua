@@ -203,3 +203,18 @@ concommand.Add('dbot_scp689t', function(ply)
 	
 	DBot_GetDBot():SetPos(ents.FindByClass('dbot_scp689')[1]:GetPos())
 end)
+
+local function OnNPCKilled(npc, wep, attacker)
+	if not IsValid(attacker) then return end
+	if not attacker.IsSCP173 then return end
+	attacker:SetFrags(attacker:GetFrags() + 1)
+end
+
+local function PlayerDeath(ply, wep, attacker)
+	if not IsValid(attacker) then return end
+	if not attacker.IsSCP173 then return end
+	attacker:SetPFrags(attacker:GetPFrags() + 1)
+end
+
+hook.Add('OnNPCKilled', 'DBot_SCP', OnNPCKilled)
+hook.Add('PlayerDeath', 'DBot_SCP', PlayerDeath)
