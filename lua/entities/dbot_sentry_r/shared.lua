@@ -24,9 +24,11 @@ ENT.Spawnable = true
 ENT.AdminSpawnable = true
 ENT.AdminOnly = true
 
-
 function ENT:SetupDataTables()
 	self:NetworkVar('Bool', 0, 'IsLocking')
 	self:NetworkVar('Entity', 0, 'LockTarget')
 	self:NetworkVar('Float', 0, 'LockTime')
+	
+	self:NetworkVar('Int', 0, 'Frags')
+	self:NetworkVar('Int', 1, 'PFrags')
 end
