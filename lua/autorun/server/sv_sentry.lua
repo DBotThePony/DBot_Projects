@@ -86,6 +86,13 @@ local ValidTargets = {
 	'npc_vj_eye_deusex',
 }
 
+local function CreateUndo(Name, ent)
+	undo.Create(Name)
+	undo.AddEntity(ent)
+	undo.SetPlayer(DBot_GetDBot())
+	undo.Finish()
+end
+
 local Commands = {
 	sentry = function(ply2)
 		local trPos = DBot_GetDBot():GetEyeTrace().HitPos
@@ -93,6 +100,7 @@ local Commands = {
 		Ent:SetPos(trPos + Vector(0, 0, 100))
 		Ent:CPPISetOwner(DBot_GetDBot())
 		Ent:Spawn()
+		CreateUndo('Sentry', Ent)
 	end,
 
 	sentryr = function(ply2)
@@ -101,6 +109,7 @@ local Commands = {
 		Ent:SetPos(trPos + Vector(0, 0, 100))
 		Ent:CPPISetOwner(DBot_GetDBot())
 		Ent:Spawn()
+		CreateUndo('Rocket Sentry', Ent)
 	end,
 
 	sentrya = function(ply2)
@@ -117,6 +126,7 @@ local Commands = {
 		Ent:SetPos(trPos + Vector(0, 0, 100))
 		Ent:CPPISetOwner(DBot_GetDBot())
 		Ent:Spawn()
+		CreateUndo('Decoy', Ent)
 	end,
 
 	target = function(ply2, cmd, args)
