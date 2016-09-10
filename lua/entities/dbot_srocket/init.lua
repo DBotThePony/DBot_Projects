@@ -20,7 +20,7 @@ function ENT:Initialize()
 	
 	self.Expires = CurTime() + 8
 	
-	self:PhysicsInitSphere(16)
+	self:PhysicsInitSphere(8)
 	self:SetSolid(SOLID_VPHYSICS)
 	self:SetMoveType(MOVETYPE_VPHYSICS)
 	
