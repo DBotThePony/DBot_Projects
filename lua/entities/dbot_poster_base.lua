@@ -32,7 +32,15 @@ ENT.IHeight = 64
 ENT.ChangeDelay = 120
 ENT.Model = 'models/hunter/plates/plate1x1.mdl'
 
+function ENT:SetupDataTables()
+	self:NetworkVar('Int', 0, 'CPoster')
+end
+
 local NextPanelCreate = 0
+
+function ENT:GetURL()
+	return self.URL[self:GetCPoster()]
+end
 
 function ENT:CreateHTMLPanel()
 	self.LastHTMLTry = self.LastHTMLTry or 0
@@ -52,7 +60,7 @@ function ENT:CreateHTMLPanel()
 	self.HTMLPanel:SetKeyBoardInputEnabled(false)
 	self.HTMLPanel:Dock(FILL)
 	
-	self:OpenURL(self.URL[self.CurrentPoster])
+	self:OpenURL(self:GetURL())
 	self.HTMLPanel:UpdateHTMLTexture()
 	self.Texture = self.HTMLPanel:GetHTMLMaterial()
 	
@@ -89,10 +97,15 @@ end
 function ENT:Initialize()
 	self:SetModel(self.Model)
 	
+	self.URL = self.URL or {}
+	self:SetCPoster(math.random(1, #self.URL))
+	
 	if SERVER then
 		self:PhysicsInit(SOLID_VPHYSICS)
 		self:SetSolid(SOLID_VPHYSICS)
 		self:SetMoveType(MOVETYPE_VPHYSICS)
+		
+		self.NextChange = CurTime() + self.ChangeDelay
 		
 		local phys = self:GetPhysicsObject()
 		
@@ -100,14 +113,8 @@ function ENT:Initialize()
 			phys:EnableMotion(false)
 		end
 	else
-		self.URL = self.URL or {}
-		self.CurrentPoster = math.random(1, #self.URL)
-		
-		self.LastURL = self.URL[self.CurrentPoster]
-		
 		self:CreateHTMLPanel()
 		
-		self.NextTexChange = CurTime() + self.ChangeDelay
 		self.LastTextThink = CurTime()
 		
 		self:DrawShadow(false)
@@ -117,6 +124,7 @@ end
 function ENT:OpenURL(url)
 	if not IsValid(self.HTMLPanel) then self:CreateHTMLPanel() end
 	
+	self.LastURL = url
 	url = url or ''
 	
 	--local width = self.IWidth*8
@@ -175,25 +183,10 @@ function ENT:OpenURL(url)
 end
 
 function ENT:Draw()
-	if not system.HasFocus() then return end
-	
-	--[==[
-	if not DLib.CanLocalPlayerSee(self) then --oshit, we have no DLib!
-		self.InactiveFrames = (self.InactiveFrames or 0) + 1
-		
-		--[[if self.InactiveFrames > framelimit then
-			if IsValid(self.HTMLPanel) then
-				self.HTMLPanel:Remove()
-			end
-		end]]
-		return
-	else
-		self.InactiveFrames = 0
-	end
-	]==]
-	
 	self:DrawModel()
-	local url = self.URL[self.CurrentPoster]
+	
+	if not system.HasFocus() then return end
+	local url = self:GetURL()
 	
 	if not IsValid(self.HTMLPanel) then self:CreateHTMLPanel() return end
 	
@@ -220,47 +213,43 @@ function ENT:Draw()
 end
 
 function ENT:Think()
-	if not CLIENT then return end
+	if SERVER then
+		self.NextChange = self.NextChange or 0
+		
+		if self.NextChange < CurTime() then
+			self.NextChange = CurTime() + self.ChangeDelay
+			self:SetCPoster(math.random(1, #self.URL))
+		end
+		
+		return
+	end
+	
 	self.InactiveFrames = self.InactiveFrames or 0
 	
 	if not system.HasFocus() then return end
-	local url = self.URL[self.CurrentPoster]
-
-	if self.InactiveFrames < framelimit then
-		if self.LastTextThink < CurTime() then
-			if not IsValid(self.HTMLPanel) then self:CreateHTMLPanel() return end
-			
-			self.HTMLPanel:UpdateHTMLTexture()
-			self.Texture = self.HTMLPanel:GetHTMLMaterial()
-			
-			self.LastMatID = self.Texture and surface.GetTextureID(self.Texture:GetName()) or 0
-			
-			self.LastTextThink = CurTime() + 1
-			self.LastURL = url
-			
-			self.LastTextThink = CurTime() + 3
-		end
-	end
+	local url = self:GetURL()
 	
-	if self.NextTexChange < CurTime() then
-		self.NextTexChange = CurTime() + self.ChangeDelay
-		self.CurrentPoster = math.random(1, #self.URL)
+	if url ~= self.LastURL and IsValid(self.HTMLPanel) then
+		self:OpenURL(url)
+	end
+
+	if self.LastTextThink < CurTime() then
+		if not IsValid(self.HTMLPanel) then self:CreateHTMLPanel() return end
 		
-		if self.InactiveFrames < framelimit then
-			if not IsValid(self.HTMLPanel) then
-				self:CreateHTMLPanel() 
-				return
-			end
-			
-			self:OpenURL(self.URL[self.CurrentPoster])
-			self.HTMLPanel:UpdateHTMLTexture()
-			self.Texture = self.HTMLPanel:GetHTMLMaterial()
-		end
+		self.HTMLPanel:UpdateHTMLTexture()
+		self.Texture = self.HTMLPanel:GetHTMLMaterial()
+		
+		self.LastMatID = self.Texture and surface.GetTextureID(self.Texture:GetName()) or 0
+		
+		self.LastTextThink = CurTime() + 1
+		self.LastURL = url
+		
+		self.LastTextThink = CurTime() + 3
 	end
 end
 
 function ENT:OnRemove()
-	if IsValid(self.HTMLPanel) then
+	if CLIENT and IsValid(self.HTMLPanel) then
 		self.HTMLPanel:Remove()
 	end
 end

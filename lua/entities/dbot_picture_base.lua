@@ -112,9 +112,7 @@ function ENT:Initialize()
 		self:SetUseType(SIMPLE_USE)
 		
 		self:SetURL(table.Random(__DPicturePics))
-	end
-	
-	if CLIENT then
+	else
 		self:CreateHTMLPanel()
 		
 		self.LastTextThink = CurTime()
