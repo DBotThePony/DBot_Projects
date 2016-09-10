@@ -15,6 +15,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
+SCP_NoKill = true
+
 SCP_Ignore = {
 	bullseye_strider_focus = true,
 }
@@ -27,6 +29,14 @@ local dbot_scp_player = CreateConVar('dbot_scp_player', '1', FCVAR_ARCHIVE, 'Wha
 SCP_ATTACK_PLAYERS = dbot_scp_player:GetBool()
 
 local VALID_NPCS = {}
+
+concommand.Add('dbot_reset173', function(ply)
+	if not ply:IsAdmin() then return end
+	
+	for k, v in ipairs(player.GetAll()) do
+		v.SCP_Killed = nil
+	end
+end)
 
 local function CreateSpawnCommand(ent, comm)
 	if not SERVER then return end
@@ -90,6 +100,7 @@ function SCP_GetTargets()
 		for k, v in ipairs(player.GetAll()) do
 			if v:HasGodMode() then continue end
 			if v == PLY then continue end
+			if v.SCP_Killed then continue end
 			table.insert(reply, v)
 		end
 	end
@@ -97,6 +108,7 @@ function SCP_GetTargets()
 	for k, v in ipairs(VALID_NPCS) do
 		if not IsValid(v) then continue end
 		if v.SCP_SLAYED then continue end
+		if v.SCP_Killed then continue end
 		if SCP_Ignore[v:GetClass()] then continue end
 		table.insert(reply, v)
 	end

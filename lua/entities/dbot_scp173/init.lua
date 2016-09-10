@@ -133,6 +133,21 @@ local DAMAGE_TYPES = {
 }
 
 function ENT:Wreck(ply)
+	if SCP_NoKill then
+		if ply.SCP_Killed then return end
+		ply.SCP_Killed = true
+		
+		self:EmitSound('snap.wav', 100)
+		
+		if ply:IsPlayer() then
+			PrintMessage(HUD_PRINTTALK, ply:Nick() .. ' should be dead now, but he is not :c')
+		else
+			ply.SCP_SLAYED = true
+		end
+		
+		return
+	end
+	
 	ply:TakeDamage(INT, self, self.Killer)
 	
 	for k, v in pairs(DAMAGE_TYPES) do

@@ -28,7 +28,7 @@ function ENT:Initialize()
 		
 		if IsValid(phys) then
 			self.phys = phys
-			phys:SetMass(128)
+			phys:SetMass(256)
 			phys:Sleep()
 		end
 	end)
