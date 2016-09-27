@@ -35,6 +35,17 @@ ENT.Category = 'DBot'
 
 ENT.RotateAng = Angle(0, -90, 0)
 
+function ENT:SpawnFunction(ply, tr, class)
+	if not tr.Hit then return end
+	
+	local ent = ents.Create(class)
+	ent:SetPos(tr.HitPos + tr.HitNormal * 40)
+	ent:Spawn()
+	ent:Activate()
+	
+	return ent
+end
+
 function ENT:Initialize()
 	self:SetModel('models/props_c17/FurnitureWashingmachine001a.mdl')
 	
