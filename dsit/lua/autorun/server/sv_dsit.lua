@@ -641,10 +641,10 @@ end
 
 local CheckSides = {}
 
-for z = -4, 4 do
-	for x = -4, 4 do
-		for y = -4, 4 do
-			table.insert(CheckSides, Vector(x * 45, y * 45, z * 45 - 20))
+for z = -6, 6 do
+	for x = -6, 6 do
+		for y = -6, 6 do
+			table.insert(CheckSides, Vector(x * 30, y * 30, z * 30 - 20))
 		end
 	end
 end
