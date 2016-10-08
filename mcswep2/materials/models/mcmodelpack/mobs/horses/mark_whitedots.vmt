@@ -1,0 +1,8 @@
+"vertexlitgeneric" {
+    "$basetexture"  "models\MCModelPack\mobs\horses\mark_whitedots"
+    "$surfaceprop"  "flesh"
+    "$translucent"  "1"
+    "$nocull"       "1"
+    "$halflambert"  "1"
+    "$model"        "1"
+}

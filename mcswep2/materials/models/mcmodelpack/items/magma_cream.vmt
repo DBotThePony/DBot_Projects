@@ -1,0 +1,5 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\items\magma_cream"
+    "$halflambert" "1"
+    "$surfaceprop" "Mslime"
+}

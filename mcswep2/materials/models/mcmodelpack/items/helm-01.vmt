@@ -1,0 +1,5 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\items\helm-01"
+    "$halflambert" "1"
+    "$surfaceprop" "Mrock"
+}

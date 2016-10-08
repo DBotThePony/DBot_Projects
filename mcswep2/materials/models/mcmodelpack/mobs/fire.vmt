@@ -1,0 +1,4 @@
+"unlitgeneric" {
+    "$basetexture" "models\MCModelPack\mobs\fire"
+    "$surfaceprop" "flesh"
+}

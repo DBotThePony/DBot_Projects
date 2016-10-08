@@ -1,0 +1,13 @@
+{
+	"title"		:	"DScoreBoard/2",
+	"type"		:	"tool",
+	"tags"		:	[ "" ],
+	"ignore"	:
+	[
+		"*.psd",
+		"*.vcproj",
+		"*.svn*",
+		"*.git*",
+		"README.md"
+	]
+}

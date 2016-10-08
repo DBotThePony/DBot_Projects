@@ -1,0 +1,16 @@
+"UnlitGeneric"
+{
+   "$basetexture" "models\MCModelPack\animated\fire"
+   "$alphatest"   "1"
+   "$nodecal"     "1"
+   "%compilepassbullets" "1"
+   "Proxies"
+   {
+      "AnimatedTexture"
+      {
+         "animatedtexturevar" "$basetexture"
+         "animatedtextureframenumvar" "$frame"
+         "animatedtextureframerate" 20
+      }
+   }
+}

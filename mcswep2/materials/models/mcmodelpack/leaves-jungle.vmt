@@ -1,0 +1,6 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\leaves-jungle"
+    "$surfaceprop" "Mfoliage"
+    "$alphatest"   "1"
+    "$color2"      "{27 122 3}"
+}

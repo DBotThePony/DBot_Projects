@@ -1,0 +1,18 @@
+"vertexlitgeneric"
+{
+   "$basetexture" "models\MCModelPack\animated\water"
+   "$halflambert" "1"
+   "$translucent" "1"
+   "$nodecal"     "1"
+   "%compilepassbullets" "1"
+
+   "Proxies"
+   {
+      "AnimatedTexture"
+      {
+         "animatedtexturevar" "$basetexture"
+         "animatedtextureframenumvar" "$frame"
+         "animatedtextureframerate" 10
+      }
+   }
+}

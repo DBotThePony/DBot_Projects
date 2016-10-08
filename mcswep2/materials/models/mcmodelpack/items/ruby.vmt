@@ -1,0 +1,10 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\items\ruby"
+    "$halflambert" "1"
+    "$surfaceprop" "Mglass"
+
+    "$color2" "{200 0 0}"
+
+    "$blendtintbybasealpha" "1"
+    "$blendtintcoloroverbase" "0"
+}

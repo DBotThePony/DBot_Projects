@@ -1,0 +1,8 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\sprout2"
+    "$surfaceprop" "Mfoliage"
+    "$color2"      "{200 160 20}"
+    "$halflambert" "1"
+    "$alphatest"   "1"
+    "$nocull"      "1"
+}

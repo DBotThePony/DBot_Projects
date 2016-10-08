@@ -1,0 +1,4 @@
+"unlitgeneric" {
+    "$basetexture" "models\MCModelPack\items\dust-glowstone"
+    "$surfaceprop" "Msand"
+}

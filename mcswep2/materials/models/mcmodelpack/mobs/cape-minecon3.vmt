@@ -1,0 +1,5 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\mobs\cape-minecon3"
+    "$surfaceprop" "Mcloth"
+    "$halflambert"  "1"
+}

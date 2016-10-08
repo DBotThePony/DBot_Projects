@@ -1,0 +1,7 @@
+"vertexlitgeneric" {
+    "$basetexture"  "models\MCModelPack\pumpkin-front2"
+    "$surfaceprop"  "Mpumpkin"
+    "$halflambert"  "1"
+    "$selfillum"    "1"
+    "$reflectivity" "[0.675 0.675 0.675]"
+}

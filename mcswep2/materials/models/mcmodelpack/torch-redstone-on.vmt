@@ -1,0 +1,6 @@
+"unlitgeneric" {
+    "$basetexture"  "models\MCModelPack\torch-redstone-on"
+    "$surfaceprop"  "Mwood"
+    "$alphatest"    "1"
+    "$reflectivity" "[0.675 0.675 0.675]"
+}

@@ -1,0 +1,8 @@
+"vertexlitgeneric" {
+    "$basetexture"  "models\MCModelPack\mobs\horses\armor_gold"
+    "$surfaceprop"  "metal"
+    "$alphatest"    "1"
+    "$nocull"       "1"
+    "$halflambert"  "1"
+    "$model"        "1"
+}

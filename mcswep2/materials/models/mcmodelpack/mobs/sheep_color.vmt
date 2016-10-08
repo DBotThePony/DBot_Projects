@@ -1,0 +1,9 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\mobs\sheep"
+    "$halflambert" "1"
+    "$surfaceprop" "flesh"
+    "$model"       "1"
+
+    "$blendtintbybasealpha"   "1"
+    "$blendtintcoloroverbase" "0"
+}

@@ -1,0 +1,7 @@
+"vertexlitgeneric" {
+    "$basetexture"  "models\MCModelPack\door-iron"
+    "$surfaceprop"  "Mmetal"
+    "$alphatest"    "1"
+    "$halflambert"  "1"
+    "$reflectivity" "[0.675 0.675 0.675]"
+}

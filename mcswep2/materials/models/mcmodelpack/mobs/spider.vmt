@@ -1,0 +1,7 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\mobs\spider"
+    "$selfillum"   "1"
+    "$halflambert" "1"
+    "$model"       "1"
+    "$surfaceprop" "flesh"
+}

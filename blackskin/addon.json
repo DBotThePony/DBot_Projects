@@ -1,0 +1,13 @@
+{
+	"title"		:	"Flat Black Derma Skin",
+	"type"		:	"effects",
+	"tags"		:	[ "scenic" ],
+	"ignore"	:
+	[
+		"*.psd",
+		"*.vcproj",
+		"*.svn*",
+		"*.git*",
+		"README.md"
+	]
+}

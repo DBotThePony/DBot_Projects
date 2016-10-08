@@ -1,0 +1,5 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\items\sword-04"
+    "$halflambert" "1"
+    "$surfaceprop" "Mglass"
+}

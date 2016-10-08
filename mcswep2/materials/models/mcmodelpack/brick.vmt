@@ -1,0 +1,7 @@
+"vertexlitgeneric" {
+    "$basetexture"  "models\MCModelPack\brick"
+    //"$bumpmap"     "models\MCModelPack\brick_normal"
+    "$surfaceprop"  "Mrock"
+    "$halflambert"  "1"
+    "$reflectivity" "[0.675 0.675 0.675]"
+}

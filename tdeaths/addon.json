@@ -1,0 +1,13 @@
+{
+	"title"		:	"Terraria styled death messages",
+	"type"		:	"effects",
+	"tags"		:	[ "fun" ],
+	"ignore"	:
+	[
+		"*.psd",
+		"*.vcproj",
+		"*.svn*",
+		"*.git*",
+		"README.md"
+	]
+}
