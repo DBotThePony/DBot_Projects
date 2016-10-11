@@ -719,42 +719,45 @@ local function FindPos(ply, pos, oldpos, H, vehpos, trCheck)
 					local newvec = vehpos + vec
 					local tr = DropPointToFloor(newvec, mins, maxs, ply)
 					
-					if tr.HitPos ~= newvec then
-						-- Make it really sure that we are found right position
+					if tr.HitPos == newvec then continue end
+					-- Make it really sure that we are found right position
+					
+					local trCheck2 = util.TraceLine{
+						start = tr.HitPos,
+						endpos = tr.HitPos + Vector(0, 0, ply:OBBMaxs().z + 20),
+						filter = ply,
+					}
+					
+					if trCheck2.Hit then
+						continue
+					else
+						-- Wew, final check
 						
-						local trCheck2 = util.TraceLine{
-							start = ply:GetPos() + Vector(0, 0, -2),
-							endpos = ply:GetPos() + Vector(0, 0, ply:OBBMaxs().z + 20),
+						local maxs = ply:OBBMaxs()
+						maxs.z = 0
+						
+						local trCheck3 = util.TraceHull{
+							start = tr.HitPos,
+							endpos = tr.HitPos + Vector(0, 0, ply:OBBMaxs().z + 20),
 							filter = ply,
+							mins = ply:OBBMins(),
+							maxs = maxs,
 						}
 						
-						if trCheck2.Hit then
+						if trCheck3.Hit then
 							continue
-						else
-							-- Wew, final check
-							
-							local maxs = ply:OBBMaxs()
-							maxs.z = 0
-							
-							local trCheck3 = util.TraceHull{
-								start = ply:GetPos() + Vector(0, 0, -2),
-								endpos = ply:GetPos() + Vector(0, 0, ply:OBBMaxs().z + 20),
-								filter = ply,
-								mins = ply:OBBMins(),
-								maxs = maxs,
-							}
 						end
-						
-						if PREVENT_EXPLOIT then
-							trCheck.endpos = tr.HitPos
-							local result = util.TraceLine(trCheck)
-							if result.Hit then continue end
-						end
-						
-						validpos = tr.HitPos
-						hit = true
-						break
 					end
+					
+					if PREVENT_EXPLOIT then
+						trCheck.endpos = tr.HitPos
+						local result = util.TraceLine(trCheck)
+						if result.Hit then continue end
+					end
+					
+					validpos = tr.HitPos
+					hit = true
+					break
 				end
 			end
 		end
