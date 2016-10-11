@@ -16,7 +16,9 @@ limitations under the License.
 ]]
 
 local Flashlight = 100
+local RFlashlight = 100
 local Oxygen = 100
+local ROxygen = 100
 local UseDHUD2 = DHUD2 ~= nil
 
 surface.CreateFont('DBot_LimitedFlashlightAndOxygen', {
@@ -26,8 +28,8 @@ surface.CreateFont('DBot_LimitedFlashlightAndOxygen', {
 })
 
 net.Receive('DBot_LimitedFlashlightAndOxygen', function()
-	Oxygen = net.ReadFloat()
-	Flashlight = net.ReadFloat()
+	ROxygen = net.ReadFloat()
+	RFlashlight = net.ReadFloat()
 end)
 
 local X, Y = ScrW() / 2, ScrH() / 2 - 200
@@ -79,11 +81,11 @@ local function HUDPaint()
 		X, Y = DHUD2.GetPosition('oxygenandflashlight')
 	end
 	
-	if Flashlight ~= 100 then
+	if RFlashlight ~= 100 then
 		FlashlightFunc()
 	end
 	
-	if Oxygen ~= 100 then
+	if ROxygen ~= 100 then
 		OxygenFunc()
 	end
 end
@@ -91,6 +93,11 @@ end
 hook.Add('PostDHUD2Init', 'DBot_LimitedFlashlightAndOxygen', function()
 	UseDHUD2 = true
 	DHUD2.DefinePosition('oxygenandflashlight', X, Y)
+end)
+
+hook.Add('Think', 'DBot_LimitedFlashlightAndOxygen', function()
+	Flashlight = Lerp(0.5, Flashlight, RFlashlight)
+	Oxygen = Lerp(0.5, Oxygen, ROxygen)
 end)
 
 hook.Add('HUDPaint', 'DBot_LimitedFlashlightAndOxygen', HUDPaint)
