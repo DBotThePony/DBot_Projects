@@ -137,6 +137,28 @@ local DisplayBlacklist = {
 	DMG_NERVEGAS,
 }
 
+local function GetObservedTo(ent)
+	for k, v in ipairs(player.GetAll()) do
+		if v:GetObserverTarget() == ent then
+			return v
+		end
+		
+		if v:InVehicle() then
+			local veh = v:GetVehicle()
+			
+			if veh:GetParent() == ent then
+				return v
+			end
+			
+			for k, v2 in pairs(veh:GetChildren()) do
+				if v2 == ent then
+					return v
+				end
+			end
+		end
+	end
+end
+
 local function EntityTakeDamage(ent, dmg)
 	if not DHUD2.ServerConVar('damage') then return end
 	if not IsValid(ent) then return end
@@ -144,6 +166,9 @@ local function EntityTakeDamage(ent, dmg)
 	if dmg:GetDamage() < .1 then return end
 	
 	local attacker = dmg:GetAttacker()
+	local inflictor = dmg:GetAttacker()
+	
+	local fattacker = IsValid(inflictor) and inflictor or attacker
 	
 	local report = dmg:GetReportedPosition()
 	
@@ -161,12 +186,28 @@ local function EntityTakeDamage(ent, dmg)
 	net.WriteEntity(ent)
 	net.Broadcast()
 	
-	if ent:IsPlayer() and IsValid(attacker) and not table.HasValue(DisplayBlacklist, dmg:GetDamageType()) then
+	if ent:IsPlayer() and IsValid(fattacker) and not table.HasValue(DisplayBlacklist, dmg:GetDamageType()) then
 		net.Start('DHUD2.DamagePlayer')
 		net.WriteFloat(dmg:GetDamage())
 		net.WriteUInt(TypesR[dmg:GetDamageType()] or 1, 8)
-		net.WriteVector(attacker:GetPos())
+		net.WriteVector(fattacker:GetPos())
 		net.Send(ent)
+	elseif ent:IsVehicle() and IsValid(ent:GetDriver()) and IsValid(fattacker) and ent:GetDriver():IsPlayer() then
+		net.Start('DHUD2.DamagePlayer')
+		net.WriteFloat(dmg:GetDamage())
+		net.WriteUInt(TypesR[dmg:GetDamageType()] or 1, 8)
+		net.WriteVector(fattacker:GetPos())
+		net.Send(ent:GetDriver())
+	else
+		local ply = GetObservedTo(ent)
+		
+		if IsValid(ply) and IsValid(fattacker) then
+			net.Start('DHUD2.DamagePlayer')
+			net.WriteFloat(dmg:GetDamage())
+			net.WriteUInt(TypesR[dmg:GetDamageType()] or 1, 8)
+			net.WriteVector(fattacker:GetPos())
+			net.Send(ply)
+		end
 	end
 end
 
