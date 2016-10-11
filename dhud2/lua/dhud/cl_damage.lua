@@ -21,6 +21,7 @@ DHUD2.AddConVar('dhud_numbers', 'Draw hit numbers', ENABLE)
 DHUD2.Damage = DHUD2.Damage or {}
 local Damage = DHUD2.Damage
 Damage.History = Damage.History or {}
+Damage.PHistory = Damage.PHistory or {}
 
 local Types = {
 	DMG_GENERIC,
@@ -87,65 +88,41 @@ Damage.Colors = {
 	[DMG_PLASMA] = Color(131, 155, 255),
 }
 
---[[
-Damage.DrawFuncs = {
-	[DMG_BULLET] = function(w, h)
-		local x, y = w + 3, h / 3
-		local h = h / 3
-		
-		surface.DrawPoly{
-			{x = x + 20, y = y},
-			{x = x + 80, y = y},
-			{x = x + 80, y = y + h},
-			{x = x + 20, y = y + h},
-			{x = x, y = y + h / 2},
-		}
-	end,
+local function NetPlayer()
+	if not ENABLE:GetBool() then return end
+	local dmg = net.ReadFloat()
+	local type = net.ReadUInt(8)
+	local pos = net.ReadVector()
+	local dtype = Types[type]
 	
-	[DMG_CRUSH] = function(w, h)
-		local x, y = w + 3, 10
-		local div = h / 3 - 7
-		
-		for i = 0, 2 do
-			surface.DrawRect(x, y + div * i, x + 20 - i * 20, div - 8)
-		end
-	end,
+	dmg = math.floor(dmg * 100) / 100
 	
-	[DMG_BLAST] = function(w, h)
-		local x, y = w + 3, 0
-		surface.DrawPoly{
-			{x = x, y = 22},
-			{x = x + 14, y = 19},
-			{x = x + 11, y = 5},
-			{x = x + 25, y = 12},
-			{x = x + 32, y = 0},
-			{x = x + 38, y = 11},
-			{x = x + 50, y = 5},
-			{x = x + 48, y = 18},
-			{x = x + 62, y = 21},
-			{x = x + 52, y = 32},
-			{x = x + 62, y = 41},
-			{x = x + 48, y = 43},
-			{x = x + 51, y = 58},
-			{x = x + 38, y = 52},
-			{x = x + 32, y = 64},
-			{x = x + 25, y = 52},
-			{x = x + 12, y = 58},
-			{x = x + 14, y = 45},
-			{x = x + 0, y = 42},
-			{x = x + 10, y = 32},
-		}
-	end,
-}]]
-
---Damage.DrawFuncs[DMG_BUCKSHOT] = Damage.DrawFuncs[DMG_BULLET]
---Damage.DrawFuncs[DMG_CLUB] = Damage.DrawFuncs[DMG_CRUSH]
+	local ctime = CurTime()
+	local tolive = math.Clamp(dmg / 10, 3, 12)
+	local col = Damage.Colors[dtype] or color_white
+	local scale = math.Clamp(dmg / 10, 0.5, 2)
+	
+	local data = {
+		pos = pos,
+		dmg = dmg,
+		start = ctime,
+		finish = ctime + tolive,
+		fade = ctime + tolive - 1,
+		color = Color(col.r, col.g, col.b, col.a),
+		dtype = dtype,
+		cfade = 1,
+		scale = scale
+	}
+	
+	table.insert(Damage.PHistory, data)
+end
 
 local function Net()
 	if not ENABLE:GetBool() then return end
 	local pos = Vector(net.ReadFloat(), net.ReadFloat(), net.ReadFloat())
 	local dmg = net.ReadFloat()
 	local type = net.ReadUInt(8)
+	local entityThatDamaged = net.ReadEntity()
 	local dtype = Types[type]
 	
 	dmg = math.floor(dmg * 100) / 100
@@ -180,6 +157,14 @@ surface.CreateFont('DHUD2.DamageNumber', {
 	weight = 800,
 })
 
+for i = 1, 4 do
+	surface.CreateFont('DHUD2.DamageNumber' .. i, {
+		font = 'Roboto',
+		size = 18 + i * 4,
+		weight = 500,
+	})
+end
+
 local function PostDrawTranslucentRenderables(a, b)
 	if a or b then return end
 	if not ENABLE:GetBool() then return end
@@ -187,8 +172,6 @@ local function PostDrawTranslucentRenderables(a, b)
 	local ply = LocalPlayer()
 	local lpos = EyePos()
 	local langle = EyeAngles()
-	
-	--draw.NoTexture()
 	
 	for k, data in pairs(Damage.History) do
 		local pos = data.pos
@@ -203,16 +186,45 @@ local function PostDrawTranslucentRenderables(a, b)
 		add:Rotate(dang)
 		
 		cam.Start3D2D(pos + add, dang, data.size / 100)
-		
 		draw.DrawText('-' .. data.dmg, 'DHUD2.DamageNumber', 0, 0, data.color)
-		
-		--[[if Damage.DrawFuncs[data.dtype] then
-			local w, h = surface.GetTextSize('-' .. data.dmg)
-			surface.SetDrawColor(data.color)
-			Damage.DrawFuncs[data.dtype](w, h)
-		end]]
-
 		cam.End3D2D()
+	end
+end
+
+local function Draw()
+	local lpos = LocalPlayer():EyePos()
+	local lyaw = EyeAngles().y
+	local srcw, scrh = ScrW(), ScrH()
+	
+	surface.SetDrawColor(255, 255, 255)
+	draw.NoTexture()
+	
+	for k, v in pairs(Damage.PHistory) do
+		local ang = (v.pos - lpos):Angle()
+		local yaw = ang.y + 90
+		local turn = math.rad(lyaw - yaw)
+		
+		local cos, sin = math.cos(turn), math.sin(turn)
+		
+		local x, y = srcw / 2 + cos * srcw / 2.4, scrh / 2 + sin * scrh / 2.4
+		
+		local gen = {
+			{x = x + 7.5 * sin * v.scale, y = y - 7.5 * cos * v.scale},
+			{x = x + 50 * cos * v.scale, y = y + 50 * sin * v.scale},
+			{x = x - 7.5 * sin * v.scale, y = y + 7.5 * cos * v.scale},
+		}
+		
+		local selectFont = math.floor(v.scale * 2)
+		surface.SetFont('DHUD2.DamageNumber' .. selectFont)
+		
+		surface.SetTextColor(v.color.r, v.color.g, v.color.b, v.color.a)
+		surface.SetDrawColor(v.color.r, v.color.g, v.color.b, v.color.a)
+		surface.DrawPoly(gen)
+		
+		local w, h = surface.GetTextSize(v.dmg)
+		
+		surface.SetTextPos(x - (w / 2 + 4) * cos - w / 2 + 3, y - (h / 2) * sin - h / 2)
+		surface.DrawText(v.dmg)
 	end
 end
 
@@ -235,8 +247,20 @@ local function Tick()
 		data.cfade = math.Clamp(1 - (CurTime() - data.fade), 0, 1)
 		data.color.a = data.cfade * 255
 	end
+	
+	for k, data in pairs(Damage.PHistory) do
+		if data.finish < ctime then
+			Damage.PHistory[k] = nil
+			continue
+		end
+		
+		data.cfade = math.Clamp(1 - (CurTime() - data.fade), 0, 1)
+		data.color.a = data.cfade * 255
+	end
 end
 
 net.Receive('DHUD2.Damage', Net)
+net.Receive('DHUD2.DamagePlayer', NetPlayer)
 hook.Add('PostDrawTranslucentRenderables', 'DHUD2.DrawDamage', PostDrawTranslucentRenderables)
 DHUD2.VarHook('damage', Tick)
+DHUD2.DrawHook('damage', Draw)

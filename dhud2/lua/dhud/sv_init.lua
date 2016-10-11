@@ -32,6 +32,7 @@ AddCSLuaFile('dhud/cl_damage.lua')
 
 util.AddNetworkString('DHUD2.PrintMessage')
 util.AddNetworkString('DHUD2.Damage')
+util.AddNetworkString('DHUD2.DamagePlayer')
 
 function PrintMessage(mode, message)
 	if string.sub(message, #message) == '\n' then
@@ -128,11 +129,21 @@ end
 
 TypesR[4098] = 3 --Bullet
 
+local DisplayBlacklist = {
+	DMG_FALL,
+	DMG_DROWN,
+	DMG_ACID,
+	DMG_POISON,
+	DMG_NERVEGAS,
+}
+
 local function EntityTakeDamage(ent, dmg)
 	if not DHUD2.ServerConVar('damage') then return end
 	if not IsValid(ent) then return end
 	
 	if dmg:GetDamage() < .1 then return end
+	
+	local attacker = dmg:GetAttacker()
 	
 	local report = dmg:GetReportedPosition()
 	
@@ -147,7 +158,16 @@ local function EntityTakeDamage(ent, dmg)
 	net.WriteFloat(report.z)
 	net.WriteFloat(dmg:GetDamage())
 	net.WriteUInt(TypesR[dmg:GetDamageType()] or 1, 8)
+	net.WriteEntity(ent)
 	net.Broadcast()
+	
+	if ent:IsPlayer() and IsValid(attacker) and not table.HasValue(DisplayBlacklist, dmg:GetDamageType()) then
+		net.Start('DHUD2.DamagePlayer')
+		net.WriteFloat(dmg:GetDamage())
+		net.WriteUInt(TypesR[dmg:GetDamageType()] or 1, 8)
+		net.WriteVector(attacker:GetPos())
+		net.Send(ent)
+	end
 end
 
 hook.Add('EntityTakeDamage', 'DHUD2.DamageDisplay', EntityTakeDamage)
