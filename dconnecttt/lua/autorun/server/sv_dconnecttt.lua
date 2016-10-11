@@ -104,7 +104,7 @@ function DConn.SavePlayerData(ply)
 			realnick,
 			ip,
 			os.time(),
-			ply.DConnecttt_Total,
+			ply.DConnecttt_Total or 0,
 			steamid64
 		)
 	)
