@@ -715,6 +715,8 @@ local function FindPos(ply, pos, oldpos, H, vehpos, trCheck)
 				validpos = tr.HitPos
 				hit = true
 			else
+				local ValidPositions = {}
+
 				for k, vec in ipairs(CheckSides) do
 					local newvec = vehpos + vec
 					local tr = DropPointToFloor(newvec, mins, maxs, ply)
@@ -755,9 +757,21 @@ local function FindPos(ply, pos, oldpos, H, vehpos, trCheck)
 						if result.Hit then continue end
 					end
 					
-					validpos = tr.HitPos
+					--validpos = tr.HitPos
+					--hit = true
+					--break
+					table.insert(ValidPositions, tr.HitPos)
+				end
+				
+				table.sort(ValidPositions, function(a, b)
+					return a:DistToSqr(vehpos) < b:DistToSqr(vehpos)
+				end)
+				
+				local pos = ValidPositions[1]
+				
+				if pos then
+					validpos = pos
 					hit = true
-					break
 				end
 			end
 		end
