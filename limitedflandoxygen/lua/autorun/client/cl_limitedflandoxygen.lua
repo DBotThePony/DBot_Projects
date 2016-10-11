@@ -90,7 +90,7 @@ end
 
 hook.Add('PostDHUD2Init', 'DBot_LimitedFlashlightAndOxygen', function()
 	UseDHUD2 = true
-	DHUD2.DefinePosition('default', X, Y)
+	DHUD2.DefinePosition('oxygenandflashlight', X, Y)
 end)
 
 hook.Add('HUDPaint', 'DBot_LimitedFlashlightAndOxygen', HUDPaint)
