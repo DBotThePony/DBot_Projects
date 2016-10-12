@@ -183,7 +183,7 @@ function Default.DrawAmmo(x, y, RX, RY)
 end
 
 function Default.DrawWeaponName(x, y)
-	DHUD2.SimpleText(Var 'weaponname', nil, x + 20, y + 20, Col 'ammotext')
+	DHUD2.SimpleText(Var 'weaponname', nil, x + 20 + DHUD2.GetDamageShift(), y + 20 + DHUD2.GetDamageShift(), Col 'ammotext')
 end
 
 function Default.PlayerInfo(x, y)

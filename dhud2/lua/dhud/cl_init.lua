@@ -39,12 +39,12 @@ DHUD2.DamageShift = false
 
 DHUD2.DamageShiftData = {}
 
-function DHUD2.GetDamageShift()
+function DHUD2.GetDamageShift(level)
 	if not DHUD2.DamageShift then
 		return 0
 	end
 	
-	local data = debug.getinfo(2, 'Sln')
+	local data = debug.getinfo(level or 2, 'Sln')
 	local name = data.short_src .. data.currentline
 	
 	if DHUD2.DamageShiftData[name] == nil then

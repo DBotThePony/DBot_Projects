@@ -38,6 +38,10 @@ if UseDHUD2 then
 	DHUD2.DefinePosition('oxygenandflashlight', X, Y)
 end
 
+local function GetAddition()
+	return UseDHUD2 and DHUD2.GetDamageShift(3) or 0
+end
+
 local OHeight, OWidth, FHeight, FWidth
 
 timer.Simple(0, function()
@@ -50,12 +54,12 @@ local function FlashlightFunc()
 	local x, y = X, Y + 30
 	
 	surface.SetDrawColor(0, 0, 0, 150)
-	surface.DrawRect(x - 200, y - 2, 400, 20)
+	surface.DrawRect(x - 200 + GetAddition(), y - 2 + GetAddition(), 400, 20)
 	
 	surface.SetDrawColor(200, 200, 0, 150)
-	surface.DrawRect(x - 195, y, 390 * Flashlight / 100, 16)
+	surface.DrawRect(x - 195 + GetAddition(), y + GetAddition(), 390 * Flashlight / 100, 16)
 	
-	surface.SetTextPos(x - FWidth, y + 2)
+	surface.SetTextPos(x - FWidth + GetAddition(), y + 2 + GetAddition())
 	surface.DrawText('Flashlight')
 end
 
@@ -63,12 +67,12 @@ local function OxygenFunc()
 	local x, y = X, Y
 	
 	surface.SetDrawColor(0, 0, 0, 150)
-	surface.DrawRect(x - 200, y - 2, 400, 20)
+	surface.DrawRect(x - 200 + GetAddition(), y - 2 + GetAddition(), 400, 20)
 	
 	surface.SetDrawColor(0, 255, 255, 150)
-	surface.DrawRect(x - 195, y, 390 * Oxygen / 100, 16)
+	surface.DrawRect(x - 195 + GetAddition(), y + GetAddition(), 390 * Oxygen / 100, 16)
 	
-	surface.SetTextPos(x - OWidth / 2, y + 2)
+	surface.SetTextPos(x - OWidth / 2 + GetAddition(), y + 2 + GetAddition())
 	surface.DrawText('Oxygen')
 end
 
