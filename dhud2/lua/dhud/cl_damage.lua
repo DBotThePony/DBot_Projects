@@ -206,7 +206,8 @@ local function Draw()
 		
 		local cos, sin = math.cos(turn), math.sin(turn)
 		
-		local x, y = srcw / 2 + cos * srcw / 2.4, scrh / 2 + sin * scrh / 2.4
+		local x, y = srcw / 2 + cos * 200, scrh / 2 + sin * 200
+		
 		
 		local gen = {
 			{x = x + 7.5 * sin * v.scale, y = y - 7.5 * cos * v.scale},
