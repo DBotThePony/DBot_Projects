@@ -69,7 +69,7 @@ local function Draw()
 	if not DHUD2.IsEnabled() then return end
 	if not DHUD2.ServerConVar('crosshairs') then return end
 	
-	local ply = LocalPlayer()
+	local ply = DHUD2.SelectPlayer()
 	local wep = ply:GetActiveWeapon()
 	if not IsValid(wep) then return end
 	

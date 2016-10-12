@@ -191,13 +191,15 @@ local function EntityTakeDamage(ent, dmg)
 		net.WriteFloat(dmg:GetDamage())
 		net.WriteUInt(TypesR[dmg:GetDamageType()] or 1, 8)
 		net.WriteVector(fattacker:GetPos())
-		net.Send(ent)
+		net.WriteEntity(ent)
+		net.Broadcast()
 	elseif ent:IsVehicle() and IsValid(ent:GetDriver()) and IsValid(fattacker) and ent:GetDriver():IsPlayer() then
 		net.Start('DHUD2.DamagePlayer')
 		net.WriteFloat(dmg:GetDamage())
 		net.WriteUInt(TypesR[dmg:GetDamageType()] or 1, 8)
 		net.WriteVector(fattacker:GetPos())
-		net.Send(ent:GetDriver())
+		net.WriteEntity(ent:GetDriver())
+		net.Broadcast()
 	else
 		local ply = GetObservedTo(ent)
 		
@@ -206,7 +208,8 @@ local function EntityTakeDamage(ent, dmg)
 			net.WriteFloat(dmg:GetDamage())
 			net.WriteUInt(TypesR[dmg:GetDamageType()] or 1, 8)
 			net.WriteVector(fattacker:GetPos())
-			net.Send(ply)
+			net.WriteEntity(ply)
+			net.Broadcast()
 		end
 	end
 end

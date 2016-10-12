@@ -33,7 +33,7 @@ local function LayoutEntity(self, ent)
 	if not ENABLE:GetBool() then return false end
 	if not DHUD2.ServerConVar('playericon') then return false end
 	if not IsValid(ent) then return end
-	local ply = LocalPlayer()
+	local ply = DHUD2.SelectPlayer()
 	local lmodel = ply:GetModel()
 	
 	Pos = DPos - Vector(DHUD2.ShiftX * .3, -DHUD2.ShiftX * .3, DHUD2.ShiftY * .5)
@@ -103,7 +103,7 @@ DHUD2.DrawHook('playericon', function()
 end)
 
 local function PreDrawModel(self, ent)
-	local ply = LocalPlayer()
+	local ply = DHUD2.SelectPlayer()
 	if not (ply:Alive() and not ply:GetNWBool('Spectator') and hook.Run('HUDShouldDraw', 'CHudGMod') ~= false and IsDrawing) then return false end
 	IsDrawing = false
 	
@@ -152,7 +152,7 @@ local function Create()
 	
 	panel:SetPos(0, ScrH() - 200)
 	
-	local ply = LocalPlayer()
+	local ply = DHUD2.SelectPlayer()
 	local lmodel = ply:GetModel()
 	model:SetModel(lmodel)
 	model.LastModel = lmodel

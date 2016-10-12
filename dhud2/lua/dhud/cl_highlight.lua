@@ -52,9 +52,9 @@ timer.Create('DHUD2.HightlightEntUpdate', 1, 0, function()
 	if not DHUD2.ServerConVar('highlight') then return end
 	
 	ENTS = ents.GetAll()
-	if not IsValid(LocalPlayer()) then return end
-	local pos = LocalPlayer():EyePos()
-	local p = LocalPlayer()
+	if not IsValid(DHUD2.SelectPlayer()) then return end
+	local pos = DHUD2.SelectPlayer():EyePos()
+	local p = DHUD2.SelectPlayer()
 	
 	for k, v in pairs(ENTS) do
 		if v == p or v:GetClass() == 'gmod_hands' or not Check(v, pos) then
@@ -103,7 +103,7 @@ local function PostDrawTranslucentRenderables(a, b)
 	
 	if not DHUD2.IsHudDrawing then return end
 	
-	local ply = LocalPlayer()
+	local ply = DHUD2.SelectPlayer()
 	if not IsValid(ply) then return end
 	if ply:InVehicle() then return end
 	local pos = ply:GetPos()

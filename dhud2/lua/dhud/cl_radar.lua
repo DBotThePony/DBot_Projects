@@ -28,11 +28,11 @@ local ENTS = {}
 
 timer.Create('DHUD2.UpdateRadar', 1, 0, function()
 	if not ENABLE:GetBool() then return end
-	if not IsValid(LocalPlayer()) then return end
+	if not IsValid(DHUD2.SelectPlayer()) then return end
 	if not DHUD2.ServerConVar('radar') then return end
 	
 	ENTS = ents.GetAll()
-	local ply = LocalPlayer()
+	local ply = DHUD2.SelectPlayer()
 	local pos = EyePos()
 	
 	for k, v in pairs(ENTS) do
@@ -54,7 +54,7 @@ local function Update()
 	if not DHUD2.ServerConVar('radar') then return end
 	
 	ToDraw = {}
-	local ply = LocalPlayer()
+	local ply = DHUD2.SelectPlayer()
 	if not IsValid(ply) then return end
 	local lpos = EyePos()
 	local ang = EyeAngles()

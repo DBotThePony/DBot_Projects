@@ -177,7 +177,7 @@ local function Reset()
 end
 
 local function KeyPress(ply)
-	if ply ~= LocalPlayer() then return end
+	if ply ~= DHUD2.SelectPlayer() then return end
 	Reset()
 end
 
@@ -205,8 +205,9 @@ local function Think()
 	if not DHUD2.ServerConVar('freecam') then return end
 	if not DHUD2.IsEnabled() then return end
 	
-	local ply = LocalPlayer()
+	local ply = DHUD2.SelectPlayer()
 	if not IsValid(ply) then return end
+	if ply ~= LocalPlayer() then return end --Spectating
 	
 	local ang = ply:EyeAngles()
 	local epos = ply:EyePos()

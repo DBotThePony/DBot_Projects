@@ -93,6 +93,8 @@ local function NetPlayer()
 	local dmg = net.ReadFloat()
 	local type = net.ReadUInt(8)
 	local pos = net.ReadVector()
+	local target = net.ReadEntity()
+	if target ~= DHUD2.SelectPlayer() then return end
 	local dtype = Types[type]
 	
 	dmg = math.floor(dmg * 100) / 100
@@ -169,7 +171,7 @@ local function PostDrawTranslucentRenderables(a, b)
 	if a or b then return end
 	if not ENABLE:GetBool() then return end
 	
-	local ply = LocalPlayer()
+	local ply = DHUD2.SelectPlayer()
 	local lpos = EyePos()
 	local langle = EyeAngles()
 	
@@ -192,7 +194,7 @@ local function PostDrawTranslucentRenderables(a, b)
 end
 
 local function Draw()
-	local lpos = LocalPlayer():EyePos()
+	local lpos = DHUD2.SelectPlayer():EyePos()
 	local lyaw = EyeAngles().y
 	local srcw, scrh = ScrW(), ScrH()
 	

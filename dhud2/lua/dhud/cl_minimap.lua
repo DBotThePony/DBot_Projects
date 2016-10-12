@@ -42,7 +42,7 @@ local Whitelist = {
 timer.Create('DHUD2.UpdateMinimap', 1, 0, function()
 	if not ENABLE:GetBool() then return end
 	if not DHUD2.ServerConVar('minimap') then return end
-	if not IsValid(LocalPlayer()) then return end
+	if not IsValid(DHUD2.SelectPlayer()) then return end
 	ENTS = ents.GetAll()
 	local lpos = EyePos()
 	
@@ -68,7 +68,7 @@ local function Tick()
 	if not DHUD2.ServerConVar('minimap') then return end
 	ToDraw = {}
 	
-	local ply = LocalPlayer()
+	local ply = DHUD2.SelectPlayer()
 	local lpos = EyePos()
 	local eyes = EyePos()
 	
@@ -256,7 +256,7 @@ local function UpdateMinimapZoom()
 		ipos = 1
 	end
 	
-	local pos = LocalPlayer():GetPos()
+	local pos = DHUD2.SelectPlayer():GetPos()
 	Records[ipos] = pos:Distance(LastPos) / DHUD2.Multipler
 	LastPos = pos
 	
@@ -274,7 +274,7 @@ end
 DHUD2.VarHook('minimap_zoom', UpdateMinimapZoom)
 
 local function DrawMap(x, y, Width, Height, Mult)
-	local ply = LocalPlayer()
+	local ply = DHUD2.SelectPlayer()
 	local DrawX, DrawY = x, y
 	local FoV = 90
 	local DrawPos = EyePos()
@@ -323,7 +323,7 @@ local function Draw()
 	if not ENABLE:GetBool() then return end
 	if not DHUD2.ServerConVar('minimap') then return end
 	
-	local ply = LocalPlayer()
+	local ply = DHUD2.SelectPlayer()
 	local x, y = DHUD2.GetPosition('minimap')
 	
 	local keyDown = input.IsKeyDown(KEY_M)

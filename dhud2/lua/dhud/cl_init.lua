@@ -79,6 +79,17 @@ function DHUD2.AddConVar(name, help, obj)
 	}
 end
 
+function DHUD2.SelectPlayer()
+	local ply = LocalPlayer()
+	local obs = ply:GetObserverTarget()
+	
+	if IsValid(obs) and obs:IsPlayer() then
+		return obs
+	else
+		return ply
+	end
+end
+
 DHUD2.Colors = DHUD2.Colors or {}
 DHUD2.ColorsVars = DHUD2.ColorsVars or {}
 
@@ -176,7 +187,7 @@ end
 DHUD2.IsHudDrawing = false
 
 local function Tick()
-	local ply = LocalPlayer()
+	local ply = DHUD2.SelectPlayer()
 	
 	if not IsValid(ply) then return end
 	
@@ -281,7 +292,7 @@ function DHUD2.IsEnabled()
 end
 
 local function HUDPaint()
-	local ply = LocalPlayer()
+	local ply = DHUD2.SelectPlayer()
 	
 	if DHUD2.IsEnabled() then
 		DHUD2.IsHudDrawing = true
@@ -502,7 +513,7 @@ local function UpdateShift()
 	if not DHUD2.IsEnabled() then return end
 	if not DHUD2.IsShiftEnabled() then return end
 	
-	local ply = LocalPlayer()
+	local ply = DHUD2.SelectPlayer()
 	local ang = ply:EyeAngles()
 	
 	local changePitch = math.AngleDifference(ang.p, DHUD2.LastAngle.p)

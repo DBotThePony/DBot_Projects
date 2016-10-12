@@ -127,7 +127,7 @@ local function PostDrawTranslucentRenderables(a, b)
 	
 	if not DHUD2.IsHudDrawing then return end
 	
-	local ply = LocalPlayer()
+	local ply = DHUD2.SelectPlayer()
 	local pos = ply:GetPos()
 	local eyes = ply:EyePos()
 	
