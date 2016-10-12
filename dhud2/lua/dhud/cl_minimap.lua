@@ -287,12 +287,12 @@ local function DrawMap(x, y, Width, Height, Mult)
 	local add = Vector(-10, 0, 0)
 	add:Rotate(DrawAngle)
 	
-	DHUD2.SimpleText('Zoom: ' ..  math.floor((1 / Mult) * 100) / 100,'DHUD2.Default', x, y - 20, DHUD2.GetColor('generic'))
+	DHUD2.SimpleText('Zoom: ' ..  math.floor((1 / Mult) * 100) / 100,'DHUD2.Default', x + DHUD2.GetDamageShift(), y - 20 + DHUD2.GetDamageShift(), DHUD2.GetColor('generic'))
 	
 	DrawPos.z = DrawPos.z + 280 * Mult
 	DrawPos = DrawPos + add
 	
-	DHUD2.DrawBox(x, y, Width, Height, DHUD2.GetColor('bg'))
+	DHUD2.DrawBox(x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), Width, Height, DHUD2.GetColor('bg'))
 	
 	cam.Start3D(DrawPos, DrawAngle, FoV, DrawX, DrawY, Width, Height)
 		render.SuppressEngineLighting(true)

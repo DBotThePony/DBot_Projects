@@ -88,6 +88,8 @@ Damage.Colors = {
 	[DMG_PLASMA] = Color(131, 155, 255),
 }
 
+local DisableAt = 0
+
 local function NetPlayer()
 	if not ENABLE:GetBool() then return end
 	local dmg = net.ReadFloat()
@@ -96,6 +98,10 @@ local function NetPlayer()
 	local target = net.ReadEntity()
 	if target ~= DHUD2.SelectPlayer() then return end
 	local dtype = Types[type]
+	
+	DHUD2.DamageShift = true
+	DHUD2.DamageShiftData = {}
+	DisableAt = CurTime() + 0.2
 	
 	dmg = math.floor(dmg * 100) / 100
 	
@@ -265,5 +271,11 @@ end
 net.Receive('DHUD2.Damage', Net)
 net.Receive('DHUD2.DamagePlayer', NetPlayer)
 hook.Add('PostDrawTranslucentRenderables', 'DHUD2.DrawDamage', PostDrawTranslucentRenderables)
+hook.Add('Think', 'DHUD2.DamageGlitch', function()
+	if DisableAt < CurTime() then
+		DHUD2.DamageShift = false
+		DHUD2.DamageShiftData = {}
+	end
+end)
 DHUD2.VarHook('damage', Tick)
 DHUD2.DrawHook('damage', Draw)

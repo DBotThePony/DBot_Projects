@@ -139,21 +139,21 @@ function Default.DrawBars(x, y, RX, RY)
 	y = y + DEFAULT_HEIGHT - 40
 	x = x + 20
 	
-	DHUD2.DrawBox(x, y, Default.HPBAR_WIDTH, Default.HPBAR_HEIGHT, EBar)
+	DHUD2.DrawBox(x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), Default.HPBAR_WIDTH, Default.HPBAR_HEIGHT, EBar)
 	
 	x = x + Default.HPBAR_WIDTH / 2
 	
-	DHUD2.SoftSkyrimBar(x, y, Default.HPBAR_WIDTH * Var 'hppercent', Default.HPBAR_HEIGHT, HLColor, 'hplost', .05)
-	DHUD2.SoftSkyrimBar(x, y, Default.HPBAR_WIDTH * Var 'hppercent', Default.HPBAR_HEIGHT, HColor, 'hp', .2)
-	DHUD2.SoftSkyrimBar(x, y + 10, Default.HPBAR_WIDTH * Var 'armorpercent', Default.ARMORBAR_HEIGHT, AColor, 'armor')
+	DHUD2.SoftSkyrimBar(x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), Default.HPBAR_WIDTH * Var 'hppercent', Default.HPBAR_HEIGHT, HLColor, 'hplost', .05)
+	DHUD2.SoftSkyrimBar(x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), Default.HPBAR_WIDTH * Var 'hppercent', Default.HPBAR_HEIGHT, HColor, 'hp', .2)
+	DHUD2.SoftSkyrimBar(x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift() + 10, Default.HPBAR_WIDTH * Var 'armorpercent', Default.ARMORBAR_HEIGHT, AColor, 'armor')
 	
 	local hp = Var 'hp'
 	if hp > ReallyBig then hp = '> 2^30' end --Heh
 	
-	DHUD2.SimpleText(hp, nil, x + Default.HPBAR_WIDTH / 2 - surface.GetTextSize(hp), y - 20, Col 'hptext')
+	DHUD2.SimpleText(hp, nil, x + Default.HPBAR_WIDTH / 2 - surface.GetTextSize(hp) + DHUD2.GetDamageShift(), y - 20 + DHUD2.GetDamageShift(), Col 'hptext')
 	
 	if Var 'armor' > 0 then
-		DHUD2.SimpleText(Var 'armor', nil, x - Default.HPBAR_WIDTH / 2, y + Default.HPBAR_HEIGHT + 2, Col 'armortext')
+		DHUD2.SimpleText(Var 'armor', nil, x - Default.HPBAR_WIDTH / 2 + DHUD2.GetDamageShift(), y + Default.HPBAR_HEIGHT + 2 + DHUD2.GetDamageShift(), Col 'armortext')
 	end
 end
 
@@ -179,7 +179,7 @@ function Default.DrawAmmo(x, y, RX, RY)
 	
 	x = x - surface.GetTextSize(DrawText)
 	
-	DHUD2.SimpleText(DrawText, nil, x, y, Col 'ammotext')
+	DHUD2.SimpleText(DrawText, nil, x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), Col 'ammotext')
 end
 
 function Default.DrawWeaponName(x, y)
@@ -192,13 +192,13 @@ function Default.PlayerInfo(x, y)
 	
 	local name = Var 'lplayername'
 	
-	DHUD2.SimpleText(name, nil, x, y, Col 'playerinfo')
+	DHUD2.SimpleText(name, nil, x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), Col 'playerinfo')
 	x = x + surface.GetTextSize(name) + 5
 	
 	local tm = Var 'lplayerteamname'
 	
 	if tm ~= 'Unassigned' then
-		DHUD2.SimpleText(tm, nil, x, y, Var 'lteamcolor')
+		DHUD2.SimpleText(tm, nil, x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), Var 'lteamcolor')
 		x = x + surface.GetTextSize(tm) + 5
 	end
 end
@@ -208,8 +208,8 @@ function Default.EntityDisplay()
 	local t = Var 'entityname'
 	local w, h = surface.GetTextSize(t)
 	
-	DHUD2.DrawBox(x - 3 - w / 2, y - 2, w + 6, h + 4, Col 'bg')
-	DHUD2.SimpleText(t, nil, x - w / 2, y, Col 'entitytext')
+	DHUD2.DrawBox(x - 3 - w / 2 + DHUD2.GetDamageShift(), y - 2 + DHUD2.GetDamageShift(), w + 6, h + 4, Col 'bg')
+	DHUD2.SimpleText(t, nil, x - w / 2 + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), Col 'entitytext')
 end
 
 DHUD2.RegisterVar('drawnhpbar', false)
@@ -232,16 +232,16 @@ function Default.NPCBars()
 	x = x - 5 - (w + 10 + Default.NPC_HPBAR_WIDTH) / 2
 	
 	DHUD2.DrawBox(x, y - 2, w + 10 + Default.NPC_HPBAR_WIDTH, h + 4, Col 'bg')
-	DHUD2.SimpleText(name, nil, x + 3, y - 1, Col 'npctext')
+	DHUD2.SimpleText(name, nil, x + 3 + DHUD2.GetDamageShift(), y - 1 + DHUD2.GetDamageShift(), Col 'npctext')
 	
 	x = x + w + 10
-	DHUD2.DrawBox(x, y + 1, Default.NPC_HPBAR_WIDTH - 5, h - 2, Col 'empty_bar')
-	DHUD2.DrawBox(x, y + 1, Default.NPC_HPBAR_WIDTH * percent - 5, h - 2, Col 'npchpbar')
+	DHUD2.DrawBox(x + DHUD2.GetDamageShift(), y + 1 + DHUD2.GetDamageShift(), Default.NPC_HPBAR_WIDTH - 5, h - 2, Col 'empty_bar')
+	DHUD2.DrawBox(x + DHUD2.GetDamageShift(), y + 1 + DHUD2.GetDamageShift(), Default.NPC_HPBAR_WIDTH * percent - 5, h - 2, Col 'npchpbar')
 	
 	local t = string.format('%s/%s (%s%%)', hp, mhp, math.floor(percent * 100))
 	local w2, h2 = surface.GetTextSize(t)
 	x = rx + Default.NPC_HPBAR_WIDTH / 2 - w2
-	DHUD2.SimpleText(t, nil, x + 3, y - 1, Col 'npctext')
+	DHUD2.SimpleText(t, nil, x + 3 + DHUD2.GetDamageShift(), y - 1 + DHUD2.GetDamageShift(), Col 'npctext')
 end
 
 Default.ENTITYHP_WIDTH = 300
@@ -254,11 +254,11 @@ function Default.EntityHealth()
 	local x, y = DHUD2.GetPosition('entityhp')
 	x = x - Default.ENTITYHP_WIDTH / 2
 	
-	DHUD2.DrawBox(x - 5, y - 2, Default.ENTITYHP_WIDTH + 10, Default.ENTITYHP_HEIGHT + 4, Col 'bg')
-	DHUD2.DrawBox(x, y, Default.ENTITYHP_WIDTH, Default.ENTITYHP_HEIGHT, Col 'empty_bar')
-	DHUD2.DrawBox(x, y, Default.ENTITYHP_WIDTH * perc, Default.ENTITYHP_HEIGHT, Col 'entityhealth')
+	DHUD2.DrawBox(x - 5 + DHUD2.GetDamageShift(), y - 2 + DHUD2.GetDamageShift(), Default.ENTITYHP_WIDTH + 10, Default.ENTITYHP_HEIGHT + 4, Col 'bg')
+	DHUD2.DrawBox(x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), Default.ENTITYHP_WIDTH, Default.ENTITYHP_HEIGHT, Col 'empty_bar')
+	DHUD2.DrawBox(x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), Default.ENTITYHP_WIDTH * perc, Default.ENTITYHP_HEIGHT, Col 'entityhealth')
 	
-	DHUD2.SimpleText(string.format('%s/%s (%s%%)', hp, mhp, math.floor(perc * 100)), nil, x + 5, y - 1, Col 'entitytext')
+	DHUD2.SimpleText(string.format('%s/%s (%s%%)', hp, mhp, math.floor(perc * 100)), nil, x + 5 + DHUD2.GetDamageShift(), y - 1 + DHUD2.GetDamageShift(), Col 'entitytext')
 end
 
 local function DRAW(self, ply)
@@ -271,7 +271,7 @@ local function DRAW(self, ply)
 	
 	surface.SetFont('DHUD2.Default')
 	
-	DHUD2.DrawBox(x, y, DEFAULT_WIDTH, DEFAULT_HEIGHT, Back)
+	DHUD2.DrawBox(x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), DEFAULT_WIDTH, DEFAULT_HEIGHT, Back)
 	
 	x = x + 30
 	
@@ -301,8 +301,8 @@ local function DRAW(self, ply)
 	
 	x = x - 30
 	
-	Default.DrawBars(x, y, RX, RY)
-	Default.PlayerInfo(x, y)
+	Default.DrawBars(x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), RX, RY)
+	Default.PlayerInfo(x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift())
 	
 	if Var 'drawammo' then
 		Default.DrawAmmo(x, y, RX, RY)

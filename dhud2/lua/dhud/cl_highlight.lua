@@ -91,7 +91,7 @@ local function Draw(ent, lpos, lang, epos)
 	col = Color(col.r, col.g, col.b, alpha)
 	
 	cam.Start3D2D(drawpos, dang, 0.05)
-	DHUD2.SimpleText(name, nil, 0, 0, col)
+	DHUD2.SimpleText(name, nil, DHUD2.GetDamageShift(), DHUD2.GetDamageShift(), col)
 	cam.End3D2D()
 end
 

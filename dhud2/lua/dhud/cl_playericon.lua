@@ -36,7 +36,7 @@ local function LayoutEntity(self, ent)
 	local ply = DHUD2.SelectPlayer()
 	local lmodel = ply:GetModel()
 	
-	Pos = DPos - Vector(DHUD2.ShiftX * .3, -DHUD2.ShiftX * .3, DHUD2.ShiftY * .5)
+	Pos = DPos - Vector(DHUD2.ShiftX * .3 + DHUD2.GetDamageShift(), -DHUD2.ShiftX * .3 + DHUD2.GetDamageShift(), DHUD2.ShiftY * .5 + DHUD2.GetDamageShift())
 	
 	ent:SetAngles(Ang)
 	ent:SetPos(Pos)

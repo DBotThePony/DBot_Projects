@@ -118,7 +118,7 @@ local function Draw()
 	if not DHUD2.ServerConVar('radar') then return end
 	
 	local x, y = DHUD2.GetPosition('radar')
-	DHUD2.DrawBox(x - RADAR_WIDTH / 2, y, RADAR_WIDTH, 10, DHUD2.GetColor('bg'))
+	DHUD2.DrawBox(x - RADAR_WIDTH / 2 + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), RADAR_WIDTH, 10, DHUD2.GetColor('bg'))
 	Positions = {}
 	PositionsPly = {}
 	
@@ -133,13 +133,13 @@ local function Draw()
 		Positions[mySector] = (Positions[mySector] or -1) + 1
 		local shiftY = Positions[mySector] * 10
 		
-		DHUD2.SimpleText(data.meters .. ' m', nil, lx, y + 13 + shiftY, data.textColor)
+		DHUD2.SimpleText(data.meters .. ' m', nil, lx + DHUD2.GetDamageShift(), y + 13 + shiftY + DHUD2.GetDamageShift(), data.textColor)
 		
 		if data.isply then
 			PositionsPly[mySector] = (PositionsPly[mySector] or -1) + 1
 			local shiftY = PositionsPly[mySector] * 10
 			
-			DHUD2.SimpleText(data.nick, nil, lx, y - 20 - shiftY, data.textColor)
+			DHUD2.SimpleText(data.nick, nil, lx + DHUD2.GetDamageShift(), y - 20 - shiftY + DHUD2.GetDamageShift(), data.textColor)
 		end
 	end
 end

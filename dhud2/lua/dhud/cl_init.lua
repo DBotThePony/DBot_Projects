@@ -35,6 +35,25 @@ DHUD2.Positions_Y = DHUD2.Positions_Y or {}
 DHUD2.ShiftX = 0
 DHUD2.ShiftY = 0
 
+DHUD2.DamageShift = false
+
+DHUD2.DamageShiftData = {}
+
+function DHUD2.GetDamageShift()
+	if not DHUD2.DamageShift then
+		return 0
+	end
+	
+	local data = debug.getinfo(2, 'Sln')
+	local name = data.short_src .. data.currentline
+	
+	if DHUD2.DamageShiftData[name] == nil then
+		DHUD2.DamageShiftData[name] = math.random(-30, 30) / 5
+	end
+	
+	return DHUD2.DamageShiftData[name]
+end
+
 DHUD2.Multipler = 1
 
 function DHUD2.GetVar(name)
