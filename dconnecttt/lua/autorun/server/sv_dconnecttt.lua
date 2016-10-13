@@ -188,7 +188,10 @@ function DConn.Message(...)
 	MsgC('\n')
 end
 
+local RUNNING = false
+
 local function CheckPassword(steamid64, ip, svpass, clpass, nick)
+	if RUNNING then return end
 	local realip = string.Explode(':', ip)[1]
 	local steamid = util.SteamIDFrom64(steamid64)
 	
@@ -205,12 +208,27 @@ local function CheckPassword(steamid64, ip, svpass, clpass, nick)
 		return false, '[DConnecttt] Connection Spam!'
 	end
 	
+	RUNNING = true
+	local can, reason = hook.Run('CheckPassword', steamid64, ip, svpass, clpass, nick)
+	RUNNING = false
+	
+	local can2, reason2
+	
+	if can == false then
+		return false, reason
+	else
+		can2, reason2 = svpass == clpass, 'Server Password ~= Client Password!\nIf you are connecting from console,\nuse "password" console command to set clientside password.'
+	end
+	
 	PendingConnect = {
 		steamid = steamid,
 		steamid64 = steamid64,
 		nick = nick,
 		ip = ip,
 	}
+	
+	-- Fixing GMod bug
+	return can2, reason2
 end
 
 local function player_disconnect(data)
