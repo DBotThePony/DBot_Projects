@@ -101,3 +101,12 @@ end
 for k, v in pairs(Register) do
 	DHUD2.RegisterVar(k, v.def, v.func)
 end
+
+local Hide = {
+	['DarkRP_LocalPlayerHUD'] = true,
+	['DarkRP_Hungermod'] = true,
+}
+
+hook.Add('HUDShouldDraw', 'DHUD2.DarkRPHide', function(name)
+	if Hide[name] then return false end
+end)
