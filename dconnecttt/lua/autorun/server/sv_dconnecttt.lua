@@ -217,7 +217,7 @@ local function CheckPassword(steamid64, ip, svpass, clpass, nick)
 	if can == false then
 		return false, reason
 	else
-		can2, reason2 = svpass == clpass, 'Server Password ~= Client Password!\nIf you are connecting from console,\nuse "password" console command to set clientside password.'
+		can2, reason2 = svpass == '' or svpass == clpass, 'Server Password ~= Client Password!\nIf you are connecting from console,\nuse "password" console command to set clientside password.'
 	end
 	
 	PendingConnect = {
