@@ -60,7 +60,14 @@ DHUD2.CreateWarning('hp', 'hp', 'mhp', 'Health', 0.4, 0.2)
 DHUD2.CreateWarning('armor', 'armor', 'maxarmor', 'Armor level', 0.4, 0.2)
 
 DHUD2.RegisterVar('lplayerteamname', nil, function(self, ply)
-	return team.GetName(Var 'lplayerteam')
+	local name = team.GetName(Var 'lplayerteam')
+	local job = Var('job')
+	
+	if job and job ~= name then
+		name = name .. ' (' .. job .. ')'
+	end
+	
+	return name
 end)
 
 DHUD2.RegisterVar('lteamcolor', Color(255, 255, 255), function(self, ply)
