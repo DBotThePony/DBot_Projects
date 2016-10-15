@@ -58,7 +58,7 @@ DHUD2.Multipler = 1
 
 function DHUD2.GetVar(name)
 	if DHUD2.Vars[name] then return DHUD2.Vars[name].value end
-	return DHUD2.EVars[name].value
+	if DHUD2.EVars[name] then return DHUD2.EVars[name].value end
 end
 
 function DHUD2.SetVar(name, new)
