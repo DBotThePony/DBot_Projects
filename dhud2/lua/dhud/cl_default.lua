@@ -119,6 +119,9 @@ end)
 local DEFAULT_WIDTH = 500
 local DEFAULT_HEIGHT = 100
 
+DHUD2.DEFAULT_WIDTH = DEFAULT_WIDTH
+DHUD2.DEFAULT_HEIGHT = DEFAULT_HEIGHT
+
 DHUD2.DefinePosition('default', ScrW() / 2, ScrH() - DEFAULT_HEIGHT - 10)
 DHUD2.DefinePosition('entitydisplay', ScrW() / 2, ScrH() / 2 + 40)
 DHUD2.DefinePosition('npcbardisplay', ScrW() / 2, ScrH() / 2 + 40)
@@ -322,6 +325,10 @@ local function DRAW(self, ply)
 	
 	if Var 'drawentityhealth' then
 		Default.EntityHealth()
+	end
+	
+	if DHUD2.DrawDarkRP then
+		DHUD2.DrawDarkRP()
 	end
 end
 

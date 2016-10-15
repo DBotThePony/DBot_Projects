@@ -621,6 +621,11 @@ local function Load()
 	LoadIfCan('dhud/cl_killfeed.lua')
 	LoadIfCan('dhud/cl_speedmeter.lua')
 	LoadIfCan('dhud/cl_damage.lua')
+	
+	if DarkRP then
+		LoadIfCan('dhud/cl_darkrp.lua')
+	end
+	
 	hook.Call('PostDHUD2Init')
 end
 
