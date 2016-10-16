@@ -21,6 +21,9 @@ local Oxygen = 100
 local ROxygen = 100
 local UseDHUD2 = DHUD2 ~= nil
 
+local POSITION_X = CreateConVar('cl_limited_posx', '50', {FCVAR_ARCHIVE}, 'Percent of X position on screen for draw')
+local POSITION_Y = CreateConVar('cl_limited_posy', '40', {FCVAR_ARCHIVE}, 'Percent of X position on screen for draw')
+
 surface.CreateFont('DBot_LimitedFlashlightAndOxygen', {
 	font = 'Roboto',
 	size = 14,
@@ -32,11 +35,22 @@ net.Receive('DBot_LimitedFlashlightAndOxygen', function()
 	RFlashlight = net.ReadFloat()
 end)
 
-local X, Y = ScrW() / 2, ScrH() / 2 - 200
+local X, Y = ScrW() * POSITION_X:GetFloat() / 100, ScrH() * POSITION_Y:GetFloat() / 100
 
 if UseDHUD2 then
 	DHUD2.DefinePosition('oxygenandflashlight', X, Y)
 end
+
+local function Changed()
+	X, Y = ScrW() * POSITION_X:GetFloat() / 100, ScrH() * POSITION_Y:GetFloat() / 100
+	
+	if UseDHUD2 then
+		DHUD2.DefinePosition('oxygenandflashlight', X, Y)
+	end
+end
+
+cvars.AddChangeCallback('cl_limited_posx', Changed, 'LimitedFLAndOxygen')
+cvars.AddChangeCallback('cl_limited_posy', Changed, 'LimitedFLAndOxygen')
 
 local function GetAddition()
 	return UseDHUD2 and DHUD2.GetDamageShift(3) or 0
@@ -54,10 +68,10 @@ local function FlashlightFunc()
 	local x, y = X, Y + 30
 	
 	surface.SetDrawColor(0, 0, 0, 150)
-	surface.DrawRect(x - 200 + GetAddition(), y - 2 + GetAddition(), 400, 20)
+	surface.DrawRect(x - 100 + GetAddition(), y - 2 + GetAddition(), 200, 20)
 	
 	surface.SetDrawColor(200, 200, 0, 150)
-	surface.DrawRect(x - 195 + GetAddition(), y + GetAddition(), 390 * Flashlight / 100, 16)
+	surface.DrawRect(x - 95 + GetAddition(), y + GetAddition(), 190 * Flashlight / 100, 16)
 	
 	surface.SetTextPos(x - FWidth + GetAddition(), y + 2 + GetAddition())
 	surface.DrawText('Flashlight')
@@ -67,10 +81,10 @@ local function OxygenFunc()
 	local x, y = X, Y
 	
 	surface.SetDrawColor(0, 0, 0, 150)
-	surface.DrawRect(x - 200 + GetAddition(), y - 2 + GetAddition(), 400, 20)
+	surface.DrawRect(x - 100 + GetAddition(), y - 2 + GetAddition(), 200, 20)
 	
 	surface.SetDrawColor(0, 255, 255, 150)
-	surface.DrawRect(x - 195 + GetAddition(), y + GetAddition(), 390 * Oxygen / 100, 16)
+	surface.DrawRect(x - 95 + GetAddition(), y + GetAddition(), 190 * Oxygen / 100, 16)
 	
 	surface.SetTextPos(x - OWidth / 2 + GetAddition(), y + 2 + GetAddition())
 	surface.DrawText('Oxygen')
@@ -93,6 +107,16 @@ local function HUDPaint()
 		OxygenFunc()
 	end
 end
+
+local function Populate(Panel)
+	if not IsValid(Panel) then return end
+	Panel:NumSlider('Position X', 'cl_limited_posx', 0, 100, 0)
+	Panel:NumSlider('Position Y', 'cl_limited_posy', 0, 100, 0)
+end
+
+hook.Add('PopulateToolMenu', 'DBot_LimitedFlashlightAndOxygen', function()
+	spawnmenu.AddToolMenuOption('Utilities', 'User', 'DBot_LimitedFlashlightAndOxygen', 'Oxygen/Fl display', '', '', Populate)
+end)
 
 hook.Add('PostDHUD2Init', 'DBot_LimitedFlashlightAndOxygen', function()
 	UseDHUD2 = true
