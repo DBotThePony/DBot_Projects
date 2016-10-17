@@ -100,6 +100,7 @@ end
 
 function DHUD2.SelectPlayer()
 	local ply = LocalPlayer()
+	if not IsValid(ply) then return ply end
 	local obs = ply:GetObserverTarget()
 	
 	if IsValid(obs) and obs:IsPlayer() then
