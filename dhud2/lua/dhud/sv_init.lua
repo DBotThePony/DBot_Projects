@@ -160,6 +160,14 @@ local function GetObservedTo(ent)
 	end
 end
 
+--Because sometimes WriteVector breaks, and i am lazy to report a bug
+--(because i don't know WHY it breaks, so...)
+local function WriteVector(vec)
+	net.WriteFloat(vec.x)
+	net.WriteFloat(vec.y)
+	net.WriteFloat(vec.z)
+end
+
 local function EntityTakeDamage(ent, dmg)
 	if not DHUD2.ServerConVar('damage') then return end
 	if not IsValid(ent) then return end
@@ -191,15 +199,15 @@ local function EntityTakeDamage(ent, dmg)
 		net.Start('DHUD2.DamagePlayer')
 		net.WriteFloat(dmg:GetDamage())
 		net.WriteUInt(TypesR[dmg:GetDamageType()] or 1, 8)
-		net.WriteVector(fattacker:GetPos())
-		net.WriteEntity(ent)
+		WriteVector(fattacker:GetPos())
+		net.WriteUInt(ent:EntIndex(), 8)
 		net.Broadcast()
 	elseif ent:IsVehicle() and IsValid(ent:GetDriver()) and IsValid(fattacker) and ent:GetDriver():IsPlayer() then
 		net.Start('DHUD2.DamagePlayer')
 		net.WriteFloat(dmg:GetDamage())
 		net.WriteUInt(TypesR[dmg:GetDamageType()] or 1, 8)
-		net.WriteVector(fattacker:GetPos())
-		net.WriteEntity(ent:GetDriver())
+		WriteVector(fattacker:GetPos())
+		net.WriteUInt(ent:GetDriver():EntIndex(), 8)
 		net.Broadcast()
 	else
 		local ply = GetObservedTo(ent)
@@ -208,8 +216,8 @@ local function EntityTakeDamage(ent, dmg)
 			net.Start('DHUD2.DamagePlayer')
 			net.WriteFloat(dmg:GetDamage())
 			net.WriteUInt(TypesR[dmg:GetDamageType()] or 1, 8)
-			net.WriteVector(fattacker:GetPos())
-			net.WriteEntity(ply)
+			WriteVector(fattacker:GetPos())
+			net.WriteUInt(ply:EntIndex(), 8)
 			net.Broadcast()
 		end
 	end

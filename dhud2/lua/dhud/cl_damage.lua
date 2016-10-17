@@ -90,12 +90,16 @@ Damage.Colors = {
 
 local DisableAt = 0
 
+local function ReadVector()
+	return Vector(net.ReadFloat(), net.ReadFloat(), net.ReadFloat())
+end
+
 local function NetPlayer()
 	if not ENABLE:GetBool() then return end
 	local dmg = net.ReadFloat()
 	local type = net.ReadUInt(8)
-	local pos = net.ReadVector()
-	local target = net.ReadEntity()
+	local pos = ReadVector()
+	local target = Entity(net.ReadUInt(8))
 	if target ~= DHUD2.SelectPlayer() then return end
 	local dtype = Types[type]
 	
@@ -278,4 +282,4 @@ hook.Add('Think', 'DHUD2.DamageGlitch', function()
 	end
 end)
 DHUD2.VarHook('damage', Tick)
-DHUD2.DrawHook('damage', Draw)
+DHUD2.DrawHook('damage_display', Draw)
