@@ -1026,6 +1026,23 @@ local function KeyPress(ply, key)
 	if ply:KeyDown(IN_WALK) then Request(ply) end
 end
 
+local function PlayerSay(ply, message)
+	if ply:GetInfo('cl_dsit_message') ~= '1' then return end
+	if not (message:find('get') and message:find('off')) then return end
+	local hit = false
+	
+	for k, ent in pairs(ents.FindByClass('prop_vehicle_prisoner_pod')) do
+		if ent.ParentedToPlayer == ply then
+			ent:GetDriver():ExitVehicle()
+			hit = true
+		end
+	end
+	
+	if hit then
+		DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'Next time you should type in console "dsit_getoff" or spawn menu > Utilities > User > DSit > Get off player on you')
+	end
+end
+
 PlayerSit = Request
 
 local hooks = {
@@ -1033,6 +1050,7 @@ local hooks = {
 	PlayerDisconnected = PlayerDisconnected,
 	PlayerLeaveVehicle = PlayerLeaveVehicle,
 	CanExitVehicle = CanExitVehicle,
+	PlayerSay = PlayerSay,
 	KeyPress = KeyPress,
 	
 	--Before i make faster functions, i would disable these hooks

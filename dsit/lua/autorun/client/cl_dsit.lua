@@ -16,6 +16,7 @@ limitations under the License.
 ]]
 
 local ALLOW_ON_ME = CreateClientConVar('cl_dsit_allow_on_me', '1', true, true, 'Allow to sit on me')
+local SEND_MESSAGE = CreateClientConVar('cl_dsit_message', '1', true, true, 'React to "get off" in chat')
 
 CreateConVar('sv_dsit_distance', '128', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Max distance (in Hammer Units)')
 
@@ -332,6 +333,7 @@ local function PopulateClient(Panel)
 	lab:SetDark(true)
 	
 	Panel:CheckBox('Allow to sit on me', 'cl_dsit_allow_on_me')
+	Panel:CheckBox('React to "get off" message in chat', 'cl_dsit_message')
 	Panel:Button('Get off player on you', 'dsit_getoff')
 	
 	local button = Panel:Button('Steam Workshop')
