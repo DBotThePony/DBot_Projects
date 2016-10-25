@@ -909,13 +909,6 @@ local function PlayerLeaveVehicle(ply, ent)
 	
 	ply.DSit_LastTry = CurTime() + 1
 	
-	if ent.__IsSittingOnPlayer then
-		local Ply = ent.__SittingPlayer
-		if IsValid(Ply) then
-			ply:SetPos(Ply:EyePos() + Vector(0, 0, 10))
-		end
-	end
-	
 	local tr = {
 		start = ent:GetPos(),
 		endpos = ply:GetPos(),
@@ -938,6 +931,17 @@ local function PlayerLeaveVehicle(ply, ent)
 	local vehpos = ent:GetPos() + Vector(0, 0, 3)
 	
 	SafeRemoveEntity(ent)
+	
+	if ply._DSit_IgnoreUnstuckUntil and ply._DSit_IgnoreUnstuckUntil > CurTime() then
+		return
+	end
+	
+	if ent.__IsSittingOnPlayer then
+		local Ply = ent.__SittingPlayer
+		if IsValid(Ply) then
+			ply:SetPos(Ply:EyePos() + Vector(0, 0, 10))
+		end
+	end
 	
 	timer.Simple(0, function()
 		PostLeaveVehicle(ply, tr, vehpos)
@@ -1043,6 +1047,10 @@ local function PlayerSay(ply, message)
 	end
 end
 
+local function playerArrested(ply)
+	ply._DSit_IgnoreUnstuckUntil = CurTime() + 1
+end
+
 PlayerSit = Request
 
 local hooks = {
@@ -1052,6 +1060,7 @@ local hooks = {
 	CanExitVehicle = CanExitVehicle,
 	PlayerSay = PlayerSay,
 	KeyPress = KeyPress,
+	playerArrested = playerArrested,
 	
 	--Before i make faster functions, i would disable these hooks
 	--EntityRemoved = EntityRemoved,
