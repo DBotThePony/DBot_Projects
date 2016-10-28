@@ -213,6 +213,14 @@ local function Think()
 	local epos = ply:EyePos()
 	
 	if NextView < CurTime() and not Active then
+		local get1 = ply:EyeAngles()
+		local get2 = EyePos()
+		
+		if get2 ~= get1 then
+			Active = false
+			NextView = CurTime() + DELAY
+		end
+		
 		CalcData.origin = epos
 		CalcData.angles = ang
 		Active = true
