@@ -88,6 +88,7 @@ end
 function ENT:Initialize()
 	self.Targets = {}
 	self:SetModel('models/hunter/blocks/cube075x075x075.mdl')
+	self:SetMaterial('models/debug/debugwhite')
 	
 	if CLIENT then return end
 	
@@ -336,6 +337,7 @@ function ENT:CreateStick()
 	ent:SetOwner(self)
 	ent:SetMoveType(MOVETYPE_NONE)
 	ent:SetColor(self:GetColor())
+	ent:SetMaterial('models/debug/debugwhite')
 	
 	self:SetNWEntity('stick', ent)
 end
@@ -363,6 +365,7 @@ function ENT:CreateTower()
 	tower:SetModel('models/hunter/blocks/cube025x2x025.mdl')
 	tower:Spawn()
 	tower:SetColor(self:GetColor())
+	tower:SetMaterial('models/debug/debugwhite')
 	
 	tower:SetCollisionGroup(COLLISION_GROUP_PLAYER)
 	
@@ -384,6 +387,7 @@ function ENT:CreateBase()
 	ent:SetOwner(self)
 	ent:SetMoveType(MOVETYPE_NONE)
 	ent:SetColor(self:GetColor())
+	ent:SetMaterial('models/debug/debugwhite')
 	
 	self:SetNWEntity('base', ent)
 end
