@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
-SCP_NoKill = true
+SCP_NoKill = false
 
 SCP_Ignore = {
 	bullseye_strider_focus = true,
