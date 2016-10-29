@@ -17,16 +17,16 @@ local Valid = {
 	['dbot_sentry_r'] = true,
 }
 
-local function PostDrawOpaqueRenderables(a, b)
-	if a or b then return end
-	
-	local lpos = LocalPlayer():GetPos()
-	
-	local find = {}
+local find = {}
+find.dbot_srocket = {}
+find.dbot_sentry_r = {}
+find.sentries = {}
+
+timer.Create('DBot.SentryEntsUpdate', 1, 0, function()
 	find.dbot_srocket = {}
 	find.dbot_sentry_r = {}
 	find.sentries = {}
-	
+
 	for k, ent in ipairs(ents.GetAll()) do
 		local class = ent:GetClass()
 		if not Valid[class] then continue end
@@ -47,10 +47,17 @@ local function PostDrawOpaqueRenderables(a, b)
 			continue
 		end
 	end
+end)
+
+local function PostDrawOpaqueRenderables(a, b)
+	if a or b then return end
+	
+	local lpos = LocalPlayer():GetPos()
 	
 	draw.NoTexture()
 	
 	for k, ent in ipairs(find.dbot_srocket) do
+		if not IsValid(ent) then continue end
 		local target = ent:GetCurTarget()
 		if not IsValid(target) then continue end
 		
@@ -79,6 +86,7 @@ local function PostDrawOpaqueRenderables(a, b)
 	end
 	
 	for k, ent in ipairs(find.dbot_sentry_r) do
+		if not IsValid(ent) then continue end
 		if not ent.GetIsLocking then continue end
 		if not ent:GetIsLocking() then continue end
 		local target = ent:GetLockTarget()
@@ -107,6 +115,7 @@ local function PostDrawOpaqueRenderables(a, b)
 	end
 	
 	for k, self in ipairs(find.sentries) do
+		if not IsValid(self) then continue end
 		local p = self:GetPos()
 		local f = self:GetAngles():Forward()
 		
@@ -116,7 +125,7 @@ local function PostDrawOpaqueRenderables(a, b)
 			filter = {self, self:GetNWEntity('tower'), self:GetNWEntity('stick'), self:GetNWEntity('base'), self:GetNWEntity('antennas')}
 		}
 		
-		render.DrawLine(p, tr.HitPos, Line, true)
+		render.DrawLine(p, tr.HitPos, self:GetColor(), true)
 	end
 end
 
