@@ -263,8 +263,20 @@ local function EntityTakeDamage(ent, dmg)
 		local a = dmg:GetAttacker()
 		if not IsValid(a) then return end
 		if a:GetClass() == 'dbot_sentry' then return end
+		
+		local inflictor = dmg:GetInflictor()
+		local addInflictor = false
+		
+		if IsValid(inflictor) then
+			addInflictor = not inflictor:IsWeapon() and inflictor.CPPIGetOwner and inflictor:CPPIGetOwner() == a
+		end
+		
 		for k, v in ipairs(GetDSentries()) do
 			v:AddTarget(a)
+			
+			if addInflictor then
+				v:AddTarget(inflictor)
+			end
 		end
 	end
 end
