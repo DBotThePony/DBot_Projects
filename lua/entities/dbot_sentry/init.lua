@@ -406,6 +406,7 @@ function ENT:CreateAntennas()
 		
 		e:SetOwner(self)
 		e:SetColor(self:GetColor())
+		e:SetMaterial('models/debug/debugwhite')
 		
 		self:SetNWEntity('antennas', e)
 	end
@@ -419,6 +420,7 @@ function ENT:CreateAntennas()
 		e:Spawn()
 		e.IsSentryPart = true
 		e:SetColor(self:GetColor())
+		e:SetMaterial('models/debug/debugwhite')
 		
 		e:SetOwner(self)
 		
