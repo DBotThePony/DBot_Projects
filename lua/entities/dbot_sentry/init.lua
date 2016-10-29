@@ -19,11 +19,14 @@ local function GetLerp()
 	return FrameTime() * 66
 end
 
+local MINIMAL = 200
+
 local function Nearests(pos, dis)
 	local reply = {}
 	
 	for k, v in pairs(player.GetAll()) do
-		if v:GetPos():Distance(pos) < dis then
+		local distC = v:GetPos():Distance(pos)
+		if distC < dis and MINIMAL < distC then
 			table.insert(reply, v)
 		end
 	end
