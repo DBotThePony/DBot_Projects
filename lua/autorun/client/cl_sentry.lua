@@ -22,7 +22,7 @@ find.dbot_srocket = {}
 find.dbot_sentry_r = {}
 find.sentries = {}
 
-timer.Create('DBot.SentryEntsUpdate', 1, 0, function()
+timer.Create('DBot.SentryEntsUpdate', 0.25, 0, function()
 	find.dbot_srocket = {}
 	find.dbot_sentry_r = {}
 	find.sentries = {}
