@@ -216,6 +216,30 @@ local function EntityTakeDamage(ent, dmg)
 			for k, v in ipairs(GetDSentries()) do
 				v:AddTarget(a)
 			end
+		elseif a:GetClass():find('drones') then
+			local owner = a.CPPIGetOwner and a:CPPIGetOwner()
+			
+			for k, v in pairs(GetDSentries()) do
+				if not IsValid(v) then continue end
+				
+				v:AddTarget(a)
+				
+				if IsValid(owner) then
+					if ADMIN_ONLY then
+						if ent:IsAdmin() and not owner:HasGodMode() then
+							v:AddTarget(owner)
+						else
+							if v.IsIDLE and v:CanSeeTarget(owner) then
+								v.WatchAtPlayer = owner
+								v.NextIDLEThink = CurTime() + 4
+							end
+						end
+					else
+						owner:GodDisable()
+						v:AddTarget(owner)
+					end
+				end
+			end
 		elseif a:IsPlayer() then
 			for k, v in pairs(GetDSentries()) do
 				if not IsValid(v) then continue end
