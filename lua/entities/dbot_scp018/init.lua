@@ -43,3 +43,12 @@ function ENT:PhysicsCollide(data)
 	
 	self.phys:AddVelocity(-mult * summ * 5 + vel * 2)
 end
+
+local big = 2 ^ 31 - 1
+
+hook.Add('EntityTakeDamage', 'DBot.SCP018', function(ent, dmg)
+	local attacker = dmg:GetAttacker()
+	if not attacker:IsValid() then return end
+	if attacker:GetClass() ~= 'dbot_scp018' then return end
+	dmg:SetDamage(big)
+end)
