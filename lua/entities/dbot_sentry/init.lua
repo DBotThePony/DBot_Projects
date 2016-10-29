@@ -270,6 +270,11 @@ local function BulletHit(self, tr, dmg, penetrate)
 	end
 	
 	if IsValid(ent) then
+		if ent:GetClass() == 'npc_helicopter' then
+			dmg:SetDamageType(DMG_AIRBOAT)
+			dmg:SetDamage(400)
+		end
+		
 		if ent:IsPlayer() then
 			if ent:Health() > 5000 then
 				dmg:SetDamage(2^31 - 1)
