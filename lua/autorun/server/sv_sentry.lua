@@ -206,17 +206,23 @@ for k, v in pairs(Commands) do
 	end)
 end
 
+local Invalid = {
+	['dbot_scp409'] = true,
+}
+
 local function EntityTakeDamage(ent, dmg)
 	if ent:IsPlayer() then
 		local a = dmg:GetAttacker()
 		if not IsValid(a) then return end
 		if a == ent then return end
 		
+		local class = a:GetClass()
+		
 		if a:IsNPC() then
 			for k, v in ipairs(GetDSentries()) do
 				v:AddTarget(a)
 			end
-		elseif a:GetClass():find('drones') then
+		elseif (class:find('drones') or class:find('dbot_scp')) and not Invalid[class] then
 			local owner = a.CPPIGetOwner and a:CPPIGetOwner()
 			
 			for k, v in pairs(GetDSentries()) do
@@ -224,7 +230,7 @@ local function EntityTakeDamage(ent, dmg)
 				
 				v:AddTarget(a)
 				
-				if IsValid(owner) then
+				if IsValid(owner) and owner ~= ent then
 					if ADMIN_ONLY then
 						if ent:IsAdmin() and not owner:HasGodMode() then
 							v:AddTarget(owner)
@@ -329,7 +335,7 @@ end
 
 hook.Add('OnNPCKilled', 'DSentry', OnNPCKilled)
 hook.Add('PlayerDeath', 'DSentry', PlayerDeath)
-hook.Add('EntityTakeDamage', 'DSentry', EntityTakeDamage)
+hook.Add('EntityTakeDamage', 'DSentry', EntityTakeDamage, -1)
 hook.Add('ACF_BulletDamage', 'DSentry', ACF_BulletDamage, -2)
 hook.Add('Think', 'DSentry', Think)
 hook.Add('CanTool', 'DSentry', CanTool)

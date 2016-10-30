@@ -50,5 +50,6 @@ hook.Add('EntityTakeDamage', 'DBot.SCP018', function(ent, dmg)
 	local attacker = dmg:GetAttacker()
 	if not attacker:IsValid() then return end
 	if attacker:GetClass() ~= 'dbot_scp018' then return end
+	dmg:SetDamageType(DMG_ACID)
 	dmg:SetDamage(big)
-end)
+end, -1)
