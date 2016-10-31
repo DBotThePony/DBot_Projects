@@ -621,7 +621,7 @@ end
 function VLL.IsDir(Path, Dir)
 	if Dir ~= 'LUA' then return file.IsDir(Path, Dir) end
 	
-	
+	return VLL.DIRECTORY_MEMORY[Path] or file.IsDir(Path, Dir)
 end
 
 function VLL.FileRead(File, Dir)
