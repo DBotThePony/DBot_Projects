@@ -40,6 +40,7 @@ file.CreateDir('vll')
 
 VLL = VLL or {}
 VLL.FILE_MEMORY = VLL.FILE_MEMORY or {}
+VLL.DIRECTORY_MEMORY = VLL.DIRECTORY_MEMORY or {}
 VLL.COMPILED_MEMORY = VLL.COMPILED_MEMORY or {}
 VLL.BUNDLE_STATUS = VLL.BUNDLE_STATUS or {}
 VLL.REPLICATED_GMA = VLL.REPLICATED_GMA or {}
@@ -617,6 +618,12 @@ function VLL.__FileFind(File, Dir)
 	return {}, {} -- ???
 end
 
+function VLL.IsDir(Path, Dir)
+	if Dir ~= 'LUA' then return file.IsDir(Path, Dir) end
+	
+	
+end
+
 function VLL.FileRead(File, Dir)
 	if Dir ~= 'LUA' then return file.Read(File, Dir) end
 	
@@ -804,6 +811,17 @@ function VLL.SaveFile(Path, Contents, Bundle)
 		bundle = Bundle,
 	}
 	
+	local split = string.Explode('/', Path)
+	table.remove(split)
+	
+	local prev = ''
+	
+	for k, v in ipairs(split) do
+		local new = prev .. '/' .. v
+		VLL.DIRECTORY_MEMORY[new] = new
+		prev = new
+	end
+	
 	VLL.COMPILED_MEMORY[Path] = nil
 end
 
@@ -858,6 +876,7 @@ local fileFuncs = {
 	Find = VLL.__FileFind,
 	Read = VLL.FileRead,
 	Exists = VLL.__FileExists,
+	IsDir = VLL.IsDir,
 }
 
 local hookFuncs = {
