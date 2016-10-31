@@ -494,15 +494,16 @@ function ENT:ClearTargets()
 		
 		if cond then
 			table.insert(toRemove, k)
-			self.CurrentTarget = NULL
 		end
 	end
 	
-	for k, v in ipairs(toRemove) do
-		table.remove(self.Targets, v)
+	for i = #toRemove, 1, -1 do
+		local removed = table.remove(self.Targets, toRemove[i])
+		if removed == self.CurrentTarget then
+			self.CurrentTarget = NULL
+		end
 	end
 end
-
 
 function ENT:CanSeeTarget(t)
 	local mine = {self, self.Tower, self.Stick, self.BaseProp, self.Antennas}
