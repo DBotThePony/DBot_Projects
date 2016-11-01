@@ -222,7 +222,7 @@ local function EntityTakeDamage(ent, dmg)
 			for k, v in ipairs(GetDSentries()) do
 				v:AddTarget(a)
 			end
-		elseif (class:find('drones') or class:find('dbot_scp')) and not Invalid[class] then
+		elseif not Invalid[class] then
 			local owner = a.CPPIGetOwner and a:CPPIGetOwner()
 			
 			for k, v in pairs(GetDSentries()) do
@@ -304,6 +304,9 @@ local function Think()
 	
 	for k, class in ipairs(ValidTargets) do
 		for k, npc in ipairs(ents.FindByClass(class)) do
+			npc:AddRelationship('dbot_sentry D_HT 1')
+			npc:AddRelationship('dbot_sentry_r D_HT 1')
+			
 			for k, sentry in ipairs(get) do
 				sentry:AddTarget(npc)
 			end

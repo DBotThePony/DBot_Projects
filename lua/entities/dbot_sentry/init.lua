@@ -277,6 +277,7 @@ local function BulletHit(self, tr, dmg, penetrate)
 		
 		if ent:IsPlayer() then
 			if ent:Health() > 5000 then
+				ent:GodDisable()
 				dmg:SetDamage(2^31 - 1)
 			end
 			
