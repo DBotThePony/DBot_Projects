@@ -15,12 +15,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
-hook.Add('EntityTakeDamage', 'dbot_sentry_r', function(ent, dmg)
+local function EntityTakeDamage(ent, dmg)
 	local a = dmg:GetAttacker()
 	if not IsValid(a) then return end
 	if a:GetClass() ~= 'dbot_sentry_r' then return end
 	ApplyDSentryDamage(ent, dmg)
-end)
+end
 
 function ENT:FireBullet()
 	if not DSENTRY_CHEAT_MODE and self.NextShot > CurTime() then return end
@@ -97,3 +97,5 @@ function ENT:Attack()
 		self:SetLockTime(self.TLock)
 	end
 end
+
+hook.Add('EntityTakeDamage', 'DBot.RocketSentry' EntityTakeDamage)
