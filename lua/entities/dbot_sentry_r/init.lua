@@ -98,4 +98,4 @@ function ENT:Attack()
 	end
 end
 
-hook.Add('EntityTakeDamage', 'DBot.RocketSentry' EntityTakeDamage)
+hook.Add('EntityTakeDamage', 'DBot.RocketSentry', EntityTakeDamage)
