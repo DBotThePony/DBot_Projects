@@ -42,6 +42,7 @@ function ENT:Initialize()
 	self.CLOSE_ENOUGH_FOR_LAST = CurTime()
 	self.WATCH_ME_FOR_LAST = CurTime()
 	self.TARGET_SELECT_COOLDOWN = CurTime()
+	self.CHASE_STARTED_AT = CurTime()
 	
 	self:SetModel('models/ppm/player_default_base.mdl')
 	self:SetSequence(self:LookupSequence('idle_all_01'))

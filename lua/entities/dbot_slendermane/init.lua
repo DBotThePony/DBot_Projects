@@ -266,6 +266,7 @@ function ENT:SelectVictim(ignore)
 	self:SetMyVictim(selected)
 	
 	self:SendStatusToPlayer(selected, true)
+	self.CHASE_STARTED_AT = CurTime()
 end
 
 util.AddNetworkString('Slendermane.StatusChanges')
@@ -281,7 +282,7 @@ function ENT:SendStatusToPlayer(ply, status)
 end
 
 function ENT:CheckVictim()
-	if self.NEED_VICTIM or self.CurrentVictimTimer + 10 < CurTime() then
+	if self.NEED_VICTIM or self.CurrentVictimTimer + 10 < CurTime() or self.CHASE_STARTED_AT + 80 < CurTime() then
 		return self:SelectVictim(self:GetMyVictim()) -- BOORING!
 	end
 	

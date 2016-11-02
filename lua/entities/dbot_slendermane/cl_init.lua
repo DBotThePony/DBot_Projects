@@ -123,7 +123,7 @@ local function Begin()
 		end
 	end)
 	
-	timer.Create('DBot_SlenderStreams', 60, 4, function()
+	timer.Create('DBot_SlenderStreams', 20, 4, function()
 		Current = Current + 1
 		
 		if Current < #stages then
