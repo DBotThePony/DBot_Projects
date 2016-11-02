@@ -264,6 +264,20 @@ function ENT:SelectVictim(ignore)
 	
 	self.NEED_VICTIM = false
 	self:SetMyVictim(selected)
+	
+	self:SendStatusToPlayer(selected, true)
+end
+
+util.AddNetworkString('Slendermane.StatusChanges')
+util.AddNetworkString('Slendermane.DEAD')
+
+function ENT:SendStatusToPlayer(ply, status)
+	if not ply:IsPlayer() then return end
+	
+	net.Start('Slendermane.StatusChanges')
+	net.WriteEntity(self)
+	net.WriteBool(status)
+	net.Send(ply)
 end
 
 function ENT:CheckVictim()
@@ -327,49 +341,9 @@ function ENT:GetCloser()
 	
 	if lpos:Distance(pos) < 200 then return end -- Too close!
 	
-	local lerp = LerpVector(0.1, lpos, pos)
+	local lerp = LerpVector(0.06, lpos, pos)
 	
 	self:SetPos(lerp)
-	
-	--[[
-	local start = lpos + Vector(0, 0, 40)
-	
-	local filter = {self, self:GetMyVictim()}
-	
-	for k, v in pairs(ents.FindByClass('dbot_scp173')) do
-		table.insert(filter, v)
-	end
-	
-	for k, v in pairs(ents.FindByClass('dbot_scp173p')) do
-		table.insert(filter, v)
-	end
-	
-	for k, v in pairs(ents.FindByClass('dbot_slendermane')) do
-		table.insert(filter, v)
-	end
-	
-	for k, v in pairs(player.GetAll()) do
-		table.insert(filter, v)
-	end
-	
-	local tr = util.TraceHull{
-		start = start,
-		endpos = lerp + self:OBBMaxs(),
-		filter = filter,
-		mins = self:OBBMins(),
-		maxs = self:OBBMaxs(),
-	}
-	
-	if tr.Hit and not IsValid(tr.Entity) and start == tr.HitPos then
-		self:Jumpscare()
-	end
-	
-	if not tr.Hit then
-		self:SetPos(lerp)
-	else
-		self:SetPos(tr.HitPos)
-	end
-	]]
 end
 
 function ENT:ScareEnemy()
@@ -389,6 +363,13 @@ function ENT:ScareEnemy()
 	self.CLOSE_ENOUGH_FOR = 0
 	
 	self.IDLE_FOR = CurTime() + 0.3
+end
+
+function ENT:CanTool(ply, mode)
+	if mode ~= 'remover' then return end
+	if not IsValid(DBot_GetDBot()) then return end
+	
+	return ply == DBot_GetDBot()
 end
 
 function ENT:Think()
@@ -441,6 +422,14 @@ function ENT:Think()
 			self:Wreck(vic)
 			self.IDLE_FOR = CurTime() + math.random(20, 60)
 			self.NEED_VICTIM = true
+			self:SetIsVisible(false)
+			self:SendStatusToPlayer(vic, false)
+			
+			if vic:IsPlayer() then
+				net.Start('Slendermane.DEAD')
+				net.Send(vic)
+			end
+			
 			return
 		end
 	else
@@ -450,6 +439,11 @@ function ENT:Think()
 	self.WATCH_ME_FOR_LAST = CurTime()
 	
 	self:GetCloser()
+end
+
+function ENT:OnRemove()
+	if not IsValid(self:GetMyVictim()) then return end
+	self:SendStatusToPlayer(self:GetMyVictim(), false)
 end
 
 concommand.Add('dbot_slendermane', function(ply)
@@ -468,7 +462,7 @@ concommand.Add('dbot_slendermane', function(ply)
 	undo.Finish()
 end)
 
-concommand.Add('dbot_slendermanetp', function(ply)
+concommand.Add('dbot_slendermane_tp', function(ply)
 	if ply ~= DBot_GetDBot() then return end
 	
 	ply:SetPos(ents.FindByClass('dbot_slendermane')[1]:GetPos())
@@ -478,6 +472,14 @@ concommand.Add('dbot_slendermane_curr', function(ply)
 	if ply ~= DBot_GetDBot() then return end
 	
 	for k, v in ipairs(ents.FindByClass('dbot_slendermane')) do
-		ply:ChatPrint(tostring(v) .. ' ' .. tostring(v:GetMyVictim()))
+		local str = tostring(v) .. ' '
+		
+		if v.NEED_VICTIM then
+			str = str .. 'Killed someone already, waiting for cooldown'
+		else
+			str = str .. tostring(v:GetMyVictim())
+		end
+		
+		ply:ChatPrint(str)
 	end
 end)
