@@ -88,6 +88,7 @@ timer.Create('dbot_SCP_UpdateNPCs', 1, 0, function()
 	
 	for k, v in pairs(ents.GetAll()) do
 		if not v:IsNPC() then continue end
+		if v:GetNPCState() == NPC_STATE_DEAD then continue end
 		
 		table.insert(VALID_NPCS, v)
 	end

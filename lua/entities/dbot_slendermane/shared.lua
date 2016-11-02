@@ -27,6 +27,7 @@ ENT.RenderGroup = RENDERGROUP_BOTH
 function ENT:SetupDataTables()
 	self:NetworkVar('Int', 0, 'Frags')
 	self:NetworkVar('Int', 1, 'PFrags')
+	self:NetworkVar('Float', 0, 'WatchingAtMeFor')
 	self:NetworkVar('Bool', 0, 'IsAttacking')
 	self:NetworkVar('Entity', 0, 'MyVictim')
 end
@@ -35,7 +36,9 @@ function ENT:Initialize()
 	self.LastMove = 0
 	self.JumpTries = 0
 	self.CurrentVictimTimer = 0
-	self.WATCHING_AT_ME_FOR = 0
+	self.CLOSE_ENOUGH_FOR = 0
+	self.IDLE_FOR = 0
+	self.CLOSE_ENOUGH_FOR_LAST = CurTime()
 	
 	self:SetModel('models/ppm/player_default_base.mdl')
 	self:SetSequence(self:LookupSequence('idle_all_01'))

@@ -25,6 +25,10 @@ function ENT:SelectSchedule()
 	self:SetSchedule(SCHED_IDLE_WANDER)
 end
 
+local function interval(val, min, max)
+	return val > min and val <= max
+end
+
 function ENT:CanSeeMe(ply)
 	if ply:IsPlayer() and not ply:Alive() then return false end
 	
@@ -125,7 +129,6 @@ function ENT:Wreck(ply)
 		
 		dmg:SetDamage(INT)
 		dmg:SetAttacker(self)
-		dmg:SetInflictor(self.Killer)
 		dmg:SetDamageType(v)
 		
 		ply:TakeDamageInfo(dmg)
@@ -229,6 +232,10 @@ function ENT:CheckVictim()
 			if vic:HasGodMode() then return self:SelectVictim() end
 			if not vic:Alive() then return self:SelectVictim() end
 		end
+		
+		if vic:IsNPC() then
+			if vic:GetNPCState() == NPC_STATE_DEAD then return self:SelectVictim() end
+		end
 	end
 	
 	self:SelectVictim()
@@ -246,14 +253,21 @@ function ENT:CheckVisibility(tab)
 	return true
 end
 
+function ENT:CloseEnough()
+	local lpos = self:GetPos()
+	local pos = self:GetMyVictim():GetPos()
+	
+	return lpos:Distance(pos) < 300
+end
+
 function ENT:GetCloser()
 	local lpos = self:GetPos()
 	local pos = self:GetMyVictim():GetPos()
 	self:TurnTo(pos)
 	
-	if lpos:Distance(pos) < 256 then return end -- Too close!
+	if lpos:Distance(pos) < 200 then return end -- Too close!
 	
-	local lerp = LerpVector(0.3, lpos, pos)
+	local lerp = LerpVector(0.1, lpos, pos)
 	
 	local start = lpos + Vector(0, 0, 40)
 	
@@ -292,52 +306,75 @@ function ENT:GetCloser()
 	else
 		self:SetPos(tr.HitPos)
 	end
+end
+
+function ENT:ScareEnemy()
+	local pos = self:GetMyVictim():GetPos()
+	local ang = self:GetMyVictim():EyeAngles()
+	ang.p = 0
+	ang.r = 0
 	
+	local newpos = pos + ang:Forward() * 80
+	
+	self:SetPos(newpos)
+	
+	local newang = self:GetRealAngle(pos)
+	
+	self:SetAngles(newang)
+	
+	self.CLOSE_ENOUGH_FOR = 0
+	
+	self.IDLE_FOR = CurTime() + 0.3
 end
 
 function ENT:Think()
+	if self.IDLE_FOR > CurTime() then return end
 	self:CheckVictim()
 	local vic = self:GetMyVictim()
-	if not vic then
-		self.WATCHING_AT_ME_FOR = 0
+	
+	if not IsValid(vic) then
+		self.CLOSE_ENOUGH_FOR_LAST = CurTime()
+		self.CLOSE_ENOUGH_FOR = 0
+		self:SetWatchingAtMeFor(0)
 		self:SetNoDraw(false)
 		return
 	end
 	
 	if not self:CheckVisibility() then
-		self.WATCHING_AT_ME_FOR = 0
+		self.CLOSE_ENOUGH_FOR_LAST = CurTime()
+		self.CLOSE_ENOUGH_FOR = 0
+		self:SetWatchingAtMeFor(0)
 		self:SetNoDraw(true)
 		
 		-- Try to get closer
 		self:GetCloser()
 		
 		return
+	else
+		self:SetNoDraw(false)
 	end
 	
 	if self:CanSeeMe(vic) then
-		self.WATCHING_AT_ME_FOR = self.WATCHING_AT_ME_FOR + FrameTime()
+		self:SetWatchingAtMeFor(self:GetWatchingAtMeFor() + FrameTime())
 		
-		if self.WATCHING_AT_ME_FOR < 1 then
+		if self:GetWatchingAtMeFor() < 1 then
 			self:Wreck(vic)
 			self:SelectVictim()
 		end
 	else
-		self.WATCHING_AT_ME_FOR = 0
+		self:SetWatchingAtMeFor(0)
+	end
+	
+	self:GetCloser()
+	
+	if self:CloseEnough() then
+		self.CLOSE_ENOUGH_FOR = self.CLOSE_ENOUGH_FOR + CurTime() - self.CLOSE_ENOUGH_FOR_LAST
+		self.CLOSE_ENOUGH_FOR_LAST = CurTime()
+		
+		if self.CLOSE_ENOUGH_FOR > 5 then
+			self:ScareEnemy()
+		end
+	else
+		self.CLOSE_ENOUGH_FOR = 0
 	end
 end
-
-function ENT:OnRemove()
-	--[[
-	if not self.REAL_REMOVE then
-		local ent = ents.Create('dbot_scp173')
-		ent:SetPos(self:GetPos())
-		ent:SetAngles(self:GetAngles())
-		ent:Spawn()
-		ent:Activate()
-	end
-	]]
-end
-
-hook.Add('ACF_BulletDamage', 'dbot_slendermane', function(Activated, Entity, Energy, FrAera, Angle, Inflictor, Bone, Gun)
-	if string.find(Entity:GetClass(), 'scp') then return false end
-end, -1)
