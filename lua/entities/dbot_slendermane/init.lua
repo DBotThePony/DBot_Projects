@@ -261,11 +261,13 @@ function ENT:SelectVictim(ignore)
 	end
 	
 	if selected == ignore then return end
+	
+	self.NEED_VICTIM = false
 	self:SetMyVictim(selected)
 end
 
 function ENT:CheckVictim()
-	if self.CurrentVictimTimer + 10 < CurTime() then
+	if self.NEED_VICTIM or self.CurrentVictimTimer + 10 < CurTime() then
 		return self:SelectVictim(self:GetMyVictim()) -- BOORING!
 	end
 	
@@ -437,7 +439,9 @@ function ENT:Think()
 		
 		if self:GetWatchingAtMeFor() < 1 then
 			self:Wreck(vic)
-			self:SelectVictim()
+			self.IDLE_FOR = CurTime() + math.random(20, 60)
+			self.NEED_VICTIM = true
+			return
 		end
 	else
 		self:SetWatchingAtMeFor(0)
