@@ -18,6 +18,7 @@ limitations under the License.
 local debugwtite = Material('models/debug/debugwhite')
 
 function ENT:Draw()
+	if LocalPlayer() ~= DBot_GetDBot() and not self:GetIsVisible() then return end
 	render.SuppressEngineLighting(true)
 	render.ModelMaterialOverride(debugwtite)
 	render.ResetModelLighting(1, 1, 1)

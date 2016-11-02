@@ -29,6 +29,7 @@ function ENT:SetupDataTables()
 	self:NetworkVar('Int', 1, 'PFrags')
 	self:NetworkVar('Float', 0, 'WatchingAtMeFor')
 	self:NetworkVar('Bool', 0, 'IsAttacking')
+	self:NetworkVar('Bool', 0, 'IsVisible')
 	self:NetworkVar('Entity', 0, 'MyVictim')
 end
 
@@ -39,6 +40,8 @@ function ENT:Initialize()
 	self.CLOSE_ENOUGH_FOR = 0
 	self.IDLE_FOR = 0
 	self.CLOSE_ENOUGH_FOR_LAST = CurTime()
+	self.WATCH_ME_FOR_LAST = CurTime()
+	self.TARGET_SELECT_COOLDOWN = CurTime()
 	
 	self:SetModel('models/ppm/player_default_base.mdl')
 	self:SetSequence(self:LookupSequence('idle_all_01'))

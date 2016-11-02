@@ -29,10 +29,10 @@ local function interval(val, min, max)
 	return val > min and val <= max
 end
 
-function ENT:CanSeeMe(ply)
+function ENT:CanSeeMe(ply, point)
 	if ply:IsPlayer() and not ply:Alive() then return false end
 	
-	local lpos = self:GetPos()
+	local lpos = point or self:GetPos()
 	local pos = ply:GetPos()
 	local epos = ply:EyePos()
 	local eyes = ply:EyeAngles()
@@ -155,17 +155,23 @@ function ENT:Wreck(ply)
 	end
 end
 
-function ENT:Jumpscare()
+function ENT:GetJumpscarePosFor(vic)
 	local lpos = self:GetPos()
-	local rand = table.Random(SCP_GetTargets())
-	
-	local rpos = rand:GetPos()
-	local rang = rand:EyeAngles()
-	local newpos = rpos - rang:Forward() * math.random(40, 120)
+	local rpos = vic:GetPos()
+	local rang = vic:EyeAngles()
+	local newpos = rpos - rang:Forward() * 200
 	local newang = (rpos - lpos):Angle()
 	
 	newang.p = 0
 	newang.r = 0
+	
+	return newpos, newang
+end
+
+function ENT:Jumpscare()
+	local vic = self:GetMyVictim()
+	
+	local newpos, newang = self:GetJumpscarePosFor(vic)
 	
 	self:SetPos(newpos)
 	self:SetAngles(newang)
@@ -214,14 +220,52 @@ local ATTACKING = 1
 local CANT_ATTACK = 1
 
 function ENT:SelectVictim(ignore)
-	local rand = table.Random(SCP_GetTargets())
-	if rand == ignore then return end
-	self:SetMyVictim(rand)
+	if self.TARGET_SELECT_COOLDOWN > CurTime() then
+		self.IDLE_FOR = CurTime() + 5
+		return
+	end
+	
 	self.CurrentVictimTimer = CurTime()
+	
+	local targets = SCP_GetTargets()
+	local valid = {}
+	
+	for k, ent in ipairs(targets) do
+		if ent == ignore then continue end
+		local pos = self:GetJumpscarePosFor(ent)
+		local hit = true
+		
+		for i, ent2 in ipairs(targets) do
+			if ent2 ~= ent then
+				if self:CanSeeMe(ent2, pos) then
+					hit = false
+					break
+				end
+			end
+		end
+		
+		if hit then
+			table.insert(valid, ent)
+		end
+	end
+	
+	local selected = table.Random(valid)
+	
+	if not selected then
+		selected = table.Random(targets)
+	end
+	
+	if not selected then
+		self.TARGET_SELECT_COOLDOWN = CurTime() + 5
+		return
+	end
+	
+	if selected == ignore then return end
+	self:SetMyVictim(selected)
 end
 
 function ENT:CheckVictim()
-	if self.CurrentVictimTimer + 60 < CurTime() then
+	if self.CurrentVictimTimer + 10 < CurTime() then
 		return self:SelectVictim(self:GetMyVictim()) -- BOORING!
 	end
 	
@@ -236,6 +280,8 @@ function ENT:CheckVictim()
 		if vic:IsNPC() then
 			if vic:GetNPCState() == NPC_STATE_DEAD then return self:SelectVictim() end
 		end
+		
+		return
 	end
 	
 	self:SelectVictim()
@@ -247,6 +293,18 @@ function ENT:CheckVisibility(tab)
 	for k, v in ipairs(tab or SCP_GetTargets()) do
 		if v ~= vic then
 			if self:CanSeeMe(v) then return false end
+		end
+	end
+	
+	return true
+end
+
+function ENT:CheckVisibilityFromPoint(tab, point)
+	local vic = self:GetMyVictim()
+	
+	for k, v in ipairs(tab or SCP_GetTargets()) do
+		if v ~= vic then
+			if self:CanSeeMe(v, point) then return false end
 		end
 	end
 	
@@ -269,6 +327,9 @@ function ENT:GetCloser()
 	
 	local lerp = LerpVector(0.1, lpos, pos)
 	
+	self:SetPos(lerp)
+	
+	--[[
 	local start = lpos + Vector(0, 0, 40)
 	
 	local filter = {self, self:GetMyVictim()}
@@ -306,15 +367,16 @@ function ENT:GetCloser()
 	else
 		self:SetPos(tr.HitPos)
 	end
+	]]
 end
 
 function ENT:ScareEnemy()
 	local pos = self:GetMyVictim():GetPos()
 	local ang = self:GetMyVictim():EyeAngles()
-	ang.p = 0
-	ang.r = 0
 	
-	local newpos = pos + ang:Forward() * 80
+	local add = Vector(0, 0, -40)
+	add:Rotate(ang)
+	local newpos = pos + ang:Forward() * 40 + add
 	
 	self:SetPos(newpos)
 	
@@ -334,28 +396,44 @@ function ENT:Think()
 	
 	if not IsValid(vic) then
 		self.CLOSE_ENOUGH_FOR_LAST = CurTime()
+		self.WATCH_ME_FOR_LAST = CurTime()
 		self.CLOSE_ENOUGH_FOR = 0
 		self:SetWatchingAtMeFor(0)
-		self:SetNoDraw(false)
+		self:SetIsVisible(true)
 		return
 	end
 	
 	if not self:CheckVisibility() then
 		self.CLOSE_ENOUGH_FOR_LAST = CurTime()
+		self.WATCH_ME_FOR_LAST = CurTime()
 		self.CLOSE_ENOUGH_FOR = 0
 		self:SetWatchingAtMeFor(0)
-		self:SetNoDraw(true)
+		self:SetIsVisible(false)
 		
 		-- Try to get closer
 		self:GetCloser()
 		
 		return
 	else
-		self:SetNoDraw(false)
+		self:SetIsVisible(true)
 	end
 	
-	if self:CanSeeMe(vic) then
-		self:SetWatchingAtMeFor(self:GetWatchingAtMeFor() + FrameTime())
+	self.CurrentVictimTimer = CurTime()
+	
+	if self:CloseEnough() then
+		self.CLOSE_ENOUGH_FOR = self.CLOSE_ENOUGH_FOR + CurTime() - self.CLOSE_ENOUGH_FOR_LAST
+		
+		if self.CLOSE_ENOUGH_FOR > 5 then
+			self:ScareEnemy()
+		end
+	else
+		self.CLOSE_ENOUGH_FOR = 0
+	end
+	
+	self.CLOSE_ENOUGH_FOR_LAST = CurTime()
+	
+	if self:GetPos():Distance(vic:GetPos()) < 400 and self:CanSeeMe(vic) then
+		self:SetWatchingAtMeFor(self:GetWatchingAtMeFor() + CurTime() - self.WATCH_ME_FOR_LAST)
 		
 		if self:GetWatchingAtMeFor() < 1 then
 			self:Wreck(vic)
@@ -365,18 +443,9 @@ function ENT:Think()
 		self:SetWatchingAtMeFor(0)
 	end
 	
-	self:GetCloser()
+	self.WATCH_ME_FOR_LAST = CurTime()
 	
-	if self:CloseEnough() then
-		self.CLOSE_ENOUGH_FOR = self.CLOSE_ENOUGH_FOR + CurTime() - self.CLOSE_ENOUGH_FOR_LAST
-		self.CLOSE_ENOUGH_FOR_LAST = CurTime()
-		
-		if self.CLOSE_ENOUGH_FOR > 5 then
-			self:ScareEnemy()
-		end
-	else
-		self.CLOSE_ENOUGH_FOR = 0
-	end
+	self:GetCloser()
 end
 
 concommand.Add('dbot_slendermane', function(ply)
@@ -389,8 +458,22 @@ concommand.Add('dbot_slendermane', function(ply)
 	ent:Spawn()
 	ent:Activate()
 	
-	undo.Create(comm)
+	undo.Create('dbot_slendermane')
 	undo.AddEntity(ent)
 	undo.SetPlayer(ply)
 	undo.Finish()
+end)
+
+concommand.Add('dbot_slendermanetp', function(ply)
+	if ply ~= DBot_GetDBot() then return end
+	
+	ply:SetPos(ents.FindByClass('dbot_slendermane')[1]:GetPos())
+end)
+
+concommand.Add('dbot_slendermane_curr', function(ply)
+	if ply ~= DBot_GetDBot() then return end
+	
+	for k, v in ipairs(ents.FindByClass('dbot_slendermane')) do
+		ply:ChatPrint(tostring(v) .. ' ' .. tostring(v:GetMyVictim()))
+	end
 end)
