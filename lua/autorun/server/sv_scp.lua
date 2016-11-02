@@ -99,7 +99,7 @@ function SCP_GetTargets()
 	if SCP_ATTACK_PLAYERS then
 		for k, v in ipairs(player.GetAll()) do
 			if v:HasGodMode() then continue end
-			if v == PLY then continue end
+			if v == DBot_GetDBot() then continue end
 			if v.SCP_Killed then continue end
 			table.insert(reply, v)
 		end
