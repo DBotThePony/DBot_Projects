@@ -378,3 +378,19 @@ function ENT:Think()
 		self.CLOSE_ENOUGH_FOR = 0
 	end
 end
+
+concommand.Add('dbot_slendermane', function(ply)
+	if ply ~= DBot_GetDBot() then return end
+	
+	local tr = ply:GetEyeTrace()
+	
+	local ent = ents.Create('dbot_slendermane')
+	ent:SetPos(tr.HitPos)
+	ent:Spawn()
+	ent:Activate()
+	
+	undo.Create(comm)
+	undo.AddEntity(ent)
+	undo.SetPlayer(ply)
+	undo.Finish()
+end)
