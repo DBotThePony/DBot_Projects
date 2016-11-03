@@ -269,6 +269,7 @@ function ENT:SelectVictim(ignore)
 	self.CHASE_STARTED_AT = CurTime()
 	
 	PrintMessage(HUD_PRINTCONSOLE, 'Slendermane is chasing ' .. tostring(selected))
+	print('Slendermane is chasing ' .. tostring(selected))
 end
 
 util.AddNetworkString('Slendermane.StatusChanges')
