@@ -351,7 +351,7 @@ function ENT:ScareEnemy()
 	local pos = self:GetMyVictim():GetPos()
 	local ang = self:GetMyVictim():EyeAngles()
 	
-	local add = Vector(0, 0, -40)
+	local add = Vector(0, 0, 20)
 	add:Rotate(ang)
 	local newpos = pos + ang:Forward() * 40 + add
 	
@@ -364,6 +364,7 @@ function ENT:ScareEnemy()
 	self.CLOSE_ENOUGH_FOR = 0
 	
 	self.IDLE_FOR = CurTime() + 0.3
+	self:SetWatchingAtMeFor(0)
 end
 
 function ENT:CanTool(ply, mode)
@@ -374,7 +375,14 @@ function ENT:CanTool(ply, mode)
 end
 
 function ENT:Think()
-	if self.IDLE_FOR > CurTime() then return end
+	if self.IDLE_FOR > CurTime() then
+		self.CLOSE_ENOUGH_FOR_LAST = CurTime()
+		self.WATCH_ME_FOR_LAST = CurTime()
+		self.CLOSE_ENOUGH_FOR = 0
+		self:SetWatchingAtMeFor(0)
+		return
+	end
+	
 	self:CheckVictim()
 	local vic = self:GetMyVictim()
 	
@@ -419,14 +427,14 @@ function ENT:Think()
 	if self:GetPos():Distance(vic:GetPos()) < 400 and self:CanSeeMe(vic) then
 		self:SetWatchingAtMeFor(self:GetWatchingAtMeFor() + CurTime() - self.WATCH_ME_FOR_LAST)
 		
-		if self:GetWatchingAtMeFor() < 1 then
+		if self:GetWatchingAtMeFor() > 1 then
 			self:Wreck(vic)
-			self.IDLE_FOR = CurTime() + math.random(20, 60)
-			self.NEED_VICTIM = true
 			self:SetIsVisible(false)
 			self:SendStatusToPlayer(vic, false)
 			
 			if vic:IsPlayer() then
+				self.IDLE_FOR = CurTime() + math.random(20, 60)
+				self.NEED_VICTIM = true
 				net.Start('Slendermane.DEAD')
 				net.Send(vic)
 			end
