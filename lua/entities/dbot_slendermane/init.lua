@@ -286,6 +286,16 @@ end
 
 function ENT:CheckVictim()
 	if self.NEED_VICTIM or self.CurrentVictimTimer + 10 < CurTime() or self.CHASE_STARTED_AT + 80 < CurTime() then
+		if math.random(1, 100) < 25 then
+			local amount = math.random(20, 50)
+			self.IDLE_FOR = CurTime() + amount
+			
+			PrintMessage(HUD_PRINTCONSOLE, 'Slendermane is asleep for ' .. tostring(amount))
+			print('Slendermane is asleep for ' .. tostring(amount))
+			
+			return
+		end
+		
 		return self:SelectVictim(self:GetMyVictim()) -- BOORING!
 	end
 	
@@ -383,6 +393,7 @@ function ENT:Think()
 		self.WATCH_ME_FOR_LAST = CurTime()
 		self.CLOSE_ENOUGH_FOR = 0
 		self:SetWatchingAtMeFor(0)
+		self:SetIsVisible(false)
 		return
 	end
 	
