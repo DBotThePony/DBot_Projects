@@ -18,6 +18,7 @@ limitations under the License.
 local debugwtite = Material('models/debug/debugwhite')
 
 function ENT:Draw()
+	if not self.GetIsVisible then return end
 	if LocalPlayer() ~= DBot_GetDBot() and not self:GetIsVisible() then return end
 	render.SuppressEngineLighting(true)
 	render.ModelMaterialOverride(debugwtite)
@@ -31,6 +32,7 @@ function ENT:Draw()
 end
 
 function ENT:Think()
+	self.LastFrame = self.LastFrame or CurTime()
 	self:FrameAdvance(CurTime() - self.LastFrame)
 	self.LastFrame = CurTime()
 end

@@ -267,6 +267,8 @@ function ENT:SelectVictim(ignore)
 	
 	self:SendStatusToPlayer(selected, true)
 	self.CHASE_STARTED_AT = CurTime()
+	
+	PrintMessage(HUD_PRINTCONSOLE, 'Slendermane is chasing ' .. tostring(selected))
 end
 
 util.AddNetworkString('Slendermane.StatusChanges')
