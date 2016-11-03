@@ -304,8 +304,10 @@ local function Think()
 	
 	for k, class in ipairs(ValidTargets) do
 		for k, npc in ipairs(ents.FindByClass(class)) do
-			npc:AddRelationship('dbot_sentry D_HT 1')
-			npc:AddRelationship('dbot_sentry_r D_HT 1')
+			if npc.AddRelationship then
+				npc:AddRelationship('dbot_sentry D_HT 1')
+				npc:AddRelationship('dbot_sentry_r D_HT 1')
+			end
 			
 			for k, sentry in ipairs(get) do
 				sentry:AddTarget(npc)
