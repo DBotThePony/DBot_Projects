@@ -427,7 +427,7 @@ function ENT:Think()
 	if self:GetPos():Distance(vic:GetPos()) < 400 and self:CanSeeMe(vic) then
 		self:SetWatchingAtMeFor(self:GetWatchingAtMeFor() + CurTime() - self.WATCH_ME_FOR_LAST)
 		
-		if self:GetWatchingAtMeFor() > 1 then
+		if self:GetWatchingAtMeFor() > 2 then
 			self:Wreck(vic)
 			self:SetIsVisible(false)
 			self:SendStatusToPlayer(vic, false)
