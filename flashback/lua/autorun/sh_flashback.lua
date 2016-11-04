@@ -29,9 +29,11 @@ self.RestoreLastFrameCurTime = 0
 self.RestoreLastFrameRealTime = 0
 self.RestoreLastFrameSysTime = 0
 
-util.AddNetworkString('DFlashback.RecordStatusChanges')
-util.AddNetworkString('DFlashback.ReplayStatusChanges')
-util.AddNetworkString('DFlashback.UpdateFrameCount')
+if SERVER then
+	util.AddNetworkString('DFlashback.RecordStatusChanges')
+	util.AddNetworkString('DFlashback.ReplayStatusChanges')
+	util.AddNetworkString('DFlashback.SyncFrameAmount')
+end
 
 function self.rungc()
 	for i = 1, #self.Frames - 3000 do
@@ -57,9 +59,11 @@ function self.Begin()
 	self.IsRecording = true
 	print('Record Started')
 	
-	net.Start('DFlashback.RecordStatusChanges')
-	net.WriteBool(true)
-	net.Broadcast()
+	if SERVER then
+		net.Start('DFlashback.RecordStatusChanges')
+		net.WriteBool(true)
+		net.Broadcast()
+	end
 	
 	hook.Run('FlashbackStartsRecord')
 end
@@ -69,9 +73,11 @@ function self.End()
 	self.IsRecording = false
 	print('Record Stopped')
 	
-	net.Start('DFlashback.RecordStatusChanges')
-	net.WriteBool(false)
-	net.Broadcast()
+	if SERVER then
+		net.Start('DFlashback.RecordStatusChanges')
+		net.WriteBool(false)
+		net.Broadcast()
+	end
 	
 	hook.Run('FlashbackEndRecord')
 end
@@ -82,9 +88,11 @@ function self.BeginRestore()
 	self.IsRestoring = true
 	print('Restoring Started')
 	
-	net.Start('DFlashback.ReplayStatusChanges')
-	net.WriteBool(true)
-	net.Broadcast()
+	if SERVER then
+		net.Start('DFlashback.ReplayStatusChanges')
+		net.WriteBool(true)
+		net.Broadcast()
+	end
 	
 	hook.Run('FlashbackStartsRestore')
 end
@@ -95,9 +103,11 @@ function self.EndRestore()
 	self.IsRestoring = false
 	print('Restoring Ended')
 	
-	net.Start('DFlashback.ReplayStatusChanges')
-	net.WriteBool(false)
-	net.Broadcast()
+	if SERVER then
+		net.Start('DFlashback.ReplayStatusChanges')
+		net.WriteBool(false)
+		net.Broadcast()
+	end
 	
 	hook.Run('FlashbackEndsRestore')
 end
@@ -207,14 +217,18 @@ function self.OnThink()
 		self.LastGC = RealTime() + 20
 	end
 	
-	net.Start('DFlashback.UpdateFrameCount')
-	net.WriteUInt(#self.Frames, 16)
-	net.Broadcast()
-	
 	if self.IsRecording then
 		self.RecordFrame()
 	elseif self.IsRestoring then
 		self.RestoreFrame()
+	end
+	
+	self.SkipCurrentFrame = false
+	
+	if SERVER then
+		net.Start('DFlashback.SyncFrameAmount')
+		net.WriteUInt(#self.Frames, 16)
+		net.Broadcast()
 	end
 end
 
@@ -251,11 +265,11 @@ function self.GetPreviousFrame()
 end
 
 function self.GetCurrentFrame()
-	if self.IsRestoring or self.LastFrame == CurTime() then
+	if (self.IsRestoring or self.LastFrame == CurTime()) and not self.SkipCurrentFrame then
 		return self.CurrentFrame
 	end
 	
-	if self.CurrentFrame and self.CurrentFrame.CurTime == CurTime() then
+	if (self.CurrentFrame and self.CurrentFrame.CurTime == CurTime()) and not self.SkipCurrentFrame then
 		return self.CurrentFrame
 	end
 	
@@ -292,4 +306,4 @@ function self.GetCurrentData(str)
 	end
 end
 
-hook.Add('Think', 'DFlashback.Main', self.OnThink)
+hook.Add('Tick', 'DFlashback.Main', self.OnThink)

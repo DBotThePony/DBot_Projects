@@ -15,22 +15,27 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
-local IsFlashingBack = false
-local FrameCount = 0
-local IsRecording = false
-
+local self = DFlashback
 local CoverDelta = 0
 
 net.Receive('DFlashback.RecordStatusChanges', function()
-	IsRecording = net.ReadBool()
+	local status = net.ReadBool()
+	
+	if status then
+		self.Begin()
+	else
+		self.End()
+	end
 end)
 
 net.Receive('DFlashback.ReplayStatusChanges', function()
-	IsFlashingBack = net.ReadBool()
-end)
-
-net.Receive('DFlashback.UpdateFrameCount', function()
-	FrameCount = net.ReadUInt(16)
+	local status = net.ReadBool()
+	
+	if status then
+		self.BeginRestore()
+	else
+		self.EndRestore()
+	end
 end)
 
 surface.CreateFont('DFlashback.TextFont', {
@@ -52,7 +57,7 @@ local function DrawIsRecording()
 	
 	surface.SetFont('DFlashback.TextFont')
 	
-	local text = 'Frame: ' .. (FrameCount + 1)
+	local text = 'Frame: ' .. (#self.Frames + 1)
 	local W = surface.GetTextSize(text)
 	
 	surface.SetTextPos(x - W - 3, y)
@@ -98,7 +103,7 @@ local function DrawIsReplaying()
 	
 	surface.SetFont('DFlashback.TextFont')
 	
-	local text = 'Frame: ' .. (FrameCount + 1)
+	local text = 'Frame: ' .. (#self.Frames + 1)
 	local W = surface.GetTextSize(text)
 	
 	surface.SetTextPos(x - W - 3, y)
@@ -143,11 +148,11 @@ end
 local LastDraw = 0
 
 local function HUDPaint()
-	if IsRecording then
+	if self.IsRecording then
 		DrawIsRecording()
 	end
 	
-	if IsFlashingBack then
+	if self.IsRestoring then
 		DrawIsReplaying()
 		
 		CoverDelta = Lerp(CurTime() - LastDraw, CoverDelta, 100)
@@ -165,3 +170,22 @@ local function HUDPaint()
 end
 
 hook.Add('HUDPaint', 'DFlashback.HUDPaint', HUDPaint)
+
+-- Ugh
+net.Receive('DFlashback.SyncFrameAmount', function()
+	if not self.IsRecording and not self.IsRestoring then return end
+	local amount = net.ReadUInt(16)
+	
+	local delta
+	
+	if self.IsRecording then
+		delta = amount - #self.Frames
+	else
+		delta = #self.Frames - amount
+	end
+	
+	for i = 1, delta do
+		self.SkipCurrentFrame = true
+		self.OnThink()
+	end
+end)
