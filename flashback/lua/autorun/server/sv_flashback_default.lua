@@ -38,8 +38,14 @@ local function CheckEntitySound(ent)
 	return not cond
 end
 
-local function plyHasVeapon(ply, weapon)
-	return ply:GetWeapon(weapon):IsValid()
+local function GetPropID(ent)
+	ent.Flashback_PropID = ent.Flashback_PropID or math.random(1, 10000)
+	
+	if ent:GetNWInt('FlashBackNetworkID') ~= ent.Flashback_PropID then
+		ent:SetNWInt('FlashBackNetworkID', ent.Flashback_PropID)
+	end
+	
+	return ent.Flashback_PropID
 end
 
 timer.Create('DFlashback.Default.UpdatePropList', 1, 0, function()
@@ -49,13 +55,11 @@ timer.Create('DFlashback.Default.UpdatePropList', 1, 0, function()
 	
 	for k, v in ipairs(ents.GetAll()) do
 		if CheckEntity(v) then
-			v.Flashback_PropID = v.Flashback_PropID or math.random(1, 10000)
-			VALID_PROPS[v.Flashback_PropID] = v
+			VALID_PROPS[GetPropID(v)] = v
 		end
 		
 		if CheckEntitySound(v) then
-			v.Flashback_PropID = v.Flashback_PropID or math.random(1, 10000)
-			VALID_PROPS_SOUNDS[v.Flashback_PropID] = v
+			VALID_PROPS_SOUNDS[GetPropID(v)] = v
 		end
 	end
 end)
@@ -322,7 +326,7 @@ local Default = {
 				ent:Activate()
 				
 				if ent.Flashback_PropID then
-					VALID_PROPS[ent.Flashback_PropID] = ent
+					VALID_PROPS[GetPropID(ent)] = ent
 					VALID_PROPS_SOUNDS[ent.Flashback_PropID] = ent
 				end
 			end
@@ -367,8 +371,9 @@ local function OnEntityCreated(ent)
 		
 		ent.Flashback_PropID = ent.Flashback_PropID or math.random(1, 10000)
 		ent.FlashbackTimeSpawned = time
-		VALID_PROPS[ent.Flashback_PropID] = ent
-		data.FrameProps[ent.Flashback_PropID] = ent
+		
+		VALID_PROPS[GetPropID(ent)] = ent
+		data.FrameProps[GetPropID(ent)] = ent
 	end)
 end
 
@@ -400,7 +405,7 @@ local function EntityEmitSound(soundData)
 	if not CheckEntitySound(ent) then return end
 	
 	ent.Flashback_PropID = ent.Flashback_PropID or math.random(1, 10000)
-	VALID_PROPS_SOUNDS[ent.Flashback_PropID] = ent
+	VALID_PROPS_SOUNDS[GetPropID(ent)] = ent
 	local uid = ent.Flashback_PropID
 	
 	local data = self.GetCurrentData('DFlashback.Default.sounds')
