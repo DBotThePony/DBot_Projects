@@ -18,6 +18,25 @@ limitations under the License.
 local self = DFlashback
 
 local VALID_PROPS = {}
+local VALID_PROPS_SOUNDS = {}
+
+local function CheckEntity(ent)
+	local cond = ent:GetSolid() == SOLID_NONE or
+		ent:CreatedByMap() or
+		ent:IsNPC() or
+		ent:IsWeapon() or
+		ent:IsConstraint() or
+		ent:IsPlayer()
+	
+	return not cond
+end
+
+local function CheckEntitySound(ent)
+	local cond = ent:GetSolid() == SOLID_NONE or
+		ent:IsConstraint()
+	
+	return not cond
+end
 
 timer.Create('DFlashback.Default.UpdatePropList', 1, 0, function()
 	if not self.IsRecording then return end
@@ -25,15 +44,14 @@ timer.Create('DFlashback.Default.UpdatePropList', 1, 0, function()
 	VALID_PROPS = {}
 	
 	for k, v in ipairs(ents.GetAll()) do
-		local cond = v:GetSolid() == SOLID_NONE or
-			v:CreatedByMap() or
-			v:IsNPC() or
-			v:IsWeapon() or
-			v:IsPlayer()
-			
-		if not cond then
+		if CheckEntity(v) then
 			v.Flashback_PropID = v.Flashback_PropID or math.random(1, 10000)
 			VALID_PROPS[v.Flashback_PropID] = v
+		end
+		
+		if CheckEntitySound(v) then
+			v.Flashback_PropID = v.Flashback_PropID or math.random(1, 10000)
+			VALID_PROPS_SOUNDS[v.Flashback_PropID] = v
 		end
 	end
 end)
@@ -58,6 +76,12 @@ local Default = {
 				self.WriteDelta(myKey, uid .. 'health', ply:Health())
 				self.WriteDelta(myKey, uid .. 'maxhealth', ply:GetMaxHealth())
 				self.WriteDelta(myKey, uid .. 'velocity', ply:GetVelocity())
+				
+				local wep = ply:GetActiveWeapon()
+				
+				if wep:IsValid() then
+					self.WriteDelta(myKey, uid .. 'weaponclass', wep:GetClass())
+				end
 			end
 		end,
 		
@@ -75,6 +99,12 @@ local Default = {
 				local oldVel = self.FindDelta(myKey, uid .. 'velocity', currVel)
 				
 				ply:SetVelocity(oldVel - currVel)
+				
+				local get = self.FindDelta(myKey, uid .. 'weaponclass')
+				
+				if get then
+					ply:SelectWeapon(get)
+				end
 			end
 		end,
 		
@@ -93,7 +123,7 @@ local Default = {
 		end,
 	},
 	
-	props = {
+	ents = {
 		record = function(data, myKey)
 			data.FrameProps = {}
 			
@@ -115,7 +145,6 @@ local Default = {
 				
 				if phys:IsValid() then
 					self.WriteDelta(myKey, uid .. 'motion', phys:IsMotionEnabled())
-					-- self.WriteDelta(myKey, uid .. 'mass', phys:GetMass())
 				end
 			end
 		end,
@@ -131,6 +160,8 @@ local Default = {
 						continue
 					end
 				end
+				
+				if v == NULL then continue end -- ???
 				
 				if v.FlashbackTimeSpawned == self.CurTime() then
 					SafeRemoveEntity(v)
@@ -150,7 +181,6 @@ local Default = {
 				
 				if phys:IsValid() then
 					phys:EnableMotion(self.WriteDelta(myKey, uid .. 'motion', phys:IsMotionEnabled()))
-					-- phys:SetMass(self.WriteDelta(myKey, uid .. 'mass', phys:GetMass()) or 0)
 				end
 			end
 		end,
@@ -161,6 +191,8 @@ local Default = {
 			if not data.ToRestore then return end
 			
 			for i, entry in ipairs(data.ToRestore) do
+				if entry.tab.FlashbackTimeSpawned == self.CurTime() then continue end
+				
 				local ent = ents.Create(entry.class)
 				
 				for id, val in ipairs(StasisFuncs) do
@@ -182,28 +214,68 @@ local Default = {
 					newTab[key] = value
 				end
 				
+				timer.Simple(0, function()
+					local newTab = ent:GetTable()
+					
+					for key, value in pairs(entry.tab) do
+						newTab[key] = value
+					end
+				end)
+				
 				ent:Activate()
 				
 				if ent.Flashback_PropID then
 					VALID_PROPS[ent.Flashback_PropID] = ent
+					VALID_PROPS_SOUNDS[ent.Flashback_PropID] = ent
 				end
 			end
 		end,
+	},
+	
+	sounds = {
+		replay = function(data, key)
+			if not data.sounds then return end
+			
+			for uid, sndData in pairs(data.sounds) do
+				local ent = VALID_PROPS_SOUNDS[uid]
+				
+				if not IsValid(ent) then return end
+				
+				for i, vals in ipairs(sndData) do
+					ent:EmitSound(
+						vals.SoundName or vals.OriginalSoundName,
+						vals.SoundLevel or 75,
+						vals.Pitch or 100,
+						vals.Volume or 1,
+						vals.Channel
+					)
+				end
+			end
+		end
 	}
 }
 
 local function OnEntityCreated(ent)
 	if not self.IsRecording then return end
-	local time = CurTime()
+	
+	local time = self.GetCurrentFrame().CurTime
+	local data = self.GetCurrentData('DFlashback.Default.ents')
+	data.FrameProps = data.FrameProps or {}
 	
 	timer.Simple(0, function()
+		if not CheckEntity(ent) then return end
+		
+		ent.Flashback_PropID = ent.Flashback_PropID or math.random(1, 10000)
 		ent.FlashbackTimeSpawned = time
-		table.insert(VALID_PROPS, ent)
+		VALID_PROPS[ent.Flashback_PropID] = ent
+		data.FrameProps[ent.Flashback_PropID] = ent
 	end)
 end
 
 local function EntityRemoved(ent)
 	if not self.IsRecording then return end
+	
+	if not CheckEntity(ent) then return end
 	
 	local data = self.GetCurrentData('DFlashback.Default.ents_restore')
 	data.ToRestore = data.ToRestore or {}
@@ -220,8 +292,28 @@ local function EntityRemoved(ent)
 	end
 end
 
+local function EntityEmitSound(soundData)
+	if not self.IsRecording then return end
+	local ent = soundData.Entity
+	
+	if not IsValid(ent) then return end
+	if not CheckEntitySound(ent) then return end
+	
+	ent.Flashback_PropID = ent.Flashback_PropID or math.random(1, 10000)
+	VALID_PROPS_SOUNDS[ent.Flashback_PropID] = ent
+	local uid = ent.Flashback_PropID
+	
+	local data = self.GetCurrentData('DFlashback.Default.sounds')
+	
+	data.sounds = data.sounds or {}
+	data.sounds[uid] = data.sounds[uid] or {}
+	
+	table.insert(data.sounds[uid], table.Copy(soundData))
+end
+
 hook.Add('OnEntityCreated', 'DFlashback.Default.PropDelete', OnEntityCreated)
 hook.Add('EntityRemoved', 'DFlashback.Default.RestoreEntity', EntityRemoved)
+hook.Add('EntityEmitSound', 'DFlashback.Default.Sounds', EntityEmitSound)
 
 for k, v in pairs(Default) do
 	hook.Add('FlashbackRecordFrame', 'DFlashback.Default.' .. k, v.record)
