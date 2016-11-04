@@ -278,10 +278,12 @@ local Default = {
 		
 		ends_replay = function()
 			for k, ent in pairs(VALID_PROPS) do
-				local phys = ent:GetPhysicsObject()
-				
-				if IsValid(phys) then
-					phys:Wake()
+				if ent:IsValid() then
+					local phys = ent:GetPhysicsObject()
+					
+					if IsValid(phys) then
+						phys:Wake()
+					end
 				end
 			end
 		end,

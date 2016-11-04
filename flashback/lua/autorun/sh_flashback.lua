@@ -34,6 +34,7 @@ if SERVER then
 	util.AddNetworkString('DFlashback.RecordStatusChanges')
 	util.AddNetworkString('DFlashback.ReplayStatusChanges')
 	util.AddNetworkString('DFlashback.SyncFrameAmount')
+	util.AddNetworkString('DFlashback.SyncServerFPS')
 end
 
 function self.rungc()
@@ -212,8 +213,16 @@ function self.SysTimeDelta()
 	return - self.RestoreLastFrameSysTime + self.GetCurrentFrame().SysTime
 end
 
+self.NextThink = 0
+self.IgnoreNextThink = false
+
 function self.OnThink()
 	if self.DISABLED then return end
+	
+	if CLIENT and not self.IgnoreNextThink then
+		if self.NextThink > RealTime() then return end
+		self.NextThink = RealTime() + self.ServerFPSTime
+	end
 	
 	if self.SkipCurrentFrame then
 		self.GetCurrentFrame()
@@ -246,6 +255,10 @@ function self.OnThink()
 	if SERVER then
 		net.Start('DFlashback.SyncFrameAmount')
 		net.WriteUInt(#self.Frames, 16)
+		net.Broadcast()
+		
+		net.Start('DFlashback.SyncServerFPS')
+		net.WriteUInt(math.floor(1 / FrameTime()), 16)
 		net.Broadcast()
 	end
 end
@@ -324,4 +337,4 @@ function self.GetCurrentData(str)
 	end
 end
 
-hook.Add('Tick', 'DFlashback.Main', self.OnThink)
+hook.Add('Think', 'DFlashback.OnThink', self.OnThink)

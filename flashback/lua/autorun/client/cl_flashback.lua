@@ -171,6 +171,14 @@ end
 
 hook.Add('HUDPaint', 'DFlashback.HUDPaint', HUDPaint)
 
+self.ServerFPS = 66
+self.ServerFPSTime = 0.05
+
+net.Receive('DFlashback.SyncServerFPS', function()
+	self.ServerFPS = net.ReadUInt(16)
+	self.ServerFPSTime = 1 / self.ServerFPS
+end)
+
 -- Ugh
 net.Receive('DFlashback.SyncFrameAmount', function()
 	if self.DISABLED then return end
@@ -185,6 +193,8 @@ net.Receive('DFlashback.SyncFrameAmount', function()
 		delta = #self.Frames - amount
 	end
 	
+	self.IgnoreNextThink = true
+	
 	for i = 1, delta do
 		if self.IsRecording then
 			self.SkipCurrentFrame = true
@@ -192,4 +202,6 @@ net.Receive('DFlashback.SyncFrameAmount', function()
 		
 		self.OnThink()
 	end
+	
+	self.IgnoreNextThink = false
 end)
