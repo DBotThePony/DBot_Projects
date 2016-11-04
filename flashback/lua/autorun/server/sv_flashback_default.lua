@@ -267,6 +267,8 @@ local Default = {
 					end
 				end
 				
+				v:Extinguish()
+				
 				local phys = v:GetPhysicsObject()
 				
 				if phys:IsValid() then
