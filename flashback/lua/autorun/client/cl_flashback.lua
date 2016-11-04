@@ -179,6 +179,10 @@ net.Receive('DFlashback.SyncServerFPS', function()
 	self.ServerFPSTime = 1 / self.ServerFPS
 end)
 
+net.Receive('DFlashback.RestoreSpeed', function()
+	self.RestoreSpeed = net.ReadFloat()
+end)
+
 -- Ugh
 net.Receive('DFlashback.SyncFrameAmount', function()
 	if self.DISABLED then return end

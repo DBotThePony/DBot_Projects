@@ -26,6 +26,8 @@ self.LastGC = 0
 self.CurrentFrame = {}
 self.DISABLED = false
 
+self.RestoreSpeed = 1
+
 self.RestoreLastFrameCurTime = 0
 self.RestoreLastFrameRealTime = 0
 self.RestoreLastFrameSysTime = 0
@@ -35,6 +37,16 @@ if SERVER then
 	util.AddNetworkString('DFlashback.ReplayStatusChanges')
 	util.AddNetworkString('DFlashback.SyncFrameAmount')
 	util.AddNetworkString('DFlashback.SyncServerFPS')
+	util.AddNetworkString('DFlashback.RestoreSpeed')
+end
+
+function self.SetRestoreSpeed(speed)
+	self.RestoreSpeed = speed
+	
+	if CLIENT then return end
+	net.Start('DFlashback.RestoreSpeed')
+	net.WriteFloat(speed)
+	net.Broadcast()
 end
 
 function self.rungc()
@@ -218,10 +230,21 @@ self.IgnoreNextThink = false
 
 function self.OnThink()
 	if self.DISABLED then return end
+
+	if not self.IgnoreNextThink and self.NextThink > RealTime() then return end
 	
-	if CLIENT and not self.IgnoreNextThink then
-		if self.NextThink > RealTime() then return end
-		self.NextThink = RealTime() + self.ServerFPSTime
+	if CLIENT then
+		if self.IsRestoring then
+			self.NextThink = RealTime() + self.ServerFPSTime * (1 / self.RestoreSpeed)
+		else
+			self.NextThink = RealTime() + self.ServerFPSTime
+		end
+	else
+		if self.IsRestoring then
+			self.NextThink = RealTime() + FrameTime() * (1 / self.RestoreSpeed)
+		else
+			self.NextThink = RealTime()
+		end
 	end
 	
 	if self.SkipCurrentFrame then
