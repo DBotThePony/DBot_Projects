@@ -105,7 +105,7 @@ local Default = {
 				data[ply] = {}
 				data[ply].weapons = {}
 				data[ply].ammos = {}
-				data[ply].clips = {}
+				data[ply].weapon_data = {}
 				
 				for i, weapon in ipairs(ply:GetWeapons()) do
 					local class = weapon:GetClass()
@@ -123,10 +123,11 @@ local Default = {
 						data[ply].ammos[id2] = amm2
 					end
 					
-					table.insert(data[ply].clips, {
+					table.insert(data[ply].weapon_data, {
 						weapon = class,
 						clip1 = clip1,
 						clip2 = clip2,
+						seq = weapon:GetSequence(),
 					})
 				end
 			end
@@ -141,6 +142,7 @@ local Default = {
 				ply:SetEyeAngles(self.FindDelta(myKey, uid .. 'ang', ply:EyeAngles()))
 				ply:SetHealth(self.FindDelta(myKey, uid .. 'health', ply:Health()))
 				ply:SetMaxHealth(self.FindDelta(myKey, uid .. 'maxhealth', ply:GetMaxHealth()))
+				ply:FrameAdvance(self.RealTimeDelta())
 				
 				local currVel = ply:GetVelocity()
 				local oldVel = self.FindDelta(myKey, uid .. 'velocity', currVel)
@@ -164,6 +166,8 @@ local Default = {
 						end
 						
 						weaponz[class] = weapon
+						
+						weapon:FrameAdvance(self.RealTimeDelta())
 					end
 					
 					for id, ammo in pairs(data[ply].ammos) do
@@ -176,9 +180,11 @@ local Default = {
 						end
 					end
 					
-					for i, clipData in ipairs(data[ply].clips) do
-						weaponz[clipData.weapon]:SetClip1(clipData.clip1)
-						weaponz[clipData.weapon]:SetClip2(clipData.clip2)
+					for i, wepData in ipairs(data[ply].weapon_data) do
+						local weapon = weaponz[wepData.weapon]
+						weapon:SetClip1(wepData.clip1)
+						weapon:SetClip2(wepData.clip2)
+						weapon:SetSequence(wepData.seq)
 					end
 				end
 			end
@@ -222,6 +228,7 @@ local Default = {
 				
 				if phys:IsValid() then
 					self.WriteDelta(myKey, uid .. 'motion', phys:IsMotionEnabled())
+					self.WriteDelta(myKey, uid .. 'mass', phys:GetMass())
 				end
 			end
 		end,
@@ -259,7 +266,18 @@ local Default = {
 				local phys = v:GetPhysicsObject()
 				
 				if phys:IsValid() then
-					phys:EnableMotion(self.WriteDelta(myKey, uid .. 'motion', phys:IsMotionEnabled()))
+					phys:EnableMotion(self.FindDelta(myKey, uid .. 'motion', phys:IsMotionEnabled()))
+					phys:SetMass(self.FindDelta(myKey, uid .. 'mass', phys:GetMass()))
+				end
+			end
+		end,
+		
+		ends_replay = function()
+			for k, ent in pairs(VALID_PROPS) do
+				local phys = ent:GetPhysicsObject()
+				
+				if IsValid(phys) then
+					phys:Wake()
 				end
 			end
 		end,
