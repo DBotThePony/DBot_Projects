@@ -48,7 +48,7 @@ local function SpeedChanges()
 end
 
 cvars.AddChangeCallback('sv_flashback_speed', SpeedChanges, 'Flashback')
-SpeedChanges()
+timer.Simple(0, SpeedChanges)
 
 local GREY = Color(200, 200, 200)
 local GREEN = Color(0, 200, 0)
