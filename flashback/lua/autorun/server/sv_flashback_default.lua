@@ -260,6 +260,15 @@ local Default = {
 					local get = self.FindDelta(myKey, uid .. ' ' .. i)
 					
 					if not get then continue end
+					
+					local status, get2 = pcall(v[names[1]], v)
+					
+					if not status then
+						print(err)
+					end
+					
+					if get2 == get then continue end
+					
 					local status, err = pcall(v[names[2]], v, get)
 					
 					if not status then
