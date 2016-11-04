@@ -18,6 +18,8 @@ limitations under the License.
 DFlashback = DFlashback or {}
 local self = DFlashback
 
+self.RESTORE_SPEED = CreateConVar('sv_flashback_speed', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Multiplier of restore speed. Must be 0.1 - 1.0')
+
 self.Frames = {}
 self.IsRecording = false
 self.IsRestoring = false
@@ -32,21 +34,28 @@ self.RestoreLastFrameCurTime = 0
 self.RestoreLastFrameRealTime = 0
 self.RestoreLastFrameSysTime = 0
 
-if SERVER then
-	util.AddNetworkString('DFlashback.RecordStatusChanges')
-	util.AddNetworkString('DFlashback.ReplayStatusChanges')
-	util.AddNetworkString('DFlashback.SyncFrameAmount')
-	util.AddNetworkString('DFlashback.SyncServerFPS')
-	util.AddNetworkString('DFlashback.RestoreSpeed')
-end
-
 function self.SetRestoreSpeed(speed)
-	self.RestoreSpeed = speed
+	self.RestoreSpeed = math.Clamp(speed, 0.1, 1)
 	
 	if CLIENT then return end
 	net.Start('DFlashback.RestoreSpeed')
 	net.WriteFloat(speed)
 	net.Broadcast()
+end
+
+local function SpeedChanges()
+	self.SetRestoreSpeed(self.RESTORE_SPEED:GetFloat())
+end
+
+cvars.AddChangeCallback('sv_flashback_speed', SpeedChanges, 'Flashback')
+SpeedChanges()
+
+local GREY = Color(200, 200, 200)
+local GREEN = Color(0, 200, 0)
+
+function self.Message(...)
+	MsgC(GREEN, '[DFlashback] ', GREY, ...)
+	MsgC('\n')
 end
 
 function self.rungc()
@@ -71,12 +80,14 @@ function self.Begin()
 	if self.IsRecording then return end
 	if self.IsRestoring then self.EndRestore() end
 	self.IsRecording = true
-	print('Record Started')
+	self.Message('Record Started')
 	
 	if SERVER then
 		net.Start('DFlashback.RecordStatusChanges')
 		net.WriteBool(true)
 		net.Broadcast()
+		
+		timer.Stop('DFlashback.Commant.RecordTimer')
 	end
 	
 	hook.Run('FlashbackStartsRecord')
@@ -85,12 +96,14 @@ end
 function self.End()
 	if not self.IsRecording then return end
 	self.IsRecording = false
-	print('Record Stopped')
+	self.Message('Record Stopped')
 	
 	if SERVER then
 		net.Start('DFlashback.RecordStatusChanges')
 		net.WriteBool(false)
 		net.Broadcast()
+		
+		timer.Stop('DFlashback.Commant.RecordTimer')
 	end
 	
 	hook.Run('FlashbackEndRecord')
@@ -100,12 +113,14 @@ function self.BeginRestore()
 	if self.IsRestoring then return end
 	if self.IsRecording then self.End() end
 	self.IsRestoring = true
-	print('Restoring Started')
+	self.Message('Replay Started')
 	
 	if SERVER then
 		net.Start('DFlashback.ReplayStatusChanges')
 		net.WriteBool(true)
 		net.Broadcast()
+		
+		timer.Stop('DFlashback.Commant.RecordTimer')
 	end
 	
 	hook.Run('FlashbackStartsRestore')
@@ -115,12 +130,15 @@ function self.EndRestore()
 	if not self.IsRestoring then return end
 	if self.IsRecording then self.End() end
 	self.IsRestoring = false
-	print('Restoring Ended')
+	self.Frames = {}
+	self.Message('Replay Ended')
 	
 	if SERVER then
 		net.Start('DFlashback.ReplayStatusChanges')
 		net.WriteBool(false)
 		net.Broadcast()
+		
+		timer.Stop('DFlashback.Commant.RecordTimer')
 	end
 	
 	hook.Run('FlashbackEndsRestore')
@@ -138,8 +156,8 @@ self.StopRestore = self.EndRestore
 self.StopFlashback = self.EndRestore
 
 local function Err(err)
-	print(err)
-	print(debug.traceback())
+	self.Message(err)
+	self.Message(debug.traceback())
 end
 
 function self.RecordFrame()
@@ -159,7 +177,7 @@ function self.RecordFrame()
 	local delta = (SysTime() - time) * 1000
 	
 	if delta > 30 then
-		print('Recording this frame took ' .. math.floor(delta * 100) / 100 .. 'ms!')
+		self.Message('Recording this frame took ' .. math.floor(delta * 100) / 100 .. 'ms!')
 	end
 end
 
@@ -191,7 +209,7 @@ function self.RestoreFrame()
 	local delta = (SysTime() - time) * 1000
 	
 	if delta > 30 then
-		print('Restoring this frame took ' .. math.floor(delta * 100) / 100 .. 'ms!')
+		self.Message('Restoring this frame took ' .. math.floor(delta * 100) / 100 .. 'ms!')
 	end
 end
 
@@ -258,8 +276,8 @@ function self.OnThink()
 	end
 	
 	if #self.Frames > 10000 then
-		print('FLASHBACK PANIC! Disabling DFlashBack')
-		print(debug.traceback())
+		self.Message('FLASHBACK PANIC! Disabling DFlashBack')
+		self.Message(debug.traceback())
 		self.Frames = {}
 		self.DISABLED = true
 		return

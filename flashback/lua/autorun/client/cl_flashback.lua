@@ -209,3 +209,7 @@ net.Receive('DFlashback.SyncFrameAmount', function()
 	
 	self.IgnoreNextThink = false
 end)
+
+net.Receive('DFlashback.Notify', function()
+	self.Message(unpack(net.ReadTable()))
+end)
