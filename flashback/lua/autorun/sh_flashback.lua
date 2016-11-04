@@ -87,6 +87,7 @@ end
 function self.Begin()
 	if self.IsRecording then return end
 	if self.IsRestoring then self.EndRestore() end
+	self.Frames = {}
 	self.IsRecording = true
 	self.Message('Record Started')
 	
