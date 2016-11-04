@@ -88,7 +88,7 @@ local function DrawIsRecording()
 end
 
 local function DrawIsReplaying()
-	local x, y = ScrW() - 350, 100
+	local x, y = ScrW() - 375, 100
 	
 	surface.SetTextColor(255, 255, 255)
 	surface.SetDrawColor(0, 255, 0)
@@ -103,7 +103,7 @@ local function DrawIsReplaying()
 	surface.DrawText(text)
 	surface.SetTextPos(x, y)
 	
-	surface.DrawText('[   REPLY]')
+	surface.DrawText('[   REPLAY]')
 	
 	if nextChange < CurTime() then
 		nextChange = CurTime() + 0.4

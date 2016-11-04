@@ -38,6 +38,10 @@ local function CheckEntitySound(ent)
 	return not cond
 end
 
+local function plyHasVeapon(ply, weapon)
+	return ply:GetWeapon(weapon):IsValid()
+end
+
 timer.Create('DFlashback.Default.UpdatePropList', 1, 0, function()
 	if not self.IsRecording then return end
 	
@@ -97,6 +101,34 @@ local Default = {
 				if wep:IsValid() then
 					self.WriteDelta(myKey, uid .. 'weaponclass', wep:GetClass())
 				end
+				
+				data[ply] = {}
+				data[ply].weapons = {}
+				data[ply].ammos = {}
+				data[ply].clips = {}
+				
+				for i, weapon in ipairs(ply:GetWeapons()) do
+					local class = weapon:GetClass()
+					table.insert(data[ply].weapons, class)
+					
+					local id1, id2 = weapon:GetPrimaryAmmoType(), weapon:GetSecondaryAmmoType()
+					local clip1, clip2 = weapon:Clip1(), weapon:Clip2()
+					local amm1, amm2 = ply:GetAmmoCount(id1), ply:GetAmmoCount(id2)
+					
+					if id1 and id1 ~= 0 then
+						data[ply].ammos[id1] = amm1
+					end
+					
+					if id2 and id2 ~= 0 then
+						data[ply].ammos[id2] = amm2
+					end
+					
+					table.insert(data[ply].clips, {
+						weapon = class,
+						clip1 = clip1,
+						clip2 = clip2,
+					})
+				end
 			end
 		end,
 		
@@ -119,6 +151,35 @@ local Default = {
 				
 				if get then
 					ply:SelectWeapon(get)
+				end
+				
+				if data[ply] then
+					local weaponz = {}
+					
+					for i, class in ipairs(data[ply].weapons) do
+						local weapon = ply:GetWeapon(class)
+						
+						if not IsValid(weapon) then
+							weapon = ply:Give(class)
+						end
+						
+						weaponz[class] = weapon
+					end
+					
+					for id, ammo in pairs(data[ply].ammos) do
+						ply:SetAmmo(ammo, id)
+					end
+					
+					for i, weapon in ipairs(ply:GetWeapons()) do
+						if not weaponz[weapon:GetClass()] then
+							weapon:Remove()
+						end
+					end
+					
+					for i, clipData in ipairs(data[ply].clips) do
+						weaponz[clipData.weapon]:SetClip1(clipData.clip1)
+						weaponz[clipData.weapon]:SetClip2(clipData.clip2)
+					end
 				end
 			end
 		end,
