@@ -62,6 +62,21 @@ local StasisFuncs = {
 	{'GetPos', 'SetPos'},
 	{'GetAngles', 'SetAngles'},
 	{'GetSkin', 'SetSkin'},
+	{'Health', 'SetHealth'},
+	{'GetMaterial', 'SetMaterial'},
+	{'GetMaxHealth', 'SetMaxHealth'},
+}
+
+local DeltaFuncs = {
+	{'GetModel', 'SetModel'},
+	{'GetPos', 'SetPos'},
+	{'GetAngles', 'SetAngles'},
+	{'GetSkin', 'SetSkin'},
+	{'GetMaterial', 'SetMaterial'},
+	{'GetVelocity', 'SetVelocity'},
+	{'Health', 'SetHealth'},
+	{'GetMaxHealth', 'SetMaxHealth'},
+	{'GetColor', 'SetColor'},
 }
 
 local Default = {
@@ -132,14 +147,15 @@ local Default = {
 				
 				data.FrameProps[uid] = v
 				
-				self.WriteDelta(myKey, uid .. 'pos', v:GetPos())
-				self.WriteDelta(myKey, uid .. 'ang', v:GetAngles())
-				self.WriteDelta(myKey, uid .. 'health', v:Health())
-				self.WriteDelta(myKey, uid .. 'mhealth', v:GetMaxHealth())
-				self.WriteDelta(myKey, uid .. 'velocity', v:GetVelocity())
-				
-				self.WriteDelta(myKey, uid .. 'model', v:GetModel())
-				self.WriteDelta(myKey, uid .. 'skin', v:GetSkin())
+				for i, names in ipairs(DeltaFuncs) do
+					local status, errOrResult = pcall(v[names[1]], v)
+					
+					if status then
+						self.WriteDelta(myKey, uid .. ' ' .. i, errOrResult)
+					else
+						print(errOrResult)
+					end
+				end
 				
 				local phys = v:GetPhysicsObject()
 				
@@ -168,14 +184,16 @@ local Default = {
 					continue
 				end
 				
-				v:SetPos(self.FindDelta(myKey, uid .. 'pos', v:GetPos()))
-				v:SetAngles(self.FindDelta(myKey, uid .. 'ang', v:GetAngles()))
-				v:SetHealth(self.FindDelta(myKey, uid .. 'health', v:Health()))
-				v:SetMaxHealth(self.FindDelta(myKey, uid .. 'mhealth', v:GetMaxHealth()))
-				v:SetVelocity(self.FindDelta(myKey, uid .. 'velocity', v:GetVelocity()))
-				
-				v:SetModel(self.FindDelta(myKey, uid .. 'model', v:GetModel()))
-				v:SetSkin(self.FindDelta(myKey, uid .. 'skin', v:GetSkin()))
+				for i, names in ipairs(DeltaFuncs) do
+					local get = self.FindDelta(myKey, uid .. ' ' .. i)
+					
+					if not get then continue end
+					local status, err = pcall(v[names[2]], v, get)
+					
+					if not status then
+						print(err)
+					end
+				end
 				
 				local phys = v:GetPhysicsObject()
 				
@@ -242,12 +260,15 @@ local Default = {
 				if not IsValid(ent) then return end
 				
 				for i, vals in ipairs(sndData) do
-					ent:EmitSound(
+					EmitSound(
 						vals.SoundName or vals.OriginalSoundName,
-						vals.SoundLevel or 75,
-						vals.Pitch or 100,
+						vals.Pos or ent:GetPos(),
+						ent:EntIndex(),
+						vals.Channel,
 						vals.Volume or 1,
-						vals.Channel
+						vals.SoundLevel or 75,
+						SND_STOP_LOOPING,
+						vals.Pitch or 100
 					)
 				end
 			end

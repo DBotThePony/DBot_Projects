@@ -119,6 +119,7 @@ local function Err(err)
 end
 
 function self.RecordFrame()
+	local time = SysTime()
 	local frame = self.GetCurrentFrame()
 	
 	self.RestoreLastFrameCurTime = frame.CurTime
@@ -131,9 +132,15 @@ function self.RecordFrame()
 	for k, func in pairs(tab) do
 		xpcall(func, Err, self.GetCurrentData(k), k)
 	end
+	local delta = (SysTime() - time) * 1000
+	
+	if delta > 30 then
+		print('Recording this frame took ' .. math.floor(delta * 100) / 100 .. 'ms!')
+	end
 end
 
 function self.RestoreFrame()
+	local time = SysTime()
 	local frame = table.remove(self.Frames)
 	if not frame then self.EndRestore() return end
 	
@@ -156,6 +163,12 @@ function self.RestoreFrame()
 	self.RestoreLastFrameCurTime = frame.CurTime
 	self.RestoreLastFrameRealTime = frame.RealTime
 	self.RestoreLastFrameSysTime = frame.SysTime
+	
+	local delta = (SysTime() - time) * 1000
+	
+	if delta > 30 then
+		print('Restoring this frame took ' .. math.floor(delta * 100) / 100 .. 'ms!')
+	end
 end
 
 function self.CurTime()
