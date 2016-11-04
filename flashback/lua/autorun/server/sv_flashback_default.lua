@@ -26,6 +26,7 @@ local function CheckEntity(ent)
 		ent:IsNPC() or
 		ent:IsWeapon() or
 		ent:IsConstraint() or
+		ent:IsVehicle() or
 		ent:IsPlayer()
 	
 	return not cond
@@ -283,6 +284,7 @@ local Default = {
 				if phys:IsValid() then
 					phys:EnableMotion(self.FindDelta(myKey, uid .. 'motion', phys:IsMotionEnabled()))
 					phys:SetMass(self.FindDelta(myKey, uid .. 'mass', phys:GetMass()))
+					phys:Sleep()
 				end
 			end
 		end,
