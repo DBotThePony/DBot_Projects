@@ -24,6 +24,7 @@ self.IsRestoring = false
 self.LastFrame = 0
 self.LastGC = 0
 self.CurrentFrame = {}
+self.DISABLED = false
 
 self.RestoreLastFrameCurTime = 0
 self.RestoreLastFrameRealTime = 0
@@ -212,9 +213,23 @@ function self.SysTimeDelta()
 end
 
 function self.OnThink()
+	if self.DISABLED then return end
+	
 	if self.LastGC < RealTime() then
 		self.rungc()
 		self.LastGC = RealTime() + 20
+	end
+	
+	if #self.Frames > 10000 then
+		print('FLASHBACK PANIC! Disabling DFlashBack')
+		print(debug.traceback())
+		self.Frames = {}
+		self.DISABLED = true
+		return
+	end
+	
+	if #self.Frames > 6000 then
+		self.rungc()
 	end
 	
 	if self.IsRecording then

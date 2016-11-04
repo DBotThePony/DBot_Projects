@@ -173,6 +173,7 @@ hook.Add('HUDPaint', 'DFlashback.HUDPaint', HUDPaint)
 
 -- Ugh
 net.Receive('DFlashback.SyncFrameAmount', function()
+	if self.DISABLED then return end
 	if not self.IsRecording and not self.IsRestoring then return end
 	local amount = net.ReadUInt(16)
 	
@@ -185,7 +186,10 @@ net.Receive('DFlashback.SyncFrameAmount', function()
 	end
 	
 	for i = 1, delta do
-		self.SkipCurrentFrame = true
+		if self.IsRecording then
+			self.SkipCurrentFrame = true
+		end
+		
 		self.OnThink()
 	end
 end)
