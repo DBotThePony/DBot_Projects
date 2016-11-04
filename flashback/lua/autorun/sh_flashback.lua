@@ -58,6 +58,14 @@ function self.Message(...)
 	MsgC('\n')
 end
 
+if not CPPI then
+	self.Message('/------------------------------------------------------\\')
+	self.Message('Warning: No CPPI Found. Without CPPI some features would not work.')
+	self.Message('To use all features install prop proection with CPPI support!')
+	self.Message('Try DPP (Mine PP), or FPP (loved by all PP)!')
+	self.Message('/------------------------------------------------------\\')
+end
+
 function self.rungc()
 	for i = 1, #self.Frames - 3000 do
 		self.Frames[i] = nil
@@ -139,6 +147,8 @@ function self.EndRestore()
 		net.Broadcast()
 		
 		timer.Stop('DFlashback.Commant.RecordTimer')
+	else
+		RunConsoleCommand('stopsound')
 	end
 	
 	hook.Run('FlashbackEndsRestore')

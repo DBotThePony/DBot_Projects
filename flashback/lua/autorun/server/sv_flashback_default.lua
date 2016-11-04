@@ -333,6 +333,15 @@ local Default = {
 					VALID_PROPS[GetPropID(ent)] = ent
 					VALID_PROPS_SOUNDS[ent.Flashback_PropID] = ent
 				end
+				
+				if IsValid(entry.owner) then
+					ent:CPPISetOwner(entry.owner)
+					
+					undo.Create('Prop')
+					undo.AddEntity(ent)
+					undo.SetPlayer(entry.owner)
+					undo.Finish()
+				end
 			end
 		end,
 	},
@@ -399,6 +408,10 @@ local function EntityRemoved(ent)
 	for i, val in ipairs(StasisFuncs) do
 		entry.stasis[i] = {ent[val[1]](ent)}
 	end
+	
+	if ent.CPPIGetOwner then
+		entry.owner = ent:CPPIGetOwner()
+	end
 end
 
 local function EntityEmitSound(soundData)
@@ -421,7 +434,7 @@ local function EntityEmitSound(soundData)
 end
 
 hook.Add('OnEntityCreated', 'DFlashback.Default.PropDelete', OnEntityCreated)
-hook.Add('EntityRemoved', 'DFlashback.Default.RestoreEntity', EntityRemoved)
+hook.Add('EntityRemoved', 'DFlashback.Default.RestoreEntity', EntityRemoved, -1)
 hook.Add('EntityEmitSound', 'DFlashback.Default.Sounds', EntityEmitSound)
 
 for k, v in pairs(Default) do
