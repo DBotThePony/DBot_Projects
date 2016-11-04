@@ -215,6 +215,11 @@ end
 function self.OnThink()
 	if self.DISABLED then return end
 	
+	if self.SkipCurrentFrame then
+		self.GetCurrentFrame()
+		self.SkipCurrentFrame = false
+	end
+	
 	if self.LastGC < RealTime() then
 		self.rungc()
 		self.LastGC = RealTime() + 20
@@ -237,8 +242,6 @@ function self.OnThink()
 	elseif self.IsRestoring then
 		self.RestoreFrame()
 	end
-	
-	self.SkipCurrentFrame = false
 	
 	if SERVER then
 		net.Start('DFlashback.SyncFrameAmount')
