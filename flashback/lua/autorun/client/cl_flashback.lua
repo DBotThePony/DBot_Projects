@@ -19,6 +19,8 @@ local IsFlashingBack = false
 local FrameCount = 0
 local IsRecording = false
 
+local CoverDelta = 0
+
 net.Receive('DFlashback.RecordStatusChanges', function()
 	IsRecording = net.ReadBool()
 end)
@@ -127,7 +129,18 @@ local function DrawIsReplaying()
 		
 		surface.DrawPoly(toDraw)
 	end
+	
+	local Start = CoverDelta
+	local End = ScrH() - CoverDelta
+	local Width = ScrW()
+	
+	for i = 1, 20 do
+		surface.SetDrawColor(255, 255, 255, math.random(3, 10))
+		surface.DrawRect(0, math.random(Start, End), Width, math.random(1, 3))
+	end
 end
+
+local LastDraw = 0
 
 local function HUDPaint()
 	if IsRecording then
@@ -136,7 +149,19 @@ local function HUDPaint()
 	
 	if IsFlashingBack then
 		DrawIsReplaying()
+		
+		CoverDelta = Lerp(CurTime() - LastDraw, CoverDelta, 100)
+	else
+		CoverDelta = Lerp(CurTime() - LastDraw, CoverDelta, 0)
 	end
+	
+	if CoverDelta > 1 then
+		surface.SetDrawColor(0, 0, 0, 255)
+		surface.DrawRect(0, 0, ScrW(), CoverDelta)
+		surface.DrawRect(0, ScrH() - CoverDelta, ScrW(), CoverDelta)
+	end
+	
+	LastDraw = CurTime()
 end
 
 hook.Add('HUDPaint', 'DFlashback.HUDPaint', HUDPaint)
