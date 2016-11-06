@@ -30,49 +30,9 @@ TOOL.ConfigName = nil
 
 TOOL.ClientConVar = {
 	step = 2,
-	mode = 1,
 }
-
---[[
-Modes:
-1 - Default. Recolor by order what props was selected.
-2 - Recolor by left to right (small X - large X)
-3 - Recolor by right to left (large X - small X)
-4 - Recolor by up to down (large Y - small Y)
-5 - Recolor by down to up (small Y - large Y)
-]]
 
 TOOL.ServerConVar = {}
-
-local Sorters = {
-	function(a, b)
-		return true
-	end,
-	
-	function(a, b)
-		return a:GetPos().x < b:GetPos().x
-	end,
-	
-	function(a, b)
-		return a:GetPos().x > b:GetPos().x
-	end,
-	
-	function(a, b)
-		return a:GetPos().y > b:GetPos().y
-	end,
-	
-	function(a, b)
-		return a:GetPos().y < b:GetPos().y
-	end,
-}
-
-local function SortTable(tab, mode)
-	if mode == 1 then
-		return tab
-	else
-		return table.Copy(table.sort(tab, Sorters[mode]))
-	end
-end
 
 if CLIENT then
 	local COLOR_R = CreateConVar('multicolour_select_r', '105', {FCVAR_ARCHIVE}, 'Prop Select visual color')
@@ -116,7 +76,7 @@ if CLIENT then
 		
 		table.remove(SelectTable, 0)
 		
-		for i, ent in ipairs(SortTable(SelectTable, MODE:GetInt())) do
+		for i, ent in ipairs(SelectTable) do
 			render.SetColorModulation(math.sin(i) * .5 + .5, math.sin(i + STEP:GetInt()) * .5 + .5, math.sin(i + STEP:GetInt() * 2) * .5 + .5)
 			ent:DrawModel()
 		end
