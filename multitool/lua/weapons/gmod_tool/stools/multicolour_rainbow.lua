@@ -17,6 +17,8 @@ limitations under the License.
 
 if SERVER then
 	util.AddNetworkString('MultiColor.RainbowSelect')
+	util.AddNetworkString('MultiColor.Clear')
+	util.AddNetworkString('MultiColor.Apply')
 end
 
 local SelectTable = {}
@@ -39,7 +41,6 @@ if CLIENT then
 	local COLOR_G = CreateConVar('multicolour_select_g', '205', {FCVAR_ARCHIVE}, 'Prop Select visual color')
 	local COLOR_B = CreateConVar('multicolour_select_b', '239', {FCVAR_ARCHIVE}, 'Prop Select visual color')
 	local STEP = CreateConVar('multicolour_rainbow_step', '2', {FCVAR_ARCHIVE}, 'Rainbow recolor step')
-	local MODE = CreateConVar('multicolour_rainbow_mode', '1', {FCVAR_ARCHIVE}, 'Rainbow recolor mode')
 
 	net.Receive('MultiColor.RainbowSelect', function()
 		local newEnt = net.ReadEntity()
@@ -52,6 +53,22 @@ if CLIENT then
 		end
 		
 		table.insert(SelectTable, newEnt)
+	end)
+	
+	net.Receive('MultiColor.Clear', function()
+		SelectTable = {}
+		
+		chat.AddText('Selection Cleared!')
+	end)
+	
+	net.Receive('MultiColor.Apply', function()
+		net.Start('MultiColor.Apply')
+		net.WriteTable(SelectTable)
+		net.SendToServer()
+		
+		SelectTable = {}
+		
+		chat.AddText('Selection is about to be Applied!')
 	end)
 	
 	hook.Add('PostDrawTranslucentRenderables', 'MultiColorDraw', function()
@@ -76,17 +93,46 @@ if CLIENT then
 		
 		table.remove(SelectTable, 0)
 		
+		local STEP = STEP:GetFloat()
+		
 		for i, ent in ipairs(SelectTable) do
-			render.SetColorModulation(math.sin(i) * .5 + .5, math.sin(i + STEP:GetInt()) * .5 + .5, math.sin(i + STEP:GetInt() * 2) * .5 + .5)
+			render.SetColorModulation(math.sin(i) * .5 + .5, math.sin(i + STEP) * .5 + .5, math.sin(i + STEP * 2) * .5 + .5)
 			ent:DrawModel()
 		end
 		
 		render.SetColorModulation(1, 1, 1)
 	end)
+else
+	net.Receive('MultiColor.Apply', function(len, ply)
+		local SelectTable = net.ReadTable()
+		
+		local STEP = tonumber(ply:GetInfo('multicolour_rainbow_step') or 2) or 2
+		
+		for i, ent in ipairs(SelectTable) do
+			if not IsValid(ent) then continue end
+			
+			if ent.CPPICanTool and not ent:CPPICanTool(ply, 'multicolour_rainbow') then continue end
+			ent:SetColor(math.sin(i) * .5 + .5, math.sin(i + STEP) * .5 + .5, math.sin(i + STEP * 2) * .5 + .5)
+		end
+	end)
+end
+
+function TOOL:Reload(tr)
+	if SERVER then
+		net.Start('MultiColor.Clear')
+		net.Send(self:GetOwner())
+	end
+	
+	return true
 end
 
 function TOOL:RightClick(tr)
-
+	if SERVER then
+		net.Start('MultiColor.Apply')
+		net.Send(self:GetOwner())
+	end
+	
+	return true
 end
 
 function TOOL:LeftClick(tr)
