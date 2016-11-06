@@ -220,12 +220,20 @@ local function Tick()
 	
 	for k, v in pairs(DHUD2.Vars) do
 		if not v.func then continue end
-		v.value = v.func(v.self, ply) or v.value
+		local newVal = v.func(v.self, ply)
+		
+		if newVal ~= nil then
+			v.value = newVal
+		end
 	end
 	
 	for k, v in pairs(DHUD2.EVars) do
 		if not v.func then continue end
-		v.value = v.func(v.self, ply, ent, isValid, isPlayer, dist)
+		local newVal = v.func(v.self, ply, ent, isValid, isPlayer, dist)
+		
+		if newVal ~= nil then
+			v.value = newVal
+		end
 	end
 	
 	for k, v in pairs(DHUD2.VarHooks) do

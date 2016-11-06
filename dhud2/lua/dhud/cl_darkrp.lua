@@ -21,6 +21,21 @@ local Var = DHUD2.GetVar
 local HungerExists = false
 
 local Register = {
+	havelicense = {
+		def = false,
+		func = function(self, ply)
+			return ply:getDarkRPVar('HasGunlicense')
+		end,
+	},
+	
+	iswanted = {
+		def = false,
+		func = function(self, ply)
+			if not ply.isWanted then return false end
+			return ply:isWanted() or false
+		end,
+	},
+	
 	money = {
 		def = 0,
 		func = function(self, ply)
@@ -96,6 +111,24 @@ function DHUD2.DrawDarkRP()
 		DHUD2.DrawBox(x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), 100, 5, DHUD2.GetColor('empty_bar'))
 		DHUD2.DrawBox(x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), hunger, 5, DHUD2.GetColor('hungerbar'))
 	end
+	
+	local haveLicense = Var('havelicense')
+	local iswanted = Var('iswanted')
+	
+	x, y = DHUD2.GetPosition('default')
+	
+	local toDraw = {}
+	
+	if haveLicense then
+		table.insert(toDraw, 'Have gun license')
+	end
+	
+	if iswanted then
+		table.insert(toDraw, 'Wanted')
+	end
+	
+	surface.SetTextPos(x - DHUD2.DEFAULT_WIDTH / 2 + 20, y + 35)
+	surface.DrawText(table.concat(toDraw, ', '))
 end
 
 for k, v in pairs(Register) do
