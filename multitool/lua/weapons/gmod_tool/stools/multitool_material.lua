@@ -316,6 +316,7 @@ else
 		for i, ent in ipairs(SelectTable) do
 			if not CanUse(ply, ent) then continue end
 			ent:SetMaterial(mat)
+			duplicator.StoreEntityModifier(ent, 'material', {MaterialOverride = mat})
 		end
 	end)
 	
@@ -325,6 +326,7 @@ else
 		for i, ent in ipairs(SelectTable) do
 			if not CanUse(ply, ent) then continue end
 			ent:SetMaterial('')
+			duplicator.StoreEntityModifier(ent, 'material', {MaterialOverride = ''})
 		end
 	end)
 end
