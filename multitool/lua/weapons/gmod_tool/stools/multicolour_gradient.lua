@@ -15,19 +15,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
-local CURRENT_TOOL_MODE = 'multicolour_rainbow'
+local CURRENT_TOOL_MODE = 'multicolour_gradient'
 
 local HALP = 'Controls:\nLeft Click - select-unselect\nRight Click - apply\nReload - clear selection\nReload + USE - clear colors or selected entities and unselect them.\nLeft Click + USE - auto-select'
 
 if SERVER then
-	util.AddNetworkString('MultiColorRainbow.Select')
-	util.AddNetworkString('MultiColorRainbow.MultiSelect')
-	util.AddNetworkString('MultiColorRainbow.Clear')
-	util.AddNetworkString('MultiColorRainbow.ClearColors')
-	util.AddNetworkString('MultiColorRainbow.Apply')
+	util.AddNetworkString(CURRENT_TOOL_MODE .. '.Select')
+	util.AddNetworkString(CURRENT_TOOL_MODE .. '.MultiSelect')
+	util.AddNetworkString(CURRENT_TOOL_MODE .. '.Clear')
+	util.AddNetworkString(CURRENT_TOOL_MODE .. '.ClearColors')
+	util.AddNetworkString(CURRENT_TOOL_MODE .. '.Apply')
 else
-	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.name', 'Multi-Color Rainbow Mode')
-	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.desc', 'RAINBOWS MAKE ME CRY!')
+	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.name', 'Multi-Color Gradient Mode')
+	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.desc', 'COLORS MAKE ME CRY!')
 	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.0', '')
 	
 	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.left', 'Left Click - select-unselect')
@@ -47,7 +47,7 @@ TOOL.Information = {
 
 local SelectTable = {}
 
-TOOL.Name = 'Multi-Color - Rainbow'
+TOOL.Name = 'Multi-Color - Gradient'
 TOOL.Category = 'Multitool'
 
 TOOL.AddToMenu = true
@@ -55,8 +55,16 @@ TOOL.Command = nil
 TOOL.ConfigName = nil
 
 TOOL.ClientConVar = {
-	step = 2,
-	step_mult = 0.6,
+	first_red = 0,
+	first_green = 255,
+	first_blue = 255,
+	first_alpha = 255,
+	
+	last_red = 200,
+	last_green = 0,
+	last_blue = 255,
+	last_alpha = 255,
+	
 	select_mode = 0,
 	select_colored = 0,
 	select_sort = 2,
@@ -99,8 +107,6 @@ function RebuildPanel(Panel)
 	Lab:SetDark(true)
 	Panel:AddItem(Lab)
 	
-	Panel:NumSlider('Step of rainbow', CURRENT_TOOL_MODE .. '_step', 0, 4, 2)
-	Panel:NumSlider('Multiplier of rainbow', CURRENT_TOOL_MODE .. '_step_mult', 0, 4, 2)
 	Panel:NumSlider('Auto Select Range', CURRENT_TOOL_MODE .. '_select_range', 1, 1024, 0)
 	
 	local Lab = Label('Auto-select settings')
@@ -224,7 +230,7 @@ function TOOL:DrawHUD()
 	if #SelectTable == 0 then return end
 	
 	surface.SetTextColor(200, 50, 50)
-	surface.SetFont('MultiColorRainbow.ScreenHeader')
+	surface.SetFont('MultiColorGradient.ScreenHeader')
 	
 	local w = surface.GetTextSize('Unsaved changes')
 	
@@ -233,16 +239,19 @@ function TOOL:DrawHUD()
 end
 
 if CLIENT then
-	local STEP = CreateConVar('multicolour_rainbow_step', '2', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'Rainbow recolor step')
-	local MULTIP = CreateConVar('multicolour_rainbow_step_mult', '1', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'Rainbow recolor multiplier')
-
-	surface.CreateFont('MultiColorRainbow.ScreenHeader', {
+	local CVars = {}
+	
+	for k, v in pairs(TOOL.ClientConVar) do
+		CVars[k] = CreateConVar(CURRENT_TOOL_MODE .. '_' .. k, tostring(v), {FCVAR_ARCHIVE, FCVAR_USERINFO}, '')
+	end
+	
+	surface.CreateFont('MultiColorGradient.ScreenHeader', {
 		font = 'Roboto',
 		size = 48,
 		weight = 800,
 	})
 	
-	net.Receive('MultiColorRainbow.Select', function()
+	net.Receive(CURRENT_TOOL_MODE .. '.Select', function()
 		local newEnt = net.ReadEntity()
 		
 		for k, v in ipairs(SelectTable) do
@@ -258,7 +267,7 @@ if CLIENT then
 		RebuildListFunc()
 	end)
 	
-	net.Receive('MultiColorRainbow.Clear', function()
+	net.Receive(CURRENT_TOOL_MODE .. '.Clear', function()
 		SelectTable = {}
 		
 		chat.AddText('Selection Cleared!')
@@ -266,8 +275,8 @@ if CLIENT then
 		RebuildListFunc()
 	end)
 	
-	net.Receive('MultiColorRainbow.Apply', function()
-		net.Start('MultiColorRainbow.Apply')
+	net.Receive(CURRENT_TOOL_MODE .. '.Apply', function()
+		net.Start(CURRENT_TOOL_MODE .. '.Apply')
 		net.WriteTable(SelectTable)
 		net.SendToServer()
 		
@@ -278,8 +287,8 @@ if CLIENT then
 		RebuildListFunc()
 	end)
 	
-	net.Receive('MultiColorRainbow.ClearColors', function()
-		net.Start('MultiColorRainbow.ClearColors')
+	net.Receive(CURRENT_TOOL_MODE .. '.ClearColors', function()
+		net.Start('MultiColorGradient.ClearColors')
 		net.WriteTable(SelectTable)
 		net.SendToServer()
 		
@@ -290,7 +299,7 @@ if CLIENT then
 		RebuildListFunc()
 	end)
 	
-	net.Receive('MultiColorRainbow.MultiSelect', function()
+	net.Receive(CURRENT_TOOL_MODE .. '.MultiSelect', function()
 		local count = net.ReadUInt(12)
 		local read = {}
 		
@@ -323,38 +332,77 @@ if CLIENT then
 		chat.AddText('Auto-Selected ' .. count .. ' entities')
 	end)
 	
-	hook.Add('PostDrawWorldToolgun', 'MultiColorDraw', function(ply, weapon, mode)
-		if mode ~= 'multicolour_rainbow' then return end
+	hook.Add('PostDrawWorldToolgun', CURRENT_TOOL_MODE, function(ply, weapon, mode)
+		if mode ~= CURRENT_TOOL_MODE then return end
 		
 		ClearSelectedItems()
 		
-		local STEP = STEP:GetFloat()
-		local MULTIP = MULTIP:GetFloat()
+		local max = #SelectTable
+		
+		local first_red = CVars.first_red:GetInt()
+		local first_green = CVars.first_green:GetInt()
+		local first_blue = CVars.first_blue:GetInt()
+		local first_alpha = CVars.first_alpha:GetInt()
+		
+		local last_red = CVars.last_red:GetInt()
+		local last_green = CVars.last_green:GetInt()
+		local last_blue = CVars.last_blue:GetInt()
+		local last_alpha = CVars.last_alpha:GetInt()
+		
+		local delta_red = last_red - first_red
+		local delta_green = last_green - first_green
+		local delta_blue = last_blue - first_blue
+		local delta_alpha = last_alpha - first_alpha
 		
 		for i, ent in ipairs(SelectTable) do
-			render.SetColorModulation(math.sin(i * MULTIP) * .5 + .5, math.sin((i + STEP) * MULTIP) * .5 + .5, math.sin((i + STEP * 2) * MULTIP) * .5 + .5)
+			local red = first_red + delta_red * (i / max)
+			local green = first_green + delta_green * (i / max)
+			local blue = first_blue + delta_blue * (i / max)
+			local alpha = first_alpha + delta_alpha * (i / max)
+			
+			render.SetColorModulation(red / 255, green / 255, blue / 255, alpha / 255)
 			ent:DrawModel()
 		end
 		
 		render.SetColorModulation(1, 1, 1)
 	end)
 else
-	net.Receive('MultiColorRainbow.Apply', function(len, ply)
+	net.Receive(CURRENT_TOOL_MODE .. '.Apply', function(len, ply)
 		local SelectTable = net.ReadTable()
 		
-		local STEP = tonumber(ply:GetInfo('multicolour_rainbow_step')) or 2
-		local MULTIP = tonumber(ply:GetInfo('multicolour_rainbow_step_mult')) or 1
+		local max = #SelectTable
+		
+		local first_red = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_first_red')) or 0
+		local first_green = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_first_green')) or 0
+		local first_blue = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_first_blue')) or 0
+		local first_alpha = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_first_alpha')) or 0
+		
+		local last_red = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_last_red')) or 0
+		local last_green = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_last_green')) or 0
+		local last_blue = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_last_blue')) or 0
+		local last_alpha = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_last_alpha')) or 0
+		
+		local delta_red = last_red - first_red
+		local delta_green = last_green - first_green
+		local delta_blue = last_blue - first_blue
+		local delta_alpha = last_alpha - first_alpha
 		
 		for i, ent in ipairs(SelectTable) do
 			if not IsValid(ent) then continue end
 			
 			if not CanUse(ply, ent) then continue end
-			local new = Color(math.sin(i * MULTIP) * 127 + 128, math.sin((i + STEP) * MULTIP) * 127 + 128, math.sin((i + STEP * 2) * MULTIP) * 127 + 128)
+			
+			local red = first_red + delta_red * (i / max)
+			local green = first_green + delta_green * (i / max)
+			local blue = first_blue + delta_blue * (i / max)
+			local alpha = first_alpha + delta_alpha * (i / max)
+			
+			local new = Color(red, green, blue, alpha)
 			ent:SetColor(new)
 		end
 	end)
 	
-	net.Receive('MultiColorRainbow.ClearColors', function(len, ply)
+	net.Receive(CURRENT_TOOL_MODE .. '.ClearColors', function(len, ply)
 		local SelectTable = net.ReadTable()
 		
 		for i, ent in ipairs(SelectTable) do
@@ -367,10 +415,10 @@ end
 function TOOL:Reload(tr)
 	if SERVER then
 		if not self:GetOwner():KeyDown(IN_USE) then
-			net.Start('MultiColorRainbow.Clear')
+			net.Start(CURRENT_TOOL_MODE .. '.Clear')
 			net.Send(self:GetOwner())
 		else
-			net.Start('MultiColorRainbow.ClearColors')
+			net.Start(CURRENT_TOOL_MODE .. '.ClearColors')
 			net.Send(self:GetOwner())
 		end
 	end
@@ -380,7 +428,7 @@ end
 
 function TOOL:RightClick(tr)
 	if SERVER then
-		net.Start('MultiColorRainbow.Apply')
+		net.Start(CURRENT_TOOL_MODE .. '.Apply')
 		net.Send(self:GetOwner())
 	end
 	
@@ -401,7 +449,7 @@ function TOOL:LeftClick(tr)
 		end
 		
 		if not ply:KeyDown(IN_USE) then
-			net.Start('MultiColorRainbow.Select')
+			net.Start(CURRENT_TOOL_MODE .. '.Select')
 			net.WriteEntity(ent)
 			net.Send(self:GetOwner())
 		else
@@ -438,7 +486,7 @@ function TOOL:LeftClick(tr)
 			
 			MultiTool_Sort(smode, tr.HitPos, new)
 			
-			net.Start('MultiColorRainbow.MultiSelect')
+			net.Start(CURRENT_TOOL_MODE .. '.MultiSelect')
 			net.WriteUInt(#new, 12)
 			
 			for i = 1, #new do
