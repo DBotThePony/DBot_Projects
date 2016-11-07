@@ -15,26 +15,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
-local CURRENT_TOOL_MODE = 'multicolour_gradient'
+local CURRENT_TOOL_MODE = 'multitool_parent'
 
-local HALP = 'Controls:\nLeft Click - select-unselect\nRight Click - apply\nReload - clear selection\nReload + USE - clear colors or selected entities and unselect them.\nLeft Click + USE - auto-select'
+local HALP = 'Controls:\nLeft Click - select-unselect\nRight Click - apply\nReload - clear selection\nReload + USE - clear parents and unselect them.\nLeft Click + USE - auto-select'
 
 if SERVER then
 	util.AddNetworkString(CURRENT_TOOL_MODE .. '.Select')
 	util.AddNetworkString(CURRENT_TOOL_MODE .. '.MultiSelect')
 	util.AddNetworkString(CURRENT_TOOL_MODE .. '.Clear')
-	util.AddNetworkString(CURRENT_TOOL_MODE .. '.ClearColors')
+	util.AddNetworkString(CURRENT_TOOL_MODE .. '.MultiClear')
 	util.AddNetworkString(CURRENT_TOOL_MODE .. '.Apply')
+	util.AddNetworkString(CURRENT_TOOL_MODE .. '.reload_shift')
 else
-	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.name', 'Multi-Color Gradient Mode')
-	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.desc', 'COLORS MAKE ME CRY!')
+	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.name', 'Multi-Parent or Unparent')
+	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.desc', 'Sets Source Engine parents of entities')
 	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.0', '')
 	
 	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.left', 'Left Click - select-unselect')
 	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.left_use', 'USE + Left Click - auto-select')
 	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.right', 'Right Click - apply')
 	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.reload', 'Reload - clear selection')
-	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.reload_use', 'USE + Reload - clear colors or selected entities and unselect them')
+	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.reload_use', 'USE + Reload - clear parents and unselect them')
+	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.reload_shift', 'SHIFT + Reload - unparent all childs')
 end
 
 TOOL.Information = {
@@ -43,11 +45,12 @@ TOOL.Information = {
 	{name = 'left_use'},
 	{name = 'reload'},
 	{name = 'reload_use'},
+	{name = 'reload_shift'},
 }
 
 local SelectTable = {}
 
-TOOL.Name = 'Multi-Color - Gradient'
+TOOL.Name = 'Multi-Parent or Unparent'
 TOOL.Category = 'Multitool'
 
 TOOL.AddToMenu = true
@@ -55,19 +58,12 @@ TOOL.Command = nil
 TOOL.ConfigName = nil
 
 TOOL.ClientConVar = {
-	first_red = 0,
-	first_green = 255,
-	first_blue = 255,
-	first_alpha = 255,
+	select_red = 0,
+	select_green = 255,
+	select_blue = 255,
 	
-	last_red = 200,
-	last_green = 0,
-	last_blue = 255,
-	last_alpha = 255,
-	
-	select_mode = 0,
 	select_by_model = 0,
-	select_colored = 0,
+	select_mode = 0,
 	select_sort = 2,
 	select_range = 512,
 }
@@ -76,7 +72,6 @@ TOOL.ServerConVar = {}
 
 local PANEL
 local RebuildPanel
-local RebuildListFunc = function() end
 
 local function ClearSelectedItems()
 	local toRemove = {}
@@ -117,110 +112,31 @@ function RebuildPanel(Panel)
 	Panel:AddItem(Lab)
 	
 	Panel:NumSlider('Auto Select Range', CURRENT_TOOL_MODE .. '_select_range', 1, 1024, 0)
-	
-	Panel:CheckBox('False - Sphere, True - Box', CURRENT_TOOL_MODE .. '_select_mode')
-	Panel:CheckBox('False - select non-colored, True - select all', CURRENT_TOOL_MODE .. '_select_colored')
 	Panel:CheckBox('Auto Select by Model', CURRENT_TOOL_MODE .. '_select_by_model')
-	
-	local Lab = Label('Auto-Selecting an colored entity will\nwhen "Select Colored" is false will\nselect all colored entities instead')
-	Lab:SizeToContents()
-	Lab:SetDark(true)
-	Panel:AddItem(Lab)
+	Panel:CheckBox('False - Sphere, True - Box', CURRENT_TOOL_MODE .. '_select_mode')
 	
 	local combo = Panel:ComboBox('Select Sort Mode', CURRENT_TOOL_MODE .. '_select_sort')
 	
 	MultiTool_AddSorterChoices(combo)
 	
-	local newPnl = vgui.Create('EditablePanel', Panel)
+	local Lab = Label('Select color')
+	Lab:SetDark(true)
+	Panel:AddItem(Lab)
 	
-	newPnl:SetHeight(500)
-	Panel:AddItem(newPnl)
-	
-	local List = newPnl:Add('DListView')
-	List:Dock(TOP)
-	List:SetHeight(475)
-	List:AddColumn('ID')
-	List:AddColumn('Entity')
-	
-	local function Rebuild()
-		ClearSelectedItems()
-		List:Clear()
-		
-		for i, ent in ipairs(SelectTable) do
-			List:AddLine(tostring(i), tostring(ent))
-		end
-	end
-	
-	RebuildListFunc = Rebuild
-	Rebuild()
-	
-	local MoveUp = newPnl:Add('DButton')
-	local Unselect = newPnl:Add('DButton')
-	local MoveDown = newPnl:Add('DButton')
-	
-	MoveUp:SetText('Move Up')
-	Unselect:SetText('Unselect')
-	MoveDown:SetText('Move Down')
-	
-	function MoveUp:DoClick()
-		local selected = List:GetLine(List:GetSelectedLine())
-		
-		if not IsValid(selected) then return end
-		
-		local i = tonumber(selected:GetValue(1))
-		if i < 2 then return end
-		
-		local firstVal, lastVal = SelectTable[i - 1], SelectTable[i]
-		
-		SelectTable[i] = firstVal
-		SelectTable[i - 1] = lastVal
-		
-		Rebuild()
-		
-		List:SelectItem(List:GetLine(i - 1))
-	end
-	
-	function MoveDown:DoClick()
-		local selected = List:GetLine(List:GetSelectedLine())
-		
-		if not IsValid(selected) then return end
-		
-		local i = tonumber(selected:GetValue(1))
-		if i == #SelectTable then return end
-		
-		local firstVal, lastVal = SelectTable[i + 1], SelectTable[i]
-		
-		SelectTable[i] = firstVal
-		SelectTable[i + 1] = lastVal
-		
-		Rebuild()
-		
-		List:SelectItem(List:GetLine(i + 1))
-	end
-	
-	function Unselect:DoClick()
-		local selected = List:GetLine(List:GetSelectedLine())
-		
-		if not IsValid(selected) then return end
-		
-		local i = tonumber(selected:GetValue(1))
-		table.remove(SelectTable, i)
-		Rebuild()
-		
-		if #SelectTable ~= 0 then
-			List:SelectItem(List:GetLine(i))
-		end
-	end
-	
-	MoveUp:Dock(LEFT)
-	Unselect:Dock(LEFT)
-	MoveDown:Dock(LEFT)
+	local mixer = vgui.Create('DColorMixer', Panel)
+	Panel:AddItem(mixer)
+	mixer:SetConVarR(CURRENT_TOOL_MODE .. '_select_red')
+	mixer:SetConVarG(CURRENT_TOOL_MODE .. '_select_green')
+	mixer:SetConVarB(CURRENT_TOOL_MODE .. '_select_blue')
+	mixer:SetAlphaBar(false)
 end
 
 local function CanUse(ply, ent)
 	if not IsValid(ent) then return false end
 	if ent:IsPlayer() then return false end
 	if ent:IsWeapon() then return false end
+	if ent:IsVehicle() then return false end
+	if ent:IsNPC() then return false end
 	if ent.CPPICanTool and not ent:CPPICanTool(ply, CURRENT_TOOL_MODE) then return false end
 	if ent:GetSolid() == SOLID_NONE then return false end
 	if IsValid(ent:GetOwner()) then return false end
@@ -232,7 +148,7 @@ function TOOL:DrawHUD()
 	if #SelectTable == 0 then return end
 	
 	surface.SetTextColor(200, 50, 50)
-	surface.SetFont('MultiColorGradient.ScreenHeader')
+	surface.SetFont('MultiTool.ScreenHeader')
 	
 	local w = surface.GetTextSize('Unsaved changes')
 	
@@ -247,58 +163,41 @@ if CLIENT then
 		CVars[k] = CreateConVar(CURRENT_TOOL_MODE .. '_' .. k, tostring(v), {FCVAR_ARCHIVE, FCVAR_USERINFO}, '')
 	end
 	
-	surface.CreateFont('MultiColorGradient.ScreenHeader', {
-		font = 'Roboto',
-		size = 48,
-		weight = 800,
-	})
-	
 	net.Receive(CURRENT_TOOL_MODE .. '.Select', function()
 		local newEnt = net.ReadEntity()
 		
 		for k, v in ipairs(SelectTable) do
 			if v == newEnt then
 				table.remove(SelectTable, k)
-				RebuildListFunc()
 				return
 			end
 		end
 		
 		table.insert(SelectTable, newEnt)
-		
-		RebuildListFunc()
 	end)
 	
 	net.Receive(CURRENT_TOOL_MODE .. '.Clear', function()
 		SelectTable = {}
-		
 		chat.AddText('Selection Cleared!')
-		
-		RebuildListFunc()
 	end)
 	
 	net.Receive(CURRENT_TOOL_MODE .. '.Apply', function()
 		net.Start(CURRENT_TOOL_MODE .. '.Apply')
 		net.WriteTable(SelectTable)
+		net.WriteEntity(net.ReadEntity())
 		net.SendToServer()
 		
 		SelectTable = {}
-		
 		chat.AddText('Selection is about to be Applied!')
-		
-		RebuildListFunc()
 	end)
 	
-	net.Receive(CURRENT_TOOL_MODE .. '.ClearColors', function()
-		net.Start(CURRENT_TOOL_MODE .. '.ClearColors')
+	net.Receive(CURRENT_TOOL_MODE .. '.MultiClear', function()
+		net.Start(CURRENT_TOOL_MODE .. '.MultiClear')
 		net.WriteTable(SelectTable)
 		net.SendToServer()
 		
 		SelectTable = {}
-		
-		chat.AddText('Clearing colors and select table')
-		
-		RebuildListFunc()
+		chat.AddText('Clearing all no-collide constraints and select table')
 	end)
 	
 	net.Receive(CURRENT_TOOL_MODE .. '.MultiSelect', function()
@@ -329,8 +228,6 @@ if CLIENT then
 			end
 		end
 		
-		RebuildListFunc()
-		
 		chat.AddText('Auto-Selected ' .. count .. ' entities')
 	end)
 	
@@ -339,88 +236,68 @@ if CLIENT then
 		
 		ClearSelectedItems()
 		
-		local max = #SelectTable
-		
-		local first_red = CVars.first_red:GetInt()
-		local first_green = CVars.first_green:GetInt()
-		local first_blue = CVars.first_blue:GetInt()
-		local first_alpha = CVars.first_alpha:GetInt()
-		
-		local last_red = CVars.last_red:GetInt()
-		local last_green = CVars.last_green:GetInt()
-		local last_blue = CVars.last_blue:GetInt()
-		local last_alpha = CVars.last_alpha:GetInt()
-		
-		local delta_red = last_red - first_red
-		local delta_green = last_green - first_green
-		local delta_blue = last_blue - first_blue
-		local delta_alpha = last_alpha - first_alpha
+		local select_red = CVars.select_red:GetInt() / 255
+		local select_green = CVars.select_green:GetInt() / 255
+		local select_blue = CVars.select_blue:GetInt() / 255
 		
 		for i, ent in ipairs(SelectTable) do
-			local red = first_red + delta_red * (i / max)
-			local green = first_green + delta_green * (i / max)
-			local blue = first_blue + delta_blue * (i / max)
-			local alpha = first_alpha + delta_alpha * (i / max)
-			
-			render.SetColorModulation(red / 255, green / 255, blue / 255, alpha / 255)
+			render.SetColorModulation(select_red, select_green, select_blue) -- Make sure that nothing we rendered reseted our color!
 			ent:DrawModel()
 		end
 		
 		render.SetColorModulation(1, 1, 1)
 	end)
+	
+	language.Add('Undo_NoCollideMulti', 'Undone Multi No-Collide')
 else
 	net.Receive(CURRENT_TOOL_MODE .. '.Apply', function(len, ply)
 		local SelectTable = net.ReadTable()
+		local parentTo = net.ReadEntity()
 		
-		local max = #SelectTable
-		
-		local first_red = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_first_red')) or 0
-		local first_green = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_first_green')) or 0
-		local first_blue = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_first_blue')) or 0
-		local first_alpha = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_first_alpha')) or 0
-		
-		local last_red = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_last_red')) or 0
-		local last_green = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_last_green')) or 0
-		local last_blue = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_last_blue')) or 0
-		local last_alpha = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_last_alpha')) or 0
-		
-		local delta_red = last_red - first_red
-		local delta_green = last_green - first_green
-		local delta_blue = last_blue - first_blue
-		local delta_alpha = last_alpha - first_alpha
+		if not IsValid(parentTo) then return end
 		
 		for i, ent in ipairs(SelectTable) do
-			if not IsValid(ent) then continue end
-			
-			if not CanUse(ply, ent) then continue end
-			
-			local red = first_red + delta_red * (i / max)
-			local green = first_green + delta_green * (i / max)
-			local blue = first_blue + delta_blue * (i / max)
-			local alpha = first_alpha + delta_alpha * (i / max)
-			
-			local new = Color(red, green, blue, alpha)
-			ent:SetColor(new)
+			if ent ~= parentTo and CanUse(ply, ent) then
+				ent:SetParent(parentTo)
+			end
 		end
 	end)
 	
-	net.Receive(CURRENT_TOOL_MODE .. '.ClearColors', function(len, ply)
+	net.Receive(CURRENT_TOOL_MODE .. '.MultiClear', function(len, ply)
 		local SelectTable = net.ReadTable()
 		
 		for i, ent in ipairs(SelectTable) do
 			if not CanUse(ply, ent) then continue end
-			ent:SetColor(color_white)
+			ent:SetParent(NULL)
 		end
 	end)
 end
 
 function TOOL:Reload(tr)
+	local ply = self:GetOwner()
+	
+	if ply:KeyDown(IN_SPEED) then
+		if not CanUse(ply, tr.Entity) then return false end
+		
+		if SERVER then
+			local get = tr.Entity:GetChildren()
+			
+			for k, ent in pairs(get) do
+				ent:SetParent(NULL)
+			end
+			
+			ply:ChatPrint('All children unparented')
+		end
+		
+		return true
+	end
+	
 	if SERVER then
 		if not self:GetOwner():KeyDown(IN_USE) then
 			net.Start(CURRENT_TOOL_MODE .. '.Clear')
 			net.Send(self:GetOwner())
 		else
-			net.Start(CURRENT_TOOL_MODE .. '.ClearColors')
+			net.Start(CURRENT_TOOL_MODE .. '.MultiClear')
 			net.Send(self:GetOwner())
 		end
 	end
@@ -429,8 +306,14 @@ function TOOL:Reload(tr)
 end
 
 function TOOL:RightClick(tr)
+	if not IsValid(tr.Entity) then return false end
+	if tr.Entity:IsPlayer() then return false end
+	if tr.Entity:IsVehicle() then return false end
+	if tr.Entity:IsNPC() then return false end
+	
 	if SERVER then
 		net.Start(CURRENT_TOOL_MODE .. '.Apply')
+		net.WriteEntity(tr.Entity)
 		net.Send(self:GetOwner())
 	end
 	
@@ -443,13 +326,6 @@ function TOOL:LeftClick(tr)
 	if not ply:KeyDown(IN_USE) and not CanUse(ply, ent) then return end
 	
 	if SERVER then
-		local hitEntityHaveColor = false
-		
-		if IsValid(ent) then
-			local col = ent:GetColor()
-			hitEntityHaveColor = col.r ~= 255 or col.g ~= 255 or col.b ~= 255
-		end
-		
 		if not ply:KeyDown(IN_USE) then
 			net.Start(CURRENT_TOOL_MODE .. '.Select')
 			net.WriteEntity(ent)
@@ -464,7 +340,6 @@ function TOOL:LeftClick(tr)
 			end
 			
 			local mode = ply:GetInfo(CURRENT_TOOL_MODE .. '_select_mode') == '1'
-			local select_colored = ply:GetInfo(CURRENT_TOOL_MODE .. '_select_colored') == '1'
 			local smode = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_select_sort')) or 1
 			local dist = math.Clamp(tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_select_range')) or 512, 1, 1024)
 			local Find
@@ -479,17 +354,6 @@ function TOOL:LeftClick(tr)
 			
 			for i, ent in ipairs(Find) do
 				if not CanUse(ply, ent) then continue end
-				if not select_colored then
-					local col = ent:GetColor()
-					
-					local status = col.r ~= 255 or col.g ~= 255 or col.b ~= 255
-					
-					if hitEntityHaveColor then
-						status = not status
-					end
-					
-					if status then continue end
-				end
 				
 				if select_by_model then
 					if ent:GetModel() ~= MDL then continue end

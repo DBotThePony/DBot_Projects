@@ -132,4 +132,10 @@ end
 
 if CLIENT then
 	hook.Add('PostDrawTranslucentRenderables', 'MultiToolHelpers', PostDrawTranslucentRenderables)
+	
+	surface.CreateFont('MultiTool.ScreenHeader', {
+		font = 'Roboto',
+		size = 48,
+		weight = 800,
+	})
 end

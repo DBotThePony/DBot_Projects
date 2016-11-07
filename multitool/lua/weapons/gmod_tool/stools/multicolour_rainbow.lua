@@ -58,6 +58,7 @@ TOOL.ClientConVar = {
 	step = 2,
 	step_mult = 0.6,
 	select_mode = 0,
+	select_by_model = 0,
 	select_colored = 0,
 	select_sort = 2,
 	select_range = 512,
@@ -101,7 +102,6 @@ function RebuildPanel(Panel)
 	
 	Panel:NumSlider('Step of rainbow', CURRENT_TOOL_MODE .. '_step', 0, 4, 2)
 	Panel:NumSlider('Multiplier of rainbow', CURRENT_TOOL_MODE .. '_step_mult', 0, 4, 2)
-	Panel:NumSlider('Auto Select Range', CURRENT_TOOL_MODE .. '_select_range', 1, 1024, 0)
 	
 	local Lab = Label('Auto-select settings')
 	Lab:SetDark(true)
@@ -111,8 +111,11 @@ function RebuildPanel(Panel)
 	Lab:SetDark(true)
 	Panel:AddItem(Lab)
 	
+	Panel:NumSlider('Auto Select Range', CURRENT_TOOL_MODE .. '_select_range', 1, 1024, 0)
+	
 	Panel:CheckBox('False - Sphere, True - Box', CURRENT_TOOL_MODE .. '_select_mode')
 	Panel:CheckBox('False - select non-colored, True - select all', CURRENT_TOOL_MODE .. '_select_colored')
+	Panel:CheckBox('Auto Select by Model', CURRENT_TOOL_MODE .. '_select_by_model')
 	
 	local Lab = Label('Auto-Selecting an colored entity will\nwhen "Select Colored" is false will\nselect all colored entities instead')
 	Lab:SizeToContents()
@@ -405,6 +408,14 @@ function TOOL:LeftClick(tr)
 			net.WriteEntity(ent)
 			net.Send(self:GetOwner())
 		else
+			local select_by_model = false
+			local MDL
+			
+			if IsValid(ent) then
+				select_by_model = ply:GetInfo(CURRENT_TOOL_MODE .. '_select_by_model') == '1'
+				MDL = ent:GetModel()
+			end
+			
 			local mode = ply:GetInfo(CURRENT_TOOL_MODE .. '_select_mode') == '1'
 			local select_colored = ply:GetInfo(CURRENT_TOOL_MODE .. '_select_colored') == '1'
 			local smode = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_select_sort')) or 1
@@ -431,6 +442,10 @@ function TOOL:LeftClick(tr)
 					end
 					
 					if status then continue end
+				end
+				
+				if select_by_model then
+					if ent:GetModel() ~= MDL then continue end
 				end
 				
 				table.insert(new, ent)
