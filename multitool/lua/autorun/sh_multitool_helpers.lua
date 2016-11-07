@@ -120,7 +120,18 @@ function MultiTool_AddSorterChoices(pnl)
 	pnl:AddChoice('Select X+y - x+Y', '11')
 end
 
+local function PreRender()
+	if not LocalPlayer():IsValid() then return end
+	local wep = LocalPlayer():GetActiveWeapon()
+	if not wep:IsValid() then return end
+	
+	if wep:GetClass() ~= 'gmod_tool' then return end
+	
+	pcall(hook.Run, 'PreDrawAnythingToolgun', LocalPlayer(), wep, wep:GetMode())
+end
+
 local function PostDrawTranslucentRenderables(a, b)
+	if a or b then return end
 	if not LocalPlayer():IsValid() then return end
 	local wep = LocalPlayer():GetActiveWeapon()
 	if not wep:IsValid() then return end
@@ -130,8 +141,21 @@ local function PostDrawTranslucentRenderables(a, b)
 	hook.Run('PostDrawWorldToolgun', LocalPlayer(), wep, wep:GetMode())
 end
 
+local function PreDrawOpaqueRenderables(a, b)
+	if a or b then return end
+	if not LocalPlayer():IsValid() then return end
+	local wep = LocalPlayer():GetActiveWeapon()
+	if not wep:IsValid() then return end
+	
+	if wep:GetClass() ~= 'gmod_tool' then return end
+	
+	hook.Run('PreDrawWorldToolgun', LocalPlayer(), wep, wep:GetMode())
+end
+
 if CLIENT then
 	hook.Add('PostDrawTranslucentRenderables', 'MultiToolHelpers', PostDrawTranslucentRenderables)
+	hook.Add('PreDrawOpaqueRenderables', 'MultiToolHelpers', PreDrawOpaqueRenderables)
+	hook.Add('PreRender', 'MultiToolHelpers', PreRender)
 	
 	surface.CreateFont('MultiTool.ScreenHeader', {
 		font = 'Roboto',
