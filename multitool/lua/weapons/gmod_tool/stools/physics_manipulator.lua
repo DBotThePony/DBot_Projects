@@ -15,6 +15,27 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
+TOOL.Name = 'Physics Manipulator'
+TOOL.Category = 'Construction'
+
+TOOL.Information = {
+	{name = 'left'},
+	{name = 'left_use'},
+	{name = 'right'},
+	{name = 'right_use'},
+	{name = 'reload'},
+}
+
+function TOOL.BuildCPanel(Panel)
+	if not IsValid(Panel) then return end
+	Panel:Clear()
+	
+	local lab = vgui.Create('DLabel', Panel)
+	Panel:AddItem(lab)
+	lab:SetText('Tool is unfinished, it does nothing')
+	lab:SetDark(true)
+end
+
 if true then return end
 
 local CURRENT_TOOL_MODE = 'physics_manipulator'
@@ -33,17 +54,6 @@ else
 	util.AddNetworkString('PhysicsManipulatorTool.SelectEntity')
 	util.AddNetworkString('PhysicsManipulatorTool.SelectProperties')
 end
-
-TOOL.Name = 'Physics Manipulator'
-TOOL.Category = 'Construction'
-
-TOOL.Information = {
-	{name = 'left'},
-	{name = 'left_use'},
-	{name = 'right'},
-	{name = 'right_use'},
-	{name = 'reload'},
-}
 
 TOOL.ClientConVar = {
 	select_red = 0,

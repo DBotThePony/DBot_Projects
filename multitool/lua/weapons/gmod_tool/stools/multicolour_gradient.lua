@@ -131,6 +131,28 @@ function RebuildPanel(Panel)
 	
 	MultiTool_AddSorterChoices(combo)
 	
+	local Lab = Label('First Color')
+	Lab:SetDark(true)
+	Panel:AddItem(Lab)
+	
+	local mixer = vgui.Create('DColorMixer', Panel)
+	Panel:AddItem(mixer)
+	mixer:SetConVarR(CURRENT_TOOL_MODE .. '_first_red')
+	mixer:SetConVarG(CURRENT_TOOL_MODE .. '_first_green')
+	mixer:SetConVarB(CURRENT_TOOL_MODE .. '_first_blue')
+	mixer:SetConVarA(CURRENT_TOOL_MODE .. '_first_alpha')
+	
+	local Lab = Label('Last Color')
+	Lab:SetDark(true)
+	Panel:AddItem(Lab)
+	
+	local mixer = vgui.Create('DColorMixer', Panel)
+	Panel:AddItem(mixer)
+	mixer:SetConVarR(CURRENT_TOOL_MODE .. '_last_red')
+	mixer:SetConVarG(CURRENT_TOOL_MODE .. '_last_green')
+	mixer:SetConVarB(CURRENT_TOOL_MODE .. '_last_blue')
+	mixer:SetConVarA(CURRENT_TOOL_MODE .. '_last_alpha')
+	
 	local newPnl = vgui.Create('EditablePanel', Panel)
 	
 	newPnl:SetHeight(500)
