@@ -156,9 +156,7 @@ sound.PlayURL('https://dbot.serealia.ca/custom/content/sound/camera_static/close
 end)
 
 net.Receive('Slendermane.StatusChanges', function()
-	local ent = net.ReadEntity()
 	local status = net.ReadBool()
-	if status == oldStatus then return end
 	
 	if status then
 		chat.AddText(color_white, 'SLENDERMANE IS CHASING Y.O.U')

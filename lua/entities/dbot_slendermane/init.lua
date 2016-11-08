@@ -279,7 +279,6 @@ function ENT:SendStatusToPlayer(ply, status)
 	if not ply:IsPlayer() then return end
 	
 	net.Start('Slendermane.StatusChanges')
-	net.WriteEntity(self)
 	net.WriteBool(status)
 	net.Send(ply)
 end
