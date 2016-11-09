@@ -112,6 +112,8 @@ local function Stop()
 	timer.Stop('DBot_SlenderStreams')
 end
 
+Stop()
+
 local function Begin()
 	Current = 1
 	
