@@ -323,6 +323,14 @@ local function DPP_AntiSpamEnt(self, ply, ent)
 	if ent == self then return false end
 end
 
+local function FastHaveValue(arr, val)
+	for i = 1, #arr do
+		if val == arr[i] then return true end
+	end
+	
+	return false
+end
+
 local function Request(ply)
 	print(ply:Nick() .. ' is symmetrying entities')
 	
@@ -345,13 +353,43 @@ local function Request(ply)
 	local realAng = ang + grabAng
 	
 	local input = {}
+	local INPUT_MEM = {}
+	local CONSTRAINT_MEM = {}
 	
 	for k, ent in ipairs(Ents) do
 		table.insert(input, {ent:GetPos(), ent:GetAngles()})
+		INPUT_MEM[ent] = ent
+		
+		CONSTRAINT_MEM[ent] = CONSTRAINT_MEM[ent] or {}
+		
+		local constr = constraint.GetTable(ent)
+		
+		for i, data in ipairs(constr) do
+			if data.Ent1 == ent then
+				CONSTRAINT_MEM[ent][data.Ent2] = CONSTRAINT_MEM[ent][data.Ent2] or {}
+				table.insert(CONSTRAINT_MEM[ent][data.Ent2], data)
+				
+				CONSTRAINT_MEM[data.Ent2] = CONSTRAINT_MEM[data.Ent2] or {}
+				CONSTRAINT_MEM[data.Ent2][ent] = CONSTRAINT_MEM[data.Ent2][ent] or {}
+				
+				table.insert(CONSTRAINT_MEM[data.Ent2][ent], data)
+			elseif data.Ent2 == ent then
+				CONSTRAINT_MEM[ent][data.Ent1] = CONSTRAINT_MEM[ent][data.Ent1] or {}
+				table.insert(CONSTRAINT_MEM[ent][data.Ent1], data)
+				
+				CONSTRAINT_MEM[data.Ent1] = CONSTRAINT_MEM[data.Ent1] or {}
+				CONSTRAINT_MEM[data.Ent1][ent] = CONSTRAINT_MEM[data.Ent1][ent] or {}
+				
+				table.insert(CONSTRAINT_MEM[data.Ent1][ent], data)
+			end
+		end
 	end
 	
 	local output = SymmetryPositions(input, pos, realAng)
 	local newEnts = {}
+	
+	local ASSOCIATION = {}
+	local ASSOCIATION_REVERSE = {}
 	
 	for i, data in ipairs(output) do
 		local ent = Ents[i]
@@ -375,11 +413,12 @@ local function Request(ply)
 		
 		if status and newEnt then
 			table.insert(newEnts, newEnt)
+			ASSOCIATION[newEnt] = ent
+			ASSOCIATION_REVERSE[ent] = newEnt
 		end
 	end
 	
-	undo.Create('Mirror')
-	undo.SetPlayer(ply)
+	local toContinue = {}
 	
 	for i, ent in ipairs(newEnts) do
 		-- Bypass DPP antispam checks
@@ -393,19 +432,126 @@ local function Request(ply)
 		
 		if class == 'prop_physics' then
 			local can = hook.Run('PlayerSpawnedProp', ply, ent:GetModel(), ent)
-			if can == false then continue end
+			if can == false then
+				SafeRemoveEntity(ent)
+				continue
+			end
 		elseif class == 'prop_ragdoll' then
 			local can = hook.Run('PlayerSpawnedRagdoll', ply, ent:GetModel(), ent)
-			if can == false then continue end
+			if can == false then
+				SafeRemoveEntity(ent)
+				continue
+			end
 		elseif ent:IsWeapon() then
 			local can = hook.Run('PlayerSpawnedSWEP', ply, ent)
-			if can == false then continue end
+			if can == false then
+				SafeRemoveEntity(ent)
+				continue
+			end
 		else
 			local can = hook.Run('PlayerSpawnedSENT', ply, ent)
-			if can == false then continue end
+			if can == false then
+				SafeRemoveEntity(ent)
+				continue
+			end
 		end
 		
+		table.insert(toContinue, ent)
+	end
+	
+	if #toContinue == 0 then return end -- Oops
+	
+	undo.Create('Mirror')
+	undo.SetPlayer(ply)
+	
+	local DONE_MEM = {}
+	
+	for i, ent in ipairs(toContinue) do
 		undo.AddEntity(ent)
+		
+		local parent = ASSOCIATION[ent]
+		
+		if not parent then continue end
+		
+		DONE_MEM[ent] = DONE_MEM[ent] or {}
+		
+		local constraints = CONSTRAINT_MEM[parent]
+		
+		if not constraints then continue end
+		
+		for cEnt, Data in pairs(constraints) do
+			if DONE_MEM[ent][cEnt] then continue end
+			
+			DONE_MEM[cEnt] = DONE_MEM[cEnt] or {}
+			if DONE_MEM[cEnt][ent] then continue end
+			
+			DONE_MEM[cEnt][ent] = true
+			DONE_MEM[ent][cEnt] = true
+			
+			for i, cData in ipairs(Data) do
+				local tp = cData.Type
+				local func = constraint[tp]
+				if not func then
+					print('[Symmetry Clonner] Unknown Constraint Type: ' .. tp .. '!')
+					continue
+				end
+				
+				local firstEntity = ent
+				local secondEntity = ASSOCIATION_REVERSE[cEnt]
+				
+				if not IsValid(secondEntity) then continue end
+				
+				local args = {firstEntity, secondEntity, cData.Bone1 or 0, cData.Bone2 or 0}
+				
+				if tp == 'Weld' then
+					table.insert(args, cData.forcelimit)
+					table.insert(args, cData.nocollide)
+				elseif tp == 'Elastic' then
+					table.insert(args, cData.Entity[1].LPos)
+					table.insert(args, cData.Entity[2].LPos)
+					table.insert(args, cData.constant)
+					table.insert(args, cData.damping)
+					table.insert(args, cData.rdamping)
+					table.insert(args, cData.material)
+					table.insert(args, cData.width)
+					table.insert(args, tobool(cData.stretchonly))
+				elseif tp == 'Rope' then
+					table.insert(args, cData.Entity[1].LPos)
+					table.insert(args, cData.Entity[2].LPos)
+					table.insert(args, cData.length)
+					table.insert(args, cData.addlength)
+					table.insert(args, cData.forcelimit)
+					table.insert(args, cData.width)
+					table.insert(args, cData.material)
+					table.insert(args, cData.rigid)
+				elseif tp == 'Slider' then
+					table.insert(args, cData.Entity[1].LPos)
+					table.insert(args, cData.Entity[2].LPos)
+					table.insert(args, cData.width)
+					table.insert(args, cData.material)
+				elseif tp == 'Axis' then
+					table.insert(args, cData.Entity[1].LPos)
+					table.insert(args, cData.Entity[2].LPos)
+					table.insert(args, cData.forcelimit)
+					table.insert(args, cData.torquelimit)
+					table.insert(args, cData.friction)
+					table.insert(args, cData.nocollide)
+				elseif tp == 'Ballsocket' then
+					table.insert(args, cData.LPos)
+					table.insert(args, cData.forcelimit)
+					table.insert(args, cData.torquelimit)
+					table.insert(args, cData.nocollide)
+				end
+				
+				local status, constraintEntity = pcall(func, unpack(args))
+				
+				if not status then
+					print('[CAUGHT ERROR] ' .. constraintEntity)
+				elseif constraintEntity then
+					undo.AddEntity(constraintEntity)
+				end
+			end
+		end
 	end
 	
 	undo.Finish()
