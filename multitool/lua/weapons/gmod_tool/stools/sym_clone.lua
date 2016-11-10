@@ -331,30 +331,84 @@ local function FastHaveValue(arr, val)
 	return false
 end
 
-local function Request(ply)
-	print(ply:Nick() .. ' is symmetrying entities')
+local function CreateConstraintByTable(fEnt, sEnt, cData)
+	local tp = cData.Type
+	local func = constraint[tp]
 	
-	local entPoint = net.ReadEntity()
-	if not IsValid(entPoint) then return end
-	
-	local Ents = {}
-	local count = net.ReadUInt(12)
-	
-	for i = 1, count do
-		local read = net.ReadEntity()
-		
-		if CanUse(ply, read) then
-			table.insert(Ents, read)
-		end
+	if not func then
+		print('[Symmetry Clonner] Unknown Constraint Type: ' .. tp .. '!')
+		return false
 	end
 	
+	local args = {fEnt, sEnt, cData.Bone1 or 0, cData.Bone2 or 0}
+	
+	if tp == 'Weld' then
+		table.insert(args, cData.forcelimit)
+		table.insert(args, cData.nocollide)
+	elseif tp == 'Elastic' then
+		table.insert(args, cData.Entity[1].LPos)
+		table.insert(args, cData.Entity[2].LPos)
+		table.insert(args, cData.constant)
+		table.insert(args, cData.damping)
+		table.insert(args, cData.rdamping)
+		table.insert(args, cData.material)
+		table.insert(args, cData.width)
+		table.insert(args, tobool(cData.stretchonly))
+	elseif tp == 'Rope' then
+		table.insert(args, cData.Entity[1].LPos)
+		table.insert(args, cData.Entity[2].LPos)
+		table.insert(args, cData.length)
+		table.insert(args, cData.addlength)
+		table.insert(args, cData.forcelimit)
+		table.insert(args, cData.width)
+		table.insert(args, cData.material)
+		table.insert(args, cData.rigid)
+	elseif tp == 'Slider' then
+		table.insert(args, cData.Entity[1].LPos)
+		table.insert(args, cData.Entity[2].LPos)
+		table.insert(args, cData.width)
+		table.insert(args, cData.material)
+	elseif tp == 'Axis' then
+		table.insert(args, cData.Entity[1].LPos)
+		table.insert(args, cData.Entity[2].LPos)
+		table.insert(args, cData.forcelimit)
+		table.insert(args, cData.torquelimit)
+		table.insert(args, cData.friction)
+		table.insert(args, cData.nocollide)
+	elseif tp == 'Ballsocket' then
+		table.insert(args, cData.LPos)
+		table.insert(args, cData.forcelimit)
+		table.insert(args, cData.torquelimit)
+		table.insert(args, cData.nocollide)
+	end
+	
+	local status, constraintEntity = pcall(func, unpack(args))
+	
+	if not status then
+		print('[CAUGHT ERROR] ' .. constraintEntity)
+		return false
+	elseif constraintEntity then
+		return constraintEntity
+	end
+end
+
+function SymmetryClonner_Clone(entPoint, Ents, ply)
 	local pos, ang = entPoint:GetPos(), entPoint:GetAngles()
-	local grabAng = GrabAngle(ply)
+	local grabAng
+	
+	if ply then
+		grabAng = GrabAngle(ply)
+	else
+		grabAng = Angle(0, 0, 0)
+	end
+	
 	local realAng = ang + grabAng
 	
 	local input = {}
 	local INPUT_MEM = {}
 	local CONSTRAINT_MEM = {}
+	
+	local entPointConstraints = {}
 	
 	for k, ent in ipairs(Ents) do
 		table.insert(input, {ent:GetPos(), ent:GetAngles()})
@@ -366,6 +420,11 @@ local function Request(ply)
 		local constr = constraint.GetTable(ent)
 		
 		for i, data in ipairs(constr) do
+			if data.Ent1 == entPoint or data.Ent2 == entPoint then
+				table.insert(entPointConstraints, data)
+				continue
+			end
+			
 			if not INPUT_MEM[data.Ent1] or not INPUT_MEM[data.Ent2] then continue end -- Not our constraint!
 			
 			if data.Ent1 == ent then
@@ -396,20 +455,23 @@ local function Request(ply)
 	
 	for i, data in ipairs(output) do
 		local ent = Ents[i]
-		local class = ent:GetClass()
 		
-		if class == 'prop_physics' then
-			local can = hook.Run('PlayerSpawnProp', ply, ent:GetModel())
-			if can == false then continue end
-		elseif class == 'prop_ragdoll' then
-			local can = hook.Run('PlayerSpawnRagdoll', ply, ent:GetModel())
-			if can == false then continue end
-		elseif ent:IsWeapon() then
-			local can = hook.Run('PlayerSpawnSWEP', ply, class, weapons.Get(class) or {})
-			if can == false then continue end
-		else
-			local can = hook.Run('PlayerSpawnSENT', ply, class)
-			if can == false then continue end
+		if ply then
+			local class = ent:GetClass()
+			
+			if class == 'prop_physics' then
+				local can = hook.Run('PlayerSpawnProp', ply, ent:GetModel())
+				if can == false then continue end
+			elseif class == 'prop_ragdoll' then
+				local can = hook.Run('PlayerSpawnRagdoll', ply, ent:GetModel())
+				if can == false then continue end
+			elseif ent:IsWeapon() then
+				local can = hook.Run('PlayerSpawnSWEP', ply, class, weapons.Get(class) or {})
+				if can == false then continue end
+			else
+				local can = hook.Run('PlayerSpawnSENT', ply, class)
+				if can == false then continue end
+			end
 		end
 		
 		local status, newEnt = xpcall(DoSafeCopy, Catch, data, ent)
@@ -425,52 +487,63 @@ local function Request(ply)
 	
 	for i, ent in ipairs(newEnts) do
 		-- Bypass DPP antispam checks
-		hook.Add('DPP_AntiSpamEnt', ent, DPP_AntiSpamEnt)
 		
-		if ent.CPPISetOwner then
-			ent:CPPISetOwner(ply)
-		end
-		
-		local class = ent:GetClass()
-		
-		if class == 'prop_physics' then
-			local can = hook.Run('PlayerSpawnedProp', ply, ent:GetModel(), ent)
-			if can == false then
-				SafeRemoveEntity(ent)
-				continue
+		if ply then
+			hook.Add('DPP_AntiSpamEnt', ent, DPP_AntiSpamEnt)
+			
+			if ent.CPPISetOwner then
+				ent:CPPISetOwner(ply)
 			end
-		elseif class == 'prop_ragdoll' then
-			local can = hook.Run('PlayerSpawnedRagdoll', ply, ent:GetModel(), ent)
-			if can == false then
-				SafeRemoveEntity(ent)
-				continue
-			end
-		elseif ent:IsWeapon() then
-			local can = hook.Run('PlayerSpawnedSWEP', ply, ent)
-			if can == false then
-				SafeRemoveEntity(ent)
-				continue
-			end
-		else
-			local can = hook.Run('PlayerSpawnedSENT', ply, ent)
-			if can == false then
-				SafeRemoveEntity(ent)
-				continue
+			
+			local class = ent:GetClass()
+			
+			if class == 'prop_physics' then
+				local can = hook.Run('PlayerSpawnedProp', ply, ent:GetModel(), ent)
+				if can == false then
+					SafeRemoveEntity(ent)
+					continue
+				end
+			elseif class == 'prop_ragdoll' then
+				local can = hook.Run('PlayerSpawnedRagdoll', ply, ent:GetModel(), ent)
+				if can == false then
+					SafeRemoveEntity(ent)
+					continue
+				end
+			elseif ent:IsWeapon() then
+				local can = hook.Run('PlayerSpawnedSWEP', ply, ent)
+				if can == false then
+					SafeRemoveEntity(ent)
+					continue
+				end
+			else
+				local can = hook.Run('PlayerSpawnedSENT', ply, ent)
+				if can == false then
+					SafeRemoveEntity(ent)
+					continue
+				end
 			end
 		end
 		
 		table.insert(toContinue, ent)
 	end
 	
-	if #toContinue == 0 then return end -- Oops
+	if #toContinue == 0 then return {} end -- Oops
 	
-	undo.Create('Mirror')
-	undo.SetPlayer(ply)
+	local createdEntities = {}
 	
 	local DONE_MEM = {}
 	
+	if ply then
+		undo.Create('Mirror')
+		undo.SetPlayer(ply)
+	end
+	
 	for i, ent in ipairs(toContinue) do
-		undo.AddEntity(ent)
+		table.insert(createdEntities, ent)
+		
+		if ply then
+			undo.AddEntity(ent)
+		end
 		
 		local parent = ASSOCIATION[ent]
 		
@@ -495,70 +568,69 @@ local function Request(ply)
 			DONE_MEM[ent][cEnt] = true
 			
 			for i, cData in ipairs(Data) do
-				local tp = cData.Type
-				local func = constraint[tp]
-				if not func then
-					print('[Symmetry Clonner] Unknown Constraint Type: ' .. tp .. '!')
-					continue
-				end
+				local constraintEntity = CreateConstraintByTable(ent, cEnt, cData)
 				
-				local firstEntity = ent
-				local secondEntity = cEnt
-				
-				local args = {firstEntity, secondEntity, cData.Bone1 or 0, cData.Bone2 or 0}
-				
-				if tp == 'Weld' then
-					table.insert(args, cData.forcelimit)
-					table.insert(args, cData.nocollide)
-				elseif tp == 'Elastic' then
-					table.insert(args, cData.Entity[1].LPos)
-					table.insert(args, cData.Entity[2].LPos)
-					table.insert(args, cData.constant)
-					table.insert(args, cData.damping)
-					table.insert(args, cData.rdamping)
-					table.insert(args, cData.material)
-					table.insert(args, cData.width)
-					table.insert(args, tobool(cData.stretchonly))
-				elseif tp == 'Rope' then
-					table.insert(args, cData.Entity[1].LPos)
-					table.insert(args, cData.Entity[2].LPos)
-					table.insert(args, cData.length)
-					table.insert(args, cData.addlength)
-					table.insert(args, cData.forcelimit)
-					table.insert(args, cData.width)
-					table.insert(args, cData.material)
-					table.insert(args, cData.rigid)
-				elseif tp == 'Slider' then
-					table.insert(args, cData.Entity[1].LPos)
-					table.insert(args, cData.Entity[2].LPos)
-					table.insert(args, cData.width)
-					table.insert(args, cData.material)
-				elseif tp == 'Axis' then
-					table.insert(args, cData.Entity[1].LPos)
-					table.insert(args, cData.Entity[2].LPos)
-					table.insert(args, cData.forcelimit)
-					table.insert(args, cData.torquelimit)
-					table.insert(args, cData.friction)
-					table.insert(args, cData.nocollide)
-				elseif tp == 'Ballsocket' then
-					table.insert(args, cData.LPos)
-					table.insert(args, cData.forcelimit)
-					table.insert(args, cData.torquelimit)
-					table.insert(args, cData.nocollide)
-				end
-				
-				local status, constraintEntity = pcall(func, unpack(args))
-				
-				if not status then
-					print('[CAUGHT ERROR] ' .. constraintEntity)
-				elseif constraintEntity then
-					undo.AddEntity(constraintEntity)
+				if constraintEntity then
+					table.insert(createdEntities, constraintEntity)
+					
+					if ply then
+						undo.AddEntity(constraintEntity)
+					end
 				end
 			end
 		end
 	end
 	
-	undo.Finish()
+	for i, cData in ipairs(entPointConstraints) do
+		local myEntity = cData.Ent1 ~= entPoint and cData.Ent1 or cData.Ent2
+		local ent = ASSOCIATION_REVERSE[myEntity]
+		
+		if not IsValid(ent) then continue end
+		
+		local constraintEntity
+		
+		if myEntity == cData.Ent1 then
+			cData.Entity[2].LPos.y = -cData.Entity[2].LPos.y
+			constraintEntity = CreateConstraintByTable(ent, entPoint, cData)
+		else
+			cData.Entity[1].LPos.y = -cData.Entity[1].LPos.y
+			constraintEntity = CreateConstraintByTable(entPoint, ent, cData)
+		end
+		
+		if constraintEntity then
+			table.insert(createdEntities, constraintEntity)
+			
+			if ply then
+				undo.AddEntity(constraintEntity)
+			end
+		end
+	end
+	
+	if ply then
+		undo.Finish()
+	end
+	
+	return createdEntities
+end
+
+local function Request(ply)
+	print(ply:Nick() .. ' is symmetrying entities')
+	
+	local entPoint = net.ReadEntity()
+	if not IsValid(entPoint) then return end
+	
+	local Ents = {}
+	local count = net.ReadUInt(12)
+	
+	for i = 1, count do
+		local read = net.ReadEntity()
+		
+		if CanUse(ply, read) then
+			table.insert(Ents, read)
+		end
+	end
+	
+	SymmetryClonner_Clone(entPoint, Ents, ply)
 end
 
 local function GetEntityDummy(ent)
