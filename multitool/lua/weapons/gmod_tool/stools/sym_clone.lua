@@ -31,6 +31,8 @@ if CLIENT then
 	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.right', 'Select entity as mirror point')
 	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.right_use', 'Make a clone!')
 	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.reload', 'Clear selection')
+	
+	language.Add('Undone_Mirror', 'Undone symmetric paste')
 else
 	util.AddNetworkString('' .. CURRENT_TOOL_MODE .. '.action')
 end
