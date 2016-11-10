@@ -266,6 +266,7 @@ local function DoSafeCopy(data, ent)
 	newEnt:SetMaterial(ent:GetMaterial() or '')
 	newEnt:SetHealth(ent:Health() or 0)
 	newEnt:SetMaxHealth(ent:GetMaxHealth() or 0)
+	newEnt:SetColor(ent:GetColor())
 	
 	newEnt:Activate()
 	
