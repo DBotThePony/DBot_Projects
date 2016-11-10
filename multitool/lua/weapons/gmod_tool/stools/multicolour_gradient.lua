@@ -70,6 +70,9 @@ TOOL.ClientConVar = {
 	select_colored = 0,
 	select_sort = 2,
 	select_range = 512,
+	
+	color_fx = 0,
+	color_mode = 0,
 }
 
 TOOL.ServerConVar = {}
@@ -126,6 +129,17 @@ function RebuildPanel(Panel)
 	Lab:SizeToContents()
 	Lab:SetDark(true)
 	Panel:AddItem(Lab)
+	
+	local color_mode = Panel:ComboBox('Render Mode', CURRENT_TOOL_MODE .. '_color_mode')
+	local color_fx = Panel:ComboBox('Render FX', CURRENT_TOOL_MODE .. '_color_fx')
+	
+	for k, v in pairs(list.Get('RenderModes')) do
+		color_mode:AddChoice(k, v.colour_mode)
+	end
+	
+	for k, v in pairs(list.Get('RenderFX')) do
+		color_fx:AddChoice(k, v.colour_fx)
+	end
 	
 	local combo = Panel:ComboBox('Select Sort Mode', CURRENT_TOOL_MODE .. '_select_sort')
 	
@@ -396,15 +410,18 @@ else
 		
 		local max = #SelectTable
 		
-		local first_red = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_first_red')) or 0
-		local first_green = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_first_green')) or 0
-		local first_blue = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_first_blue')) or 0
-		local first_alpha = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_first_alpha')) or 0
+		local first_red = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_first_red') or 0) or 0
+		local first_green = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_first_green') or 0) or 0
+		local first_blue = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_first_blue') or 0) or 0
+		local first_alpha = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_first_alpha') or 0) or 0
 		
-		local last_red = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_last_red')) or 0
-		local last_green = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_last_green')) or 0
-		local last_blue = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_last_blue')) or 0
-		local last_alpha = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_last_alpha')) or 0
+		local last_red = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_last_red') or 0) or 0
+		local last_green = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_last_green') or 0) or 0
+		local last_blue = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_last_blue') or 0) or 0
+		local last_alpha = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_last_alpha') or 0) or 0
+		
+		local color_fx = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_color_fx') or 0) or 0
+		local color_mode = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_color_mode') or 0) or 0
 		
 		local delta_red = last_red - first_red
 		local delta_green = last_green - first_green
@@ -423,6 +440,14 @@ else
 			
 			local new = Color(red, green, blue, alpha)
 			ent:SetColor(new)
+			ent:SetRenderMode(color_mode)
+			ent:SetKeyValue('renderfx', color_fx)
+			
+			duplicator.StoreEntityModifier(ent, 'colour', {
+				Color = new,
+				RenderMode = color_mode,
+				RenderFX = color_fx,
+			})
 		end
 	end)
 	
@@ -432,6 +457,14 @@ else
 		for i, ent in ipairs(SelectTable) do
 			if not CanUse(ply, ent) then continue end
 			ent:SetColor(color_white)
+			ent:SetRenderMode(0)
+			ent:SetKeyValue('renderfx', 0)
+			
+			duplicator.StoreEntityModifier(ent, 'colour', {
+				Color = color_white,
+				RenderMode = 0,
+				RenderFX = 0,
+			})
 		end
 	end)
 end

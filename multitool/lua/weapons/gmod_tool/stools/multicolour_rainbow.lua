@@ -62,6 +62,9 @@ TOOL.ClientConVar = {
 	select_colored = 0,
 	select_sort = 2,
 	select_range = 512,
+	
+	color_fx = 0,
+	color_mode = 0,
 }
 
 TOOL.ServerConVar = {}
@@ -121,6 +124,17 @@ function RebuildPanel(Panel)
 	Lab:SizeToContents()
 	Lab:SetDark(true)
 	Panel:AddItem(Lab)
+	
+	local color_mode = Panel:ComboBox('Render Mode', CURRENT_TOOL_MODE .. '_color_mode')
+	local color_fx = Panel:ComboBox('Render FX', CURRENT_TOOL_MODE .. '_color_fx')
+	
+	for k, v in pairs(list.Get('RenderModes')) do
+		color_mode:AddChoice(k, v.colour_mode)
+	end
+	
+	for k, v in pairs(list.Get('RenderFX')) do
+		color_fx:AddChoice(k, v.colour_fx)
+	end
 	
 	local combo = Panel:ComboBox('Select Sort Mode', CURRENT_TOOL_MODE .. '_select_sort')
 	
@@ -348,12 +362,23 @@ else
 		local STEP = tonumber(ply:GetInfo('multicolour_rainbow_step')) or 2
 		local MULTIP = tonumber(ply:GetInfo('multicolour_rainbow_step_mult')) or 1
 		
+		local color_fx = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_color_fx') or 0) or 0
+		local color_mode = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_color_mode') or 0) or 0
+		
 		for i, ent in ipairs(SelectTable) do
 			if not IsValid(ent) then continue end
 			
 			if not CanUse(ply, ent) then continue end
 			local new = Color(math.sin(i * MULTIP) * 127 + 128, math.sin((i + STEP) * MULTIP) * 127 + 128, math.sin((i + STEP * 2) * MULTIP) * 127 + 128)
 			ent:SetColor(new)
+			ent:SetRenderMode(color_mode)
+			ent:SetKeyValue('renderfx', color_fx)
+			
+			duplicator.StoreEntityModifier(ent, 'colour', {
+				Color = new,
+				RenderMode = color_mode,
+				RenderFX = color_fx,
+			})
 		end
 	end)
 	
@@ -363,6 +388,14 @@ else
 		for i, ent in ipairs(SelectTable) do
 			if not CanUse(ply, ent) then continue end
 			ent:SetColor(color_white)
+			ent:SetRenderMode(0)
+			ent:SetKeyValue('renderfx', 0)
+			
+			duplicator.StoreEntityModifier(ent, 'colour', {
+				Color = color_white,
+				RenderMode = 0,
+				RenderFX = 0,
+			})
 		end
 	end)
 end
