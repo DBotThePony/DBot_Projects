@@ -68,6 +68,8 @@ TOOL.ClientConVar = {
 	select_invert = 0,
 	
 	deselect = 1,
+	display_mode = 0,
+	ghost_obey_colors = 1,
 }
 
 function TOOL:SelectEntities(tr)
@@ -129,6 +131,8 @@ end
 
 function TOOL.BuildCPanel(Panel)
 	Panel:CheckBox('Clear selection after paste', CURRENT_TOOL_MODE_VARS .. 'deselect')
+	Panel:CheckBox('Display ghosts only when you hold toolgun', CURRENT_TOOL_MODE_VARS .. 'display_mode')
+	Panel:CheckBox('Ghost entities in original color, if it is not white', CURRENT_TOOL_MODE_VARS .. 'ghost_obey_colors')
 	Panel:NumSlider('Symmetry Angle Pith', CURRENT_TOOL_MODE_VARS .. 'angle_p', -180, 180, 0)
 	Panel:NumSlider('Symmetry Angle Yaw', CURRENT_TOOL_MODE_VARS .. 'angle_y', -180, 180, 0)
 	Panel:NumSlider('Symmetry Angle Roll', CURRENT_TOOL_MODE_VARS .. 'angle_r', -180, 180, 0)
@@ -793,8 +797,17 @@ if CLIENT then
 		Receivers[net.ReadString()]()
 	end)
 	
-	hook.Add('PostDrawTranslucentRenderables', CURRENT_TOOL_MODE, function(ply, weapon, mode)
-		--if mode ~= CURRENT_TOOL_MODE then return end
+	hook.Add('PostDrawTranslucentRenderables', CURRENT_TOOL_MODE, function(a, b)
+		if a or b then return end
+		
+		if vars.display_mode:GetBool() then
+			if not LocalPlayer():IsValid() then return end
+			local wep = LocalPlayer():GetActiveWeapon()
+			if not wep:IsValid() then return end
+			
+			if wep:GetClass() ~= 'gmod_tool' then return end
+			if wep:GetMode() ~= CURRENT_TOOL_MODE then return end
+		end
 		
 		ClearSelectedItems()
 		
@@ -842,9 +855,17 @@ if CLIENT then
 		
 		local toMirror = {}
 		
+		local obey = vars.ghost_obey_colors:GetBool()
+		
 		for k, ent in ipairs(SELECT_TABLE) do
-			render.SetColorModulation(select_red, select_green, select_blue)
-			ent:DrawModel()
+			local col = ent:GetColor()
+			local nonDefaultCol = col.r ~= 255 or col.g ~= 255 or col.b ~= 255
+			
+			if not nonDefaultCol or not obey then
+				render.SetColorModulation(select_red, select_green, select_blue)
+				ent:DrawModel()
+			end
+			
 			table.insert(toMirror, {ent:GetPos(), ent:GetAngles()})
 		end
 		
@@ -857,10 +878,24 @@ if CLIENT then
 			for i, v in ipairs(get) do
 				local ent = SELECT_TABLE[i]
 				local ent2 = GetEntityDummy(ent)
+				local mat = ent:GetMaterial()
+				local col = ent:GetColor()
 				
 				ent2:SetPos(v[1])
 				ent2:SetAngles(v[2])
+				ent2:SetMaterial(mat)
+				
+				local nonDefaultCol = col.r ~= 255 or col.g ~= 255 or col.b ~= 255
+				
+				if nonDefaultCol and obey then
+					render.SetColorModulation(col.r / 255, col.g / 255, col.b / 255)
+				end
+				
 				ent2:DrawModel()
+				
+				if nonDefaultCol and obey then
+					render.SetColorModulation(select_red, select_green, select_blue)
+				end
 			end
 		end
 		
@@ -908,6 +943,17 @@ function TOOL:LeftClick(tr)
 end
 
 function TOOL:RightClick(tr)
+	self.LastRightClick = self.LastRightClick or CurTime()
+	if self.LastRightClick > CurTime() then
+		if SERVER then
+			self:GetOwner():ChatPrint('Stop spamming!')
+		end
+		
+		return false
+	end
+	
+	self.LastRightClick = CurTime() + 2
+	
 	if not self:GetOwner():KeyDown(IN_USE) then
 		if not CanUse(self:GetOwner(), tr.Entity) then return false end
 	end
