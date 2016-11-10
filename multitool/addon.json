@@ -1,0 +1,13 @@
+{
+	"title"		:	"GMod's Tools (GTools)",
+	"type"		:	"tool",
+	"tags"		:	[ "build" ],
+	"ignore"	:
+	[
+		"*.psd",
+		"*.vcproj",
+		"*.svn*",
+		"*.git*",
+		"README.md"
+	]
+}
