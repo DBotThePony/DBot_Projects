@@ -27,6 +27,7 @@ if CLIENT then
 	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.0', '')
 	
 	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.left', 'Select entity to mirror')
+	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.left_use', 'Auto select entities to mirror')
 	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.right', 'Select entity as mirror point')
 	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.right_use', 'Make a clone!')
 	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.reload', 'Clear selection')
@@ -36,6 +37,7 @@ end
 
 TOOL.Information = {
 	{name = 'left'},
+	{name = 'left_use'},
 	{name = 'right'},
 	{name = 'right_use'},
 	{name = 'reload'},
@@ -57,9 +59,76 @@ TOOL.ClientConVar = {
 	angle_p = 0,
 	angle_y = 0,
 	angle_r = 0,
+	
+	select_by_model = 0,
+	select_only_constrained = 1,
+	select_mode = 0,
+	select_by_material = 0,
+	select_size = 512,
+	select_invert = 0,
+	
+	deselect = 1,
 }
 
+function TOOL:SelectEntities(tr)
+	local vars = {}
+	
+	for k, v in pairs(self.ClientConVar) do
+		vars[k] = self:GetClientNumber(k, v)
+	end
+	
+	vars.select_size = math.Clamp(vars.select_size, 1, 1024)
+	
+	local bools = {}
+	
+	for k, v in pairs(vars) do
+		bools[k] = tobool(vars[k])
+	end
+	
+	local MEM = {}
+	
+	if IsValid(tr.Entity) then
+		for k, v in pairs(constraint.GetAllConstrainedEntities(tr.Entity)) do
+			MEM[v] = v
+		end
+	end
+	
+	if not bools.select_only_constrained then
+		local MDL, MTRL
+		
+		if IsValid(tr.Entity) then
+			MDL = tr.Entity:GetModel()
+			MTRL = tr.Entity:GetMaterial()
+		end
+		
+		for i, ent in ipairs(bools.select_mode and ents.FindInBox(tr.HitPos, vars.select_size) or ents.FindInSphere(tr.HitPos, vars.select_size)) do
+			if bools.select_by_material then
+				if MTRL ~= ent:GetMaterial() then continue end
+			end
+			
+			if bools.select_by_model then
+				if MDL ~= ent:GetModel() then continue end
+			end
+			
+			MEM[ent] = ent
+		end
+	end
+	
+	local reply = {}
+	
+	for k, v in pairs(MEM) do
+		local phys = v:GetPhysicsObject()
+		
+		if phys:IsValid() then
+			table.insert(reply, {v, phys})
+		end
+	end
+	
+	return reply
+end
+
 function TOOL.BuildCPanel(Panel)
+	Panel:CheckBox('Clear selection after paste', CURRENT_TOOL_MODE_VARS .. 'deselect')
 	Panel:NumSlider('Symmetry Angle Pith', CURRENT_TOOL_MODE_VARS .. 'angle_p', -180, 180, 0)
 	Panel:NumSlider('Symmetry Angle Yaw', CURRENT_TOOL_MODE_VARS .. 'angle_y', -180, 180, 0)
 	Panel:NumSlider('Symmetry Angle Roll', CURRENT_TOOL_MODE_VARS .. 'angle_r', -180, 180, 0)
@@ -104,6 +173,17 @@ function TOOL.BuildCPanel(Panel)
 	mixer:SetConVarG(CURRENT_TOOL_MODE .. '_select3_g')
 	mixer:SetConVarB(CURRENT_TOOL_MODE .. '_select3_b')
 	mixer:SetAlphaBar(false)
+	
+	local lab = Label('Autoselect options', Panel)
+	Panel:AddItem(lab)
+	lab:SetDark(true)
+	
+	Panel:CheckBox('Auto Select only constrained', CURRENT_TOOL_MODE_VARS .. 'select_only_constrained')
+	Panel:CheckBox('Auto Select by Model', CURRENT_TOOL_MODE_VARS .. 'select_by_model')
+	Panel:CheckBox('Auto Select by Material', CURRENT_TOOL_MODE_VARS .. 'select_by_material')
+	Panel:NumSlider('Auto Select Range', CURRENT_TOOL_MODE_VARS .. 'select_size', 1, 1024, 0)
+	Panel:CheckBox('False - Sphere, True - Box', CURRENT_TOOL_MODE_VARS .. 'select_mode')
+	Panel:CheckBox('Invert entities status on auto select', CURRENT_TOOL_MODE_VARS .. 'select_invert')
 end
 
 local SELECTED_ENTITY
@@ -161,6 +241,7 @@ end
 local function CanUse(ply, ent)
 	return IsValid(ent) and
 		not ent:IsPlayer() and
+		not ent:IsNPC() and
 		not ent:IsVehicle() and
 		(not ent.CPPICanTool or ent:CPPICanTool(ply, CURRENT_TOOL_MODE))
 end
@@ -177,7 +258,7 @@ local function DoSafeCopy(data, ent)
 	
 	newEnt:SetSkin(ent:GetSkin() or 0)
 	newEnt:SetModelScale(ent:GetModelScale() or 1)
-	newEnt:SetMaterial(ent:SetMaterial() or '')
+	newEnt:SetMaterial(ent:GetMaterial() or '')
 	newEnt:SetHealth(ent:Health() or 0)
 	newEnt:SetMaxHealth(ent:GetMaxHealth() or 0)
 	
@@ -238,6 +319,10 @@ local function Catch(err)
 	print(debug.traceback())
 end
 
+local function DPP_AntiSpamEnt(self, ply, ent)
+	if ent == self then return false end
+end
+
 local function Request(ply)
 	print(ply:Nick() .. ' is symmetrying entities')
 	
@@ -278,6 +363,9 @@ local function Request(ply)
 		elseif class == 'prop_ragdoll' then
 			local can = hook.Run('PlayerSpawnRagdoll', ply, ent:GetModel())
 			if can == false then continue end
+		elseif ent:IsWeapon() then
+			local can = hook.Run('PlayerSpawnSWEP', ply, class, weapons.Get(class) or {})
+			if can == false then continue end
 		else
 			local can = hook.Run('PlayerSpawnSENT', ply, class)
 			if can == false then continue end
@@ -295,7 +383,7 @@ local function Request(ply)
 	
 	for i, ent in ipairs(newEnts) do
 		-- Bypass DPP antispam checks
-		-- By doing owner setup before DPP detect owner by itself
+		hook.Add('DPP_AntiSpamEnt', ent, DPP_AntiSpamEnt)
 		
 		if ent.CPPISetOwner then
 			ent:CPPISetOwner(ply)
@@ -308,6 +396,9 @@ local function Request(ply)
 			if can == false then continue end
 		elseif class == 'prop_ragdoll' then
 			local can = hook.Run('PlayerSpawnedRagdoll', ply, ent:GetModel(), ent)
+			if can == false then continue end
+		elseif ent:IsWeapon() then
+			local can = hook.Run('PlayerSpawnedSWEP', ply, ent)
 			if can == false then continue end
 		else
 			local can = hook.Run('PlayerSpawnedSENT', ply, ent)
@@ -346,6 +437,24 @@ if CLIENT then
 	
 	for k, v in pairs(TOOL.ClientConVar) do
 		vars[k] = CreateConVar(CURRENT_TOOL_MODE .. '_' .. k, tostring(v), {FCVAR_ARCHIVE, FCVAR_USERINFO}, '')
+	end
+	
+	local function DoAdd(ent)
+		local status = vars.select_invert:GetBool()
+		
+		for i = 1, #SELECT_TABLE do
+			if SELECT_TABLE[i] == ent then
+				if status then
+					table.remove(SELECT_TABLE, i)
+					return true
+				else
+					return false
+				end
+			end
+		end
+		
+		table.insert(SELECT_TABLE, ent)
+		return true
 	end
 	
 	local function ClearSelectedItems()
@@ -406,6 +515,26 @@ if CLIENT then
 			table.insert(SELECT_TABLE, read)
 		end,
 		
+		multi = function()
+			local count = net.ReadUInt(12)
+			local newCount = 0
+			local read = {}
+			
+			for i = 1, count do
+				local get = net.ReadEntity()
+				
+				if IsValid(get) and get ~= SELECTED_ENTITY then
+					local status = DoAdd(get)
+					
+					if status then
+						newCount = newCount + 1
+					end
+				end
+			end
+			
+			chat.AddText('Auto Selected ' .. newCount .. ' entities')
+		end,
+		
 		clear = function()
 			SELECTED_ENTITY = nil
 			SELECT_TABLE = {}
@@ -431,8 +560,10 @@ if CLIENT then
 			
 			net.SendToServer()
 			
-			SELECTED_ENTITY = nil
-			SELECT_TABLE = {}
+			if vars.deselect:GetBool() then
+				SELECTED_ENTITY = nil
+				SELECT_TABLE = {}
+			end
 		end,
 	}
 	
@@ -524,13 +655,31 @@ else
 end
 
 function TOOL:LeftClick(tr)
-	if not CanUse(self:GetOwner(), tr.Entity) then return false end
+	if not self:GetOwner():KeyDown(IN_USE) then
+		if not CanUse(self:GetOwner(), tr.Entity) then return false end
+	end
 	
 	if SERVER then
-		net.Start('sym_clone.action')
-		net.WriteString('select')
-		net.WriteEntity(tr.Entity)
-		net.Send(self:GetOwner())
+		if not self:GetOwner():KeyDown(IN_USE) then
+			net.Start('sym_clone.action')
+			net.WriteString('select')
+			net.WriteEntity(tr.Entity)
+			net.Send(self:GetOwner())
+		else
+			net.Start('sym_clone.action')
+			net.WriteString('multi')
+			
+			local get = self:SelectEntities(tr)
+			local c = #get
+			
+			net.WriteUInt(c, 12)
+			
+			for i = 1, c do
+				net.WriteEntity(get[i][1])
+			end
+			
+			net.Send(self:GetOwner())
+		end
 	end
 	
 	return true
