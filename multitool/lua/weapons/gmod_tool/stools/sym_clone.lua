@@ -80,6 +80,20 @@ local function CanUse(ply, ent)
 		(not ent.CPPICanTool or ent:CPPICanTool(ply, CURRENT_TOOL_MODE))
 end
 
+local function DuplicateVectors(tab)
+	for k, v in pairs(tab) do
+		if type(v) == 'Vector' then
+			tab[k] = Vector(v)
+		elseif type(v) == 'Angle' then
+			tab[k] = Angle(v.p, v.y, v.r)
+		elseif type(v) == 'table' then
+			DuplicateVectors(v)
+		end
+	end
+	
+	return tab
+end
+
 function TOOL:SelectEntities(tr)
 	local vars = {}
 	
@@ -341,7 +355,9 @@ local function FastHaveValue(arr, val)
 	return false
 end
 
-local function CreateConstraintByTable(fEnt, sEnt, cData)
+local function CreateConstraintByTable(fEnt, sEnt, cData, doSymmetry)
+	cData = DuplicateVectors(table.Copy(cData))
+	
 	local tp = cData.Type
 	local func = constraint[tp]
 	
@@ -356,6 +372,11 @@ local function CreateConstraintByTable(fEnt, sEnt, cData)
 		table.insert(args, cData.forcelimit)
 		table.insert(args, cData.nocollide)
 	elseif tp == 'Elastic' then
+		if doSymmetry then
+			cData.Entity[1].LPos.y = -cData.Entity[1].LPos.y
+			cData.Entity[2].LPos.y = -cData.Entity[2].LPos.y
+		end
+		
 		table.insert(args, cData.Entity[1].LPos)
 		table.insert(args, cData.Entity[2].LPos)
 		table.insert(args, cData.constant)
@@ -365,6 +386,11 @@ local function CreateConstraintByTable(fEnt, sEnt, cData)
 		table.insert(args, cData.width)
 		table.insert(args, tobool(cData.stretchonly))
 	elseif tp == 'Rope' then
+		if doSymmetry then
+			cData.Entity[1].LPos.y = -cData.Entity[1].LPos.y
+			cData.Entity[2].LPos.y = -cData.Entity[2].LPos.y
+		end
+		
 		table.insert(args, cData.Entity[1].LPos)
 		table.insert(args, cData.Entity[2].LPos)
 		table.insert(args, cData.length)
@@ -374,11 +400,21 @@ local function CreateConstraintByTable(fEnt, sEnt, cData)
 		table.insert(args, cData.material)
 		table.insert(args, cData.rigid)
 	elseif tp == 'Slider' then
+		if doSymmetry then
+			cData.Entity[1].LPos.y = -cData.Entity[1].LPos.y
+			cData.Entity[2].LPos.y = -cData.Entity[2].LPos.y
+		end
+		
 		table.insert(args, cData.Entity[1].LPos)
 		table.insert(args, cData.Entity[2].LPos)
 		table.insert(args, cData.width)
 		table.insert(args, cData.material)
 	elseif tp == 'Axis' then
+		if doSymmetry then
+			cData.Entity[1].LPos.y = -cData.Entity[1].LPos.y
+			cData.Entity[2].LPos.y = -cData.Entity[2].LPos.y
+		end
+		
 		table.insert(args, cData.Entity[1].LPos)
 		table.insert(args, cData.Entity[2].LPos)
 		table.insert(args, cData.forcelimit)
@@ -599,14 +635,18 @@ function SymmetryClonner_Clone(entPoint, Ents, ply)
 		
 		local constraintEntity
 		
-		if myEntity == cData.Ent1 then
-			cData.Entity[2].LPos = cData.Entity[2].LPos or Vector()
-			cData.Entity[2].LPos.y = -cData.Entity[2].LPos.y
-			constraintEntity = CreateConstraintByTable(ent, entPoint, cData)
+		local data = DuplicateVectors(table.Copy(cData))
+		
+		data.Entity[2].LPos = data.Entity[2].LPos or Vector()
+		data.Entity[2].LPos.y = -data.Entity[2].LPos.y
+		
+		data.Entity[1].LPos = data.Entity[1].LPos or Vector()
+		data.Entity[1].LPos.y = -data.Entity[1].LPos.y
+		
+		if myEntity == data.Ent1 then
+			constraintEntity = CreateConstraintByTable(ent, entPoint, data)
 		else
-			cData.Entity[1].LPos = cData.Entity[1].LPos or Vector()
-			cData.Entity[1].LPos.y = -cData.Entity[1].LPos.y
-			constraintEntity = CreateConstraintByTable(entPoint, ent, cData)
+			constraintEntity = CreateConstraintByTable(entPoint, ent, data)
 		end
 		
 		if constraintEntity then
