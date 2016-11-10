@@ -233,8 +233,9 @@ local function SymmetryPositions(tabIn, pos, ang)
 		
 		local localPos, localAng = WorldToLocal(entry[1], entry[2], pos, ang)
 		localPos.y = -localPos.y
+		
 		localAng.y = -localAng.y
-		localAng.r = -localAng.r
+		localAng.r = 180 - localAng.r
 		
 		table.insert(tabOut, {LocalToWorld(localPos, localAng, pos, ang)})
 	end
@@ -594,9 +595,11 @@ function SymmetryClonner_Clone(entPoint, Ents, ply)
 		local constraintEntity
 		
 		if myEntity == cData.Ent1 then
+			cData.Entity[2].LPos = cData.Entity[2].LPos or Vector()
 			cData.Entity[2].LPos.y = -cData.Entity[2].LPos.y
 			constraintEntity = CreateConstraintByTable(ent, entPoint, cData)
 		else
+			cData.Entity[1].LPos = cData.Entity[1].LPos or Vector()
 			cData.Entity[1].LPos.y = -cData.Entity[1].LPos.y
 			constraintEntity = CreateConstraintByTable(entPoint, ent, cData)
 		end
@@ -943,8 +946,8 @@ function TOOL:LeftClick(tr)
 end
 
 function TOOL:RightClick(tr)
-	self.LastRightClick = self.LastRightClick or CurTime()
-	if self.LastRightClick > CurTime() then
+	self:GetSWEP().SymmLastRightClick = self:GetSWEP().SymmLastRightClick or CurTime()
+	if self:GetSWEP().SymmLastRightClick > CurTime() then
 		if SERVER then
 			self:GetOwner():ChatPrint('Stop spamming!')
 		end
@@ -952,7 +955,7 @@ function TOOL:RightClick(tr)
 		return false
 	end
 	
-	self.LastRightClick = CurTime() + 2
+	self:GetSWEP().SymmLastRightClick = CurTime() + 2
 	
 	if not self:GetOwner():KeyDown(IN_USE) then
 		if not CanUse(self:GetOwner(), tr.Entity) then return false end
