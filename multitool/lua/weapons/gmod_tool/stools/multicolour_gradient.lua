@@ -92,8 +92,8 @@ local function ClearSelectedItems()
 	end
 	
 	if #toRemove > 0 then
-		RebuildPanel(PANEL)
 		table.remove(SelectTable, toRemove[#toRemove])
+		RebuildPanel(PANEL)
 	end
 end
 
