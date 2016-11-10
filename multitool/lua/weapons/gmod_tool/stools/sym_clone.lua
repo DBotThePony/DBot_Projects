@@ -359,12 +359,15 @@ local function Request(ply)
 	for k, ent in ipairs(Ents) do
 		table.insert(input, {ent:GetPos(), ent:GetAngles()})
 		INPUT_MEM[ent] = ent
-		
+	end
+	
+	for k, ent in ipairs(Ents) do
 		CONSTRAINT_MEM[ent] = CONSTRAINT_MEM[ent] or {}
-		
 		local constr = constraint.GetTable(ent)
 		
 		for i, data in ipairs(constr) do
+			if not INPUT_MEM[data.Ent1] or not INPUT_MEM[data.Ent2] then continue end -- Not our constraint!
+			
 			if data.Ent1 == ent then
 				CONSTRAINT_MEM[ent][data.Ent2] = CONSTRAINT_MEM[ent][data.Ent2] or {}
 				table.insert(CONSTRAINT_MEM[ent][data.Ent2], data)
@@ -479,7 +482,10 @@ local function Request(ply)
 		
 		if not constraints then continue end
 		
-		for cEnt, Data in pairs(constraints) do
+		for fakeEnt, Data in pairs(constraints) do
+			local cEnt = ASSOCIATION_REVERSE[fakeEnt]
+			if not cEnt then continue end
+			
 			if DONE_MEM[ent][cEnt] then continue end
 			
 			DONE_MEM[cEnt] = DONE_MEM[cEnt] or {}
@@ -497,9 +503,7 @@ local function Request(ply)
 				end
 				
 				local firstEntity = ent
-				local secondEntity = ASSOCIATION_REVERSE[cEnt]
-				
-				if not IsValid(secondEntity) then continue end
+				local secondEntity = cEnt
 				
 				local args = {firstEntity, secondEntity, cData.Bone1 or 0, cData.Bone2 or 0}
 				
