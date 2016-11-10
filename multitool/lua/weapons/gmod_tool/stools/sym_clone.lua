@@ -316,6 +316,20 @@ local function DoSafeCopy(data, ent)
 		end
 	end
 	
+	local function ApplyTableChanges()
+		if not IsValid(newEnt) then return end
+		
+		local newTab = newEnt:GetTable()
+		
+		for k, v in pairs(deepCopy) do
+			if newTab[k] == nil then
+				newTab[k] = v
+			elseif type(newTab[k]) == 'table' then
+				table.Merge(newTab[k], v)
+			end
+		end
+	end
+	
 	local phys = ent:GetPhysicsObject()
 	local newPhys = newEnt:GetPhysicsObject()
 	
@@ -334,6 +348,8 @@ local function DoSafeCopy(data, ent)
 		
 		newPhys:EnableMotion(phys:IsMotionEnabled())
 	end
+	
+	timer.Simple(0, ApplyTableChanges)
 	
 	return newEnt
 end
