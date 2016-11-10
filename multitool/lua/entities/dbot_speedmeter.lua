@@ -197,7 +197,7 @@ function ENT:Draw()
 	
 	local f = self:GetFontName()
 	surface.SetFont(f)
-	local mult = 0.3
+	local mult = self:GetDisplaySize()
 	local build = {}
 	
 	for i, data in ipairs(self.DisplayUnits) do

@@ -46,6 +46,7 @@ TOOL.ClientConVar = {
 	weld_to_prop = 1,
 	
 	font = 0,
+	size = 0.3,
 	
 	r = 255,
 	g = 255,
@@ -101,6 +102,8 @@ function TOOL:SetupVars(ent)
 	ent:SetBackgroundGreen(math.Clamp(vars.bg, 0, 255))
 	ent:SetBackgroundBlue(math.Clamp(vars.bb, 0, 255))
 	ent:SetBackgroundAlpha(math.Clamp(vars.ba, 0, 255))
+	
+	ent:SetDisplaySize(math.Clamp(vars.size, 0, 1))
 end
 
 if CLIENT then
@@ -124,6 +127,8 @@ if CLIENT then
 		RunConsoleCommand(CURRENT_TOOL_MODE_VARS .. 'bb', ent:GetBackgroundBlue())
 		RunConsoleCommand(CURRENT_TOOL_MODE_VARS .. 'ba', ent:GetBackgroundAlpha())
 		
+		RunConsoleCommand(CURRENT_TOOL_MODE_VARS .. 'size', ent:GetDisplaySize())
+		
 		chat.AddText('Settings copied')
 	end)
 end
@@ -138,6 +143,7 @@ function TOOL.BuildCPanel(Panel)
 	Panel:CheckBox('Smooth the speed change', CURRENT_TOOL_MODE_VARS .. 'smooth')
 	Panel:CheckBox('Weld speedmeter to world', CURRENT_TOOL_MODE_VARS .. 'weld_to_world')
 	Panel:CheckBox('Weld speedmeter to prop', CURRENT_TOOL_MODE_VARS .. 'weld_to_prop')
+	Panel:NumSlider('Screen size', CURRENT_TOOL_MODE_VARS .. 'size', 0, 1, 2)
 	
 	local lab = Label('Per second', Panel)
 	Panel:AddItem(lab)
