@@ -18,18 +18,18 @@ limitations under the License.
 local CURRENT_TOOL_MODE = 'speedmeter'
 local CURRENT_TOOL_MODE_VARS = 'speedmeter_'
 
-TOOL.Name = 'Speedmeter'
+TOOL.Name = 'Speedometer'
 TOOL.Category = 'Construction'
 
 if CLIENT then
-	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.name', 'Speedmeter')
-	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.desc', 'Creates a speedmeter!')
+	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.name', 'Speedometer')
+	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.desc', 'Creates a Speedometer!')
 	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.0', '')
 	
-	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.left', 'Create or update a speedmeter')
-	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.right', 'Copy speedmeter\'s properties')
+	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.left', 'Create or update a Speedometer')
+	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.right', 'Copy Speedometer\'s properties')
 	
-	language.Add('Undone_Speedmeter', 'Undone speedmeter')
+	language.Add('Undone_Speedmeter', 'Undone Speedometer')
 else
 	util.AddNetworkString(CURRENT_TOOL_MODE .. '.copy')
 end
@@ -141,8 +141,8 @@ function TOOL.BuildCPanel(Panel)
 	Panel:Clear()
 	
 	Panel:CheckBox('Smooth the speed change', CURRENT_TOOL_MODE_VARS .. 'smooth')
-	Panel:CheckBox('Weld speedmeter to world', CURRENT_TOOL_MODE_VARS .. 'weld_to_world')
-	Panel:CheckBox('Weld speedmeter to prop', CURRENT_TOOL_MODE_VARS .. 'weld_to_prop')
+	Panel:CheckBox('Weld Speedometer to world', CURRENT_TOOL_MODE_VARS .. 'weld_to_world')
+	Panel:CheckBox('Weld Speedometer to prop', CURRENT_TOOL_MODE_VARS .. 'weld_to_prop')
 	Panel:NumSlider('Screen size', CURRENT_TOOL_MODE_VARS .. 'size', 0, 1, 2)
 	
 	local lab = Label('Per second', Panel)
