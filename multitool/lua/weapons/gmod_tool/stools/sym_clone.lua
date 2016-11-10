@@ -247,7 +247,7 @@ local function SymmetryPositions(tabIn, pos, ang)
 		localPos.y = -localPos.y
 		
 		localAng.y = -localAng.y
-		localAng.r = 180 - localAng.r
+		localAng.r = -localAng.r
 		
 		table.insert(tabOut, {LocalToWorld(localPos, localAng, pos, ang)})
 	end
