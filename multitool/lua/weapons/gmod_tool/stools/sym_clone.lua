@@ -72,6 +72,14 @@ TOOL.ClientConVar = {
 	ghost_obey_colors = 1,
 }
 
+local function CanUse(ply, ent)
+	return IsValid(ent) and
+		not ent:IsPlayer() and
+		not ent:IsNPC() and
+		not ent:IsVehicle() and
+		(not ent.CPPICanTool or ent:CPPICanTool(ply, CURRENT_TOOL_MODE))
+end
+
 function TOOL:SelectEntities(tr)
 	local vars = {}
 	
@@ -118,11 +126,15 @@ function TOOL:SelectEntities(tr)
 	
 	local reply = {}
 	
+	local ply = self:GetOwner()
+	
 	for k, v in pairs(MEM) do
-		local phys = v:GetPhysicsObject()
-		
-		if phys:IsValid() then
-			table.insert(reply, {v, phys})
+		if CanUse(ply, v) then
+			local phys = v:GetPhysicsObject()
+			
+			if phys:IsValid() then
+				table.insert(reply, {v, phys})
+			end
 		end
 	end
 	
@@ -241,14 +253,6 @@ local function SymmetryPositions(tabIn, pos, ang)
 	end
 	
 	return tabOut
-end
-
-local function CanUse(ply, ent)
-	return IsValid(ent) and
-		not ent:IsPlayer() and
-		not ent:IsNPC() and
-		not ent:IsVehicle() and
-		(not ent.CPPICanTool or ent:CPPICanTool(ply, CURRENT_TOOL_MODE))
 end
 
 local function DoSafeCopy(data, ent)
