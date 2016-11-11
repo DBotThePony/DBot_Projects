@@ -222,7 +222,7 @@ if CLIENT then
 	
 	net.Receive(CURRENT_TOOL_MODE .. '.Clear', function()
 		SelectTable = {}
-		chat.AddText('Selection Cleared!')
+		GTools.ChatPrint('Selection Cleared!')
 	end)
 	
 	net.Receive(CURRENT_TOOL_MODE .. '.Apply', function()
@@ -231,7 +231,7 @@ if CLIENT then
 		net.SendToServer()
 		
 		SelectTable = {}
-		chat.AddText('Selection is about to be Applied!')
+		GTools.ChatPrint('Selection is about to be Applied!')
 	end)
 	
 	net.Receive(CURRENT_TOOL_MODE .. '.MultiClear', function()
@@ -240,7 +240,7 @@ if CLIENT then
 		net.SendToServer()
 		
 		SelectTable = {}
-		chat.AddText('Clearing all materials and select table')
+		GTools.ChatPrint('Clearing all materials and select table')
 	end)
 	
 	net.Receive(CURRENT_TOOL_MODE .. '.MultiSelect', function()
@@ -271,7 +271,7 @@ if CLIENT then
 			end
 		end
 		
-		chat.AddText('Auto-Selected ' .. count .. ' entities')
+		GTools.ChatPrint('Auto-Selected ' .. count .. ' entities')
 	end)
 	
 	local MatCache = {}

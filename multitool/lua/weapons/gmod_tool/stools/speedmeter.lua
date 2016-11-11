@@ -129,7 +129,7 @@ if CLIENT then
 		
 		RunConsoleCommand(CURRENT_TOOL_MODE_VARS .. 'size', ent:GetDisplaySize())
 		
-		chat.AddText('Settings copied')
+		GTools.ChatPrint('Settings copied')
 	end)
 end
 

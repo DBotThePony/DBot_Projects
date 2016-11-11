@@ -272,8 +272,8 @@ local function SymmetryPositions(tabIn, pos, ang)
 end
 
 local function Catch(err)
-	print('[SYMMETRY CLONER CATCHED ERROR] ', err)
-	print(debug.traceback())
+	GTools.AdminPrint('[SYMMETRY CLONER CATCHED ERROR] ', err)
+	GTools.AdminPrint(debug.traceback())
 end
 
 local function DoSafeCopy(data, ent)
@@ -442,7 +442,7 @@ local function CreateConstraintByTable(fEnt, sEnt, cData, doSymmetry)
 	local func = constraint[tp]
 	
 	if not func then
-		print('[Symmetry Clonner] Unknown Constraint Type: ' .. tp .. '!')
+		GTools.AdminPrint('[Symmetry Clonner] Unknown Constraint Type: ' .. tp .. '!')
 		return false
 	end
 	
@@ -511,7 +511,7 @@ local function CreateConstraintByTable(fEnt, sEnt, cData, doSymmetry)
 	local status, constraintEntity = pcall(func, unpack(args))
 	
 	if not status then
-		print('[CAUGHT ERROR] ' .. constraintEntity)
+		GTools.AdminPrint('[CAUGHT ERROR] ' .. constraintEntity)
 		return false
 	elseif constraintEntity then
 		return constraintEntity
@@ -650,7 +650,9 @@ function SymmetryClonner_Clone(entPoint, Ents, ply)
 			end
 		end
 		
-		table.insert(toContinue, ent)
+		if ent:IsValid() then
+			table.insert(toContinue, ent)
+		end
 	end
 	
 	if #toContinue == 0 then return {} end -- Oops
@@ -752,13 +754,15 @@ function SymmetryClonner_Clone(entPoint, Ents, ply)
 	
 	if ply then
 		undo.Finish()
+		
+		GTools.AdminPrint(ply:Nick() .. ' cloned total ' .. #createdEntities .. ' entities (including constraints), and total ' .. #entsWithMods .. ' from the requested ' .. #Ents)
 	end
 	
 	return createdEntities
 end
 
 local function Request(ply)
-	print(ply:Nick() .. ' is symmetrying entities')
+	GTools.AdminPrint(ply:Nick() .. ' is symmetrying entities')
 	
 	local entPoint = net.ReadEntity()
 	if not IsValid(entPoint) then return end
@@ -848,10 +852,10 @@ if CLIENT then
 			
 			if new ~= SELECTED_ENTITY then
 				SELECTED_ENTITY = new
-				chat.AddText('Primary Entity selected')
+				GTools.ChatPrint('Primary Entity selected')
 			else
 				SELECTED_ENTITY = nil
-				chat.AddText('Primary Entity unselected')
+				GTools.ChatPrint('Primary Entity unselected')
 			end
 			
 			for i, ent in ipairs(SELECT_TABLE) do
@@ -875,7 +879,7 @@ if CLIENT then
 			
 			if read == SELECTED_ENTITY then
 				SELECTED_ENTITY = nil
-				chat.AddText('Primary Entity unselected')
+				GTools.ChatPrint('Primary Entity unselected')
 			end
 			
 			table.insert(SELECT_TABLE, read)
@@ -898,18 +902,18 @@ if CLIENT then
 				end
 			end
 			
-			chat.AddText('Auto Selected ' .. newCount .. ' entities')
+			GTools.ChatPrint('Auto Selected ' .. newCount .. ' entities')
 		end,
 		
 		clear = function()
 			SELECTED_ENTITY = nil
 			SELECT_TABLE = {}
 			
-			chat.AddText('Selection Cleared')
+			GTools.ChatPrint('Selection Cleared')
 		end,
 		
 		paste = function()
-			chat.AddText('Selection is about to be applied!')
+			GTools.ChatPrint('Selection is about to be applied!')
 			
 			ClearSelectedItems()
 			

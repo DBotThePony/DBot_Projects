@@ -169,7 +169,7 @@ else
 			table.insert(DisplayTable, net.ReadEntity())
 		end
 		
-		chat.AddText('Counted ' .. #DisplayTable .. ' physics objects')
+		GTools.ChatPrint('Counted ' .. #DisplayTable .. ' physics objects')
 	end)
 	
 	hook.Add('PostDrawWorldToolgun', 'multifreeze', function(ply, weapon, mode)

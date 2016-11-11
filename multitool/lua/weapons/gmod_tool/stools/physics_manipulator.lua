@@ -173,9 +173,9 @@ if CLIENT then
 		end
 		
 		if IGNORE_CHANGE then
-			chat.AddText('Properties copied')
+			GTools.ChatPrint('Properties copied')
 		else
-			chat.AddText('Properties copied and applied to selected entity')
+			GTools.ChatPrint('Properties copied and applied to selected entity')
 		end
 		
 		IGNORE_CHANGE = false

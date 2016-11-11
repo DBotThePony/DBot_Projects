@@ -17,6 +17,29 @@ limitations under the License.
 
 module('GTools', package.seeall)
 
+surface.CreateFont('MultiTool.ScreenHeader', {
+	font = 'Roboto',
+	size = 48,
+	weight = 800,
+})
+
+function MultiTool_AddSorterChoices(pnl)
+	pnl:AddChoice('Unsorted', '1')
+	pnl:AddChoice('Select the nearests to fire point first', '2')
+	pnl:AddChoice('Select the far to fire point first', '3')
+	pnl:AddChoice('Select x - X', '4')
+	pnl:AddChoice('Select X - x', '5')
+	pnl:AddChoice('Select y - Y', '6')
+	pnl:AddChoice('Select Y - y', '7')
+	
+	pnl:AddChoice('Select x+y - X+Y', '8')
+	pnl:AddChoice('Select X+Y - x+y', '9')
+	pnl:AddChoice('Select x+Y - X+y', '10')
+	pnl:AddChoice('Select X+y - x+Y', '11')
+end
+
+_G.MultiTool_AddSorterChoices = MultiTool_AddSorterChoices
+
 function BuildPhysgunMenu(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
@@ -139,8 +162,44 @@ function About(Panel)
 	end
 end
 
+function PreRender()
+	if not LocalPlayer():IsValid() then return end
+	local wep = LocalPlayer():GetActiveWeapon()
+	if not wep:IsValid() then return end
+	
+	if wep:GetClass() ~= 'gmod_tool' then return end
+	
+	pcall(hook.Run, 'PreDrawAnythingToolgun', LocalPlayer(), wep, wep:GetMode())
+end
+
+function PostDrawTranslucentRenderables(a, b)
+	if a or b then return end
+	if not LocalPlayer():IsValid() then return end
+	local wep = LocalPlayer():GetActiveWeapon()
+	if not wep:IsValid() then return end
+	
+	if wep:GetClass() ~= 'gmod_tool' then return end
+	
+	hook.Run('PostDrawWorldToolgun', LocalPlayer(), wep, wep:GetMode())
+end
+
+function PreDrawOpaqueRenderables(a, b)
+	if a or b then return end
+	if not LocalPlayer():IsValid() then return end
+	local wep = LocalPlayer():GetActiveWeapon()
+	if not wep:IsValid() then return end
+	
+	if wep:GetClass() ~= 'gmod_tool' then return end
+	
+	hook.Run('PreDrawWorldToolgun', LocalPlayer(), wep, wep:GetMode())
+end
+
 hook.Add('PopulateToolMenu', 'GTools.SpawnMenu', function()
 	spawnmenu.AddToolMenuOption('Utilities', 'User', 'GTool.About', 'About GTools', '', '', About)
 	spawnmenu.AddToolMenuOption('Utilities', 'User', 'GTool.PhysgunSettings', 'Physgun Settings', '', '', BuildPhysgunMenu)
 	spawnmenu.AddToolMenuOption('Utilities', 'Admin', 'GTool.PhysgunSettingsAdmin', 'Physgun Settings', '', '', BuildPhysgunMenuAdmin)
 end)
+
+hook.Add('PostDrawTranslucentRenderables', 'GTools.DrawHooks', PostDrawTranslucentRenderables)
+hook.Add('PreDrawOpaqueRenderables', 'GTools.DrawHooks', PreDrawOpaqueRenderables)
+hook.Add('PreRender', 'GTools.DrawHooks', PreRender)

@@ -308,7 +308,7 @@ if CLIENT then
 	net.Receive(CURRENT_TOOL_MODE .. '.Clear', function()
 		SelectTable = {}
 		
-		chat.AddText('Selection Cleared!')
+		GTools.ChatPrint('Selection Cleared!')
 		
 		RebuildListFunc()
 	end)
@@ -320,7 +320,7 @@ if CLIENT then
 		
 		SelectTable = {}
 		
-		chat.AddText('Selection is about to be Applied!')
+		GTools.ChatPrint('Selection is about to be Applied!')
 		
 		RebuildListFunc()
 	end)
@@ -332,7 +332,7 @@ if CLIENT then
 		
 		SelectTable = {}
 		
-		chat.AddText('Clearing colors and select table')
+		GTools.ChatPrint('Clearing colors and select table')
 		
 		RebuildListFunc()
 	end)
@@ -367,7 +367,7 @@ if CLIENT then
 		
 		RebuildListFunc()
 		
-		chat.AddText('Auto-Selected ' .. count .. ' entities')
+		GTools.ChatPrint('Auto-Selected ' .. count .. ' entities')
 	end)
 	
 	hook.Add('PostDrawWorldToolgun', CURRENT_TOOL_MODE, function(ply, weapon, mode)
