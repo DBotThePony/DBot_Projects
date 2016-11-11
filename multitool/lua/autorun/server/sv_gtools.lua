@@ -18,6 +18,7 @@ limitations under the License.
 module('GTools', package.seeall)
 
 util.AddNetworkString('GTools.AdminMessage')
+util.AddNetworkString('GTools.PrintMessage')
 
 DISABLE_PHYSGUN_SETUP_BY_ADMINS = CreateConVar('gtools_disable_physgun_config', '0', {FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Disable ability to modify physgun settings from superadmin clients')
 
@@ -164,6 +165,12 @@ function AdminPrint(...)
 	net.Start('GTools.AdminMessage')
 	net.WriteTable{...}
 	net.Send(filter)
+end
+
+function PChatPrint(ply, ...)
+	net.Start('GTools.PrintMessage')
+	net.WriteTable{...}
+	net.Send(ply)
 end
 
 AdminMessage = AdminPrint

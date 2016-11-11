@@ -194,6 +194,17 @@ function PreDrawOpaqueRenderables(a, b)
 	hook.Run('PreDrawWorldToolgun', LocalPlayer(), wep, wep:GetMode())
 end
 
+local Green = Color(0, 200, 0)
+local Gray = Color(200, 200, 200)
+
+function ChatPrint(...)
+	chat.AddText(Green, '[GTools] ', Gray, ...)
+end
+
+net.Receive('GTools.PrintMessage', function()
+	ChatPrint(unpack(net.ReadTable()))
+end)
+
 hook.Add('PopulateToolMenu', 'GTools.SpawnMenu', function()
 	spawnmenu.AddToolMenuOption('Utilities', 'User', 'GTool.About', 'About GTools', '', '', About)
 	spawnmenu.AddToolMenuOption('Utilities', 'User', 'GTool.PhysgunSettings', 'Physgun Settings', '', '', BuildPhysgunMenu)

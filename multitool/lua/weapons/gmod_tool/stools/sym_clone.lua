@@ -1090,7 +1090,7 @@ function TOOL:RightClick(tr)
 	self:GetSWEP().SymmLastRightClick = self:GetSWEP().SymmLastRightClick or CurTime()
 	if self:GetSWEP().SymmLastRightClick > CurTime() then
 		if SERVER then
-			self:GetOwner():ChatPrint('Stop spamming!')
+			GTools.PChatPrint(self:GetOwner(), 'Stop spamming!')
 		end
 		
 		return false

@@ -24,8 +24,3 @@ function Message(...)
 	MsgC(Green, '[GTools] ', Gray, ...)
 	MsgC('\n')
 end
-
-function ChatPrint(...)
-	if SERVER then return end
-	chat.AddText(Green, '[GTools] ', Gray, ...)
-end
