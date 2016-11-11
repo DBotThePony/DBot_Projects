@@ -15,7 +15,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
+GTools = GTools or {}
+
 module('GToolsHUD', package.seeall)
+
+_G.GTools.HUD = _G.GToolsHUD
 
 ENABLED = CreateConVar('gtool_draw', '1', {FCVAR_ARCHIVE}, 'Draw stuff')
 DRAW_COORDINATES = CreateConVar('gtool_draw_coordinates', '1', {FCVAR_ARCHIVE}, 'Draw directions near world borders')
