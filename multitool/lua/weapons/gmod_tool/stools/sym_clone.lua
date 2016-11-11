@@ -271,6 +271,11 @@ local function SymmetryPositions(tabIn, pos, ang)
 	return tabOut
 end
 
+local function Catch(err)
+	print('[SYMMETRY CLONER CATCHED ERROR] ', err)
+	print(debug.traceback())
+end
+
 local function DoSafeCopy(data, ent)
 	local newEnt = ents.Create(ent:GetClass())
 	newEnt:SetPos(data[1])
@@ -318,18 +323,8 @@ local function DoSafeCopy(data, ent)
 		end
 	end
 	
-	local function ApplyTableChanges()
-		if not IsValid(newEnt) then return end
-		
-		local newTab = newEnt:GetTable()
-		
-		for k, v in pairs(deepCopy) do
-			if newTab[k] == nil then
-				newTab[k] = v
-			elseif type(newTab[k]) == 'table' then
-				table.Merge(newTab[k], v)
-			end
-		end
+	if ent.GetNWVarTable then
+		deepCopy.NWVals = ent:GetNWVarTable()
 	end
 	
 	local phys = ent:GetPhysicsObject()
@@ -351,14 +346,81 @@ local function DoSafeCopy(data, ent)
 		newPhys:EnableMotion(phys:IsMotionEnabled())
 	end
 	
-	timer.Simple(0, ApplyTableChanges)
+	newEnt:GetTable().Symm_DeepTableClone = deepCopy
 	
-	return newEnt
+	DoPropSpawnedEffect(newEnt)
+	
+	return newEnt, deepCopy
 end
 
-local function Catch(err)
-	print('[CATCHED ERROR] ', err)
-	print(debug.traceback())
+local function LoopedMerge(to, source)
+	for k, v in pairs(source) do
+		if k ~= '__index' and k ~= '__newindex' then
+			local t = type(to[k])
+			
+			if t == 'nil' then
+				to[k] = v
+			elseif t == 'table' and to[k] ~= source and to[k] ~= to then
+				LoopedMerge(to[k], v)
+			end
+		end
+	end
+end
+
+local function ApplyEntityMods(ply, ent, source)
+	local tab = ent:GetTable()
+	local class = ent:GetClass()
+	
+	for k, v in pairs(source) do
+		if k == 'NWVals' then continue end
+		
+		if tab[k] == nil then
+			tab[k] = v
+		elseif type(tab[k]) == 'table' then
+			LoopedMerge(tab[k], v)
+		end
+	end
+	
+	if source.NWVals then
+		for key, value in pairs(source.NWVals) do
+			local Type = type(value)
+			
+			if Type == 'Angle' then
+				ent:SetNWAngle(key, value)
+			elseif Type == 'boolean' then
+				ent:SetNWBool(key, value)
+			elseif Type == 'number' then
+				ent:SetNWFloat(key, value)
+				ent:SetNWInt(key, value)
+			elseif Type == 'string' then
+				ent:SetNWString(key, value)
+			elseif Type == 'Vector' then
+				ent:SetNWVector(key, value)
+			elseif IsEntity(value) then
+				ent:SetNWEntity(key, value)
+			end
+		end
+	end
+	
+	if ply then
+		if source.EntityMods then
+			for name, data in pairs(source.EntityMods) do
+				local func = duplicator.EntityModifiers[name]
+				
+				if func then
+					xpcall(func, Catch, ply, ent, data)
+				end
+			end
+		end
+		
+		if ent.PostEntityPaste then
+			xpcall(ent.PostEntityPaste, Catch, ent, ply, ent, {ent})
+		end
+		
+		if ent.OnDuplicated then
+			xpcall(ent.OnDuplicated, Catch, ent)
+		end
+	end
 end
 
 local function DPP_AntiSpamEnt(self, ply, ent)
@@ -594,6 +656,7 @@ function SymmetryClonner_Clone(entPoint, Ents, ply)
 	if #toContinue == 0 then return {} end -- Oops
 	
 	local createdEntities = {}
+	local entsWithMods = {}
 	
 	local DONE_MEM = {}
 	
@@ -604,6 +667,7 @@ function SymmetryClonner_Clone(entPoint, Ents, ply)
 	
 	for i, ent in ipairs(toContinue) do
 		table.insert(createdEntities, ent)
+		table.insert(entsWithMods, ent)
 		
 		if ply then
 			undo.AddEntity(ent)
@@ -672,6 +736,16 @@ function SymmetryClonner_Clone(entPoint, Ents, ply)
 			
 			if ply then
 				undo.AddEntity(constraintEntity)
+			end
+		end
+	end
+	
+	if ply then
+		for i, ent in ipairs(entsWithMods) do
+			local tab = ent:GetTable()
+			
+			if tab and tab.Symm_DeepTableClone then
+				xpcall(ApplyEntityMods, Catch, ply, ent, tab.Symm_DeepTableClone)
 			end
 		end
 	end
