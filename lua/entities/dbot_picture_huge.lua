@@ -15,6 +15,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
+AddCSLuaFile()
+
 ENT.Type = 'anim'
 ENT.Base = 'dbot_picture_base'
 ENT.PrintName = '3x3 Picture'

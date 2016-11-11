@@ -15,6 +15,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
+include('shared.lua')
+AddCSLuaFile('cl_init.lua')
+
 function ENT:Initialize()
 	self:SetModel('models/Combine_Helicopter/helicopter_bomb01.mdl')
 	self:SetModelScale(0.4)

@@ -15,6 +15,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
+AddCSLuaFile('cl_init.lua')
+
+ENT.Type = 'anim'
+ENT.PrintName = 'SCP-409 Fragment'
+ENT.Author = 'DBot'
+ENT.Base = 'dbot_scp409'
+
 function ENT:Initialize()
 	self:SetModel('models/props_combine/breenbust_chunk03.mdl')
 	

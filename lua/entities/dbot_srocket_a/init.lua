@@ -15,6 +15,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
+AddCSLuaFile('cl_init.lua')
+
+ENT.PrintName = 'DBot Rocket'
+ENT.Author = 'DBot'
+ENT.Type = 'anim'
+
+function ENT:SetupDataTables()
+	self:NetworkVar('Entity', 0, 'CurTarget')
+end
+
+
 function ENT:Initialize()
 	self:SetModel('models/weapons/w_missile_closed.mdl')
 	

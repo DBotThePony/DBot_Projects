@@ -15,6 +15,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
+AddCSLuaFile('cl_init.lua')
+
+ENT.Type = 'anim'
+ENT.PrintName = 'SCP-596'
+ENT.Author = 'DBot'
+ENT.Spawnable = true
+ENT.AdminSpawnable = true
+ENT.AdminOnly = true
+
 function ENT:Initialize()
 	self:SetModel('models/props_combine/breenbust.mdl')
 	

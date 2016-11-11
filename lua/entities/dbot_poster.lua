@@ -15,6 +15,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
+AddCSLuaFile()
+
 ENT.Type = 'anim'
 ENT.Base = 'dbot_poster_base'
 ENT.PrintName = 'Poster'

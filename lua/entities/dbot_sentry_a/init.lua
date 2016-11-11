@@ -15,6 +15,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
+AddCSLuaFile('cl_init.lua')
+
+ENT.PrintName = 'DBot Artilery Sentry'
+ENT.Author = 'DBot'
+ENT.Type = 'anim'
+ENT.Base = 'dbot_sentry'
+
+function ENT:SetupDataTables()
+	self:NetworkVar('Bool', 0, 'IsLocking')
+	self:NetworkVar('Entity', 0, 'LockTarget')
+	self:NetworkVar('Float', 0, 'LockTime')
+end
+
 hook.Add('EntityTakeDamage', 'dbot_sentry_r', function(ent, dmg)
 	local a = dmg:GetAttacker()
 	if not IsValid(a) then return end

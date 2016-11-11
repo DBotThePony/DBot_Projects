@@ -15,6 +15,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
+include('shared.lua')
+AddCSLuaFile('cl_init.lua')
+
 function ENT:PhysicsCollide(data)
 	local ent = data.HitEntity
 	if not IsValid(ent) then return end

@@ -15,6 +15,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
+include('shared.lua')
+AddCSLuaFile('cl_init.lua')
+
 function ENT:GetRealAngle(pos)
 	return (- self:GetPos() + pos):Angle()
 end

@@ -15,6 +15,26 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
+AddCSLuaFile('cl_init.lua')
+
+ENT.PrintName = 'DBot Rocket Sentry'
+ENT.Author = 'DBot'
+ENT.Category = 'DBot'
+ENT.Type = 'anim'
+ENT.Base = 'dbot_sentry'
+ENT.Spawnable = true
+ENT.AdminSpawnable = true
+ENT.AdminOnly = true
+
+function ENT:SetupDataTables()
+	self:NetworkVar('Bool', 0, 'IsLocking')
+	self:NetworkVar('Entity', 0, 'LockTarget')
+	self:NetworkVar('Float', 0, 'LockTime')
+	
+	self:NetworkVar('Int', 0, 'Frags')
+	self:NetworkVar('Int', 1, 'PFrags')
+end
+
 local function EntityTakeDamage(ent, dmg)
 	local a = dmg:GetAttacker()
 	if not IsValid(a) then return end

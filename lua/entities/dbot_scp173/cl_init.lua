@@ -17,6 +17,8 @@ limitations under the License.
 
 --Same as DSentry
 
+include('shared.lua')
+
 function ENT:Draw()
 	self:DrawModel()
 end

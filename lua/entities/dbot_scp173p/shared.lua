@@ -15,6 +15,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
+AddCSLuaFile()
+
 ENT.Base = 'dbot_scp173'
 ENT.Type = 'anim'
 ENT.PrintName = 'Pony'
