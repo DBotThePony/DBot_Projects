@@ -201,8 +201,56 @@ function ChatPrint(...)
 	chat.AddText(Green, '[GTools] ', Gray, ...)
 end
 
+function AutoSelectOptions(Panel, ToolClass)
+	local Lab = Label('Auto-select settings')
+	Lab:SetDark(true)
+	Panel:AddItem(Lab)
+	
+	Panel:NumSlider('Auto Select Range', ToolClass .. '_select_range', 1, 1024, 0)
+	Panel:CheckBox('Auto Select by Model', ToolClass .. '_select_model')
+	Panel:CheckBox('Auto Select by Color', ToolClass .. '_select_color')
+	Panel:CheckBox('Auto Select inverts selection', ToolClass .. '_select_invert')
+	Panel:CheckBox('Select only constrained entities', ToolClass .. '_select_only_constrained')
+	Panel:CheckBox('Print auto selection into console', ToolClass .. '_select_print')
+	
+	local Lab = Label('Firing at entity with color will invert that option\nEntities without color will be selected instead')
+	Lab:SetDark(true)
+	Lab:SizeToContents()
+	Panel:AddItem(Lab)
+	
+	Panel:CheckBox('Auto Select by Material', ToolClass .. '_select_material')
+	
+	local Lab = Label('Note: It is strict lookup. Material mismatch - don\'t select')
+	Lab:SetDark(true)
+	Panel:AddItem(Lab)
+	
+	local combo = Panel:ComboBox('Select Sort Mode', ToolClass .. '_select_sort')
+	
+	MultiTool_AddSorterChoices(combo)
+end
+
+function GenericSelectPicker(Panel, ToolClass)
+	local Lab = Label('Entity select color')
+	Lab:SetDark(true)
+	Lab:SizeToContents()
+	Panel:AddItem(Lab)
+	
+	local mixer = vgui.Create('DColorMixer', Panel)
+	Panel:AddItem(mixer)
+	mixer:SetConVarR(ToolClass .. '_select_r')
+	mixer:SetConVarG(ToolClass .. '_select_g')
+	mixer:SetConVarB(ToolClass .. '_select_b')
+	mixer:SetAlphaBar(false)
+	
+	return mixer
+end
+
 net.Receive('GTools.PrintMessage', function()
 	ChatPrint(unpack(net.ReadTable()))
+end)
+
+net.Receive('GTools.ConsoleMessage', function()
+	Message(unpack(net.ReadTable()))
 end)
 
 hook.Add('PopulateToolMenu', 'GTools.SpawnMenu', function()
