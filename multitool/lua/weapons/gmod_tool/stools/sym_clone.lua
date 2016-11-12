@@ -127,7 +127,7 @@ function TOOL:SelectEntities(tr)
 			MTRL = tr.Entity:GetMaterial()
 		end
 		
-		for i, ent in ipairs(bools.select_mode and ents.FindInBox(tr.HitPos, vars.select_size) or ents.FindInSphere(tr.HitPos, vars.select_size)) do
+		for i, ent in ipairs(ents.FindInSphere(tr.HitPos, vars.select_size)) do
 			if bools.select_by_material then
 				if MTRL ~= ent:GetMaterial() then continue end
 			end

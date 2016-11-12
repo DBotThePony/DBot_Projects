@@ -350,13 +350,7 @@ function TOOL:LeftClick(tr)
 			local mode = ply:GetInfo(CURRENT_TOOL_MODE .. '_select_mode') == '1'
 			local smode = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_select_sort')) or 1
 			local dist = math.Clamp(tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_select_range')) or 512, 1, 1024)
-			local Find
-			
-			if mode then
-				Find = ents.FindInBox(tr.HitPos, dist)
-			else
-				Find = ents.FindInSphere(tr.HitPos, dist)
-			end
+			local Find = ents.FindInSphere(tr.HitPos, dist)
 			
 			local new = {}
 			
