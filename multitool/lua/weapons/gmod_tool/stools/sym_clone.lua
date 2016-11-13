@@ -583,9 +583,15 @@ function SymmetryClonner_Clone(entPoint, Ents, ply)
 			local class = ent:GetClass()
 			
 			if class == 'prop_physics' then
+				local can = hook.Run('PlayerSpawnObject', ply, ent:GetModel(), ent:GetSkin())
+				if can == false then continue end
+				
 				local can = hook.Run('PlayerSpawnProp', ply, ent:GetModel())
 				if can == false then continue end
 			elseif class == 'prop_ragdoll' then
+				local can = hook.Run('PlayerSpawnObject', ply, ent:GetModel(), ent:GetSkin())
+				if can == false then continue end
+				
 				local can = hook.Run('PlayerSpawnRagdoll', ply, ent:GetModel())
 				if can == false then continue end
 			elseif ent:IsWeapon() then

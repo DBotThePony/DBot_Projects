@@ -183,6 +183,13 @@ function TOOL:LeftClick(tr)
 	
 	local vars, bools = self:GetVars()
 	
+	local can = hook.Run('PlayerSpawnObject', self:GetOwner(), self:GetModel(), 0)
+	
+	if can == false then
+		GTools.PChatPrint(self:GetOwner(), 'Server is not allowing to use this model!')
+		return false
+	end
+	
 	ent.__MDL_Manipulator_oldModel = ent.__MDL_Manipulator_oldModel or ent:GetModel()
 	ent.__MDL_Manipulator_newModel = self:GetModel()
 	ent:SetModel(self:GetModel())
