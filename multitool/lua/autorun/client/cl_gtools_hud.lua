@@ -211,7 +211,20 @@ function PostDrawTranslucentRenderables(a, b)
 	local ent = tr.Entity
 	local mins, maxs = ent:WorldSpaceAABB()
 	local pos, ang = ent:GetPos(), ent:GetAngles()
-	local pDist = tr.HitPos:Distance(lpos)
+	
+	local pDist = math.min(
+		tr.HitPos:Distance(lpos),
+		pos:Distance(lpos),
+		
+		mins:Distance(lpos),
+		Vector(mins.x, mins.y, maxs.z):Distance(lpos),
+		Vector(mins.x, maxs.y, mins.z):Distance(lpos),
+		Vector(mins.x, maxs.y, maxs.z):Distance(lpos),
+		Vector(maxs.x, mins.y, mins.z):Distance(lpos),
+		Vector(maxs.x, mins.y, maxs.z):Distance(lpos),
+		Vector(maxs.x, maxs.y, mins.z):Distance(lpos),
+		maxs:Distance(lpos)
+	)
 	
 	local dMins, dMaxs, dCenter = ent:OBBMins(), ent:OBBMaxs(), ent:OBBCenter()
 	
