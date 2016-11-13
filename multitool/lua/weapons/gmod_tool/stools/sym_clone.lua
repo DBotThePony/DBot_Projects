@@ -434,6 +434,25 @@ local function CreateConstraintByTable(fEnt, sEnt, cData, doSymmetry)
 		table.insert(args, cData.torquelimit)
 		table.insert(args, cData.friction)
 		table.insert(args, cData.nocollide)
+	elseif tp == 'Motor' then
+		if doSymmetry then
+			cData.Entity[1].LPos.y = -cData.Entity[1].LPos.y
+			cData.Entity[2].LPos.y = -cData.Entity[2].LPos.y
+		end
+		
+		table.insert(args, cData.Entity[1].LPos)
+		table.insert(args, cData.Entity[2].LPos)
+		table.insert(args, cData.friction)
+		table.insert(args, cData.torque)
+		table.insert(args, cData.forcetime)
+		table.insert(args, cData.nocollide)
+		table.insert(args, cData.toggle)
+		table.insert(args, cData.pl)
+		table.insert(args, cData.forcelimit)
+		table.insert(args, cData.numpadkey_fwd)
+		table.insert(args, cData.numpadkey_bwd)
+		table.insert(args, cData.direction)
+		table.insert(args, cData.LocalAxis)
 	elseif tp == 'Ballsocket' then
 		table.insert(args, cData.LPos)
 		table.insert(args, cData.forcelimit)
