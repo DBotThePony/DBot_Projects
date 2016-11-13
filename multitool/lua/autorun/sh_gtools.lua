@@ -100,3 +100,7 @@ function HasValueFast(arr, val)
 end
 
 HaveValueFast = HasValueFast
+
+function PrintEntity(ent)
+	Message(color_white, tostring(ent), GTools.Grey, ', class ', color_white, ent:GetClass())
+end
