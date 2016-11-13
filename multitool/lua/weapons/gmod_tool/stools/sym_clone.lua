@@ -454,6 +454,10 @@ local function CreateConstraintByTable(fEnt, sEnt, cData, doSymmetry)
 		table.insert(args, cData.direction)
 		table.insert(args, cData.LocalAxis)
 	elseif tp == 'Ballsocket' then
+		if doSymmetry then
+			cData.LPos.y = -cData.LPos.LPos.y
+		end
+		
 		table.insert(args, cData.LPos)
 		table.insert(args, cData.forcelimit)
 		table.insert(args, cData.torquelimit)
@@ -650,7 +654,7 @@ function SymmetryClonner_Clone(entPoint, Ents, ply)
 			DONE_MEM[ent][cEnt] = true
 			
 			for i, cData in ipairs(Data) do
-				local constraintEntity = CreateConstraintByTable(ent, cEnt, cData)
+				local constraintEntity = CreateConstraintByTable(ent, cEnt, cData, true)
 				
 				if constraintEntity then
 					table.insert(createdEntities, constraintEntity)
