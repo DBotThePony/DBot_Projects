@@ -206,8 +206,9 @@ else
 		local sorted = {}
 		
 		for k = 1, #tab do
-			if tab[k] == filter then continue end
-			table.insert(sorted, tab[k])
+			if tab[k] ~= filter then
+				table.insert(sorted, tab[k])
+			end
 		end
 		
 		CustomSorter(sorted, pos)
