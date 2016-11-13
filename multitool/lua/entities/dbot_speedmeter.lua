@@ -206,9 +206,11 @@ function ENT:Draw()
 		end
 	end
 	
+	local maxs = self:OBBMaxs()
+	
 	local buildString = table.concat(build, '\n')
 	local w, h = surface.GetTextSize(buildString)
-	local toAdd = Vector(-w / 2 - 4, h + 34, 0) * mult
+	local toAdd = Vector(-w / 2 - 4, h + maxs.z / mult + 10, 0) * mult
 	toAdd:Rotate(finalAngle)
 	
 	cam.Start3D2D(pos + toAdd, finalAngle, mult)

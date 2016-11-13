@@ -165,6 +165,53 @@ function TOOL:CanManipulate(ent)
 	return true
 end
 
+local function OnDupePost(ply, ent, data)
+	ent.__MDL_Manipulator_oldModel = data.OriginalModel
+	ent.__MDL_Manipulator_newModel = data.Model
+	
+	ent:SetModel(data.Model)
+	
+	local oldPhys = ent:GetPhysicsObject()
+	
+	if oldPhys:IsValid() and (data.phys and ent:GetSolid() == SOLID_VPHYSICS or ply:IsAdmin() and data.force_phys) then
+		local oldMass = data.mass or oldPhys:IsValid() and oldPhys:GetMass() or 1
+		
+		ent:PhysicsInit(SOLID_VPHYSICS)
+		local phys = ent:GetPhysicsObject()
+		
+		if phys:IsValid() then
+			if data.keep_mass then
+				phys:SetMass(oldMass)
+			end
+		end
+	end
+end
+
+local function OnDupe(ply, ent, data)
+	if not data then return end
+	if not data.valid then return end
+	
+	if not util.IsValidModel(data.Model) or not util.IsValidProp(data.Model) then
+		GTools.PChatPrint(ply, 'Model of entity you pasted is not valid on serverside!')
+		return
+	end
+	
+	local can = hook.Run('PlayerSpawnObject', ply, data.Model, 0)
+	
+	if can == false then
+		GTools.PChatPrint(ply, 'Server is not allowing to use model of entity you pasted!')
+		return
+	end
+	
+	timer.Simple(0, function()
+		if not IsValid(ent) then return end
+		if not IsValid(ply) then return end
+		OnDupePost(ply, ent, data)
+	end)
+end
+
+duplicator.RegisterEntityModifier('mdl_manipulator', OnDupe)
+
 function TOOL:LeftClick(tr)
 	local ent = tr.Entity
 	if not self:CanManipulate(ent) then return false end
@@ -194,14 +241,30 @@ function TOOL:LeftClick(tr)
 	ent.__MDL_Manipulator_newModel = self:GetModel()
 	ent:SetModel(self:GetModel())
 	
-	local oldphys = ent:GetPhysicsObject()
+	local dataToStore = {
+		valid = true,
+		Model = self:GetModel(),
+		OriginalModel = ent.__MDL_Manipulator_oldModel,
+		awake = bools.awake,
+		keep_mass = bools.keep_mass,
+		phys = bools.phys,
+		force_phys = bools.force_phys,
+	}
 	
-	if oldphys:IsValid() and (bools.phys and ent:GetSolid() == SOLID_VPHYSICS or self:GetOwner():IsAdmin() and bools.force_phys) then
-		local oldMotion = oldphys:IsMotionEnabled()
-		local oldMass = oldphys:GetMass() or 1
+	local oldPhys = ent:GetPhysicsObject()
+	
+	if oldPhys:IsValid() and (bools.phys and ent:GetSolid() == SOLID_VPHYSICS or self:GetOwner():IsAdmin() and bools.force_phys) then
+		local oldMotion = oldPhys:IsValid() and oldPhys:IsMotionEnabled() or false
+		local oldMass = oldPhys:IsValid() and oldPhys:GetMass() or 1
 		
 		ent:PhysicsInit(SOLID_VPHYSICS)
 		local phys = ent:GetPhysicsObject()
+		
+		if oldPhys:IsValid() then
+			dataToStore.mass = oldMass
+		else
+			dataToStore.mass = phys:IsValid() and phys:GetMass() or 1
+		end
 		
 		if phys:IsValid() then
 			if bools.awake then
@@ -219,6 +282,8 @@ function TOOL:LeftClick(tr)
 			end
 		end
 	end
+	
+	duplicator.StoreEntityModifier(ent, 'mdl_manipulator', dataToStore)
 	
 	return true
 end
@@ -265,6 +330,8 @@ function TOOL:Reload(tr)
 			end
 		end
 	end
+	
+	duplicator.StoreEntityModifier(ent, 'mdl_manipulator', {})
 	
 	return true
 end
