@@ -279,7 +279,10 @@ local function DoSafeCopy(data, ent)
 		newPhys:EnableMotion(phys:IsMotionEnabled())
 	end
 	
-	newEnt:GetTable().Symm_DeepTableClone = deepCopy
+	local eTab = newEnt:GetTable()
+	eTab.Symm_DeepTableClone = deepCopy
+	eTab.twinOriginalPos = ent:GetPos()
+	eTab.twinOriginalAng = ent:GetAngles()
 	
 	DoPropSpawnedEffect(newEnt)
 	
@@ -476,16 +479,17 @@ local function CreateConstraintByTable(fEnt, sEnt, cData, doSymmetry)
 		table.insert(args, cData.material)
 	elseif tp == 'Axis' then
 		if doSymmetry then
-			cData.Entity[1].LPos.y = -cData.Entity[1].LPos.y
-			cData.Entity[2].LPos.y = -cData.Entity[2].LPos.y
+			cData.LPos1.y = -cData.LPos1.y
+			cData.LPos2.y = -cData.LPos2.y
 		end
 		
-		table.insert(args, cData.Entity[1].LPos)
-		table.insert(args, cData.Entity[2].LPos)
+		table.insert(args, cData.LPos1)
+		table.insert(args, cData.LPos2)
 		table.insert(args, cData.forcelimit)
 		table.insert(args, cData.torquelimit)
 		table.insert(args, cData.friction)
 		table.insert(args, cData.nocollide)
+		table.insert(args, cData.LocalAxis)
 	elseif tp == 'Motor' then
 		if doSymmetry then
 			cData.Entity[1].LPos.y = -cData.Entity[1].LPos.y
@@ -550,7 +554,6 @@ function SymmetryClonner_Clone(entPoint, Ents, ply)
 	end
 	
 	for k, ent in ipairs(Ents) do
-		CONSTRAINT_MEM[ent] = CONSTRAINT_MEM[ent] or {}
 		local constr = constraint.GetTable(ent)
 		
 		for i, data in ipairs(constr) do
@@ -561,23 +564,9 @@ function SymmetryClonner_Clone(entPoint, Ents, ply)
 			
 			if not INPUT_MEM[data.Ent1] or not INPUT_MEM[data.Ent2] then continue end -- Not our constraint!
 			
-			if data.Ent1 == ent then
-				CONSTRAINT_MEM[ent][data.Ent2] = CONSTRAINT_MEM[ent][data.Ent2] or {}
-				table.insert(CONSTRAINT_MEM[ent][data.Ent2], data)
-				
-				CONSTRAINT_MEM[data.Ent2] = CONSTRAINT_MEM[data.Ent2] or {}
-				CONSTRAINT_MEM[data.Ent2][ent] = CONSTRAINT_MEM[data.Ent2][ent] or {}
-				
-				table.insert(CONSTRAINT_MEM[data.Ent2][ent], data)
-			elseif data.Ent2 == ent then
-				CONSTRAINT_MEM[ent][data.Ent1] = CONSTRAINT_MEM[ent][data.Ent1] or {}
-				table.insert(CONSTRAINT_MEM[ent][data.Ent1], data)
-				
-				CONSTRAINT_MEM[data.Ent1] = CONSTRAINT_MEM[data.Ent1] or {}
-				CONSTRAINT_MEM[data.Ent1][ent] = CONSTRAINT_MEM[data.Ent1][ent] or {}
-				
-				table.insert(CONSTRAINT_MEM[data.Ent1][ent], data)
-			end
+			CONSTRAINT_MEM[data.Ent1] = CONSTRAINT_MEM[data.Ent1] or {}
+			CONSTRAINT_MEM[data.Ent1][data.Ent2] = CONSTRAINT_MEM[data.Ent1][data.Ent2] or {}
+			table.insert(CONSTRAINT_MEM[data.Ent1][data.Ent2], data)
 		end
 	end
 	
