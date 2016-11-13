@@ -227,6 +227,10 @@ function GenericAutoSelect(self, tr)
 	for i, ent in ipairs(Find) do
 		if not self:CanUseEntity(ent) then continue end
 		
+		if bools.select_owned and ent.CPPIGetOwner then
+			if ent:CPPIGetOwner() ~= ply then continue end
+		end
+		
 		if select_modifiers then
 			if bools.select_model and ent:GetModel() ~= MDL then continue end
 			if bools.select_material and ent:GetMaterial() ~= MATERIAL then continue end
@@ -245,4 +249,14 @@ function GenericAutoSelect(self, tr)
 	MultiTool_Sort(smode, tr.HitPos, new)
 	
 	return new
+end
+
+function CreateInputs(...)
+	if not WireLib then return end
+	return WireLib.CreateInputs(...)
+end
+
+function CreateOutputs(...)
+	if not WireLib then return end
+	return WireLib.CreateOutputs(...)
 end

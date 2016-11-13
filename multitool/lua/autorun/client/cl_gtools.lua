@@ -210,6 +210,7 @@ function AutoSelectOptions(Panel, ToolClass)
 	Panel:CheckBox('Auto Select by Model', ToolClass .. '_select_model')
 	Panel:CheckBox('Auto Select by Color', ToolClass .. '_select_color')
 	Panel:CheckBox('Auto Select inverts selection', ToolClass .. '_select_invert')
+	Panel:CheckBox('Auto Select only owned by you entities (Needs CPPI)', ToolClass .. '_select_owned')
 	Panel:CheckBox('Select only constrained entities', ToolClass .. '_select_only_constrained')
 	Panel:CheckBox('Print auto selection into console', ToolClass .. '_select_print')
 	

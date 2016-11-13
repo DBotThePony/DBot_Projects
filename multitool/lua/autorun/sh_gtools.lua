@@ -38,6 +38,7 @@ function AddAutoSelectConVars(tab)
 	tab.select_sort = 2
 	tab.select_invert = 0
 	tab.select_print = 0
+	tab.select_owned = 0
 end
 
 function CheckColor(col)
