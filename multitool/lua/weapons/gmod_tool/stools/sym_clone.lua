@@ -385,6 +385,8 @@ local function CreateConstraintByTable(fEnt, sEnt, cData, doSymmetry)
 		table.insert(args, cData.forcelimit)
 		table.insert(args, cData.nocollide)
 	elseif tp == 'Elastic' then
+		GTools.Prepend(args, cData.pl)
+		
 		if doSymmetry then
 			cData.Entity[1].LPos.y = -cData.Entity[1].LPos.y
 			cData.Entity[2].LPos.y = -cData.Entity[2].LPos.y
@@ -398,6 +400,56 @@ local function CreateConstraintByTable(fEnt, sEnt, cData, doSymmetry)
 		table.insert(args, cData.material)
 		table.insert(args, cData.width)
 		table.insert(args, tobool(cData.stretchonly))
+	elseif tp == 'Winch' then
+		GTools.Prepend(args, cData.pl)
+		
+		if doSymmetry then
+			cData.LPos1.y = -cData.LPos1.y
+			cData.LPos2.y = -cData.LPos2.y
+		end
+		
+		table.insert(args, cData.LPos1)
+		table.insert(args, cData.LPos2)
+		table.insert(args, cData.width)
+		table.insert(args, cData.key)
+		table.insert(args, cData.fwd_speed)
+		table.insert(args, cData.bwd_speed)
+		table.insert(args, cData.material)
+		table.insert(args, cData.toggle)
+	elseif tp == 'Hydraulic' then
+		if doSymmetry then
+			cData.LPos1.y = -cData.LPos1.y
+			cData.LPos2.y = -cData.LPos2.y
+		end
+		
+		table.insert(args, cData.LPos1)
+		table.insert(args, cData.LPos2)
+		table.insert(args, cData.Length1)
+		table.insert(args, cData.Length2)
+		table.insert(args, cData.width)
+		table.insert(args, cData.key)
+		table.insert(args, cData.fixed)
+		table.insert(args, cData.speed)
+		table.insert(args, cData.material)
+	elseif tp == 'Muscle' then
+		GTools.Prepend(args, cData.pl)
+		
+		if doSymmetry then
+			cData.LPos1.y = -cData.LPos1.y
+			cData.LPos2.y = -cData.LPos2.y
+		end
+		
+		table.insert(args, cData.LPos1)
+		table.insert(args, cData.LPos2)
+		table.insert(args, cData.Length1)
+		table.insert(args, cData.Length2)
+		table.insert(args, cData.width)
+		table.insert(args, cData.key)
+		table.insert(args, cData.fixed)
+		table.insert(args, cData.period)
+		table.insert(args, cData.amplitude)
+		table.insert(args, cData.starton)
+		table.insert(args, cData.material)
 	elseif tp == 'Rope' then
 		if doSymmetry then
 			cData.Entity[1].LPos.y = -cData.Entity[1].LPos.y

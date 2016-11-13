@@ -104,3 +104,11 @@ HaveValueFast = HasValueFast
 function PrintEntity(ent)
 	Message(color_white, tostring(ent), GTools.Grey, ', class ', color_white, ent:GetClass())
 end
+
+function Prepend(arr, val)
+	for i = #arr, 1, -1 do
+		arr[i + i] = arr[i]
+	end
+	
+	arr[1] = val
+end
