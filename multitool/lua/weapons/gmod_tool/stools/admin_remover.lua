@@ -60,6 +60,10 @@ TOOL.ClientConVar = {
 
 local ClientConVar = TOOL.ClientConVar
 
+hook.Add('CanTool', '!AdminRemover', function(ply, tr, mode)
+	if mode == CURRENT_TOOL_MODE then return true end
+end, -1)
+
 function TOOL:GrabCVars()
 	local vars = {}
 	local bools = {}
