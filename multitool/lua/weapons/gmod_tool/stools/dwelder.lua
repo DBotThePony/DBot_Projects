@@ -186,9 +186,9 @@ else
 	local POS_MEM = {}
 
 	local function CustomSorter(tab, pos)
-		for i = 1, #tab - 1 do
-			local a = tab[i]
-			local b = tab[i + 1]
+		for i = #tab, 2, -1 do
+			local a = tab[i - 1]
+			local b = tab[i]
 			
 			local posa = POS_MEM[a] or a:GetPos()
 			local posb = POS_MEM[b] or b:GetPos()
@@ -196,8 +196,8 @@ else
 			POS_MEM[b] = posb
 			
 			if posa:DistToSqr(pos) > posb:DistToSqr(pos) then
-				tab[i] = b
-				tab[i + 1] = a
+				tab[i - 1] = b
+				tab[i] = a
 			end
 		end
 	end
@@ -205,9 +205,9 @@ else
 	local function CreateSortedTable(tab, pos, filter)
 		local sorted = {}
 		
-		for k, v in ipairs(tab) do
-			if v == filter then continue end
-			table.insert(sorted, v)
+		for k = 1, #tab do
+			if tab[k] == filter then continue end
+			table.insert(sorted, tab[k])
 		end
 		
 		CustomSorter(sorted, pos)
