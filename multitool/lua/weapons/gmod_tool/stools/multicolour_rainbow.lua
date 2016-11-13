@@ -284,38 +284,8 @@ if CLIENT then
 	end)
 	
 	net.Receive('MultiColorRainbow.MultiSelect', function()
-		local read = GTools.ReadEntityList()
-		
-		for i, newEnt in ipairs(read) do
-			local hit = false
-			
-			for k, v in ipairs(SelectTable) do
-				if v == newEnt then
-					if cvar.select_invert:GetBool() then
-						table.remove(SelectTable, k)
-					end
-					
-					hit = true
-					break
-				end
-			end
-			
-			if not hit then
-				table.insert(SelectTable, newEnt)
-			end
-		end
-		
+		GTools.GenericMultiselectReceive(SelectTable, cvar)
 		RebuildListFunc()
-		
-		GTools.ChatPrint('Auto-Selected ' .. #read .. ' entities!')
-		
-		if cvar.select_print:GetBool() then
-			GTools.ChatPrint('Look into console for the list')
-			
-			for k, v in ipairs(read) do
-				GTools.PrintEntity(v)
-			end
-		end
 	end)
 	
 	hook.Add('PostDrawWorldToolgun', 'MultiColorDraw', function(ply, weapon, mode)
