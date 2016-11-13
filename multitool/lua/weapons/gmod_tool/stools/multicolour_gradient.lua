@@ -294,7 +294,7 @@ if CLIENT then
 	
 	net.Receive(CURRENT_TOOL_MODE .. '.ClearColors', function()
 		net.Start(CURRENT_TOOL_MODE .. '.ClearColors')
-		net.WriteTable(SelectTable)
+		GTools.WriteEntityList(SelectTable)
 		net.SendToServer()
 		
 		SelectTable = {}
@@ -391,7 +391,7 @@ else
 	end)
 	
 	net.Receive(CURRENT_TOOL_MODE .. '.ClearColors', function(len, ply)
-		local SelectTable = net.ReadTable()
+		local SelectTable = GTools.ReadEntityList()
 		
 		for i, ent in ipairs(SelectTable) do
 			if not CanUse(ply, ent) then continue end

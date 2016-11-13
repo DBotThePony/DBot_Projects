@@ -261,7 +261,7 @@ if CLIENT then
 	
 	net.Receive('MultiColorRainbow.Apply', function()
 		net.Start('MultiColorRainbow.Apply')
-		net.WriteTable(SelectTable)
+		GTools.WriteEntityList(SelectTable)
 		net.SendToServer()
 		
 		SelectTable = {}
@@ -273,7 +273,7 @@ if CLIENT then
 	
 	net.Receive('MultiColorRainbow.ClearColors', function()
 		net.Start('MultiColorRainbow.ClearColors')
-		net.WriteTable(SelectTable)
+		GTools.WriteEntityList(SelectTable)
 		net.SendToServer()
 		
 		SelectTable = {}
@@ -331,7 +331,7 @@ else
 	end)
 	
 	net.Receive('MultiColorRainbow.ClearColors', function(len, ply)
-		local SelectTable = net.ReadTable()
+		local SelectTable = GTools.ReadEntityList()
 		
 		for i, ent in ipairs(SelectTable) do
 			if not CanUse(ply, ent) then continue end
