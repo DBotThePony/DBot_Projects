@@ -216,7 +216,7 @@ function GenericAutoSelect(self, tr)
 		Find = ents.FindInSphere(tr.HitPos, dist)
 	end
 	
-	for k, nent in pairs(constraint.GetAllConstrainedEntities(ent)) do
+	for k, nent in pairs(constraint.GetAllConstrainedEntities(ent) or {}) do
 		if not HasValueFast(Find, nent) then
 			table.insert(Find, nent)
 		end
