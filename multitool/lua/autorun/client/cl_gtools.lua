@@ -245,6 +245,39 @@ function GenericSelectPicker(Panel, ToolClass)
 	return mixer
 end
 
+function GenericMultiselectReceive(tabToInsert, cvar)
+	local read = ReadEntityList()
+	
+	for k, new in ipairs(read) do
+		local hit = false
+		
+		for i, ent in ipairs(tabToInsert) do
+			if ent == new then
+				if cvar.select_invert:GetBool() then
+					table.remove(tabToInsert, i)
+				end
+				
+				hit = true
+				break
+			end
+		end
+		
+		if not hit then
+			table.insert(tabToInsert, new)
+		end
+	end
+	
+	ChatPrint('Auto Selected ' .. #read .. ' entities')
+
+	if cvar.select_print:GetBool() then
+		ChatPrint('Look into console for the list')
+		
+		for k, v in ipairs(read) do
+			PrintEntity(v)
+		end
+	end
+end
+
 net.Receive('GTools.PrintMessage', function()
 	ChatPrint(unpack(net.ReadTable()))
 end)

@@ -838,36 +838,7 @@ if CLIENT then
 		end,
 		
 		multi = function()
-			local read = GTools.ReadEntityList()
-			
-			for k, v in ipairs(read) do
-				local hit = false
-				
-				for i, old in ipairs(SELECT_TABLE) do
-					if old == v then
-						if vars.select_invert then
-							table.remove(SELECT_TABLE, i)
-						end
-						
-						hit = true
-						break
-					end
-				end
-				
-				if not hit then
-					table.insert(SELECT_TABLE, v)
-				end
-			end
-			
-			GTools.ChatPrint('Auto Selected ' .. #read .. ' entities')
-			
-			if vars.select_print:GetBool() then
-				GTools.ChatPrint('Look into console for the list')
-				
-				for k, v in ipairs(read) do
-					GTools.PrintEntity(v)
-				end
-			end
+			GTools.GenericMultiselectReceive(SELECT_TABLE, vars)
 		end,
 		
 		clear = function()

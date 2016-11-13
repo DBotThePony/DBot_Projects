@@ -15,9 +15,36 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
+local CURRENT_TOOL_MODE = 'dwelder'
+local CURRENT_TOOL_MODE_VARS = CURRENT_TOOL_MODE .. '_'
+
 TOOL.Name = 'DWelder'
 TOOL.Category = 'Constraints'
-TOOL.Name = 'DWelder'
+
+if CLIENT then
+	language.Add('Undone_DWeld', 'Undone DWeld')
+	
+	language.Add('tool.dwelder.name', 'DWelder')
+	language.Add('tool.dwelder.desc', 'Welds multiple entities at once')
+	language.Add('tool.dwelder.0', '')
+	
+	language.Add('tool.dwelder.left', 'Select/deselect')
+	language.Add('tool.dwelder.left_use', 'Multiselect')
+	language.Add('tool.dwelder.right', 'Weld')
+	language.Add('tool.dwelder.reload', 'Clear selection')
+else
+	util.AddNetworkString(CURRENT_TOOL_MODE .. '.select')
+	util.AddNetworkString(CURRENT_TOOL_MODE .. '.mselect')
+	util.AddNetworkString(CURRENT_TOOL_MODE .. '.apply')
+	util.AddNetworkString(CURRENT_TOOL_MODE .. '.clear')
+end
+
+TOOL.Information = {
+	{name = 'left'},
+	{name = 'left_use'},
+	{name = 'right'},
+	{name = 'reload'},
+}
 
 TOOL.ClientConVar = {
 	forcelimit = 0,
@@ -25,15 +52,44 @@ TOOL.ClientConVar = {
 	nocollide_dist = 200,
 	max_nocollide = 3,
 	max_weld = 3,
-	autoselect_radius = 400,
 	should_freeze = 0,
-	select_mode = 0,
+	
 	select_r = 0,
 	select_g = 200,
 	select_b = 0,
 }
 
-local function CanTool(ent, ply)
+local ClientConVar = TOOL.ClientConVar
+GTools.AddAutoSelectConVars(TOOL.ClientConVar)
+
+TOOL.ClientConVar.select_only_constrained = 0
+
+function TOOL.BuildCPanel(Panel)
+	if not IsValid(Panel) then return end
+	Panel:Clear()
+	
+	Panel:CheckBox('Freeze before weld', 'dwelder_should_freeze')
+	Panel:CheckBox('No Collide', 'dwelder_nocollide')
+	Panel:NumSlider('No Collide max distance', 'dwelder_nocollide_dist', 1, 600)
+	Panel:NumSlider('No Collide max count', 'dwelder_max_nocollide', 1, 10, 0)
+	Panel:NumSlider('Weld max count', 'dwelder_max_weld', 1, 10, 0)
+	Panel:NumSlider('Force limit', 'dwelder_forcelimit', 0, 4000)
+	
+	GTools.AutoSelectOptions(Panel, CURRENT_TOOL_MODE)
+	
+	local lab = Label('Entity select color', Panel)
+	lab:SetDark(true)
+	Panel:AddItem(lab)
+	
+	local pick = vgui.Create('DColorMixer', Panel)
+	Panel:AddItem(pick)
+	pick:SetConVarR('dwelder_select_r')
+	pick:SetConVarG('dwelder_select_g')
+	pick:SetConVarB('dwelder_select_b')
+	pick:SetAlphaBar(false)
+end
+
+local function CanUse(ply, ent)
 	if not IsValid(ent) then return false end
 	if ent:GetSolid() ~= SOLID_VPHYSICS and ent:GetSolid() ~= SOLID_BBOX then return false end
 	if ent:IsPlayer() then return false end
@@ -45,66 +101,20 @@ local function CanTool(ent, ply)
 	return true
 end
 
-function TOOL:UpdateCounts()
-	self:GetWeapon():SetNWInt('DWelder.Count', table.Count(self.OBJECTS))
-end
+local SELECTED = {}
 
-function TOOL:GetSelectColor()
-	return Color(self:GetClientNumber('select_r', 0), self:GetClientNumber('select_g', 200), self:GetClientNumber('select_b', 0))
+function TOOL:CanUseEntity(ent)
+	return CanUse(self:GetOwner(), ent)
 end
 
 function TOOL:GetCounts()
-	return self:GetWeapon():GetNWInt('DWelder.Count')
-end
-
-function TOOL:UnselectObject(ent)
-	self.OBJECTS = self.OBJECTS or {}
-	self.OBJECTS[ent] = nil
-	
-	if ent.DWelder_OldColor then
-		ent:SetColor(ent.DWelder_OldColor)
-		ent.DWelder_OldColor = nil
-	end
-end
-
-function TOOL:IsSelcted(ent)
-	self.OBJECTS = self.OBJECTS or {}
-	return self.OBJECTS[ent] ~= nil
-end
-
-function TOOL:SelectObject(ent)
-	self.OBJECTS = self.OBJECTS or {}
-	
-	self.OBJECTS[ent] = ent
-	ent.DWelder_OldColor = ent.DWelder_OldColor or ent:GetColor()
-	ent:SetColor(self:GetSelectColor())
+	return #SELECTED
 end
 
 function TOOL:MuliSelect(tr)
-	local dist = self:GetClientNumber('autoselect_radius', 400)
-	
-	local Ents
-	
-	if not tobool(self:GetClientNumber('select_mode', 0)) then
-		Ents = ents.FindInSphere(tr.HitPos, dist)
-	else
-		Ents = ents.FindInBox(tr.HitPos, dist)
-	end
-	
-	local ply = self:GetOwner()
-	
-	local count = 0
-	
-	for k, v in pairs(Ents) do
-		if self:IsSelcted(v) then continue end
-		if CanTool(v, ply) then
-			self:SelectObject(v)
-			count = count + 1
-		end
-	end
-	
-	self:UpdateCounts()
-	self:GetOwner():ChatPrint('Selected ' .. count .. ' entities')
+	net.Start(CURRENT_TOOL_MODE .. '.mselect')
+	GTools.WriteEntityList(GTools.GenericAutoSelect(self, tr))
+	net.Send(self:GetOwner())
 end
 
 if CLIENT then
@@ -113,6 +123,207 @@ if CLIENT then
 		size = 50,
 		weight = 600,
 	})
+	
+	local cvar = {}
+	
+	for k, v in pairs(TOOL.ClientConVar) do
+		cvar[k] = CreateConVar(CURRENT_TOOL_MODE_VARS .. k, tostring(v), {FCVAR_ARCHIVE, FCVAR_USERINFO}, '')
+	end
+	
+	net.Receive(CURRENT_TOOL_MODE .. '.apply', function()
+		GTools.GenericTableClear(SELECTED)
+		
+		net.Start(CURRENT_TOOL_MODE .. '.apply')
+		GTools.WriteEntityList(SELECTED)
+		net.SendToServer()
+		
+		SELECTED = {}
+		
+		GTools.ChatPrint('Selection is about to be processed!')
+	end)
+	
+	net.Receive(CURRENT_TOOL_MODE .. '.clear', function()
+		SELECTED = {}
+		
+		GTools.ChatPrint('Selection cleared')
+	end)
+	
+	net.Receive(CURRENT_TOOL_MODE .. '.select', function()
+		local ent = net.ReadEntity()
+		if not IsValid(ent) then return end
+		
+		for k, v in ipairs(SELECTED) do
+			if v == ent then
+				table.remove(SELECTED, k)
+				return
+			end
+		end
+		
+		table.insert(SELECTED, ent)
+	end)
+	
+	net.Receive(CURRENT_TOOL_MODE .. '.mselect', function()
+		GTools.GenericMultiselectReceive(SELECTED, cvar)
+	end)
+	
+	hook.Add('PostDrawWorldToolgun', CURRENT_TOOL_MODE, function(ply, weapon, mode)
+		if mode ~= CURRENT_TOOL_MODE then return end
+		
+		GTools.GenericTableClear(SELECTED)
+		
+		local r = cvar.select_r:GetInt() / 255
+		local g = cvar.select_g:GetInt() / 255
+		local b = cvar.select_b:GetInt() / 255
+		
+		for i, ent in ipairs(SELECTED) do
+			render.SetColorModulation(r, g, b)
+			ent:DrawModel()
+		end
+		
+		render.SetColorModulation(1, 1, 1)
+	end)
+else
+	local POS_MEM = {}
+
+	local function CustomSorter(tab, pos)
+		for i = 1, #tab - 1 do
+			local a = tab[i]
+			local b = tab[i + 1]
+			
+			local posa = POS_MEM[a] or a:GetPos()
+			local posb = POS_MEM[b] or b:GetPos()
+			POS_MEM[a] = posa
+			POS_MEM[b] = posb
+			
+			if posa:DistToSqr(pos) > posb:DistToSqr(pos) then
+				tab[i] = b
+				tab[i + 1] = a
+			end
+		end
+	end
+
+	local function CreateSortedTable(tab, pos, filter)
+		local sorted = {}
+		
+		for k, v in ipairs(tab) do
+			if v == filter then continue end
+			table.insert(sorted, v)
+		end
+		
+		CustomSorter(sorted, pos)
+		
+		return sorted
+	end
+	
+	net.Receive(CURRENT_TOOL_MODE .. '.apply', function(len, ply)
+		local T = SysTime()
+		
+		local vars = {}
+		local bools = {}
+		
+		for k, v in pairs(ClientConVar) do
+			local get = ply:GetInfo(CURRENT_TOOL_MODE_VARS .. k)
+			
+			if not get then
+				vars[k] = v
+			else
+				vars[k] = tonumber(get) or v
+			end
+			
+			bools[k] = tobool(vars[k])
+		end
+		
+		local read = GTools.ReadEntityList()
+		local objects = {}
+		
+		for i, ent in ipairs(read) do
+			if CanUse(ply, ent) then
+				table.insert(objects, ent)
+			end
+		end
+		
+		POS_MEM = {}
+		
+		undo.Create('DWeld')
+		
+		local welds = {}
+		local collides = {}
+		
+		local ENT_MEM_WELD = {}
+		local ENT_MEM_COLLIDE = {}
+		
+		if bools.should_freeze then
+			for k = 1, #objects do
+				local ent = objects[k]
+				local phys = ent:GetPhysicsObject()
+				if not IsValid(phys) then continue end
+				phys:EnableMotion(false)
+			end
+		end
+		
+		for k = 1, #objects do
+			local ent = objects[k]
+			local sorted = CreateSortedTable(objects, ent:GetPos(), ent)
+			
+			local Index = ent:EntIndex()
+			
+			local hits = 0
+			
+			for i = 1, #sorted do
+				local v = sorted[i]
+				if ENT_MEM_WELD[Index .. ' ' .. v:EntIndex()] then continue end
+				if ENT_MEM_WELD[v:EntIndex() .. ' ' .. Index] then continue end
+				
+				if hits >= vars.max_weld then break end
+				local weld = constraint.Weld(ent, v, 0, 0, vars.forcelimit, vars.nocollide)
+				
+				ENT_MEM_WELD[Index .. ' ' .. v:EntIndex()] = true
+				ENT_MEM_WELD[v:EntIndex() .. ' ' .. Index] = true
+				
+				if weld then
+					table.insert(welds, weld)
+					undo.AddEntity(weld)
+					hits = hits + 1
+				end
+			end
+			
+			if bools.nocollide then
+				local hits = 0
+				
+				local lpos = ent:GetPos()
+				
+				for i = 1, #sorted do
+					local v = sorted[i]
+					if ENT_MEM_COLLIDE[Index .. ' ' .. v:EntIndex()] then continue end
+					if ENT_MEM_COLLIDE[v:EntIndex() .. ' ' .. Index] then continue end
+					
+					if v:GetPos():Distance(lpos) > vars.nocollide_dist then break end
+					if hits >= vars.max_nocollide then break end
+					
+					local collide = constraint.NoCollide(ent, v, 0, 0)
+					
+					ENT_MEM_COLLIDE[Index .. ' ' .. v:EntIndex()] = true
+					ENT_MEM_COLLIDE[v:EntIndex() .. ' ' .. Index] = true
+					
+					if collide then
+						table.insert(collides, collide)
+						undo.AddEntity(collide)
+						hits = hits + 1
+					end
+				end
+			end
+		end
+		
+		undo.SetPlayer(ply)
+		undo.Finish()
+		
+		local total = (SysTime() - T) * 1000
+		local ms = math.floor(total * 100) / 100
+		
+		GTools.PChatPrint(ply, 'Total weld constraints created: ' .. #welds)
+		GTools.PChatPrint(ply, 'Total no-collide constraints created: ' .. #collides)
+		GTools.PChatPrint(ply, 'Done in ' .. ms .. ' milliseconds')
+	end)
 end
 
 function TOOL:DrawToolScreen(w, h)
@@ -126,240 +337,40 @@ function TOOL:DrawToolScreen(w, h)
 end
 
 function TOOL:LeftClick(tr)
-	self.OBJECTS = self.OBJECTS or {}
+	local ply = self:GetOwner()
+	local use = ply:KeyDown(IN_USE)
+	
 	local ent = tr.Entity
-	if not CanTool(ent, self:GetOwner()) then return false end
+	if not use and not self:CanUseEntity(ent) then return false end
 	
 	if CLIENT then return true end
 	
-	local ply = self:GetOwner()
-	
-	if ply:KeyDown(IN_USE) then self:MuliSelect(tr) return true end
-	
-	local isSelected = self:IsSelcted(ent)
-	
-	if not isSelected then
-		self:SelectObject(ent)
-	else
-		self:UnselectObject(ent)
+	if use then
+		self:MuliSelect(tr)
+		return true
 	end
 	
-	self:RefreshObjects()
+	net.Start(CURRENT_TOOL_MODE .. '.select')
+	net.WriteEntity(ent)
+	net.Send(ply)
 	
 	return true
-end
-
-function TOOL:RefreshObjects()
-	self.OBJECTS = self.OBJECTS or {}
-	
-	for k, v in pairs(self.OBJECTS) do
-		if not IsValid(v) then
-			self.OBJECTS[k] = nil
-		end
-	end
-	
-	self:UpdateCounts()
-end
-
-local POS_MEM = {}
-
-local function CustomSorter(tab, pos)
-	for i = 1, #tab - 1 do
-		local a = tab[i]
-		local b = tab[i + 1]
-		
-		local posa = POS_MEM[a] or a:GetPos()
-		local posb = POS_MEM[b] or b:GetPos()
-		POS_MEM[a] = posa
-		POS_MEM[b] = posb
-		
-		if posa:DistToSqr(pos) > posb:DistToSqr(pos) then
-			tab[i] = b
-			tab[i + 1] = a
-		end
-	end
-end
-
-local function CreateSortedTable(tab, pos, filter)
-	local sorted = {}
-	
-	for k, v in pairs(tab) do
-		if v == filter then continue end
-		table.insert(sorted, v)
-	end
-	
-	CustomSorter(sorted, pos)
-	
-	return sorted
-end
-
-function TOOL:GetAllVars()
-	local reply = {}
-	
-	for k, v in pairs(self.ClientConVar) do
-		reply[k] = self:GetClientNumber(k, v)
-	end
-	
-	return reply
-end
-
-function TOOL:DoWeld()
-	self:RefreshObjects()
-	
-	local T = SysTime()
-	
-	POS_MEM = {}
-	
-	undo.Create('DWeld')
-	
-	local welds = {}
-	local collides = {}
-	
-	local ENT_MEM_WELD = {}
-	local ENT_MEM_COLLIDE = {}
-	
-	local vars = self:GetAllVars()
-	
-	if tobool(vars.should_freeze) then
-		for k, ent in pairs(self.OBJECTS) do
-			local phys = ent:GetPhysicsObject()
-			if not IsValid(phys) then continue end
-			phys:EnableMotion(false)
-		end
-	end
-	
-	for k, ent in pairs(self.OBJECTS) do
-		local sorted = CreateSortedTable(self.OBJECTS, ent:GetPos(), ent)
-		
-		local Index = ent:EntIndex()
-		
-		local hits = 0
-		
-		for i = 1, #sorted do
-			local v = sorted[i]
-			if ENT_MEM_WELD[Index .. ' ' .. v:EntIndex()] then continue end
-			if ENT_MEM_WELD[v:EntIndex() .. ' ' .. Index] then continue end
-			
-			if hits >= vars.max_weld then break end
-			local weld = constraint.Weld(ent, v, 0, 0, vars.forcelimit, vars.nocollide)
-			
-			ENT_MEM_WELD[Index .. ' ' .. v:EntIndex()] = true
-			ENT_MEM_WELD[v:EntIndex() .. ' ' .. Index] = true
-			
-			if weld then
-				table.insert(welds, weld)
-				undo.AddEntity(weld)
-				hits = hits + 1
-			end
-		end
-		
-		if tobool(vars.nocollide) then
-			local hits = 0
-			
-			local lpos = ent:GetPos()
-			
-			for i = 1, #sorted do
-				local v = sorted[i]
-				if ENT_MEM_COLLIDE[Index .. ' ' .. v:EntIndex()] then continue end
-				if ENT_MEM_COLLIDE[v:EntIndex() .. ' ' .. Index] then continue end
-				
-				if v:GetPos():Distance(lpos) > vars.nocollide_dist then break end
-				if hits >= vars.max_nocollide then break end
-				
-				local collide = constraint.NoCollide(ent, v, 0, 0)
-				
-				ENT_MEM_COLLIDE[Index .. ' ' .. v:EntIndex()] = true
-				ENT_MEM_COLLIDE[v:EntIndex() .. ' ' .. Index] = true
-				
-				if collide then
-					table.insert(collides, collide)
-					undo.AddEntity(collide)
-					hits = hits + 1
-				end
-			end
-		end
-	end
-	
-	undo.SetPlayer(self:GetOwner())
-	undo.Finish()
-	
-	return welds, collides, T
-end
-
-function TOOL:UnselectAll()
-	self.OBJECTS = self.OBJECTS or {}
-	
-	for k, v in pairs(self.OBJECTS) do
-		self:UnselectObject(v)
-	end
-	
-	self:UpdateCounts()
 end
 
 function TOOL:RightClick(tr)
-	self.OBJECTS = self.OBJECTS or {}
-	if CLIENT then return false end
+	if CLIENT then return true end
 	
-	self:RefreshObjects()
-	
-	local c = table.Count(self.OBJECTS)
-	
-	if c == 0 then
-		self:GetOwner():ChatPrint('No entities to weld!')
-	elseif c == 1 then
-		self:GetOwner():ChatPrint('Only one entitiy is selected.')
-	else
-		local welds, collides, time = self:DoWeld()
-		local donein = math.floor((SysTime() - time) * 100000) / 100
-		self:GetOwner():ChatPrint('Welded ' .. table.Count(self.OBJECTS) .. ' entities.')
-		self:GetOwner():ChatPrint('Total weld constraints: ' .. #welds)
-		self:GetOwner():ChatPrint('Total nocollide constraints: ' .. #collides)
-		self:GetOwner():ChatPrint('Done in: ' .. donein .. ' ms')
-		self:UnselectAll()
-	end
-	
-	return false
-end
-
-function TOOL:Reload()
-	if SERVER then
-		self:UnselectAll()
-		self:GetOwner():ChatPrint('Selection cleared')
-	end
+	net.Start(CURRENT_TOOL_MODE .. '.apply')
+	net.Send(self:GetOwner())
 	
 	return true
 end
 
-function TOOL.BuildCPanel(Panel)
-	if not IsValid(Panel) then return end
-	Panel:Clear()
+function TOOL:Reload()
+	if CLIENT then return true end
 	
-	Panel:CheckBox('Freeze before weld', 'dwelder_should_freeze')
-	Panel:CheckBox('No Collide', 'dwelder_nocollide')
-	Panel:NumSlider('No Collide max distance', 'dwelder_nocollide_dist', 1, 600)
-	Panel:NumSlider('No Collide max count', 'dwelder_max_nocollide', 1, 10, 0)
-	Panel:NumSlider('Weld max count', 'dwelder_max_weld', 1, 10, 0)
-	Panel:NumSlider('Force limit', 'dwelder_forcelimit', 0, 4000)
-	Panel:NumSlider('Autoselect radius', 'dwelder_autoselect_radius', 1, 1500)
-	Panel:CheckBox('Autoselect mode', 'dwelder_select_mode')
+	net.Start(CURRENT_TOOL_MODE .. '.clear')
+	net.Send(self:GetOwner())
 	
-	local lab = Label('Autoselect Mode: false - sphere, true - box', Panel)
-	Panel:AddItem(lab)
-	
-	local lab = Label('Entity select color', Panel)
-	Panel:AddItem(lab)
-	
-	local pick = vgui.Create('DColorMixer', Panel)
-	Panel:AddItem(pick)
-	pick:SetConVarR('dwelder_select_r')
-	pick:SetConVarG('dwelder_select_g')
-	pick:SetConVarB('dwelder_select_b')
-	pick:SetAlphaBar(false)
-end
-
-if CLIENT then
-	language.Add('Undone_DWeld', 'Undone DWeld')
-	language.Add('tool.dwelder.name', 'DWelder')
-	language.Add('tool.dwelder.desc', 'Welds multiple entities at once')
-	language.Add('tool.dwelder.0', 'Left click to select, Right to weld, hold USE and left click to do multi select. Reload to clear selection.')
+	return true
 end
