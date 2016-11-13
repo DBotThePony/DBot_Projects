@@ -345,7 +345,7 @@ if CLIENT then
 	end)
 else
 	net.Receive(CURRENT_TOOL_MODE .. '.Apply', function(len, ply)
-		local SelectTable = net.ReadTable()
+		local SelectTable = GTools.ReadEntityList()
 		
 		local max = #SelectTable
 		

@@ -305,7 +305,7 @@ if CLIENT then
 	end)
 else
 	net.Receive('MultiColorRainbow.Apply', function(len, ply)
-		local SelectTable = net.ReadTable()
+		local SelectTable = GTools.ReadEntityList()
 		
 		local STEP = tonumber(ply:GetInfo('multicolour_rainbow_step')) or 2
 		local MULTIP = tonumber(ply:GetInfo('multicolour_rainbow_step_mult')) or 1
