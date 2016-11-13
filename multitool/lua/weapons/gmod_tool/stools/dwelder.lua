@@ -185,23 +185,6 @@ if CLIENT then
 else
 	local POS_MEM = {}
 
-	local function CustomSorter(tab, pos)
-		for i = #tab, 2, -1 do
-			local a = tab[i - 1]
-			local b = tab[i]
-			
-			local posa = POS_MEM[a] or a:GetPos()
-			local posb = POS_MEM[b] or b:GetPos()
-			POS_MEM[a] = posa
-			POS_MEM[b] = posb
-			
-			if posa:DistToSqr(pos) > posb:DistToSqr(pos) then
-				tab[i - 1] = b
-				tab[i] = a
-			end
-		end
-	end
-
 	local function CreateSortedTable(tab, pos, filter)
 		local sorted = {}
 		
@@ -211,7 +194,9 @@ else
 			end
 		end
 		
-		CustomSorter(sorted, pos)
+		table.sort(sorted, function(a, b)
+			return POS_MEM[a]:DistToSqr(pos) < POS_MEM[b]:DistToSqr(pos)
+		end)
 		
 		return sorted
 	end
@@ -244,6 +229,10 @@ else
 		end
 		
 		POS_MEM = {}
+		
+		for k = 1, #objects do
+			POS_MEM[objects[k]] = objects[k]:GetPos()
+		end
 		
 		undo.Create('DWeld')
 		
