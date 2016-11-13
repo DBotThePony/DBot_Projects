@@ -260,3 +260,10 @@ function CreateOutputs(...)
 	if not WireLib then return end
 	return WireLib.CreateOutputs(...)
 end
+
+-- Output: Entity (self), Key, Value
+
+function TriggerOutput(...)
+	if not WireLib then return end
+	WireLib.TriggerOutput(...)
+end

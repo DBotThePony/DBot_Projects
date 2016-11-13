@@ -22,6 +22,58 @@ ENT.PrintName = 'Speedmeter'
 ENT.RenderGroup = RENDERGROUP_BOTH
 ENT.Author = 'DBot'
 
+ENT.OutputsToTrigger = {
+	-- Second
+	{'Speed', 'HammerUnits_Second'},
+	{'Meters', 'Meters_Second'},
+	{'Kilometers', 'KM_Second'},
+	{'Feet', 'Feet_Second'},
+	{'Miles', 'Miles_Second'},
+	
+	-- Minute
+	{'Speed_M', 'HammerUnits_Minute'},
+	{'Meters_M', 'Meters_Minute'},
+	{'Kilometers_M', 'KM_Minute'},
+	{'Feet_M', 'Feet_Minute'},
+	{'Miles_M', 'Miles_Minute'},
+	
+	-- Hour
+	{'Speed_H', 'HammerUnits_Hour'},
+	{'Meters_H', 'Meters_Hour'},
+	{'Kilometers_H', 'KM_Hour'},
+	{'Feet_H', 'Feet_Hour'},
+	{'Miles_H', 'Miles_Hour'},
+}
+
+ENT.DisplayUnits = {
+	-- Second
+	{'Speed', 'GetDisplayHuS', ' Hu/s'},
+	{'Meters', 'GetDisplayMetersS', ' M/s'},
+	{'Kilometers', 'GetDisplayKMS', ' KM/s'},
+	{'Feet', 'GetDisplayFeetS', ' Feet/s'},
+	{'Miles', 'GetDisplayMilesS', ' Miles/s'},
+	
+	-- Minute
+	{'Speed_M', 'GetDisplayHuM', ' Hu/min'},
+	{'Meters_M', 'GetDisplayMetersM', ' M/min'},
+	{'Kilometers_M', 'GetDisplayKMM', ' KM/min'},
+	{'Feet_M', 'GetDisplayFeetM', ' Feet/min'},
+	{'Miles_M', 'GetDisplayMilesM', ' Miles/min'},
+	
+	-- Hour
+	{'Speed_H', 'GetDisplayHuH', ' Hu/h'},
+	{'Meters_H', 'GetDisplayMetersH', ' M/h'},
+	{'Kilometers_H', 'GetDisplayKMH', ' KM/h'},
+	{'Feet_H', 'GetDisplayFeetH', ' Feet/h'},
+	{'Miles_H', 'GetDisplayMilesH', ' Miles/h'},
+}
+
+ENT.OutputsToTriggerComp = {}
+
+for k, v in ipairs(ENT.OutputsToTrigger) do
+	table.insert(ENT.OutputsToTriggerComp, v[2])
+end
+
 function ENT:SetupDataTables()
 	self:NetworkVar('Bool', 0, 'DisplayKMS')
 	self:NetworkVar('Bool', 1, 'DisplayMilesS')
@@ -64,9 +116,7 @@ function ENT:Initialize()
 	self:SetModel('models/hunter/blocks/cube025x025x025.mdl')
 	
 	self.LastPos = nil
-	
-	self.KMs = 0
-	self.KMh = 0
+	self.LastThink = nil
 	
 	if CLIENT then return end
 	
@@ -74,6 +124,8 @@ function ENT:Initialize()
 	self:SetMoveType(MOVETYPE_VPHYSICS)
 	
 	self:PhysWake()
+	
+	self.Outputs = GTools.CreateOutputs(self, self.OutputsToTriggerComp)
 end
 
 function ENT:UpdateVars()
@@ -105,32 +157,13 @@ function ENT:UpdateVars()
 	self.Feet_H = self.Feet * 3600
 end
 
-ENT.DisplayUnits = {
-	-- Second
-	{'Speed', 'GetDisplayHuS', ' Hu/s'},
-	{'Meters', 'GetDisplayMetersS', ' M/s'},
-	{'Kilometers', 'GetDisplayKMS', ' KM/s'},
-	{'Feet', 'GetDisplayFeetS', ' Feet/s'},
-	{'Miles', 'GetDisplayMilesS', ' Miles/s'},
-	
-	-- Minute
-	{'Speed_M', 'GetDisplayHuM', ' Hu/min'},
-	{'Meters_M', 'GetDisplayMetersM', ' M/min'},
-	{'Kilometers_M', 'GetDisplayKMM', ' KM/min'},
-	{'Feet_M', 'GetDisplayFeetM', ' Feet/min'},
-	{'Miles_M', 'GetDisplayMilesM', ' Miles/min'},
-	
-	-- Hour
-	{'Speed_H', 'GetDisplayHuH', ' Hu/h'},
-	{'Meters_H', 'GetDisplayMetersH', ' M/h'},
-	{'Kilometers_H', 'GetDisplayKMH', ' KM/h'},
-	{'Feet_H', 'GetDisplayFeetH', ' Feet/h'},
-	{'Miles_H', 'GetDisplayMilesH', ' Miles/h'},
-}
+function ENT:TriggerWireOutputs()
+	for k, v in ipairs(ENT.OutputsToTrigger) do
+		WireLib.TriggerOutput(self, v[2], v[1])
+	end
+end
 
 function ENT:Think()
-	if SERVER then return end
-	
 	self.LastThink = self.LastThink or CurTime()
 	local delta = CurTime() - self.LastThink
 	self.LastThink = CurTime()
@@ -154,6 +187,10 @@ function ENT:Think()
 	end
 	
 	self:UpdateVars()
+	
+	if SERVER and WireLib then
+		self:TriggerWireOutputs()
+	end
 end
 
 DBot_Speedmeter_Fonts = {
