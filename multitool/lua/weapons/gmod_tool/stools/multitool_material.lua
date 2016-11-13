@@ -219,16 +219,7 @@ if CLIENT then
 	end)
 	
 	net.Receive(CURRENT_TOOL_MODE .. '.MultiSelect', function()
-		local count = net.ReadUInt(12)
-		local read = {}
-		
-		for i = 1, count do
-			local new = net.ReadEntity()
-			
-			if IsValid(new) then
-				table.insert(read, new)
-			end
-		end
+		local read = GTools.ReadEntityList()
 		
 		for i, newEnt in ipairs(read) do
 			local hit = false
@@ -249,7 +240,7 @@ if CLIENT then
 			end
 		end
 		
-		GTools.ChatPrint('Auto-Selected ' .. count .. ' entities!')
+		GTools.ChatPrint('Auto-Selected ' .. #read .. ' entities!')
 		
 		if cvar.select_print:GetBool() then
 			GTools.ChatPrint('Look into console for the list')
@@ -354,12 +345,7 @@ function TOOL:LeftClick(tr)
 			local new = GTools.GenericAutoSelect(self, tr)
 			
 			net.Start(CURRENT_TOOL_MODE .. '.MultiSelect')
-			net.WriteUInt(#new, 12)
-			
-			for i = 1, #new do
-				net.WriteEntity(new[i])
-			end
-			
+			GTools.WriteEntityList(new)
 			net.Send(self:GetOwner())
 		end
 	end
