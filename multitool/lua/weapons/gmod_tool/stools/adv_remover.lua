@@ -65,8 +65,10 @@ local function CanUseEntity(ply, ent)
 		(CLIENT or ent:GetPhysicsObject() ~= game.GetWorld():GetPhysicsObject()) and
 		(not ent:IsWeapon() or not ent:GetOwner():IsValid()) and
 		(not ent.CPPICanTool or ent:CPPICanTool(ply, CURRENT_TOOL_MODE)) and
+		(not ent.CPPICanTool or ent:CPPICanTool(ply, 'remover')) and
 		ent:GetSolid() ~= SOLID_NONE and
 		(CLIENT or not ent:CreatedByMap())
+		-- hook.Run('CanTool', ply, {HitPos = ent:GetPos(), HitNormal = Vector(), Entity = ent}, CURRENT_TOOL_MODE)
 end
 
 function TOOL:CanUseEntity(ent)

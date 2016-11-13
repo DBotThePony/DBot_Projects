@@ -48,20 +48,11 @@ local SelectTable = {}
 TOOL.Name = 'Multi-Material'
 TOOL.Category = 'Multitool'
 
-TOOL.AddToMenu = true
-TOOL.Command = nil
-TOOL.ConfigName = nil
-
 TOOL.ClientConVar = {
 	override = 'debug/env_cubemap_model',
-	select_by_model = 0,
-	select_by_material = 0,
-	select_mode = 0,
-	select_sort = 2,
-	select_range = 512,
 }
 
-TOOL.ServerConVar = {}
+GTools.AddAutoSelectConVars(TOOL.ClientConVar)
 
 local PANEL
 local RebuildPanel
@@ -90,27 +81,7 @@ function RebuildPanel(Panel)
 	Panel:Clear()
 	PANEL = Panel
 	
-	local Lab = Label('Auto-select settings')
-	Lab:SetDark(true)
-	Panel:AddItem(Lab)
-	
-	local Lab = Label('To do auto select - Hold +use while left click')
-	Lab:SetDark(true)
-	Panel:AddItem(Lab)
-	
-	Panel:NumSlider('Auto Select Range', CURRENT_TOOL_MODE .. '_select_range', 1, 1024, 0)
-	Panel:CheckBox('Auto Select by Model', CURRENT_TOOL_MODE .. '_select_by_model')
-	Panel:CheckBox('Auto Select by Material', CURRENT_TOOL_MODE .. '_select_by_material')
-	
-	local Lab = Label('Note: It is strict lookup. Material mismatch - don\'t select')
-	Lab:SetDark(true)
-	Panel:AddItem(Lab)
-	
-	Panel:CheckBox('False - Sphere, True - Box', CURRENT_TOOL_MODE .. '_select_mode')
-	
-	local combo = Panel:ComboBox('Select Sort Mode', CURRENT_TOOL_MODE .. '_select_sort')
-	
-	MultiTool_AddSorterChoices(combo)
+	GTools.AutoSelectOptions(Panel, CURRENT_TOOL_MODE)
 	
 	local Lab = Label('Quick search')
 	Lab:SetDark(true)
@@ -188,6 +159,10 @@ local function CanUse(ply, ent)
 	return true
 end
 
+function TOOL:CanUseEntity(ent)
+	return CanUse(self:GetOwner(), ent)
+end
+
 function TOOL:DrawHUD()
 	if #SelectTable == 0 then return end
 	
@@ -201,10 +176,10 @@ function TOOL:DrawHUD()
 end
 
 if CLIENT then
-	local CVars = {}
+	local cvar = {}
 	
 	for k, v in pairs(TOOL.ClientConVar) do
-		CVars[k] = CreateConVar(CURRENT_TOOL_MODE .. '_' .. k, tostring(v), {FCVAR_ARCHIVE, FCVAR_USERINFO}, '')
+		cvar[k] = CreateConVar(CURRENT_TOOL_MODE .. '_' .. k, tostring(v), {FCVAR_ARCHIVE, FCVAR_USERINFO}, '')
 	end
 	
 	net.Receive(CURRENT_TOOL_MODE .. '.Select', function()
@@ -260,7 +235,10 @@ if CLIENT then
 			
 			for k, v in ipairs(SelectTable) do
 				if v == newEnt then
-					table.remove(SelectTable, k)
+					if cvar.select_invert:GetBool() then
+						table.remove(SelectTable, k)
+					end
+					
 					hit = true
 					break
 				end
@@ -271,7 +249,15 @@ if CLIENT then
 			end
 		end
 		
-		GTools.ChatPrint('Auto-Selected ' .. count .. ' entities')
+		GTools.ChatPrint('Auto-Selected ' .. count .. ' entities!')
+		
+		if cvar.select_print:GetBool() then
+			GTools.ChatPrint('Look into console for the list')
+			
+			for k, v in ipairs(read) do
+				GTools.PrintEntity(v)
+			end
+		end
 	end)
 	
 	local MatCache = {}
@@ -291,10 +277,10 @@ if CLIENT then
 	hook.Add('PostDrawWorldToolgun', CURRENT_TOOL_MODE, function(ply, weapon, mode)
 		if mode ~= CURRENT_TOOL_MODE then return end
 		
-		MatCache[CVars.override:GetString()] = MatCache[CVars.override:GetString()] or Material(CVars.override:GetString())
+		MatCache[cvar.override:GetString()] = MatCache[cvar.override:GetString()] or Material(cvar.override:GetString())
 		
 		for i, ent in ipairs(SelectTable) do
-			render.ModelMaterialOverride(MatCache[CVars.override:GetString()])
+			render.ModelMaterialOverride(MatCache[cvar.override:GetString()])
 			ent:DrawModel()
 			ent:SetNoDraw(DRAW_MEM[ent])
 		end
@@ -365,41 +351,7 @@ function TOOL:LeftClick(tr)
 			net.WriteEntity(ent)
 			net.Send(self:GetOwner())
 		else
-			local select_by_model = false
-			local select_by_material = false
-			local MDL
-			local MATERIAL
-			
-			if IsValid(ent) then
-				select_by_model = ply:GetInfo(CURRENT_TOOL_MODE .. '_select_by_model') == '1'
-				select_by_material = ply:GetInfo(CURRENT_TOOL_MODE .. '_select_by_material') == '1'
-				
-				MDL = ent:GetModel()
-				MATERIAL = ent:GetMaterial()
-			end
-			
-			local mode = ply:GetInfo(CURRENT_TOOL_MODE .. '_select_mode') == '1'
-			local smode = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_select_sort')) or 1
-			local dist = math.Clamp(tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_select_range')) or 512, 1, 1024)
-			local Find = ents.FindInSphere(tr.HitPos, dist)
-			
-			local new = {}
-			
-			for i, ent in ipairs(Find) do
-				if not CanUse(ply, ent) then continue end
-				
-				if select_by_model then
-					if ent:GetModel() ~= MDL then continue end
-				end
-				
-				if select_by_material then
-					if ent:GetMaterial() ~= MATERIAL then continue end
-				end
-				
-				table.insert(new, ent)
-			end
-			
-			MultiTool_Sort(smode, tr.HitPos, new)
+			local new = GTools.GenericAutoSelect(self, tr)
 			
 			net.Start(CURRENT_TOOL_MODE .. '.MultiSelect')
 			net.WriteUInt(#new, 12)

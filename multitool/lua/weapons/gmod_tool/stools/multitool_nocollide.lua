@@ -50,82 +50,24 @@ local SelectTable = {}
 TOOL.Name = 'Multi-NoCollide'
 TOOL.Category = 'Multitool'
 
-TOOL.AddToMenu = true
-TOOL.Command = nil
-TOOL.ConfigName = nil
-
 TOOL.ClientConVar = {
-	select_red = 0,
-	select_green = 255,
-	select_blue = 255,
-	
-	select_by_model = 0,
-	select_mode = 0,
-	select_sort = 2,
-	select_range = 512,
+	select_r = 0,
+	select_g = 255,
+	select_b = 255,
 }
 
-TOOL.ServerConVar = {}
+GTools.AddAutoSelectConVars(TOOL.ClientConVar)
 
 local PANEL
 local RebuildPanel
-
-local function ClearSelectedItems()
-	local toRemove = {}
-	
-	for k, v in ipairs(SelectTable) do
-		if not v:IsValid() then
-			table.insert(toRemove, k)
-		end
-	end
-	
-	for k = 1, #toRemove - 1 do
-		SelectTable[toRemove[k]] = nil
-	end
-	
-	if #toRemove > 0 then
-		RebuildPanel(PANEL)
-		table.remove(SelectTable, toRemove[#toRemove])
-	end
-end
 
 function RebuildPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
 	PANEL = Panel
 	
-	local Lab = Label(HALP)
-	Lab:SizeToContents()
-	Lab:SetTooltip(HALP)
-	Lab:SetDark(true)
-	Panel:AddItem(Lab)
-	
-	local Lab = Label('Auto-select settings')
-	Lab:SetDark(true)
-	Panel:AddItem(Lab)
-	
-	local Lab = Label('To do auto select - Hold +use while left click')
-	Lab:SetDark(true)
-	Panel:AddItem(Lab)
-	
-	Panel:NumSlider('Auto Select Range', CURRENT_TOOL_MODE .. '_select_range', 1, 1024, 0)
-	Panel:CheckBox('Auto Select by Model', CURRENT_TOOL_MODE .. '_select_by_model')
-	Panel:CheckBox('False - Sphere, True - Box', CURRENT_TOOL_MODE .. '_select_mode')
-	
-	local combo = Panel:ComboBox('Select Sort Mode', CURRENT_TOOL_MODE .. '_select_sort')
-	
-	MultiTool_AddSorterChoices(combo)
-	
-	local Lab = Label('Select color')
-	Lab:SetDark(true)
-	Panel:AddItem(Lab)
-	
-	local mixer = vgui.Create('DColorMixer', Panel)
-	Panel:AddItem(mixer)
-	mixer:SetConVarR(CURRENT_TOOL_MODE .. '_select_red')
-	mixer:SetConVarG(CURRENT_TOOL_MODE .. '_select_green')
-	mixer:SetConVarB(CURRENT_TOOL_MODE .. '_select_blue')
-	mixer:SetAlphaBar(false)
+	GTools.AutoSelectOptions(Panel, CURRENT_TOOL_MODE)
+	GTools.GenericSelectPicker(Panel, CURRENT_TOOL_MODE)
 end
 
 local function CanUse(ply, ent)
@@ -137,6 +79,10 @@ local function CanUse(ply, ent)
 	if IsValid(ent:GetOwner()) then return false end
 	
 	return true
+end
+
+function TOOL:CanUseEntity(ent)
+	return CanUse(self:GetOwner(), ent)
 end
 
 function TOOL:DrawHUD()
@@ -152,10 +98,10 @@ function TOOL:DrawHUD()
 end
 
 if CLIENT then
-	local CVars = {}
+	local cvar = {}
 	
 	for k, v in pairs(TOOL.ClientConVar) do
-		CVars[k] = CreateConVar(CURRENT_TOOL_MODE .. '_' .. k, tostring(v), {FCVAR_ARCHIVE, FCVAR_USERINFO}, '')
+		cvar[k] = CreateConVar(CURRENT_TOOL_MODE .. '_' .. k, tostring(v), {FCVAR_ARCHIVE, FCVAR_USERINFO}, '')
 	end
 	
 	net.Receive(CURRENT_TOOL_MODE .. '.Select', function()
@@ -177,6 +123,8 @@ if CLIENT then
 	end)
 	
 	net.Receive(CURRENT_TOOL_MODE .. '.Apply', function()
+		GTools.GenericTableClear(SelectTable)
+		
 		net.Start(CURRENT_TOOL_MODE .. '.Apply')
 		net.WriteTable(SelectTable)
 		net.SendToServer()
@@ -195,23 +143,17 @@ if CLIENT then
 	end)
 	
 	net.Receive(CURRENT_TOOL_MODE .. '.MultiSelect', function()
-		local count = net.ReadUInt(12)
-		local read = {}
-		
-		for i = 1, count do
-			local new = net.ReadEntity()
-			
-			if IsValid(new) then
-				table.insert(read, new)
-			end
-		end
+		local read = GTools.ReadEntityList()
 		
 		for i, newEnt in ipairs(read) do
 			local hit = false
 			
 			for k, v in ipairs(SelectTable) do
 				if v == newEnt then
-					table.remove(SelectTable, k)
+					if cvar.select_invert:GetBool() then
+						table.remove(SelectTable, k)
+					end
+					
 					hit = true
 					break
 				end
@@ -222,20 +164,28 @@ if CLIENT then
 			end
 		end
 		
-		GTools.ChatPrint('Auto-Selected ' .. count .. ' entities')
+		GTools.ChatPrint('Auto-Selected ' .. #read .. ' entities!')
+		
+		if cvar.select_print:GetBool() then
+			GTools.ChatPrint('Look into console for the list')
+			
+			for k, v in ipairs(read) do
+				GTools.PrintEntity(v)
+			end
+		end
 	end)
 	
 	hook.Add('PostDrawWorldToolgun', CURRENT_TOOL_MODE, function(ply, weapon, mode)
 		if mode ~= CURRENT_TOOL_MODE then return end
 		
-		ClearSelectedItems()
+		GTools.GenericTableClear(SelectTable)
 		
-		local select_red = CVars.select_red:GetInt() / 255
-		local select_green = CVars.select_green:GetInt() / 255
-		local select_blue = CVars.select_blue:GetInt() / 255
+		local r = cvar.select_r:GetInt() / 255
+		local g = cvar.select_g:GetInt() / 255
+		local b = cvar.select_b:GetInt() / 255
 		
 		for i, ent in ipairs(SelectTable) do
-			render.SetColorModulation(select_red, select_green, select_blue) -- Make sure that nothing we rendered reseted our color!
+			render.SetColorModulation(r, g, b) -- Make sure that nothing we rendered reseted our color!
 			ent:DrawModel()
 		end
 		
@@ -339,40 +289,10 @@ function TOOL:LeftClick(tr)
 			net.WriteEntity(ent)
 			net.Send(self:GetOwner())
 		else
-			local select_by_model = false
-			local MDL
-			
-			if IsValid(ent) then
-				select_by_model = ply:GetInfo(CURRENT_TOOL_MODE .. '_select_by_model') == '1'
-				MDL = ent:GetModel()
-			end
-			
-			local mode = ply:GetInfo(CURRENT_TOOL_MODE .. '_select_mode') == '1'
-			local smode = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_select_sort')) or 1
-			local dist = math.Clamp(tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_select_range')) or 512, 1, 1024)
-			local Find = ents.FindInSphere(tr.HitPos, dist)
-			
-			local new = {}
-			
-			for i, ent in ipairs(Find) do
-				if not CanUse(ply, ent) then continue end
-				
-				if select_by_model then
-					if ent:GetModel() ~= MDL then continue end
-				end
-				
-				table.insert(new, ent)
-			end
-			
-			MultiTool_Sort(smode, tr.HitPos, new)
+			local new = GTools.GenericAutoSelect(self, tr)
 			
 			net.Start(CURRENT_TOOL_MODE .. '.MultiSelect')
-			net.WriteUInt(#new, 12)
-			
-			for i = 1, #new do
-				net.WriteEntity(new[i])
-			end
-			
+			GTools.WriteEntityList(new)
 			net.Send(self:GetOwner())
 		end
 	end

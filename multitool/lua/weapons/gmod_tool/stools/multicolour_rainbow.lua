@@ -50,10 +50,6 @@ local SelectTable = {}
 TOOL.Name = 'Multi-Color - Rainbow'
 TOOL.Category = 'Multitool'
 
-TOOL.AddToMenu = true
-TOOL.Command = nil
-TOOL.ConfigName = nil
-
 TOOL.ClientConVar = {
 	step = 2,
 	step_mult = 0.6,
@@ -67,7 +63,7 @@ TOOL.ClientConVar = {
 	color_mode = 0,
 }
 
-TOOL.ServerConVar = {}
+GTools.AddAutoSelectConVars(TOOL.ClientConVar)
 
 local PANEL
 local RebuildPanel
@@ -97,33 +93,10 @@ function RebuildPanel(Panel)
 	Panel:Clear()
 	PANEL = Panel
 	
-	local Lab = Label(HALP)
-	Lab:SizeToContents()
-	Lab:SetTooltip(HALP)
-	Lab:SetDark(true)
-	Panel:AddItem(Lab)
-	
 	Panel:NumSlider('Step of rainbow', CURRENT_TOOL_MODE .. '_step', 0, 4, 2)
 	Panel:NumSlider('Multiplier of rainbow', CURRENT_TOOL_MODE .. '_step_mult', 0, 4, 2)
 	
-	local Lab = Label('Auto-select settings')
-	Lab:SetDark(true)
-	Panel:AddItem(Lab)
-	
-	local Lab = Label('To do auto select - Hold +use while left click')
-	Lab:SetDark(true)
-	Panel:AddItem(Lab)
-	
-	Panel:NumSlider('Auto Select Range', CURRENT_TOOL_MODE .. '_select_range', 1, 1024, 0)
-	
-	Panel:CheckBox('False - Sphere, True - Box', CURRENT_TOOL_MODE .. '_select_mode')
-	Panel:CheckBox('False - select non-colored, True - select all', CURRENT_TOOL_MODE .. '_select_colored')
-	Panel:CheckBox('Auto Select by Model', CURRENT_TOOL_MODE .. '_select_by_model')
-	
-	local Lab = Label('Auto-Selecting an colored entity will\nwhen "Select Colored" is false will\nselect all colored entities instead')
-	Lab:SizeToContents()
-	Lab:SetDark(true)
-	Panel:AddItem(Lab)
+	GTools.AutoSelectOptions(Panel, CURRENT_TOOL_MODE)
 	
 	local color_mode = Panel:ComboBox('Render Mode', CURRENT_TOOL_MODE .. '_color_mode')
 	local color_fx = Panel:ComboBox('Render FX', CURRENT_TOOL_MODE .. '_color_fx')
@@ -135,10 +108,6 @@ function RebuildPanel(Panel)
 	for k, v in pairs(list.Get('RenderFX')) do
 		color_fx:AddChoice(k, v.colour_fx)
 	end
-	
-	local combo = Panel:ComboBox('Select Sort Mode', CURRENT_TOOL_MODE .. '_select_sort')
-	
-	MultiTool_AddSorterChoices(combo)
 	
 	local newPnl = vgui.Create('EditablePanel', Panel)
 	
@@ -237,6 +206,10 @@ local function CanUse(ply, ent)
 	return true
 end
 
+function TOOL:CanUseEntity(ent)
+	return CanUse(self:GetOwner(), ent)
+end
+
 function TOOL:DrawHUD()
 	if #SelectTable == 0 then return end
 	
@@ -250,9 +223,12 @@ function TOOL:DrawHUD()
 end
 
 if CLIENT then
-	local STEP = CreateConVar('multicolour_rainbow_step', '2', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'Rainbow recolor step')
-	local MULTIP = CreateConVar('multicolour_rainbow_step_mult', '1', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'Rainbow recolor multiplier')
-
+	local cvar = {}
+	
+	for k, v in pairs(TOOL.ClientConVar) do
+		cvar[k] = CreateConVar('multicolour_rainbow_' .. k, tostring(v), {FCVAR_ARCHIVE, FCVAR_USERINFO}, '')
+	end
+	
 	surface.CreateFont('MultiColorRainbow.ScreenHeader', {
 		font = 'Roboto',
 		size = 48,
@@ -308,23 +284,17 @@ if CLIENT then
 	end)
 	
 	net.Receive('MultiColorRainbow.MultiSelect', function()
-		local count = net.ReadUInt(12)
-		local read = {}
-		
-		for i = 1, count do
-			local new = net.ReadEntity()
-			
-			if IsValid(new) then
-				table.insert(read, new)
-			end
-		end
+		local read = GTools.ReadEntityList()
 		
 		for i, newEnt in ipairs(read) do
 			local hit = false
 			
 			for k, v in ipairs(SelectTable) do
 				if v == newEnt then
-					table.remove(SelectTable, k)
+					if cvar.select_invert:GetBool() then
+						table.remove(SelectTable, k)
+					end
+					
 					hit = true
 					break
 				end
@@ -337,7 +307,15 @@ if CLIENT then
 		
 		RebuildListFunc()
 		
-		GTools.ChatPrint('Auto-Selected ' .. count .. ' entities')
+		GTools.ChatPrint('Auto-Selected ' .. #read .. ' entities!')
+		
+		if cvar.select_print:GetBool() then
+			GTools.ChatPrint('Look into console for the list')
+			
+			for k, v in ipairs(read) do
+				GTools.PrintEntity(v)
+			end
+		end
 	end)
 	
 	hook.Add('PostDrawWorldToolgun', 'MultiColorDraw', function(ply, weapon, mode)
@@ -345,8 +323,8 @@ if CLIENT then
 		
 		ClearSelectedItems()
 		
-		local STEP = STEP:GetFloat()
-		local MULTIP = MULTIP:GetFloat()
+		local STEP = cvar.step:GetFloat()
+		local MULTIP = cvar.step_mult:GetFloat()
 		
 		for i, ent in ipairs(SelectTable) do
 			render.SetColorModulation(math.sin(i * MULTIP) * .5 + .5, math.sin((i + STEP) * MULTIP) * .5 + .5, math.sin((i + STEP * 2) * MULTIP) * .5 + .5)
@@ -441,52 +419,10 @@ function TOOL:LeftClick(tr)
 			net.WriteEntity(ent)
 			net.Send(self:GetOwner())
 		else
-			local select_by_model = false
-			local MDL
-			
-			if IsValid(ent) then
-				select_by_model = ply:GetInfo(CURRENT_TOOL_MODE .. '_select_by_model') == '1'
-				MDL = ent:GetModel()
-			end
-			
-			local mode = ply:GetInfo(CURRENT_TOOL_MODE .. '_select_mode') == '1'
-			local select_colored = ply:GetInfo(CURRENT_TOOL_MODE .. '_select_colored') == '1'
-			local smode = tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_select_sort')) or 1
-			local dist = math.Clamp(tonumber(ply:GetInfo(CURRENT_TOOL_MODE .. '_select_range')) or 512, 1, 1024)
-			local Find = ents.FindInSphere(tr.HitPos, dist)
-			
-			local new = {}
-			
-			for i, ent in ipairs(Find) do
-				if not CanUse(ply, ent) then continue end
-				if not select_colored then
-					local col = ent:GetColor()
-					
-					local status = col.r ~= 255 or col.g ~= 255 or col.b ~= 255
-					
-					if hitEntityHaveColor then
-						status = not status
-					end
-					
-					if status then continue end
-				end
-				
-				if select_by_model then
-					if ent:GetModel() ~= MDL then continue end
-				end
-				
-				table.insert(new, ent)
-			end
-			
-			MultiTool_Sort(smode, tr.HitPos, new)
+			local new = GTools.GenericAutoSelect(self, tr)
 			
 			net.Start('MultiColorRainbow.MultiSelect')
-			net.WriteUInt(#new, 12)
-			
-			for i = 1, #new do
-				net.WriteEntity(new[i])
-			end
-			
+			GTools.WriteEntityList(new)
 			net.Send(self:GetOwner())
 		end
 	end

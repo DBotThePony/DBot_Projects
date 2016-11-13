@@ -15,6 +15,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
+local CURRENT_TOOL_MODE = 'multifreeze'
+
 if CLIENT then
 	language.Add('tool.multifreeze.name', 'Multifreeze')
 	language.Add('tool.multifreeze.desc', 'Freeze-unfreeze entities')
@@ -35,114 +37,60 @@ TOOL.Information = {
 }
 
 TOOL.ClientConVar = {
-	select_by_model = 0,
-	select_only_constrained = 1,
-	select_mode = 0,
-	select_by_material = 0,
-	select_size = 512,
-	
-	display_red = 0,
-	display_green = 255,
-	display_blue = 255,
+	select_r = 0,
+	select_g = 255,
+	select_b = 255,
 }
 
+GTools.AddAutoSelectConVars(TOOL.ClientConVar)
+
 function TOOL.BuildCPanel(Panel)
-	Panel:CheckBox('Auto Select only constrained', 'multifreeze_select_only_constrained')
-	Panel:CheckBox('Auto Select by Model', 'multifreeze_select_by_model')
-	Panel:CheckBox('Auto Select by Material', 'multifreeze_select_by_material')
-	Panel:NumSlider('Auto Select Range', 'multifreeze_select_size', 1, 1024, 0)
-	Panel:CheckBox('False - Sphere, True - Box', 'multifreeze_select_mode')
-	
-	local mixer = vgui.Create('DColorMixer', Panel)
-	Panel:AddItem(mixer)
-	mixer:SetConVarR('multifreeze_display_red')
-	mixer:SetConVarG('multifreeze_display_green')
-	mixer:SetConVarB('multifreeze_display_blue')
-	mixer:SetAlphaBar(false)
+	GTools.AutoSelectOptions(Panel, CURRENT_TOOL_MODE)
+	GTools.GenericSelectPicker(Panel, CURRENT_TOOL_MODE, 'Highlight color')
 end
 
-function TOOL:SelectEntities(tr)
-	local vars = {}
-	
-	for k, v in pairs(self.ClientConVar) do
-		vars[k] = self:GetClientNumber(k, v)
-	end
-	
-	vars.select_size = math.Clamp(vars.select_size, 1, 1024)
-	
-	local bools = {}
-	
-	for k, v in pairs(vars) do
-		bools[k] = tobool(vars[k])
-	end
-	
-	local MEM = {}
-	
-	if IsValid(tr.Entity) then
-		for k, v in pairs(constraint.GetAllConstrainedEntities(tr.Entity)) do
-			MEM[v] = v
-		end
-	end
-	
-	if not bools.select_only_constrained then
-		local MDL, MTRL
-		
-		if IsValid(tr.Entity) then
-			MDL = tr.Entity:GetModel()
-			MTRL = tr.Entity:GetMaterial()
-		end
-		
-		for i, ent in ipairs(ents.FindInSphere(tr.HitPos, vars.select_size)) do
-			if bools.select_by_material then
-				if MTRL ~= ent:GetMaterial() then continue end
-			end
-			
-			if bools.select_by_model then
-				if MDL ~= ent:GetModel() then continue end
-			end
-			
-			MEM[ent] = ent
-		end
-	end
-	
-	local reply = {}
-	
-	for k, v in pairs(MEM) do
-		local phys = v:GetPhysicsObject()
-		
-		if phys:IsValid() then
-			table.insert(reply, {v, phys})
-		end
-	end
-	
-	return reply
-end
-
-function TOOL:RightClick(tr)
-	if CLIENT then return true end
-	
-	local get = self:SelectEntities(tr)
-	
-	for i, v in ipairs(get) do
-		v[2]:EnableMotion(true)
-		v[2]:Wake()
-	end
-	
-	self:GetOwner():ChatPrint('Unfreezed ' .. #get .. ' physics objects')
-	
-	return true
+function TOOL:CanUseEntity(ent)
+	return IsValid(ent) and
+		not ent:IsPlayer() and
+		not ent:IsNPC() and
+		not ent:IsVehicle() and
+		ent:GetPhysicsObject():IsValid() and
+		(not ent.CPPICanTool or ent:CPPICanTool(self:GetOwner(), CURRENT_TOOL_MODE))
 end
 
 function TOOL:LeftClick(tr)
 	if CLIENT then return true end
 	
-	local get = self:SelectEntities(tr)
+	local get = GTools.GenericAutoSelect(self, tr)
 	
 	for i, v in ipairs(get) do
-		v[2]:EnableMotion(false)
+		v:GetPhysicsObject():EnableMotion(false)
+		local data = EffectData()
+		data:SetOrigin(v:GetPos())
+		data:SetEntity(v)
+		util.Effect('entity_remove', data, true, true)
 	end
 	
-	self:GetOwner():ChatPrint('Freezed ' .. #get .. ' physics objects')
+	GTools.PChatPrint(self:GetOwner(), 'Freezed ' .. #get .. ' physics objects')
+	
+	return true
+end
+
+function TOOL:RightClick(tr)
+	if CLIENT then return true end
+	
+	local get = GTools.GenericAutoSelect(self, tr)
+	
+	for i, v in ipairs(get) do
+		v:GetPhysicsObject():EnableMotion(true)
+		v:GetPhysicsObject():Wake()
+		local data = EffectData()
+		data:SetOrigin(v:GetPos())
+		data:SetEntity(v)
+		util.Effect('entity_remove', data, true, true)
+	end
+	
+	GTools.PChatPrint(self:GetOwner(), 'Unfreezed ' .. #get .. ' physics objects')
 	
 	return true
 end
@@ -166,10 +114,22 @@ else
 		local max = net.ReadUInt(12)
 		
 		for i = 1, max do
-			table.insert(DisplayTable, net.ReadEntity())
+			local new = net.ReadEntity()
+			
+			if IsValid(new) then
+				table.insert(DisplayTable, new)
+				
+				if vars.select_print:GetBool() then
+					GTools.PrintEntity(new)
+				end
+			end
 		end
 		
 		GTools.ChatPrint('Counted ' .. #DisplayTable .. ' physics objects')
+		
+		if vars.select_print:GetBool() then
+			GTools.ChatPrint('Look into console for list')
+		end
 	end)
 	
 	hook.Add('PostDrawWorldToolgun', 'multifreeze', function(ply, weapon, mode)
@@ -178,7 +138,7 @@ else
 		
 		if RealTime() % 0.5 < .25 then return end
 		
-		local r, g, b = vars.display_red:GetInt() / 255, vars.display_green:GetInt() / 255, vars.display_blue:GetInt() / 255
+		local r, g, b = vars.select_r:GetInt() / 255, vars.select_g:GetInt() / 255, vars.select_b:GetInt() / 255
 		
 		for i, ent in ipairs(DisplayTable) do
 			if not IsValid(ent) then continue end
@@ -193,13 +153,13 @@ end
 function TOOL:Reload(tr)
 	if CLIENT then return true end
 	
-	local get = self:SelectEntities(tr)
+	local get = GTools.GenericAutoSelect(self, tr)
 	
 	net.Start('MultiFreezeTool.ShowUp')
 	net.WriteUInt(#get, 12)
 	
 	for i, v in ipairs(get) do
-		net.WriteEntity(v[1])
+		net.WriteEntity(v)
 	end
 	
 	net.Send(self:GetOwner())

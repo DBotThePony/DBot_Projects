@@ -62,17 +62,12 @@ TOOL.ClientConVar = {
 	angle_y = 0,
 	angle_r = 0,
 	
-	select_by_model = 0,
-	select_only_constrained = 1,
-	select_mode = 0,
-	select_by_material = 0,
-	select_size = 512,
-	select_invert = 0,
-	
 	deselect = 1,
 	display_mode = 0,
 	ghost_obey_colors = 1,
 }
+
+GTools.AddAutoSelectConVars(TOOL.ClientConVar)
 
 local function CanUse(ply, ent)
 	return IsValid(ent) and
@@ -80,6 +75,10 @@ local function CanUse(ply, ent)
 		not ent:IsNPC() and
 		not ent:IsVehicle() and
 		(not ent.CPPICanTool or ent:CPPICanTool(ply, CURRENT_TOOL_MODE))
+end
+
+function TOOL:CanUseEntity(ent)
+	return CanUse(self:GetOwner(), ent)
 end
 
 local function DuplicateVectors(tab)
@@ -97,64 +96,7 @@ local function DuplicateVectors(tab)
 end
 
 function TOOL:SelectEntities(tr)
-	local vars = {}
-	
-	for k, v in pairs(self.ClientConVar) do
-		vars[k] = self:GetClientNumber(k, v)
-	end
-	
-	vars.select_size = math.Clamp(vars.select_size, 1, 1024)
-	
-	local bools = {}
-	
-	for k, v in pairs(vars) do
-		bools[k] = tobool(vars[k])
-	end
-	
-	local MEM = {}
-	
-	if IsValid(tr.Entity) then
-		for k, v in pairs(constraint.GetAllConstrainedEntities(tr.Entity)) do
-			MEM[v] = v
-		end
-	end
-	
-	if not bools.select_only_constrained then
-		local MDL, MTRL
-		
-		if IsValid(tr.Entity) then
-			MDL = tr.Entity:GetModel()
-			MTRL = tr.Entity:GetMaterial()
-		end
-		
-		for i, ent in ipairs(ents.FindInSphere(tr.HitPos, vars.select_size)) do
-			if bools.select_by_material then
-				if MTRL ~= ent:GetMaterial() then continue end
-			end
-			
-			if bools.select_by_model then
-				if MDL ~= ent:GetModel() then continue end
-			end
-			
-			MEM[ent] = ent
-		end
-	end
-	
-	local reply = {}
-	
-	local ply = self:GetOwner()
-	
-	for k, v in pairs(MEM) do
-		if CanUse(ply, v) then
-			local phys = v:GetPhysicsObject()
-			
-			if phys:IsValid() then
-				table.insert(reply, {v, phys})
-			end
-		end
-	end
-	
-	return reply
+	return GTools.GenericAutoSelect(self, tr)
 end
 
 function TOOL.BuildCPanel(Panel)
@@ -206,16 +148,7 @@ function TOOL.BuildCPanel(Panel)
 	mixer:SetConVarB(CURRENT_TOOL_MODE .. '_select3_b')
 	mixer:SetAlphaBar(false)
 	
-	local lab = Label('Autoselect options', Panel)
-	Panel:AddItem(lab)
-	lab:SetDark(true)
-	
-	Panel:CheckBox('Auto Select only constrained', CURRENT_TOOL_MODE_VARS .. 'select_only_constrained')
-	Panel:CheckBox('Auto Select by Model', CURRENT_TOOL_MODE_VARS .. 'select_by_model')
-	Panel:CheckBox('Auto Select by Material', CURRENT_TOOL_MODE_VARS .. 'select_by_material')
-	Panel:NumSlider('Auto Select Range', CURRENT_TOOL_MODE_VARS .. 'select_size', 1, 1024, 0)
-	Panel:CheckBox('False - Sphere, True - Box', CURRENT_TOOL_MODE_VARS .. 'select_mode')
-	Panel:CheckBox('Invert entities status on auto select', CURRENT_TOOL_MODE_VARS .. 'select_invert')
+	GTools.AutoSelectOptions(Panel, CURRENT_TOOL_MODE)
 end
 
 local SELECTED_ENTITY
@@ -886,23 +819,36 @@ if CLIENT then
 		end,
 		
 		multi = function()
-			local count = net.ReadUInt(12)
-			local newCount = 0
-			local read = {}
+			local read = GTools.ReadEntityList()
 			
-			for i = 1, count do
-				local get = net.ReadEntity()
+			for k, v in ipairs(read) do
+				local hit = false
 				
-				if IsValid(get) and get ~= SELECTED_ENTITY then
-					local status = DoAdd(get)
-					
-					if status then
-						newCount = newCount + 1
+				for i, old in ipairs(SELECT_TABLE) do
+					if old == v then
+						if vars.select_invert then
+							table.remove(SELECT_TABLE, i)
+						end
+						
+						hit = true
+						break
 					end
+				end
+				
+				if not hit then
+					table.insert(SELECT_TABLE, v)
 				end
 			end
 			
-			GTools.ChatPrint('Auto Selected ' .. newCount .. ' entities')
+			GTools.ChatPrint('Auto Selected ' .. #read .. ' entities')
+			
+			if vars.select_print:GetBool() then
+				GTools.ChatPrint('Look into console for the list')
+				
+				for k, v in ipairs(read) do
+					GTools.PrintEntity(v)
+				end
+			end
 		end,
 		
 		clear = function()
@@ -1071,13 +1017,8 @@ function TOOL:LeftClick(tr)
 			net.WriteString('multi')
 			
 			local get = self:SelectEntities(tr)
-			local c = #get
 			
-			net.WriteUInt(c, 12)
-			
-			for i = 1, c do
-				net.WriteEntity(get[i][1])
-			end
+			GTools.WriteEntityList(get)
 			
 			net.Send(self:GetOwner())
 		end
