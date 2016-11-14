@@ -11,6 +11,6 @@ content of MinecraftSWEP/2 and "Bonus Ducks" addon because MinecraftSWEP/2 uses 
 https://www.apache.org/licenses/LICENSE-2.0
 
 There are three repositories hosted
-* https://dbot.serealia.ca:2071/dbot/dbot_projects - This is my Gitlab server
+* https://git.dbot.serealia.ca/dbot/dbot_projects - This is my Gitlab server aaaaaand this is main host
 * https://github.com/roboderpy/dbot_projects - GitHub
 * https://bitbucket.org/DBotThePony/dbot_projects - BitBucket
