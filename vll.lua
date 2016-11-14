@@ -502,6 +502,9 @@ function VLL.DirectoryContent(path)
 	for k, v in pairs(VLL.FILE_MEMORY) do
 		local sub = string.sub(k, 1, len)
 		if sub ~= path then continue end
+		
+		if string.sub(k, len + 1, len + 1) == '.' then continue end
+		
 		local subnext = string.sub(k, len + 2)
 		if not string.find(subnext, '/') then
 			table.insert(reply, subnext)
@@ -621,7 +624,8 @@ end
 function VLL.IsDir(Path, Dir)
 	if Dir ~= 'LUA' then return file.IsDir(Path, Dir) end
 	
-	return VLL.DIRECTORY_MEMORY[Path] or file.IsDir(Path, Dir)
+	if VLL.DIRECTORY_MEMORY[Path] then return true end
+	return file.IsDir(Path, Dir)
 end
 
 function VLL.FileRead(File, Dir)
@@ -879,6 +883,12 @@ local fileFuncs = {
 	IsDir = VLL.IsDir,
 }
 
+for k, v in pairs(file) do
+	if not fileFuncs[k] then
+		fileFuncs[k] = v
+	end
+end
+
 local hookFuncs = {
 	Add = VLL.__addHook,
 }
@@ -890,7 +900,11 @@ local EnvMeta = {
 	end
 }
 
-setmetatable(fileFuncs, file)
+setmetatable(fileFuncs, {
+	__index = _G.file,
+	__newindex = _G.file,
+})
+
 setmetatable(hookFuncs, hook)
 
 function VLL.AdminMessage(...)
@@ -1302,6 +1316,36 @@ function VLL.RunBundle(bundle)
 		
 		ENT = nil
 	end
+	
+	--[[
+	local toolgunHit = false
+	
+	local contents = VLL.DirectoryContent('weapons/gmod_tool/stools')
+	
+	for k, fil in ipairs(contents) do
+		if VLL.FileBundle('weapons/gmod_tool/stools/' .. fil) == bundle then
+			toolgunHit = true
+			break
+		end
+	end
+	
+	if toolgunHit then
+		VLL.Message('Toolgun changes detected, reloading toolgun SWEP')
+		
+		SWEP = {}
+		SWEP.Folder = 'weapons/gmod_tool'
+		SWEP.Primary = {}
+		SWEP.Secondary = {}
+		
+		if SERVER then
+			VLL.Include('weapons/gmod_tool/init.lua')
+		else
+			VLL.Include('weapons/gmod_tool/cl_init.lua')
+		end
+		
+		scripted_ents.Register(SWEP, 'gmod_tool')
+	end
+	]]
 	
 	VLL.Message('Initialized bundle ' .. bundle .. ' in ' .. math.floor((SysTime() - t) * 100000) / 100 .. ' ms')
 end
