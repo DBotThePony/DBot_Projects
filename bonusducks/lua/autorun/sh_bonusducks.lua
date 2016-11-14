@@ -16,9 +16,17 @@ limitations under the License.
 ]]
 
 local DockOMetrValue = 0
+local DockOMetrValue_Server = 0
 
 if SERVER then
 	util.AddNetworkString('DBot_DuckOMeter')
+	sql.Query('CREATE TABLE IF NOT EXISTS dbot_duckometr_sv (steamid varchar(32) not null primary key, cval integer not null)')
+	
+	hook.Add('PlayerInitialSpawn', 'DBot_DuckOMeter', function(ply)
+		local data = sql.Query('SELECT cval FROM dbot_duckometr_sv WHERE steamid = "' .. ply:SteamID() .. '"') or {}
+		
+		ply.CurrentDucksCollected = data[1] and data[1].cval or 0
+	end)
 else
 	sql.Query('CREATE TABLE IF NOT EXISTS dbot_duckometr (cval integer not null)')
 	local select = sql.Query('SELECT * FROM dbot_duckometr')
@@ -114,8 +122,13 @@ function ENT:Collect(ply)
 	self:EmitSound(table.Random(DUCK_TOUCH_SOUND), 75)
 	self:Remove()
 	
+	ply.CurrentDucksCollected = (ply.CurrentDucksCollected or 0) + 1
+	
 	net.Start('DBot_DuckOMeter')
+	net.WriteUInt(ply.CurrentDucksCollected, 16)
 	net.Send(ply)
+	
+	sql.Query(string.format('REPLACE INTO dbot_duckometr_sv (steamid, cval) VALUES (%q, %q)', ply:SteamID(), ply.CurrentDucksCollected))
 	
 	hook.Run('PostCollectDuck', self, ply)
 end
@@ -248,11 +261,12 @@ if CLIENT then
 		if DuckDisplayTimer < CurTime() then return end
 		local fade = (DuckDisplayTimer - CurTime()) / 4
 		local x, y = ScrW() - 200, ScrH() / 2 + 100
-		draw.DrawText('Ducks collected: ' .. DockOMetrValue, 'DBot_DuckOMeter', x, y, Color(255, 255, 255, fade * 255))
+		draw.DrawText('Ducks collected: ' .. DockOMetrValue .. '\nOn this server: ' .. DockOMetrValue_Server, 'DBot_DuckOMeter', x, y, Color(255, 255, 255, fade * 255))
 	end)
 	
 	net.Receive('DBot_DuckOMeter', function()
 		DockOMetrValue = DockOMetrValue + 1
+		DockOMetrValue_Server = net.ReadUInt(16)
 		sql.Query('DELETE FROM dbot_duckometr')
 		sql.Query('INSERT INTO dbot_duckometr (cval) VALUES (' .. DockOMetrValue .. ')')
 		DuckDisplayTimer = CurTime() + 4
