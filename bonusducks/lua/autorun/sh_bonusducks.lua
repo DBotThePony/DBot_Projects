@@ -27,10 +27,40 @@ if SERVER then
 		
 		ply.CurrentDucksCollected = data[1] and data[1].cval or 0
 	end)
+	
+	concommand.Add('sv_duck_reset', function(ply, cmd, args)
+		ply.CurrentDucksCollected = 0
+		sql.Query('DELETE FROM dbot_duckometr_sv WHERE steamid = "' .. ply:SteamID() .. '"')
+		print('Duck count reseted serverside for you!')
+	end)
+	
+	concommand.Add('sv_duck_reset_all', function(ply, cmd, args)
+		if IsValid(ply) and not ply:IsSuperAdmin() then
+			ply:ChatPrint('Merasmus not trusting you ducks! Must be a superadmin!')
+			return
+		end
+		
+		for i, ply2 in ipairs(player.GetAll()) do
+			ply2.CurrentDucksCollected = 0
+		end
+		
+		sql.Query('DELETE FROM dbot_duckometr_sv')
+		print('Duck count reseted serverside for EVERYONE! Merasmus cries!')
+		
+		if IsValid(ply) then
+			ply:ChatPrint('Duck count reseted serverside for EVERYONE! Merasmus cries!')
+		end
+	end)
 else
 	sql.Query('CREATE TABLE IF NOT EXISTS dbot_duckometr (cval integer not null)')
 	local select = sql.Query('SELECT * FROM dbot_duckometr')
 	DockOMetrValue = select and select[1] and select[1].cval or 0
+	
+	concommand.Add('cl_duck_reset', function(ply, cmd, args)
+		DockOMetrValue = 0
+		sql.Query('DELETE FROM dbot_duckometr')
+		print('Duck count reseted clientside!')
+	end)
 end
 
 local DUCK_SOUND = {
