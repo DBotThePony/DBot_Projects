@@ -541,6 +541,12 @@ local function Request(ply)
 	
 	if ply:InVehicle() then return end
 	
+	if ply:GetMoveType() == MOVETYPE_NONE then
+		ply:PrintMessage(HUD_PRINTCENTER, '[DSit] You can not sit right now')
+		DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'You can not sit right now')
+		return
+	end
+	
 	local lpos = ply:GetPos()
 	local epos = ply:EyePos()
 	local eyes = ply:EyeAngles()
