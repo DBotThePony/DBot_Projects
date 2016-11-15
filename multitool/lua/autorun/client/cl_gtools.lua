@@ -160,6 +160,12 @@ function About(Panel)
 	function button:DoClick()
 		gui.OpenURL('https://git.dbot.serealia.ca/dbot/dbot_projects')
 	end
+	
+	local button = Panel:Button('Questions or ideas? Join Discord!')
+	
+	function button:DoClick()
+		gui.OpenURL('https://discord.gg/HG9eS79')
+	end
 end
 
 function PreRender()

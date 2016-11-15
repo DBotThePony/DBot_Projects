@@ -562,6 +562,17 @@ hook.Add('Think', 'DHUD2.Shift', UpdateShift)
 
 local function Populate(Panel)
 	if not IsValid(Panel) then return end --spawnmenu_reload
+	Panel:Clear()
+	
+	local lab = Label('DHUD/2 - Resurrection of DHUD Legacy', Panel)
+	lab:SetDark(true)
+	Panel:AddItem(lab)
+	
+	local button = Panel:Button('Questions or ideas? Join Discord!')
+	
+	function button:DoClick()
+		gui.OpenURL('https://discord.gg/HG9eS79')
+	end
 	
 	for k, v in pairs(DHUD2.CVars) do
 		local checkbox = Panel:CheckBox(v.help, k)

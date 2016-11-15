@@ -341,14 +341,14 @@ local function PopulateClient(Panel)
 		gui.OpenURL('http://steamcommunity.com/sharedfiles/filedetails/?id=673317324')
 	end
 	
-	local button = Panel:Button('BitBucket')
+	local button = Panel:Button('GitLab')
 	button.DoClick = function()
-		gui.OpenURL('https://bitbucket.org/DBotThePony/dsit')
+		gui.OpenURL('https://git.dbot.serealia.ca/dbot/dbot_projects')
 	end
 	
-	local button = Panel:Button('Github')
+	local button = Panel:Button('Questions? Join Discord!')
 	button.DoClick = function()
-		gui.OpenURL('https://github.com/roboderpy/dsit')
+		gui.OpenURL('https://discord.gg/HG9eS79')
 	end
 end
 
