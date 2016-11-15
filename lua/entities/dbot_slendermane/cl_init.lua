@@ -17,6 +17,8 @@ limitations under the License.
 
 include('shared.lua')
 
+language.Add('dbot_slendermane', 'Slendermane')
+
 local debugwtite = Material('models/debug/debugwhite')
 
 function ENT:Draw()
