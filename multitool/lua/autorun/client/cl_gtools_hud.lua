@@ -33,6 +33,9 @@ MAXIMAL_DRAW_DISTANCE_OBB = CreateConVar('gtool_draw_dist_obb', '400', {FCVAR_AR
 MAXIMAL_DRAW_DISTANCE_WORLD_BORDERS = CreateConVar('gtool_draw_dist_bb', '1024', {FCVAR_ARCHIVE}, 'Maximal draw distance of world borders box')
 DIST_COORD_MINIMAL = CreateConVar('gtool_draw_dist_cmin', '40', {FCVAR_ARCHIVE}, 'Minimal allowed distance between coordinates display')
 
+ENABLED_SV = CreateConVar('gtool_draw_sv', '1', {FCVAR_ARCHIVE, FCVAR_REPLICATED}, 'Tell clients to draw stuff')
+OBEY_SV = CreateConVar('gtool_draw_obey', '1', {FCVAR_ARCHIVE}, 'Obey server politics about drawing')
+
 LINE_COLOR_DEFAULT_RED = CreateConVar('gtool_line_r', '0', {FCVAR_ARCHIVE}, '')
 LINE_COLOR_DEFAULT_GREEN = CreateConVar('gtool_line_g', '0', {FCVAR_ARCHIVE}, '')
 LINE_COLOR_DEFAULT_BLUE = CreateConVar('gtool_line_b', '0', {FCVAR_ARCHIVE}, '')
@@ -135,6 +138,8 @@ DRAW_DIRECTION_TEXT_X3, DRAW_DIRECTION_TEXT_Y3, DRAW_DIRECTION_TEXT_Z3, DRAW_DIR
 
 function HUDPaint()
 	if not ENABLED:GetBool() then return end
+	if OBEY_SV:GetBool() and not ENABLED_SV:GetBool() then return end
+	
 	surface.SetFont('Default')
 	
 	if SHOULD_DRAW_DIRECTIONS_TEXT then
@@ -193,6 +198,7 @@ end
 function PostDrawTranslucentRenderables(a, b)
 	if a or b then return end
 	if not ENABLED:GetBool() then return end
+	if OBEY_SV:GetBool() and not ENABLED_SV:GetBool() then return end
 	
 	if not IsValid(LocalPlayer()) then return end
 	if LocalPlayer():InVehicle() then return end
@@ -368,7 +374,14 @@ function BuildMenu(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
 	
+	local lab = Label('If you are an server owner and want to disable GTools draws\nyou need to set gtool_draw_sv to 0 in server console.', Panel)
+	lab:SetDark(true)
+	lab:SetTooltip(lab:GetText())
+	lab:SizeToContents()
+	Panel:AddItem(lab)
+	
 	Panel:CheckBox('Enable', 'gtool_draw')
+	Panel:CheckBox('Disable HUD if server tells so', 'gtool_draw_obey')
 	Panel:CheckBox('Draw coordinates near model world borders', 'gtool_draw_coordinates')
 	Panel:CheckBox('Draw coordinates near model center', 'gtool_draw_coordinates_obb')
 	Panel:CheckBox('Draw angles directions', 'gtool_draw_angles')

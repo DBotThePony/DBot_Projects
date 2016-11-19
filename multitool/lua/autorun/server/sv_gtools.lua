@@ -22,6 +22,7 @@ util.AddNetworkString('GTools.PrintMessage')
 util.AddNetworkString('GTools.ConsoleMessage')
 
 DISABLE_PHYSGUN_SETUP_BY_ADMINS = CreateConVar('gtools_disable_physgun_config', '0', {FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Disable ability to modify physgun settings from superadmin clients')
+HUD_ENABLED_SV = CreateConVar('gtool_draw_sv', '1', {FCVAR_ARCHIVE, FCVAR_REPLICATED}, 'Tell clients to draw stuff')
 
 local physgun = {
 	'physgun_DampingFactor',
