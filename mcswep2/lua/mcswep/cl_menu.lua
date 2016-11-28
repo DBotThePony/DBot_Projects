@@ -267,11 +267,6 @@ function self.BuildMenu()
 	mixer:SetConVarB('cl_mc_drawblock_dcolor_b')
 	mixer:SetAlphaBar(false)
 	
-	local lab = Label('Blocks Draw Time: 0.00 ms', right)
-	lab:Dock(TOP)
-	lab:DockMargin(4, 4, 4, 4)
-	lab.Think = function() lab:SetText('Blocks Draw Time: ' .. math.floor(MCSWEP2.DRAW_TIME * 100000) / 100 .. ' ms') end
-	
 	local canvas = self:Add('EditablePanel')
 	scroll:AddItem(canvas)
 	canvas:Dock(FILL)

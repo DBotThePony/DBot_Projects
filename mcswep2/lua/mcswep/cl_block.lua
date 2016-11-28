@@ -25,58 +25,8 @@ MCSWEP2.ToDraw = MCSWEP2.ToDraw or {}
 
 MCSWEP2.DRAW_FILTER = CreateConVar('cl_mc_filter', '1', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'Force "point" texture filter on minecraft blocks.')
 
-local function PreDrawTranslucentRenderables()
-	MCSWEP2.ToDraw = {}
-end
-
-local function RealDraw()
-	for k, self in ipairs(MCSWEP2.ToDraw) do
-		if not IsValid(self) then continue end
-		if not self.Draw then continue end
-		self.IS_RENDERING = true
-		self:Draw()
-		self.IS_RENDERING = false
-	end
-end
-
-local function err(e)
-	print(e)
-	print(debug.traceback())
-end
-
-local function PostDrawTranslucentRenderables(a, b)
-	if a or b then return end
-	
-	hook.Run('PreDrawMinecraftBlocks')
-	
-	local t = SysTime()
-	
-	if not MCSWEP2.DISABLE_DRAW:GetBool() then
-		render.SetColorModulation(1, 1, 1)
-		
-		if MCSWEP2.DRAW_FILTER:GetBool() then
-			render.PushFilterMag(TEXFILTER.POINT)
-			render.PushFilterMin(TEXFILTER.POINT)
-		end
-		
-		xpcall(RealDraw, err)
-		
-		if MCSWEP2.DRAW_FILTER:GetBool() then
-			render.PopFilterMag()
-			render.PopFilterMin()
-		end
-	end
-	
-	MCSWEP2.DRAW_TIME = SysTime() - t
-	
-	hook.Run('PostDrawMinecraftBlocks')
-end
-
-hook.Add('PostDrawTranslucentRenderables', 'MCSWEP2.DrawBlocks', PostDrawTranslucentRenderables)
-hook.Add('PreDrawTranslucentRenderables', 'MCSWEP2.DrawBlocks', PreDrawTranslucentRenderables)
-
 function ENT:IsRendering()
-	return self.IS_RENDERING
+	return true
 end
 
 local GlowHalf = Vector(0, 0, 1) * MCSWEP2.STEP / 2
@@ -116,12 +66,22 @@ function ENT:RealDraw()
 end
 
 function ENT:Draw()
-	if not self.IS_RENDERING then return end
+	if MCSWEP2.DISABLE_DRAW:GetBool() then return end
+	if MCSWEP2.DRAW_FILTER:GetBool() then
+		render.PushFilterMag(TEXFILTER.POINT)
+		render.PushFilterMin(TEXFILTER.POINT)
+	end
+	
 	self:RealDraw()
+	
+	if MCSWEP2.DRAW_FILTER:GetBool() then
+		render.PopFilterMag()
+		render.PopFilterMin()
+	end
 end
 
 function ENT:DrawTranslucent()
-	if not self.IS_RENDERING then table.insert(MCSWEP2.ToDraw, self) else self:Draw() end
+	self:Draw()
 end
 
 local DRAW_LINES = CreateConVar('cl_mc_drawlines', '1', FCVAR_ARCHIVE, 'Draw lines on blocks')
@@ -157,7 +117,8 @@ end
 
 local maxdist = 256 ^ 2
 
-local function PostDrawMinecraftBlocks()
+local function PostDrawTranslucentRenderables(a, b)
+	if a or b then return end
 	if not DRAW_LINES:GetBool() then return end
 	
 	local ply = LocalPlayer()
@@ -172,7 +133,7 @@ local function PostDrawMinecraftBlocks()
 	ent:DrawLines()
 end
 
-hook.Add('PostDrawMinecraftBlocks', 'MCSWEP2.BlockLines', PostDrawMinecraftBlocks)
+hook.Add('PostDrawTranslucentRenderables', 'MCSWEP2.BlockLines', PostDrawTranslucentRenderables)
 hook.Add('PlayerFootstep', 'MCSWEP2.BlockSounds', PlayerFootstep)
 
 language.Add('dbot_mcblock', 'Minecraft Block')
