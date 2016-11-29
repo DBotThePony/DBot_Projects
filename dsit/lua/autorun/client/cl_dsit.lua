@@ -244,22 +244,33 @@ local function VehicleTick(ent)
 	
 	if IsValid(ent:GetParent()) then return end
 	
-	local Angles = ply:EyeAngles()
-
+	local eAng = ply:EyeAngles()
+	local ePos = ply:EyePos()
+	
 	if ply == LocalPlayer() and ply:InVehicle() then
-		Angles = Angles + ply:GetVehicle():GetAngles()
+		eAng = eAng + ply:GetVehicle():GetAngles()
 	end
 	
-	Angles.p = 0
-	Angles.r = 0
-	Angles.y = math.ceil((Angles.y - 90) * 5) / 5
+	if not ply:InVehicle() then
+		eAng.p = 0
+		eAng.r = 0
+	end
 	
-	ent:SetRenderAngles(Angles)
+	local deltaZ = ply:GetPos():Distance(ply:EyePos())
+	local localPos, localAng = WorldToLocal(ent:GetPos(), ent:GetAngles(), ePos, eAng)
+	localPos.x = 0
+	localPos.y = 0
+	localPos.z = 20
 	
-	local epos = ply:EyePos()
-	epos.z = epos.z + 10
-	ent:SetRenderOrigin(epos)
-	ent:SetPos(epos)
+	localAng.p = 0
+	localAng.y = -90
+	localAng.r = 0
+	
+	local nPos, nAng = LocalToWorld(localPos, localAng, ePos, eAng)
+	
+	ent:SetRenderAngles(nAng)
+	ent:SetRenderOrigin(nPos)
+	ent:SetPos(nPos)
 end
 
 local KeyName, KeyID

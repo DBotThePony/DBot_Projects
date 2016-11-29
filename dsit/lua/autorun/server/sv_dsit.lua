@@ -989,16 +989,28 @@ local function VehicleTick(ent)
 	local ply = ent.ParentedToPlayer
 	
 	if not SHOULD_PARENT:GetBool() then
-		local Angles = ply:EyeAngles()
-		Angles.p = 0
-		Angles.r = 0
-		Angles.y = Angles.y - 90
+		local eAng = ply:EyeAngles()
+		local ePos = ply:EyePos()
 		
-		ent:SetAngles(Angles)
+		if not ply:InVehicle() then
+			eAng.p = 0
+			eAng.r = 0
+		end
 		
-		local epos = ply:EyePos()
-		epos.z = epos.z + 10
-		ent:SetPos(epos)
+		local deltaZ = ply:GetPos():Distance(ply:EyePos())
+		local localPos, localAng = WorldToLocal(ent:GetPos(), ent:GetAngles(), ePos, eAng)
+		localPos.x = 0
+		localPos.y = 0
+		localPos.z = 20
+		
+		localAng.p = 0
+		localAng.y = -90
+		localAng.r = 0
+		
+		local nPos, nAng = LocalToWorld(localPos, localAng, ePos, eAng)
+		
+		ent:SetAngles(nAng)
+		ent:SetPos(nPos)
 	end
 end
 
