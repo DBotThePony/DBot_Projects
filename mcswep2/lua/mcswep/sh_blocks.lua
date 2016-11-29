@@ -367,7 +367,7 @@ self.RegisterBlock(ID(), 'models/mcmodelpack/blocks/cloth-old.mdl', {health = 25
 self.RegisterBlock(ID(), 'models/mcmodelpack/blocks/dispencer.mdl', {skins = {0, 1}, rotate = true}, 'dispencer')
 self.RegisterBlock(ID(), 'models/mcmodelpack/blocks/giantmushroom-base.mdl', {health = 10, material = self.MAT_WOOD, flame = true}, 'mushroon')
 self.RegisterBlock(ID(), 'models/mcmodelpack/blocks/giantmushroom-head.mdl', {health = 10, material = self.MAT_WOOD, flame = true, skins = {0, 1}}, 'mushroom.head')
-self.RegisterBlock(ID(), 'models/mcmodelpack/blocks/glass.mdl', {health = 25, material = self.MAT_GLASS, skins = {0, 1}}, 'glass')
+self.RegisterBlock(ID(), 'models/mcmodelpack/blocks/glass.mdl', {health = 25, material = self.MAT_GLASS, skins = {0, 1}, canchoke = false}, 'glass')
 self.RegisterBlock(ID(), 'models/mcmodelpack/blocks/glowstone.mdl', {health = 25, material = self.MAT_GLASS, 'glowstone', glowmult = 3, glow = true, glowcolor = Color(255, 225, 65)}, 'glowstone')
 self.RegisterBlock(ID(), 'models/mcmodelpack/blocks/gravel.mdl', {health = 20, material = self.MAT_GRAVEL, physics = true}, 'gravel')
 self.RegisterBlock(ID(), 'models/mcmodelpack/blocks/hay.mdl', {health = 50, material = self.MAT_CLOTH}, 'hay')
@@ -399,7 +399,7 @@ self.RegisterBlock(ID(), 'models/mcmodelpack/other_blocks/brewing_stand.mdl', {c
 self.RegisterBlock(ID(), 'models/mcmodelpack/other_blocks/cauldron.mdl', {canchoke = false}, 'cauldron')
 self.RegisterBlock(ID(), 'models/mcmodelpack/other_blocks/ironbars.mdl', {material = self.MAT_IRON, health = 60, canchoke = false}, 'ironbars')
 self.RegisterBlock(ID(), 'models/mcmodelpack/other_blocks/decoration.mdl', {material = self.MAT_LEAVES, health = 5, class = 'dbot_mcblock_decoration', skins = self.SimpleSkins(4, 26)}, 'decoration')
-self.RegisterBlock(ID(), 'models/mcmodelpack/other_blocks/glasspane.mdl', {material = self.MAT_GLASS, health = 10, rotate = true}, 'glasspanel')
+self.RegisterBlock(ID(), 'models/mcmodelpack/other_blocks/glasspane.mdl', {material = self.MAT_GLASS, health = 10, rotate = true, canchoke = false}, 'glasspanel')
 self.RegisterBlock(ID(), 'models/mcmodelpack/other_blocks/ladder.mdl', {material = self.MAT_WOOD, health = 20, flame = true, rotate = true, rotateblock = true, opaque = false, canchoke = false, solid = false}, 'ladder')
 self.RegisterBlock(ID(), 'models/mcmodelpack/blocks/lamp.mdl', {health = 50, material = self.MAT_GLASS, skins = {1}}, 'lamp.off')
 
