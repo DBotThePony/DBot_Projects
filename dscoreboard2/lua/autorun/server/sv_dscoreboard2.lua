@@ -48,16 +48,11 @@ local function ChatPrint(ply, ...)
 end
 
 local function SavePly(ply)
-	LINK:Begin(true) --Dead lock on MySQL for SOME FUCKING UNRESONABLE REASON
-	--GOD I HATE YOU
-	
 	local steamid = ply:SteamID64()
 	
 	for k, v in ipairs(ply.DSCOREBOARD_RATE) do
-		LINK:Add(string.format('UPDATE dscoreboard2_rate SET val = %q WHERE rate = %q AND ply = %q', v, k, steamid))
+		LINK:Query(string.format('REPLACE INTO dscoreboard2_rate (ply, rate, val) VALUES (%q, %q, %q)', steamid, k, v))
 	end
-	
-	LINK:Commit()
 end
 
 local function SetRate(ply, id, value)
@@ -73,7 +68,7 @@ local function AddRate(ply, id)
 	return SetRate(ply, id, GetRate(ply, id) + 1)
 end
 
-local function PlayerAuthed(ply)
+local function PlayerInitialSpawn(ply)
 	local steamid64 = ply:SteamID64()
 	
 	ply.DSCOREBOARD_RATE = {}
@@ -83,21 +78,24 @@ local function PlayerAuthed(ply)
 			ply.DSCOREBOARD_RATE[tonumber(row.rate)] = tonumber(row.val)
 		end
 		
-		LINK:Begin(true)
-		
 		for i = 1, #DScoreBoard2Ratings.Ratings do
-			if ply.DSCOREBOARD_RATE[i] then continue end
-			ply.DSCOREBOARD_RATE[i] = 0
-			LINK:Add(string.format('INSERT INTO dscoreboard2_rate (ply, rate, val) VALUES (%q, %q, %q)', steamid64, i, 0))
+			if not ply.DSCOREBOARD_RATE[i] then
+				ply.DSCOREBOARD_RATE[i] = 0
+				LINK:Query(string.format('INSERT INTO dscoreboard2_rate (ply, rate, val) VALUES (%q, %q, %q)', steamid64, i, 0))
+			end
 		end
-		
-		LINK:Commit()
 		
 		for k, v in ipairs(ply.DSCOREBOARD_RATE) do
 			ply:SetNWInt('DScoreBoard2.Rating' .. k, v)
 		end
 	end)
 end
+
+timer.Simple(0, function()
+	for i, ply in ipairs(player.GetAll()) do
+		PlayerInitialSpawn(ply)
+	end
+end)
 
 local function BroadcastFlags()
 	local plys = player.GetAll()
@@ -143,7 +141,7 @@ local function RatePlayer(ply, cmd, args)
 		return
 	end
 	
-	if not target.DSCOREBOARD_RATE then PlayerAuthed(target) return end
+	if not target.DSCOREBOARD_RATE then PlayerInitialSpawn(target) return end
 	
 	local i1 = target:UserID()
 	
@@ -217,20 +215,19 @@ local function CheckPassword(steamid64, ip, svpass, clpass, nick)
 end
 
 for k, v in ipairs(player.GetAll()) do
-	PlayerAuthed(v)
+	PlayerInitialSpawn(v)
 end
 
-hook.Add('PlayerAuthed', 'DSCOREBOARD_RATE', PlayerAuthed)
+hook.Add('PlayerInitialSpawn', 'DSCOREBOARD_RATE', PlayerInitialSpawn)
 hook.Add('player_disconnect', 'DScoreBoard2.Hooks', player_disconnect)
 hook.Add('PlayerConnect', 'DScoreBoard2.Hooks', PlayerConnect)
 hook.Add('CheckPassword', 'DScoreBoard2.Hooks', CheckPassword)
 
 LINK:Query([[
-	CREATE TABLE IF NOT EXISTS dscoreboard2_rate
-	(
-		ply VARCHAR(26) NOT NULL,
-		rate INT NOT NULL,
-		val INT NOT NULL,
-		PRIMARY KEY (ply, rate)
-	)
+CREATE TABLE IF NOT EXISTS dscoreboard2_rate (
+	ply VARCHAR(26) NOT NULL,
+	rate INT NOT NULL,
+	val INT NOT NULL,
+	PRIMARY KEY (ply, rate)
+)
 ]])
