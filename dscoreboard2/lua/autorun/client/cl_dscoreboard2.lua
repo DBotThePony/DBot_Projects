@@ -228,7 +228,7 @@ function PANEL:Think()
 	if self._Text ~= name then
 		self:SetText(name)
 		self:SizeToContents()
-		self:DockMargin(self:GetParent():GetSize() / 2 - self:GetSize() / 2, 0, 0, 0)
+		self:DockMargin(15, 0, 0, 0)
 	end
 	
 	self.BaseClass.Think(self)
