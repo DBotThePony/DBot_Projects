@@ -24,6 +24,12 @@ local Colors = {
 	textcolor = Color(255, 255, 255, 255),
 }
 
+local plyMeta = FindMetaTable('Player')
+
+function plyMeta:DBoardNick()
+	return self:Nick() .. (self.SteamName and (' (Steam Name: ' .. self:SteamName() .. ')') or '')
+end
+
 board.Colors = Colors
 
 for k, v in pairs(Colors) do
@@ -437,7 +443,7 @@ PANEL.Panels = {
 }
 
 PANEL.Funcs = {
-	nick = 'Nick',
+	nick = 'DBoardNick',
 	health = 'Health',
 	maxhealth = 'GetMaxHealth',
 	armor = 'Armor',
