@@ -215,6 +215,7 @@ function PostDrawTranslucentRenderables(a, b)
 	local lpos = EyePos()
 	
 	local ent = tr.Entity
+	if ent:IsPlayer() then return end
 	local mins, maxs = ent:WorldSpaceAABB()
 	local pos, ang = ent:GetPos(), ent:GetAngles()
 	
