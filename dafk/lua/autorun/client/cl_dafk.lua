@@ -146,7 +146,7 @@ local function PostDrawTranslucentRenderables(a, b)
 		surface.SetFont('DAFK.Text')
 		
 		for k, ply in ipairs(player.GetAll()) do
-			if ply ~= lply and ply:GetPos():Distance(eyes) < 512 then 
+			if ply ~= lply and ply:Alive() and ply:GetPos():Distance(eyes) < 512 then 
 				if ply:IsAFK() then
 					Draw(ply)
 				elseif ply:IsTabbedOut() then
@@ -230,9 +230,10 @@ local function Timer()
 	local lply = LocalPlayer()
 	
 	for k, ply in ipairs(player.GetAll()) do
-		if ply ~= lply and ply:IsAFK() then
+		if ply ~= lply and ply:Alive() and ply:IsAFK() then
 			timer.Create('DAFK.ZZZ.' .. ply:SteamID(), 0.4, 4, function()
 				if not IsValid(ply) then return end
+				if not ply:Alive() then return end
 				Zzz(ply)
 			end)
 		end
