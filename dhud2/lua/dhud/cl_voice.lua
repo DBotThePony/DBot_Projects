@@ -136,6 +136,7 @@ local function BuildVoicePanel()
 	VoicePanel = vgui.Create('EditablePanel')
 	DHUD2.VoicePanel = VoicePanel
 	VoicePanel:KillFocus()
+	VoicePanel:SetRenderInScreenshots(false)
 	VoicePanel:SetPos(DHUD2.GetPosition('voice'))
 	VoicePanel:SetSize(250, ScrH() - 350)
 end
