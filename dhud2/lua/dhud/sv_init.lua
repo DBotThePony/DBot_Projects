@@ -30,6 +30,7 @@ AddCSLuaFile('dhud/cl_killfeed.lua')
 AddCSLuaFile('dhud/cl_speedmeter.lua')
 AddCSLuaFile('dhud/cl_damage.lua')
 AddCSLuaFile('dhud/cl_darkrp.lua')
+AddCSLuaFile('dhud/cl_voice.lua')
 
 util.AddNetworkString('DHUD2.PrintMessage')
 util.AddNetworkString('DHUD2.Damage')

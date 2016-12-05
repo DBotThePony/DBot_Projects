@@ -155,4 +155,10 @@ DHUD2.CreateVar('damage', {
 	help = 'Enable damage hitnumbers',
 })
 
+DHUD2.CreateVar('voice', {
+	type = 'bool',
+	value = '1',
+	help = 'Enable voice panels',
+})
+
 hook.Run('RegisterDHUD2Vars')

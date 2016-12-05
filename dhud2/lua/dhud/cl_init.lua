@@ -622,6 +622,13 @@ local Init = false
 local function LoadIfCan(fil)
 	local can = hook.Run('DHUD2CanLoad', fil)
 	if can == false then return end
+	
+	local can = hook.Run('DHUD2CanLoad', string.Explode('/', fil)[2])
+	if can == false then return end
+	
+	local can = hook.Run('DHUD2CanLoad', string.Explode('.', string.Explode('/', fil)[2])[1])
+	if can == false then return end
+	
 	include(fil)
 end
 
@@ -641,6 +648,7 @@ local function Load()
 	LoadIfCan('dhud/cl_killfeed.lua')
 	LoadIfCan('dhud/cl_speedmeter.lua')
 	LoadIfCan('dhud/cl_damage.lua')
+	LoadIfCan('dhud/cl_voice.lua')
 	
 	if DarkRP then
 		LoadIfCan('dhud/cl_darkrp.lua')
