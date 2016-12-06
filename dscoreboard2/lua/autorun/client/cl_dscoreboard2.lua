@@ -436,6 +436,8 @@ PANEL.Panels = {
 	'health',
 	'maxhealth',
 	'armor',
+	'frags',
+	'deaths',
 	'team',
 	'steamid',
 	'steamid64',
@@ -450,6 +452,8 @@ PANEL.Funcs = {
 	steamid = 'SteamID',
 	steamid64 = 'SteamID64',
 	usergroup = 'GetUserGroup',
+	frags = 'Frags',
+	deaths = 'Deaths',
 }
 
 PANEL.Names = {
@@ -461,6 +465,8 @@ PANEL.Names = {
 	steamid = 'SteamID: ',
 	steamid64 = 'SteamID64: ',
 	usergroup = 'User Group: ',
+	frags = 'Kills: ',
+	deaths = 'Deaths: ',
 }
 
 function PANEL:Think()
