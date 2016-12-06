@@ -484,6 +484,8 @@ function PANEL:Think()
 	
 	self.pnls.team:SetText('Team: ' .. team.GetName(ply:Team()))
 	self.pnls.team.val = team.GetName(ply:Team())
+	
+	hook.Run('DUpdateUserLabels', self, ply, self.pnls)
 end
 
 do
@@ -496,6 +498,29 @@ do
 			surface.SetDrawColor(150, 150, 150, 100)
 			surface.DrawRect(0, 0, w, h)
 		end
+	end
+	
+	local function advSetText(self, text)
+		return self:SetText(self.name .. ' ' .. text)
+	end
+	
+	function PANEL:CreateInfoLabel(id, name)
+		local lab = self.topright:Add('DLabel')
+		self.pnls[id] = lab
+		lab:Dock(TOP)
+		lab:SetFont(FONT_PLAYERINFO)
+		lab:SetText(id)
+		lab:SetTextColor(color_white)
+		lab:SetHeight(14)
+		lab:SetTooltip('Click to copy field to clipboard!')
+		lab.DoClick = LabelClick
+		lab:SetMouseInputEnabled(true)
+		lab.Paint = LabelPaint
+		lab.DSetText = advSetText
+		lab.name = name
+		lab.infos = self
+		
+		return lab
 	end
 
 	function PANEL:Init()
@@ -525,22 +550,15 @@ do
 		topright:Dock(FILL)
 		topright:DockMargin(4, 4, 4, 4)
 		topright.Paint = function() end
+		self.topright = topright
 		
 		self.pnls = {}
 		
 		for k, v in pairs(self.Panels) do
-			local lab = topright:Add('DLabel')
-			self.pnls[v] = lab
-			lab:Dock(TOP)
-			lab:SetFont(FONT_PLAYERINFO)
-			lab:SetText(v)
-			lab:SetTextColor(color_white)
-			lab:SetHeight(14)
-			lab:SetTooltip('Click to copy field to clipboard!')
-			lab.DoClick = LabelClick
-			lab:SetMouseInputEnabled(true)
-			lab.Paint = LabelPaint
+			self:CreateInfoLabel(v)
 		end
+		
+		hook.Run('DPopulateUserLabels', self)
 		
 		local canvas = self:Add('EditablePanel')
 		self.canvas = canvas
@@ -807,6 +825,8 @@ function PANEL:UpdateVars()
 	self.DrawColor = team.GetColor(vars.team)
 	
 	if vars.ping == 0 then vars.ping = 'BOT' end
+	
+	hook.Run('DRUpdateUserLabels', self, ply, vars)
 end
 
 function PANEL:Paint(w, h)
