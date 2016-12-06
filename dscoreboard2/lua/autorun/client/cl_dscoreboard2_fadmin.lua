@@ -36,6 +36,8 @@ local function CreateButton(parent, args)
 	return button
 end
 
+local EMPTY_FUNC = function() end
+
 local function Populate(canvas, self, ply)
 	if not FAdmin then return end
 	
@@ -51,28 +53,31 @@ local function Populate(canvas, self, ply)
 	
 	local Controls = FAdmin.ScoreBoard.Player.Controls
 	local PlayerControls = FAdmin.ScoreBoard.Player
+	PlayerControls.Player = ply
 	
 	for k, v in ipairs(PlayerControls.ActionButtons) do
-        if v.Visible == true or (type(v.Visible) == 'function' and v.Visible(PlayerControls.Player) == true) then
+        if v.Visible == true or (type(v.Visible) == 'function' and v.Visible(ply) == true) then
 			local ActionButton = canvas:Add('DScoreBoard2_Button')
 			grid:AddItem(ActionButton)
 			ActionButton:SetWide(100)
+			ActionButton.SetImage2 = EMPTY_FUNC
+			ActionButton.SetImage = EMPTY_FUNC
 
 			local name = v.Name
 			
 			if type(name) == 'function' then
-				name = name(PlayerControls.Player)
+				name = name(ply)
 			end
 			
 			ActionButton:SetText(name)
 
 			function ActionButton:DoClick()
-				if not IsValid(PlayerControls.Player) then return end
-				return v.Action(PlayerControls.Player, self)
+				if not IsValid(ply) then return end
+				return v.Action(ply, self)
 			end
 			
 			if v.OnButtonCreated then
-				v.OnButtonCreated(PlayerControls.Player, ActionButton)
+				v.OnButtonCreated(ply, ActionButton)
 			end
         end
     end
