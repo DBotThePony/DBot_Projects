@@ -42,6 +42,25 @@ local function DRUpdateUserLabels(self, ply, vars)
 	vars.teamname = ply:getDarkRPVar('job') or team.GetName(vars.team)
 end
 
+local function Row(self, ply)
+	local wanted = self:Add('DLabel')
+	wanted:Dock(RIGHT)
+	wanted:SetTextColor(color_white)
+	wanted:SetText('Wanted!')
+	wanted:SetFont('DScoreBoard2.Button')
+	
+	wanted.Think = function()
+		if not IsValid(ply) then return end
+		
+		if not ply.isWanted or not ply:isWanted() then
+			wanted:SetText('')
+		else
+			wanted:SetText('Wanted!')
+		end
+	end
+end
+
+hook.Add('DScoreBoard2_PlayerRow', 'DarkRP', Row)
 hook.Add('DPopulateUserLabels', 'DarkRP', DPopulateUserLabels)
 hook.Add('DUpdateUserLabels', 'DarkRP', DUpdateUserLabels)
 hook.Add('DRUpdateUserLabels', 'DarkRP', DRUpdateUserLabels)

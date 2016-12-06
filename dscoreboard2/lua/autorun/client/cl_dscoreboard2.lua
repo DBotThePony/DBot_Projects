@@ -750,13 +750,18 @@ function PANEL:Think()
 	self:UpdatePanels()
 end
 
+local function DScoreBoard2_PlayerRowErr(err)
+	print(err)
+	print(debug.traceback())
+end
+
 function PANEL:SetPlayer(ply)
 	self.ply = ply
 	self.avatar:SetPlayer(ply, 32)
 	self.avatar.dply = ply
 	self.flag:SetPlayer(ply)
 	
-	hook.Run('DScoreBoard2_PlayerRow', self, ply)
+	xpcall(hook.Run, DScoreBoard2_PlayerRowErr, 'DScoreBoard2_PlayerRow', self, ply)
 	self:Think()
 end
 
