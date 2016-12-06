@@ -625,6 +625,7 @@ function PANEL:CreateGrid(wide)
 	grid:Dock(TOP)
 	grid:DockMargin(4, 4, 4, 4)
 	grid:SetColWide(wide + 5)
+	grid:SetRowHeight(25)
 	grid:SetCols(math.floor(self.canvas:GetWide() / (wide + 5)))
 	
 	return grid
@@ -1172,7 +1173,7 @@ function PANEL:Init()
 	self:SizeToContents()
 	local w, h = self:GetSize()
 	self:SetWidth(w + 8)
-	self:SetHeight(16)
+	self:SetHeight(20)
 	self:SetFont(FONT_BUTTONFONT)
 end
 
