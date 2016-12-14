@@ -39,10 +39,12 @@ local function DPopulateUserLabels(self)
 end
 
 local function DRUpdateUserLabels(self, ply, vars)
+	if not DarkRP then return end
 	vars.teamname = ply:getDarkRPVar('job') or team.GetName(vars.team)
 end
 
 local function Row(self, ply)
+	if not DarkRP then return end
 	local wanted = self:Add('DLabel')
 	wanted:Dock(RIGHT)
 	wanted:SetTextColor(color_white)

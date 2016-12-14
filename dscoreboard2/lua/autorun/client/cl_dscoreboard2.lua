@@ -1342,8 +1342,10 @@ local MiscFunctions = {
 }
 
 local PANEL = {}
+local CURRENT_PANEL
 
 function PANEL:Init()
+	CURRENT_PANEL = self
 	self:SetSize(ScrW() - 100, ScrH() - 100)
 	self:Center()
 	
@@ -1628,7 +1630,13 @@ vgui.Register('DScoreBoard2', PANEL, 'EditablePanel')
 local function Create(force)
 	if force and IsValid(board.Board) then board.Board:Remove() end 
 	if IsValid(board.Board) then return end
-	board.Board = vgui.Create('DScoreBoard2')
+	
+	local status, board2 = pcall(vgui.Create, 'DScoreBoard2')
+	if status then
+		board.Board = board2
+	elseif IsValid(CURRENT_PANEL) then
+		CURRENT_PANEL:Remove()
+	end
 end
 
 local function Open()
