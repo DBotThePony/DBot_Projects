@@ -109,7 +109,7 @@ function ENT:Think()
 		local lpos = self:GetPos()
 		local dist = PICKUP_RANGE:GetInt()
 		
-		for k, v in pairs(player.GetAll()) do
+		for k, v in ipairs(player.GetAll()) do
 			if v:GetPos():Distance(lpos) > dist then continue end
 			self:Pickup(v)
 			return
@@ -193,6 +193,7 @@ end
 scripted_ents.Register(ENT, 'dbot_wspawner_base')
 
 function DSpawnPoints_Create(class, SWEP)
+	if not class then return end
 	local ENT = {}
 	
 	ENT.Base = 'dbot_wspawner_base'
@@ -225,7 +226,9 @@ end
 
 function DSpawnPoints_Populate()
 	for k, v in pairs(weapons.GetList()) do
-		DSpawnPoints_Create(v.ClassName, v)
+		if v.ClassName then
+			DSpawnPoints_Create(v.ClassName, v)
+		end
 	end
 end
 
@@ -312,5 +315,5 @@ end
 
 if CLIENT then
 	hook.Add('PopulateWeaponsSpawnpoints', 'PopulateWeaponsSpawnpoints', PopulateMenu)
-	spawnmenu.AddCreationTab('Weapons Spawnpoints', CreateMenu, 'icon16/gun.png', 10)
+	spawnmenu.AddCreationTab('Weapons Spawnpoints', CreateMenu, 'icon16/gun.png', 40)
 end
