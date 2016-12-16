@@ -112,6 +112,7 @@ function ENT:Think()
 		for k, v in pairs(player.GetAll()) do
 			if v:GetPos():Distance(lpos) > dist then continue end
 			self:Pickup(v)
+			return
 		end
 	else
 		if self.NextRespawn < CurTime() then
