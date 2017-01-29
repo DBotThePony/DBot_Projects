@@ -216,6 +216,13 @@ local function ShouldEnabledScreen()
 	return true
 end
 
+local function pointInsideBox(point, mins, maxs)
+	return
+		mins.x < point.x and point.x < maxs.x and
+		mins.y < point.y and point.y < maxs.y and
+		mins.z < point.z and point.z < maxs.z
+end
+
 local function Think()
 	if not ENABLE:GetBool() then
 		ADOF.Render = false
@@ -227,23 +234,47 @@ local function Think()
 	if not system.HasFocus() then return end
 	
 	local ply = LocalPlayer()
+	local obs = ply:GetObserverTarget()
+	local observer = false
+	
+	if IsValid(obs) and obs:IsPlayer() then
+		ply = obs
+		observer = true
+	end
 	
 	local trace = {}
 	
-	local eye = ply:EyePos()
-	local langles = ply:EyeAngles()
-	if ply:InVehicle() then
-		langles = ply:GetVehicle():GetAngles() + langles
+	local eye, langles, ignoreEnts
+	
+	if observer then
+		eye = ply:EyePos()
+		langles = ply:EyeAngles()
+	else
+		if not ply:ShouldDrawLocalPlayer() then
+			eye = ply:EyePos()
+			langles = ply:EyeAngles()
+			
+			if ply:InVehicle() then
+				langles = ply:GetVehicle():GetAngles() + langles
+			end
+		else
+			eye = EyePos()
+			langles = EyeAngles()
+			ignoreEnts = true
+		end
 	end
 	
 	local FILTER = {}
 	
 	trace.start = eye
-	trace.endpos = langles:Forward()*300 + eye
+	trace.endpos = langles:Forward() * 300 + eye
 	trace.filter = function(ent)
 		if ent == ply then return false end
 		if ent:GetClass() == 'func_breakable_surf' then return false end
 		if FILTER[ent] then return false end
+		
+		if ignoreEnts and (pointInsideBox(eye, ent:WorldSpaceAABB()) or eye:DistToSqr(ent:GetPos()) < 400) then return false end
+		
 		return true
 	end
 	
@@ -323,11 +354,11 @@ local function Think()
 			end
 		end
 		
-		if not (ADOF.OFFSET - ADOF.OFFSET*FrameTime()*mult < dist + dist - offset and ADOF.OFFSET + ADOF.OFFSET*FrameTime()*mult > dist + dist - offset) then
-			if ADOF.OFFSET - ADOF.OFFSET*FrameTime()*mult < dist + dist - offset then
-				ADOF.OFFSET = math.max(ADOF.OFFSET + ADOF.OFFSET*FrameTime()*mult, dist + dist - offset)
+		if not (ADOF.OFFSET - ADOF.OFFSET * FrameTime()*mult < dist + dist - offset and ADOF.OFFSET + ADOF.OFFSET * FrameTime() * mult > dist + dist - offset) then
+			if ADOF.OFFSET - ADOF.OFFSET * FrameTime() * mult < dist + dist - offset then
+				ADOF.OFFSET = math.max(ADOF.OFFSET + ADOF.OFFSET * FrameTime() * mult, dist + dist - offset)
 			else
-				ADOF.OFFSET = math.max(ADOF.OFFSET - ADOF.OFFSET*FrameTime()*mult, dist + dist - offset)
+				ADOF.OFFSET = math.max(ADOF.OFFSET - ADOF.OFFSET * FrameTime() * mult, dist + dist - offset)
 			end
 		end
 		
