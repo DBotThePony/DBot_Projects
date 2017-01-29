@@ -1482,6 +1482,104 @@ end)
 derma.DefineSkin("Flat", "Made to look like flat VGUI", SKIN)
 derma.RefreshSkins()
 
+local function smoothEnabled()
+	return ENABLE:GetBool() and ENABLE_SMOOTH:GetBool()
+end
+
+local reOverride
+
+local function fuckupCheck(self)
+	local weAreFuckedUp = 
+		self.GetScroll ~= getScroll or
+		self.SetScroll ~= setScroll or
+		self.GetOffset ~= getOffset
+	
+	if weAreFuckedUp then
+		reOverride(self)
+	end
+end
+
+local function realUpdate(self)
+	fuckupCheck(self)
+	self:InvalidateLayout()
+	
+	if self:GetParent().OnVScroll then
+		self:GetParent():OnVScroll(self:GetOffset())
+	else
+		self:GetParent():InvalidateLayout()
+	end
+end
+
+local function updateFunction(self)
+	fuckupCheck(self)
+	if not self.Enabled then
+		self.Scroll = 0
+		self.RealScroll = 0
+		return
+	end
+	
+	if not smoothEnabled() then
+		realUpdate(self)
+		return
+	end
+	
+	self.RealScroll = self.RealScroll or 0
+	local Update = self.Scroll ~= self.RealScroll
+	
+	if smoothEnabled() then
+		self.Scroll = Lerp(FrameTime() * 4, self.Scroll, self.RealScroll)
+	else
+		self.Scroll = self.RealScroll
+	end
+	
+	if not Update then return end
+	realUpdate(self)
+end
+
+local function getScroll(self)
+	fuckupCheck(self)
+	if not self.Enabled then return 0 end
+	self.RealScroll = self.RealScroll or 0
+	return self.RealScroll
+end
+
+local function barThink(self)
+	fuckupCheck(self)
+	if smoothEnabled() then
+		self:UpdateScroll()
+	end
+	
+	if self.olderBarThink then
+		return self:olderBarThink()
+	elseif self.oldBarThink then
+		return self:oldBarThink()
+	end
+end
+
+local function setScroll(self, scrll)
+	self.RealScroll = math.Clamp(scrll, 0, self.CanvasSize)
+	self:UpdateScroll()
+end
+
+local function getOffset(self)
+	fuckupCheck(self)
+	if not self.Enabled then return 0 end
+	
+	if smoothEnabled() then
+		return -self.Scroll
+	else
+		return -(self.RealScroll or 0)
+	end
+end
+
+function reOverride(self)
+	self.GetScroll = getScroll
+	self.SetScroll = setScroll
+	self.GetOffset = getOffset
+	self.Think = barThink
+	self.UpdateScroll = updateFunction
+end
+
 local function UpdateScrollBar()
 	local get = vgui.GetControlTable('DVScrollBar')
 	
@@ -1492,49 +1590,10 @@ local function UpdateScrollBar()
 	
 	local DVScrollBar = table.Copy(DVScrollBar)
 	
-	local oldThink = DVScrollBar.Think
-	
-	function DVScrollBar:UpdateScroll()
-		if not self.Enabled then self.RealScroll = 0 self.Scroll = 0 end
-		self.RealScroll = self.RealScroll or 0
-		
-		local Update = self.Scroll ~= self.RealScroll
-		
-		if ENABLE:GetBool() and ENABLE_SMOOTH:GetBool() then
-			self.Scroll = Lerp(FrameTime() * 4, self.Scroll, self.RealScroll)
-		else
-			self.Scroll = self.RealScroll
-		end
-		
-		if not Update then return end
-		
-		self:InvalidateLayout()
-		
-		if self:GetParent().OnVScroll then
-			self:GetParent().OnVScroll(self:GetParent(), self:GetOffset())
-		else
-			self:GetParent():InvalidateLayout()
-		end
-	end
-	
-	function DVScrollBar:GetScroll()
-		self.RealScroll = self.RealScroll or 0
-		return self.RealScroll
-	end
-	
-	function DVScrollBar:SetScroll(scrll)
-		if not self.Enabled then self.RealScroll = 0 self.Scroll = 0 return end
-		self.RealScroll = math.Clamp(scrll, 0, self.CanvasSize)
-		self:UpdateScroll()
-	end
-	
-	function DVScrollBar:Think()
-		self:UpdateScroll()
-		if oldThink then
-			return oldThink(self)
-		end
-	end
+	DVScrollBar.oldBarThink = DVScrollBar.Think
+	reOverride(DVScrollBar)
 	
 	derma.DefineControl("DVScrollBar", "A Scrollbar", DVScrollBar, "Panel")
 end
 
+timer.Simple(0, UpdateScrollBar)
