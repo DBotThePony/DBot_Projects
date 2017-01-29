@@ -36,6 +36,9 @@ DSit.SVars = {
 	'flat',
 	'anyangle',
 	'disablephysgun',
+	'entities',
+	'entities_owner',
+	'entities_world',
 }
 
 DSit.SVarsObjects = {
@@ -52,6 +55,9 @@ DSit.SVarsObjects = {
 	CreateConVar('sv_dsit_flat', '0', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Force players sit angle "pitch" to be zero'),
 	CreateConVar('sv_dsit_anyangle', '0', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Letting players have fun'),
 	CreateConVar('sv_dsit_disablephysgun', '0', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Disable physgun usage in seat'),
+	CreateConVar('sv_dsit_entities', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Allow to sit on entities'),
+	CreateConVar('sv_dsit_entities_owner', '0', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Allow to sit on entities owned only by that player'),
+	CreateConVar('sv_dsit_entities_world', '0', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Allow to sit on non-owned entities only'),
 }
 
 local DISABLE_PHYSGUN = GetConVar('sv_dsit_disablephysgun')
@@ -70,6 +76,9 @@ DSit.SVarsHelp = {
 	'Force players sit angle "pitch" have zero value',
 	'Unrestricted sit angles',
 	'Disable physgun usage in seat',
+	'Allow to sit on entities',
+	'Allow to sit on entities owned only by that player',
+	'Allow to sit on non-owned entities only',
 }
 
 local KeyMap = {

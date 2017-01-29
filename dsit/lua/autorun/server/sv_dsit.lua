@@ -30,6 +30,10 @@ local FORCE_FLAT = CreateConVar('sv_dsit_flat', '0', {FCVAR_ARCHIVE, FCVAR_NOTIF
 local ALLOW_ANY = CreateConVar('sv_dsit_anyangle', '0', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Letting players have fun')
 local DISABLE_PHYSGUN = CreateConVar('sv_dsit_disablephysgun', '0', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Disable physgun usage in seat')
 
+local ALLOW_ON_ENTITIES = CreateConVar('sv_dsit_entities', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Allow to sit on entities')
+local ALLOW_ON_ENTITIES_OWNER = CreateConVar('sv_dsit_entities_owner', '0', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Allow to sit on entities owned only by that player')
+local ALLOW_ON_ENTITIES_WORLD_ONLY = CreateConVar('sv_dsit_entities_world', '0', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Allow to sit on non-owned entities only')
+
 --If you want to know:
 --This code was written a long time ago by me, and for me it looks slightly shitty.
 
@@ -597,6 +601,30 @@ local function Request(ply)
 		
 		if ent.ParentedToPlayer == ply or class:sub(1, 5) == 'func_' or class:sub(1, 9) == 'func_door' then
 			return
+		end
+		
+		if not IsPlayer then
+			if not ALLOW_ON_ENTITIES:GetBool() then
+				ply:PrintMessage(HUD_PRINTCENTER, '[DSit] Server owner has disabled ability to sit on entities')
+				DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'erver owner has disabled ability to sit on entities')
+				return
+			end
+			
+			if ALLOW_ON_ENTITIES_OWNER:GetBool() and ent.CPPIGetOwner then
+				if ent:CPPIGetOwner() ~= ply then
+					ply:PrintMessage(HUD_PRINTCENTER, '[DSit] Server owner has disabled ability to sit on entities not owned by you')
+					DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'Server owner has disabled ability to sit on entities not owned by you')
+					return
+				end
+			end
+			
+			if ALLOW_ON_ENTITIES_WORLD_ONLY:GetBool() and ent.CPPIGetOwner then
+				if ent:CPPIGetOwner() ~= NULL and ent:CPPIGetOwner() ~= nil then
+					ply:PrintMessage(HUD_PRINTCENTER, '[DSit] Server owner has disabled ability to sit on owned entities')
+					DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'erver owner has disabled ability to sit on owned entities')
+					return
+				end
+			end
 		end
 	end
 	
