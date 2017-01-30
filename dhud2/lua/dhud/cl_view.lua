@@ -18,13 +18,13 @@ limitations under the License.
 ]]
 
 local ENABLE = CreateConVar('dhud_smoothview', '1', FCVAR_ARCHIVE, 'Enable soomth view. Disabling this WILL affect other features.')
-local ENABLE_ALWAYS = CreateConVar('dhud_smoothview_always', '1', FCVAR_ARCHIVE, 'Always enable soomth view. Disabling this WILL affect other features.')
 DHUD2.AddConVar('dhud_smoothview', 'Enable smooth view', ENABLE)
-DHUD2.AddConVar('dhud_smoothview_always', 'Always enable soomth view (If sharpeye is detected, it is always disabled)', ENABLE_ALWAYS)
 DHUD2.EyePos = Vector()
 DHUD2.EyeAngles = Angle(0, 0, 0)
 DHUD2.PredictedEntity = NULL
 local oldPos, oldAng
+local lastCall = 0
+local lastResult
 
 local bypass = false
 
@@ -38,13 +38,13 @@ local function CalcView(ply, pos, ang, fov, nearZ, farZ)
 	
 	if bypass then return end
 	
+	if lastCall == CurTime() then return lastResult end
+	lastCall = CurTime()
+	
 	local inVehicle = ply:InVehicle()
-	local always = ENABLE_ALWAYS:GetBool()
 	
-	if not always and not inVehicle then return end
-	
-	--Sharpeye already have it
-	if not inVehicle and always and not (not sharpeye or sharpeye and sharpeye.IsEnabled and sharpeye.IsEnabled()) then return end
+	-- Sharpeye already has it
+	if not (not sharpeye or sharpeye and sharpeye.IsEnabled and sharpeye.IsEnabled()) then return end
 	local veh = ply:GetVehicle()
 	
 	local newData
@@ -88,14 +88,7 @@ local function CalcView(ply, pos, ang, fov, nearZ, farZ)
 	end
 	
 	oldAng = oldAng or newData.angles
-	local newang
-	
-	if inVehicle then
-		newang = LerpAngle(math.min(0.4 * math.sqrt(DHUD2.Multipler), 1), oldAng, newData.angles)
-	else
-		newang = LerpAngle(math.min(0.4 * math.sqrt(DHUD2.Multipler), 1), oldAng, newData.angles)
-	end
-	
+	local newang = LerpAngle(math.min(0.4 * math.sqrt(DHUD2.Multipler), 1), oldAng, newData.angles)
 	newData.angles = newang
 	oldAng = newang
 	
@@ -108,18 +101,24 @@ local function CalcView(ply, pos, ang, fov, nearZ, farZ)
 		local Ents = ents.FindInSphere(newData.origin, 128)
 		local hit = false
 		local min = 99999999
+		local maxSize = 0
 		
 		for k = 1, #Ents do
 			local ent = Ents[k]
-			if ent:IsPlayer() or ent:GetSolid() == SOLID_NONE then continue end
+			if ent:IsPlayer() or ent:GetSolid() == SOLID_NONE or ent:IsWeapon() or ent:GetOwner():IsValid() or ent:GetParent():IsValid() then continue end
 			local mins, maxs = ent:WorldSpaceAABB()
 			
 			if mins and maxs then
+				local aMins, aMaxs = ent:OBBMins(), ent:OBBMaxs()
+				mins = mins + aMins * .4
+				maxs = maxs + aMaxs * .4
 				local dist = newData.origin:DistToSqr(ent:GetPos())
+				local size = mins:DistToSqr(maxs)
 				
-				if DHUD2.pointInsideBox(newData.origin, mins, maxs) and min > dist then
+				if DHUD2.pointInsideBox(newData.origin, mins, maxs) and min > dist and size > maxSize then
 					DHUD2.PredictedEntity = ent
 					min = dist
+					maxSize = size
 					hit = true
 				end
 			end
@@ -132,6 +131,7 @@ local function CalcView(ply, pos, ang, fov, nearZ, farZ)
 		DHUD2.PredictedEntity = LocalPlayer()
 	end
 	
+	lastResult = newData
 	return newData
 end
 
