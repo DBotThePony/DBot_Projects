@@ -17,18 +17,25 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
-local ENABLE = CreateConVar('dhud_smoothview', '1', FCVAR_ARCHIVE, 'Enable soomth view')
-local ENABLE_ALWAYS = CreateConVar('dhud_smoothview_always', '1', FCVAR_ARCHIVE, 'Always enable soomth view (If sharpeye is detected, it is always disabled)')
+local ENABLE = CreateConVar('dhud_smoothview', '1', FCVAR_ARCHIVE, 'Enable soomth view. Disabling this WILL affect other features.')
+local ENABLE_ALWAYS = CreateConVar('dhud_smoothview_always', '1', FCVAR_ARCHIVE, 'Always enable soomth view. Disabling this WILL affect other features.')
 DHUD2.AddConVar('dhud_smoothview', 'Enable smooth view', ENABLE)
 DHUD2.AddConVar('dhud_smoothview_always', 'Always enable soomth view (If sharpeye is detected, it is always disabled)', ENABLE_ALWAYS)
 DHUD2.EyePos = Vector()
 DHUD2.EyeAngles = Angle(0, 0, 0)
+DHUD2.PredictedEntity = NULL
 local oldPos, oldAng
 
 local bypass = false
 
 local function CalcView(ply, pos, ang, fov, nearZ, farZ)
-	if not ENABLE:GetBool() then return end
+	if not ENABLE:GetBool() then
+		DHUD2.EyePos = pos
+		DHUD2.EyeAngles = ang
+		DHUD2.PredictedEntity = DHUD2.SelectPlayer()
+		return
+	end
+	
 	if not DHUD2.ServerConVar('smoothview') then return end
 	if not DHUD2.IsEnabled() then return end
 	if bypass then return end
@@ -96,6 +103,36 @@ local function CalcView(ply, pos, ang, fov, nearZ, farZ)
 	
 	DHUD2.EyePos = newData.origin
 	DHUD2.EyeAngles = newData.angles
+	
+	if LocalPlayer() ~= DHUD2.SelectPlayer() then
+		DHUD2.PredictedEntity = DHUD2.SelectPlayer()
+	elseif LocalPlayer():ShouldDrawLocalPlayer() then
+		local Ents = ents.FindInSphere(newData.origin, 128)
+		local hit = false
+		local min = 99999999
+		
+		for k = 1, #Ents do
+			local ent = Ents[k]
+			if ent:IsPlayer() or ent:GetSolid() == SOLID_NONE then continue end
+			local mins, maxs = ent:WorldSpaceAABB()
+			
+			if mins and maxs then
+				local dist = newData.origin:DistToSqr(ent:GetPos())
+				
+				if DHUD2.pointInsideBox(newData.origin, mins, maxs) and min > dist then
+					DHUD2.PredictedEntity = ent
+					min = dist
+					hit = true
+				end
+			end
+		end
+		
+		if not hit then
+			DHUD2.PredictedEntity = LocalPlayer()
+		end
+	else
+		DHUD2.PredictedEntity = LocalPlayer()
+	end
 	
 	return newData
 end

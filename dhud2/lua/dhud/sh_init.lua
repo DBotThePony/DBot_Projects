@@ -71,6 +71,14 @@ function DHUD2.ServerConVar(name)
 	return var
 end
 
+function DHUD2.pointInsideBox(point, mins, maxs)
+	return
+		mins.x < point.x and point.x < maxs.x and
+		mins.y < point.y and point.y < maxs.y and
+		mins.z < point.z and point.z < maxs.z
+end
+
+
 if SERVER then 
 	AddCSLuaFile()
 else
@@ -104,7 +112,7 @@ DHUD2.CreateVar('highlight', {
 DHUD2.CreateVar('smoothview', {
 	type = 'bool',
 	value = '1',
-	help = 'Enable DHUD2 smooth view',
+	help = 'Enable DHUD2 smooth view. Disabling this WILL affect other features.',
 })
 
 DHUD2.CreateVar('allowdisable', {

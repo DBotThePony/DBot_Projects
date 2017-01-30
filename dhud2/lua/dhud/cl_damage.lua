@@ -129,13 +129,6 @@ local function NetPlayer()
 	table.insert(Damage.PHistory, data)
 end
 
-local function pointInsideBox(point, mins, maxs)
-	return
-		mins.x < point.x and point.x < maxs.x and
-		mins.y < point.y and point.y < maxs.y and
-		mins.z < point.z and point.z < maxs.z
-end
-
 local function Net()
 	if not ENABLE:GetBool() then return end
 	local pos = Vector(net.ReadFloat(), net.ReadFloat(), net.ReadFloat())
@@ -171,7 +164,7 @@ local function Net()
 	if IsValid(entityThatDamaged) and LocalPlayer():ShouldDrawLocalPlayer() then
 		local mins, maxs = entityThatDamaged:WorldSpaceAABB()
 		
-		if pointInsideBox(DHUD2.EyePos, mins, maxs) or DHUD2.EyePos:Distance(entityThatDamaged:GetPos()) < 10 then
+		if DHUD2.pointInsideBox(DHUD2.EyePos, mins, maxs) or DHUD2.EyePos:Distance(entityThatDamaged:GetPos()) < 10 then
 			table.insert(Damage.PHistory, table.Copy(data))
 		end
 	end

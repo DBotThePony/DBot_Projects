@@ -208,6 +208,7 @@ local function Think()
 	local ply = DHUD2.SelectPlayer()
 	if not IsValid(ply) then return end
 	if ply ~= LocalPlayer() then return end --Spectating
+	if LocalPlayer():ShouldDrawLocalPlayer() then return end
 	
 	local ang = ply:EyeAngles()
 	local epos = ply:EyePos()
