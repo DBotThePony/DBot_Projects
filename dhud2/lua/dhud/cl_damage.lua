@@ -129,6 +129,13 @@ local function NetPlayer()
 	table.insert(Damage.PHistory, data)
 end
 
+local function pointInsideBox(point, mins, maxs)
+	return
+		mins.x < point.x and point.x < maxs.x and
+		mins.y < point.y and point.y < maxs.y and
+		mins.z < point.z and point.z < maxs.z
+end
+
 local function Net()
 	if not ENABLE:GetBool() then return end
 	local pos = Vector(net.ReadFloat(), net.ReadFloat(), net.ReadFloat())
@@ -156,9 +163,18 @@ local function Net()
 		color = Color(col.r, col.g, col.b, col.a),
 		dtype = dtype,
 		cfade = 1,
+		scale = math.Clamp(dmg / 10, 0.5, 2)
 	}
 	
 	data.ssize = data.size
+	
+	if IsValid(entityThatDamaged) and LocalPlayer():ShouldDrawLocalPlayer() then
+		local mins, maxs = entityThatDamaged:WorldSpaceAABB()
+		
+		if pointInsideBox(DHUD2.EyePos, mins, maxs) or DHUD2.EyePos:Distance(entityThatDamaged:GetPos()) < 10 then
+			table.insert(Damage.PHistory, table.Copy(data))
+		end
+	end
 	
 	table.insert(Damage.History, data)
 end
@@ -204,8 +220,8 @@ local function PostDrawTranslucentRenderables(a, b)
 end
 
 local function Draw()
-	local lpos = DHUD2.SelectPlayer():EyePos()
-	local lyaw = EyeAngles().y
+	local lpos = DHUD2.EyePos
+	local lyaw = DHUD2.EyeAngles.y
 	local srcw, scrh = ScrW(), ScrH()
 	
 	surface.SetDrawColor(255, 255, 255)

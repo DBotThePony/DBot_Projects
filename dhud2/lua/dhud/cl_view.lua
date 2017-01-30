@@ -17,11 +17,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
-
 local ENABLE = CreateConVar('dhud_smoothview', '1', FCVAR_ARCHIVE, 'Enable soomth view')
 local ENABLE_ALWAYS = CreateConVar('dhud_smoothview_always', '1', FCVAR_ARCHIVE, 'Always enable soomth view (If sharpeye is detected, it is always disabled)')
 DHUD2.AddConVar('dhud_smoothview', 'Enable smooth view', ENABLE)
 DHUD2.AddConVar('dhud_smoothview_always', 'Always enable soomth view (If sharpeye is detected, it is always disabled)', ENABLE_ALWAYS)
+DHUD2.EyePos = Vector()
+DHUD2.EyeAngles = Angle(0, 0, 0)
 local oldPos, oldAng
 
 local bypass = false
@@ -83,15 +84,20 @@ local function CalcView(ply, pos, ang, fov, nearZ, farZ)
 	
 	oldAng = oldAng or newData.angles
 	local newang
+	
 	if inVehicle then
 		newang = LerpAngle(math.min(0.4 * math.sqrt(DHUD2.Multipler), 1), oldAng, newData.angles)
 	else
 		newang = LerpAngle(math.min(0.4 * math.sqrt(DHUD2.Multipler), 1), oldAng, newData.angles)
 	end
+	
 	newData.angles = newang
 	oldAng = newang
+	
+	DHUD2.EyePos = newData.origin
+	DHUD2.EyeAngles = newData.angles
 	
 	return newData
 end
 
-hook.Add('CalcView', '!DHUD2.VehicleView', CalcView, -1)
+hook.Add('CalcView', '.DHUD2.CalcView', CalcView, -1)
