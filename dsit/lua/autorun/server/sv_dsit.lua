@@ -589,6 +589,17 @@ local function Request(ply)
 	ply.DSit_LastTry = ply.DSit_LastTry or 0
 	if ply.DSit_LastTry > CurTime() then return false end
 	
+	local can, reason = hook.Run('CanSit', ply, tr, tr.Entity)
+	
+	if can == false then
+		if reason then
+			ply:PrintMessage(HUD_PRINTCENTER, reason)
+			DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), reason)
+		end
+		
+		return
+	end
+	
 	local ent = tr.Entity
 	
 	local IsPlayer
@@ -606,7 +617,7 @@ local function Request(ply)
 		if not IsPlayer then
 			if not ALLOW_ON_ENTITIES:GetBool() then
 				ply:PrintMessage(HUD_PRINTCENTER, '[DSit] Server owner has disabled ability to sit on entities')
-				DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'erver owner has disabled ability to sit on entities')
+				DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'Server owner has disabled ability to sit on entities')
 				return
 			end
 			
@@ -621,7 +632,7 @@ local function Request(ply)
 			if ALLOW_ON_ENTITIES_WORLD_ONLY:GetBool() and ent.CPPIGetOwner then
 				if ent:CPPIGetOwner() ~= NULL and ent:CPPIGetOwner() ~= nil then
 					ply:PrintMessage(HUD_PRINTCENTER, '[DSit] Server owner has disabled ability to sit on owned entities')
-					DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'erver owner has disabled ability to sit on owned entities')
+					DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'Server owner has disabled ability to sit on owned entities')
 					return
 				end
 			end
