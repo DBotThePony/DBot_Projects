@@ -29,15 +29,13 @@ local oldPos, oldAng
 local bypass = false
 
 local function CalcView(ply, pos, ang, fov, nearZ, farZ)
-	if not ENABLE:GetBool() then
+	if not ENABLE:GetBool() or not DHUD2.ServerConVar('smoothview') or not DHUD2.IsEnabled() then
 		DHUD2.EyePos = pos
 		DHUD2.EyeAngles = ang
 		DHUD2.PredictedEntity = DHUD2.SelectPlayer()
 		return
 	end
 	
-	if not DHUD2.ServerConVar('smoothview') then return end
-	if not DHUD2.IsEnabled() then return end
 	if bypass then return end
 	
 	local inVehicle = ply:InVehicle()
