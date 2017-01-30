@@ -39,16 +39,39 @@ function ENT:SpawnFunction(ply, tr, class)
 	local ent = ents.Create(class)
 	ent:SetPos(tr.HitPos + tr.HitNormal)
 	
-	local newEnt = ents.Create(self.CLASS)
-	newEnt:SetPos(tr.HitPos)
-	newEnt:Spawn()
-	newEnt:Activate()
+	if not self.TABLE.eSpawnerInfo then
+		local newEnt = ents.Create(self.CLASS)
+		newEnt:SetPos(tr.HitPos)
+		newEnt:Spawn()
+		newEnt:Activate()
+		
+		local mdl = newEnt:GetModel()
+		local skin = newEnt:GetSkin()
+		local color = newEnt:GetColor()
+		local material = newEnt:GetMaterial()
+		local bg = newEnt:GetBodyGroups()
+		
+		self.TABLE.eSpawnerInfo = {}
+		self.TABLE.eSpawnerInfo.mdl = mdl
+		self.TABLE.eSpawnerInfo.skin = skin
+		self.TABLE.eSpawnerInfo.color = color
+		self.TABLE.eSpawnerInfo.material = material
+		self.TABLE.eSpawnerInfo.bg = bg
+		self.TABLE.eSpawnerInfo.bginfo = {}
+		
+		if bg then
+			for k, v in pairs(bg) do
+				self.TABLE.eSpawnerInfo.bginfo[v.id] = newEnt:GetBodygroup(v.id)
+			end
+		end
+		
+		newEnt:Remove()
+	end
 	
-	local mdl = newEnt:GetModel()
-	local skin = newEnt:GetSkin()
-	local color = newEnt:GetColor()
-	local material = newEnt:GetMaterial()
-	local bg = newEnt:GetBodyGroups()
+	local mdl = self.TABLE.eSpawnerInfo.mdl
+	local skin = self.TABLE.eSpawnerInfo.skin
+	local color = self.TABLE.eSpawnerInfo.color
+	local material = self.TABLE.eSpawnerInfo.material
 	
 	if mdl then
 		ent.Model = mdl
@@ -61,13 +84,9 @@ function ENT:SpawnFunction(ply, tr, class)
 		ent:SetSkin(skin)
 	end
 	
-	if bg then
-		for k, v in pairs(bg) do
-			ent:SetBodygroup(v.id, newEnt:GetBodygroup(v.id))
-		end
+	for k, v in pairs(self.TABLE.eSpawnerInfo.bginfo) do
+		ent:SetBodygroup(k, v)
 	end
-	
-	newEnt:Remove()
 	
 	ent:Spawn()
 	ent:Activate()
@@ -342,6 +361,52 @@ function DSpawnPoints_PopulateEntities()
 		end
 	end
 end
+
+local HL2 = {}
+HL2.Author = 'VALVe'
+HL2.Category = 'Half-Life 2'
+HL2.Spawnable = true
+HL2.AdminSpawnable = true
+HL2.AdminOnly = false
+
+local function ADD_ITEM(name, class, model)
+	local HL2 = table.Copy(HL2)
+	HL2.PrintName = name
+	HL2.WorldModel = model
+	DSpawnPoints_CreateEntity(class, HL2)
+end
+
+-- Ammo
+ADD_ITEM('AR2 Ammo', 'item_ammo_ar2')
+ADD_ITEM('AR2 Ammo (Large)', 'item_ammo_ar2_large')
+
+ADD_ITEM('Pistol Ammo', 'item_ammo_pistol')
+ADD_ITEM('Pistol Ammo (Large)', 'item_ammo_pistol_large')
+
+ADD_ITEM('357 Ammo', 'item_ammo_357')
+ADD_ITEM('357 Ammo (Large)', 'item_ammo_357_large')
+
+ADD_ITEM('SMG Ammo', 'item_ammo_smg1')
+ADD_ITEM('SMG Ammo (Large)', 'item_ammo_smg1_large')
+
+ADD_ITEM('SMG Grenade', 'item_ammo_smg1_grenade')
+ADD_ITEM('Crossbow Bolts', 'item_ammo_crossbow')
+ADD_ITEM('Shotgun Ammo', 'item_box_buckshot')
+ADD_ITEM('AR2 Orb', 'item_ammo_ar2_altfire')
+ADD_ITEM('RPG Rocket', 'item_rpg_round')
+
+-- Items
+ADD_ITEM('Suit Battery', 'item_battery')
+ADD_ITEM('Health Kit', 'item_healthkit')
+ADD_ITEM('Health Vial', 'item_healthvial')
+ADD_ITEM('Suit Charger', 'item_suitcharger')
+ADD_ITEM('Health Charger', 'item_healthcharger')
+ADD_ITEM('Suit', 'item_suit')
+
+ADD_ITEM('Thumper', 'prop_thumper')
+ADD_ITEM('Combine Mine', 'combine_mine')
+ADD_ITEM('Zombine Grenade', 'npc_grenade_frag')
+ADD_ITEM('Helicopter Grenade', 'grenade_helicopter')
 
 timer.Simple(0, DSpawnPoints_PopulateEntities)
 
