@@ -551,6 +551,12 @@ local function Request(ply)
 		return
 	end
 	
+	if ply:GetVelocity():Length() > 350 then
+		ply:PrintMessage(HUD_PRINTCENTER, '[DSit] You are moving too fast to sit right now')
+		DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'You are moving too fast to sit right now')
+		return
+	end
+	
 	local lpos = ply:GetPos()
 	local epos = ply:EyePos()
 	local eyes = ply:EyeAngles()
