@@ -15,8 +15,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
-local ALLOW_ON_ME = CreateClientConVar('cl_dsit_allow_on_me', '1', true, true, 'Allow to sit on me')
-local SEND_MESSAGE = CreateClientConVar('cl_dsit_message', '1', true, true, 'React to "get off" in chat')
+local ALLOW_ON_ME = CreateConVar('cl_dsit_allow_on_me', '1', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'Allow to sit on me')
+local ALLOW_FRIENDS_ONLY = CreateConVar('cl_dsit_friendsonly', '0', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'Allow to sit on me')
+local SEND_MESSAGE = CreateConVar('cl_dsit_message', '1', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'React to "get off" in chat')
+CreateConVar('__dsit_friends', '', {FCVAR_USERINFO}, 'Internal variable to storge online steam friends')
+CreateConVar('__dsit_blocked', '', {FCVAR_USERINFO}, 'Internal variable to storge online steam blocked users')
 
 CreateConVar('sv_dsit_distance', '128', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Max distance (in Hammer Units)')
 
@@ -353,6 +356,7 @@ local function PopulateClient(Panel)
 	lab:SetDark(true)
 	
 	Panel:CheckBox('Allow to sit on me', 'cl_dsit_allow_on_me')
+	Panel:CheckBox('Sit on me for friends only', 'cl_dsit_friendsonly')
 	Panel:CheckBox('React to "get off" message in chat', 'cl_dsit_message')
 	Panel:Button('Get off player on you', 'dsit_getoff')
 	
@@ -377,6 +381,29 @@ local function PopulateToolMenu()
 	spawnmenu.AddToolMenuOption('Utilities', 'User', 'DSit.CVars', 'DSit', '', '', PopulateClient)
 end
 
+local function __dsit_friends_think()
+	local build = {}
+	local buildB = {}
+	
+	-- Fuck off about pairs. Pairs follows hash-table,
+	-- so it's run time is O(n) while ipairs has O(const)
+	-- but this const is much bigger than pairs(table) with table
+	-- that has only <400 rows
+	for i, ply in pairs(player.GetAll()) do
+		local rel = ply:GetFriendStatus()
+		
+		if rel == 'friend' or rel == 'requested' then
+			table.insert(build, ply:UserID())
+		elseif rel == 'blocked' then
+			table.insert(buildB, ply:UserID())
+		end
+	end
+	
+	RunConsoleCommand('__dsit_friends', table.concat(build, ','))
+	RunConsoleCommand('__dsit_blocked', table.concat(buildB, ','))
+end
+
+timer.Create('__dsit_friends_think', 1, 0, __dsit_friends_think)
 hook.Add('Think', 'DSit.Hooks', Think)
 hook.Add('PopulateToolMenu', 'DSit.Hooks', PopulateToolMenu)
 hook.Add('PhysgunPickup', 'DSit.Hooks', PhysgunPickup, -1)

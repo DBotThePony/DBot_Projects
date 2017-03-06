@@ -419,28 +419,96 @@ function DSit.SitOnPlayerLegs(ply, tr, lpos, eyes, epos)
 	ent.__SittingPlayer = target
 end
 
+local function easyUserParse(str)
+	local output = {}
+	if not str then return output end
+	
+	for i, s in pairs(string.Explode(',', str)) do
+		local n = tonumber(s)
+		
+		if n then
+			local get = Player(s)
+			
+			if IsValid(get) then
+				table.insert(output, get)
+			end
+		end
+	end
+	
+	return output
+end
+
 function DSit.SitOnPlayer(ply, tr, lpos, eyes, epos, notify)
 	if not IsValid(ply) then return end
 	if not tr then return end
 	
-	local info = ply:GetInfo('cl_dsit_allow_on_me')
-	if info and info == '0' then
+	local cl_dsit_allow_on_me = ply:GetInfo('cl_dsit_allow_on_me')
+	
+	if cl_dsit_allow_on_me and cl_dsit_allow_on_me == '0' then
 		if notify then 
 			ply:PrintMessage(HUD_PRINTCENTER, '[DSit] You disallowed sitting on players')
 			DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'You disallowed sitting on players')
 		end
+		
 		return
 	end
 	
 	local Ply = tr.Entity
 	
-	local info = Ply:GetInfo('cl_dsit_allow_on_me')
+	local cl_dsit_allow_on_me = Ply:GetInfo('cl_dsit_allow_on_me')
 	
-	if info and info == '0' then
+	if cl_dsit_allow_on_me and cl_dsit_allow_on_me == '0' then
 		if notify then 
 			ply:PrintMessage(HUD_PRINTCENTER, '[DSit] Target disallowed sitting on him')
 			DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'Target disallowed sitting on him')
 		end
+		
+		return
+	end
+	
+	local friends_self = ply:GetInfo('cl_dsit_friendsonly')
+	local __dsit_friends_self = easyUserParse(ply:GetInfo('__dsit_friends'))
+	local __dsit_blocked_self = easyUserParse(ply:GetInfo('__dsit_blocked'))
+	
+	local friends_target = Ply:GetInfo('cl_dsit_friendsonly')
+	local __dsit_friends_target = easyUserParse(Ply:GetInfo('__dsit_friends'))
+	local __dsit_blocked_target = easyUserParse(Ply:GetInfo('__dsit_blocked'))
+	
+	if table.HasValue(__dsit_blocked_self, Ply) then
+		if notify then 
+			ply:PrintMessage(HUD_PRINTCENTER, '[DSit] You blacklisted this player')
+			DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'You blacklisted this player')
+		end
+		
+		return
+	end
+	
+	if table.HasValue(__dsit_blocked_target, ply) then
+		if notify then 
+			ply:PrintMessage(HUD_PRINTCENTER, '[DSit] Target blacklisted you')
+			DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'Target blacklisted you')
+		end
+		
+		return
+	end
+	
+	print(friends_self, friends_target, type(friends_self), type(friends_target))
+	
+	if (friends_self and friends_self ~= '0' and friends_self ~= '' or friends_target and friends_target ~= '0' and friends_target ~= '') and (not table.HasValue(__dsit_friends_target, ply) or not table.HasValue(__dsit_friends_self, Ply)) then
+		if notify then 
+			ply:PrintMessage(HUD_PRINTCENTER, '[DSit] One or both players has cl_dsit_friendsonly set to 1 and you are not friends')
+			DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'One or both players has cl_dsit_friendsonly set to 1 and you are not friends')
+		end
+		
+		return
+	end
+	
+	if cl_dsit_allow_on_me and cl_dsit_allow_on_me == '0' then
+		if notify then 
+			ply:PrintMessage(HUD_PRINTCENTER, '[DSit] Target disallowed sitting on him')
+			DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'Target disallowed sitting on him')
+		end
+		
 		return
 	end
 	
