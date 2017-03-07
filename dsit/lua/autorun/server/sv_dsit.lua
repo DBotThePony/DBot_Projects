@@ -492,8 +492,6 @@ function DSit.SitOnPlayer(ply, tr, lpos, eyes, epos, notify)
 		return
 	end
 	
-	print(friends_self, friends_target, type(friends_self), type(friends_target))
-	
 	if (friends_self and friends_self ~= '0' and friends_self ~= '' or friends_target and friends_target ~= '0' and friends_target ~= '') and (not table.HasValue(__dsit_friends_target, ply) or not table.HasValue(__dsit_friends_self, Ply)) then
 		if notify then 
 			ply:PrintMessage(HUD_PRINTCENTER, '[DSit] One or both players has cl_dsit_friendsonly set to 1 and you are not friends')
