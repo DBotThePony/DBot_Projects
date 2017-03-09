@@ -18,6 +18,7 @@ limitations under the License.
 local ALLOW_ON_ME = CreateConVar('cl_dsit_allow_on_me', '1', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'Allow to sit on me')
 local ALLOW_FRIENDS_ONLY = CreateConVar('cl_dsit_friendsonly', '0', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'Allow to sit on me')
 local SEND_MESSAGE = CreateConVar('cl_dsit_message', '1', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'React to "get off" in chat')
+local MAXIMUM_ON_ME = CreateConVar('cl_dsit_maxonme', '0', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'Maximum players on you. 0 to disable')
 CreateConVar('__dsit_friends', '', {FCVAR_USERINFO}, 'Internal variable to storge online steam friends')
 CreateConVar('__dsit_blocked', '', {FCVAR_USERINFO}, 'Internal variable to storge online steam blocked users')
 
@@ -358,6 +359,7 @@ local function PopulateClient(Panel)
 	Panel:CheckBox('Allow to sit on me', 'cl_dsit_allow_on_me')
 	Panel:CheckBox('Sit on me for friends only', 'cl_dsit_friendsonly')
 	Panel:CheckBox('React to "get off" message in chat', 'cl_dsit_message')
+	Panel:NumSlider('Max players on you', 'cl_dsit_maxonme', 0, 32, 0)
 	Panel:Button('Get off player on you', 'dsit_getoff')
 	
 	local button = Panel:Button('Steam Workshop')

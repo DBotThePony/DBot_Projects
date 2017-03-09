@@ -438,6 +438,36 @@ local function easyUserParse(str)
 	return output
 end
 
+local CALCULATE_MEM = {}
+local CALCULATE_MEM_VEH = {}
+
+local function calculatePlayersRecursion(ply)
+	for k = 1, #CALCULATE_MEM_VEH do
+		local veh = CALCULATE_MEM_VEH[k]
+		local ply2 = veh.ParentedToPlayer
+		local driver = veh:GetDriver()
+		
+		if ply2 == ply and driver:IsValid() then -- ???
+			CALCULATE_MEM[driver] = driver
+			calculatePlayersRecursion(driver)
+		end
+	end
+end
+
+local function calculatePlayers(ply)
+	CALCULATE_MEM_VEH = ents.FindByClass('prop_vehicle_prisoner_pod')
+	
+	calculatePlayersRecursion(ply)
+	local reply = {}
+	
+	for k, v in pairs(CALCULATE_MEM) do
+		table.insert(reply, v)
+	end
+	
+	CALCULATE_MEM = {}
+	return reply
+end
+
 function DSit.SitOnPlayer(ply, tr, lpos, eyes, epos, notify)
 	if not IsValid(ply) then return end
 	if not tr then return end
@@ -505,6 +535,17 @@ function DSit.SitOnPlayer(ply, tr, lpos, eyes, epos, notify)
 		if notify then 
 			ply:PrintMessage(HUD_PRINTCENTER, '[DSit] Target disallowed sitting on him')
 			DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'Target disallowed sitting on him')
+		end
+		
+		return
+	end
+	
+	local maxonme = tonumber(Ply:GetInfo('cl_dsit_maxonme') or '')
+	
+	if maxonme and maxonme > 0 and #calculatePlayers(Ply) >= maxonme then
+		if notify then 
+			ply:PrintMessage(HUD_PRINTCENTER, '[DSit] Player restricted maximal amount of players on him')
+			DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'Player restricted maximal amount of players on him')
 		end
 		
 		return
