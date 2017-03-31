@@ -33,6 +33,7 @@ NetworkedValues = {
 	{'uwater', 'Underwater distance: %sm'}
 	{'fall', 'Fall distance: %sm'}
 	{'climb', 'Climb distance: %sm'}
+	{'height', 'Maximal potential height: %sm'}
 }
 
 for nData in *NetworkedValues

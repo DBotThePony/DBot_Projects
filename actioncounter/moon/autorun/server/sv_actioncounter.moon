@@ -17,6 +17,8 @@
 
 util.AddNetworkString 'dactioncounter_network'
 
+SV_MAX_POTENTIAL_HEIGHT_ENABLE = CreateConVar('sv_ac_maxheight', '1', {FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Calculate maximal potential height (disable if this causes performance hit)')
+
 NetworkedValues = {
 	{'jump', 4}
 	{'speed', 400}
@@ -26,6 +28,7 @@ NetworkedValues = {
 	{'uwater', 400}
 	{'fall', 100}
 	{'climb', 100}
+	{'height', 200}
 }
 
 PlayerCache = {}
@@ -49,6 +52,7 @@ Think = ->
 		@uwater_cnt = @uwater_cnt or 0
 		@fall_cnt = @fall_cnt or 0
 		@climb_cnt = @climb_cnt or 0
+		@height_cnt = @height_cnt or 0
 		
 		for nData in *NetworkedValues
 			@[nData[1] .. '_timer'] = @[nData[1] .. '_timer'] or cTime
@@ -83,18 +87,33 @@ Think = ->
 		underWater = waterLevel >= 3
 		
 		if not onGround and ply\GetMoveType! == MOVETYPE_WALK
+			if SV_MAX_POTENTIAL_HEIGHT_ENABLE\GetBool!
+				trData = {
+					filter: ply
+					start: pos
+					endpos: pos + Vector(0, 0, -10000)
+				}
+				
+				tr = util.TraceLine(trData)
+				height = tr.HitPos\Distance(pos)
+				@height_cnt = height if height > @height_cnt
+				@height_timer = cTime + 4
+				
 			if deltaZ > 0
 				@climb_cnt += deltaZ
+				@climb_timer = cTime + 4
 			else
 				@fall_cnt -= deltaZ
+				@fall_timer = cTime + 4
 		else
-			@climb_cnt = 0
-			@fall_cnt = 0
+			@climb_cnt = 0 if @climb_timer < cTime
+			@fall_cnt = 0 if @fall_timer < cTime
+			@height_cnt = 0 if @height_timer < cTime
 		
 		if not onGround or speed < 0.5 or inWater
-			if @duck_timer < cTime then @duck_cnt = 0
-			if @speed_timer < cTime then @speed_cnt = 0
-			if @walk_timer < cTime then @walk_cnt = 0
+			@duck_cnt = 0 if @duck_timer < cTime
+			@speed_cnt = 0 if @speed_timer < cTime
+			@walk_cnt = 0 if @walk_timer < cTime
 		else
 			if duck
 				@duck_cnt += speed
@@ -107,8 +126,8 @@ Think = ->
 				@speed_timer = cTime + 1
 		
 		if not inWater
-			if @water_timer < cTime then @water_cnt = 0
-			if @uwater_timer < cTime then @uwater_cnt = 0
+			@water_cnt = 0 if @water_timer < cTime
+			@uwater_cnt = 0 if @uwater_timer < cTime
 			
 			if not onGround and not @jump
 				@jump = true

@@ -1,4 +1,8 @@
 util.AddNetworkString('dactioncounter_network')
+local SV_MAX_POTENTIAL_HEIGHT_ENABLE = CreateConVar('sv_ac_maxheight', '1', {
+  FCVAR_NOTIFY,
+  FCVAR_ARCHIVE
+}, 'Calculate maximal potential height (disable if this causes performance hit)')
 local NetworkedValues = {
   {
     'jump',
@@ -31,6 +35,10 @@ local NetworkedValues = {
   {
     'climb',
     100
+  },
+  {
+    'height',
+    200
   }
 }
 local PlayerCache = { }
@@ -54,6 +62,7 @@ Think = function()
     self.uwater_cnt = self.uwater_cnt or 0
     self.fall_cnt = self.fall_cnt or 0
     self.climb_cnt = self.climb_cnt or 0
+    self.height_cnt = self.height_cnt or 0
     for _index_1 = 1, #NetworkedValues do
       local nData = NetworkedValues[_index_1]
       self[nData[1] .. '_timer'] = self[nData[1] .. '_timer'] or cTime
@@ -83,14 +92,36 @@ Think = function()
     local inWater = waterLevel > 0
     local underWater = waterLevel >= 3
     if not onGround and ply:GetMoveType() == MOVETYPE_WALK then
+      if SV_MAX_POTENTIAL_HEIGHT_ENABLE:GetBool() then
+        local trData = {
+          filter = ply,
+          start = pos,
+          endpos = pos + Vector(0, 0, -10000)
+        }
+        local tr = util.TraceLine(trData)
+        local height = tr.HitPos:Distance(pos)
+        if height > self.height_cnt then
+          self.height_cnt = height
+        end
+        self.height_timer = cTime + 4
+      end
       if deltaZ > 0 then
         self.climb_cnt = self.climb_cnt + deltaZ
+        self.climb_timer = cTime + 4
       else
         self.fall_cnt = self.fall_cnt - deltaZ
+        self.fall_timer = cTime + 4
       end
     else
-      self.climb_cnt = 0
-      self.fall_cnt = 0
+      if self.climb_timer < cTime then
+        self.climb_cnt = 0
+      end
+      if self.fall_timer < cTime then
+        self.fall_cnt = 0
+      end
+      if self.height_timer < cTime then
+        self.height_cnt = 0
+      end
     end
     if not onGround or speed < 0.5 or inWater then
       if self.duck_timer < cTime then

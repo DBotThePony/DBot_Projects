@@ -38,6 +38,10 @@ local NetworkedValues = {
   {
     'climb',
     'Climb distance: %sm'
+  },
+  {
+    'height',
+    'Maximal potential height: %sm'
   }
 }
 for _index_0 = 1, #NetworkedValues do
