@@ -57,7 +57,7 @@ Think = ->
 		for nData in *NetworkedValues
 			@[nData[1] .. '_timer'] = @[nData[1] .. '_timer'] or cTime
 		
-		if @jump_timer < cTime and not @jump
+		if @jump_timer < cTime and (not @jump or ply\GetMoveType! == MOVETYPE_WALK)
 			@jump_cnt = 0
 		
 		onGround = ply\OnGround!

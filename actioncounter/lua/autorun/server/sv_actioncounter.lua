@@ -67,7 +67,7 @@ Think = function()
       local nData = NetworkedValues[_index_1]
       self[nData[1] .. '_timer'] = self[nData[1] .. '_timer'] or cTime
     end
-    if self.jump_timer < cTime and not self.jump then
+    if self.jump_timer < cTime and (not self.jump or ply:GetMoveType() == MOVETYPE_WALK) then
       self.jump_cnt = 0
     end
     local onGround = ply:OnGround()
