@@ -6,6 +6,9 @@ if not DNotify then
   return 
 end
 local HUInMeter = 40
+local DISABLE = CreateConVar('cl_ac_disable', '0', {
+  FCVAR_ARCHIVE
+}, 'Disable action counter display')
 local NetworkedValues = {
   {
     'jump',
@@ -59,6 +62,9 @@ for _index_0 = 1, #NetworkedValues do
 end
 local NET
 NET = function()
+  if DISABLE:GetBool() then
+    return 
+  end
   for _index_0 = 1, #NetworkedValues do
     local _continue_0 = false
     repeat
@@ -83,6 +89,9 @@ NET = function()
 end
 local Think
 Think = function()
+  if DISABLE:GetBool() then
+    return 
+  end
   local ctime = RealTime() - 4
   for _index_0 = 1, #NetworkedValues do
     local nData = NetworkedValues[_index_0]

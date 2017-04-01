@@ -23,6 +23,7 @@ if not DNotify
 	return
 
 HUInMeter = 40
+DISABLE = CreateConVar('cl_ac_disable', '0', {FCVAR_ARCHIVE}, 'Disable action counter display')
 
 NetworkedValues = {
 	{'jump', 'Jump streak: %s'}
@@ -47,6 +48,7 @@ for nData in *NetworkedValues
 			@ExtendTimer!
 
 NET = ->
+	if DISABLE\GetBool() then return
 	for nData in *NetworkedValues
 		readValue = net.ReadUInt(32)
 		if readValue == 0 then continue
@@ -58,6 +60,7 @@ NET = ->
 			nData.lastChange = RealTime!
 
 Think = ->
+	if DISABLE\GetBool() then return
 	ctime = RealTime! - 4
 	
 	for nData in *NetworkedValues
