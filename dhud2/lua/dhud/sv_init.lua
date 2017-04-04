@@ -32,33 +32,8 @@ AddCSLuaFile('dhud/cl_damage.lua')
 AddCSLuaFile('dhud/cl_darkrp.lua')
 AddCSLuaFile('dhud/cl_voice.lua')
 
-util.AddNetworkString('DHUD2.PrintMessage')
 util.AddNetworkString('DHUD2.Damage')
 util.AddNetworkString('DHUD2.DamagePlayer')
-
-function PrintMessage(mode, message)
-	if string.sub(message, #message) == '\n' then
-		message = string.sub(message, 1, #message - 1)
-	end
-	
-	net.Start('DHUD2.PrintMessage')
-	net.WriteUInt(mode, 4)
-	net.WriteString(message)
-	net.Broadcast()
-end
-
-local plyMeta = FindMetaTable('Player')
-
-function plyMeta:PrintMessage(mode, message)
-	if string.sub(message, #message) == '\n' then
-		message = string.sub(message, 1, #message - 1)
-	end
-	
-	net.Start('DHUD2.PrintMessage')
-	net.WriteUInt(mode, 4)
-	net.WriteString(message)
-	net.Send(self)
-end
 
 DHUD2.SVars = DHUD2.SVars or {}
 

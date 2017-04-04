@@ -290,27 +290,6 @@ local function Tick()
 	end
 end
 
-local MessageDraw = 0
-local Message = ''
-net.Receive('DHUD2.PrintMessage', function()
-	local mode = net.ReadUInt(4)
-	local mes = net.ReadString()
-	
-	if mode == HUD_PRINTCENTER then
-		MessageDraw = CurTime() + 6
-		Message = mes
-	end
-	
-	if mode == HUD_PRINTTALK then
-		print(mes)
-		chat.AddText(mes)
-	end
-	
-	if mode == HUD_PRINTCONSOLE or mode == HUD_PRINTNOTIFY then
-		print(mes)
-	end
-end)
-
 function DHUD2.IsEnabled()
 	if DHUD2.ServerConVar('allowdisable') then
 		return ENABLE:GetBool()
@@ -339,18 +318,6 @@ local function HUDPaint()
 	local x, y = DHUD2.GetPosition('warning')
 	local col = DHUD2.GetColor('warning')
 	local bg = DHUD2.GetColor('bg')
-	
-	if MessageDraw > CurTime() then
-		surface.SetFont('DHUD2.PrintMessage')
-		local x, y = DHUD2.GetPosition('printmessage')
-		local w, h = surface.GetTextSize(Message)
-		
-		x = x - w / 2
-		y = y - h
-		
-		DHUD2.DrawBox(x - 4, y - 2, w + 8, h + 4, bg)
-		draw.DrawText(Message, 'DHUD2.PrintMessage', x, y, DHUD2.GetColor('generic'))
-	end
 	
 	local next = 0
 	surface.SetFont('DHUD2.Default')
