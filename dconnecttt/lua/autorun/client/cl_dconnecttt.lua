@@ -277,6 +277,7 @@ end
 
 local function PostPlayerDraw(ply)
 	if ply.DConnecttt_Clip then
+		ply.DConnecttt_Clip = false
 		render.PopCustomClipPlane()
 		render.EnableClipping(ply.DConnecttt_oldClipping)
 	end
