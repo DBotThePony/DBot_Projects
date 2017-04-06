@@ -221,6 +221,67 @@ local function Draw(ply)
 	cam.End3D2D()
 end
 
+local function PrePlayerDraw(ply)
+	local delta = CurTime() - ply:GetNWFloat('DConnecttt.JoinTime', 0)
+	
+	if delta < 0 or delta >= 20 then return end
+	local defaultMult = delta / 20
+	local fast = ply:GetNWFloat('DConnecttt.FastInit', 0)
+	
+	local multToUse = 0
+	
+	if fast ~= 0 then
+		local fastMult = (CurTime() - fast) / 4
+		
+		if fastMult > defaultMult then
+			multToUse = fastMult
+		else
+			multToUse = defaultMult
+		end
+	else
+		multToUse = defaultMult
+	end
+	
+	if multToUse > 1 or multToUse < 0 then return end
+	
+	ply.DConnecttt_oldClipping = render.EnableClipping(true)
+	ply.DConnecttt_Clip = true
+	local getPos, eyePos = ply:GetPos(), ply:EyePos()
+	local deltaZ = (eyePos.z - getPos.z) * 1.2
+	
+	local normal = Vector(0, 0, -1)
+	local newPos = Vector(getPos.x, getPos.y, getPos.z + deltaZ * multToUse)
+	local dot = normal:Dot(newPos)
+	
+	render.PushCustomClipPlane(normal, dot)
+	
+	local mins, maxs = ply:OBBMins(), ply:OBBMaxs()
+	ply.DConnecttt_EffectEmmiter = ply.DConnecttt_EffectEmmiter or ParticleEmitter(newPos)
+	local emitter = ply.DConnecttt_EffectEmmiter
+	
+	ply.DConnecttt_lastParticle = ply.DConnecttt_lastParticle or 0
+	
+	if ply.DConnecttt_lastParticle < RealTime() then
+		ply.DConnecttt_lastParticle = RealTime() + 0.05
+		local new = newPos + Vector(math.random(mins.x, maxs.x), math.random(mins.y, maxs.y), 0)
+		
+		local particle = emitter:Add('particle/fire', new)
+		particle:SetColor(math.random(1, 255), math.random(1, 255), math.random(1, 255))
+		particle:SetVelocity(Vector(math.random(mins.x, maxs.x), math.random(mins.y, maxs.y), math.random(mins.x, maxs.x)))
+		particle:SetDieTime(3)
+		particle:SetStartSize(math.random(1, 3))
+		particle:SetEndSize(0)
+		particle:SetGravity(Vector(0, 0, -10))
+	end
+end
+
+local function PostPlayerDraw(ply)
+	if ply.DConnecttt_Clip then
+		render.PopCustomClipPlane()
+		render.EnableClipping(ply.DConnecttt_oldClipping)
+	end
+end
+
 local function PostDrawTranslucentRenderables(a, b)
 	if a or b then return end
 	if not DRAW_NOT_RESPONDING:GetBool() then return end
@@ -245,6 +306,9 @@ end
 
 hook.Add('PostDrawTranslucentRenderables', 'DConnecttt.Draw', PostDrawTranslucentRenderables)
 hook.Add('HUDPaint', 'DConnecttt.Draw', HUDPaint)
+hook.Add('PrePlayerDraw', 'DConnecttt.Draw', PrePlayerDraw)
+hook.Add('PostPlayerDraw', 'DConnecttt.Draw', PostPlayerDraw)
+
 hook.Add('PopulateToolMenu', 'DConnecttt.Menus', function()
 	spawnmenu.AddToolMenuOption('Utilities', 'User', 'DConnecttt.CVars', 'DConnecttt', '', '', Populate)
 end)

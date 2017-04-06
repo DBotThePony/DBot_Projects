@@ -127,6 +127,8 @@ local function PlayerAuthed(ply, steamid)
 	timer.Simple(0, function()
 		if not IsValid(ply) then return end
 		
+		ply:SetNWFloat('DConnecttt.JoinTime', CurTime())
+		
 		DConn.Query('SELECT * FROM dconnecttt WHERE steamid64 = "' .. steamid64 .. '";', function(data)
 			if not IsValid(ply) then return end
 			
@@ -299,6 +301,9 @@ end
 
 local function PlayerTick(len, ply)
 	ply.DConnecttt_LastTick = CurTime()
+	if ply:GetNWFloat('DConnecttt.FastInit', 0) == 0 then
+		ply:SetNWFloat('DConnecttt.FastInit', CurTime())
+	end	
 end
 
 local plyMeta = FindMetaTable('Player')
