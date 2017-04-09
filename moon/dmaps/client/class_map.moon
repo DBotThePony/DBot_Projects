@@ -477,6 +477,7 @@ class DMap
 		@DRAW_WIDTH = newWidth
 		@DRAW_HEIGHT = newHeight
 		
+		render.SuppressEngineLighting(true)
 		render.SetViewPort(newX, newY, newWidth, newHeight)
 		
 		xpcall(@PreDraw, @@CatchError, @, newX, newY, newWidth, newHeight)
@@ -484,6 +485,7 @@ class DMap
 		xpcall(@PostDraw, @@CatchError, @, newX, newY, newWidth, newHeight)
 		
 		render.SetViewPort(0, 0, oldW, oldH)
+		render.SuppressEngineLighting(false)
 		
 	PreDrawWorld: => -- Override
 	PostDrawWorld: => -- Override
