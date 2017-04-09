@@ -37,6 +37,9 @@ class DMap
 	@yLineText = Vector(-5, 28, 0)
 	@yLineTextAngle = Angle(0, 0, 0)
 	
+	@clipNormalUp = Vector(0, 0, -1)
+	@clipNormalDown = Vector(0, 0, 1)
+	
 	@hooksToDisable = {
 		'PreDrawEffects'
 		'PreDrawHalos'
@@ -76,11 +79,11 @@ class DMap
 		@currY = 0
 		@currZ = 0
 		
-		@clipLevel = 100
+		@clipLevelTop = 100
+		@clipLevelBottom = -100
 		@lockClip = false
 		@lockView = false
 		@lockZoom = false
-		@clipNormal = Vector(0, 0, -1)
 		
 		@removed = false
 		
@@ -115,7 +118,10 @@ class DMap
 	
 	GetFOV: => @fov
 	
-	GetPos: => Vector(@currX, @currY, @clipLevel)
+	GetPos: => Vector(@currX, @currY, @clipLevelTop)
+	GetPosTop: => Vector(@currX, @currY, @clipLevelTop)
+	GetPosBottom: => Vector(@currX, @currY, @clipLevelBottom)
+	
 	GetDrawPos: => Vector(@currX, @currY, @zoom)
 	GetAngles: => @angle
 	GetAngle: => @angle
@@ -187,7 +193,6 @@ class DMap
 		
 		disableFunc = ->
 			if @MAP_DRAW
-				
 				return false
 		
 		for k, hookName in pairs @@hooksToDisable
@@ -226,12 +231,13 @@ class DMap
 			}
 			
 			tr = util.TraceLine(trData)
-			deltaZ = trData.HutPos.z - (pos.z + 10)
+			deltaZ = tr.HitPos.z - (pos.z + 10)
 			
-			@clipLevel = Lerp(0.2, @clipLevel, deltaZ * 0.8)
+			@clipLevelTop = Lerp(0.2, @clipLevelTop, pos.z + deltaZ * 0.8)
+			@clipLevelBottom = Lerp(0.2, @clipLevelBottom, pos.z - deltaZ * 0.2)
 			
 			if not @lockZoom
-				@zoom = @clipLevel * 1.3
+				@zoom = @clipLevelTop * 1.3
 		
 		if not @lockView
 			@currX = pos.x
@@ -281,6 +287,8 @@ class DMap
 		
 	
 	DrawMap: (x, y, w, h) =>
+		oldClipping = render.EnableClipping(false)
+		
 		render.DrawLine(@@xLineStart, @@xLineEnd, @@xLineColor)
 		render.DrawLine(@@yLineStart, @@yLineEnd, @@yLineColor)
 		
@@ -296,6 +304,8 @@ class DMap
 		surface.SetTextColor(@@yLineColor)
 		surface.DrawText('Y')
 		cam.End3D2D()
+		
+		render.EnableClipping(oldClipping)
 	
 	DrawWaypoints: (x, y, w, h) =>
 		for k, waypoint in pairs @waypoints
@@ -319,10 +329,16 @@ class DMap
 	Draw: (x, y, w, h) =>
 		-- Override with call "super!"
 		oldClipping = render.EnableClipping(true)
-		render.PushCustomClipPlane(@clipNormal, @clipNormal\Dot(@GetPos!))
+		
+		render.PushCustomClipPlane(@@clipNormalUp, @@clipNormalUp\Dot(@GetPosTop!))
+		render.PushCustomClipPlane(@@clipNormalDown, @@clipNormalDown\Dot(@GetPosBottom!))
+		
 		xpcall(@DrawMapBackground, @CatchError, @, x, y, w, h)
 		xpcall(@DrawMap, @CatchError, @, x, y, w, h)
+		
 		render.PopCustomClipPlane()
+		render.PopCustomClipPlane()
+		
 		render.EnableClipping(oldClipping)
 		
 		@DrawWaypoints(x, y, w, h)

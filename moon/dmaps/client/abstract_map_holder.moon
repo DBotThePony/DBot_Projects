@@ -29,6 +29,8 @@ PANEL.Init = =>
 	
 	@SetMouseInputEnabled(true)
 	
+	@Spectating = LocalPlayer!
+	
 	@cursor_lastX = 0
 	@cursor_lastY = 0
 	
@@ -68,7 +70,7 @@ PANEL.OnMouseReleased = (code) =>
 PANEL.OnMouseWheeled = (deltaWheel) =>
 	@mapObject\LockZoom(true)
 	@mapObject\LockView(true)
-	@mapObject\AddZoom(-deltaWheel * math.abs(@mapObject\GetZ!) * 0.1)
+	@mapObject\AddZoom(-deltaWheel * math.max(math.abs(@mapObject\GetZ!), 100) * 0.1)
 	
 	mult = @mapObject\GetZoomMultiplier! * 0.017
 	
@@ -100,6 +102,9 @@ PANEL.GetHookName = =>
 PANEL.Think = =>
 	if not @IsHovered!
 		@Release!
+	
+	@mapObject\Think!
+	@mapObject\ThinkPlayer(@Spectating)
 	
 	if @hold
 		x, y = gui.MousePos()
