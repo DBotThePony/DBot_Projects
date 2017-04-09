@@ -66,8 +66,25 @@ PANEL.OnMouseReleased = (code) =>
 		@Release!
 
 PANEL.OnMouseWheeled = (deltaWheel) =>
-	@mapObject\LockZoom!
+	@mapObject\LockZoom(true)
+	@mapObject\LockView(true)
 	@mapObject\AddZoom(-deltaWheel * math.abs(@mapObject\GetZ!) * 0.1)
+	
+	mult = @mapObject\GetZoomMultiplier! * 0.017
+	
+	print mult
+	
+	x, y = gui.MousePos()
+	
+	deltaX = x - ScrW! / 2
+	deltaY = y - ScrH! / 2
+	
+	if deltaWheel < 0
+		@mapObject\AddX(deltaX * mult)
+		@mapObject\AddY(-deltaY * mult)
+	else
+		@mapObject\AddX(-deltaX * mult)
+		@mapObject\AddY(deltaY * mult)
 
 PANEL.UpdateMapSizes = =>
 	@mapObject\SetSize(@GetSize!)
