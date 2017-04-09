@@ -32,6 +32,9 @@ class DMap
 	@MAP_2D_X_ADD = @MAP_2D_SIZE
 	@MAP_2D_Y_ADD = @MAP_2D_SIZE
 	
+	@clipNormalDown = Vector(0, 0, 1)
+	@clipNormalUp = Vector(0, 0, -1)
+	
 	@divideConstant = 400
 	
 	@hooksToDisable = {
@@ -113,7 +116,7 @@ class DMap
 	AddX: (val = 0) => @currX += assert(val, 'number')
 	AddY: (val = 0) => @currY += assert(val, 'number')
 	AddZ: (val = 0) => @zoom += assert(val, 'number')
-	AddZoom: (val = 0) => @zoom += assert(val, 'number')
+	AddZoom: (val = 0) => @zoom = math.max(@zoom + assert(val, 'number'), 300)
 	
 	GetFOV: => @fov
 	
@@ -173,16 +176,16 @@ class DMap
 			y < border.topLeftY and y > border.bottomLeftY
 	
 	AddObject: (object) =>
-		if object.__type == 'waypoint' -- Waypoint object
+		if object.__class.__type == 'waypoint' -- Waypoint object
 			if not table.HasValue(@waypoints, object)
 				table.insert(@waypoints, object)
-		elseif object.__type == 'entity' -- Generic/Entity pointer
+		elseif object.__class.__type == 'entity' -- Generic/Entity pointer
 			if not table.HasValue(@entities, object)
 				table.insert(@entities, object)
-		elseif object.__type == 'player' -- Player pointer
+		elseif object.__class.__type == 'player' -- Player pointer
 			if not table.HasValue(@players, object)
 				table.insert(@players, object)
-		elseif object.__type == 'points' -- Simple pointer
+		elseif object.__class.__type == 'points' -- Simple pointer
 			if not table.HasValue(@points, object)
 				table.insert(@points, object)
 	
@@ -200,7 +203,17 @@ class DMap
 			@INSIDE_2D_DRAW = true
 			
 			cam.IgnoreZ(true)
+			
+			if not @outside
+				render.PopCustomClipPlane()
+				render.PopCustomClipPlane()
+			
 			@Draw2DHook!
+			
+			if not @outside
+				render.PushCustomClipPlane(@GetClipDataUp!)
+				render.PushCustomClipPlane(@GetClipDataDown!)
+			
 			cam.IgnoreZ(false)
 			
 			@INSIDE_2D_DRAW = false
@@ -269,7 +282,7 @@ class DMap
 			deltaZ = tr.HitPos.z - (pos.z + 10)
 			
 			@clipLevelTop = Lerp(0.2, @clipLevelTop, pos.z + deltaZ * 0.8)
-			@clipLevelBottom = Lerp(0.2, @clipLevelBottom, pos.z - deltaZ * 0.2)
+			@clipLevelBottom = Lerp(0.2, @clipLevelBottom, pos.z - deltaZ * 0.3)
 			
 			@outside = not tr.Hit or tr.HitSky
 			
@@ -279,7 +292,7 @@ class DMap
 			@currZ = pos.z + 20
 			
 			if not @lockZoom
-				@zoom = @clipLevelTop * 1.3
+				@zoom = math.min(math.abs(@clipLevelTop * 1.3), 300)
 			
 		else
 			@outside = false
@@ -348,14 +361,17 @@ class DMap
 	Stop2D: => cam.End3D2D()
 	End2D: => cam.End3D2D()
 	
+	GetClipDataUp: => @@clipNormalUp, @@clipNormalUp\Dot(@GetPosTop!)
+	GetClipDataDown: => @@clipNormalDown, @@clipNormalDown\Dot(@GetPosBottom!)
+	
 	-- Called when new X, Y, Width and Height are calculated
 	-- And we need to start draw of Map
 	Draw: (x, y, w, h) =>
 		oldClipping = render.EnableClipping(true)
 		
 		if not @outside
-			render.PushCustomClipPlane(@@clipNormalUp, @@clipNormalUp\Dot(@GetPosTop!))
-			render.PushCustomClipPlane(@@clipNormalDown, @@clipNormalDown\Dot(@GetPosBottom!))
+			render.PushCustomClipPlane(@GetClipDataUp!)
+			render.PushCustomClipPlane(@GetClipDataDown!)
 		
 		xpcall(@DrawMap, @@CatchError, @, x, y, w, h)
 		
