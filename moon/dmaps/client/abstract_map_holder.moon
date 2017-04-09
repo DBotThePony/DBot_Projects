@@ -115,16 +115,27 @@ PANEL.Think = =>
 		deltaX = x - @cursor_lastX
 		deltaY = y - @cursor_lastY
 		
-		yaw = math.rad(@mapObject\GetRealYaw!)
-		sin, cos = math.sin(yaw), math.cos(yaw)
-		
-		@cursor_lastX = x
-		@cursor_lastY = y
-		
-		mult = @mapObject\GetZoomMultiplier! * 0.125
-		
-		@mapObject\AddX(-deltaX * mult)
-		@mapObject\AddY(deltaY * mult)
+		if deltaX ~= 0 or deltaY ~= 0
+			yaw = math.rad(@mapObject\GetYaw!)
+			sin, cos = math.sin(yaw), math.cos(yaw)
+			
+			@cursor_lastX = x
+			@cursor_lastY = y
+			
+			mult = @mapObject\GetZoomMultiplier! * 0.125
+			
+			bMoveX = -deltaX * mult
+			bMoveY = deltaY * mult
+			
+			moveX = bMoveX * cos - bMoveY * sin
+			moveY = bMoveX * sin + bMoveY * cos
+			
+			if yaw < 0
+				moveX = -moveX
+				moveY = -moveY
+			
+			@mapObject\AddX(moveX)
+			@mapObject\AddY(moveY)
 		
 	
 PANEL.Paint = (w, h) =>
