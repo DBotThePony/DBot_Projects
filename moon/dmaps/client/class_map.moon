@@ -69,12 +69,17 @@ class DMap
 		@x = x
 		@y = y
 		
+		@panelx = 0
+		@panely = 0
+		
 		@width = width
 		@height = height
 		@fov = fov
 		@fovSin = math.sin(math.rad(@fov))
 		@angle = Angle(90, 90, 0) + angle
 		@angleOffset = angle
+		@mapYaw = 0
+		@mapYawLerp = 0
 		
 		@zoom = 1000
 		@currX = 0
@@ -84,6 +89,7 @@ class DMap
 		@currZ = 0
 		@abstractZ = 0
 		@abstractSetup = false
+		@isDrawinInPanel = false
 		
 		@clipLevelTop = 100
 		@clipLevelBottom = -100
@@ -102,6 +108,14 @@ class DMap
 	GetDrawX: => @x
 	GetDrawY: => @y
 	
+	GetYaw: => @mapYaw
+	SetYaw: (val = 0) =>
+		@mapYaw = assert(val, 'number')
+		@mapYawLerp = @mapYaw
+		@angle = Angle(90, 90 + @mapYaw, 0) + @angleOffset
+	
+	LerpYaw: (val = 0) => @mapYawLerp = assert(val, 'number')
+	
 	IsValid: => not @removed
 	
 	Remove: =>
@@ -117,6 +131,11 @@ class DMap
 	GetY: => @curry
 	GetZ: => @currZ
 	GetZoom: => @zoom
+	
+	IsDrawnInPanel: (val = false) => @isDrawinInPanel = assert(val, 'boolean')
+	PanelScreenPos: (x = 0, y = 0) =>
+		@panelx = assert(x, 'number')
+		@panely = assert(y, 'number')
 	
 	AddX: (val = 0) => @currX += assert(val, 'number')
 	AddY: (val = 0) => @currY += assert(val, 'number')
@@ -314,6 +333,11 @@ class DMap
 	
 	Think: =>
 		if not @IsValid! then return
+		
+		if @mapYawLerp ~= @mapYaw
+			@mapYaw = Lerp(0.2, @mapYaw, @mapYawLerp)
+			@angle = Angle(90, 90 + @mapYaw, 0) + @angleOffset
+		
 		for k, objectTab in pairs @objectTables
 			for k, object in pairs objectTab
 				if object\IsValid()
@@ -365,6 +389,11 @@ class DMap
 	Start2D: (x = 0, y = 0, size = @@MAP_2D_START_MULTIPLIER) =>
 		shft = @@MAP_2D_STEP_LIMIT / 2
 		newVector = Vector(x - shft * size, y + shft * size, 0)
+		
+		if @isDrawinInPanel
+			newVector.x -= @panelx * size
+			newVector.y += @panely * size
+		
 		cam.Start3D2D(newVector, @@MAP_2D_START_ANGLE, size)
 		
 		return shft, shft
@@ -438,7 +467,7 @@ class DMap
 	PostDraw2D: (x, y, screenx, screeny, screenw, screenh) =>
 		-- Override
 	
-	Get2DContextData: => @DRAW_X, @DRAW_Y, @DRAW_WIDTH, @DRAW_HEIGHT
+	Get2DContextData: => @DRAW_X_2D, @DRAW_Y_2D, @DRAW_WIDTH, @DRAW_HEIGHT
 	
 	-- Called inside DrawMap() right after landskape was drawn
 	-- Calls all 2D hooks with X and Y that are used as shift, also
@@ -451,6 +480,7 @@ class DMap
 	
 	DrawHook: =>
 		if not @IsValid! then return
+		
 		newX = @GetDrawX!
 		newY = @GetDrawY!
 		newWidth = @GetWidth!
@@ -472,6 +502,14 @@ class DMap
 		
 		oldW, oldH = ScrW!, ScrH!
 		
+		if @isDrawinInPanel
+			surface.DisableClipping(true)
+			@DRAW_X_2D = newX - @panelx
+			@DRAW_Y_2D = newY - @panely
+		else
+			@DRAW_X_2D = newX
+			@DRAW_Y_2D = newY
+			
 		@DRAW_X = newX
 		@DRAW_Y = newY
 		@DRAW_WIDTH = newWidth
@@ -480,12 +518,16 @@ class DMap
 		render.SuppressEngineLighting(true)
 		render.SetViewPort(newX, newY, newWidth, newHeight)
 		
-		xpcall(@PreDraw, @@CatchError, @, newX, newY, newWidth, newHeight)
-		xpcall(@Draw, @@CatchError, @, newX, newY, newWidth, newHeight)
-		xpcall(@PostDraw, @@CatchError, @, newX, newY, newWidth, newHeight)
+		xpcall(@PreDraw, @@CatchError, @, @DRAW_X, newY, newWidth, newHeight)
+		xpcall(@Draw, @@CatchError, @, @DRAW_X, newY, newWidth, newHeight)
+		xpcall(@PostDraw, @@CatchError, @, @DRAW_X, newY, newWidth, newHeight)
 		
 		render.SetViewPort(0, 0, oldW, oldH)
 		render.SuppressEngineLighting(false)
+		
+		if @isDrawinInPanel
+			surface.DisableClipping(false)
+		
 		
 	PreDrawWorld: => -- Override
 	PostDrawWorld: => -- Override
@@ -497,4 +539,5 @@ class DMap
 		xpcall(@DrawWorld, @@CatchError, @)
 		xpcall(@PostDrawWorld, @@CatchError, @)
 		
+DMaps.DMap = DMap
 return DMap
