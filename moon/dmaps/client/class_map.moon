@@ -22,20 +22,20 @@ assert = (arg, tp) ->
 	return arg
 
 class DMap
-	@xLineStart = Vector(-10, 0, 0)
-	@xLineEnd = Vector(10, 0, 0)
+	@xLineStart = Vector(-30, 0, 0)
+	@xLineEnd = Vector(30, 0, 0)
 	
-	@xLineText = Vector(14, 0, 0)
-	@xLineTextAngle = Angle(90, 0, 0)
+	@xLineText = Vector(20, 0, 0)
+	@xLineTextAngle = Angle(0, 0, 0)
 	
 	@xLineColor = Color(200, 50, 50)
 	
-	@yLineStart = Vector(0, 10, 0)
-	@yLineEnd = Vector(0, -10, 0)
+	@yLineStart = Vector(0, 30, 0)
+	@yLineEnd = Vector(0, -30, 0)
 	@yLineColor = Color(50, 200, 50)
 	
-	@yLineText = Vector(0, 14, 0)
-	@yLineTextAngle = Angle(90, 0, 0)
+	@yLineText = Vector(-5, 28, 0)
+	@yLineTextAngle = Angle(0, 0, 0)
 	
 	new: (x = 0, y = 0, width = ScrW(), height = ScrH(), fov = 90, angle = Angle(0, 0, 0)) =>
 		@waypoints = {}
@@ -50,7 +50,7 @@ class DMap
 		@height = height
 		@fov = fov
 		@fovSin = math.sin(math.rad(@fov))
-		@angle = Angle(90, -90, 0) + angle
+		@angle = Angle(90, 90, 0) + angle
 		@angleOffset = angle
 		
 		@zoom = 1000
@@ -58,7 +58,7 @@ class DMap
 		@currY = 0
 		@currZ = 0
 		
-		@clipLevel = 0
+		@clipLevel = 100
 		@lockClip = false
 		@lockView = false
 		@lockZoom = false
@@ -223,7 +223,7 @@ class DMap
 		
 		cam.Start3D2D(@@yLineText, @@yLineTextAngle, 1)
 		surface.SetTextColor(@@yLineColor)
-		surface.DrawText('X')
+		surface.DrawText('Y')
 		cam.End3D2D()
 	
 	DrawWaypoints: =>

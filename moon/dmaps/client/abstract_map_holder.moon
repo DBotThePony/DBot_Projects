@@ -78,11 +78,11 @@ PANEL.OnMouseWheeled = (deltaWheel) =>
 	deltaY = y - ScrH! / 2
 	
 	if deltaWheel < 0
-		@mapObject\AddX(deltaX * mult)
-		@mapObject\AddY(-deltaY * mult)
-	else
 		@mapObject\AddX(-deltaX * mult)
 		@mapObject\AddY(deltaY * mult)
+	else
+		@mapObject\AddX(deltaX * mult)
+		@mapObject\AddY(-deltaY * mult)
 
 PANEL.UpdateMapSizes = =>
 	@mapObject\SetSize(@GetSize!)
@@ -111,8 +111,8 @@ PANEL.Think = =>
 		
 		mult = @mapObject\GetZoomMultiplier! * 0.125
 		
-		@mapObject\AddX(deltaX * mult)
-		@mapObject\AddY(-deltaY * mult)
+		@mapObject\AddX(-deltaX * mult)
+		@mapObject\AddY(deltaY * mult)
 		
 	
 PANEL.Paint = (w, h) =>
