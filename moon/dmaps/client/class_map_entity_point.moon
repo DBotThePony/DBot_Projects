@@ -20,10 +20,11 @@ import DMapPointer from DMaps
 class DMapEntityPointer extends DMapPointer
 	@TRIANGLE_COLOR = Color(200, 200, 200)
 	
+	@__type = 'entity'
+	
 	new: (entity = NULL) =>
 		super!
 		
-		@__type = 'entity'
 		@drawScale = 1
 		
 		@pitch = 0

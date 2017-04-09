@@ -18,7 +18,7 @@
 -- A panel that holds the map
 -- And user controls
 
-import DMapLocalPlayerPointer from DMaps
+import DMapLocalPlayerPointer, DMapPlayerPointer from DMaps
 
 PANEL = {}
 
@@ -74,7 +74,7 @@ PANEL.OnMouseReleased = (code) =>
 PANEL.OnMouseWheeled = (deltaWheel) =>
 	@mapObject\LockZoom(true)
 	@mapObject\LockView(true)
-	@mapObject\AddZoom(-deltaWheel * math.max(math.abs(@mapObject\GetZ!), 100) * 0.1)
+	@mapObject\AddZoom(-deltaWheel * math.max(math.abs(@mapObject\GetZoom!), 100) * 0.1)
 	
 	mult = @mapObject\GetZoomMultiplier! * 0.017
 	
@@ -109,6 +109,16 @@ PANEL.Think = =>
 	
 	@mapObject\Think!
 	@mapObject\ThinkPlayer(@Spectating)
+	
+	existingPlayers = {}
+	
+	for k, obj in pairs @mapObject.players
+		if IsValid(obj\GetEntity!)
+			existingPlayers[obj\GetEntity!] = obj\GetEntity!
+	
+	for k, ply in pairs player.GetAll!
+		if existingPlayers[ply] then continue
+		@mapObject\AddObject(DMapPlayerPointer(ply))
 	
 	if @hold
 		x, y = gui.MousePos()

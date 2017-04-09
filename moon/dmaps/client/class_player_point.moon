@@ -23,30 +23,112 @@ surface.CreateFont('DMaps.PlayerInfoFont', {
 	weight: 500
 })
 
+HU_IN_METER = 40
+
+class AppenableString
+	new: (str = '') =>
+		@str = str
+	
+	GetString: => @str
+	
+	append: (str = '') =>
+		@str ..= '\n' .. str
+	
+	add: (...) => @append(...)
+	Append: (...) => @append(...)
+	Add: (...) => @append(...)
+	Concat: (...) => @append(...)
+	concat: (...) => @append(...)
+
 class DMapPlayerPointer extends DMapEntityPointer
 	@FONT = 'DMaps.PlayerInfoFont'
+	@BACKGROUND_COLOR = Color(0, 0, 0, 150)
+	@BACKGROUND_SHIFT = 4
+	
+	@__type = 'player'
 	
 	new: (ply = NULL) =>
 		super(ply)
 		@playerName = '%PLAYERNAME%'
+		
+		@hp = 100
+		@armor = 0
+		@maxhp = 100
+		
 		@color = Color(50, 50, 50)
 		@teamID = 0
+		@teamName = '%PLAYERTEAM%'
 	
 	ShouldDraw: => true
 	
 	Think: (map) =>
 		super(map)
 		
-		if IsValid(@entity)
-			ply = @entity
-			@playerName = ply\Nick()
-			@teamID = ply\Team!
-			@color = team.GetColor(@teamID)
+		if not IsValid(@entity) return
+		ply = @entity
+		
+		ang = ply\EyeAngles!
+		@playerName = ply\Nick()
+		@teamID = ply\Team!
+		@color = team.GetColor(@teamID)
+		@teamName = team.GetName(@teamID)
+		
+		@hp = ply\Health!
+		@armor = ply\Armor!
+		@maxhp = ply\GetMaxHealth!
+		
+		@pitch = ang.p
+		@yaw = -ang.y
+		@roll = ang.r
+	
+	GetPlayerInfo: =>
+		text = AppenableString("#{@playerName}
+Team: #{@teamName}
+HP: #{@hp}/#{@maxhp}
+Armor: #{@armor}")
+		hook.Run('DMaps.AddPlayerInfo', @, AppenableString)
+		
+		newStr = text\GetString!
+		delta = @GetDeltaHeight!
+		
+		if delta > 100
+			newStr ..= "\n#{math.floor(delta / HU_IN_METER * 10) / 10} meters higher"
+		elseif delta < -100
+			newStr ..= "\n#{math.floor(-delta / HU_IN_METER * 10) / 10} meters lower"
+		
+		return newStr
+	
+	DrawPlayerInfo: (map, x = 0, y = 0, alpha = 1) =>
+		y += 90
+		surface.SetFont(@@FONT)
+		
+		text = @GetPlayerInfo!
+		w, h = surface.GetTextSize(text)
+		
+		surface.SetDrawColor(@@BACKGROUND_COLOR.r, @@BACKGROUND_COLOR.g, @@BACKGROUND_COLOR.b, @@BACKGROUND_COLOR.a * alpha)
+		surface.DrawRect(x - @@BACKGROUND_SHIFT - w / 2, y - @@BACKGROUND_SHIFT, w + @@BACKGROUND_SHIFT * 2, h + @@BACKGROUND_SHIFT * 2)
+		draw.DrawText(text, @@FONT, x, y, Color(@@TEXT_COLOR.r, @@TEXT_COLOR.g, @@TEXT_COLOR.b, @@TEXT_COLOR.a * alpha), TEXT_ALIGN_CENTER)
+	
+	GetDeltaHeight: => @z - @CURRENT_MAP\GetZ!
 	
 	Draw: (map) =>
-		trig = @@generateTriangle(@DRAW_X - 25, @DRAW_Y - 25, @yaw)
+		@CURRENT_MAP = map
 		
-		surface.SetDrawColor(@color)
+		trig = @@generateTriangle(@DRAW_X, @DRAW_Y, @yaw, 30, 50, 160)
+		
+		newAlpha = 1
+		delta = @z - map\GetZ!
+		deltaAbs = math.abs(delta)
+		
+		if deltaAbs > 200
+			newAlpha = math.Clamp((400 - deltaAbs) / 200, 0.2, 1)
+		
+		surface.SetDrawColor(@color.r, @color.g, @color.b, @color.a * newAlpha)
 		surface.DrawPoly(trig)
+		
+		x, y = @DRAW_X, @DRAW_Y
+		@DrawPlayerInfo(map, x, y, newAlpha)
+		
+		@CURRENT_MAP = nil
 
 return DMapPlayerPointer

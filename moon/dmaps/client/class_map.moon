@@ -111,7 +111,8 @@ class DMap
 	
 	GetX: => @currX
 	GetY: => @curry
-	GetZ: => @zoom
+	GetZ: => @currZ
+	GetZoom: => @zoom
 	
 	AddX: (val = 0) => @currX += assert(val, 'number')
 	AddY: (val = 0) => @currY += assert(val, 'number')

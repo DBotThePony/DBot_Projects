@@ -22,6 +22,8 @@ assert = (arg, tp) ->
 	return arg
 
 class DMapPointer
+	@TEXT_COLOR = Color(255, 255, 255)
+	
 	@generateTriangle = (x = 0, y = 0, ang = 0, hypo = 20, myShift = 30, height = 70) =>
 		sin = math.sin(math.rad(ang))
 		cos = math.cos(math.rad(ang))
@@ -41,9 +43,9 @@ class DMapPointer
 		
 		return trigData
 	
+	@__type = 'point'
+	
 	new: =>
-		@__type = 'point'
-		
 		@x = 0
 		@y = 0
 		@z = 0
