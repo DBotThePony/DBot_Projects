@@ -63,7 +63,23 @@ PANEL.Init = =>
 	@yaw = 0
 	@SetSize(128, 128)
 	@targetyaw = 0
+	
+	@hold = false
+	@holdstart = 0
 
+PANEL.OnMousePressed = (code) =>
+	if code == MOUSE_RIGHT or code == MOUSE_MIDDLE
+		@targetyaw = 0
+	elseif code == MOUSE_LEFT
+		@hold = true
+		@holdstart = RealTime!
+
+PANEL.OnMouseReleased = (code) =>
+	if code == MOUSE_LEFT
+		@hold = false
+		if @holdstart + 0.1 > RealTime!
+			@targetyaw = 0
+	
 PANEL.SetMap = (map) =>
 	@mapObject = map
 	@yaw = @mapObject\GetYaw!
@@ -75,8 +91,26 @@ PANEL.OnYawChanges = =>
 	@BuildTriangle!
 
 PANEL.Think = =>
+	if @hold
+		if @holdstart + 0.1 < RealTime!
+			w, h = @GetSize!
+			
+			centerX, centerY = @LocalToScreen(w / 2, h / 2)
+			x, y = gui.MousePos()
+			
+			deltaX = x - centerX
+			deltaY = centerY - y
+			
+			if deltaX < 64 and deltaX > -64 and deltaY < 64 and deltaY > -64
+				forward = deltaX / ((deltaX ^ 2 + deltaY ^ 2) ^ 0.5)
+				ang = math.deg(math.acos(-forward))
+				
+				if deltaY < 0 then ang = -ang
+				@targetyaw = ang - 90
+			
+	
 	if @yaw ~= @targetyaw
-		@yaw = Lerp(0.2, @yaw, @targetyaw)
+		@yaw += math.AngleDifference(@targetyaw, @yaw) * 0.2
 		@OnYawChanges!
 	
 	if @mapObject\GetYaw! ~= @yaw
