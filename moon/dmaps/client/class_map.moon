@@ -22,23 +22,16 @@ assert = (arg, tp) ->
 	return arg
 
 class DMap
-	@xLineStart = Vector(-30, 0, 0)
-	@xLineEnd = Vector(30, 0, 0)
+	@MAP_2D_SIZE = 8000
+	@MAP_2D_STEP_LIMIT = 1000
+	@MAP_2D_START_MULTIPLIER = 1
 	
-	@xLineText = Vector(20, 0, 0)
-	@xLineTextAngle = Angle(0, 0, 0)
+	@MAP_2D_START_VECTOR = Vector(-@MAP_2D_SIZE, @MAP_2D_SIZE, 0)
+	@MAP_2D_START_ANGLE = Angle(0, 0, 0)
+	@MAP_2D_X_ADD = @MAP_2D_SIZE
+	@MAP_2D_Y_ADD = @MAP_2D_SIZE
 	
-	@xLineColor = Color(200, 50, 50)
-	
-	@yLineStart = Vector(0, 30, 0)
-	@yLineEnd = Vector(0, -30, 0)
-	@yLineColor = Color(50, 200, 50)
-	
-	@yLineText = Vector(-5, 28, 0)
-	@yLineTextAngle = Angle(0, 0, 0)
-	
-	@clipNormalUp = Vector(0, 0, -1)
-	@clipNormalDown = Vector(0, 0, 1)
+	@divideConstant = 400
 	
 	@hooksToDisable = {
 		'PreDrawEffects'
@@ -46,10 +39,9 @@ class DMap
 		'PreDrawHUD'
 		'PreDrawPlayerHands'
 		'PreDrawSkyBox'
-		'PreDrawTranslucentRenderables'
 		'PreDrawViewModel'
-		'PrePlayerDraw'
-		'PreDrawOpaqueRenderables'
+		--'PrePlayerDraw'
+		--'PreDrawOpaqueRenderables'
 		'ShouldDrawLocalPlayer'
 	}
 	
@@ -147,8 +139,8 @@ class DMap
 		@width = assert(width, 'number')
 		@height = assert(height, 'number')
 	
-	GetZoomMultiplier: => @zoom / @fov * @fovSin
-	GetMapZoomMultiplier: => (@zoom - @currZ) / @fov * @fovSin
+	GetZoomMultiplier: => @zoom / @fov
+	GetMapZoomMultiplier: => (@zoom - @currZ) / @fov
 	
 	-- fucking math
 	-- For now custom map angles are not supported
@@ -197,29 +189,38 @@ class DMap
 	RegisterHooks: =>
 		hookID = tostring(@)
 		
+		preDrawFunc = ->
+			if not @MAP_DRAW return
+			
+			@INSIDE_2D_DRAW = true
+			
+			cam.IgnoreZ(true)
+			@Draw2DHook!
+			cam.IgnoreZ(false)
+			
+			@INSIDE_2D_DRAW = false
+			
+			return true
+		
 		disableFunc = ->
 			if @MAP_DRAW
 				return true
 		
 		for k, hookName in pairs @@hooksToDisable
 			hook.Add(hookName, hookID, disableFunc)
+		
+		hook.Add('PreDrawTranslucentRenderables', hookID, preDrawFunc)
 	
-	MapToScreen: (x = 0, y = 0) =>
-		widthHalf = @width / 2
-		heightHalf = @height / 2
-		
-		mult = 1 / @GetMapZoomMultiplier! * 100
-		
-		newX = x + @x + widthHalf - @currX * mult
-		newY = y + @y + heightHalf - @currY * mult
-		
-		return newX, newY
+	FixCoordinate: (x = 0, y = 0) =>
+		return x + 16000, y + 16000
 	
 	UnregisterHooks: =>
 		hookID = tostring(@)
 		
 		for k, hookName in pairs @@hooksToDisable
 			hook.Remove(hookName, hookID)
+		
+		hook.Remove('PreDrawTranslucentRenderables', hookID)
 	
 	-- Call when you give the decidion about pointer draw
 	-- To the map object itself
@@ -293,7 +294,9 @@ class DMap
 			else
 				@players[k] = nil
 	
-	DrawMapBackground: (x, y, w, h) =>
+	-- Called to draw map
+	-- It calls Draw2D() inside it
+	DrawMap: (x, y, w, h) =>
 		aspectRatio1 = w / h
 		aspectRatio2 = h / w * 2
 		
@@ -326,33 +329,6 @@ class DMap
 		@MAP_DRAW = true
 		xpcall(render.RenderView, @CatchError, newView)
 		@MAP_DRAW = false
-		
-	
-	DrawMap: (x, y, w, h) =>
-		--oldClipping = render.EnableClipping(false)
-		
-		--render.DrawLine(@@xLineStart, @@xLineEnd, @@xLineColor)
-		--render.DrawLine(@@yLineStart, @@yLineEnd, @@yLineColor)
-		
-		x, y = @MapToScreen(0, 0)
-		surface.SetTextPos(x, y)
-		surface.SetFont('Default')
-		
-		--cam.Start3D2D(@@xLineText, @@xLineTextAngle, 1)
-		
-		surface.SetDrawColor(@@xLineColor)
-		surface.SetTextColor(@@xLineColor)
-		
-		surface.DrawLine(-20, 20, 0, 0)
-		surface.DrawText('X')
-		--cam.End3D2D()
-		
-		--cam.Start3D2D(@@yLineText, @@yLineTextAngle, 1)
-		surface.SetTextColor(@@yLineColor)
-		surface.DrawText('Y')
-		--cam.End3D2D()
-		
-		--render.EnableClipping(oldClipping)
 	
 	DrawWaypoints: (x, y, w, h) =>
 		for k, waypoint in pairs @waypoints
@@ -373,15 +349,27 @@ class DMap
 	PreDraw: (x, y, w, h) =>
 		-- Override
 	
+	-- X and Y are preffered positions where we would draw
+	-- Function returns shift of X and Y for use
+	Start2D: (x = 0, y = 0, size = @@MAP_2D_START_MULTIPLIER) =>
+		shft = @@MAP_2D_STEP_LIMIT / 2
+		newVector = Vector(x - shft * size, y + shft * size, 0)
+		cam.Start3D2D(newVector, @@MAP_2D_START_ANGLE, size)
+		
+		return shft, shft
+	
+	Stop2D: =>
+		cam.End3D2D()
+	
+	-- Called when new X, Y, Width and Height are calculated
+	-- And we need to start draw of Map
 	Draw: (x, y, w, h) =>
-		-- Override with call "super!"
 		oldClipping = render.EnableClipping(true)
 		
 		if not @outside
 			render.PushCustomClipPlane(@@clipNormalUp, @@clipNormalUp\Dot(@GetPosTop!))
 			render.PushCustomClipPlane(@@clipNormalDown, @@clipNormalDown\Dot(@GetPosBottom!))
 		
-		xpcall(@DrawMapBackground, @CatchError, @, x, y, w, h)
 		xpcall(@DrawMap, @CatchError, @, x, y, w, h)
 		
 		if not @outside
@@ -390,12 +378,50 @@ class DMap
 		
 		render.EnableClipping(oldClipping)
 		
-		@DrawWaypoints(x, y, w, h)
-		@DrawEntities(x, y, w, h)
-		
-	PostDraw: (x, y, w, h) =>
+	-- PostDraw
+	-- Called after all was drawn on the screen
+	PostDraw: (screenx, screeny, screenw, screenh) =>
 		-- Override
+	
+	PreDraw2D: (screenx, screeny, screenw, screenh) =>
+		surface.SetFont('Default')
+		surface.SetTextColor(255, 255, 255)
+		surface.SetDrawColor(255, 255, 255)
+		draw.NoTexture()
+	
+	DrawMapCenter: (screenx, screeny, screenw, screenh) =>
+		x, y = @Start2D(0, 0, 5)
 		
+		surface.SetTextPos(x + 40, y + 4)
+		surface.SetTextColor(200, 50, 50)
+		
+		surface.DrawText('X')
+		
+		surface.SetTextPos(x + 4, y + 40)
+		surface.SetTextColor(50, 200, 50)
+		
+		surface.DrawText('Y')
+		
+		cam.End3D2D()
+	
+	-- Still have to create 3D2D context!
+	Draw2D: (screenx, screeny, screenw, screenh) =>
+		@DrawWaypoints(x, y, screenx, screeny, screenw, screenh)
+		@DrawEntities(x, y, screenx, screeny, screenw, screenh)
+		@DrawMapCenter(x, y, screenx, screeny, screenw, screenh)
+	
+	PostDraw2D: (x, y, screenx, screeny, screenw, screenh) =>
+		-- Override
+	
+	-- Called inside DrawMap() right after landskape was drawn
+	-- Calls all 2D hooks with X and Y that are used as shift, also
+	-- Called with default 2D properties
+	Draw2DHook: =>
+		screenx, screeny, screenw, screenh = @DRAW_X, @DRAW_Y, @DRAW_WIDTH, @DRAW_HEIGHT
+		xpcall(@PreDraw2D, @CatchError, @, screenx, screeny, screenw, screenh)
+		xpcall(@Draw2D, @CatchError, @, screenx, screeny, screenw, screenh)
+		xpcall(@PostDraw2D, @CatchError, @, screenx, screeny, screenw, screenh)
+	
 	DrawHook: =>
 		if not @IsValid! then return
 		newX = @GetDrawX!
@@ -419,14 +445,17 @@ class DMap
 		
 		oldW, oldH = ScrW!, ScrH!
 		
+		@DRAW_X = newX
+		@DRAW_Y = newY
+		@DRAW_WIDTH = newWidth
+		@DRAW_HEIGHT = newHeight
+		
 		render.SetViewPort(newX, newY, newWidth, newHeight)
-		--cam.Start3D(@GetDrawPos!, @GetAngles!, @GetFOV!, newX, newY, newWidth, newHeight)
 		
 		xpcall(@PreDraw, @CatchError, @, newX, newY, newWidth, newHeight)
 		xpcall(@Draw, @CatchError, @, newX, newY, newWidth, newHeight)
 		xpcall(@PostDraw, @CatchError, @, newX, newY, newWidth, newHeight)
 		
-		--cam.End3D()
 		render.SetViewPort(0, 0, oldW, oldH)
 		
 return DMap
