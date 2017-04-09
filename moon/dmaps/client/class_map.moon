@@ -37,7 +37,12 @@ class DMap
 	@yLineText = Vector(-5, 28, 0)
 	@yLineTextAngle = Angle(0, 0, 0)
 	
+	@uid = 0
+	
 	new: (x = 0, y = 0, width = ScrW(), height = ScrH(), fov = 90, angle = Angle(0, 0, 0)) =>
+		@MY_ID = @@uid
+		@@uid += 1
+		
 		@waypoints = {}
 		@entities = {}
 		@players = {}
@@ -150,6 +155,13 @@ class DMap
 			if not table.HasValue(@points, object)
 				table.insert(@points, object)
 	
+	__tostring: =>
+		return "[DMapObject:#{@MY_ID}]"
+	
+	RegisterHooks: =>
+		if not @__hookName
+			@__hookName = tostring(@)\sub(8) .. '__DMapObject'
+	
 	-- Call when you give the decidion about pointer draw
 	-- To the map object itself
 	PrefferDraw: (x = 0, y = 0, z = 0) =>
@@ -209,7 +221,25 @@ class DMap
 			else
 				@players[k] = nil
 	
-	DrawMap: =>
+	DrawMapBackground: (x, y, w, h) =>
+		newView = {
+			:x
+			:y
+			:w
+			:h
+			origin: @GetDrawPos!
+			angles: @GetAngles!
+			drawhud: false
+			drawmonitors: false
+			drawviewmodel: false
+			viewmodelfov: @fov
+			fov: @fov
+		}
+		
+		render.RenderView(newView)
+		
+	
+	DrawMap: (x, y, w, h) =>
 		render.DrawLine(@@xLineStart, @@xLineEnd, @@xLineColor)
 		render.DrawLine(@@yLineStart, @@yLineEnd, @@yLineColor)
 		
@@ -226,7 +256,7 @@ class DMap
 		surface.DrawText('Y')
 		cam.End3D2D()
 	
-	DrawWaypoints: =>
+	DrawWaypoints: (x, y, w, h) =>
 		for k, waypoint in pairs @waypoints
 			if waypoint\IsValid()
 				if waypoint\ShouldDraw(@)
@@ -234,7 +264,7 @@ class DMap
 			else
 				@waypoints[k] = nil
 	
-	DrawPoints: =>
+	DrawPoints: (x, y, w, h) =>
 		for k, pointer in pairs @points
 			if pointer\IsValid()
 				if pointer\ShouldDraw(@)
@@ -242,21 +272,22 @@ class DMap
 			else
 				@waypoints[k] = nil
 	
-	PreDraw: =>
+	PreDraw: (x, y, w, h) =>
 		-- Override
 	
-	Draw: =>
+	Draw: (x, y, w, h) =>
 		-- Override with call "super!"
 		oldClipping = render.EnableClipping(true)
 		render.PushCustomClipPlane(@clipNormal, @clipNormal\Dot(@GetPos!))
-		xpcall(@DrawMap, @CatchError, @)
+		xpcall(@DrawMapBackground, @CatchError, @, x, y, w, h)
+		xpcall(@DrawMap, @CatchError, @, x, y, w, h)
 		render.PopCustomClipPlane()
 		render.EnableClipping(oldClipping)
 		
-		@DrawWaypoints!
-		@DrawEntities!
+		@DrawWaypoints(x, y, w, h)
+		@DrawEntities(x, y, w, h)
 		
-	PostDraw: =>
+	PostDraw: (x, y, w, h) =>
 		-- Override
 		
 	DrawHook: =>
@@ -278,12 +309,14 @@ class DMap
 		
 		if newHeight + newY > ScrH!
 			newHeight = ScrH! - newY
+			
+		--xpcall(@DrawMapBackground, @CatchError, @, newX, newY, newWidth, newHeight)
 		
 		cam.Start3D(@GetDrawPos!, @GetAngles!, @GetFOV!, newX, newY, newWidth, newHeight)
 		
-		xpcall(@PreDraw, @CatchError, @)
-		xpcall(@Draw, @CatchError, @)
-		xpcall(@PostDraw, @CatchError, @)
+		xpcall(@PreDraw, @CatchError, @, newX, newY, newWidth, newHeight)
+		xpcall(@Draw, @CatchError, @, newX, newY, newWidth, newHeight)
+		xpcall(@PostDraw, @CatchError, @, newX, newY, newWidth, newHeight)
 		
 		cam.End3D()
 		
