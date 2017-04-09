@@ -85,7 +85,11 @@ class DMap
 		@lockView = false
 		@lockZoom = false
 		
+		@skyHeight = 0
+		
 		@removed = false
+		
+		@outside = false
 		
 		@RegisterHooks!
 		
@@ -121,6 +125,7 @@ class DMap
 	GetPos: => Vector(@currX, @currY, @clipLevelTop)
 	GetPosTop: => Vector(@currX, @currY, @clipLevelTop)
 	GetPosBottom: => Vector(@currX, @currY, @clipLevelBottom)
+	GetPosCurrent: => Vector(@currX, @currY, @currZ + 300)
 	
 	GetDrawPos: => Vector(@currX, @currY, @zoom)
 	GetAngles: => @angle
@@ -143,6 +148,7 @@ class DMap
 		@height = assert(height, 'number')
 	
 	GetZoomMultiplier: => @zoom / @fov * @fovSin
+	GetMapZoomMultiplier: => (@zoom - @currZ) / @fov * @fovSin
 	
 	-- fucking math
 	-- For now custom map angles are not supported
@@ -198,6 +204,17 @@ class DMap
 		for k, hookName in pairs @@hooksToDisable
 			hook.Add(hookName, hookID, disableFunc)
 	
+	MapToScreen: (x = 0, y = 0) =>
+		widthHalf = @width / 2
+		heightHalf = @height / 2
+		
+		mult = 1 / @GetMapZoomMultiplier! * 100
+		
+		newX = x + @x + widthHalf - @currX * mult
+		newY = y + @y + heightHalf - @currY * mult
+		
+		return newX, newY
+	
 	UnregisterHooks: =>
 		hookID = tostring(@)
 		
@@ -236,8 +253,18 @@ class DMap
 			@clipLevelTop = Lerp(0.2, @clipLevelTop, pos.z + deltaZ * 0.8)
 			@clipLevelBottom = Lerp(0.2, @clipLevelBottom, pos.z - deltaZ * 0.2)
 			
+			@outside = not tr.Hit or tr.HitSky
+			
+			if @outside
+				@skyHeight = deltaZ
+			
+			@currZ = pos.z + 20
+			
 			if not @lockZoom
 				@zoom = @clipLevelTop * 1.3
+			
+		else
+			@outside = false
 		
 		if not @lockView
 			@currX = pos.x
@@ -267,19 +294,34 @@ class DMap
 				@players[k] = nil
 	
 	DrawMapBackground: (x, y, w, h) =>
+		aspectRatio1 = w / h
+		aspectRatio2 = h / w * 2
+		
+		localZoom = @zoom
+		
 		newView = {
 			:x
 			:y
 			:w
 			:h
-			origin: @GetDrawPos!
+			origin: @GetPosCurrent!
 			angles: @GetAngles!
 			drawhud: false
 			drawmonitors: false
 			drawviewmodel: false
 			viewmodelfov: @fov
 			fov: @fov
+			
+			ortho: true
+			ortholeft: -localZoom * aspectRatio1
+			orthoright: localZoom * aspectRatio1
+			orthotop: -localZoom * aspectRatio2
+			orthobottom: localZoom * aspectRatio2
 		}
+		
+		if @outside
+			newView.origin.z += @skyHeight
+			newView.zfar = 4000 + @skyHeight
 		
 		@MAP_DRAW = true
 		xpcall(render.RenderView, @CatchError, newView)
@@ -287,25 +329,30 @@ class DMap
 		
 	
 	DrawMap: (x, y, w, h) =>
-		oldClipping = render.EnableClipping(false)
+		--oldClipping = render.EnableClipping(false)
 		
-		render.DrawLine(@@xLineStart, @@xLineEnd, @@xLineColor)
-		render.DrawLine(@@yLineStart, @@yLineEnd, @@yLineColor)
+		--render.DrawLine(@@xLineStart, @@xLineEnd, @@xLineColor)
+		--render.DrawLine(@@yLineStart, @@yLineEnd, @@yLineColor)
 		
-		surface.SetTextPos(0, 0)
+		x, y = @MapToScreen(0, 0)
+		surface.SetTextPos(x, y)
 		surface.SetFont('Default')
 		
-		cam.Start3D2D(@@xLineText, @@xLineTextAngle, 1)
-		surface.SetTextColor(@@xLineColor)
-		surface.DrawText('X')
-		cam.End3D2D()
+		--cam.Start3D2D(@@xLineText, @@xLineTextAngle, 1)
 		
-		cam.Start3D2D(@@yLineText, @@yLineTextAngle, 1)
+		surface.SetDrawColor(@@xLineColor)
+		surface.SetTextColor(@@xLineColor)
+		
+		surface.DrawLine(-20, 20, 0, 0)
+		surface.DrawText('X')
+		--cam.End3D2D()
+		
+		--cam.Start3D2D(@@yLineText, @@yLineTextAngle, 1)
 		surface.SetTextColor(@@yLineColor)
 		surface.DrawText('Y')
-		cam.End3D2D()
+		--cam.End3D2D()
 		
-		render.EnableClipping(oldClipping)
+		--render.EnableClipping(oldClipping)
 	
 	DrawWaypoints: (x, y, w, h) =>
 		for k, waypoint in pairs @waypoints
@@ -330,14 +377,16 @@ class DMap
 		-- Override with call "super!"
 		oldClipping = render.EnableClipping(true)
 		
-		render.PushCustomClipPlane(@@clipNormalUp, @@clipNormalUp\Dot(@GetPosTop!))
-		render.PushCustomClipPlane(@@clipNormalDown, @@clipNormalDown\Dot(@GetPosBottom!))
+		if not @outside
+			render.PushCustomClipPlane(@@clipNormalUp, @@clipNormalUp\Dot(@GetPosTop!))
+			render.PushCustomClipPlane(@@clipNormalDown, @@clipNormalDown\Dot(@GetPosBottom!))
 		
 		xpcall(@DrawMapBackground, @CatchError, @, x, y, w, h)
 		xpcall(@DrawMap, @CatchError, @, x, y, w, h)
 		
-		render.PopCustomClipPlane()
-		render.PopCustomClipPlane()
+		if not @outside
+			render.PopCustomClipPlane()
+			render.PopCustomClipPlane()
 		
 		render.EnableClipping(oldClipping)
 		
@@ -367,15 +416,17 @@ class DMap
 		
 		if newHeight + newY > ScrH!
 			newHeight = ScrH! - newY
-			
-		--xpcall(@DrawMapBackground, @CatchError, @, newX, newY, newWidth, newHeight)
 		
-		cam.Start3D(@GetDrawPos!, @GetAngles!, @GetFOV!, newX, newY, newWidth, newHeight)
+		oldW, oldH = ScrW!, ScrH!
+		
+		render.SetViewPort(newX, newY, newWidth, newHeight)
+		--cam.Start3D(@GetDrawPos!, @GetAngles!, @GetFOV!, newX, newY, newWidth, newHeight)
 		
 		xpcall(@PreDraw, @CatchError, @, newX, newY, newWidth, newHeight)
 		xpcall(@Draw, @CatchError, @, newX, newY, newWidth, newHeight)
 		xpcall(@PostDraw, @CatchError, @, newX, newY, newWidth, newHeight)
 		
-		cam.End3D()
+		--cam.End3D()
+		render.SetViewPort(0, 0, oldW, oldH)
 		
 return DMap
