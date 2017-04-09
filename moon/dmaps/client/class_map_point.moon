@@ -22,7 +22,7 @@ assert = (arg, tp) ->
 	return arg
 
 class DMapPointer
-	@generateTriangle = (x = 0, y = 0, ang = 0) ->
+	@generateTriangle = (x = 0, y = 0, ang = 0) =>
 		sin = math.sin(math.rad(ang))
 		cos = math.cos(math.rad(ang))
 		
@@ -66,14 +66,14 @@ class DMapPointer
 	Remove: =>
 		@removed = true
 	
-	Draw: => -- Override
-	PreDraw: => -- Override
-	PostDraw: => -- Override
+	Draw: (map) => -- Override
+	PreDraw: (map) => -- Override
+	PostDraw: (map) => -- Override
 	
-	DrawHook: =>
-		@PreDraw!
-		@Draw!
-		@PostDraw!
+	DrawHook: (map) =>
+		@PreDraw(map)
+		@Draw(map)
+		@PostDraw(map)
 	
 	-- Simple check
 	__eq: (other) =>
@@ -83,5 +83,6 @@ class DMapPointer
 		-- Override
 	
 	IsValid: => not @removed
+	IsRemoved: => @removed
 	
 return DMapPointer

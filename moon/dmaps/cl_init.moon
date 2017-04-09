@@ -18,6 +18,8 @@
 DMaps.DMap = include 'dmaps/client/class_map.lua'
 DMaps.DMapPointer = include 'dmaps/client/class_map_point.lua'
 DMaps.DMapEntityPointer = include 'dmaps/client/class_map_entity_point.lua'
+DMaps.DMapPlayerPointer = include 'dmaps/client/class_player_point.lua'
+DMaps.DMapLocalPlayerPointer = include 'dmaps/client/class_lplayer_point.lua'
 DMaps.PANEL_ABSTRACT_MAP_HOLDER = include 'dmaps/client/abstract_map_holder.lua'
 
 vgui.Register('DMapsMapHolder', DMaps.PANEL_ABSTRACT_MAP_HOLDER, 'EditablePanel')

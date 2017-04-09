@@ -18,6 +18,8 @@
 -- A panel that holds the map
 -- And user controls
 
+import DMapLocalPlayerPointer from DMaps
+
 PANEL = {}
 
 PANEL.Init = =>
@@ -26,6 +28,8 @@ PANEL.Init = =>
 	@UpdateMapSizes!
 	@SetCursor('hand')
 	@hold = false
+	
+	@mapObject\AddObject(DMapLocalPlayerPointer!)
 	
 	@SetMouseInputEnabled(true)
 	

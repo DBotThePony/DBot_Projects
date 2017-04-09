@@ -20,3 +20,28 @@ import DMapEntityPointer from DMaps
 class DMapPlayerPointer extends DMapEntityPointer
 	new: (ply = NULL) =>
 		super(ply)
+		@playerName = '%PLAYERNAME%'
+		@color = Color(50, 50, 50)
+		@teamID = 0
+	
+	ShouldDraw: => true
+	
+	Think: (map) =>
+		super(map)
+		
+		if IsValid(@entity)
+			ply = @entity
+			@playerName = ply\Nick()
+			@teamID = ply\Team!
+			@color = team.GetColor(@teamID)
+	
+	Draw: (map) =>
+		trig = @@generateTriangle(@DRAW_X - 25, @DRAW_Y - 25, @yaw)
+		
+		surface.SetDrawColor(color_white)
+		surface.DrawRect(0, 0, 100, 100)
+		
+		surface.SetDrawColor(@color)
+		surface.DrawPoly(trig)
+
+return DMapPlayerPointer

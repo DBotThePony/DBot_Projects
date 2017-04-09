@@ -18,6 +18,8 @@
 import DMapPointer from DMaps
 
 class DMapEntityPointer extends DMapPointer
+	@TRIANGLE_COLOR = Color(200, 200, 200)
+	
 	new: (entity = NULL) =>
 		super!
 		
@@ -27,24 +29,32 @@ class DMapEntityPointer extends DMapPointer
 		@pitch = 0
 		@yaw = 0
 		@roll = 0
+		@pos = Vector(0, 0, 0)
+		@ang = Angle(0, 0, 0)
 		
 		@SetEntity(entity)
 	
 	UpdatePos: =>
-		pos = @entity\GetPos!
+		@pos = @entity\GetPos!
 		
-		@x = pos.x
-		@y = pos.y
-		@z = pos.z
+		@x = @pos.x
+		@y = @pos.y
+		@z = @pos.z
 	
 	UpdateAngles: =>
-		ang = @entity\GetAngles!
+		@ang = @entity\GetAngles!
 		
-		@pitch = ang.p
-		@yaw = ang.y
-		@roll = ang.r
+		@pitch = @ang.p
+		@yaw = @ang.y
+		@roll = @ang.r
 	
 	GetEntity: => @entity
+	
+	PreDraw: (map) =>
+		@DRAW_X, @DRAW_Y = map\Start2D(@x, @y)
+	
+	PostDraw: (map) =>
+		map\Stop2D()
 	
 	Think: =>
 		if IsValid(@entity)
@@ -61,19 +71,20 @@ class DMapEntityPointer extends DMapPointer
 		else
 			@entClass = 'NULL'
 	
-	Draw: =>
-		pos = @GetPos! - Vector(50, 50, 50) * @drawScale
-		
-		draw.NoTexture!
-		cam.Start3D2D(pos, Angle(90, 0, 0), @drawScale)
-		
-		trig = @@generateTriangle(-25, -25, @yaw)
-		surface.DrawPoly(trig)
+	Draw: (map) =>
+		trig = @@generateTriangle(@DRAW_X - 25, @DRAW_Y - 25, @yaw)
 		
 		surface.SetDrawColor(color_white)
 		surface.DrawRect(0, 0, 100, 100)
 		
-		cam.End3D2D()
+		surface.SetDrawColor(@@TRIANGLE_COLOR)
+		surface.DrawPoly(trig)
+	
+	DrawHook: (map) =>
+		if IsValid(@entity)
+			@PreDraw(map)
+			@Draw(map)
+			@PostDraw(map)
 	
 	__eq: (other) =>
 		if type(other) == 'table' and other.__type == 'entity'

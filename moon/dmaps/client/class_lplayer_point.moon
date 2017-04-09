@@ -15,10 +15,25 @@
 -- limitations under the License.
 -- 
 
-AddCSLuaFile 'dmaps/client/class_map.lua'
-AddCSLuaFile 'dmaps/client/class_map_point.lua'
-AddCSLuaFile 'dmaps/client/class_map_entity_point.lua'
-AddCSLuaFile 'dmaps/client/class_map_player_point.lua'
-AddCSLuaFile 'dmaps/client/class_map_lplayer_point.lua'
-AddCSLuaFile 'dmaps/client/abstract_map_holder.lua'
-AddCSLuaFile 'dmaps/client/default_gui.lua'
+import DMapPlayerPointer from DMaps
+
+class DMapLocalPlayerPointer extends DMapPlayerPointer
+	@PointerColor = Color(40, 40, 210)
+	
+	new: =>
+		super(LocalPlayer!)
+	
+	IsValid: =>
+		if @IsRemoved! return false
+		return true
+	
+	Draw: (map) =>
+		trig = @@generateTriangle(@DRAW_X - 25, @DRAW_Y - 25, @yaw)
+		
+		surface.SetDrawColor(color_white)
+		surface.DrawRect(0, 0, 100, 100)
+		
+		surface.SetDrawColor(@@PointerColor)
+		surface.DrawPoly(trig)
+
+return DMapLocalPlayerPointer
