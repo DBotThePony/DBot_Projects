@@ -22,17 +22,24 @@ assert = (arg, tp) ->
 	return arg
 
 class DMapPointer
-	@generateTriangle = (x = 0, y = 0, ang = 0) =>
+	@generateTriangle = (x = 0, y = 0, ang = 0, hypo = 20, myShift = 30, height = 70) =>
 		sin = math.sin(math.rad(ang))
 		cos = math.cos(math.rad(ang))
 		
-		newData = {
-			{x: x + 7.5 * sin, y: y - 7.5 * cos}
-			{x: x + 50 * cos, y: y - 50 * sin}
-			{x: x - 7.5 * sin, y: y + 7.5 * cos}
+		x -= myShift * cos
+		y -= myShift * sin
+		
+		Ax, Ay = -hypo * sin, hypo * cos
+		Bx, By = height * cos, height * sin
+		Cx, Cy = hypo * sin, -hypo * cos
+		
+		trigData = {
+			{x: x + Cx, y: y + Cy}
+			{x: x + Bx, y: y + By}
+			{x: x + Ax, y: y + Ay}
 		}
 		
-		return newData
+		return trigData
 	
 	new: =>
 		@__type = 'point'

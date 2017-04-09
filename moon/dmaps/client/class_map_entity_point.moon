@@ -45,7 +45,7 @@ class DMapEntityPointer extends DMapPointer
 		@ang = @entity\GetAngles!
 		
 		@pitch = @ang.p
-		@yaw = @ang.y
+		@yaw = -@ang.y
 		@roll = @ang.r
 	
 	GetEntity: => @entity

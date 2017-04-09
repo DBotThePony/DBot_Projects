@@ -17,7 +17,15 @@
 
 import DMapEntityPointer from DMaps
 
+surface.CreateFont('DMaps.PlayerInfoFont', {
+	font: 'Roboto',
+	size: 48
+	weight: 500
+})
+
 class DMapPlayerPointer extends DMapEntityPointer
+	@FONT = 'DMaps.PlayerInfoFont'
+	
 	new: (ply = NULL) =>
 		super(ply)
 		@playerName = '%PLAYERNAME%'

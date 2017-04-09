@@ -379,6 +379,7 @@ class DMap
 	DrawMapCenter: (screenx, screeny, screenw, screenh) =>
 		x, y = @Start2D(0, 0, 5)
 		
+		surface.SetFont('Default')
 		surface.SetTextPos(x + 40, y + 4)
 		surface.SetTextColor(200, 50, 50)
 		surface.SetDrawColor(200, 50, 50)

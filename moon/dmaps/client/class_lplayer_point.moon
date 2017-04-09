@@ -18,7 +18,7 @@
 import DMapPlayerPointer from DMaps
 
 class DMapLocalPlayerPointer extends DMapPlayerPointer
-	@PointerColor = Color(40, 40, 210)
+	@PointerColor = Color(80, 80, 210)
 	
 	new: =>
 		super(LocalPlayer!)
@@ -28,9 +28,18 @@ class DMapLocalPlayerPointer extends DMapPlayerPointer
 		return true
 	
 	Draw: (map) =>
-		trig = @@generateTriangle(@DRAW_X - 25, @DRAW_Y - 25, @yaw)
+		trig = @@generateTriangle(@DRAW_X, @DRAW_Y, @yaw, 40, 50, 200)
 		
 		surface.SetDrawColor(@@PointerColor)
 		surface.DrawPoly(trig)
+		
+		surface.SetFont(@@FONT)
+		
+		text = "Local Player (#{@playerName})"
+		w, h = surface.GetTextSize(text)
+		
+		surface.SetTextPos(@DRAW_X - w / 2, @DRAW_Y + 50)
+		surface.SetTextColor(color_white)
+		surface.DrawText(text)
 
 return DMapLocalPlayerPointer
