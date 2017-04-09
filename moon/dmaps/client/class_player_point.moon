@@ -38,9 +38,6 @@ class DMapPlayerPointer extends DMapEntityPointer
 	Draw: (map) =>
 		trig = @@generateTriangle(@DRAW_X - 25, @DRAW_Y - 25, @yaw)
 		
-		surface.SetDrawColor(color_white)
-		surface.DrawRect(0, 0, 100, 100)
-		
 		surface.SetDrawColor(@color)
 		surface.DrawPoly(trig)
 
