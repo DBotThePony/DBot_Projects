@@ -149,8 +149,8 @@ PANEL.BuildCircle = =>
 PANEL.Paint = (w, h) =>
 	draw.NoTexture!
 	
-	surface.SetDrawColor(@BACKGROUND_COLOR)
-	surface.DrawRect(0, 0, w, h)
+	--surface.SetDrawColor(@BACKGROUND_COLOR)
+	--surface.DrawRect(0, 0, w, h)
 	
 	surface.SetDrawColor(40, 70, 180)
 	surface.DrawPoly(@circleOuter)
