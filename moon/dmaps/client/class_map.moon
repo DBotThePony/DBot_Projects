@@ -410,9 +410,9 @@ class DMap
 	
 	-- Still have to create 3D2D context!
 	Draw2D: (screenx, screeny, screenw, screenh) =>
-		@DrawWaypoints(x, y, screenx, screeny, screenw, screenh)
-		@DrawEntities(x, y, screenx, screeny, screenw, screenh)
-		@DrawMapCenter(x, y, screenx, screeny, screenw, screenh)
+		@DrawWaypoints(screenx, screeny, screenw, screenh)
+		@DrawEntities(screenx, screeny, screenw, screenh)
+		@DrawMapCenter(screenx, screeny, screenw, screenh)
 	
 	PostDraw2D: (x, y, screenx, screeny, screenw, screenh) =>
 		-- Override
