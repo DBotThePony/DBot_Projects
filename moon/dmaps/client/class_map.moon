@@ -260,7 +260,26 @@ class DMap
 		-- Override
 		
 	DrawHook: =>
-		cam.Start3D(@GetDrawPos!, @GetAngles!, @GetFOV!, @GetDrawX!, @GetDrawY!, @GetWidth!, @GetHeight!)
+		newX = @GetDrawX!
+		newY = @GetDrawY!
+		newWidth = @GetWidth!
+		newHeight = @GetHeight!
+		
+		if newX < 0
+			newWidth += newX
+			newX = 0
+		
+		if newY < 0
+			newHeight += newY
+			newY = 0
+		
+		if newWidth + newX > ScrW!
+			newWidth = ScrW! - newX
+		
+		if newHeight + newY > ScrH!
+			newHeight = ScrH! - newY
+		
+		cam.Start3D(@GetDrawPos!, @GetAngles!, @GetFOV!, newX, newY, newWidth, newHeight)
 		
 		xpcall(@PreDraw, @CatchError, @)
 		xpcall(@Draw, @CatchError, @)
