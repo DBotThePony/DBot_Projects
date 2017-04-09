@@ -72,8 +72,6 @@ PANEL.OnMouseWheeled = (deltaWheel) =>
 	
 	mult = @mapObject\GetZoomMultiplier! * 0.017
 	
-	print mult
-	
 	x, y = gui.MousePos()
 	
 	deltaX = x - ScrW! / 2
