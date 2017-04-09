@@ -40,8 +40,8 @@ class DMap
 		'PreDrawPlayerHands'
 		'PreDrawSkyBox'
 		'PreDrawViewModel'
-		--'PrePlayerDraw'
-		--'PreDrawOpaqueRenderables'
+		'PrePlayerDraw'
+		'PreDrawOpaqueRenderables'
 		'ShouldDrawLocalPlayer'
 	}
 	
@@ -55,6 +55,8 @@ class DMap
 		@entities = {}
 		@players = {}
 		@points = {}
+		
+		@objectTables = {@waypoints, @entities, @players, @points}
 		
 		@x = x
 		@y = y
@@ -202,6 +204,16 @@ class DMap
 			
 			return true
 		
+		-- For drawing in-world markers, points, etc.
+		postDrawFunc = ->
+			if not @IsValid!
+				hook.Remove('PostDrawTranslucentRenderables', hookID, preDrawFunc)
+				return
+			
+			@INSIDE_3D_DRAW = true
+			@DrawWorldHook!
+			@INSIDE_3D_DRAW = false
+		
 		disableFunc = ->
 			if @MAP_DRAW
 				return true
@@ -210,6 +222,7 @@ class DMap
 			hook.Add(hookName, hookID, disableFunc)
 		
 		hook.Add('PreDrawTranslucentRenderables', hookID, preDrawFunc)
+		hook.Add('PostDrawTranslucentRenderables', hookID, postDrawFunc)
 	
 	FixCoordinate: (x = 0, y = 0) =>
 		return x + 16000, y + 16000
@@ -221,6 +234,7 @@ class DMap
 			hook.Remove(hookName, hookID)
 		
 		hook.Remove('PreDrawTranslucentRenderables', hookID)
+		hook.Remove('PostDrawTranslucentRenderables', hookID)
 	
 	-- Call when you give the decidion about pointer draw
 	-- To the map object itself
@@ -273,26 +287,12 @@ class DMap
 	
 	Think: =>
 		if not @IsValid! then return
-		for k, waypoint in pairs @waypoints
-			if waypoint\IsValid()
-				waypoint\Think()
-			else
-				@waypoints[k] = nil
-	
-	DrawEntities: =>
-		for k, pointer in pairs @entities
-			if pointer\IsValid()
-				if pointer\ShouldDraw(@)
-					pointer\Draw()
-			else
-				@entities[k] = nil
-		
-		for k, pointer in pairs @players
-			if pointer\IsValid()
-				if pointer\ShouldDraw(@)
-					pointer\Draw()
-			else
-				@players[k] = nil
+		for k, objectTab in pairs @objectTables
+			for k, object in pairs objectTab
+				if object\IsValid()
+					object\Think()
+				else
+					@objectTab[k] = nil
 	
 	-- Called to draw map
 	-- It calls Draw2D() inside it
@@ -329,22 +329,6 @@ class DMap
 		@MAP_DRAW = true
 		xpcall(render.RenderView, @CatchError, newView)
 		@MAP_DRAW = false
-	
-	DrawWaypoints: (x, y, w, h) =>
-		for k, waypoint in pairs @waypoints
-			if waypoint\IsValid()
-				if waypoint\ShouldDraw(@)
-					waypoint\Draw()
-			else
-				@waypoints[k] = nil
-	
-	DrawPoints: (x, y, w, h) =>
-		for k, pointer in pairs @points
-			if pointer\IsValid()
-				if pointer\ShouldDraw(@)
-					pointer\Draw()
-			else
-				@waypoints[k] = nil
 	
 	PreDraw: (x, y, w, h) =>
 		-- Override
@@ -410,8 +394,14 @@ class DMap
 	
 	-- Still have to create 3D2D context!
 	Draw2D: (screenx, screeny, screenw, screenh) =>
-		@DrawWaypoints(screenx, screeny, screenw, screenh)
-		@DrawEntities(screenx, screeny, screenw, screenh)
+		for k, objectTab in pairs @objectTables
+			for k, object in pairs objectTab
+				if object\IsValid()
+					if object\ShouldDraw(@)
+						object\Draw()
+				else
+					@objectTab[k] = nil
+		
 		@DrawMapCenter(screenx, screeny, screenw, screenh)
 	
 	PostDraw2D: (x, y, screenx, screeny, screenw, screenh) =>
@@ -463,5 +453,15 @@ class DMap
 		xpcall(@PostDraw, @CatchError, @, newX, newY, newWidth, newHeight)
 		
 		render.SetViewPort(0, 0, oldW, oldH)
+		
+	PreDrawWorld: => -- Override
+	PostDrawWorld: => -- Override
+	
+	DrawWorld: =>
+	
+	DrawWorldHook: =>
+		xpcall(@PreDrawWorld, @CatchError, @)
+		xpcall(@DrawWorld, @CatchError, @)
+		xpcall(@PostDrawWorld, @CatchError, @)
 		
 return DMap
