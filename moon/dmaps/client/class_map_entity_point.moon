@@ -94,4 +94,5 @@ class DMapEntityPointer extends DMapPointer
 		if not super! then return false
 		return IsValid(@entity)
 
+DMaps.DMapEntityPointer = DMapEntityPointer
 return DMapEntityPointer

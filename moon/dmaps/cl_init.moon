@@ -15,13 +15,16 @@
 -- limitations under the License.
 -- 
 
-DMaps.DMap = include 'dmaps/client/class_map.lua'
-DMaps.DMapPointer = include 'dmaps/client/class_map_point.lua'
-DMaps.DMapEntityPointer = include 'dmaps/client/class_map_entity_point.lua'
-DMaps.DMapPlayerPointer = include 'dmaps/client/class_player_point.lua'
-DMaps.DMapLocalPlayerPointer = include 'dmaps/client/class_lplayer_point.lua'
-DMaps.PANEL_ABSTRACT_MAP_HOLDER = include 'dmaps/client/abstract_map_holder.lua'
+include 'dmaps/client/class_map.lua'
+include 'dmaps/client/class_map_point.lua'
+include 'dmaps/client/class_map_entity_point.lua'
+include 'dmaps/client/class_player_point.lua'
+include 'dmaps/client/class_lplayer_point.lua'
+
+include 'dmaps/client/controls/control_compass.lua'
+include 'dmaps/client/abstract_map_holder.lua'
 
 vgui.Register('DMapsMapHolder', DMaps.PANEL_ABSTRACT_MAP_HOLDER, 'EditablePanel')
+vgui.Register('DMapsMapCompass', DMaps.PANEL_MAP_COMPASS, 'EditablePanel')
 
 include 'dmaps/client/default_gui.lua'

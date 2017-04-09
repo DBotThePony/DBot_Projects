@@ -109,6 +109,7 @@ class DMap
 	GetDrawY: => @y
 	
 	GetYaw: => @mapYaw
+	GetRealYaw: => @mapYaw + 90
 	SetYaw: (val = 0) =>
 		@mapYaw = assert(val, 'number')
 		@mapYawLerp = @mapYaw

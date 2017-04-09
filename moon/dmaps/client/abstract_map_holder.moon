@@ -29,6 +29,10 @@ PANEL.Init = =>
 	@SetCursor('hand')
 	@hold = false
 	
+	@compass = vgui.Create('DMapsMapCompass', @)
+	@compass\SetMap(@mapObject)
+	
+	@mapObject\IsDrawnInPanel(true)
 	@mapObject\AddObject(DMapLocalPlayerPointer!)
 	
 	@SetMouseInputEnabled(true)
@@ -37,17 +41,6 @@ PANEL.Init = =>
 	
 	@cursor_lastX = 0
 	@cursor_lastY = 0
-	
-	hookName = @GetHookName!
-	
-	callFunc = ->
-		if IsValid(@) and IsValid(@GetParent!)
-			if @GetParent!\IsVisible!
-				@DrawOverlay!
-		else
-			hook.Remove('DrawOverlay', hookName)
-	
-	hook.Add('DrawOverlay', hookName, callFunc)
 
 PANEL.OnMousePressed = (code) =>
 	if code == MOUSE_LEFT
@@ -96,17 +89,14 @@ PANEL.UpdateMapSizes = =>
 PANEL.PerformLayout = (w, h) =>
 	@mapObject\SetSize(w, h)
 	@mapObject\SetDrawPos(@LocalToScreen(0, 0))
-
-PANEL.GetHookName = =>
-	if not @__hookName
-		@__hookName = tostring(@GetTable!)\sub(8) .. '__mapholder'
 	
-	return @__hookName
+	@compass\SetPos(0, h - 128)
 
 PANEL.Think = =>
 	if not @IsHovered!
 		@Release!
 	
+	@mapObject\PanelScreenPos(@LocalToScreen(0, 0))
 	@mapObject\Think!
 	@mapObject\ThinkPlayer(@Spectating)
 	
@@ -125,6 +115,9 @@ PANEL.Think = =>
 		deltaX = x - @cursor_lastX
 		deltaY = y - @cursor_lastY
 		
+		yaw = math.rad(@mapObject\GetRealYaw!)
+		sin, cos = math.sin(yaw), math.cos(yaw)
+		
 		@cursor_lastX = x
 		@cursor_lastY = y
 		
@@ -135,20 +128,17 @@ PANEL.Think = =>
 		
 	
 PANEL.Paint = (w, h) =>
-	@lastW = w
-	@lastH = h
 	surface.SetDrawColor(0, 0, 0)
 	surface.DrawRect(0, 0, w, h)
 	
-PANEL.DrawOverlay = =>
-	if @lastW then @mapObject\SetWidth(@lastW)
-	if @lastH then @mapObject\SetHeight(@lastH)
+	@mapObject\SetWidth(w)
+	@mapObject\SetHeight(h)
 	
 	@mapObject\SetDrawPos(@LocalToScreen(0, 0))
 	@mapObject\DrawHook!
 	
 PANEL.OnRemove = =>
-	hook.Remove('DrawOverlay', @GetHookName!)
 	@mapObject\Remove!
 
+DMaps.PANEL_ABSTRACT_MAP_HOLDER = PANEL
 return PANEL

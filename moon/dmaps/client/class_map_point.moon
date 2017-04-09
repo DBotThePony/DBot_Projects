@@ -93,5 +93,6 @@ class DMapPointer
 	
 	IsValid: => not @removed
 	IsRemoved: => @removed
-	
+
+DMaps.DMapPointer = DMapPointer
 return DMapPointer

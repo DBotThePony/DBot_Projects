@@ -46,4 +46,5 @@ class DMapLocalPlayerPointer extends DMapPlayerPointer
 		surface.SetTextColor(color_white)
 		surface.DrawText(text)
 
+DMaps.DMapLocalPlayerPointer = DMapLocalPlayerPointer
 return DMapLocalPlayerPointer

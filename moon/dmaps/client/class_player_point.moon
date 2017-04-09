@@ -171,4 +171,5 @@ Armor: #{@armor}")
 		
 		@CURRENT_MAP = nil
 
+DMaps.DMapPlayerPointer = DMapPlayerPointer
 return DMapPlayerPointer
