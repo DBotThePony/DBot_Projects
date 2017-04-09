@@ -193,7 +193,7 @@ class DMap
 		
 		disableFunc = ->
 			if @MAP_DRAW
-				return false
+				return true
 		
 		for k, hookName in pairs @@hooksToDisable
 			hook.Add(hookName, hookID, disableFunc)
@@ -283,7 +283,7 @@ class DMap
 		
 		@MAP_DRAW = true
 		xpcall(render.RenderView, @CatchError, newView)
-		MAP_DRAW = false
+		@MAP_DRAW = false
 		
 	
 	DrawMap: (x, y, w, h) =>
