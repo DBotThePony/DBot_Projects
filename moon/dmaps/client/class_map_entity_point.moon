@@ -44,6 +44,8 @@ class DMapEntityPointer extends DMapPointer
 		@yaw = ang.y
 		@roll = ang.r
 	
+	GetEntity: => @entity
+	
 	Think: =>
 		if IsValid(@entity)
 			@UpdatePos!
@@ -59,7 +61,6 @@ class DMapEntityPointer extends DMapPointer
 		else
 			@entClass = 'NULL'
 	
-
 	Draw: =>
 		pos = @GetPos! - Vector(50, 50, 50) * @drawScale
 		
@@ -73,6 +74,12 @@ class DMapEntityPointer extends DMapPointer
 		surface.DrawRect(0, 0, 100, 100)
 		
 		cam.End3D2D()
+	
+	__eq: (other) =>
+		if type(other) == 'table' and other.__type == 'entity'
+			return @entity == other.entity
+		else
+			return @ == other
 	
 	IsValid: =>
 		if not super! then return false

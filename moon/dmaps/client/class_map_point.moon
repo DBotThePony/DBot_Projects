@@ -44,6 +44,10 @@ class DMapPointer
 		
 	ShouldDraw: (map) => map\PrefferDraw(@x, @y, @z)
 	
+	DrawWorld: (map) =>
+		-- Do nothing
+		-- Override
+	
 	SetX: (val = 0) => @x = assert(val, 'number')
 	SetY: (val = 0) => @y = assert(val, 'number')
 	SetZ: (val = 0) => @z = assert(val, 'number')
@@ -62,8 +66,18 @@ class DMapPointer
 	Remove: =>
 		@removed = true
 	
-	Draw: =>
-		-- Override
+	Draw: => -- Override
+	PreDraw: => -- Override
+	PostDraw: => -- Override
+	
+	DrawHook: =>
+		@PreDraw!
+		@Draw!
+		@PostDraw!
+	
+	-- Simple check
+	__eq: (other) =>
+		return @ == other
 	
 	Think: =>
 		-- Override

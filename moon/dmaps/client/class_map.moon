@@ -398,7 +398,7 @@ class DMap
 			for k, object in pairs objectTab
 				if object\IsValid()
 					if object\ShouldDraw(@)
-						object\Draw()
+						object\DrawHook()
 				else
 					@objectTab[k] = nil
 		
