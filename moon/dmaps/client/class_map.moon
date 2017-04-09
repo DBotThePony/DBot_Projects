@@ -417,9 +417,9 @@ class DMap
 	-- Called with default 2D properties
 	Draw2DHook: =>
 		screenx, screeny, screenw, screenh = @Get2DContextData!
-		xpcall(@PreDraw2D, @@CatchError, screenx, screeny, screenw, screenh)
-		xpcall(@Draw2D, @@CatchError, screenx, screeny, screenw, screenh)
-		xpcall(@PostDraw2D, @@CatchError, screenx, screeny, screenw, screenh)
+		xpcall(@PreDraw2D, @@CatchError, @, screenx, screeny, screenw, screenh)
+		xpcall(@Draw2D, @@CatchError, @, screenx, screeny, screenw, screenh)
+		xpcall(@PostDraw2D, @@CatchError, @, screenx, screeny, screenw, screenh)
 	
 	DrawHook: =>
 		if not @IsValid! then return
