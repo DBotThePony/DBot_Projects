@@ -32,6 +32,9 @@ PANEL.Init = =>
 	@compass = vgui.Create('DMapsMapCompass', @)
 	@compass\SetMap(@mapObject)
 	
+	@arrows = vgui.Create('DMapsMapArrows', @)
+	@arrows\SetMap(@mapObject)
+	
 	@mapObject\IsDrawnInPanel(true)
 	@mapObject\AddObject(DMapLocalPlayerPointer!)
 	
@@ -90,7 +93,8 @@ PANEL.PerformLayout = (w, h) =>
 	@mapObject\SetSize(w, h)
 	@mapObject\SetDrawPos(@LocalToScreen(0, 0))
 	
-	@compass\SetPos(0, h - 128)
+	@compass\SetPos(0, h - @compass.HEIGHT)
+	@arrows\SetPos(w - @arrows.WIDTH, 0)
 
 PANEL.Think = =>
 	if not @IsHovered!

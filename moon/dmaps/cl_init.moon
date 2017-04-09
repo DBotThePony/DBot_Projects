@@ -22,9 +22,11 @@ include 'dmaps/client/class_player_point.lua'
 include 'dmaps/client/class_lplayer_point.lua'
 
 include 'dmaps/client/controls/control_compass.lua'
+include 'dmaps/client/controls/control_arrows.lua'
 include 'dmaps/client/abstract_map_holder.lua'
 
 vgui.Register('DMapsMapHolder', DMaps.PANEL_ABSTRACT_MAP_HOLDER, 'EditablePanel')
 vgui.Register('DMapsMapCompass', DMaps.PANEL_MAP_COMPASS, 'EditablePanel')
+vgui.Register('DMapsMapArrows', DMaps.PANEL_MAP_ARROWS, 'EditablePanel')
 
 include 'dmaps/client/default_gui.lua'

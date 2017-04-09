@@ -57,6 +57,9 @@ generateCircle = (x = 0, y = 0, radius = 0) ->
 PANEL = {}
 
 PANEL.BACKGROUND_COLOR = Color(0, 0, 0, 150)
+PANEL.WIDTH = 128
+PANEL.HEIGHT = 128
+PANEL.DIV = 64
 
 PANEL.Init = =>
 	@UpdateCache!
