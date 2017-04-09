@@ -46,6 +46,7 @@ PANEL.OUTER_COLOR = Color(190, 190, 190)
 PANEL.WIDTH = 96
 PANEL.HEIGHT = 96
 PANEL.DIV = 96 / 2
+PANEL.DIV2 = 96 / 2.5
 
 PANEL.Init = =>
 	@SetSize(96, 96)
@@ -77,9 +78,18 @@ PANEL.Think = =>
 		deltaX = x - centerX
 		deltaY = y - centerY
 		
+		dist = ((deltaX ^ 2) + (deltaY ^ 2)) ^ 0.5
+		
+		lineX = deltaX
+		lineY = deltaY
+		
+		if dist > @DIV2
+			lineX = deltaX / ((deltaX ^ 2 + deltaY ^ 2) ^ 0.5) * @DIV2
+			lineY = deltaY / ((deltaX ^ 2 + deltaY ^ 2) ^ 0.5) * @DIV2
+		
 		if deltaX < @DIV and deltaX > -@DIV and deltaY < @DIV and deltaY > -@DIV
-			@joystickPosX = Lerp(0.1, @joystickPosX, deltaX)
-			@joystickPosY = Lerp(0.1, @joystickPosY, deltaY)
+			@joystickPosX = Lerp(0.1, @joystickPosX, lineX)
+			@joystickPosY = Lerp(0.1, @joystickPosY, lineY)
 		else
 			@joystickPosX = Lerp(0.1, @joystickPosX, 0)
 			@joystickPosY = Lerp(0.1, @joystickPosY, 0)
@@ -92,7 +102,7 @@ PANEL.Think = =>
 		
 		yaw = math.rad(@mapObject\GetYaw!)
 		sin, cos = math.sin(yaw), math.cos(yaw)
-		mult = @mapObject\GetZoomMultiplier! * 0.125
+		mult = @mapObject\GetZoomMultiplier! * 0.1
 		
 		bMoveX = @joystickPosX * mult
 		bMoveY = -@joystickPosY * mult
