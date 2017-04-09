@@ -394,12 +394,16 @@ class DMap
 		
 		surface.SetTextPos(x + 40, y + 4)
 		surface.SetTextColor(200, 50, 50)
+		surface.SetDrawColor(200, 50, 50)
 		
+		surface.DrawLine(x - 40, y, x + 40, y)
 		surface.DrawText('X')
 		
 		surface.SetTextPos(x + 4, y + 40)
 		surface.SetTextColor(50, 200, 50)
+		surface.SetDrawColor(50, 200, 50)
 		
+		surface.DrawLine(x, y - 40, x, y + 40)
 		surface.DrawText('Y')
 		
 		cam.End3D2D()
@@ -413,11 +417,13 @@ class DMap
 	PostDraw2D: (x, y, screenx, screeny, screenw, screenh) =>
 		-- Override
 	
+	Get2DContextData: => @DRAW_X, @DRAW_Y, @DRAW_WIDTH, @DRAW_HEIGHT
+	
 	-- Called inside DrawMap() right after landskape was drawn
 	-- Calls all 2D hooks with X and Y that are used as shift, also
 	-- Called with default 2D properties
 	Draw2DHook: =>
-		screenx, screeny, screenw, screenh = @DRAW_X, @DRAW_Y, @DRAW_WIDTH, @DRAW_HEIGHT
+		screenx, screeny, screenw, screenh = @Get2DContextData!
 		xpcall(@PreDraw2D, @CatchError, @, screenx, screeny, screenw, screenh)
 		xpcall(@Draw2D, @CatchError, @, screenx, screeny, screenw, screenh)
 		xpcall(@PostDraw2D, @CatchError, @, screenx, screeny, screenw, screenh)
