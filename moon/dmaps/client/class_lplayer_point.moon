@@ -27,6 +27,10 @@ class DMapLocalPlayerPointer extends DMapPlayerPointer
 		if @IsRemoved! return false
 		return true
 	
+	ShouldDraw: => true
+	
+	CalculatePlayerVisibility: => true
+	
 	Draw: (map) =>
 		trig = @@generateTriangle(@DRAW_X, @DRAW_Y, @yaw, 40, 50, 200)
 		

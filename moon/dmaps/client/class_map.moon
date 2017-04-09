@@ -78,8 +78,12 @@ class DMap
 		
 		@zoom = 1000
 		@currX = 0
+		@abstractX = 0
 		@currY = 0
+		@abstractY = 0
 		@currZ = 0
+		@abstractZ = 0
+		@abstractSetup = false
 		
 		@clipLevelTop = 100
 		@clipLevelBottom = -100
@@ -122,6 +126,7 @@ class DMap
 	GetFOV: => @fov
 	
 	GetPos: => Vector(@currX, @currY, @clipLevelTop)
+	GetAbstractPos: => Vector(@abstractX, @abstractY, @abstractZ)
 	GetPosTop: => Vector(@currX, @currY, @clipLevelTop)
 	GetPosBottom: => Vector(@currX, @currY, @clipLevelBottom)
 	GetPosCurrent: => Vector(@currX, @currY, @currZ + 300)
@@ -269,7 +274,12 @@ class DMap
 	
 	ThinkPlayer: (ply = LocalPlayer!) =>
 		if not @IsValid! then return
+		@abstractSetup = true
 		pos = ply\GetPos!
+		
+		@abstractX = pos.x
+		@abstractY = pos.y
+		@abstractZ = pos.z
 		
 		if not @lockClip
 			trData = {

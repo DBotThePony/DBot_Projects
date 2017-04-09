@@ -44,6 +44,12 @@ class DMapPlayerPointer extends DMapEntityPointer
 	@FONT = 'DMaps.PlayerInfoFont'
 	@BACKGROUND_COLOR = Color(0, 0, 0, 150)
 	@BACKGROUND_SHIFT = 4
+	@UP_VECTOR = Vector(0, 0, 4000)
+	@MAX_DELTA_HEIGHT = 600
+	@START_FADE_HEIGHT = 200
+	@FADE_VALUE_HEIGHT = 400
+	@FADE_VALUE_HEIGHT_DIV = 200
+	@TRIGGER_FADE_DIST = 800
 	
 	@__type = 'player'
 	
@@ -54,17 +60,15 @@ class DMapPlayerPointer extends DMapEntityPointer
 		@hp = 100
 		@armor = 0
 		@maxhp = 100
+		@draw = true
 		
 		@color = Color(50, 50, 50)
 		@teamID = 0
 		@teamName = '%PLAYERTEAM%'
 	
-	ShouldDraw: => true
+	ShouldDraw: => @draw
 	
-	Think: (map) =>
-		super(map)
-		
-		if not IsValid(@entity) return
+	CalcPlayerData: (map) =>
 		ply = @entity
 		
 		ang = ply\EyeAngles!
@@ -80,6 +84,40 @@ class DMapPlayerPointer extends DMapEntityPointer
 		@pitch = ang.p
 		@yaw = -ang.y
 		@roll = ang.r
+	
+	CalculatePlayerVisibility: (map) =>
+		dh = @GetDeltaHeight!
+		
+		if dh > @@MAX_DELTA_HEIGHT or dh < -@@MAX_DELTA_HEIGHT
+			@draw = false
+		elseif map.abstractSetup
+			if map\GetAbstractPos!\Distance(@pos) > @@TRIGGER_FADE_DIST
+				trData = {
+					mask: MASK_BLOCKLOS
+					filter: ply
+					start: @pos
+					endpos: @pos + @@UP_VECTOR
+				}
+				
+				tr = util.TraceLine(trData)
+				
+				if not tr.Hit or tr.HitSky
+					@draw = true
+				else
+					@draw = false
+			else
+				@draw = true
+		else
+			@draw = true
+	
+	Think: (map) =>
+		@CURRENT_MAP = map
+		super(map)
+		
+		if not IsValid(@entity) return
+		@CalcPlayerData(map)
+		@CalculatePlayerVisibility(map)
+		
 	
 	GetPlayerInfo: =>
 		text = AppenableString("#{@playerName}
@@ -120,8 +158,10 @@ Armor: #{@armor}")
 		delta = @z - map\GetZ!
 		deltaAbs = math.abs(delta)
 		
-		if deltaAbs > 200
-			newAlpha = math.Clamp((400 - deltaAbs) / 200, 0.2, 1)
+		if deltaAbs > @@MAX_DELTA_HEIGHT
+			return
+		elseif deltaAbs > @@START_FADE_HEIGHT
+			newAlpha = math.Clamp((@@FADE_VALUE_HEIGHT - deltaAbs) / @@FADE_VALUE_HEIGHT_DIV, 0.2, 1)
 		
 		surface.SetDrawColor(@color.r, @color.g, @color.b, @color.a * newAlpha)
 		surface.DrawPoly(trig)
