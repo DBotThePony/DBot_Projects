@@ -16,6 +16,7 @@
 -- 
 
 _assert = assert
+import xpcall from _G
 
 assert = (arg, tp) ->
 	_assert(type(arg) == tp, 'must be ' .. tp)
@@ -46,6 +47,10 @@ class DMap
 	}
 	
 	@uid = 0
+	
+	@CatchError = (err) ->
+		print('ERROR: ' .. err)
+		print debug.traceback!
 	
 	new: (x = 0, y = 0, width = ScrW(), height = ScrH(), fov = 90, angle = Angle(0, 0, 0)) =>
 		@MY_ID = @@uid
@@ -86,10 +91,6 @@ class DMap
 		@outside = false
 		
 		@RegisterHooks!
-		
-		@CatchError = (err) ->
-			print('[DMaps|' .. @ .. '] ERROR: ', err)
-			print debug.traceback!
 	
 	GetDrawX: => @x
 	GetDrawY: => @y
@@ -184,6 +185,8 @@ class DMap
 		elseif object.__type == 'points' -- Simple pointer
 			if not table.HasValue(@points, object)
 				table.insert(@points, object)
+	
+	Add: (...) => @AddObject(...)
 	
 	__tostring: =>
 		return "[DMapObject:#{@MY_ID}]"
@@ -290,7 +293,7 @@ class DMap
 		for k, objectTab in pairs @objectTables
 			for k, object in pairs objectTab
 				if object\IsValid()
-					object\Think()
+					object\Think(@)
 				else
 					@objectTab[k] = nil
 	
@@ -327,7 +330,7 @@ class DMap
 			newView.zfar = 4000 + @skyHeight
 		
 		@MAP_DRAW = true
-		xpcall(render.RenderView, @CatchError, newView)
+		xpcall(render.RenderView, @@CatchError, newView)
 		@MAP_DRAW = false
 	
 	PreDraw: (x, y, w, h) =>
@@ -342,8 +345,8 @@ class DMap
 		
 		return shft, shft
 	
-	Stop2D: =>
-		cam.End3D2D()
+	Stop2D: => cam.End3D2D()
+	End2D: => cam.End3D2D()
 	
 	-- Called when new X, Y, Width and Height are calculated
 	-- And we need to start draw of Map
@@ -354,7 +357,7 @@ class DMap
 			render.PushCustomClipPlane(@@clipNormalUp, @@clipNormalUp\Dot(@GetPosTop!))
 			render.PushCustomClipPlane(@@clipNormalDown, @@clipNormalDown\Dot(@GetPosBottom!))
 		
-		xpcall(@DrawMap, @CatchError, @, x, y, w, h)
+		xpcall(@DrawMap, @@CatchError, @, x, y, w, h)
 		
 		if not @outside
 			render.PopCustomClipPlane()
@@ -398,7 +401,7 @@ class DMap
 			for k, object in pairs objectTab
 				if object\IsValid()
 					if object\ShouldDraw(@)
-						object\DrawHook()
+						object\DrawHook(@)
 				else
 					@objectTab[k] = nil
 		
@@ -414,9 +417,9 @@ class DMap
 	-- Called with default 2D properties
 	Draw2DHook: =>
 		screenx, screeny, screenw, screenh = @Get2DContextData!
-		xpcall(@PreDraw2D, @CatchError, @, screenx, screeny, screenw, screenh)
-		xpcall(@Draw2D, @CatchError, @, screenx, screeny, screenw, screenh)
-		xpcall(@PostDraw2D, @CatchError, @, screenx, screeny, screenw, screenh)
+		xpcall(@PreDraw2D, @@CatchError, screenx, screeny, screenw, screenh)
+		xpcall(@Draw2D, @@CatchError, screenx, screeny, screenw, screenh)
+		xpcall(@PostDraw2D, @@CatchError, screenx, screeny, screenw, screenh)
 	
 	DrawHook: =>
 		if not @IsValid! then return
@@ -448,9 +451,9 @@ class DMap
 		
 		render.SetViewPort(newX, newY, newWidth, newHeight)
 		
-		xpcall(@PreDraw, @CatchError, @, newX, newY, newWidth, newHeight)
-		xpcall(@Draw, @CatchError, @, newX, newY, newWidth, newHeight)
-		xpcall(@PostDraw, @CatchError, @, newX, newY, newWidth, newHeight)
+		xpcall(@PreDraw, @@CatchError, @, newX, newY, newWidth, newHeight)
+		xpcall(@Draw, @@CatchError, @, newX, newY, newWidth, newHeight)
+		xpcall(@PostDraw, @@CatchError, @, newX, newY, newWidth, newHeight)
 		
 		render.SetViewPort(0, 0, oldW, oldH)
 		
@@ -460,8 +463,8 @@ class DMap
 	DrawWorld: =>
 	
 	DrawWorldHook: =>
-		xpcall(@PreDrawWorld, @CatchError, @)
-		xpcall(@DrawWorld, @CatchError, @)
-		xpcall(@PostDrawWorld, @CatchError, @)
+		xpcall(@PreDrawWorld, @@CatchError, @)
+		xpcall(@DrawWorld, @@CatchError, @)
+		xpcall(@PostDrawWorld, @@CatchError, @)
 		
 return DMap
