@@ -130,5 +130,6 @@ PANEL.DrawOverlay = =>
 	
 PANEL.OnRemove = =>
 	hook.Remove('DrawOverlay', @GetHookName!)
+	@mapObject\Remove!
 
 return PANEL

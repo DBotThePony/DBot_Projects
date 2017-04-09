@@ -37,6 +37,19 @@ class DMap
 	@yLineText = Vector(-5, 28, 0)
 	@yLineTextAngle = Angle(0, 0, 0)
 	
+	@hooksToDisable = {
+		'PreDrawEffects'
+		'PreDrawHalos'
+		'PreDrawHUD'
+		'PreDrawPlayerHands'
+		'PreDrawSkyBox'
+		'PreDrawTranslucentRenderables'
+		'PreDrawViewModel'
+		'PrePlayerDraw'
+		'PreDrawOpaqueRenderables'
+		'ShouldDrawLocalPlayer'
+	}
+	
 	@uid = 0
 	
 	new: (x = 0, y = 0, width = ScrW(), height = ScrH(), fov = 90, angle = Angle(0, 0, 0)) =>
@@ -69,12 +82,23 @@ class DMap
 		@lockZoom = false
 		@clipNormal = Vector(0, 0, -1)
 		
+		@removed = false
+		
+		@RegisterHooks!
+		
 		@CatchError = (err) ->
 			print('[DMaps|' .. @ .. '] ERROR: ', err)
 			print debug.traceback!
 	
 	GetDrawX: => @x
 	GetDrawY: => @y
+	
+	IsValid: => not @removed
+	
+	Remove: =>
+		if @removed then return
+		@removed = true
+		@UnregisterHooks!
 	
 	SetDrawPos: (x = 0, y = 0) =>
 		@x = assert(x, 'number')
@@ -159,8 +183,21 @@ class DMap
 		return "[DMapObject:#{@MY_ID}]"
 	
 	RegisterHooks: =>
-		if not @__hookName
-			@__hookName = tostring(@)\sub(8) .. '__DMapObject'
+		hookID = tostring(@)
+		
+		disableFunc = ->
+			if @MAP_DRAW
+				
+				return false
+		
+		for k, hookName in pairs @@hooksToDisable
+			hook.Add(hookName, hookID, disableFunc)
+	
+	UnregisterHooks: =>
+		hookID = tostring(@)
+		
+		for k, hookName in pairs @@hooksToDisable
+			hook.Remove(hookName, hookID)
 	
 	-- Call when you give the decidion about pointer draw
 	-- To the map object itself
@@ -177,6 +214,7 @@ class DMap
 		return true
 	
 	ThinkPlayer: (ply = LocalPlayer!) =>
+		if not @IsValid! then return
 		pos = ply\GetPos!
 		
 		if not @lockClip
@@ -200,6 +238,7 @@ class DMap
 			@currY = pos.y
 	
 	Think: =>
+		if not @IsValid! then return
 		for k, waypoint in pairs @waypoints
 			if waypoint\IsValid()
 				waypoint\Think()
@@ -236,7 +275,9 @@ class DMap
 			fov: @fov
 		}
 		
-		render.RenderView(newView)
+		@MAP_DRAW = true
+		xpcall(render.RenderView, @CatchError, newView)
+		MAP_DRAW = false
 		
 	
 	DrawMap: (x, y, w, h) =>
@@ -291,6 +332,7 @@ class DMap
 		-- Override
 		
 	DrawHook: =>
+		if not @IsValid! then return
 		newX = @GetDrawX!
 		newY = @GetDrawY!
 		newWidth = @GetWidth!
