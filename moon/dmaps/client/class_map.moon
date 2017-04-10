@@ -82,6 +82,7 @@ class DMap
 		@mapYawLerp = 0
 		
 		@zoom = 1000
+		@lerpzoom = 1000
 		@currX = 0
 		@abstractX = 0
 		@currY = 0
@@ -133,6 +134,13 @@ class DMap
 	GetZ: => @currZ
 	GetZoom: => @zoom
 	
+	GetZoomLock: => @lockZoom
+	GetClipLock: => @lockClip
+	GetViewLock: => @lockView
+	GetLockZoom: => @lockZoom
+	GetLockClip: => @lockClip
+	GetLockView: => @lockView
+	
 	IsDrawnInPanel: (val = false) => @isDrawinInPanel = assert(val, 'boolean')
 	PanelScreenPos: (x = 0, y = 0) =>
 		@panelx = assert(x, 'number')
@@ -142,6 +150,11 @@ class DMap
 	AddY: (val = 0) => @currY += assert(val, 'number')
 	AddZ: (val = 0) => @zoom += assert(val, 'number')
 	AddZoom: (val = 0) => @zoom = math.max(@zoom + assert(val, 'number'), 300)
+	SetZoom: (val = 300) =>
+		@zoom = math.max(assert(val, 'number'), 300)
+		@lerpzoom = @zoom
+	
+	SetLerpZoom: (val = 300) => @lerpzoom = math.max(assert(val, 'number'), 300)
 	
 	GetFOV: => @fov
 	
