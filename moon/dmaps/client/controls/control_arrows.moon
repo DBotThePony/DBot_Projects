@@ -114,7 +114,8 @@ PANEL.Think = =>
 		@UpdateCache!
 		
 		if @move
-			yaw = math.rad(@mapObject\GetYaw!)
+			yawDeg = @mapObject\GetYaw!
+			yaw = math.rad(yawDeg)
 			sin, cos = math.sin(yaw), math.cos(yaw)
 			mult = @mapObject\GetZoomMultiplier! * 0.1
 			
@@ -124,7 +125,7 @@ PANEL.Think = =>
 			moveX = bMoveX * cos - bMoveY * sin
 			moveY = bMoveX * sin + bMoveY * cos
 			
-			if yaw < 0
+			if yawDeg < -180
 				moveX = -moveX
 				moveY = -moveY
 			

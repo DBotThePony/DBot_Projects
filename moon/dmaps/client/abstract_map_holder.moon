@@ -75,19 +75,35 @@ PANEL.OnMouseWheeled = (deltaWheel) =>
 	@mapObject\LockView(true)
 	@mapObject\AddZoom(-deltaWheel * math.max(math.abs(@mapObject\GetZoom!), 100) * 0.1)
 	
-	mult = @mapObject\GetZoomMultiplier! * 0.017
+	mult = @mapObject\GetZoomMultiplier! * 0.019
+	yawDeg = @mapObject\GetYaw!
+	yaw = math.rad(yawDeg)
+	sin, cos = math.sin(yaw), math.cos(yaw)
 	
 	x, y = gui.MousePos()
 	
 	deltaX = x - ScrW! / 2
 	deltaY = y - ScrH! / 2
 	
+	bMoveX = deltaX * mult
+	bMoveY = deltaY * mult
+	
+	--moveX = bMoveX * cos - bMoveY * sin
+	--moveY = bMoveX * sin + bMoveY * cos
+	
+	moveX = bMoveX
+	moveY = bMoveY
+	
+	--if @mapObject\GetRealYaw! < 0
+	--	moveX = -moveX
+	--	moveY = -moveY
+	
 	if deltaWheel < 0
-		@mapObject\AddX(-deltaX * mult)
-		@mapObject\AddY(deltaY * mult)
+		@mapObject\AddX(-moveX)
+		@mapObject\AddY(moveY)
 	else
-		@mapObject\AddX(deltaX * mult)
-		@mapObject\AddY(-deltaY * mult)
+		@mapObject\AddX(moveX)
+		@mapObject\AddY(-moveY)
 
 PANEL.UpdateMapSizes = =>
 	@mapObject\SetSize(@GetSize!)
@@ -124,7 +140,8 @@ PANEL.Think = =>
 		deltaY = y - @cursor_lastY
 		
 		if deltaX ~= 0 or deltaY ~= 0
-			yaw = math.rad(@mapObject\GetYaw!)
+			yawDeg = @mapObject\GetYaw!
+			yaw = math.rad(yawDeg)
 			sin, cos = math.sin(yaw), math.cos(yaw)
 			
 			@cursor_lastX = x
@@ -138,7 +155,7 @@ PANEL.Think = =>
 			moveX = bMoveX * cos - bMoveY * sin
 			moveY = bMoveX * sin + bMoveY * cos
 			
-			if yaw < 0
+			if yawDeg < -180
 				moveX = -moveX
 				moveY = -moveY
 			

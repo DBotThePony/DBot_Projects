@@ -114,6 +114,12 @@ PANEL.Think = =>
 	
 	if @yaw ~= @targetyaw
 		@yaw += math.AngleDifference(@targetyaw, @yaw) * 0.2
+		
+		if @yaw < -180
+			@yaw = 180
+		elseif @yaw > 180
+			@yaw = -180
+		
 		@OnYawChanges!
 	
 	if @mapObject\GetYaw! ~= @yaw
