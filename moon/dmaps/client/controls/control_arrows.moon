@@ -54,22 +54,35 @@ PANEL.Init = =>
 	@joystickPosX = 0
 	@joystickPosY = 0
 	
+	@hold = false
+	@move = false
+	@holdstart = 0
 	@UpdateCache!
 
 PANEL.OnMousePressed = (code) =>
-	if code == MOUSE_LEFT
+	if code == MOUSE_RIGHT or code == MOUSE_MIDDLE
+		@hold = false
+		@holdstart = 0
+		@mapObject\LockView(false)
+	elseif code == MOUSE_LEFT
 		@hold = true
+		@holdstart = RealTime!
 
 PANEL.OnMouseReleased = (code) =>
 	if code == MOUSE_LEFT
 		@hold = false
+		
+		if @holdstart + 0.1 > RealTime!
+			@mapObject\LockView(false)
 	
 PANEL.SetMap = (map) =>
 	@mapObject = map
 
 PANEL.Think = =>
 	if not @mapObject return
+	
 	if @hold
+		@move = @holdstart + 0.1 < RealTime!
 		w, h = @GetSize!
 		
 		centerX, centerY = @LocalToScreen(w / 2, h / 2)
@@ -100,23 +113,24 @@ PANEL.Think = =>
 	if @joystickPosX ~= 0 or @joystickPosY ~= 0
 		@UpdateCache!
 		
-		yaw = math.rad(@mapObject\GetYaw!)
-		sin, cos = math.sin(yaw), math.cos(yaw)
-		mult = @mapObject\GetZoomMultiplier! * 0.1
-		
-		bMoveX = @joystickPosX * mult
-		bMoveY = -@joystickPosY * mult
-		
-		moveX = bMoveX * cos - bMoveY * sin
-		moveY = bMoveX * sin + bMoveY * cos
-		
-		if yaw < 0
-			moveX = -moveX
-			moveY = -moveY
-		
-		@mapObject\AddX(moveX)
-		@mapObject\AddY(moveY)
-		@mapObject\LockView(true)
+		if @move
+			yaw = math.rad(@mapObject\GetYaw!)
+			sin, cos = math.sin(yaw), math.cos(yaw)
+			mult = @mapObject\GetZoomMultiplier! * 0.1
+			
+			bMoveX = @joystickPosX * mult
+			bMoveY = -@joystickPosY * mult
+			
+			moveX = bMoveX * cos - bMoveY * sin
+			moveY = bMoveX * sin + bMoveY * cos
+			
+			if yaw < 0
+				moveX = -moveX
+				moveY = -moveY
+			
+			@mapObject\AddX(moveX)
+			@mapObject\AddY(moveY)
+			@mapObject\LockView(true)
 
 PANEL.UpdateCache = =>
 	w, h = @WIDTH, @HEIGHT
