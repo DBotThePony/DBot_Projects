@@ -55,7 +55,7 @@ class DMap
 	@CONVERSION_CONSTANT_Y2 = 0.99                                     -- wtf
 	@CONVERSION_CONSTANT_X_INPUT = 1.5                                 -- wtf
 	@CONVERSION_CONSTANT_X2 = 1.15                                     -- wtf
-	@CONVERSION_CONSTANT_Y_INPUT = 1.15                                -- wtf
+	@CONVERSION_CONSTANT_Y_INPUT = 1.095                               -- wtf
 	
 	@hooksToDisable = {
 		'PreDrawEffects'
