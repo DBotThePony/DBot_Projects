@@ -119,9 +119,16 @@ PANEL.Think = =>
 	if not @IsHovered!
 		@Release!
 	
-	@mapObject\PanelScreenPos(@LocalToScreen(0, 0))
-	@mapObject\Think!
-	@mapObject\ThinkPlayer(@Spectating)
+	mouseX, mouseY = gui.MousePos()
+	w, h = @GetSize!
+	cX, cY = @LocalToScreen(w / 2, h / 2)
+	
+	with @mapObject
+		getX, getY = \ScreenToMap(mouseX - cX, cY - mouseY)
+		\SetMousePos(getX, getY)
+		\PanelScreenPos(@LocalToScreen(0, 0))
+		\Think!
+		\ThinkPlayer(@Spectating)
 	
 	existingPlayers = {}
 	
@@ -134,7 +141,7 @@ PANEL.Think = =>
 		@mapObject\AddObject(DMapPlayerPointer(ply))
 	
 	if @hold
-		x, y = gui.MousePos()
+		x, y = mouseX, mouseY
 		deltaX = x - @cursor_lastX
 		deltaY = y - @cursor_lastY
 		
@@ -171,6 +178,10 @@ PANEL.Paint = (w, h) =>
 	
 	@mapObject\SetDrawPos(@LocalToScreen(0, 0))
 	@mapObject\DrawHook!
+	
+	getX, getY = @mapObject\MapToScreen(0, 0)
+	
+	surface.DrawRect(getX, getY, 10, 10)
 	
 PANEL.OnRemove = =>
 	@mapObject\Remove!

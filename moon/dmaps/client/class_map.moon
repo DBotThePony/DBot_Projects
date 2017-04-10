@@ -35,7 +35,22 @@ class DMap
 	@clipNormalDown = Vector(0, 0, 1)
 	@clipNormalUp = Vector(0, 0, -1)
 	
+	@MAP_MOUSE_POINTER_SIZE = 3
+	@MAP_MOUSE_POINTER_DRAW_SIZE = 10
+	
 	@divideConstant = 400
+	
+	@MINIMAL_ZOOM = 300
+	
+	-- Conversion constants
+	-- wtf
+	@WIDTH_CONST = 1378                                              -- wtf
+	@WIDTH_CONST2 = 1332                                              -- wtf
+	@HEIGHT_CONST = 690                                              -- wtf
+	@HEIGHT_CONST2 = 766                                              -- wtf
+	@CONVERSION_RATIO_CONST = 80 / 511                               -- wtf
+	@CONVERSION_RATIO_CONST_BACKWARD = 1 / @CONVERSION_RATIO_CONST   -- wtf
+	@CONVERSION_CONSTANT = 5.19                                      -- wtf
 	
 	@hooksToDisable = {
 		'PreDrawEffects'
@@ -74,6 +89,12 @@ class DMap
 		
 		@width = width
 		@height = height
+		
+		@widthConst = width / @@WIDTH_CONST
+		@widthConst2 = width / @@WIDTH_CONST2
+		@heightConst = height / @@HEIGHT_CONST
+		@heightConst2 = height / @@HEIGHT_CONST2
+		
 		@fov = fov
 		@fovSin = math.sin(math.rad(@fov))
 		@angle = Angle(90, 90, 0) + angle
@@ -91,6 +112,10 @@ class DMap
 		@abstractZ = 0
 		@abstractSetup = false
 		@isDrawinInPanel = false
+		
+		@mouseX = 0
+		@mouseY = 0
+		@mouseHit = false
 		
 		@clipLevelTop = 100
 		@clipLevelBottom = -100
@@ -141,6 +166,11 @@ class DMap
 	GetLockClip: => @lockClip
 	GetLockView: => @lockView
 	
+	SetMousePos: (x = 0, y = 0) =>
+		@mouseX = assert(x, 'number')
+		@mouseY = assert(y, 'number')
+		@mouseHit = true
+		
 	IsDrawnInPanel: (val = false) => @isDrawinInPanel = assert(val, 'boolean')
 	PanelScreenPos: (x = 0, y = 0) =>
 		@panelx = assert(x, 'number')
@@ -149,12 +179,12 @@ class DMap
 	AddX: (val = 0) => @currX += assert(val, 'number')
 	AddY: (val = 0) => @currY += assert(val, 'number')
 	AddZ: (val = 0) => @zoom += assert(val, 'number')
-	AddZoom: (val = 0) => @zoom = math.max(@zoom + assert(val, 'number'), 300)
-	SetZoom: (val = 300) =>
-		@zoom = math.max(assert(val, 'number'), 300)
+	AddZoom: (val = 0) => @zoom = math.max(@zoom + assert(val, 'number'), @@MINIMAL_ZOOM)
+	SetZoom: (val = @@MINIMAL_ZOOM) =>
+		@zoom = math.max(assert(val, 'number'), @@MINIMAL_ZOOM)
 		@lerpzoom = @zoom
 	
-	SetLerpZoom: (val = 300) => @lerpzoom = math.max(assert(val, 'number'), 300)
+	SetLerpZoom: (val = @@MINIMAL_ZOOM) => @lerpzoom = math.max(assert(val, 'number'), @@MINIMAL_ZOOM)
 	
 	GetFOV: => @fov
 	
@@ -175,14 +205,25 @@ class DMap
 	GetWidth: => @width
 	GetHeight: => @height
 	
-	SetWidth: (val = @width) => @width = assert(val, 'number')
-	SetHeight: (val = @height) => @height = assert(val, 'number')
+	SetWidth: (val = @width) =>
+		@width = assert(val, 'number')
+		@widthConst = @width / @@WIDTH_CONST
+		@widthConst2 = @width / @@WIDTH_CONST2
+	
+	SetHeight: (val = @height) =>
+		@height = assert(val, 'number')
+		@heightConst = @height / @@HEIGHT_CONST
+		@heightConst2 = @height / @@HEIGHT_CONST2
 	
 	GetSize: => return @x, @y
 	
 	SetSize: (width = 0, height = 0) =>
 		@width = assert(width, 'number')
 		@height = assert(height, 'number')
+		@widthConst = @width / @@WIDTH_CONST
+		@widthConst2 = @width / @@WIDTH_CONST2
+		@heightConst = @height / @@HEIGHT_CONST
+		@heightConst2 = @height / @@HEIGHT_CONST2
 	
 	GetZoomMultiplier: => @zoom / @fov
 	GetMapZoomMultiplier: => (@zoom - @currZ) / @fov
@@ -437,37 +478,88 @@ class DMap
 		
 	-- PostDraw
 	-- Called after all was drawn on the screen
-	PostDraw: (screenx, screeny, screenw, screenh) =>
+	PostDraw: (screenx = 0, screeny = 0, screenw = 0, screenh = 0) =>
 		-- Override
 	
-	PreDraw2D: (screenx, screeny, screenw, screenh) =>
+	PreDraw2D: (screenx = 0, screeny = 0, screenw = 0, screenh = 0) =>
 		surface.SetFont('Default')
 		surface.SetTextColor(255, 255, 255)
 		surface.SetDrawColor(255, 255, 255)
 		draw.NoTexture()
 	
-	DrawMapCenter: (screenx, screeny, screenw, screenh) =>
+	DrawMapCenter: (screenx = 0, screeny = 0, screenw = 0, screenh = 0) =>
 		x, y = @Start2D(0, 0, 5)
 		
-		surface.SetFont('Default')
-		surface.SetTextPos(x + 40, y + 4)
-		surface.SetTextColor(200, 50, 50)
-		surface.SetDrawColor(200, 50, 50)
+		with surface
+			.SetFont('Default')
+			.SetTextPos(x + 40, y + 4)
+			.SetTextColor(200, 50, 50)
+			.SetDrawColor(200, 50, 50)
+			
+			.DrawLine(x - 40, y, x + 40, y)
+			.DrawText('X')
+			
+			.SetTextPos(x + 4, y + 40)
+			.SetTextColor(50, 200, 50)
+			.SetDrawColor(50, 200, 50)
+			
+			.DrawLine(x, y - 40, x, y + 40)
+			.DrawText('Y')
 		
-		surface.DrawLine(x - 40, y, x + 40, y)
-		surface.DrawText('X')
+		cam.End3D2D()
+	
+	-- wtf
+	ScreenToMap: (x = 0, y = 0) =>
+		deltaZoom = @zoom / @@MINIMAL_ZOOM
+		newX, newY = x, y
 		
-		surface.SetTextPos(x + 4, y + 40)
-		surface.SetTextColor(50, 200, 50)
-		surface.SetDrawColor(50, 200, 50)
+		newX *= @@CONVERSION_RATIO_CONST * deltaZoom * @@CONVERSION_CONSTANT
+		newY *= @@CONVERSION_RATIO_CONST * deltaZoom * @@CONVERSION_CONSTANT
 		
-		surface.DrawLine(x, y - 40, x, y + 40)
-		surface.DrawText('Y')
+		newX *= @widthConst
+		newY *= @heightConst
+		
+		newX += @currX
+		newY += @currY
+		
+		return newX, newY
+	
+	-- wtf
+	MapToScreen: (x = 0, y = 0) =>
+		deltaZoom = @zoom / @@MINIMAL_ZOOM
+		newX, newY = x, y
+		
+		newX *= @@CONVERSION_RATIO_CONST * deltaZoom * @@CONVERSION_CONSTANT2
+		newY *= @@CONVERSION_RATIO_CONST * deltaZoom * @@CONVERSION_CONSTANT2
+		
+		newX *= @widthConst2
+		newY *= @heightConst2
+		
+		newX += @width / 2
+		newY += @height / 2
+		
+		newX -= @currX * @@CONVERSION_RATIO_CONST_BACKWARD
+		newY += @currY * @@CONVERSION_RATIO_CONST_BACKWARD
+		
+		return newX, newY
+	
+	DrawMousePointer: (screenx = 0, screeny = 0, screenw = 0, screenh = 0) =>
+		if not @mouseHit return
+		
+		x, y = @Start2D(@mouseX, @mouseY, @@MAP_MOUSE_POINTER_DRAW_SIZE)
+		size = @@MAP_MOUSE_POINTER_SIZE
+		
+		with surface
+			.SetDrawColor(230, 230, 230)
+			.DrawLine(x - size, y - size, x + size, y - size)
+			.DrawLine(x - size, y + size, x + size, y + size)
+			.DrawLine(x - size, y + size, x - size, y - size)
+			.DrawLine(x + size, y + size, x + size, y - size)
 		
 		cam.End3D2D()
 	
 	-- Still have to create 3D2D context!
-	Draw2D: (screenx, screeny, screenw, screenh) =>
+	Draw2D: (screenx = 0, screeny = 0, screenw = 0, screenh = 0) =>
 		for k, objectTab in pairs @objectTables
 			for k, object in pairs objectTab
 				if object\IsValid()
@@ -477,8 +569,9 @@ class DMap
 					@objectTab[k] = nil
 		
 		@DrawMapCenter(screenx, screeny, screenw, screenh)
+		@DrawMousePointer(screenx, screeny, screenw, screenh)
 	
-	PostDraw2D: (x, y, screenx, screeny, screenw, screenh) =>
+	PostDraw2D: (screenx = 0, screeny = 0, screenw = 0, screenh = 0) =>
 		-- Override
 	
 	Get2DContextData: => @DRAW_X_2D, @DRAW_Y_2D, @DRAW_WIDTH, @DRAW_HEIGHT
