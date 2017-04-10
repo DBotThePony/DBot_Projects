@@ -53,7 +53,9 @@ class DMap
 	@CONVERSION_CONSTANT = 5.19                                        -- wtf
 	@CONVERSION_CONSTANT2 = 0.9                                        -- wtf
 	@CONVERSION_CONSTANT_Y2 = 0.99                                     -- wtf
+	@CONVERSION_CONSTANT_X_INPUT = 1.5                                 -- wtf
 	@CONVERSION_CONSTANT_X2 = 1.15                                     -- wtf
+	@CONVERSION_CONSTANT_Y_INPUT = 1.15                                -- wtf
 	
 	@hooksToDisable = {
 		'PreDrawEffects'
@@ -531,6 +533,9 @@ class DMap
 	MapToScreen: (x = 0, y = 0) =>
 		deltaZoom = @@MINIMAL_ZOOM / @zoom
 		newX, newY = x, y
+		
+		newX *= deltaZoom * @@CONVERSION_RATIO_CONST_BACKWARD * @@CONVERSION_CONSTANT2 * @@CONVERSION_CONSTANT_X_INPUT / @@CONVERSION_CONSTANT * 2
+		newY *= -deltaZoom * @@CONVERSION_RATIO_CONST_BACKWARD * @@CONVERSION_CONSTANT2 * @@CONVERSION_CONSTANT_Y_INPUT / @@CONVERSION_CONSTANT * 2
 		
 		newX *= @widthConst
 		newY *= @heightConst
