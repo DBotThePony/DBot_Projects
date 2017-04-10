@@ -310,9 +310,9 @@ class DMap
 		@abstractSetup = true
 		pos = ply\GetPos!
 		
-		@abstractX = pos.x
-		@abstractY = pos.y
-		@abstractZ = pos.z
+		@abstractX = Lerp(0.1, @abstractX, pos.x)
+		@abstractY = Lerp(0.1, @abstractY, pos.y)
+		@abstractZ = Lerp(0.1, @abstractZ, pos.z)
 		
 		if not @lockClip
 			trData = {
@@ -333,17 +333,17 @@ class DMap
 			if @outside
 				@skyHeight = deltaZ
 			
-			@currZ = pos.z + 20
+			@currZ = Lerp(0.1, @currZ, pos.z + 20)
 			
 			if not @lockZoom
-				@zoom = math.min(math.abs(@clipLevelTop * 1.3), 300)
+				@zoom = Lerp(0.1, @zoom, math.min(math.abs(@clipLevelTop * 1.3), 300))
 			
 		else
 			@outside = false
 		
 		if not @lockView
-			@currX = pos.x
-			@currY = pos.y
+			@currX = Lerp(0.1, @currX, pos.x)
+			@currY = Lerp(0.1, @currY, pos.y)
 	
 	Think: =>
 		if not @IsValid! then return
