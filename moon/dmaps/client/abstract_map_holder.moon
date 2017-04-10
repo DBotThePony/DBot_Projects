@@ -179,10 +179,6 @@ PANEL.Paint = (w, h) =>
 	@mapObject\SetDrawPos(@LocalToScreen(0, 0))
 	@mapObject\DrawHook!
 	
-	getX, getY = @mapObject\MapToScreen(0, 0)
-	
-	surface.DrawRect(getX, getY, 10, 10)
-	
 PANEL.OnRemove = =>
 	@mapObject\Remove!
 

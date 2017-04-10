@@ -44,13 +44,16 @@ class DMap
 	
 	-- Conversion constants
 	-- wtf
-	@WIDTH_CONST = 1378                                              -- wtf
-	@WIDTH_CONST2 = 1332                                              -- wtf
-	@HEIGHT_CONST = 690                                              -- wtf
-	@HEIGHT_CONST2 = 766                                              -- wtf
-	@CONVERSION_RATIO_CONST = 80 / 511                               -- wtf
-	@CONVERSION_RATIO_CONST_BACKWARD = 1 / @CONVERSION_RATIO_CONST   -- wtf
-	@CONVERSION_CONSTANT = 5.19                                      -- wtf
+	@WIDTH_CONST = 1378                                                -- wtf
+	@WIDTH_CONST2 = 1332                                               -- wtf
+	@HEIGHT_CONST = 690                                                -- wtf
+	@HEIGHT_CONST2 = 766                                               -- wtf
+	@CONVERSION_RATIO_CONST = 80 / 511                                 -- wtf
+	@CONVERSION_RATIO_CONST_BACKWARD = 1 / @CONVERSION_RATIO_CONST     -- wtf
+	@CONVERSION_CONSTANT = 5.19                                        -- wtf
+	@CONVERSION_CONSTANT2 = 0.9                                        -- wtf
+	@CONVERSION_CONSTANT_Y2 = 0.99                                     -- wtf
+	@CONVERSION_CONSTANT_X2 = 1.15                                     -- wtf
 	
 	@hooksToDisable = {
 		'PreDrawEffects'
@@ -526,20 +529,17 @@ class DMap
 	
 	-- wtf
 	MapToScreen: (x = 0, y = 0) =>
-		deltaZoom = @zoom / @@MINIMAL_ZOOM
+		deltaZoom = @@MINIMAL_ZOOM / @zoom
 		newX, newY = x, y
 		
-		newX *= @@CONVERSION_RATIO_CONST * deltaZoom * @@CONVERSION_CONSTANT2
-		newY *= @@CONVERSION_RATIO_CONST * deltaZoom * @@CONVERSION_CONSTANT2
-		
-		newX *= @widthConst2
-		newY *= @heightConst2
+		newX *= @widthConst
+		newY *= @heightConst
 		
 		newX += @width / 2
 		newY += @height / 2
 		
-		newX -= @currX * @@CONVERSION_RATIO_CONST_BACKWARD
-		newY += @currY * @@CONVERSION_RATIO_CONST_BACKWARD
+		newX -= @currX * @@CONVERSION_RATIO_CONST_BACKWARD * deltaZoom / @@CONVERSION_CONSTANT * @@CONVERSION_CONSTANT2 * @@CONVERSION_CONSTANT_X2
+		newY += @currY * @@CONVERSION_RATIO_CONST_BACKWARD * deltaZoom / @@CONVERSION_CONSTANT * @@CONVERSION_CONSTANT2 * @@CONVERSION_CONSTANT_Y2
 		
 		return newX, newY
 	
