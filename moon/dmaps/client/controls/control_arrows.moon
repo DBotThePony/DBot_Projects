@@ -129,7 +129,7 @@ PANEL.UpdateCache = =>
 	
 	@joysticks = {}
 	
-	for i = 6, 0, -1
+	for i = 0, 6, 1
 		table.insert(@joysticks, {generateCircle(w / 2 + @joystickPosX, h / 2 + @joystickPosY, 16 - i), Color(230 - i * 2, 230 - i * 2, 230 - i * 2)})
 
 PANEL.InvalidateLayout = =>
