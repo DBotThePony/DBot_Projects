@@ -77,26 +77,25 @@ PANEL.OnMouseWheeled = (deltaWheel) =>
 	
 	mult = @mapObject\GetZoomMultiplier! * 0.019
 	yawDeg = @mapObject\GetYaw!
-	yaw = math.rad(yawDeg)
-	sin, cos = math.sin(yaw), math.cos(yaw)
+	w, h = @GetSize!
+	centerX, centerY = @LocalToScreen(w / 2, h / 2)
 	
+	yaw = math.rad(-yawDeg)
+	sin, cos = math.sin(yaw), math.cos(yaw)
 	x, y = gui.MousePos()
 	
-	deltaX = x - ScrW! / 2
-	deltaY = y - ScrH! / 2
+	deltaX = x - centerX
+	deltaY = y - centerY
 	
 	bMoveX = deltaX * mult
 	bMoveY = deltaY * mult
 	
-	--moveX = bMoveX * cos - bMoveY * sin
-	--moveY = bMoveX * sin + bMoveY * cos
+	moveX = bMoveX * cos - bMoveY * sin
+	moveY = bMoveY * cos + bMoveX * sin
 	
-	moveX = bMoveX
-	moveY = bMoveY
-	
-	--if @mapObject\GetRealYaw! < 0
-	--	moveX = -moveX
-	--	moveY = -moveY
+	if yawDeg < -180
+		moveX = -moveX
+		moveY = -moveY
 	
 	if deltaWheel < 0
 		@mapObject\AddX(-moveX)
