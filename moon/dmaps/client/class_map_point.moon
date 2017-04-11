@@ -60,6 +60,14 @@ class DMapPointer
 	GetID: => @ID
 	ShouldDraw: (map) => map\PrefferDraw(@x, @y, @z)
 	
+	@MOUSE_CONSTANT = 70
+	
+	IsNearMouse: =>
+		if not @map.mouseHit return false
+		deltaX = @map.mouseX - @x
+		deltaY = @map.mouseY - @y
+		return deltaX > -@@MOUSE_CONSTANT and deltaX < @@MOUSE_CONSTANT and deltaY > -@@MOUSE_CONSTANT and deltaY < @@MOUSE_CONSTANT
+	
 	DrawWorld: (map) =>
 		-- Do nothing
 		-- Override
@@ -98,7 +106,7 @@ class DMapPointer
 	__eq: (other) =>
 		return @ == other
 	
-	Think: =>
+	Think: (map) =>
 		-- Override
 	
 	IsValid: => not @removed

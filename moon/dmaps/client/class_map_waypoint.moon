@@ -60,6 +60,12 @@ class DMapWaypoint extends DMapPointer
 	ShouldDraw: (map) => true
 	SetSize: (val = 1) => @zoom = 60 * val
 	
+	GetText: =>
+		text = @name
+		if @IsNearMouse!
+			text ..= "\nX: #{@x}; Y: #{@y}; Z: #{@z}"
+		return text
+	
 	Draw: (map) =>
 		x, y = @DRAW_X, @DRAW_Y
 		draw.NoTexture!
@@ -68,13 +74,12 @@ class DMapWaypoint extends DMapPointer
 			.SetDrawColor(@color)
 			.DrawPoly(@@generateSquare(x, y, @zoom))
 			.SetFont(@@TEXT_FONT)
-			.SetTextColor(@@TEXT_COLOR)
 			.SetDrawColor(@@TEXT_BACKGROUND_COLOR)
 			
-			w, h = .GetTextSize(@name)
+			text = @GetText!
+			w, h = .GetTextSize(text)
 			.DrawRect(x - @@TEXT_BACKGROUND_SHIFT - w / 2, y - @@TEXT_BACKGROUND_SHIFT + 10 + @zoom, w + @@TEXT_BACKGROUND_SHIFT * 2, h + @@TEXT_BACKGROUND_SHIFT * 2)
-			.SetTextPos(x - w / 2, y + @zoom + 10)
-			.DrawText(@name)
+			draw.DrawText(text, @@TEXT_FONT, x, y + @zoom + 10, @@TEXT_COLOR, TEXT_ALIGN_CENTER)
 
 DMaps.DMapWaypoint = DMapWaypoint
 return DMapWaypoint

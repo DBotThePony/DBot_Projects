@@ -403,6 +403,7 @@ class DMap
 		for k, objectTab in pairs @objectTables
 			for k, object in pairs objectTab
 				if object\IsValid()
+					object.map = @
 					object\Think(@)
 				else
 					@objectTab[k] = nil
