@@ -126,8 +126,10 @@ PANEL.Think = =>
 	w, h = @GetSize!
 	cX, cY = @LocalToScreen(w / 2, h / 2)
 	
+	sw, sh = ScrW!, ScrH!
+	
 	with @mapObject
-		getX, getY = \ScreenToMap(mouseX - cX, cY - mouseY)
+		getX, getY = \ScreenToMap((mouseX - cX) / w * sw, (cY - mouseY) / h * sh)
 		\SetMousePos(getX, getY)
 		\PanelScreenPos(@LocalToScreen(0, 0))
 		\Think!

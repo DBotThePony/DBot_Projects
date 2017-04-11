@@ -42,21 +42,6 @@ class DMap
 	
 	@MINIMAL_ZOOM = 300
 	
-	-- Conversion constants
-	-- wtf
-	@WIDTH_CONST = 1378                                                -- wtf
-	@WIDTH_CONST2 = 1332                                               -- wtf
-	@HEIGHT_CONST = 690                                                -- wtf
-	@HEIGHT_CONST2 = 766                                               -- wtf
-	@CONVERSION_RATIO_CONST = 80 / 511                                 -- wtf
-	@CONVERSION_RATIO_CONST_BACKWARD = 1 / @CONVERSION_RATIO_CONST     -- wtf
-	@CONVERSION_CONSTANT = 5.19                                        -- wtf
-	@CONVERSION_CONSTANT2 = 0.9                                        -- wtf
-	@CONVERSION_CONSTANT_Y2 = 0.99                                     -- wtf
-	@CONVERSION_CONSTANT_X_INPUT = 1.5                                 -- wtf
-	@CONVERSION_CONSTANT_X2 = 1.15                                     -- wtf
-	@CONVERSION_CONSTANT_Y_INPUT = 1.095                               -- wtf
-	
 	@hooksToDisable = {
 		'PreDrawEffects'
 		'PreDrawHalos'
@@ -79,6 +64,11 @@ class DMap
 		@MY_ID = @@uid
 		@@uid += 1
 		
+		@xHUPerPixel = 1
+		@yHUPerPixel = 1
+		@REAL_SCRW = 0
+		@REAL_SCRH = 0
+		
 		@waypoints = {}
 		@entities = {}
 		@players = {}
@@ -92,13 +82,7 @@ class DMap
 		@panelx = 0
 		@panely = 0
 		
-		@width = width
-		@height = height
-		
-		@widthConst = width / @@WIDTH_CONST
-		@widthConst2 = width / @@WIDTH_CONST2
-		@heightConst = height / @@HEIGHT_CONST
-		@heightConst2 = height / @@HEIGHT_CONST2
+		@SetSize(width, height)
 		
 		@fov = fov
 		@fovSin = math.sin(math.rad(@fov))
@@ -212,23 +196,19 @@ class DMap
 	
 	SetWidth: (val = @width) =>
 		@width = assert(val, 'number')
-		@widthConst = @width / @@WIDTH_CONST
-		@widthConst2 = @width / @@WIDTH_CONST2
+		@widthConst = @@WIDTH_CONST / @width
+		@widthConst2 = @@WIDTH_CONST2 / @width
 	
 	SetHeight: (val = @height) =>
 		@height = assert(val, 'number')
-		@heightConst = @height / @@HEIGHT_CONST
-		@heightConst2 = @height / @@HEIGHT_CONST2
+		@heightConst = @@HEIGHT_CONST / @height
+		@heightConst2 = @@HEIGHT_CONST2 / @height
 	
 	GetSize: => return @x, @y
 	
-	SetSize: (width = 0, height = 0) =>
-		@width = assert(width, 'number')
-		@height = assert(height, 'number')
-		@widthConst = @width / @@WIDTH_CONST
-		@widthConst2 = @width / @@WIDTH_CONST2
-		@heightConst = @height / @@HEIGHT_CONST
-		@heightConst2 = @height / @@HEIGHT_CONST2
+	SetSize: (width = @width, height = @height) =>
+		@SetWidth(width)
+		@SetHeight(height)
 	
 	GetZoomMultiplier: => @zoom / @fov
 	GetMapZoomMultiplier: => (@zoom - @currZ) / @fov
@@ -410,11 +390,13 @@ class DMap
 	
 	-- Called to draw map
 	-- It calls Draw2D() inside it
+	
+	@BOX_DRAW_CONSTANT = 800
+	
 	DrawMap: (x, y, w, h) =>
-		aspectRatio1 = w / h
-		aspectRatio2 = h / w * 2
+		localZoom = @zoom / @@MINIMAL_ZOOM
 		
-		localZoom = @zoom
+		hw, hh = w / 2, h / 2
 		
 		newView = {
 			:x
@@ -430,10 +412,10 @@ class DMap
 			fov: @fov
 			
 			ortho: true
-			ortholeft: -localZoom * aspectRatio1
-			orthoright: localZoom * aspectRatio1
-			orthotop: -localZoom * aspectRatio2
-			orthobottom: localZoom * aspectRatio2
+			ortholeft: -hw * localZoom
+			orthoright: hw * localZoom
+			orthotop: -hh * localZoom
+			orthobottom: hh * localZoom
 		}
 		
 		if @outside
@@ -516,16 +498,19 @@ class DMap
 		
 		cam.End3D2D()
 	
+	-- When 1113 830
+	@CONSTANT_MULTIPLY = 1.6
+	
 	-- wtf
 	ScreenToMap: (x = 0, y = 0) =>
 		deltaZoom = @zoom / @@MINIMAL_ZOOM
 		newX, newY = x, y
 		
-		newX *= @@CONVERSION_RATIO_CONST * deltaZoom * @@CONVERSION_CONSTANT
-		newY *= @@CONVERSION_RATIO_CONST * deltaZoom * @@CONVERSION_CONSTANT
+		newX /= @xHUPerPixel
+		newY /= @yHUPerPixel
 		
-		newX *= @widthConst
-		newY *= @heightConst
+		newX *= @@CONSTANT_MULTIPLY
+		newY *= @@CONSTANT_MULTIPLY
 		
 		newX += @currX
 		newY += @currY
@@ -537,17 +522,14 @@ class DMap
 		deltaZoom = @@MINIMAL_ZOOM / @zoom
 		newX, newY = x, y
 		
-		newX *= deltaZoom * @@CONVERSION_RATIO_CONST_BACKWARD * @@CONVERSION_CONSTANT2 * @@CONVERSION_CONSTANT_X_INPUT / @@CONVERSION_CONSTANT * 2
-		newY *= -deltaZoom * @@CONVERSION_RATIO_CONST_BACKWARD * @@CONVERSION_CONSTANT2 * @@CONVERSION_CONSTANT_Y_INPUT / @@CONVERSION_CONSTANT * 2
+		newX *= @xHUPerPixel
+		newY *= @yHUPerPixel
 		
-		newX *= @widthConst
-		newY *= @heightConst
+		newX /= @@CONSTANT_MULTIPLY
+		newY /= @@CONSTANT_MULTIPLY
 		
-		newX += @width / 2
-		newY += @height / 2
-		
-		newX -= @currX * @@CONVERSION_RATIO_CONST_BACKWARD * deltaZoom / @@CONVERSION_CONSTANT * @@CONVERSION_CONSTANT2 * @@CONVERSION_CONSTANT_X2
-		newY += @currY * @@CONVERSION_RATIO_CONST_BACKWARD * deltaZoom / @@CONVERSION_CONSTANT * @@CONVERSION_CONSTANT2 * @@CONVERSION_CONSTANT_Y2
+		newX += @currX
+		newY += @currY
 		
 		return newX, newY
 	
@@ -605,11 +587,22 @@ class DMap
 	
 	Get2DContextData: => @DRAW_X_2D, @DRAW_Y_2D, @DRAW_WIDTH, @DRAW_HEIGHT
 	
+	@CHECK_1_VECTOR = Vector(-40, -40, 0)
+	@CHECK_2_VECTOR = Vector(40, 40, 0)
+	
 	-- Called inside DrawMap() right after landskape was drawn
 	-- Calls all 2D hooks with X and Y that are used as shift, also
 	-- Called with default 2D properties
 	Draw2DHook: =>
 		screenx, screeny, screenw, screenh = @Get2DContextData!
+		
+		render.SetViewPort(unpack(@PREVIOUS_RENDER_PORT))
+		pos1 = @@CHECK_1_VECTOR\ToScreen!
+		pos2 = @@CHECK_2_VECTOR\ToScreen!
+		render.SetViewPort(unpack(@CURENT_RENDER_PORT))
+		
+		@xHUPerPixel = (pos2.x - pos1.x) / 50
+		@yHUPerPixel = (pos1.y - pos2.y) / 50
 		
 		oldClipping = render.EnableClipping(false)
 		xpcall(@PreDraw2D, @@CatchError, @, screenx, screeny, screenw, screenh)
@@ -656,13 +649,19 @@ class DMap
 		@DRAW_HEIGHT = newHeight
 		
 		render.SuppressEngineLighting(true)
-		render.SetViewPort(newX, newY, newWidth, newHeight)
+		@PREVIOUS_RENDER_PORT = {0, 0, oldW, oldH}
+		@CURENT_RENDER_PORT = {newX, newY, newWidth, newHeight}
+		
+		@REAL_SCRW = oldW
+		@REAL_SCRH = oldH
+		
+		render.SetViewPort(unpack(@CURENT_RENDER_PORT))
 		
 		xpcall(@PreDraw, @@CatchError, @, @DRAW_X, newY, newWidth, newHeight)
 		xpcall(@Draw, @@CatchError, @, @DRAW_X, newY, newWidth, newHeight)
 		xpcall(@PostDraw, @@CatchError, @, @DRAW_X, newY, newWidth, newHeight)
 		
-		render.SetViewPort(0, 0, oldW, oldH)
+		render.SetViewPort(unpack(@PREVIOUS_RENDER_PORT))
 		render.SuppressEngineLighting(false)
 		
 		surface.DisableClipping(false)

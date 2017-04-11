@@ -18,6 +18,9 @@
 if IsValid(DMaps.MainFrame)
 	DMaps.MainFrame\Remove!
 
+ASPECT_RATIO = 1.3
+ASPECT_RATIO_R = 1 / ASPECT_RATIO
+
 DMaps.CreateMainFrame = ->
 	if IsValid(DMaps.MainFrame)
 		DMaps.MainFrame\Remove!
@@ -25,7 +28,9 @@ DMaps.CreateMainFrame = ->
 	DMaps.MainFrame = vgui.Create('DFrame')
 	self = DMaps.MainFrame
 	
-	@SetSize(ScrW! - 100, ScrH! - 100)
+	mins = math.min(ScrW!, ScrH!) * 0.96
+	
+	@SetSize(mins * ASPECT_RATIO, mins)
 	@Center!
 	@MakePopup!
 	@SetDeleteOnClose(false)
