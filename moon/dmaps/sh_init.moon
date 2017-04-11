@@ -17,7 +17,7 @@
 
 export DMaps
 
-DMaps = {}
+DMaps = DMaps or {}
 
 if CLIENT
 	include 'dmaps/cl_init.lua'
