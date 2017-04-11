@@ -287,6 +287,8 @@ class DMap
 			
 			@INSIDE_2D_DRAW = true
 			
+			@Draw2DLight!
+			
 			cam.IgnoreZ(true)
 			
 			if not @outside
@@ -448,7 +450,7 @@ class DMap
 	-- Function returns shift of X and Y for use
 	Start2D: (x = 0, y = 0, size = @@MAP_2D_START_MULTIPLIER) =>
 		shft = @@MAP_2D_STEP_LIMIT / 2
-		newVector = Vector(x - shft * size, y + shft * size, 0)
+		newVector = Vector(x - shft * size, y + shft * size, @currZ)
 		
 		if @isDrawinInPanel
 			newVector.x -= @panelx * size
@@ -563,6 +565,27 @@ class DMap
 		
 		cam.End3D2D()
 	
+	@MAP_2D_LIGHT_SIZE = 1000
+	@MAP_2D_LIGHT_SIZING = 16000
+	@MAP_2D_LIGHT_START_X = -@MAP_2D_LIGHT_SIZING
+	@MAP_2D_LIGHT_END_X = @MAP_2D_LIGHT_SIZING
+	@MAP_2D_LIGHT_START_Y = -@MAP_2D_LIGHT_SIZING
+	@MAP_2D_LIGHT_END_Y = @MAP_2D_LIGHT_SIZING
+	@MAP_2D_LIGHT_Z = -1600
+	@MAP_2D_LIGHT_ANGLE_CONST = Angle(0, 0, 0)
+	
+	-- Better not override that
+	Draw2DLight: =>
+		if true then return -- just a test
+		draw.NoTexture!
+		surface.SetDrawColor(255, 255, 255)
+		for x = @@MAP_2D_LIGHT_START_X, @@MAP_2D_LIGHT_END_X, @@MAP_2D_LIGHT_SIZE
+			for y = @@MAP_2D_LIGHT_START_Y, @@MAP_2D_LIGHT_END_Y, @@MAP_2D_LIGHT_SIZE
+				vec = Vector(x, y, @@MAP_2D_LIGHT_Z)
+				cam.Start3D2D(vec, @@MAP_2D_LIGHT_ANGLE_CONST, 10)
+				surface.DrawRect(x, y, @@MAP_2D_LIGHT_SIZE, @@MAP_2D_LIGHT_SIZE)
+				cam.End3D2D()
+	
 	-- Still have to create 3D2D context!
 	Draw2D: (screenx = 0, screeny = 0, screenw = 0, screenh = 0) =>
 		for k, objectTab in pairs @objectTables
@@ -586,9 +609,12 @@ class DMap
 	-- Called with default 2D properties
 	Draw2DHook: =>
 		screenx, screeny, screenw, screenh = @Get2DContextData!
+		
+		oldClipping = render.EnableClipping(false)
 		xpcall(@PreDraw2D, @@CatchError, @, screenx, screeny, screenw, screenh)
 		xpcall(@Draw2D, @@CatchError, @, screenx, screeny, screenw, screenh)
 		xpcall(@PostDraw2D, @@CatchError, @, screenx, screeny, screenw, screenh)
+		render.EnableClipping(oldClipping)
 	
 	DrawHook: =>
 		if not @IsValid! then return
@@ -614,8 +640,9 @@ class DMap
 		
 		oldW, oldH = ScrW!, ScrH!
 		
+		surface.DisableClipping(true)
+		
 		if @isDrawinInPanel
-			surface.DisableClipping(true)
 			@DRAW_X_2D = newX - @panelx
 			@DRAW_Y_2D = newY - @panely
 		else
@@ -637,8 +664,7 @@ class DMap
 		render.SetViewPort(0, 0, oldW, oldH)
 		render.SuppressEngineLighting(false)
 		
-		if @isDrawinInPanel
-			surface.DisableClipping(false)
+		surface.DisableClipping(false)
 		
 		
 	PreDrawWorld: => -- Override
