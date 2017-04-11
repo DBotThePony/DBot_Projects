@@ -66,6 +66,8 @@ class DMap
 		
 		@xHUPerPixel = 1
 		@yHUPerPixel = 1
+		@xHUPerPixelOriginal = 1
+		@yHUPerPixelOriginal = 1
 		@REAL_SCRW = 0
 		@REAL_SCRH = 0
 		
@@ -499,7 +501,6 @@ class DMap
 	
 	-- wtf
 	ScreenToMap: (x = 0, y = 0) =>
-		deltaZoom = @zoom / @@MINIMAL_ZOOM
 		newX, newY = x, y
 		
 		newX /= @xHUPerPixel
@@ -523,16 +524,23 @@ class DMap
 	-- wtf
 	MapToScreen: (x = 0, y = 0) =>
 		deltaZoom = @@MINIMAL_ZOOM / @zoom
-		newX, newY = x, y
 		
-		newX *= @xHUPerPixel
-		newY *= @yHUPerPixel
+		yawDeg = @GetYaw!
+		yaw = math.rad(yawDeg)
+		sin1, cos1 = math.sin(-yaw), math.cos(-yaw)
+		sin2, cos2 = math.sin(yaw), math.cos(yaw)
 		
-		newX /= @@CONSTANT_MULTIPLY
-		newY /= @@CONSTANT_MULTIPLY
+		newX = x * cos2 - y * sin2
+		newY = y * cos2 + x * sin2
 		
-		newX += @currX
-		newY += @currY
+		newX *= @xHUPerPixelOriginal
+		newY *= @yHUPerPixelOriginal
+		
+		newX -= (@currX * cos1 - @currY * sin1) * deltaZoom
+		newY += (@currY * cos1 + @currX * sin1) * deltaZoom
+		
+		newX += @width / 2
+		newY += @height / 2
 		
 		return newX, newY
 	
@@ -611,7 +619,9 @@ class DMap
 		render.SetViewPort(unpack(@CURENT_RENDER_PORT))
 		
 		@xHUPerPixel = (pos2.x - pos1.x) / 50
+		@xHUPerPixelOriginal = (pos2.x - pos1.x) / 40
 		@yHUPerPixel = (pos1.y - pos2.y) / 50
+		@yHUPerPixelOriginal = (pos1.y - pos2.y) / 40
 		
 		oldClipping = render.EnableClipping(false)
 		xpcall(@PreDraw2D, @@CatchError, @, screenx, screeny, screenw, screenh)
