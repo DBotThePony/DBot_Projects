@@ -29,6 +29,9 @@ PANEL.Init = =>
 	@SetCursor('hand')
 	@hold = false
 	
+	@mapX = 0
+	@mapY = 0
+	
 	@compass = vgui.Create('DMapsMapCompass', @)
 	@compass\SetMap(@mapObject)
 	
@@ -129,6 +132,8 @@ PANEL.Think = =>
 		\PanelScreenPos(@LocalToScreen(0, 0))
 		\Think!
 		\ThinkPlayer(@Spectating)
+		
+		@mapX, @mapY = math.floor(getX), math.floor(getY)
 	
 	existingPlayers = {}
 	
@@ -170,14 +175,25 @@ PANEL.Think = =>
 		
 	
 PANEL.Paint = (w, h) =>
-	surface.SetDrawColor(0, 0, 0)
-	surface.DrawRect(0, 0, w, h)
+	with surface
+		.SetDrawColor(0, 0, 0)
+		.DrawRect(0, 0, w, h)
 	
 	@mapObject\SetWidth(w)
 	@mapObject\SetHeight(h)
 	
 	@mapObject\SetDrawPos(@LocalToScreen(0, 0))
 	@mapObject\DrawHook!
+	
+	with surface
+		.SetDrawColor(0, 0, 0, 100)
+		.SetTextColor(255, 255, 255)
+		.SetFont('Default')
+		text = "X: #{@mapX}; Y: #{@mapY}"
+		tw, th = .GetTextSize(text)
+		.DrawRect(w - tw - 8, h - th - 8, tw + 8, th + 8)
+		.SetTextPos(w - tw - 4, h - th - 4)
+		.DrawText(text)
 	
 PANEL.OnRemove = =>
 	@mapObject\Remove!
