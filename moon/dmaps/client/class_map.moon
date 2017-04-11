@@ -508,10 +508,17 @@ class DMap
 		newX *= @@CONSTANT_MULTIPLY
 		newY *= @@CONSTANT_MULTIPLY
 		
-		newX += @currX
-		newY += @currY
+		yawDeg = @GetYaw!
+		yaw = math.rad(yawDeg)
+		sin, cos = math.sin(yaw), math.cos(yaw)
 		
-		return newX, newY
+		newX2 = newX * cos - newY * sin
+		newY2 = newY * cos + newX * sin
+		
+		newX2 += @currX
+		newY2 += @currY
+		
+		return newX2, newY2
 	
 	-- wtf
 	MapToScreen: (x = 0, y = 0) =>
@@ -583,9 +590,6 @@ class DMap
 	
 	Get2DContextData: => @DRAW_X_2D, @DRAW_Y_2D, @DRAW_WIDTH, @DRAW_HEIGHT
 	
-	@CHECK_1_VECTOR = Vector(-40, -40, 0)
-	@CHECK_2_VECTOR = Vector(40, 40, 0)
-	
 	-- Called inside DrawMap() right after landskape was drawn
 	-- Calls all 2D hooks with X and Y that are used as shift, also
 	-- Called with default 2D properties
@@ -593,8 +597,17 @@ class DMap
 		screenx, screeny, screenw, screenh = @Get2DContextData!
 		
 		render.SetViewPort(unpack(@PREVIOUS_RENDER_PORT))
-		pos1 = @@CHECK_1_VECTOR\ToScreen!
-		pos2 = @@CHECK_2_VECTOR\ToScreen!
+		
+		vec1Check = Vector(-40, -40, 0)
+		vec2Check = Vector(40, 40, 0)
+		
+		ang = Angle(0, @GetYaw!, 0)
+		vec1Check\Rotate(ang)
+		vec2Check\Rotate(ang)
+		
+		pos1 = vec1Check\ToScreen!
+		pos2 = vec2Check\ToScreen!
+		
 		render.SetViewPort(unpack(@CURENT_RENDER_PORT))
 		
 		@xHUPerPixel = (pos2.x - pos1.x) / 50
