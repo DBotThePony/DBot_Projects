@@ -504,7 +504,7 @@ class DMap
 			.DrawLine(x - 40, y, x + 40, y)
 			.DrawText('X')
 			
-			.SetTextPos(x + 4, y + 40)
+			.SetTextPos(x + 4, y - 40)
 			.SetTextColor(50, 200, 50)
 			.SetDrawColor(50, 200, 50)
 			
