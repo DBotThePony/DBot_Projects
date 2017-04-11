@@ -196,13 +196,9 @@ class DMap
 	
 	SetWidth: (val = @width) =>
 		@width = assert(val, 'number')
-		@widthConst = @@WIDTH_CONST / @width
-		@widthConst2 = @@WIDTH_CONST2 / @width
 	
 	SetHeight: (val = @height) =>
 		@height = assert(val, 'number')
-		@heightConst = @@HEIGHT_CONST / @height
-		@heightConst2 = @@HEIGHT_CONST2 / @height
 	
 	GetSize: => return @x, @y
 	
