@@ -644,7 +644,7 @@ class DMap
 	PreDrawWorld: => -- Override
 	PostDrawWorld: => -- Override
 	
-	DrawWorld: =>
+	DrawWorld: => -- Override
 	
 	DrawWorldHook: =>
 		xpcall(@PreDrawWorld, @@CatchError, @)

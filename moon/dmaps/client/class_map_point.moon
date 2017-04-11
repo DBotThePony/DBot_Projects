@@ -23,6 +23,7 @@ assert = (arg, tp) ->
 
 class DMapPointer
 	@TEXT_COLOR = Color(255, 255, 255)
+	@UID = 0
 	
 	@generateTriangle = (x = 0, y = 0, ang = 0, hypo = 20, myShift = 30, height = 70) =>
 		sin = math.sin(math.rad(ang))
@@ -45,35 +46,44 @@ class DMapPointer
 	
 	@__type = 'point'
 	
-	new: =>
-		@x = 0
-		@y = 0
-		@z = 0
+	new: (x = 0, y = 0, z = 0) =>
+		@ID = @@UID
+		@@UID += 1
+		@x = x
+		@y = y
+		@z = z
 		@removed = false
-		
+	
+	-- Called internally
+	PositionChanged: => -- Override
+	
+	GetID: => @ID
 	ShouldDraw: (map) => map\PrefferDraw(@x, @y, @z)
 	
 	DrawWorld: (map) =>
 		-- Do nothing
 		-- Override
 	
-	SetX: (val = 0) => @x = assert(val, 'number')
-	SetY: (val = 0) => @y = assert(val, 'number')
-	SetZ: (val = 0) => @z = assert(val, 'number')
-	
-	GetX: => @x
-	GetY: => @y
-	GetZ: => @z
-	
+	SetX: (val = 0) =>
+		@x = assert(val, 'number')
+		@PositionChanged!
+	SetY: (val = 0) =>
+		@y = assert(val, 'number')
+		@PositionChanged!
+	SetZ: (val = 0) =>
+		@z = assert(val, 'number')
+		@PositionChanged!
 	SetPos: (val = Vector(0, 0, 0)) =>
 		@x = val.x
 		@y = val.y
 		@z = val.z
+		@PositionChanged!
 	
+	GetX: => @x
+	GetY: => @y
+	GetZ: => @z
 	GetPos: => Vector(@x, @y, @z)
-	
-	Remove: =>
-		@removed = true
+	Remove: => @removed = true
 	
 	Draw: (map) => -- Override
 	PreDraw: (map) => -- Override

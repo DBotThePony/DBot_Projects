@@ -20,6 +20,7 @@ include 'dmaps/client/class_map_point.lua'
 include 'dmaps/client/class_map_entity_point.lua'
 include 'dmaps/client/class_player_point.lua'
 include 'dmaps/client/class_lplayer_point.lua'
+include 'dmaps/client/class_map_waypoint.lua'
 
 include 'dmaps/client/controls/control_compass.lua'
 include 'dmaps/client/controls/control_arrows.lua'
