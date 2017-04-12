@@ -30,7 +30,8 @@ DMaps.CreateMainFrame = ->
 	
 	mins = math.min(ScrW!, ScrH!) * 0.96
 	
-	@SetSize(mins * ASPECT_RATIO, mins)
+	w, h = mins * ASPECT_RATIO, mins
+	@SetSize(w, h)
 	@Center!
 	@MakePopup!
 	@SetDeleteOnClose(false)
@@ -38,6 +39,9 @@ DMaps.CreateMainFrame = ->
 	
 	@mapHolder = vgui.Create('DMapsMapHolder', @)
 	@mapHolder\Dock(FILL)
+	
+	@buttons = vgui.Create('DMapButtons', @)
+	@buttons\DoSetup(w, h, -5)
 
 DMaps.OpenMap = ->
 	if not IsValid(DMaps.MainFrame)

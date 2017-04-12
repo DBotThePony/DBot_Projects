@@ -25,6 +25,7 @@ AddCSLuaFile 'dmaps/client/classes/class_map_waypoint.lua'
 AddCSLuaFile 'dmaps/client/controls/control_compass.lua'
 AddCSLuaFile 'dmaps/client/controls/control_arrows.lua'
 AddCSLuaFile 'dmaps/client/controls/control_zoom.lua'
+AddCSLuaFile 'dmaps/client/controls/control_buttons.lua'
 AddCSLuaFile 'dmaps/client/controls/abstract_map_holder.lua'
 
 AddCSLuaFile 'dmaps/client/default_gui.lua'
