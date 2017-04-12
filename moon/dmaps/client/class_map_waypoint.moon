@@ -60,6 +60,9 @@ class DMapWaypoint extends DMapPointer
 	ShouldDraw: (map) => true
 	SetSize: (val = 1) => @zoom = 60 * val
 	
+	SetDrawInWorld: (val = true) => @drawInWorld = val
+	GetDrawInWorld: => @drawInWorld
+	
 	GetText: =>
 		text = @name
 		if @IsNearMouse!
