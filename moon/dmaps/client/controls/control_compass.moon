@@ -66,6 +66,7 @@ PANEL.DIV = 64
 PANEL.CreateControlButtons = =>
 	buttonFollowAngles = vgui.Create('DButton')
 	buttonFollowAngles\SetText('Follow player direction')
+	buttonFollowAngles\SetTooltip('Follow player direction')
 	
 	lastStatus = @followingPlayer
 	
@@ -79,8 +80,10 @@ PANEL.CreateControlButtons = =>
 			lastStatus = @compass.followingPlayer
 			if lastStatus
 				@SetText('Stop following player direction')
+				@SetTooltip('Stop following player direction')
 			else
 				@SetText('Follow player direction')
+				@SetTooltip('Follow player direction')
 	
 	return buttonFollowAngles
 
@@ -100,7 +103,7 @@ PANEL.OnMousePressed = (code) =>
 		@followingPlayer = false
 	elseif code == MOUSE_LEFT
 		@hold = true
-		@followingPlayer = true
+		@followingPlayer = false
 		@holdstart = RealTime!
 
 PANEL.OnMouseReleased = (code) =>
