@@ -15,14 +15,16 @@
 -- limitations under the License.
 -- 
 
-AddCSLuaFile 'dmaps/client/class_map.lua'
-AddCSLuaFile 'dmaps/client/class_map_point.lua'
-AddCSLuaFile 'dmaps/client/class_map_entity_point.lua'
-AddCSLuaFile 'dmaps/client/class_map_player_point.lua'
-AddCSLuaFile 'dmaps/client/class_map_lplayer_point.lua'
-AddCSLuaFile 'dmaps/client/class_map_waypoint.lua'
-AddCSLuaFile 'dmaps/client/logic/abstract_map_holder.lua'
+AddCSLuaFile 'dmaps/client/classes/class_map.lua'
+AddCSLuaFile 'dmaps/client/classes/class_map_point.lua'
+AddCSLuaFile 'dmaps/client/classes/class_map_entity_point.lua'
+AddCSLuaFile 'dmaps/client/classes/class_player_point.lua'
+AddCSLuaFile 'dmaps/client/classes/class_lplayer_point.lua'
+AddCSLuaFile 'dmaps/client/classes/class_map_waypoint.lua'
+
 AddCSLuaFile 'dmaps/client/controls/control_compass.lua'
 AddCSLuaFile 'dmaps/client/controls/control_arrows.lua'
 AddCSLuaFile 'dmaps/client/controls/control_zoom.lua'
-AddCSLuaFile 'dmaps/client/logic/default_gui.lua'
+AddCSLuaFile 'dmaps/client/controls/abstract_map_holder.lua'
+
+AddCSLuaFile 'dmaps/client/default_gui.lua'
