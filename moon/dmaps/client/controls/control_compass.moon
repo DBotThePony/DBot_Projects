@@ -15,6 +15,8 @@
 -- limitations under the License.
 -- 
 
+import draw, surface, LocalPlayer, gui from _G
+
 generateTriangle = (x = 0, y = 0, ang = 0, hypo = 30) ->
 	sin = math.sin(math.rad(ang))
 	cos = math.cos(math.rad(ang))
@@ -61,20 +63,44 @@ PANEL.WIDTH = 128
 PANEL.HEIGHT = 128
 PANEL.DIV = 64
 
+PANEL.CreateControlButtons = =>
+	buttonFollowAngles = vgui.Create('DButton')
+	buttonFollowAngles\SetText('Follow player direction')
+	
+	lastStatus = @followingPlayer
+	
+	buttonFollowAngles.compass = @
+	buttonFollowAngles.DoClick = =>
+		@compass.followingPlayer = not @compass.followingPlayer
+		@Think!
+	
+	buttonFollowAngles.Think = =>
+		if lastStatus ~= @compass.followingPlayer
+			lastStatus = @compass.followingPlayer
+			if lastStatus
+				@SetText('Stop following player direction')
+			else
+				@SetText('Follow player direction')
+	
+	return buttonFollowAngles
+
 PANEL.Init = =>
 	@UpdateCache!
 	@yaw = 0
 	@SetSize(128, 128)
 	@targetyaw = 0
 	
+	@followingPlayer = false
 	@hold = false
 	@holdstart = 0
 
 PANEL.OnMousePressed = (code) =>
 	if code == MOUSE_RIGHT or code == MOUSE_MIDDLE
 		@targetyaw = 0
+		@followingPlayer = false
 	elseif code == MOUSE_LEFT
 		@hold = true
+		@followingPlayer = true
 		@holdstart = RealTime!
 
 PANEL.OnMouseReleased = (code) =>
@@ -82,6 +108,7 @@ PANEL.OnMouseReleased = (code) =>
 		@hold = false
 		if @holdstart + 0.1 > RealTime!
 			@targetyaw = 0
+			@followingPlayer = false
 	
 PANEL.SetMap = (map) =>
 	@mapObject = map
@@ -94,6 +121,9 @@ PANEL.OnYawChanges = =>
 	@BuildTriangle!
 
 PANEL.Think = =>
+	if @followingPlayer
+		@targetyaw = LocalPlayer!\GetAngles!.y - 90
+	
 	if @hold
 		if @holdstart + 0.1 < RealTime!
 			w, h = @GetSize!

@@ -18,9 +18,15 @@
 -- A panel that holds the map
 -- And user controls
 
+import DMaps, surface, gui, draw, table, unpack, vgui, math from _G
 import DMapLocalPlayerPointer, DMapPlayerPointer from DMaps
 
 PANEL = {}
+
+PANEL.GetButtons = =>
+	buttons = {}
+	for button in *{@compass\CreateControlButtons!} do table.insert(buttons, button)
+	return unpack(buttons)
 
 PANEL.Init = =>
 	@SetSize(200, 200)

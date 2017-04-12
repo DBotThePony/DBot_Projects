@@ -41,6 +41,7 @@ DMaps.CreateMainFrame = ->
 	@mapHolder\Dock(FILL)
 	
 	@buttons = vgui.Create('DMapButtons', @)
+	@buttons\AddMultiButton(@mapHolder\GetButtons!)
 	@buttons\DoSetup(w, h, -5)
 
 DMaps.OpenMap = ->

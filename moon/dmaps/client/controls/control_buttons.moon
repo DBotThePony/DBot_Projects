@@ -26,14 +26,33 @@ PANEL =
 		@options\SetText('Options')
 		table.insert(@buttons, @waypoints)
 		table.insert(@buttons, @options)
+		
+		@setup = false
+		@knownW = 0
+		@knownH = 0
+		@knownAdd = 0
+		@additionalWidth = 0
 	
-	DoSetup: (w = 0, h = 0, addH = 0) =>
-		mw, mh = w / 4, 30
+	AddSize: (val = 0) => @additionalWidth += val
+	AddSizeMult: (val) => @additionalWidth += @knownW / 8
+	AddButton: (button) =>
+		button\SetParent(@)
+		table.insert(@buttons, button)
+		if @setup then @DoSetup!
+	
+	AddMultiButton: (...) => for button in *{...} do @AddButton(button)
+	
+	DoSetup: (w = @knownW, h = @knownH, addH = @knownAdd) =>
+		@setup = true
+		@knownW = w
+		@knownH = h
+		@knownAdd = addH
+		mw, mh = w / 3, 30
 		@SetSize(mw, mh)
 		@SetPos(w / 2 - mw / 2, h - mh + addH)
-		step = mw / (#@buttons + 1)
+		step = mw / (#@buttons)
 		for i, button in pairs @buttons
-			button\SetPos(step * i, 3)
+			button\SetPos(step * (i - 1), 3)
 			button\SetSize(step, mh - 6)
 
 DMaps.PANEL_CONTROL_BUTTONS = PANEL
