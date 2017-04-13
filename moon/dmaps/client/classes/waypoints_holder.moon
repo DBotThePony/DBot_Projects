@@ -15,7 +15,7 @@
 -- limitations under the License.
 -- 
 
-import DMaps from _G
+import DMaps, pairs, table, sql, game, math, SQLStr from _G
 
 class WaypointsDataContainer
 	@WaypointsTable = [[CREATE TABLE IF NOT EXISTS dmap_clientwaypoints (
@@ -38,27 +38,72 @@ class WaypointsDataContainer
 		@serverip = serverip
 		@map = map
 		@SaveData = {}
+		@UpdateTrigger = (id, data) =>
+		@CreateTrigger = (id, data) =>
 	
+	SetUpdateTrigger: (val = ((id, data) =>)) => @UpdateTrigger = val
+	SetCreateTrigger: (val = ((id, data) =>)) => @CreateTrigger = val
 	SetSaveData: (id = 0, data = {}, triggerSave = true) =>
 		@SaveData[id] = data
 		@SaveWaypoint(id) if triggerSave
+		@UpdateTrigger(id, data)
 	GetData: => @SaveData
+	GetPoint: (id = 0) => table.Copy(@SaveData[id]) if @SaveData[id] else nil
+	GetWaypoint: (id = 0) => table.Copy(@SaveData[id]) if @SaveData[id] else nil
 	GetTable: => @SaveData
+	GetCount: => table.Count(@SaveData)
 	Clear: => for k, v in pairs @SaveData do @SaveData[k] = nil
 	SaveWaypoints: => @SaveWaypoint(k) for k, v in pairs @SaveData
 	SaveWaypoint: (id = 0) =>
 		waypoint = @SaveData[id]
-		if not id then error('No such a waypoint with ID: ' .. id)
+		error("No such a waypoint with ID: #{id}") if not waypoint
 		sqlData = {k, SQLStr(v) for k, v in pairs waypoint}
-		query = "UPDATE dmap_clientwaypoints SET name = #{sqlData.name}, posx = #{sqlData.posx}, posy = #{sqlData.posy}, posz = #{sqlData.posz}, red = #{sqlData.red}, green = #{sqlData.green}, blue = #{sqlData.blue}, visible = #{sqlData.visible};"
-		print sql.LastError! if sql.Query(query) == false
-	LoadWaypoints: (serverip = game.GetIPAddress(), map = game.GetMap()) =>
-		query = "SELECT * FROM dmap_clientwaypoints WHERE map = #{SQLStr(map)} AND serverip = #{SQLStr(serverip)}"
+		query = "UPDATE dmap_clientwaypoints SET name = #{sqlData.name}, posx = #{sqlData.posx}, posy = #{sqlData.posy}, posz = #{sqlData.posz}, red = #{sqlData.red}, green = #{sqlData.green}, blue = #{sqlData.blue}, visible = #{sqlData.visible} WHERE id = #{id};"
+		status = sql.Query(query)
+		
+		print sql.LastError! if status == false
+		return status
+	DeleteWaypoint: (id = 0) =>
+		error("No such a waypoint with ID: #{id}") if not @SaveData[id]
+		query = "DELETE FROM dmap_clientwaypoints WHERE id = #{SQLStr(id)};"
+		status = sql.Query(query)
+		
+		print sql.LastError! if status == false
+		return status
+	CreateWaypoint: (name = 'New Waypoint', posx = 0, posy = 0, posz = 0, red = math.random(1, 255), green = math.random(1, 255), blue = math.random(1, 255), visible = true) =>
+		newData = {
+			:name
+			:posx
+			:posy
+			:posz
+			:red
+			:green
+			:blue
+			:visible
+		}
+		
+		serverip = SQLStr(@serverip)
+		map = SQLStr(@map)
+		sqlData = {k, SQLStr(v) for k, v in pairs newData}
+		query = "INSERT INTO dmap_clientwaypoints (serverip, map, name, posx, posy, posz, red, green, blue, visible) VALUES (#{serverip}, #{map}, #{sqlData.name}, #{sqlData.posx}, #{sqlData.posy}, #{sqlData.posz}, #{sqlData.red}, #{sqlData.green}, #{sqlData.blue}, #{sqlData.visible});"
+		status = sql.Query(query)
+		if status ~= false
+			id = tonumber(sql.Query('SELECT last_insert_rowid() AS "ID"')[1].ID)
+			newData.id = id
+			@SaveData[id] = newData
+			@CreateTrigger(id, newData)
+			return newData, id
+		else
+			print '[DMaps] ERROR WHEN EXECUTING QUERY: ', query
+			print sql.LastError!
+			return false, false
+	LoadWaypoints: =>
+		query = "SELECT * FROM dmap_clientwaypoints WHERE map = #{SQLStr(@map)} AND serverip = #{SQLStr(@serverip)}"
 		data = sql.Query(query)
-		if data ~= nil and not dryrun
+		if data ~= nil
 			@Clear!
-			for k, v in pairs data
-				@SaveData[data.id] = data
+			for row in *data
+				@SaveData[tonumber(row.id)] = row if row.id
 		print sql.LastError! if data == false
 		return data
 		

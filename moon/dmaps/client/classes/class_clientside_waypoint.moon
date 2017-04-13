@@ -15,7 +15,7 @@
 -- limitations under the License.
 -- 
 
-import DMaps, sql from _G
+import DMaps, sql, Color from _G
 import DMapWaypoint, WaypointsDataContainer from DMaps
 
 -- Structure of loaded clientside waypoint
@@ -33,21 +33,20 @@ import DMapWaypoint, WaypointsDataContainer from DMaps
 class ClientsideWaypoint extends DMapWaypoint
 	@WAYPOINTS = {}
 	@WAYPOINTS_ALL = {}
+	@nosave = false
 	
 	@RegisterWaypoints = (map) =>
-		error('Data was not loaded!') if not @DataContainer
-		for k, data in pairs @DataContainer\GetData!
-			waypoint = ClientsideWaypoint(data)
-			map\AddObject(waypoint)
-	
+		error('ClientsideWaypoint Data is not loaded!') if not @DataContainer
+		map\AddObject(ClientsideWaypoint(data)) for k, data in pairs @DataContainer\GetData!
+		@map = map
 	@SaveWaypoints = =>
 		error('Data was not loaded!') if not @DataContainer
 		@DataContainer\SaveWaypoints!
 	@SaveWaypoint = (id = 0) =>
 		error('Data was not loaded!') if not @DataContainer
 		@DataContainer\SaveWaypoint(id)
-	
 	@OnWaypointUpdates = (waypoint) =>
+		if @nosave return
 		newData = {}
 		with waypoint
 			newData.posx = .GetX!
@@ -63,9 +62,21 @@ class ClientsideWaypoint extends DMapWaypoint
 			newData.map = .map
 			newData.serverip = .serverip
 			newData.id = .id
+		@nosave = true
 		@DataContainer\SetSaveData(newData.id, newData)
+		@nosave = false
 		waypoint.savedata = newData
-	
+	@OnDataContainerChanges = (id, data) =>
+		if @nosave return
+		if not @WAYPOINTS[id] return
+		waypoint = @WAYPOINTS[id]
+		waypoint.nosave = true
+		waypoint\SetupSaveData(data)
+		waypoint.nosave = false
+	@OnDataAdded = (id, data) =>
+		if @nosave return
+		if not @map return
+		@map\AddObject(ClientsideWaypoint(data))
 	@Clear = =>
 		error('Data was not loaded!') if not @DataContainer
 		@DataContainer\Clear!
@@ -78,7 +89,10 @@ class ClientsideWaypoint extends DMapWaypoint
 	@LoadWaypoints = (dryrun = true, serverip = game.GetIPAddress(), map = game.GetMap()) =>
 		newData = WaypointsDataContainer(serverip, map)
 		newData\LoadWaypoints!
-		@DataContainer = newData if not dryrun
+		if not dryrun
+			@DataContainer = newData
+			newData\SetUpdateTrigger((container, id, data) -> @OnDataContainerChanges(id, data))
+			newData\SetCreateTrigger((container, id, data) -> @OnDataAdded(id, data))
 		return newData
 	
 	-- Static methods end
@@ -89,8 +103,23 @@ class ClientsideWaypoint extends DMapWaypoint
 		@SAVEID = savedata.id
 		@@WAYPOINTS[@SAVEID] = @
 		@tableID = table.insert(@@WAYPOINTS_ALL, @)
+		@nosave = false
+		@SetupSaveData(savedata)
 	
-	OnDataChanged: => timer.Create("DMaps.SaveClientsideWaypointData.#{@SAVEID}", 0.5, 1, -> @@OnWaypointUpdates(@))
+	SetupSaveData: (savedata) =>
+		@nosave = true
+		@savedata = savedata
+		with savedata
+			@color = Color(.red, .green, .blue)
+			@x = .posx
+			@y = .posy
+			@z = .posz
+			@name = .name
+			@pointName = .name
+			@visible = .visible
+		@nosave = false
+	
+	OnDataChanged: => if not @nosave then timer.Create("DMaps.SaveClientsideWaypointData.#{@SAVEID}", 0.5, 1, -> @@OnWaypointUpdates(@))
 	GetSaveID: => @SAVEID
 	Remove: =>
 		super!

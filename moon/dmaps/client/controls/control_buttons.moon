@@ -23,6 +23,7 @@ PANEL =
 		@waypoints = vgui.Create('DButton', @)
 		@options = vgui.Create('DButton', @)
 		@waypoints\SetText('Waypoints')
+		@waypoints.DoClick = DMaps.OpenWaypointsMenu
 		@options\SetText('Options')
 		table.insert(@buttons, @waypoints)
 		table.insert(@buttons, @options)

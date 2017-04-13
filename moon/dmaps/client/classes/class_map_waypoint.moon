@@ -17,6 +17,7 @@
 
 -- Yeah, waypoints
 
+import DMaps, surface, Color, math, draw, TEXT_ALIGN_CENTER from _G
 import DMapPointer from DMaps
 
 surface.CreateFont('DMaps.WaypointName', {
@@ -64,10 +65,14 @@ class DMapWaypoint extends DMapPointer
 	GetDrawInWorld: => @drawInWorld
 	ShouldDrawInWorld: => @drawInWorld and @visible
 	
+	GetColor: => @color
+	SetColor: (color = Color(math.random(1, 255), math.random(1, 255), math.random(1, 255))) =>
+		@color = color
+		@OnDataChanged!
 	GetIsVisible: => @visible
 	SetIsVisible: (val = true) =>
 		@visible = val
-		@OnDataChanged
+		@OnDataChanged!
 	SetName: (val = "%WAYPOINT_#{@ID}%") =>
 		@pointName = val
 		@name = val

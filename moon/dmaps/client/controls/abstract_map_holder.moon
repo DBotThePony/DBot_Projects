@@ -32,6 +32,7 @@ PANEL.GetButtons = =>
 PANEL.Init = =>
 	@SetSize(200, 200)
 	@mapObject = DMaps.DMap!
+	RegisterWaypoints(@mapObject)
 	@UpdateMapSizes!
 	@SetCursor('hand')
 	@hold = false
