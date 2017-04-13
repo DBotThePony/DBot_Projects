@@ -168,4 +168,5 @@ PANEL.Paint = (w, h) =>
 	
 
 DMaps.PANEL_MAP_ARROWS = PANEL
+vgui.Register('DMapsMapArrows', DMaps.PANEL_MAP_ARROWS, 'EditablePanel')
 return PANEL

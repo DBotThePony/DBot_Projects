@@ -21,6 +21,8 @@ include 'dmaps/client/classes/class_map_entity_point.lua'
 include 'dmaps/client/classes/class_player_point.lua'
 include 'dmaps/client/classes/class_lplayer_point.lua'
 include 'dmaps/client/classes/class_map_waypoint.lua'
+include 'dmaps/client/classes/waypoints_holder.lua'
+include 'dmaps/client/classes/class_clientside_waypoint.lua'
 
 include 'dmaps/client/controls/control_compass.lua'
 include 'dmaps/client/controls/control_arrows.lua'
@@ -28,10 +30,5 @@ include 'dmaps/client/controls/control_zoom.lua'
 include 'dmaps/client/controls/control_buttons.lua'
 include 'dmaps/client/controls/abstract_map_holder.lua'
 
-vgui.Register('DMapsMapHolder', DMaps.PANEL_ABSTRACT_MAP_HOLDER, 'EditablePanel')
-vgui.Register('DMapsMapCompass', DMaps.PANEL_MAP_COMPASS, 'EditablePanel')
-vgui.Register('DMapsMapArrows', DMaps.PANEL_MAP_ARROWS, 'EditablePanel')
-vgui.Register('DMapsMapZoom', DMaps.PANEL_MAP_ZOOM, 'EditablePanel')
-vgui.Register('DMapButtons', DMaps.PANEL_CONTROL_BUTTONS, 'EditablePanel')
-
 include 'dmaps/client/default_gui.lua'
+include 'dmaps/client/waypoints_controller.lua'

@@ -124,4 +124,5 @@ PANEL.Paint = (w, h) =>
 		surface.DrawRect(0, 0, w, 10)
 
 DMaps.PANEL_MAP_ZOOM = PANEL
+vgui.Register('DMapsMapZoom', DMaps.PANEL_MAP_ZOOM, 'EditablePanel')
 return PANEL

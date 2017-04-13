@@ -56,6 +56,7 @@ class DMapPointer
 	
 	-- Called internally
 	PositionChanged: => -- Override
+	OnDataChanged: => -- Override
 	
 	GetID: => @ID
 	ShouldDraw: (map) => map\PrefferDraw(@x, @y, @z)
@@ -75,17 +76,21 @@ class DMapPointer
 	SetX: (val = 0) =>
 		@x = assert(val, 'number')
 		@PositionChanged!
+		@OnDataChanged!
 	SetY: (val = 0) =>
 		@y = assert(val, 'number')
 		@PositionChanged!
+		@OnDataChanged!
 	SetZ: (val = 0) =>
 		@z = assert(val, 'number')
 		@PositionChanged!
+		@OnDataChanged!
 	SetPos: (val = Vector(0, 0, 0)) =>
 		@x = val.x
 		@y = val.y
 		@z = val.z
 		@PositionChanged!
+		@OnDataChanged!
 	
 	GetX: => @x
 	GetY: => @y

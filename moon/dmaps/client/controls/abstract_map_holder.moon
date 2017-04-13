@@ -19,7 +19,8 @@
 -- And user controls
 
 import DMaps, surface, gui, draw, table, unpack, vgui, math from _G
-import DMapLocalPlayerPointer, DMapPlayerPointer from DMaps
+import DMapLocalPlayerPointer, DMapPlayerPointer, ClientsideWaypoint from DMaps
+import \RegisterWaypoints from ClientsideWaypoint
 
 PANEL = {}
 
@@ -207,4 +208,5 @@ PANEL.OnRemove = =>
 	@mapObject\Remove!
 
 DMaps.PANEL_ABSTRACT_MAP_HOLDER = PANEL
+vgui.Register('DMapsMapHolder', DMaps.PANEL_ABSTRACT_MAP_HOLDER, 'EditablePanel')
 return PANEL

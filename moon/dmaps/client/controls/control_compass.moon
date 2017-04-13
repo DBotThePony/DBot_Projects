@@ -204,4 +204,5 @@ PANEL.Paint = (w, h) =>
 	surface.DrawPoly(@southPart)
 
 DMaps.PANEL_MAP_COMPASS = PANEL
+vgui.Register('DMapsMapCompass', DMaps.PANEL_MAP_COMPASS, 'EditablePanel')
 return PANEL

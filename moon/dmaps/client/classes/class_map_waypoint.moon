@@ -35,7 +35,6 @@ class DMapWaypoint extends DMapPointer
 	
 	@HU_IN_METR = 40
 	@HuToMemtr = (val = 0) =>
-		
 	
 	@generateSquare = (x = 0, y = 0, size = 30) =>
 		output = {
@@ -54,6 +53,7 @@ class DMapWaypoint extends DMapPointer
 		@name = name
 		@color = Color(math.random(1, 255), math.random(1, 255), math.random(1, 255))
 		@zoom = 60
+		@visible = true
 	
 	PreDraw: (map) => @DRAW_X, @DRAW_Y = map\Start2D(@x, @y)
 	PostDraw: (map) => map\Stop2D()
@@ -62,13 +62,22 @@ class DMapWaypoint extends DMapPointer
 	
 	SetDrawInWorld: (val = true) => @drawInWorld = val
 	GetDrawInWorld: => @drawInWorld
+	ShouldDrawInWorld: => @drawInWorld and @visible
+	
+	GetIsVisible: => @visible
+	SetIsVisible: (val = true) =>
+		@visible = val
+		@OnDataChanged
+	SetName: (val = "%WAYPOINT_#{@ID}%") =>
+		@pointName = val
+		@name = val
+		@OnDataChanged!
 	
 	GetText: =>
 		text = @name
 		if @IsNearMouse!
 			text ..= "\nX: #{@x}; Y: #{@y}; Z: #{@z}"
 		return text
-	
 	Draw: (map) =>
 		x, y = @DRAW_X, @DRAW_Y
 		draw.NoTexture!

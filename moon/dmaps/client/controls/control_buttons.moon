@@ -56,4 +56,5 @@ PANEL =
 			button\SetSize(step, mh - 6)
 
 DMaps.PANEL_CONTROL_BUTTONS = PANEL
+vgui.Register('DMapButtons', DMaps.PANEL_CONTROL_BUTTONS, 'EditablePanel')
 return PANEL
