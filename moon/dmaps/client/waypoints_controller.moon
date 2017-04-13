@@ -83,6 +83,13 @@ DMaps.OpenWaypointEditMenu = (pointid = 0, container = ClientsideWaypoint.DataCo
 		\SetValue(data.visible)
 		\Dock(TOP)
 	
+	decline = vgui.Create('DButton', @)
+	with decline
+		\SetText('Decline')
+		\Dock(BOTTOM)
+		\SetSize(0, 20)
+		.DoClick = -> @Close()
+	
 	local picker
 	confirm = vgui.Create('DButton', @)
 	with confirm
@@ -104,13 +111,6 @@ DMaps.OpenWaypointEditMenu = (pointid = 0, container = ClientsideWaypoint.DataCo
 			container\SetSaveData(pointid, newData)
 			@confirmed = true
 			@Close()
-	
-	decline = vgui.Create('DButton', @)
-	with decline
-		\SetText('Decline')
-		\Dock(BOTTOM)
-		\SetSize(0, 20)
-		.DoClick = -> @Close()
 	
 	picker = vgui.Create('DColorMixer', @)
 	with picker
