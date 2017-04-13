@@ -85,7 +85,7 @@ PANEL.OnMouseWheeled = (deltaWheel) =>
 	@mapObject\LockView(true)
 	@mapObject\AddZoom(-deltaWheel * math.max(math.abs(@mapObject\GetZoom!), 100) * 0.1)
 	
-	mult = @mapObject\GetZoomMultiplier! * 0.019
+	mult = @mapObject\GetZoomMultiplier! * 0.05
 	yawDeg = @mapObject\GetYaw!
 	w, h = @GetSize!
 	centerX, centerY = @LocalToScreen(w / 2, h / 2)
@@ -167,10 +167,8 @@ PANEL.Think = =>
 			@cursor_lastX = x
 			@cursor_lastY = y
 			
-			mult = @mapObject\GetZoomMultiplier! * 0.125
-			
-			bMoveX = -deltaX * mult
-			bMoveY = deltaY * mult
+			bMoveX = -deltaX * @mapObject.xHUPerPixel * (@mapObject\DeltaZoomMultiplier! ^ 2) * @mapObject.__class.CONSTANT_ZOOM_MOVE
+			bMoveY = deltaY * @mapObject.yHUPerPixel * (@mapObject\DeltaZoomMultiplier! ^ 2) * @mapObject.__class.CONSTANT_ZOOM_MOVE
 			
 			moveX = bMoveX * cos - bMoveY * sin
 			moveY = bMoveX * sin + bMoveY * cos

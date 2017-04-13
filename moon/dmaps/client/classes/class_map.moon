@@ -170,6 +170,7 @@ class DMap
 	AddX: (val = 0) => @currX += assert(val, 'number')
 	AddY: (val = 0) => @currY += assert(val, 'number')
 	AddZ: (val = 0) => @zoom += assert(val, 'number')
+	DeltaZoomMultiplier: => @zoom / @@MINIMAL_ZOOM
 	AddZoom: (val = 0) => @zoom = math.max(@zoom + assert(val, 'number'), @@MINIMAL_ZOOM)
 	SetZoom: (val = @@MINIMAL_ZOOM) =>
 		@zoom = math.max(assert(val, 'number'), @@MINIMAL_ZOOM)
@@ -498,6 +499,7 @@ class DMap
 	
 	-- When 1113 830
 	@CONSTANT_MULTIPLY = 1.6
+	@CONSTANT_ZOOM_MOVE = 0.43
 	
 	-- wtf
 	ScreenToMap: (x = 0, y = 0) =>
