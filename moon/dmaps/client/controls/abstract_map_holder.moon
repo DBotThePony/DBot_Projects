@@ -60,7 +60,12 @@ PANEL.Init = =>
 	@cursor_lastY = 0
 
 PANEL.OnMousePressed = (code) =>
-	if code == MOUSE_LEFT
+	if code == MOUSE_RIGHT
+		points = @mapObject\FindInRadius(@mapObject.mouseX, @mapObject.mouseY, 130, @mapObject.__class.WaypointsFilter)
+		for point in *points
+			status = point\OpenMenu()
+			break if status
+	elseif code == MOUSE_LEFT
 		@hold = true
 		x, y = gui.MousePos()
 		@SetCursor('sizeall')

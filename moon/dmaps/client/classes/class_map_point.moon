@@ -25,6 +25,8 @@ class DMapPointer
 	@TEXT_COLOR = Color(255, 255, 255)
 	@UID = 0
 	
+	@Filter = (obj) => obj.__class.__type == @__type
+	
 	@generateTriangle = (x = 0, y = 0, ang = 0, hypo = 20, myShift = 30, height = 70) =>
 		sin = math.sin(math.rad(ang))
 		cos = math.cos(math.rad(ang))
@@ -62,6 +64,11 @@ class DMapPointer
 	ShouldDraw: (map) => map\PrefferDraw(@x, @y, @z)
 	
 	@MOUSE_CONSTANT = 70
+	
+	-- True - menu is opened
+	-- False - Point has no menu
+	OpenMenu: => -- Override
+		return false
 	
 	IsNearMouse: =>
 		if not @map.mouseHit return false

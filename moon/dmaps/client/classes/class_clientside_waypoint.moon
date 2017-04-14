@@ -15,7 +15,7 @@
 -- limitations under the License.
 -- 
 
-import DMaps, sql, Color from _G
+import DMaps, sql, Color, DermaMenu from _G
 import DMapWaypoint, WaypointsDataContainer from DMaps
 
 -- Structure of loaded clientside waypoint
@@ -125,6 +125,14 @@ class ClientsideWaypoint extends DMapWaypoint
 	
 	OnDataChanged: => if not @nosave then timer.Create("DMaps.SaveClientsideWaypointData.#{@SAVEID}", 0.5, 1, -> @@OnWaypointUpdates(@))
 	GetSaveID: => @SAVEID
+	OpenMenu: =>
+		menu = DermaMenu()
+		with menu
+			\AddOption('Edit...', -> DMaps.OpenWaypointEditMenu(@SAVEID, @@DataContainer))
+			\AddSubMenu('Delete')\AddOption('Confirm?', -> @@DataContainer\DeleteWaypoint(@SAVEID))
+			\AddOption('Close', ->)
+			\Open()
+		return true
 	Remove: =>
 		super!
 		@@WAYPOINTS[@SAVEID] = nil

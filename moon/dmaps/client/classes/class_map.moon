@@ -122,6 +122,11 @@ class DMap
 		
 		@RegisterHooks!
 	
+	IsMouseActive: => @mouseHit
+	MouseActive: => @mouseHit
+	GetMouseX: => @mouseX
+	GetMouseY: => @mouseY
+	
 	GetDrawX: => @x
 	GetDrawY: => @y
 	
@@ -371,6 +376,25 @@ class DMap
 		if not @lockView
 			@currX = Lerp(0.1, @currX, pos.x)
 			@currY = Lerp(0.1, @currY, pos.y)
+	
+	@WaypointsFilter = (obj, radius) -> obj.__class.__type == 'waypoint'
+	@EntityFilter = (obj, radius) -> obj.__class.__type == 'entity'
+	@PlayerFilter = (obj, radius) -> obj.__class.__type == 'player'
+	@PointFilter = (obj, radius) -> obj.__class.__type == 'points'
+	FindInRadius: (x = 0, y = 0, radius = 130, filter = ((obj, radius) -> true)) =>
+		output = {}
+		for k, objectTab in pairs @objectTables
+			for k, object in pairs objectTab
+				if object\IsValid()
+					x1 = object\GetX()
+					y1 = object\GetY()
+					dist = ((x - x1) ^ 2 + (y - y1) ^ 2) ^ 0.5
+					if dist < radius
+						if filter(object, radius)
+							table.insert(output, object)
+				else
+					objectTab[k] = nil
+		return output
 	
 	Think: =>
 		if not @IsValid! then return
