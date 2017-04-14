@@ -104,7 +104,7 @@ class ClientsideWaypoint extends DMapWaypoint
 		if not savedata then error('No savedata was passed to the constructor of DMapClientsideWaypoint!')
 		super(savedata.name, savedata.posx, savedata.posy, savedata.posz)
 		@savedata = savedata
-		@SAVEID = savedata.id
+		@SAVEID = tonumber(savedata.id)
 		@@WAYPOINTS[@SAVEID] = @
 		@tableID = table.insert(@@WAYPOINTS_ALL, @)
 		@nosave = false
