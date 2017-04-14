@@ -47,6 +47,42 @@ class WaypointsDataContainer
 		@SaveData[id] = data
 		@SaveWaypoint(id) if triggerSave
 		@UpdateTrigger(id, data)
+	SetVisible: (id = 0, visible = true) =>
+		data = @GetPoint(id)
+		error("No such a waypoint with ID: #{id}") if not data
+		data.visible = visible
+		@SetSaveData(id, data)
+	SetX: (id = 0, val = 0) =>
+		data = @GetPoint(id)
+		error("No such a waypoint with ID: #{id}") if not data
+		data.posx = val
+		@SetSaveData(id, data)
+	SetY: (id = 0, val = 0) =>
+		data = @GetPoint(id)
+		error("No such a waypoint with ID: #{id}") if not data
+		data.posy = val
+		@SetSaveData(id, data)
+	SetZ: (id = 0, val = 0) =>
+		data = @GetPoint(id)
+		error("No such a waypoint with ID: #{id}") if not data
+		data.posz = val
+		@SetSaveData(id, data)
+	SetRed: (id = 0, val = 0) =>
+		data = @GetPoint(id)
+		error("No such a waypoint with ID: #{id}") if not data
+		data.red = val
+		@SetSaveData(id, data)
+	SetGreen: (id = 0, val = 0) =>
+		data = @GetPoint(id)
+		error("No such a waypoint with ID: #{id}") if not data
+		data.green = val
+		@SetSaveData(id, data)
+	SetBlue: (id = 0, val = 0) =>
+		data = @GetPoint(id)
+		error("No such a waypoint with ID: #{id}") if not data
+		data.blue = val
+		@SetSaveData(id, data)
+	
 	GetData: => @SaveData
 	GetPoint: (id = 0) => table.Copy(@SaveData[id]) if @SaveData[id] else nil
 	GetWaypoint: (id = 0) => table.Copy(@SaveData[id]) if @SaveData[id] else nil
@@ -69,6 +105,7 @@ class WaypointsDataContainer
 		status = sql.Query(query)
 		
 		print sql.LastError! if status == false
+		@SaveData[id] = nil if status == nil
 		return status
 	CreateWaypoint: (name = 'New Waypoint', posx = 0, posy = 0, posz = 0, red = math.random(1, 255), green = math.random(1, 255), blue = math.random(1, 255), visible = true) =>
 		newData = {

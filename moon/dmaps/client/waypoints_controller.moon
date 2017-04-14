@@ -27,7 +27,7 @@ DMaps.LoadWaypoints = ->
 		chat.AddText(sql.LastError!)
 	elseif status == nil
 		chat.AddText('[DMaps] No waypoints found for this server/map')
-DMaps.OpenWaypointEditMenu = (pointid = 0, container = ClientsideWaypoint.DataContainer, onCancel = (->)) ->
+DMaps.OpenWaypointEditMenu = (pointid = 0, container = ClientsideWaypoint.DataContainer, onCancel = (->), onFinish = (->)) ->
 	data = container\GetWaypoint(pointid)
 	if not data return
 	frame = vgui.Create('DFrame')
@@ -39,7 +39,8 @@ DMaps.OpenWaypointEditMenu = (pointid = 0, container = ClientsideWaypoint.DataCo
 	@Center()
 	@MakePopup()
 	
-	@OnClose = -> onCancel() if not @confirmed
+	@OnClose = ->
+		onCancel() if not @confirmed
 	
 	fieldsData = {
 		{"Waypoint name", data.name}
@@ -110,6 +111,7 @@ DMaps.OpenWaypointEditMenu = (pointid = 0, container = ClientsideWaypoint.DataCo
 			}
 			container\SetSaveData(pointid, newData)
 			@confirmed = true
+			onFinish()
 			@Close()
 	
 	picker = vgui.Create('DColorMixer', @)
@@ -118,6 +120,8 @@ DMaps.OpenWaypointEditMenu = (pointid = 0, container = ClientsideWaypoint.DataCo
 		\SetAlphaBar(false)
 	with data
 		picker\SetColor(Color(.red, .green, .blue))
+	DMaps.WaypointEditContainer = frame
+	return frame
 DMaps.OpenWaypointsMenu = ->
 	frame = vgui.Create('DFrame')
 	self = frame
@@ -161,7 +165,100 @@ DMaps.OpenWaypointsMenu = ->
 		\SizeToContents()
 		.DoClick = ->
 			data, id = ClientsideWaypoint.DataContainer\CreateWaypoint()
-			DMaps.OpenWaypointEditMenu(id, ClientsideWaypoint.DataContainer, -> ClientsideWaypoint.DataContainer\DeleteWaypoint(id)) if id
+			DMaps.OpenWaypointEditMenu(id, ClientsideWaypoint.DataContainer,
+				-> ClientsideWaypoint.DataContainer\DeleteWaypoint(id),
+				-> DMaps.WaypointListContainer.buildList()
+			) if id
 	
+	@buildList = ->
+		if @points
+			v\Remove() for i, v in pairs @points
+		@points = {}
+		for i, point in pairs ClientsideWaypoint.DataContainer\GetData()
+			str = vgui.Create('EditablePanel', @)
+			table.insert(@points, str)
+			with str
+				\Dock(TOP)
+				\SetSize(0, 25)
+				\DockMargin(5, 2, 5, 2)
+				.Paint = (w, h) =>
+					surface.SetDrawColor(130, 130, 130)
+					surface.DrawRect(0, 0, w, h)
+			
+			str.name = vgui.Create('DLabel', str)
+			with str.name
+				\SetText(point.name)
+				\Dock(LEFT)
+				\DockMargin(5, 0, 5, 0)
+				\SetSize(200, 100)
+				\SetColor(color_white)
+			
+			str.posx = vgui.Create('DLabel', str)
+			with str.posx
+				\SetText("X: #{point.posx}")
+				\Dock(LEFT)
+				\DockMargin(5, 0, 5, 0)
+				\SetSize(60, 60)
+				\SetColor(color_white)
+			
+			str.posy = vgui.Create('DLabel', str)
+			with str.posy
+				\SetText("Y: #{point.posy}")
+				\Dock(LEFT)
+				\DockMargin(5, 0, 5, 0)
+				\SetSize(60, 60)
+				\SetColor(color_white)
+			
+			str.posz = vgui.Create('DLabel', str)
+			with str.posz
+				\SetText("Z: #{point.posz}")
+				\Dock(LEFT)
+				\DockMargin(5, 0, 5, 0)
+				\SetSize(60, 60)
+				\SetColor(color_white)
+			
+			str.color = vgui.Create('EditablePanel', str)
+			with str.color
+				\Dock(LEFT)
+				\DockMargin(5, 5, 5, 5)
+				\SetSize(60, 60)
+				.Paint = (w, h) =>
+					surface.SetDrawColor(point.red, point.green, point.blue)
+					surface.DrawRect(0, 0, w, h)
+			
+			str.edit = vgui.Create('DButton', str)
+			with str.edit
+				\Dock(RIGHT)
+				\DockMargin(5, 2, 5, 2)
+				\SetSize(100, 60)
+				\SetText('Edit Waypoint...')
+				.DoClick = -> DMaps.OpenWaypointEditMenu(i, ClientsideWaypoint.DataContainer, nil, -> DMaps.WaypointListContainer.buildList())
+			
+			str.visible = vgui.Create('DButton', str)
+			with str.visible
+				\Dock(RIGHT)
+				\DockMargin(5, 2, 5, 2)
+				\SetSize(100, 60)
+				if point.visible
+					\SetText('Make invisible')
+				else
+					\SetText('Make visible')
+				.DoClick = ->
+					ClientsideWaypoint.DataContainer\SetVisible(i, not point.visible)
+					DMaps.WaypointListContainer.buildList()
+			
+			str.delete = vgui.Create('DButton', str)
+			with str.delete
+				\Dock(RIGHT)
+				\DockMargin(5, 2, 5, 2)
+				\SetSize(100, 60)
+				\SetText('Delete waypoint')
+				.DoClick = ->
+					btnconfirmed = ->
+						ClientsideWaypoint.DataContainer\DeleteWaypoint(i)
+						DMaps.WaypointListContainer.buildList()
+					Derma_Query("Delete waypoint №#{i} (#{point.name})?\nIt will be gone forever!\n(A long time!)", "Delete waypoint №#{i} (#{point.name})?", 'Confirm', btnconfirmed, 'Cancel', (->))
+	DMaps.WaypointListContainer = frame
+	DMaps.WaypointListContainer.buildList()
 	return frame
 timer.Simple(0, DMaps.LoadWaypoints)
