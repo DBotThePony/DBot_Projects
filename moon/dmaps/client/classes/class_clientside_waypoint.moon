@@ -123,7 +123,9 @@ class ClientsideWaypoint extends DMapWaypoint
 			@visible = .visible
 		@nosave = false
 	
-	OnDataChanged: => if not @nosave then timer.Create("DMaps.SaveClientsideWaypointData.#{@SAVEID}", 0.5, 1, -> @@OnWaypointUpdates(@))
+	OnDataChanged: =>
+		if not @nosave then timer.Create("DMaps.SaveClientsideWaypointData.#{@SAVEID}", 0.5, 1, -> @@OnWaypointUpdates(@))
+		super!
 	GetSaveID: => @SAVEID
 	OpenMenu: =>
 		menu = DermaMenu()

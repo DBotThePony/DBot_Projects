@@ -294,7 +294,8 @@ class DMap
 			return true
 		
 		-- For drawing in-world markers, points, etc.
-		postDrawFunc = ->
+		postDrawFunc = (a, b) ->
+			if a or b return
 			if not @IsValid!
 				hook.Remove('PostDrawTranslucentRenderables', hookID, preDrawFunc)
 				return
@@ -727,7 +728,13 @@ class DMap
 	PreDrawWorld: => -- Override
 	PostDrawWorld: => -- Override
 	
-	DrawWorld: => -- Override
+	DrawWorld: =>
+		for k, objectTab in pairs @objectTables
+			for k, object in pairs objectTab
+				if object\IsValid()
+					object\DrawWorldHook(@)
+				else
+					objectTab[k] = nil
 	
 	DrawWorldHook: =>
 		xpcall(@PreDrawWorld, @@CatchError, @)

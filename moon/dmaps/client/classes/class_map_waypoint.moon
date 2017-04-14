@@ -18,11 +18,36 @@
 -- Yeah, waypoints
 
 import DMaps, surface, Color, math, draw, TEXT_ALIGN_CENTER from _G
-import DMapPointer from DMaps
+import math, Vector, Angle, render, cam from _G
+import DMapPointer, HU_IN_METRE from DMaps
 
 surface.CreateFont('DMaps.WaypointName', {
 	font: 'Roboto',
 	size: 48
+	weight: 500
+})
+
+surface.CreateFont('DMaps.WaypointNameSmaller', {
+	font: 'Roboto',
+	size: 36
+	weight: 500
+})
+
+surface.CreateFont('DMaps.WaypointNameSmall', {
+	font: 'Roboto',
+	size: 24
+	weight: 500
+})
+
+surface.CreateFont('DMaps.WaypointNameSmall2', {
+	font: 'Roboto',
+	size: 18
+	weight: 500
+})
+
+surface.CreateFont('DMaps.WaypointNameSmall3', {
+	font: 'Roboto',
+	size: 14
 	weight: 500
 })
 
@@ -31,6 +56,10 @@ class DMapWaypoint extends DMapPointer
 	
 	@TEXT_BACKGROUND_COLOR = Color(0, 0, 0, 150)
 	@TEXT_FONT = 'DMaps.WaypointName'
+	@TEXT_FONT_SMALL = 'DMaps.WaypointNameSmall'
+	@TEXT_FONT_SMALLER = 'DMaps.WaypointNameSmaller'
+	@TEXT_FONT_SMALL2 = 'DMaps.WaypointNameSmall2'
+	@TEXT_FONT_SMALL3 = 'DMaps.WaypointNameSmall3'
 	@TEXT_COLOR = Color(255, 255, 255)
 	@TEXT_BACKGROUND_SHIFT = 4
 	
@@ -55,6 +84,7 @@ class DMapWaypoint extends DMapPointer
 		@color = Color(math.random(1, 255), math.random(1, 255), math.random(1, 255))
 		@zoom = 60
 		@visible = true
+		@BuildBoxes!
 	
 	PreDraw: (map) => @DRAW_X, @DRAW_Y = map\Start2D(@x, @y)
 	PostDraw: (map) => map\Stop2D()
@@ -64,6 +94,65 @@ class DMapWaypoint extends DMapPointer
 	SetDrawInWorld: (val = true) => @drawInWorld = val
 	GetDrawInWorld: => @drawInWorld
 	ShouldDrawInWorld: => @drawInWorld and @visible
+	
+	@MAX_DRAW_DIST = 1000
+	
+	BuildBoxes: =>
+		@worldBoxes = {}
+		for i = 50, 10, -15
+			mins = Vector(-i, -i, -2000)
+			maxs = Vector(i, i, 4000)
+			table.insert(@worldBoxes, {:mins, :maxs})
+	OnDataChanged: =>
+		super!
+		@BuildBoxes!
+	
+	@BOX_MATERIAL = Material('models/debug/debugwhite')
+	@BLEND = 0.1
+	@BOX_ANGLES = Angle(0, 0, 0)
+	@NORMAL_LEFT = Vector(0, 1, 0)
+	DrawWorld: (map) =>
+		if not @ShouldDrawInWorld() return
+		pos = @GetPos()
+		scr = pos\ToScreen()
+		w, h = ScrW!, ScrH!
+		if scr.x > w + 100 or scr.x < -100 return
+		-- if scr.y > h + 100 or scr.y < -100 return
+		
+		x, y = w / 2, h / 2
+		dist = ((x - scr.x) ^ 2 + (y - scr.y) ^ 2) ^ 0.5
+		alpha = math.Clamp((200 - dist) / 180, 0.1, 1)
+		
+		local ang, epos, pdist
+		with LocalPlayer()
+			ang = \EyeAngles()
+			epos = \EyePos()
+			pdist = epos\Distance(pos)
+			if \InVehicle() and \GetVehicle()\IsValid()
+				ang += \GetVehicle()\GetAngles()
+		
+		deltaAng = (pos - epos)\Angle()
+		deltaAng\RotateAroundAxis(deltaAng\Right(), 90)
+		deltaAng = Angle(0, 0, 0)
+		
+		add = Vector(-20, 20, 0)
+		add\Rotate(deltaAng)
+		cam.Start2D()
+		@DrawInternal(scr.x, scr.y, math.Clamp((@@MAX_DRAW_DIST - pdist) / @@MAX_DRAW_DIST, 0.1, 1), alpha)
+		cam.End2D()
+		
+		render.SuppressEngineLighting(true)
+		render.SetMaterial(@@BOX_MATERIAL)
+		render.SetColorModulation(@color.r / 255, @color.g / 255, @color.b / 255)
+		render.ResetModelLighting(1, 1, 1)
+		render.SetBlend(@@BLEND)
+		
+		for box in *@worldBoxes
+			render.DrawBox(pos, @@BOX_ANGLES, box.mins, box.maxs, Color(@color.r, @color.b, @color.g, 255 * @@BLEND), true)
+		
+		render.SuppressEngineLighting(false)
+		render.SetBlend(1)
+		render.SetColorModulation(1, 1, 1)
 	
 	GetColor: => @color
 	SetColor: (color = Color(math.random(1, 255), math.random(1, 255), math.random(1, 255))) =>
@@ -80,23 +169,31 @@ class DMapWaypoint extends DMapPointer
 	
 	GetText: =>
 		text = @name
+		text ..= "\nDistance: #{math.floor(LocalPlayer()\EyePos()\Distance(@GetPos()) / HU_IN_METRE * 10) / 10} metres"
 		if @IsNearMouse!
 			text ..= "\nX: #{@x}; Y: #{@y}; Z: #{@z}"
 		return text
-	Draw: (map) =>
-		x, y = @DRAW_X, @DRAW_Y
+	DrawInternal: (x = 0, y = 0, size = 1, alpha = 1) =>
 		draw.NoTexture!
 		
 		with surface
-			.SetDrawColor(@color)
-			.DrawPoly(@@generateSquare(x, y, @zoom))
-			.SetFont(@@TEXT_FONT)
-			.SetDrawColor(@@TEXT_BACKGROUND_COLOR)
+			.SetDrawColor(@color.r, @color.g, @color.b, @color.a * alpha)
+			.DrawPoly(@@generateSquare(x, y, @zoom * math.max(size, 0.3)))
+			pickFont = @@TEXT_FONT if size >= 1
+			pickFont = @@TEXT_FONT_SMALLER if size < 1 and size > 0.5
+			pickFont = @@TEXT_FONT_SMALL if size < 0.5
+			pickFont = @@TEXT_FONT_SMALL2 if size < 0.3
+			pickFont = @@TEXT_FONT_SMALL3 if size <= 0.1
+			.SetFont(pickFont)
+			.SetDrawColor(@@TEXT_BACKGROUND_COLOR.r, @@TEXT_BACKGROUND_COLOR.g, @@TEXT_BACKGROUND_COLOR.b, @@TEXT_BACKGROUND_COLOR.a * alpha)
 			
 			text = @GetText!
 			w, h = .GetTextSize(text)
-			.DrawRect(x - @@TEXT_BACKGROUND_SHIFT - w / 2, y - @@TEXT_BACKGROUND_SHIFT + 10 + @zoom, w + @@TEXT_BACKGROUND_SHIFT * 2, h + @@TEXT_BACKGROUND_SHIFT * 2)
-			draw.DrawText(text, @@TEXT_FONT, x, y + @zoom + 10, @@TEXT_COLOR, TEXT_ALIGN_CENTER)
+			.DrawRect(x - @@TEXT_BACKGROUND_SHIFT - w / 2, y - @@TEXT_BACKGROUND_SHIFT + 10 + @zoom * size, w + @@TEXT_BACKGROUND_SHIFT * 2, h + @@TEXT_BACKGROUND_SHIFT * 2)
+			draw.DrawText(text, pickFont, x, y + @zoom * size + 10, Color(@@TEXT_COLOR.r, @@TEXT_COLOR.g, @@TEXT_COLOR.b, @@TEXT_COLOR.a * alpha), TEXT_ALIGN_CENTER)
+	Draw: (map) =>
+		x, y = @DRAW_X, @DRAW_Y
+		@DrawInternal(x, y)
 
 DMaps.DMapWaypoint = DMapWaypoint
 return DMapWaypoint

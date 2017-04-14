@@ -76,9 +76,14 @@ class DMapPointer
 		deltaY = @map.mouseY - @y
 		return deltaX > -@@MOUSE_CONSTANT and deltaX < @@MOUSE_CONSTANT and deltaY > -@@MOUSE_CONSTANT and deltaY < @@MOUSE_CONSTANT
 	
-	DrawWorld: (map) =>
-		-- Do nothing
-		-- Override
+	DrawWorldHook: (map) =>
+		@PreDrawWorld(map)
+		@DrawWorld(map)
+		@PostDrawWorld(map)
+	
+	PreDrawWorld: (map) => -- Override
+	PostDrawWorld: (map) => -- Override
+	DrawWorld: (map) => -- Override
 	
 	SetX: (val = 0) =>
 		@x = assert(val, 'number')
