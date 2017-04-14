@@ -17,6 +17,8 @@
 
 _assert = assert
 import xpcall from _G
+import cam, surface, draw, util, Vector, Angle, hook from _G
+import debug, print, MsgC, Msg, table, render, math from _G
 
 assert = (arg, tp) ->
 	_assert(type(arg) == tp, 'must be ' .. tp)
@@ -570,6 +572,16 @@ class DMap
 		
 		return newX, newY
 	
+	-- wtf
+	Trace2DPoint: (x = 0, y = 0) =>
+		trData = {
+			mask: MASK_BLOCKLOS
+			start: Vector(x, y, @clipLevelTop)
+			endpos: Vector(x, y, @clipLevelBottom)
+		}
+		
+		return util.TraceLine(trData)
+	Trace2D: (...) => @Trace2DPoint(...)
 	DrawMousePointer: (screenx = 0, screeny = 0, screenw = 0, screenh = 0) =>
 		if not @mouseHit return
 		

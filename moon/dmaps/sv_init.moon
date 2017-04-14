@@ -33,3 +33,5 @@ AddCSLuaFile 'dmaps/client/controls/waypoint_row.lua'
 
 AddCSLuaFile 'dmaps/client/default_gui.lua'
 AddCSLuaFile 'dmaps/client/waypoints_controller.lua'
+
+include 'dmaps/server/commands.lua'

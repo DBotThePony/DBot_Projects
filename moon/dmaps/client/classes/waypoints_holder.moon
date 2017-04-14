@@ -113,6 +113,12 @@ class WaypointsDataContainer
 			@SaveData[id] = nil
 		return status
 	CreateWaypoint: (name = 'New Waypoint', posx = LocalPlayer()\GetPos().x, posy = LocalPlayer()\GetPos().y, posz = LocalPlayer()\GetPos().z, red = math.random(1, 255), green = math.random(1, 255), blue = math.random(1, 255), visible = true) =>
+		posx = math.floor(posx)
+		posy = math.floor(posy)
+		posz = math.floor(posz)
+		red = math.Clamp(math.floor(red), 0, 255)
+		green = math.Clamp(math.floor(green), 0, 255)
+		blue = math.Clamp(math.floor(blue), 0, 255)
 		newData = {
 			:name
 			:posx

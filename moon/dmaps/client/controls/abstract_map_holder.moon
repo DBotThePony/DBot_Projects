@@ -18,7 +18,7 @@
 -- A panel that holds the map
 -- And user controls
 
-import DMaps, surface, gui, draw, table, unpack, vgui, math from _G
+import DMaps, surface, gui, draw, table, unpack, vgui, math, DermaMenu from _G
 import DMapLocalPlayerPointer, DMapPlayerPointer, ClientsideWaypoint from DMaps
 import \RegisterWaypoints from ClientsideWaypoint
 
@@ -61,10 +61,26 @@ PANEL.Init = =>
 
 PANEL.OnMousePressed = (code) =>
 	if code == MOUSE_RIGHT
-		points = @mapObject\FindInRadius(@mapObject.mouseX, @mapObject.mouseY, 130, @mapObject.__class.WaypointsFilter)
+		x, y = math.floor(@mapObject.mouseX), math.floor(@mapObject.mouseY)
+		points = @mapObject\FindInRadius(x, y, 130, @mapObject.__class.WaypointsFilter)
+		hit = false
 		for point in *points
 			status = point\OpenMenu()
-			break if status
+			if status
+				hit = true
+				break
+		if not hit
+			tr = @mapObject\Trace2DPoint(x, y)
+			z = math.floor(tr.HitPos.z + 10)
+			menu = DermaMenu()
+			with menu
+				createWaypoint = ->
+					data, id = ClientsideWaypoint.DataContainer\CreateWaypoint("New Waypoint At X: #{x}, Y: #{y}, Z: #{z}", x, y, z)
+					DMaps.OpenWaypointEditMenu(id, ClientsideWaypoint.DataContainer, -> ClientsideWaypoint.DataContainer\DeleteWaypoint(id)) if id
+				\AddOption('Create waypoint...', createWaypoint)
+				if LocalPlayer()\IsAdmin()
+					\AddOption('Teleport to', -> RunConsoleCommand('dmaps_teleport', x, y, z))
+				\Open()
 	elseif code == MOUSE_LEFT
 		@hold = true
 		x, y = gui.MousePos()
