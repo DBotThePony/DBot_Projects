@@ -385,7 +385,7 @@ class DMap
 					object.map = @
 					object\Think(@)
 				else
-					@objectTab[k] = nil
+					objectTab[k] = nil
 	
 	-- Called to draw map
 	-- It calls Draw2D() inside it
@@ -590,7 +590,7 @@ class DMap
 					if object\ShouldDraw(@)
 						object\DrawHook(@)
 				else
-					@objectTab[k] = nil
+					objectTab[k] = nil
 		
 		@DrawMapCenter(screenx, screeny, screenw, screenh)
 		@DrawMousePointer(screenx, screeny, screenw, screenh)
