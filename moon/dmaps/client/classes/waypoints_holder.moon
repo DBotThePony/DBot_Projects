@@ -15,7 +15,7 @@
 -- limitations under the License.
 -- 
 
-import DMaps, pairs, table, sql, game, math, SQLStr from _G
+import DMaps, pairs, table, sql, game, math, SQLStr, LocalPlayer from _G
 
 class WaypointsDataContainer
 	@WaypointsTable = [[CREATE TABLE IF NOT EXISTS dmap_clientwaypoints (
@@ -112,7 +112,7 @@ class WaypointsDataContainer
 			@RemoveTrigger(id, @SaveData[id])
 			@SaveData[id] = nil
 		return status
-	CreateWaypoint: (name = 'New Waypoint', posx = 0, posy = 0, posz = 0, red = math.random(1, 255), green = math.random(1, 255), blue = math.random(1, 255), visible = true) =>
+	CreateWaypoint: (name = 'New Waypoint', posx = LocalPlayer()\GetPos().x, posy = LocalPlayer()\GetPos().y, posz = LocalPlayer()\GetPos().z, red = math.random(1, 255), green = math.random(1, 255), blue = math.random(1, 255), visible = true) =>
 		newData = {
 			:name
 			:posx
