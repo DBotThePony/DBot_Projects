@@ -29,6 +29,7 @@ include 'dmaps/client/controls/control_arrows.lua'
 include 'dmaps/client/controls/control_zoom.lua'
 include 'dmaps/client/controls/control_buttons.lua'
 include 'dmaps/client/controls/abstract_map_holder.lua'
+include 'dmaps/client/controls/waypoint_row.lua'
 
 include 'dmaps/client/default_gui.lua'
 include 'dmaps/client/waypoints_controller.lua'
