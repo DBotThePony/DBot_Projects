@@ -40,9 +40,12 @@ class WaypointsDataContainer
 		@SaveData = {}
 		@UpdateTrigger = (id, data) =>
 		@CreateTrigger = (id, data) =>
+		@RemoveTrigger = (id, data) =>
 	
 	SetUpdateTrigger: (val = ((id, data) =>)) => @UpdateTrigger = val
 	SetCreateTrigger: (val = ((id, data) =>)) => @CreateTrigger = val
+	SetDeleteTrigger: (val = ((id, data) =>)) => @RemoveTrigger = val
+	SetRemoveTrigger: (val = ((id, data) =>)) => @RemoveTrigger = val
 	SetSaveData: (id = 0, data = {}, triggerSave = true) =>
 		@SaveData[id] = data
 		@SaveWaypoint(id) if triggerSave
@@ -105,7 +108,9 @@ class WaypointsDataContainer
 		status = sql.Query(query)
 		
 		print sql.LastError! if status == false
-		@SaveData[id] = nil if status == nil
+		if status == nil
+			@RemoveTrigger(id, @SaveData[id])
+			@SaveData[id] = nil
 		return status
 	CreateWaypoint: (name = 'New Waypoint', posx = 0, posy = 0, posz = 0, red = math.random(1, 255), green = math.random(1, 255), blue = math.random(1, 255), visible = true) =>
 		newData = {

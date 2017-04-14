@@ -77,6 +77,9 @@ class ClientsideWaypoint extends DMapWaypoint
 		if @nosave return
 		if not @map return
 		@map\AddObject(ClientsideWaypoint(data))
+	@OnDataRemoved = (id, data) =>
+		if @nosave return
+		@WAYPOINTS[id]\Remove() if @WAYPOINTS[id]
 	@Clear = =>
 		error('Data was not loaded!') if not @DataContainer
 		@DataContainer\Clear!
@@ -93,6 +96,7 @@ class ClientsideWaypoint extends DMapWaypoint
 			@DataContainer = newData
 			newData\SetUpdateTrigger((container, id, data) -> @OnDataContainerChanges(id, data))
 			newData\SetCreateTrigger((container, id, data) -> @OnDataAdded(id, data))
+			newData\SetDeleteTrigger((container, id, data) -> @OnDataRemoved(id, data))
 		return newData
 	
 	-- Static methods end
