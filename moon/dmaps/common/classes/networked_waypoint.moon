@@ -30,7 +30,7 @@ class NetworkedWaypoint
 	@WAYPOINT_TYPE = DMapWaypoint
 	@__type = 'networked_waypoint'
 	
-	@PLAYER_FILTER = => player.GetAll()
+	@PLAYER_FILTER = (waypoint) => player.GetAll()
 	
 	@GetWaypoints = => [point for i, point in pairs @NETWORKED_WAYPOINTS]
 	
@@ -200,14 +200,14 @@ class NetworkedWaypoint
 		net.Send(ply)
 	AddPlayer: (ply, networkNow = true) =>
 		return false if CLIENT
-		error('Table will be overwritten on initialize. Override static PLAYER_FILTER() function') if not @INITIALIZE
+		error('Table will be overwritten on initialize. Override static PLAYER_FILTER(waypoint) function') if not @INITIALIZE
 		return false if table.HasValue(@networkedClients, ply)
 		table.insert(@networkedClients, ply)
 		@NetworkToPlayer(ply) if networkNow
 		return true
 	RemovePlayer: (ply, networkNow = true) =>
 		return false if CLIENT
-		error('Table will be overwritten on initialize. Override static PLAYER_FILTER() function') if not @INITIALIZE
+		error('Table will be overwritten on initialize. Override static PLAYER_FILTER(waypoint) function') if not @INITIALIZE
 		for i, ply2 in pairs @networkedClients
 			if ply2 == ply
 				@RemoveFromPlayer(ply2) if networkNow
@@ -224,7 +224,7 @@ class NetworkedWaypoint
 		net.Start(@@NETWORK_STRING)
 		net.WriteUInt(@ID, @@NETWORK_ID_LENGTH)
 		@WriteData()
-		@networkedClients = @@PLAYER_FILTER()
+		@networkedClients = @@PLAYER_FILTER(@)
 		net.Send(@networkedClients)
 net.Receive(NetworkedWaypoint.NETWORK_STRING, -> NetworkedWaypoint\NetworkedCreate())
 net.Receive(NetworkedWaypoint.NETWORK_STRING_CHANGED, -> NetworkedWaypoint\NetworkedChange())
