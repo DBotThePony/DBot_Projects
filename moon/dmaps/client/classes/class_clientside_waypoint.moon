@@ -131,7 +131,6 @@ class ClientsideWaypoint extends DMapWaypoint
 		with menu
 			\AddOption('Edit...', -> DMaps.OpenWaypointEditMenu(@SAVEID, @@DataContainer))
 			\AddSubMenu('Delete')\AddOption('Confirm?', -> @@DataContainer\DeleteWaypoint(@SAVEID))
-			\AddOption('Close', ->)
 			\Open()
 		return super(menu)
 	Remove: =>
