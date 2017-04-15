@@ -171,11 +171,14 @@ DMaps.OpenWaypointsMenu = ->
 			) if id
 	
 	@buildList = ->
+		@scroll\Remove() if IsValid(@scroll)
+		@scroll = vgui.Create('DScrollPanel', @)
+		@scroll\Dock(FILL)
 		if @points
 			v\Remove() for i, v in pairs @points
 		@points = {}
 		for i, point in pairs ClientsideWaypoint.DataContainer\GetData()
-			str = vgui.Create('DMapsWaypointRow', @)
+			str = vgui.Create('DMapsWaypointRow', @scroll)
 			str\Dock(TOP)
 			str\SetData(i, ClientsideWaypoint.DataContainer)
 			str\SetOnUpdate(-> DMaps.WaypointListContainer.buildList())
