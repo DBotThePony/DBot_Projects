@@ -164,7 +164,7 @@ class NetworkedWaypoint
 		@WriteValString('z') if triggerNetwork
 	SetColor: (val = RANDOM_COLOR(), triggerNetwork = @INITIALIZE) =>
 		@color = color
-		@WriteValString('z') if triggerNetwork
+		@WriteValString('color') if triggerNetwork
 	SetPos: (val = Vector(0, 0, 0), triggerNetwork = @INITIALIZE) =>
 		@SetX(val.x, triggerNetwork)
 		@SetY(val.y, triggerNetwork)
