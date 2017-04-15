@@ -15,6 +15,8 @@
 -- limitations under the License.
 -- 
 
+import CreateConVar from _G
+
 Files = {
 	'dmaps/client/classes/class_map.lua'
 	'dmaps/client/classes/class_map_point.lua'
@@ -36,5 +38,12 @@ Files = {
 	'dmaps/client/waypoints_controller.lua'
 	'dmaps/client/network.lua'
 }
+
+DMaps.CONVARS_SETTINGS = {}
+
+DMaps.ClientsideOption = (cvar, default, desc) ->
+	object = CreateConVar(cvar, default, {FCVAR_ARCHIVE}, desc)
+	table.insert(DMaps.CONVARS_SETTINGS, {cvar, desc})
+	return object
 
 include file for file in *Files

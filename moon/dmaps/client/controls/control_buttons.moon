@@ -25,6 +25,7 @@ PANEL =
 		@waypoints\SetText('Waypoints')
 		@waypoints.DoClick = DMaps.OpenWaypointsMenu
 		@options\SetText('Options')
+		@options.DoClick = DMaps.OpenOptions
 		table.insert(@buttons, @waypoints)
 		table.insert(@buttons, @options)
 		

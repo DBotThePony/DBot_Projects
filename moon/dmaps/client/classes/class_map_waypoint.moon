@@ -18,12 +18,12 @@
 -- Yeah, waypoints
 
 import DMaps, surface, Color, math, draw, TEXT_ALIGN_CENTER from _G
-import math, Vector, Angle, render, cam, CreateConVar from _G
+import math, Vector, Angle, render, cam, CreateConVar, table from _G
 import DMapPointer, HU_IN_METRE from DMaps
 
-DRAW_DISTANCE = CreateConVar('cl_dmap_draw_dist', '1', {FCVAR_ARCHIVE}, 'Draw distance under waypoint name')
-DRAW_BEAM = CreateConVar('cl_dmap_draw_beam', '1', {FCVAR_ARCHIVE}, 'Draw waypoint beam')
-DRAW_IN_WORLD = CreateConVar('cl_dmap_draw_waypoints', '1', {FCVAR_ARCHIVE}, 'Draw waypoints in world')
+DRAW_DISTANCE = DMaps.ClientsideOption('cl_dmap_draw_dist', '1', 'Draw distance under waypoint name')
+DRAW_BEAM = DMaps.ClientsideOption('cl_dmap_draw_beam', '1', 'Draw waypoint beam')
+DRAW_IN_WORLD = DMaps.ClientsideOption('cl_dmap_draw_waypoints', '1', 'Draw waypoints in world')
 
 surface.CreateFont('DMaps.WaypointName', {
 	font: 'Roboto',

@@ -43,7 +43,7 @@ DMaps.CreateMainFrame = ->
 	@buttons = vgui.Create('DMapButtons', @)
 	@buttons\AddMultiButton(@mapHolder\GetButtons!)
 	@buttons\DoSetup(w, h, -5)
-
+	return @
 DMaps.OpenMap = ->
 	if not IsValid(DMaps.MainFrame)
 		DMaps.CreateMainFrame!
@@ -54,5 +54,25 @@ DMaps.OpenMap = ->
 		\SetKeyboardInputEnabled(true)
 		\RequestFocus!
 		\Center!
-
+DMaps.OpenOptions = ->
+	frame = vgui.Create('DFrame')
+	self = frame
+	@SetSize(400, ScrH! - 200)
+	@SetTitle('DMaps Clientside Options')
+	@Center()
+	@MakePopup()
+	
+	scroll = vgui.Create('DScrollPanel', @)
+	scroll\Dock(FILL)
+	scroll.Paint = (w, h) =>
+		surface.SetDrawColor(160, 160, 160)
+		surface.DrawRect(0, 0, w, h)
+	
+	for data in *DMaps.CONVARS_SETTINGS
+		checkbox = vgui.Create('DCheckBoxLabel', scroll)
+		checkbox\SetText(data[2])
+		checkbox\SetConVar(data[1])
+		checkbox\Dock(TOP)
+		checkbox\DockMargin(3, 3, 3, 3)
+	return frame
 concommand.Add('dmaps_open', DMaps.OpenMap)
