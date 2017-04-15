@@ -27,6 +27,7 @@ class NetworkedWaypoint
 	@NETWORK_STRING_CHANGED = 'DMaps.NetworkedWaypointChanges'
 	@NETWORK_STRING_REMOVE = 'DMaps.NetworkedWaypointRemoved'
 	@NETWORK_VAR_LENGTH = 8
+	@WAYPOINT_TYPE = DMapWaypoint
 	@__type = 'networked_waypoint'
 	
 	@PLAYER_FILTER = => player.GetAll()
@@ -104,12 +105,16 @@ class NetworkedWaypoint
 		@clonedWaypoints = {} if CLIENT
 	
 	-- INTERNAL
-	CreateWaypoint: => @waypoint = DMapWaypoint(@name, @x, @y, @z, @color)
+	CreateWaypoint: =>
+		constructor = @@WAYPOINT_TYPE
+		@waypoint = constructor(@name, @x, @y, @z, @color)
+		return @waypoint
 	GetWaypoint: => @waypoint
 	
 	-- Feel free to use
 	CloneWaypoint: =>
-		waypoint = DMapWaypoint(@name, @x, @y, @z, @color)
+		constructor = @@WAYPOINT_TYPE
+		waypoint = constructor(@name, @x, @y, @z, @color)
 		table.insert(@clonedWaypoints, waypoint)
 		return waypoint
 	Waypoint: => @CloneWaypoint()
