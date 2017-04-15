@@ -159,7 +159,7 @@ class DMapWaypoint extends DMapPointer
 		cam.End2D()
 	
 	GetColor: => @color
-	SetColor: (color = Color(math.random(1, 255), math.random(1, 255), math.random(1, 255))) =>
+	SetColor: (color = DMaps.RandomColor()) =>
 		@color = color
 		@OnDataChanged!
 	GetIsVisible: => @visible
