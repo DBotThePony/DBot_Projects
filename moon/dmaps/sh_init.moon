@@ -26,3 +26,4 @@ else
 	include 'dmaps/sv_init.lua'
 
 include 'dmaps/common/functions.lua'
+include 'dmaps/common/classes/networked_waypoint.lua'

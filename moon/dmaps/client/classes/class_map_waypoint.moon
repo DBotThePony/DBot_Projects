@@ -76,12 +76,12 @@ class DMapWaypoint extends DMapPointer
 		
 		return output
 	
-	new: (name = "%WAYPOINT_#{@@UID}%", x = 0, y = 0, z = 0) =>
+	new: (name = "%WAYPOINT_#{@@UID}%", x = 0, y = 0, z = 0, color = DMaps.RandomColor()) =>
 		super(x, y, z)
 		@drawInWorld = true
 		@pointName = name
 		@name = name
-		@color = Color(math.random(1, 255), math.random(1, 255), math.random(1, 255))
+		@color = color
 		@zoom = 60
 		@visible = true
 		@BuildBoxes!

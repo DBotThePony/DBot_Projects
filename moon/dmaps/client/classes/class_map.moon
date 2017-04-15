@@ -16,7 +16,7 @@
 -- 
 
 _assert = assert
-import xpcall from _G
+import xpcall, DMaps from _G
 import cam, surface, draw, util, Vector, Angle, hook from _G
 import debug, print, MsgC, Msg, table, render, math from _G
 
@@ -247,18 +247,23 @@ class DMap
 			y < border.topLeftY and y > border.bottomLeftY
 	
 	AddObject: (object) =>
-		if object.__class.__type == 'waypoint' -- Waypoint object
-			if not table.HasValue(@waypoints, object)
-				table.insert(@waypoints, object)
-		elseif object.__class.__type == 'entity' -- Generic/Entity pointer
-			if not table.HasValue(@entities, object)
-				table.insert(@entities, object)
-		elseif object.__class.__type == 'player' -- Player pointer
-			if not table.HasValue(@players, object)
-				table.insert(@players, object)
-		elseif object.__class.__type == 'points' -- Simple pointer
-			if not table.HasValue(@points, object)
-				table.insert(@points, object)
+		switch object.__class.__type
+			when 'waypoint' -- Waypoint object
+				if not table.HasValue(@waypoints, object)
+					table.insert(@waypoints, object)
+					object.map = @
+			when 'entity' -- Generic/Entity pointer
+				if not table.HasValue(@entities, object)
+					table.insert(@entities, object)
+					object.map = @
+			when 'player' -- Player pointer
+				if not table.HasValue(@players, object)
+					table.insert(@players, object)
+					object.map = @
+			when 'points' -- Simple pointer
+				if not table.HasValue(@points, object)
+					table.insert(@points, object)
+					object.map = @
 	
 	Add: (...) => @AddObject(...)
 	
@@ -306,6 +311,17 @@ class DMap
 			hook.Add(hookName, hookID, disableFunc)
 		
 		hook.Add('PreDrawTranslucentRenderables', hookID, preDrawFunc)
+	
+	CloneNetworkWaypoints: =>
+		@AddObject(point\CloneWaypoint()) for point in *DMaps.NetworkedWaypoint\GetWaypoints()
+	ListenNetworkWaypoints: =>
+		hookID = tostring(@)
+		created = (waypoint) ->
+			if not @IsValid()
+				hook.Remove('NetworkedWaypointCreated', hookID)
+				return
+			@AddObject(waypoint\CloneWaypoint())
+		hook.Add('NetworkedWaypointCreated', hookID, created)
 	
 	FixCoordinate: (x = 0, y = 0) =>
 		return x + 16000, y + 16000

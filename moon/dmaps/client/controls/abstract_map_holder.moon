@@ -51,6 +51,8 @@ PANEL.Init = =>
 	
 	@mapObject\IsDrawnInPanel(true)
 	@mapObject\AddObject(DMapLocalPlayerPointer!)
+	@mapObject\CloneNetworkWaypoints()
+	@mapObject\ListenNetworkWaypoints()
 	
 	@SetMouseInputEnabled(true)
 	

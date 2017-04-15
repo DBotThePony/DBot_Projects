@@ -34,6 +34,7 @@ DMaps.GetAdmins = ->
 	output = {}
 	for ply in *player.GetAll() do insert(output, ply) if ply\IsAdmin()
 	return output
+DMaps.RandomColor = -> Color(math.random(0, 255), math.random(0, 255), math.random(0, 255))
 DMaps.Format = (...) ->
 	previousColor = DEFAULT_COLOR
 	output = {previousColor}

@@ -18,6 +18,9 @@
 import util from _G
 
 util.AddNetworkString 'DMaps.AdminEcho'
+util.AddNetworkString 'DMaps.NetworkedWaypoint'
+util.AddNetworkString 'DMaps.NetworkedWaypointChanges'
+util.AddNetworkString 'DMaps.NetworkedWaypointRemoved'
 
 ClientsideFiles = {
 	'dmaps/client/classes/class_map.lua'
@@ -39,6 +42,9 @@ ClientsideFiles = {
 	'dmaps/client/default_gui.lua'
 	'dmaps/client/waypoints_controller.lua'
 	'dmaps/client/network.lua'
+	
+	'dmaps/common/functions.lua'
+	'dmaps/common/classes/networked_waypoint.lua'
 }
 
 AddCSLuaFile v for v in *ClientsideFiles
