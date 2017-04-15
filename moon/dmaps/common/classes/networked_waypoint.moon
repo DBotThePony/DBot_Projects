@@ -153,28 +153,31 @@ class NetworkedWaypoint
 		error('Initialize point first') if not @INITIALIZE
 		@[data[1]] = data[3]() for data in *@@NETWORKED_VALUES
 	
-	SetX: (val = 0, triggerNetwork = @INITIALIZE) =>
+	SetX: (val = 0, networkNow = @INITIALIZE) =>
 		@x = math.floor(val)
-		@WriteValString('x') if triggerNetwork
-	SetY: (val = 0, triggerNetwork = @INITIALIZE) =>
+		@WriteValString('x') if networkNow
+	SetY: (val = 0, networkNow = @INITIALIZE) =>
 		@y = math.floor(val)
-		@WriteValString('y') if triggerNetwork
-	SetZ: (val = 0, triggerNetwork = @INITIALIZE) =>
+		@WriteValString('y') if networkNow
+	SetZ: (val = 0, networkNow = @INITIALIZE) =>
 		@z = math.floor(val)
-		@WriteValString('z') if triggerNetwork
-	SetColor: (val = DMaps.RandomColor(), triggerNetwork = @INITIALIZE) =>
+		@WriteValString('z') if networkNow
+	SetColor: (val = DMaps.RandomColor(), networkNow = @INITIALIZE) =>
 		@color = val
-		@WriteValString('color') if triggerNetwork
-	SetPos: (val = Vector(0, 0, 0), triggerNetwork = @INITIALIZE) =>
-		@SetX(val.x, triggerNetwork)
-		@SetY(val.y, triggerNetwork)
-		@SetZ(val.z, triggerNetwork)
-	
+		@WriteValString('color') if networkNow
+	SetPos: (val = Vector(0, 0, 0), networkNow = @INITIALIZE) =>
+		@SetX(val.x, networkNow)
+		@SetY(val.y, networkNow)
+		@SetZ(val.z, networkNow)
+	SetName: (val = "%WAYPOINT_NAME_#{@ID}%", networkNow = @INITIALIZE) =>
+		@name = val
+		@WriteValString('name') if networkNow
 	GetX: => @x
 	GetY: => @y
 	GetZ: => @z
 	GetColor: => @color
 	GetPos: => Vector(@x, @y, @z)
+	GetName: => @name
 	
 	Remove: =>
 		@removed = true
@@ -185,6 +188,32 @@ class NetworkedWaypoint
 			net.WriteUInt(@ID, @@NETWORK_ID_LENGTH)
 			net.Send(@networkedClients)
 	IsValid: => not @removed and @INITIALIZE
+	
+	NetworkToPlayer: (ply) =>
+		net.Start(@@NETWORK_STRING)
+		net.WriteUInt(@ID, @@NETWORK_ID_LENGTH)
+		@WriteData()
+		net.Send(ply)
+	RemoveFromPlayer: (ply) =>
+		net.Start(@@NETWORK_STRING_REMOVE)
+		net.WriteUInt(@ID, @@NETWORK_ID_LENGTH)
+		net.Send(ply)
+	AddPlayer: (ply, networkNow = true) =>
+		return false if CLIENT
+		error('Table will be overwritten on initialize. Override static PLAYER_FILTER() function') if not @INITIALIZE
+		return false if table.HasValue(@networkedClients, ply)
+		table.insert(@networkedClients, ply)
+		@NetworkToPlayer(ply) if networkNow
+		return true
+	RemovePlayer: (ply, networkNow = true) =>
+		return false if CLIENT
+		error('Table will be overwritten on initialize. Override static PLAYER_FILTER() function') if not @INITIALIZE
+		for i, ply2 in pairs @networkedClients
+			if ply2 == ply
+				@RemoveFromPlayer(ply2) if networkNow
+				table.remove(@networkedClients, i)
+				return true
+		return false
 	
 	Initialize: => @InitPoint()
 	Init: => @InitPoint()
@@ -197,8 +226,6 @@ class NetworkedWaypoint
 		@WriteData()
 		@networkedClients = @@PLAYER_FILTER()
 		net.Send(@networkedClients)
-	SetName: (val = "%WAYPOINT_NAME_#{@ID}%") =>
-		
 net.Receive(NetworkedWaypoint.NETWORK_STRING, -> NetworkedWaypoint\NetworkedCreate())
 net.Receive(NetworkedWaypoint.NETWORK_STRING_CHANGED, -> NetworkedWaypoint\NetworkedChange())
 net.Receive(NetworkedWaypoint.NETWORK_STRING_REMOVE, -> NetworkedWaypoint\NetworkedRemove())
