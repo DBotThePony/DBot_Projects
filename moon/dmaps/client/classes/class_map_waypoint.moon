@@ -112,6 +112,13 @@ class DMapWaypoint extends DMapPointer
 	@BOX_ANGLES = Angle(0, 0, 0)
 	@NORMAL_LEFT = Vector(0, 1, 0)
 	@BOX_MATERIAL\SetFloat('$alpha', @@BLEND)
+	
+	OpenMenu: (menu = DermaMenu()) =>
+		with menu
+			\AddOption('Teleport to', -> RunConsoleCommand('dmaps_teleport', @x, @y, @z)) if LocalPlayer()\IsAdmin()
+			\Open()
+		return true
+	
 	DrawWorld: (map) =>
 		if not @ShouldDrawInWorld() return
 		pos = @GetPos()

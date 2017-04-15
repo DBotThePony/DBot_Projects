@@ -127,14 +127,13 @@ class ClientsideWaypoint extends DMapWaypoint
 		if not @nosave then timer.Create("DMaps.SaveClientsideWaypointData.#{@SAVEID}", 0.5, 1, -> @@OnWaypointUpdates(@))
 		super!
 	GetSaveID: => @SAVEID
-	OpenMenu: =>
-		menu = DermaMenu()
+	OpenMenu: (menu = DermaMenu()) =>
 		with menu
 			\AddOption('Edit...', -> DMaps.OpenWaypointEditMenu(@SAVEID, @@DataContainer))
 			\AddSubMenu('Delete')\AddOption('Confirm?', -> @@DataContainer\DeleteWaypoint(@SAVEID))
 			\AddOption('Close', ->)
 			\Open()
-		return true
+		return super(menu)
 	Remove: =>
 		super!
 		@@WAYPOINTS[@SAVEID] = nil
