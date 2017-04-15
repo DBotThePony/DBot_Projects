@@ -119,6 +119,21 @@ class DMapWaypoint extends DMapPointer
 		if scr.x > w + 100 or scr.x < -100 return
 		-- if scr.y > h + 100 or scr.y < -100 return
 		
+		render.SuppressEngineLighting(true)
+		render.SetMaterial(@@BOX_MATERIAL)
+		render.MaterialOverride(@@BOX_MATERIAL)
+		render.SetColorModulation(@color.r / 255, @color.g / 255, @color.b / 255)
+		render.ResetModelLighting(1, 1, 1)
+		render.SetBlend(@@BLEND)
+		
+		for box in *@worldBoxes
+			render.DrawBox(pos, @@BOX_ANGLES, box.mins, box.maxs, Color(@color.r, @color.b, @color.g, 255 * @@BLEND), true)
+		
+		render.SuppressEngineLighting(false)
+		render.SetBlend(1)
+		render.MaterialOverride()
+		render.SetColorModulation(1, 1, 1)
+		
 		x, y = w / 2, h / 2
 		dist = ((x - scr.x) ^ 2 + (y - scr.y) ^ 2) ^ 0.5
 		alpha = math.Clamp((200 - dist) / 180, 0.1, 1)
@@ -140,19 +155,6 @@ class DMapWaypoint extends DMapPointer
 		cam.Start2D()
 		@DrawInternal(scr.x, scr.y, math.Clamp((@@MAX_DRAW_DIST - pdist) / @@MAX_DRAW_DIST, 0.1, 1), alpha)
 		cam.End2D()
-		
-		render.SuppressEngineLighting(true)
-		render.SetMaterial(@@BOX_MATERIAL)
-		render.SetColorModulation(@color.r / 255, @color.g / 255, @color.b / 255)
-		render.ResetModelLighting(1, 1, 1)
-		render.SetBlend(@@BLEND)
-		
-		for box in *@worldBoxes
-			render.DrawBox(pos, @@BOX_ANGLES, box.mins, box.maxs, Color(@color.r, @color.b, @color.g, 255 * @@BLEND), true)
-		
-		render.SuppressEngineLighting(false)
-		render.SetBlend(1)
-		render.SetColorModulation(1, 1, 1)
 	
 	GetColor: => @color
 	SetColor: (color = Color(math.random(1, 255), math.random(1, 255), math.random(1, 255))) =>

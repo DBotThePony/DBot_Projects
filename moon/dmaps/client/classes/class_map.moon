@@ -268,8 +268,13 @@ class DMap
 	RegisterHooks: =>
 		hookID = tostring(@)
 		
-		preDrawFunc = ->
-			if not @MAP_DRAW return
+		preDrawFunc = (a, b) ->
+			if a or b return
+			if not @MAP_DRAW
+				@INSIDE_3D_DRAW = true
+				@DrawWorldHook!
+				@INSIDE_3D_DRAW = false
+				return
 			
 			@INSIDE_2D_DRAW = true
 			
@@ -293,17 +298,6 @@ class DMap
 			
 			return true
 		
-		-- For drawing in-world markers, points, etc.
-		postDrawFunc = (a, b) ->
-			if a or b return
-			if not @IsValid!
-				hook.Remove('PostDrawTranslucentRenderables', hookID, preDrawFunc)
-				return
-			
-			@INSIDE_3D_DRAW = true
-			@DrawWorldHook!
-			@INSIDE_3D_DRAW = false
-		
 		disableFunc = ->
 			if @MAP_DRAW
 				return true
@@ -312,7 +306,6 @@ class DMap
 			hook.Add(hookName, hookID, disableFunc)
 		
 		hook.Add('PreDrawTranslucentRenderables', hookID, preDrawFunc)
-		hook.Add('PostDrawTranslucentRenderables', hookID, postDrawFunc)
 	
 	FixCoordinate: (x = 0, y = 0) =>
 		return x + 16000, y + 16000
@@ -324,7 +317,6 @@ class DMap
 			hook.Remove(hookName, hookID)
 		
 		hook.Remove('PreDrawTranslucentRenderables', hookID)
-		hook.Remove('PostDrawTranslucentRenderables', hookID)
 	
 	-- Call when you give the decidion about pointer draw
 	-- To the map object itself
