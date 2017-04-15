@@ -18,8 +18,12 @@
 -- Yeah, waypoints
 
 import DMaps, surface, Color, math, draw, TEXT_ALIGN_CENTER from _G
-import math, Vector, Angle, render, cam from _G
+import math, Vector, Angle, render, cam, CreateConVar from _G
 import DMapPointer, HU_IN_METRE from DMaps
+
+DRAW_DISTANCE = CreateConVar('cl_dmap_draw_dist', '1', {FCVAR_ARCHIVE}, 'Draw distance under waypoint name')
+DRAW_BEAM = CreateConVar('cl_dmap_draw_beam', '1', {FCVAR_ARCHIVE}, 'Draw waypoint beam')
+DRAW_IN_WORLD = CreateConVar('cl_dmap_draw_waypoints', '1', {FCVAR_ARCHIVE}, 'Draw waypoints in world')
 
 surface.CreateFont('DMaps.WaypointName', {
 	font: 'Roboto',
@@ -120,21 +124,23 @@ class DMapWaypoint extends DMapPointer
 		return true
 	
 	DrawWorld: (map) =>
-		if not @ShouldDrawInWorld() return
+		return if not DRAW_IN_WORLD\GetBool()
+		return if not @ShouldDrawInWorld()
 		pos = @GetPos()
 		scr = pos\ToScreen()
 		w, h = ScrW!, ScrH!
 		if scr.x > w + 100 or scr.x < -100 return
 		-- if scr.y > h + 100 or scr.y < -100 return
 		
-		@@BOX_MATERIAL\SetVector('$color', Vector(@color.r / 255, @color.g / 255, @color.b / 255))
-		render.SuppressEngineLighting(true)
-		render.SetMaterial(@@BOX_MATERIAL)
-		
-		for box in *@worldBoxes
-			render.DrawBox(pos, @@BOX_ANGLES, box.mins, box.maxs, Color(@color.r, @color.b, @color.g, 255 * @@BLEND), true)
-		
-		render.SuppressEngineLighting(false)
+		if DRAW_BEAM\GetBool()
+			@@BOX_MATERIAL\SetVector('$color', Vector(@color.r / 255, @color.g / 255, @color.b / 255))
+			render.SuppressEngineLighting(true)
+			render.SetMaterial(@@BOX_MATERIAL)
+			
+			for box in *@worldBoxes
+				render.DrawBox(pos, @@BOX_ANGLES, box.mins, box.maxs, Color(@color.r, @color.b, @color.g, 255 * @@BLEND), true)
+			
+			render.SuppressEngineLighting(false)
 		
 		x, y = w / 2, h / 2
 		dist = ((x - scr.x) ^ 2 + (y - scr.y) ^ 2) ^ 0.5
@@ -173,7 +179,7 @@ class DMapWaypoint extends DMapPointer
 	
 	GetText: =>
 		text = @name
-		text ..= "\nDistance: #{math.floor(LocalPlayer()\EyePos()\Distance(@GetPos()) / HU_IN_METRE * 10) / 10} metres"
+		text ..= "\nDistance: #{math.floor(LocalPlayer()\EyePos()\Distance(@GetPos()) / HU_IN_METRE * 10) / 10} metres" if DRAW_DISTANCE\GetBool()
 		if @IsNearMouse!
 			text ..= "\nX: #{@x}; Y: #{@y}; Z: #{@z}"
 		return text
