@@ -24,5 +24,5 @@ TeleportTo = (ply, x, y, z) ->
 	if not y return
 	if not z return
 	ply\SetPos(Vector(x, y, z))
-	MsgC Color(0, 200, 0), '[DMaps] ', Color(200, 200, 200), "Player #{ply\Nick()} has teleported to X: #{x} Y: #{y} Z: #{z}", '\n'
+	DMaps.AdminEcho('Admin ', ply, ' has teleported to X: ', x, ' Y: ', y, ' Z: ', z)
 concommand.Add('dmaps_teleport', (ply = NULL, cmd = '', args = {}) -> TeleportTo(ply, tonumber(args[1]), tonumber(args[2]), tonumber(args[3])))

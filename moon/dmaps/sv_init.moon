@@ -15,23 +15,33 @@
 -- limitations under the License.
 -- 
 
-AddCSLuaFile 'dmaps/client/classes/class_map.lua'
-AddCSLuaFile 'dmaps/client/classes/class_map_point.lua'
-AddCSLuaFile 'dmaps/client/classes/class_map_entity_point.lua'
-AddCSLuaFile 'dmaps/client/classes/class_player_point.lua'
-AddCSLuaFile 'dmaps/client/classes/class_lplayer_point.lua'
-AddCSLuaFile 'dmaps/client/classes/class_map_waypoint.lua'
-AddCSLuaFile 'dmaps/client/classes/waypoints_holder.lua'
-AddCSLuaFile 'dmaps/client/classes/class_clientside_waypoint.lua'
+import util from _G
 
-AddCSLuaFile 'dmaps/client/controls/control_compass.lua'
-AddCSLuaFile 'dmaps/client/controls/control_arrows.lua'
-AddCSLuaFile 'dmaps/client/controls/control_zoom.lua'
-AddCSLuaFile 'dmaps/client/controls/control_buttons.lua'
-AddCSLuaFile 'dmaps/client/controls/abstract_map_holder.lua'
-AddCSLuaFile 'dmaps/client/controls/waypoint_row.lua'
+util.AddNetworkString 'DMaps.AdminEcho'
 
-AddCSLuaFile 'dmaps/client/default_gui.lua'
-AddCSLuaFile 'dmaps/client/waypoints_controller.lua'
+ClientsideFiles = {
+	'dmaps/client/classes/class_map.lua'
+	'dmaps/client/classes/class_map_point.lua'
+	'dmaps/client/classes/class_map_entity_point.lua'
+	'dmaps/client/classes/class_player_point.lua'
+	'dmaps/client/classes/class_lplayer_point.lua'
+	'dmaps/client/classes/class_map_waypoint.lua'
+	'dmaps/client/classes/waypoints_holder.lua'
+	'dmaps/client/classes/class_clientside_waypoint.lua'
 
+	'dmaps/client/controls/control_compass.lua'
+	'dmaps/client/controls/control_arrows.lua'
+	'dmaps/client/controls/control_zoom.lua'
+	'dmaps/client/controls/control_buttons.lua'
+	'dmaps/client/controls/abstract_map_holder.lua'
+	'dmaps/client/controls/waypoint_row.lua'
+
+	'dmaps/client/default_gui.lua'
+	'dmaps/client/waypoints_controller.lua'
+	'dmaps/client/network.lua'
+}
+
+AddCSLuaFile v for v in *ClientsideFiles
+
+include 'dmaps/server/functions.lua'
 include 'dmaps/server/commands.lua'

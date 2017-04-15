@@ -15,21 +15,26 @@
 -- limitations under the License.
 -- 
 
-include 'dmaps/client/classes/class_map.lua'
-include 'dmaps/client/classes/class_map_point.lua'
-include 'dmaps/client/classes/class_map_entity_point.lua'
-include 'dmaps/client/classes/class_player_point.lua'
-include 'dmaps/client/classes/class_lplayer_point.lua'
-include 'dmaps/client/classes/class_map_waypoint.lua'
-include 'dmaps/client/classes/waypoints_holder.lua'
-include 'dmaps/client/classes/class_clientside_waypoint.lua'
+Files = {
+	'dmaps/client/classes/class_map.lua'
+	'dmaps/client/classes/class_map_point.lua'
+	'dmaps/client/classes/class_map_entity_point.lua'
+	'dmaps/client/classes/class_player_point.lua'
+	'dmaps/client/classes/class_lplayer_point.lua'
+	'dmaps/client/classes/class_map_waypoint.lua'
+	'dmaps/client/classes/waypoints_holder.lua'
+	'dmaps/client/classes/class_clientside_waypoint.lua'
 
-include 'dmaps/client/controls/control_compass.lua'
-include 'dmaps/client/controls/control_arrows.lua'
-include 'dmaps/client/controls/control_zoom.lua'
-include 'dmaps/client/controls/control_buttons.lua'
-include 'dmaps/client/controls/abstract_map_holder.lua'
-include 'dmaps/client/controls/waypoint_row.lua'
+	'dmaps/client/controls/control_compass.lua'
+	'dmaps/client/controls/control_arrows.lua'
+	'dmaps/client/controls/control_zoom.lua'
+	'dmaps/client/controls/control_buttons.lua'
+	'dmaps/client/controls/abstract_map_holder.lua'
+	'dmaps/client/controls/waypoint_row.lua'
 
-include 'dmaps/client/default_gui.lua'
-include 'dmaps/client/waypoints_controller.lua'
+	'dmaps/client/default_gui.lua'
+	'dmaps/client/waypoints_controller.lua'
+	'dmaps/client/network.lua'
+}
+
+include file for file in *Files

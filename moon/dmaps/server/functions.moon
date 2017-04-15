@@ -15,14 +15,10 @@
 -- limitations under the License.
 -- 
 
-export DMaps
+import DMaps, net from _G
 
-DMaps = DMaps or {}
-DMaps.HU_IN_METRE = 40
-
-if CLIENT
-	include 'dmaps/cl_init.lua'
-else
-	include 'dmaps/sv_init.lua'
-
-include 'dmaps/common/functions.lua'
+DMaps.AdminEcho = (...) ->
+	DMaps.Message(...)
+	net.Start('DMaps.AdminEcho')
+	DMaps.WriteArray({...})
+	net.Send(DMaps.GetAdmins())
