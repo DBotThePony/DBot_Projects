@@ -62,6 +62,7 @@ if SERVER then
 	util.AddNetworkString('DSetNWPrecache')
 	util.AddNetworkString('DSetNWPrecacheFull')
 	util.AddNetworkString('DSetNWRequestID')
+	util.AddNetworkString('DSetNWRemove')
 	
 	for k, v in pairs(avaliableFunctions) do
 		util.AddNetworkString('D' .. v[1])
@@ -142,6 +143,13 @@ if SERVER then
 			net.Send(ply)
 		end)
 	end)
+	
+	hook.Add('EntityRemoved', 'DNWClear', function(ent)
+		net.Start('DSetNWRemove')
+		net.WriteUInt(ent:EntIndex() or 0, 16)
+		D_NW_NETWORK_DB[ent:EntIndex() or 0] = nil
+		net.Send(ply)
+	end)
 end
 
 if CLIENT then
@@ -150,6 +158,10 @@ if CLIENT then
 		local netID = net.ReadUInt(16)
 		D_NW_NETWORK_STRINGS_PRECACHE[str] = netID
 		D_NW_NETWORK_STRINGS_PRECACHE_BACKWARDS[netID] = str
+	end)
+	
+	net.Receive('DSetNWRemove', function()
+		D_NW_NETWORK_DB[net.ReadUInt(16)] = nil
 	end)
 	
 	net.Receive('DSetNWPrecacheFull', function()
