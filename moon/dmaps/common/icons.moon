@@ -86,6 +86,13 @@ class Icon
 		'wizard'
 	}
 	
+	@GetNetworkID = (iconName) => @IconID[iconName] or 1
+	@GetIconName = (netID = 1) => @AvaliableBare[netID] or @AvaliableBare[1]
+	
+	@DefaultIconName = @AvaliableBare[1]
+	@GetIcons = => @AvaliableBare
+	@CopyIcons = => [icon for icon in *@AvaliableBare]
+	
 	@IconID = {icon, i for i, icon in ipairs @AvaliableBare}
 	@Avaliable = [icon .. '.png' for icon in *@AvaliableBare]
 	@AvaliableFull = [DMaps.IconsPrefix .. icon for icon in *@Avaliable]

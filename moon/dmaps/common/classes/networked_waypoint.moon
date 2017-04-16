@@ -17,7 +17,7 @@
 
 import DMaps, net, player, math, Color, hook, table from _G
 import SERVER, CLIENT, Vector from _G
-import DMapWaypoint from DMaps
+import DMapWaypoint, Icon from DMaps
 
 class NetworkedWaypoint
 	@NEXT_NETWORK_ID = 0
@@ -40,6 +40,7 @@ class NetworkedWaypoint
 		{'z', ((val = 0) -> net.WriteInt(math.floor(val), 32)), (-> net.ReadInt(32)), 'SetZ'}
 		{'color', ((val = Color(0, 0, 0)) -> net.WriteColor(val)), net.ReadColor, 'SetColor'}
 		{'name', ((val = '') -> net.WriteString(val)), net.ReadString, 'SetName'}
+		{'icon', ((val = '') -> net.WriteUInt(Icon\GetNetworkID(val), 16)), (-> Icon\GetIconName(net.ReadUInt(16))), 'SetIcon'}
 	}
 	
 	@GetNetworkID = (val = '') => @NETWORKED_VALUES_IDS[val]
@@ -89,7 +90,7 @@ class NetworkedWaypoint
 		waypoint\Remove()
 		hook.Run('NetworkedWaypointRemoved', waypoint)
 	
-	new: (name = "%WAYPOINT_NAME_#{@@NEXT_NETWORK_ID}%", x = 0, y = 0, z = 0, color = DMaps.RandomColor()) =>
+	new: (name = "%WAYPOINT_NAME_#{@@NEXT_NETWORK_ID}%", x = 0, y = 0, z = 0, color = DMaps.RandomColor(), icon = DMaps.DefaultIconName) =>
 		-- Do not create clientside externally
 		if SERVER
 			@ID = @@NEXT_NETWORK_ID
@@ -102,19 +103,20 @@ class NetworkedWaypoint
 		@color = color
 		@INITIALIZE = false
 		@removed = false
+		@icon = icon
 		@clonedWaypoints = {} if CLIENT
 	
 	-- INTERNAL
 	CreateWaypoint: =>
 		constructor = @@WAYPOINT_TYPE
-		@waypoint = constructor(@name, @x, @y, @z, @color)
+		@waypoint = constructor(@name, @x, @y, @z, @color, @icon)
 		return @waypoint
 	GetWaypoint: => @waypoint
 	
 	-- Feel free to use
 	CloneWaypoint: =>
 		constructor = @@WAYPOINT_TYPE
-		waypoint = constructor(@name, @x, @y, @z, @color)
+		waypoint = constructor(@name, @x, @y, @z, @color, @icon)
 		table.insert(@clonedWaypoints, waypoint)
 		return waypoint
 	Waypoint: => @CloneWaypoint()
@@ -172,12 +174,17 @@ class NetworkedWaypoint
 	SetName: (val = "%WAYPOINT_NAME_#{@ID}%", networkNow = @INITIALIZE) =>
 		@name = val
 		@WriteValString('name') if networkNow
+	SetIcon: (val = Icon.DefaultIconName, networkNow = @INITIALIZE) =>
+		@icon = val if type(val) == 'string'
+		@icon = val\GetName() if type(val) == 'table'
+		@WriteValString('icon') if networkNow
 	GetX: => @x
 	GetY: => @y
 	GetZ: => @z
 	GetColor: => @color
 	GetPos: => Vector(@x, @y, @z)
 	GetName: => @name
+	GetIcon: => @icon
 	
 	Remove: =>
 		@removed = true

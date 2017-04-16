@@ -16,6 +16,7 @@
 -- 
 
 import DMaps, pairs, table, sql, game, math, SQLStr, LocalPlayer from _G
+import Icon from DMaps
 
 class WaypointsDataContainer
 	@WaypointsTable = [[CREATE TABLE IF NOT EXISTS dmap_clientwaypoints (
@@ -29,7 +30,8 @@ class WaypointsDataContainer
 	red INTEGER NOT NULL DEFAULT 255,
 	green INTEGER NOT NULL DEFAULT 255,
 	blue INTEGER NOT NULL DEFAULT 255,
-	visible BOOLEAN NOT NULL DEFAULT true
+	visible BOOLEAN NOT NULL DEFAULT true,
+	icon VARCHAR(64) NOT NULL DEFAULT ']] .. Icon.DefaultIconName .. [['
 )]]
 
 	@CreateTables = => print sql.LastError! if sql.Query(@WaypointsTable) == false
@@ -97,7 +99,7 @@ class WaypointsDataContainer
 		waypoint = @SaveData[id]
 		error("No such a waypoint with ID: #{id}") if not waypoint
 		sqlData = {k, SQLStr(v) for k, v in pairs waypoint}
-		query = "UPDATE dmap_clientwaypoints SET name = #{sqlData.name}, posx = #{sqlData.posx}, posy = #{sqlData.posy}, posz = #{sqlData.posz}, red = #{sqlData.red}, green = #{sqlData.green}, blue = #{sqlData.blue}, visible = #{sqlData.visible} WHERE id = #{id};"
+		query = "UPDATE dmap_clientwaypoints SET name = #{sqlData.name}, posx = #{sqlData.posx}, posy = #{sqlData.posy}, posz = #{sqlData.posz}, red = #{sqlData.red}, green = #{sqlData.green}, blue = #{sqlData.blue}, visible = #{sqlData.visible}, icon = #{sqlData.icon} WHERE id = #{id};"
 		status = sql.Query(query)
 		
 		print sql.LastError! if status == false
@@ -112,7 +114,7 @@ class WaypointsDataContainer
 			@RemoveTrigger(id, @SaveData[id])
 			@SaveData[id] = nil
 		return status
-	CreateWaypoint: (name = 'New Waypoint', posx = LocalPlayer()\GetPos().x, posy = LocalPlayer()\GetPos().y, posz = LocalPlayer()\GetPos().z, red = math.random(1, 255), green = math.random(1, 255), blue = math.random(1, 255), visible = true) =>
+	CreateWaypoint: (name = 'New Waypoint', posx = LocalPlayer()\GetPos().x, posy = LocalPlayer()\GetPos().y, posz = LocalPlayer()\GetPos().z, red = math.random(1, 255), green = math.random(1, 255), blue = math.random(1, 255), visible = true, icon = Icon.DefaultIconName) =>
 		posx = math.floor(posx)
 		posy = math.floor(posy)
 		posz = math.floor(posz)
@@ -128,12 +130,13 @@ class WaypointsDataContainer
 			:green
 			:blue
 			:visible
+			:icon
 		}
 		
 		serverip = SQLStr(@serverip)
 		map = SQLStr(@map)
 		sqlData = {k, SQLStr(v) for k, v in pairs newData}
-		query = "INSERT INTO dmap_clientwaypoints (serverip, map, name, posx, posy, posz, red, green, blue, visible) VALUES (#{serverip}, #{map}, #{sqlData.name}, #{sqlData.posx}, #{sqlData.posy}, #{sqlData.posz}, #{sqlData.red}, #{sqlData.green}, #{sqlData.blue}, #{sqlData.visible});"
+		query = "INSERT INTO dmap_clientwaypoints (serverip, map, name, posx, posy, posz, red, green, blue, visible, icon) VALUES (#{serverip}, #{map}, #{sqlData.name}, #{sqlData.posx}, #{sqlData.posy}, #{sqlData.posz}, #{sqlData.red}, #{sqlData.green}, #{sqlData.blue}, #{sqlData.visible}, #{sqlData.icon});"
 		status = sql.Query(query)
 		if status ~= false
 			id = tonumber(sql.Query('SELECT last_insert_rowid() AS "ID"')[1].ID)

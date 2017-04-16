@@ -84,12 +84,18 @@ class DMapWaypoint extends DMapPointer
 		super(x, y, z)
 		@drawInWorld = true
 		@pointName = name
-		@icon = icon
+		@icon = icon if type(icon) == 'table'
+		@icon = Icon(icon) if type(icon) == 'string'
 		@name = name
 		@color = color
 		@zoom = 60
 		@visible = true
 		@BuildBoxes!
+	
+	SetIcon: (val = Icon.DefaultIconName) => @icon = Icon(val)
+	SetIconObject: (val) => @icon = val
+	GetIcon: => @icon
+	GetIconName: => @icon\GetName()
 	
 	PreDraw: (map) => @DRAW_X, @DRAW_Y = map\Start2D(@x, @y)
 	PostDraw: (map) => map\Stop2D()

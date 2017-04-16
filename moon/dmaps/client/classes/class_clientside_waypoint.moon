@@ -16,7 +16,7 @@
 -- 
 
 import DMaps, sql, Color, DermaMenu from _G
-import DMapWaypoint, WaypointsDataContainer from DMaps
+import DMapWaypoint, WaypointsDataContainer, Icon from DMaps
 
 -- Structure of loaded clientside waypoint
 -- {
@@ -102,7 +102,8 @@ class ClientsideWaypoint extends DMapWaypoint
 	-- Static methods end
 	new: (savedata) =>
 		if not savedata then error('No savedata was passed to the constructor of DMapClientsideWaypoint!')
-		super(savedata.name, savedata.posx, savedata.posy, savedata.posz)
+		with savedata
+			super(.name, .posx, .posy, .posz, Color(.red, .green, .blue), .icon)
 		@savedata = savedata
 		@SAVEID = tonumber(savedata.id)
 		@@WAYPOINTS[@SAVEID] = @
@@ -121,6 +122,7 @@ class ClientsideWaypoint extends DMapWaypoint
 			@name = .name
 			@pointName = .name
 			@visible = .visible
+			@icon = Icon(.icon)
 		@nosave = false
 	
 	OnDataChanged: =>
