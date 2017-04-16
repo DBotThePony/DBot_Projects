@@ -131,6 +131,7 @@ class Icon
 			surface.SetMaterial(@material)
 			surface.DrawTexturedRect(x, y, @Width() * size, @Height() * size) if not centered
 			surface.DrawTexturedRect(x - @Width() / 2 * size, y - @Height() / 2 * size, @Width() * size, @Height() * size) if centered
+			draw.NoTexture()
 		else
 			draw.NoTexture()
 			surface.DrawPoly(@@GENERATE_POLY(x, y, @Width() * size, @Height() * size)) if centered
