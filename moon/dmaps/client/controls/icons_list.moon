@@ -28,6 +28,7 @@ PANEL_ICON =
 		@color = Color(255, 255, 255)
 		@hold = false
 		@Think2 = =>
+		@SetCursor('hand')
 	
 	RegisterThink: (func = (->)) => @Think2 = func
 	
@@ -72,7 +73,7 @@ PANEL =
 	Init: =>
 		@icons = {}
 		@color = Color(255, 255, 255)
-		@w, @h = 32 * 5 + 12, 400 -- 5 icons per row + scrollbar
+		@w, @h = 32 * 7 + 24, 400 -- 7 icons per row + scrollbar
 		@SetSize(@w, @h)
 		@SetMouseInputEnabled(true)
 		@DockPadding(5, 5, 5, 5)
@@ -84,7 +85,10 @@ PANEL =
 		
 		mouse = (p) ->
 			return hook.Remove('VGUIMousePressed', hookID) if not @IsValid()
-			@Close() if p ~= @ and not table.HasValue(@icons, p)
+			x, y  = gui.MousePos()
+			condX = x > @x + @w or x < @x
+			condY = y > @y + @h or y < @y
+			@Close() if condX or condY
 		
 		hook.Add('VGUIMousePressed', hookID, mouse)
 		
@@ -104,6 +108,10 @@ PANEL =
 	OpenAt: (x, y) =>
 		--x += @w + 5
 		y -= @h / 2
+		
+		@x = x
+		@y = y
+		
 		@SetPos(x, y)
 		@RequestFocus()
 		@MakePopup()
