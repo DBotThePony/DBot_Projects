@@ -148,7 +148,7 @@ if SERVER then
 		net.Start('DSetNWRemove')
 		net.WriteUInt(ent:EntIndex() or 0, 16)
 		D_NW_NETWORK_DB[ent:EntIndex() or 0] = nil
-		net.Send(ply)
+		net.Broadcast()
 	end)
 end
 
