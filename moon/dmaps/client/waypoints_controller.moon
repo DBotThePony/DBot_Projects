@@ -80,6 +80,9 @@ DMaps.OpenWaypointEditMenu = (pointid = 0, container = ClientsideWaypoint.DataCo
 	@iconStr = vgui.Create('EditablePanel', @)
 	@iconStr\Dock(TOP)
 	@iconStr\SetSize(0, 32)
+	@iconStr.Paint = (w, h) =>
+		surface.SetDrawColor(100, 100, 100)
+		surface.DrawRect(0, 0, w, h)
 	
 	@iconStrLab = vgui.Create('DLabel', @iconStr)
 	with @iconStrLab
@@ -87,6 +90,7 @@ DMaps.OpenWaypointEditMenu = (pointid = 0, container = ClientsideWaypoint.DataCo
 		\Dock(LEFT)
 		\SetText('Waypoint Icon:')
 		\SizeToContents()
+		\DockMargin(5, 0, 5, 0)
 	
 	dataColor = Color(data.red, data.green, data.blue)
 	
@@ -108,6 +112,7 @@ DMaps.OpenWaypointEditMenu = (pointid = 0, container = ClientsideWaypoint.DataCo
 	
 	@icon\SetIcon(data.icon)
 	@icon\Dock(RIGHT)
+	@icon\DockMargin(5, 0, 5, 0)
 	@icon\SetColor(dataColor)
 	@icon\RegisterThink(=> @SetColor(dataColor))
 	
