@@ -232,7 +232,9 @@ class Icon
 	@AvaliableFullMap = {icon, icon for icon in *@AvaliableFull}
 	@AvaliableFullFileMap = {icon, icon for icon in *@AvaliableFullFile}
 	
-	@FILES = {icon, file.Exists(icon, 'GAME') for icon in *@AvaliableFullFile}
+	@FILES_FIND = {fil, true for fil in *file.Find(DMaps.IconsPrefixFull .. '*', 'GAME')}
+	
+	@FILES = {icon, @FILES_FIND[icon] for icon in *@Avaliable}
 	@MATERIALS = {icon, Material(icon) for icon in *@AvaliableFull} if CLIENT
 	
 	@SIZE_X = 32
