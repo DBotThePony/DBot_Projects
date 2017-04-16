@@ -20,6 +20,8 @@ export DMaps
 DMaps = DMaps or {}
 DMaps.HU_IN_METRE = 40
 
+include 'dmaps/common/icons.lua'
+
 if CLIENT
 	include 'dmaps/cl_init.lua'
 else

@@ -19,7 +19,7 @@
 
 import DMaps, surface, Color, math, draw, TEXT_ALIGN_CENTER from _G
 import math, Vector, Angle, render, cam, CreateConVar, table from _G
-import DMapPointer, HU_IN_METRE from DMaps
+import DMapPointer, HU_IN_METRE, Icon from DMaps
 
 DRAW_DISTANCE = DMaps.ClientsideOption('cl_dmap_draw_dist', '1', 'Draw distance under waypoint name')
 DRAW_BEAM = DMaps.ClientsideOption('cl_dmap_draw_beam', '1', 'Draw waypoint beam')
@@ -80,10 +80,11 @@ class DMapWaypoint extends DMapPointer
 		
 		return output
 	
-	new: (name = "%WAYPOINT_#{@@UID}%", x = 0, y = 0, z = 0, color = DMaps.RandomColor()) =>
+	new: (name = "%WAYPOINT_#{@@UID}%", x = 0, y = 0, z = 0, color = DMaps.RandomColor(), icon = Icon\GetDefaultIcon()) =>
 		super(x, y, z)
 		@drawInWorld = true
 		@pointName = name
+		@icon = icon
 		@name = name
 		@color = color
 		@zoom = 60
@@ -146,20 +147,9 @@ class DMapWaypoint extends DMapPointer
 		dist = ((x - scr.x) ^ 2 + (y - scr.y) ^ 2) ^ 0.5
 		alpha = math.Clamp((200 - dist) / 180, 0.1, 1)
 		
-		local ang, epos, pdist
-		with LocalPlayer()
-			ang = \EyeAngles()
-			epos = \EyePos()
-			pdist = epos\Distance(pos)
-			if \InVehicle() and \GetVehicle()\IsValid()
-				ang += \GetVehicle()\GetAngles()
+		epos = LocalPlayer()\EyePos()
+		pdist = epos\Distance(pos)
 		
-		deltaAng = (pos - epos)\Angle()
-		deltaAng\RotateAroundAxis(deltaAng\Right(), 90)
-		deltaAng = Angle(0, 0, 0)
-		
-		add = Vector(-20, 20, 0)
-		add\Rotate(deltaAng)
 		cam.Start2D()
 		@DrawInternal(scr.x, scr.y, math.Clamp((@@MAX_DRAW_DIST - pdist) / @@MAX_DRAW_DIST, 0.1, 1), alpha)
 		cam.End2D()
@@ -188,7 +178,8 @@ class DMapWaypoint extends DMapPointer
 		
 		with surface
 			.SetDrawColor(@color.r, @color.g, @color.b, @color.a * alpha)
-			.DrawPoly(@@generateSquare(x, y, @zoom * math.max(size, 0.3)))
+			--.DrawPoly(@@generateSquare(x, y, @zoom * math.max(size, 0.3)))
+			@icon\Draw(x, y, @zoom * math.max(size, 0.3) / 30, true)
 			pickFont = @@TEXT_FONT if size >= 1
 			pickFont = @@TEXT_FONT_SMALLER if size < 1 and size > 0.5
 			pickFont = @@TEXT_FONT_SMALL if size < 0.5

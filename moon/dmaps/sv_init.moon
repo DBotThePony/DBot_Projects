@@ -44,6 +44,7 @@ ClientsideFiles = {
 	'dmaps/client/network.lua'
 	
 	'dmaps/common/functions.lua'
+	'dmaps/common/icons.lua'
 	'dmaps/common/classes/networked_waypoint.lua'
 }
 
