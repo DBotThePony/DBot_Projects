@@ -25,14 +25,18 @@ PANEL_ICON =
 		@SetMouseInputEnabled(true)
 		@hoverTime = 0
 		@lastTick = RealTime()
+		@color = Color(255, 255, 255)
 		@hold = false
+		@Think2 = =>
+	
+	RegisterThink: (func = (->)) => @Think2 = func
 	
 	OnMousePressed: (code) =>
 		@hold = true
 	
 	OnMouseReleased: (code) =>
 		@hold = false
-		@GetParent()\OnIconPress(@) if @IsHovered()
+		(@parent or @GetParent())\OnIconPress(@) if @IsHovered()
 	
 	Think: =>
 		time = RealTime()
@@ -40,10 +44,14 @@ PANEL_ICON =
 		@lastTick = time
 		
 		if @IsHovered()
-			@hoverTime = math.Clamp(@hoverTime + delta, 0, 1)
+			@hoverTime = math.Clamp(@hoverTime + delta * 3, 0, 1)
 		else
-			@hoverTime = math.Clamp(@hoverTime - delta, 0, 1)
+			@hoverTime = math.Clamp(@hoverTime - delta * 3, 0, 1)
+		@Think2()
 	
+	SetColor: (color = @color) => @color = color
+	GetIcon: => @icon
+	GetIconName: => @icon\GetName()
 	IsValid: => @valid
 	SetIcon: (name = Icon\GetIcons()[1]) =>
 		@icon = Icon(name)
@@ -53,6 +61,7 @@ PANEL_ICON =
 		surface.SetDrawColor(140 + @hoverTime * 80, 140 + @hoverTime * 80, 140 + @hoverTime * 80) if not @hold
 		surface.SetDrawColor(220, 220, 220) if @hold
 		surface.DrawRect(0, 0, w, h)
+		surface.SetDrawColor(@color)
 		@icon\Draw(0, 0, 1, false)
 
 PANEL = 
@@ -75,23 +84,29 @@ PANEL =
 		
 		mouse = (p) ->
 			return hook.Remove('VGUIMousePressed', hookID) if not @IsValid()
-			@Close() if p ~= @
+			@Close() if p ~= @ and not table.HasValue(@icons, p)
 		
 		hook.Add('VGUIMousePressed', hookID, mouse)
 		
 		for icon in *Icon\GetIcons()
 			pnl = vgui.Create('DMapsIcon', @scroll)
 			pnl\SetIcon(icon)
+			pnl.parent = @
 			table.insert(@icons, pnl)
 	
 	Register: (parent) => @parent = parent
 	OnIconPress: (icon) => @parent\OnIconPress(icon)
 	
+	SetColor: (color = @color) =>
+		@color = color
+		icon\SetColor(@color) for icon in *@icons
+	
 	OpenAt: (x, y) =>
-		x += @w + 5
+		--x += @w + 5
 		y -= @h / 2
 		@SetPos(x, y)
 		@RequestFocus()
+		@MakePopup()
 	
 	PerformLayout: (w, h) =>
 		x = 0

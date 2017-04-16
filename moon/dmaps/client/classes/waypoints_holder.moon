@@ -121,6 +121,8 @@ class WaypointsDataContainer
 		red = math.Clamp(math.floor(red), 0, 255)
 		green = math.Clamp(math.floor(green), 0, 255)
 		blue = math.Clamp(math.floor(blue), 0, 255)
+		icon = Icon\FixIcon(icon)
+		
 		newData = {
 			:name
 			:posx

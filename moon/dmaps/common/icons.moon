@@ -89,6 +89,10 @@ class Icon
 	@GetNetworkID = (iconName) => @IconID[iconName] or 1
 	@GetIconName = (netID = 1) => @AvaliableBare[netID] or @AvaliableBare[1]
 	
+	@FixIcon = (name) =>
+		return name if @AvaliableBareMap[name]
+		return @AvaliableBare[1]
+	
 	@DefaultIconName = @AvaliableBare[1]
 	@GetIcons = => @AvaliableBare
 	@CopyIcons = => [icon for icon in *@AvaliableBare]
@@ -114,6 +118,7 @@ class Icon
 	-- Static data end
 	new: (name = @@AvaliableBare[1], forceDrawDefault = false) =>
 		@name = name
+		@bareName = name
 		@valid = false
 		@forceDrawDefault = forceDrawDefault
 		if not @@AvaliableBareMap[name] return
@@ -147,8 +152,8 @@ class Icon
 	@LoadFromName: (str, forceDrawDefault) => Icon(str, forceDrawDefault)
 	@GetDefaultIcon: (forceDrawDefault) => Icon(@AvaliableBare[1], forceDrawDefault)
 	@DefaultIcon: (forceDrawDefault) => Icon(@AvaliableBare[1], forceDrawDefault)
-	GetSaveName: => @name
-	GetName: => @name
+	GetSaveName: => @bareName
+	GetName: => @bareName
 	GetID: => @ID
 	GetFullName: => @nameFull
 	GetPath: => @file
@@ -163,7 +168,6 @@ class Icon
 	GetInt: (...) => @material\GetInt(...) if CLIENT
 	GetKeyValues: (...) => @material\GetKeyValues(...) if CLIENT
 	GetMatrix: (...) => @material\GetMatrix(...) if CLIENT
-	GetName: (...) => @material\GetName(...) if CLIENT
 	GetShader: (...) => @material\GetShader(...) if CLIENT
 	GetString: (...) => @material\GetString(...) if CLIENT
 	GetTexture: (...) => @material\GetTexture(...) if CLIENT

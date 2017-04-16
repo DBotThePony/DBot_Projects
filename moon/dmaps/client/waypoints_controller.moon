@@ -77,6 +77,40 @@ DMaps.OpenWaypointEditMenu = (pointid = 0, container = ClientsideWaypoint.DataCo
 			\SetText(tostring(field[2]))
 		table.insert(fields, fieldPanel)
 	
+	@iconStr = vgui.Create('EditablePanel', @)
+	@iconStr\Dock(TOP)
+	@iconStr\SetSize(0, 32)
+	
+	@iconStrLab = vgui.Create('DLabel', @iconStr)
+	with @iconStrLab
+		\SetColor(color_white)
+		\Dock(LEFT)
+		\SetText('Waypoint Icon:')
+		\SizeToContents()
+	
+	dataColor = Color(data.red, data.green, data.blue)
+	
+	@icon = vgui.Create('DMapsIcon', @iconStr)
+	@OnIconPress = (nIcon) =>
+		if nIcon == @icon
+			if IsValid(@IconList)
+				@IconList\Close()
+			else
+				@IconList = vgui.Create('DMapsIconList')
+				@IconList\Register(@)
+				@IconList\SetColor(dataColor)
+				x, y = @icon\LocalToScreen(32, 0)
+				@IconList\OpenAt(x, y)
+		else
+			@IconList\Close()
+			@icon\SetIcon(nIcon\GetIconName())
+	@iconStr.OnIconPress = (s, icon) -> @OnIconPress(icon)
+	
+	@icon\SetIcon(data.icon)
+	@icon\Dock(RIGHT)
+	@icon\SetColor(dataColor)
+	@icon\RegisterThink(=> @SetColor(dataColor))
+	
 	isVisible = vgui.Create('DCheckBoxLabel', @)
 	with isVisible
 		\SetText('Enabled (draw in world and no alpha on map)')
@@ -108,6 +142,7 @@ DMaps.OpenWaypointEditMenu = (pointid = 0, container = ClientsideWaypoint.DataCo
 				green: color.g
 				blue: color.b
 				visible: tobool(isVisible\GetChecked())
+				icon: @icon\GetIconName()
 			}
 			container\SetSaveData(pointid, newData)
 			@confirmed = true
@@ -118,8 +153,8 @@ DMaps.OpenWaypointEditMenu = (pointid = 0, container = ClientsideWaypoint.DataCo
 	with picker
 		\Dock(FILL)
 		\SetAlphaBar(false)
-	with data
-		picker\SetColor(Color(.red, .green, .blue))
+	picker\SetColor(dataColor)
+	picker.ValueChanged = => dataColor = @GetColor()
 	DMaps.WaypointEditContainer = frame
 	return frame
 DMaps.OpenWaypointsMenu = ->

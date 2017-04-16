@@ -38,6 +38,7 @@ ClientsideFiles = {
 	'dmaps/client/controls/control_buttons.lua'
 	'dmaps/client/controls/abstract_map_holder.lua'
 	'dmaps/client/controls/waypoint_row.lua'
+	'dmaps/client/controls/icons_list.lua'
 
 	'dmaps/client/default_gui.lua'
 	'dmaps/client/waypoints_controller.lua'
