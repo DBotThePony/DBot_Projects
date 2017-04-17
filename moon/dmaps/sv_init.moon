@@ -51,5 +51,15 @@ ClientsideFiles = {
 
 AddCSLuaFile v for v in *ClientsideFiles
 
-include 'dmaps/server/functions.lua'
-include 'dmaps/server/commands.lua'
+ServersideFiles = {
+	'dmaps/server/classes/waypoints_holder.lua'
+	'dmaps/server/classes/waypoints_controller.lua'
+	
+	'dmaps/server/classes/waypoints_holder_team.lua'
+	'dmaps/server/classes/waypoint_team.lua'
+	
+	'dmaps/server/functions.lua'
+	'dmaps/server/commands.lua'
+}
+
+include v for v in *ServersideFiles

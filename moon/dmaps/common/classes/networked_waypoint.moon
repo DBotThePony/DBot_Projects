@@ -106,6 +106,11 @@ class NetworkedWaypoint
 		@icon = icon
 		@clonedWaypoints = {} if CLIENT
 	
+	NetworkID: => @ID
+	GetNetworkID: => @ID
+	GetNetID: => @ID
+	NetID: => @ID
+	
 	-- INTERNAL
 	CreateWaypoint: =>
 		constructor = @@WAYPOINT_TYPE
@@ -155,18 +160,24 @@ class NetworkedWaypoint
 		error('Initialize point first') if not @INITIALIZE
 		@[data[1]] = data[3]() for data in *@@NETWORKED_VALUES
 	
+	OnDataChanges: =>
+	
 	SetX: (val = 0, networkNow = @INITIALIZE) =>
 		@x = math.floor(val)
 		@WriteValString('x') if networkNow
+		@OnDataChanges()
 	SetY: (val = 0, networkNow = @INITIALIZE) =>
 		@y = math.floor(val)
 		@WriteValString('y') if networkNow
+		@OnDataChanges()
 	SetZ: (val = 0, networkNow = @INITIALIZE) =>
 		@z = math.floor(val)
 		@WriteValString('z') if networkNow
+		@OnDataChanges()
 	SetColor: (val = DMaps.RandomColor(), networkNow = @INITIALIZE) =>
 		@color = val
 		@WriteValString('color') if networkNow
+		@OnDataChanges()
 	SetPos: (val = Vector(0, 0, 0), networkNow = @INITIALIZE) =>
 		@SetX(val.x, networkNow)
 		@SetY(val.y, networkNow)
@@ -174,10 +185,12 @@ class NetworkedWaypoint
 	SetName: (val = "%WAYPOINT_NAME_#{@ID}%", networkNow = @INITIALIZE) =>
 		@name = val
 		@WriteValString('name') if networkNow
+		@OnDataChanges()
 	SetIcon: (val = Icon.DefaultIconName, networkNow = @INITIALIZE) =>
 		@icon = val if type(val) == 'string'
 		@icon = val\GetName() if type(val) == 'table'
 		@WriteValString('icon') if networkNow
+		@OnDataChanges()
 	GetX: => @x
 	GetY: => @y
 	GetZ: => @z
