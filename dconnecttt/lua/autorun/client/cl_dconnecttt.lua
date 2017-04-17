@@ -43,11 +43,11 @@ end)
 local plyMeta = FindMetaTable('Player')
 
 function plyMeta:TotalTimeConnected()
-	return self:GetNWInt('DConnecttt_Total')
+	return self:SessionTime() + self:GetNWFloat('DConnecttt_Total_OnJoin')
 end
 
 function plyMeta:SessionTime()
-	return self:GetNWInt('DConnecttt_Session')
+	return CurTime() - self:GetNWFloat('DConnecttt_Join')
 end
 
 --UTime interface
@@ -84,6 +84,7 @@ surface.CreateFont('DConnecttt.HUD', {
 })
 
 local function NiceTime(time)
+	time = math.floor(time)
 	local seconds = time % 60
 	time = time - seconds
 	
@@ -300,7 +301,7 @@ local function PostDrawTranslucentRenderables(a, b)
 	surface.SetFont('DConnecttt.Disconnect')
 	
 	for k, v in pairs(player.GetAll()) do
-		if v:GetNWInt('DConnecttt_DeadTime') < 5 then continue end
+		if not v:GetNWBool('DConnecttt_Dead') then continue end
 		Draw(v)
 	end
 end

@@ -162,6 +162,7 @@ local function PlayerAuthed(ply, steamid)
 				ply.DConnecttt_Session = 0
 				ply.DConnecttt_Total = tonumber(totaltime)
 				ply:SetNWFloat('DConnecttt_Join', CurTime())
+				ply:SetNWFloat('DConnecttt_Total_OnJoin', ply.DConnecttt_Total)
 				
 				local PrintNick = nick
 				
@@ -274,16 +275,14 @@ local function Timer()
 		
 		ply.DConnecttt_Session = (ply.DConnecttt_Session or 0) + 1
 		ply.DConnecttt_Total = (ply.DConnecttt_Total or 0) + 1
-		ply:SetNWInt('DConnecttt_Session', ply.DConnecttt_Session)
-		ply:SetNWInt('DConnecttt_Total', ply.DConnecttt_Total)
-		
 		ply.DConnecttt_LastTick = ply.DConnecttt_LastTick or CurTime()
 		
 		if ply:IsBot() then
 			ply.DConnecttt_LastTick = CurTime()
 		end
 		
-		ply:SetNWInt('DConnecttt_DeadTime', CurTime() - ply.DConnecttt_LastTick)
+		local deadTime = CurTime() - ply.DConnecttt_LastTick
+		ply:SetNWBool('DConnecttt_Dead', deadTime > 5)
 		
 		if KICK_NOT_RESPONDING and ply.DConnecttt_LastTick + 360 < CurTime() then
 			ply.DConnecttt_Kicked = true
@@ -301,6 +300,7 @@ end
 
 local function PlayerTick(len, ply)
 	ply.DConnecttt_LastTick = CurTime()
+	
 	if ply:GetNWFloat('DConnecttt.FastInit', 0) == 0 then
 		ply:SetNWFloat('DConnecttt.FastInit', CurTime())
 	end	
@@ -309,11 +309,11 @@ end
 local plyMeta = FindMetaTable('Player')
 
 function plyMeta:TotalTimeConnected()
-	return self:GetNWInt('DConnecttt_Total')
+	return self:SessionTime() + self:GetNWFloat('DConnecttt_Total_OnJoin')
 end
 
 function plyMeta:SessionTime()
-	return self:GetNWInt('DConnecttt_Session')
+	return CurTime() - self:GetNWFloat('DConnecttt_Join')
 end
 
 --UTime interface
