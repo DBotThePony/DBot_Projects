@@ -25,15 +25,16 @@ function plyMeta:IsAFK()
 end
 
 function plyMeta:SetIsAFK(status)
+	if status then self:SetAFKTime(DAFK_MINTIMER:GetInt()) end
 	self:SetNWBool('DAFK.IsAFK', status)
 end
 
 function plyMeta:SetAFKTime(time)
-	self:SetNWInt('DAFK.AFKTime', math.ceil(time))
+	self:SetNWInt('DAFK.TimerStart', math.floor(CurTime() - time))
 end
 
 function plyMeta:GetAFKTime()
-	return self:GetNWInt('DAFK.AFKTime')
+	return math.floor(CurTime() - self:GetNWInt('DAFK.TimerStart'))
 end
 
 function plyMeta:IsEvenAFK()

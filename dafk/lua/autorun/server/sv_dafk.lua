@@ -21,10 +21,9 @@ util.AddNetworkString('DAFK.HasFocus')
 
 local function Awake(ply)
 	local oldTime = ply:GetAFKTime()
-	ply:SetAFKTime(0)
+	ply.__DAFK_SLEEP = 0
 	if not ply:IsAFK() then return end
 	ply:SetIsAFK(false)
-	
 	
 	net.Start('DAFK.StatusChanges')
 	net.WriteEntity(ply)
@@ -46,10 +45,6 @@ local function Sleep(ply)
 	MsgC('\n')
 end
 
-local function KeyPress(ply)
-	Awake(ply)
-end
-
 local function Heartbeat(len, ply)
 	Awake(ply)
 end
@@ -57,10 +52,11 @@ end
 local function Timer()
 	local min = DAFK_MINTIMER:GetInt()
 	
-	for k, v in ipairs(player.GetAll()) do
-		v:SetAFKTime(v:GetAFKTime() + 1)
-		if not v:IsAFK() and v:GetAFKTime() >= min then
-			Sleep(v)
+	for i, ply in pairs(player.GetAll()) do
+		ply.__DAFK_SLEEP = (ply.__DAFK_SLEEP or 0) + 1
+		
+		if not ply:IsAFK() and ply.__DAFK_SLEEP >= min then
+			Sleep(ply)
 		end
 	end
 end
@@ -78,5 +74,5 @@ end
 
 net.Receive('DAFK.Heartbeat', Heartbeat)
 net.Receive('DAFK.HasFocus', HasFocus)
-hook.Add('KeyPress', 'DAFK.Hooks', KeyPress)
+hook.Add('KeyPress', 'DAFK.Hooks', Awake)
 timer.Create('DAFK.Timer', 1, 0, Timer)
