@@ -30,7 +30,12 @@ class NetworkedWaypoint
 	@WAYPOINT_TYPE = DMapWaypoint
 	@__type = 'networked_waypoint'
 	
-	@PLAYER_FILTER = (waypoint) => player.GetAll()
+	@PLAYER_FILTER_FUNC = (waypoint, ply) => true
+	@PLAYER_FILTER = (waypoint) =>
+		output = {}
+		for ply in *player.GetAll()
+			table.insert(output, ply) if @PLAYER_FILTER_FUNC(waypoint, ply)
+		return output
 	
 	@GetWaypoints = => [point for i, point in pairs @NETWORKED_WAYPOINTS]
 	
@@ -53,7 +58,7 @@ class NetworkedWaypoint
 	
 	@RECALC_NETWORK_TABLE()
 	-- Clientside only
-	@NetworkedCreate: =>
+	@NetworkedCreate = =>
 		return if SERVER
 		id = net.ReadUInt(@NETWORK_ID_LENGTH)
 		waypoint = NetworkedWaypoint("%WAYPOINT_NAME_#{id}%")
@@ -66,7 +71,7 @@ class NetworkedWaypoint
 		waypoint\CreateWaypoint()
 		
 		hook.Run('NetworkedWaypointCreated', waypoint)
-	@NetworkedChange: =>
+	@NetworkedChange = =>
 		return if SERVER
 		id = net.ReadUInt(@NETWORK_ID_LENGTH)
 		varid = net.ReadUInt(@NETWORK_VAR_LENGTH) + 1
@@ -82,11 +87,11 @@ class NetworkedWaypoint
 		waypoint[data[1]] = read
 		
 		hook.Run('NetworkedWaypointChanges', waypoint)
-	@NetworkedRemove: =>
+	@NetworkedRemove = =>
 		return if SERVER
 		id = net.ReadUInt(@NETWORK_ID_LENGTH)
-		return if not @NETWORKED_WAYPOINTS[id]
 		waypoint = @NETWORKED_WAYPOINTS[id]
+		return if not waypoint
 		waypoint\Remove()
 		hook.Run('NetworkedWaypointRemoved', waypoint)
 	
@@ -203,6 +208,8 @@ class NetworkedWaypoint
 		@removed = true
 		@@NETWORKED_WAYPOINTS[@ID] = nil
 		@waypoint\Remove() if @waypoint
+		if CLIENT
+			waypoint\Remove() for waypoint in *@clonedWaypoints
 		if SERVER and @INITIALIZE
 			net.Start(@@NETWORK_STRING_REMOVE)
 			net.WriteUInt(@ID, @@NETWORK_ID_LENGTH)
@@ -218,16 +225,17 @@ class NetworkedWaypoint
 		net.Start(@@NETWORK_STRING_REMOVE)
 		net.WriteUInt(@ID, @@NETWORK_ID_LENGTH)
 		net.Send(ply)
+	IsNetworkedToPlayer: (ply) => table.HasValue(@networkedClients, ply)
 	AddPlayer: (ply, networkNow = true) =>
 		return false if CLIENT
-		error('Table will be overwritten on initialize. Override static PLAYER_FILTER(waypoint) function') if not @INITIALIZE
+		error('Table will be overwritten on initialize. Override static PLAYER_FILTER_FUNC(waypoint, player) function') if not @INITIALIZE
 		return false if table.HasValue(@networkedClients, ply)
 		table.insert(@networkedClients, ply)
 		@NetworkToPlayer(ply) if networkNow
 		return true
 	RemovePlayer: (ply, networkNow = true) =>
 		return false if CLIENT
-		error('Table will be overwritten on initialize. Override static PLAYER_FILTER(waypoint) function') if not @INITIALIZE
+		error('Table will be overwritten on initialize. Override static PLAYER_FILTER_FUNC(waypoint, player) function') if not @INITIALIZE
 		for i, ply2 in pairs @networkedClients
 			if ply2 == ply
 				@RemoveFromPlayer(ply2) if networkNow
@@ -246,6 +254,15 @@ class NetworkedWaypoint
 		@WriteData()
 		@networkedClients = @@PLAYER_FILTER(@)
 		net.Send(@networkedClients)
+
+if SERVER
+	hook.Add 'PlayerInitialSpawn', 'DMaps.NetworkedWaypoint', (ply) ->
+		for i, waypoint in pairs NetworkedWaypoint.NETWORKED_WAYPOINTS
+			if waypoint.__class\PLAYER_FILTER_FUNC(waypoint, ply)
+				waypoint\AddPlayer(ply)
+	hook.Add 'PlayerDisconnected', 'DMaps.NetworkedWaypoint', (ply) ->
+		waypoint\RemovePlayer(ply) for i, waypoint in pairs NetworkedWaypoint.NETWORKED_WAYPOINTS
+
 net.Receive(NetworkedWaypoint.NETWORK_STRING, -> NetworkedWaypoint\NetworkedCreate())
 net.Receive(NetworkedWaypoint.NETWORK_STRING_CHANGED, -> NetworkedWaypoint\NetworkedChange())
 net.Receive(NetworkedWaypoint.NETWORK_STRING_REMOVE, -> NetworkedWaypoint\NetworkedRemove())

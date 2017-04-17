@@ -22,11 +22,7 @@ import WaypointDataContainerTeams, WaypointsController, Icon from DMaps
 class TeamWaypoint extends WaypointsController
 	@WAYPOINTS_SAVED = {} -- Redefine in subclasses
 	@CONTAINER = WaypointDataContainerTeams()
-	@PLAYER_FILTER = (waypoint) =>
-		output = {}
-		for ply in *player.GetAll()
-			table.insert(output, ply) if waypoint.teamCheck[ply\Team()]
-		return output
+	@PLAYER_FILTER_FUNC = (waypoint, ply) => waypoint.teamCheck[ply\Team()]
 	
 	@RegisterContainerFunctions()
 	@CONTAINER\LoadWaypoints()
@@ -42,6 +38,19 @@ class TeamWaypoint extends WaypointsController
 		@teamsArray = [tonumber(v) for v in *string.Explode(',', data.teams)]
 		@teamCheck = {v, true for v in *@teamsArray}
 		@teams = data.teams
+
+TeamChanges = (ply, newTeam) ->
+	for i, waypoint in pairs TeamWaypoint.WAYPOINTS_SAVED
+		if waypoint.teamCheck[newTeam]
+			waypoint\AddPlayer(ply)
+		else
+			waypoint\RemovePlayer(ply)
+
+-- what the fuck with this hook on sandbox
+-- i know that wiki says i should use PlayerJoinTeam
+-- but any gamemode DON'T GIVE A FUCK ABOUT PlayerJoinTeam HOOK
+hook.Add 'PlayerJoinTeam', 'DMaps.TeamWaypoint', TeamChanges
+hook.Add 'OnPlayerChangedTeam', 'DMaps.TeamWaypoint', (ply, old, new) -> TeamChanges(ply, new)
 	
 DMaps.TeamWaypoint = TeamWaypoint
 return TeamWaypoint

@@ -23,7 +23,6 @@ class WaypointsController extends NetworkedWaypoint
 	@STORED_WAYPOINTS = {}
 	@WAYPOINTS_SAVED = {} -- Redefine in subclasses
 	@CONTAINER = WaypointsDataContainer()
-	@PLAYER_FILTER = (waypoint) => player.GetAll()
 	
 	@RegisterContainerFunctions = => -- Call in subclasses
 		@CONTAINER.CreateTrigger = (container, id, data) ->
