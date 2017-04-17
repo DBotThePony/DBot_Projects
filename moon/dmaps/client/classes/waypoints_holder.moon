@@ -156,7 +156,8 @@ class WaypointsDataContainer
 		if data ~= nil
 			@Clear!
 			for row in *data
-				@SaveData[tonumber(row.id)] = row if row.id
+				row[k] = tonumber(row[k]) for k in *{'id', 'posx', 'posy', 'posz', 'red', 'green', 'blue'}
+				@SaveData[row.id] = row if row.id
 		print sql.LastError! if data == false
 		return data
 		
