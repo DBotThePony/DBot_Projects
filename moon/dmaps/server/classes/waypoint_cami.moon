@@ -65,7 +65,7 @@ hook.Add 'CAMI.PlayerUsergroupChanged', 'DMaps.CAMIGroupWaypoint', (ply, old, ne
 			waypoint\AddPlayer(ply)
 		else
 			waypoint\RemovePlayer(ply)
-hook.Add 'CAMI.OnUsergroupRegistered', 'DMaps.CAMIGroupWaypoint', (group) ->
+OnUsergroupRegistered = (group) ->
 	plys = [{ply, ply\GetUserGroup()} for ply in *player.GetAll()]
 	for i, waypoint in pairs CAMIGroupWaypoint.WAYPOINTS_SAVED
 		waypoint\RecalculateGroups()
@@ -74,5 +74,7 @@ hook.Add 'CAMI.OnUsergroupRegistered', 'DMaps.CAMIGroupWaypoint', (group) ->
 				waypoint\AddPlayer(ply[1])
 			else
 				waypoint\RemovePlayer(ply[1])
+hook.Add 'CAMI.OnUsergroupRegistered', 'DMaps.CAMIGroupWaypoint', OnUsergroupRegistered
+hook.Add 'CAMI.OnUsergroupUnregistered', 'DMaps.CAMIGroupWaypoint', OnUsergroupRegistered
 DMaps.CAMIGroupWaypoint = CAMIGroupWaypoint
 return CAMIGroupWaypoint
