@@ -19,7 +19,7 @@ import DMaps, net, player, math, Color, hook, table from _G
 import SERVER, CLIENT, Vector from _G
 import WaypointsDataContainer, Icon, NetworkedWaypoint from DMaps
 
-class WaypointsController extends NetworkedWaypoint
+class BasicWaypoint extends NetworkedWaypoint
 	@STORED_WAYPOINTS = {}
 	@WAYPOINTS_SAVED = {} -- Redefine in subclasses
 	@CONTAINER = WaypointsDataContainer()
@@ -58,6 +58,6 @@ class WaypointsController extends NetworkedWaypoint
 		super!
 		@@STORED_WAYPOINTS[@ID] = nil
 		@@WAYPOINTS_SAVED[@SAVEID] = nil if @SAVEID
-	
-DMaps.WaypointsController = WaypointsController
-return WaypointsController
+
+DMaps.BasicWaypoint = BasicWaypoint
+return BasicWaypoint

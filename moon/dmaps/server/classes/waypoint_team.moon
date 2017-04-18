@@ -17,9 +17,9 @@
 
 import DMaps, net, player, math, Color, hook, table from _G
 import SERVER, CLIENT, Vector from _G
-import WaypointDataContainerTeams, WaypointsController, Icon from DMaps
+import WaypointDataContainerTeams, BasicWaypoint, Icon from DMaps
 
-class TeamWaypoint extends WaypointsController
+class TeamWaypoint extends BasicWaypoint
 	@WAYPOINTS_SAVED = {} -- Redefine in subclasses
 	@CONTAINER = WaypointDataContainerTeams()
 	@PLAYER_FILTER_FUNC = (waypoint, ply) => waypoint.teamCheck[ply\Team()]

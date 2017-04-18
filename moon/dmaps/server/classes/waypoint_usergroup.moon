@@ -17,9 +17,9 @@
 
 import DMaps, net, player, math, Color, hook, table from _G
 import SERVER, CLIENT, Vector from _G
-import WaypointDataContainerUsergroup, WaypointsController, Icon from DMaps
+import WaypointDataContainerUsergroup, BasicWaypoint, Icon from DMaps
 
-class UsergroupWaypoint extends WaypointsController
+class UsergroupWaypoint extends BasicWaypoint
 	@WAYPOINTS_SAVED = {} -- Redefine in subclasses
 	@CONTAINER = WaypointDataContainerUsergroup()
 	@PLAYER_FILTER_FUNC = (waypoint, ply) => waypoint._check[ply\GetUserGroup()]
