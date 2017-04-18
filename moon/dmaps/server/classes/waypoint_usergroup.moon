@@ -41,6 +41,11 @@ class UsergroupWaypoint extends BasicWaypoint
 		@_check = {v, true for v in *@_array}
 		@ugroups = data.ugroups
 
-	
+hook.Add 'CAMI.PlayerUsergroupChanged', 'DMaps.UsergroupWaypoint', (ply, old, new, source) ->
+	for i, waypoint in pairs UsergroupWaypoint.WAYPOINTS_SAVED
+		if waypoint._check[new]
+			waypoint\AddPlayer(ply)
+		else
+			waypoint\RemovePlayer(ply)
 DMaps.UsergroupWaypoint = UsergroupWaypoint
 return UsergroupWaypoint
