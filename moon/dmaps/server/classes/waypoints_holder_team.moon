@@ -15,7 +15,7 @@
 -- limitations under the License.
 -- 
 
-import DMaps, pairs, table, sql, game, math, SQLStr, LocalPlayer from _G
+import DMaps, pairs, table, string from _G
 import Icon, WaypointsDataContainer from DMaps
 
 class WaypointDataContainerTeams extends WaypointsDataContainer

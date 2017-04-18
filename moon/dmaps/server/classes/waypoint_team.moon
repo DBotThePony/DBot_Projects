@@ -15,8 +15,7 @@
 -- limitations under the License.
 -- 
 
-import DMaps, net, player, math, Color, hook, table from _G
-import SERVER, CLIENT, Vector from _G
+import DMaps, hook, string from _G
 import WaypointDataContainerTeams, BasicWaypoint, Icon from DMaps
 
 class TeamWaypoint extends BasicWaypoint
