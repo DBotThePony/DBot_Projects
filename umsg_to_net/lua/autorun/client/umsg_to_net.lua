@@ -251,8 +251,8 @@ net.Receive('DNetUMSGPrecacheFull', function()
 		local str = net.ReadString()
 		local netID = net.ReadUInt(16)
 		table.insert(netIDs, netID)
-		D_NW_NETWORK_STRINGS_PRECACHE[str] = netID
-		D_NW_NETWORK_STRINGS_PRECACHE_BACKWARDS[netID] = str
+		D_UMSG_NETWORK_STRINGS_PRECACHE[str] = netID
+		D_UMSG_NETWORK_STRINGS_PRECACHE_BACKWARDS[netID] = str
 	end
 	
 	net.Start('DNetUMSGDestinationReachedFull')
