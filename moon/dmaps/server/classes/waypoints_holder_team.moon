@@ -47,7 +47,7 @@ class WaypointDataContainerTeams extends WaypointsDataContainer
 		data = @GetPoint(id)
 		error("No such a waypoint with ID: #{id}") if not data
 		val = {val} if type(val) ~= 'table'
-		data.teams = table.concat(val,  ',')
+		data.teams = table.concat([tostring(v) for v in *val],  ',')
 		@SetSaveData(id, data, triggerSave)
 	AddTeam: (id = 0, val = 1000, triggerSave = true) =>
 		data = @GetPoint(id)
