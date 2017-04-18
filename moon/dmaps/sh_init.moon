@@ -19,13 +19,3 @@ export DMaps
 
 DMaps = DMaps or {}
 DMaps.HU_IN_METRE = 40
-
-include 'dmaps/common/icons.lua'
-include 'dmaps/common/functions.lua'
-include 'dmaps/common/classes/networked_waypoint.lua'
-
-if CLIENT
-	include 'dmaps/cl_init.lua'
-else
-	include 'dmaps/sv_init.lua'
-

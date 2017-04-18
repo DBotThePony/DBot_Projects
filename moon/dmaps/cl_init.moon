@@ -17,7 +17,12 @@
 
 import CreateConVar from _G
 
+include 'dmaps/sh_init.lua'
+
 Files = {
+	'dmaps/common/icons.lua'
+	'dmaps/common/functions.lua'
+	
 	'dmaps/client/classes/class_map.lua'
 	'dmaps/client/classes/class_map_point.lua'
 	'dmaps/client/classes/class_map_entity_point.lua'
@@ -38,6 +43,8 @@ Files = {
 	'dmaps/client/default_gui.lua'
 	'dmaps/client/waypoints_controller.lua'
 	'dmaps/client/network.lua'
+	
+	'dmaps/common/classes/networked_waypoint.lua'
 }
 
 DMaps.CONVARS_SETTINGS = {}

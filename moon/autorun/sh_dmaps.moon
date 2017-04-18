@@ -15,8 +15,5 @@
 -- limitations under the License.
 -- 
 
-include 'dmaps/sh_init.lua'
-
-if SERVER
-	AddCSLuaFile 'dmaps/cl_init.lua'
-	AddCSLuaFile 'dmaps/sh_init.lua'
+include 'dmaps/sv_init.lua' if SERVER
+include 'dmaps/cl_init.lua' if CLIENT
