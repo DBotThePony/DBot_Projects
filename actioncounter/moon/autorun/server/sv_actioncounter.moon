@@ -156,7 +156,7 @@ Think = ->
 				break
 		
 		if nwhit
-			net.Start('dactioncounter_network')
+			net.Start('dactioncounter_network', true)
 			
 			for nData in *NetworkedValues
 				if @[nData[1] .. '_cnt'] >= nData[2]

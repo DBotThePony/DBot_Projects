@@ -182,7 +182,7 @@ Think = function()
       end
     end
     if nwhit then
-      net.Start('dactioncounter_network')
+      net.Start('dactioncounter_network', true)
       for _index_1 = 1, #NetworkedValues do
         local nData = NetworkedValues[_index_1]
         if self[nData[1] .. '_cnt'] >= nData[2] then
