@@ -312,3 +312,13 @@ for k, data in pairs(SETNW_AVALIABLE_FUNCTIONS) do
 		D_NW_NETWORK_DB[ent][netString] = read()
 	end)
 end
+
+net.Receive('__setnw_panic', function()
+	for k, data in pairs(SETNW_AVALIABLE_FUNCTIONS) do
+		local name = data[1]
+		entMeta['oldSet' .. name] = entMeta['oldSet' .. name] or entMeta['Set' .. name]
+		entMeta['oldGet' .. name] = entMeta['oldGet' .. name] or entMeta['Get' .. name]
+		entMeta['Set' .. name] = entMeta['oldSet' .. name]
+		entMeta['Get' .. name] = entMeta['oldGet' .. name]
+	end
+end)

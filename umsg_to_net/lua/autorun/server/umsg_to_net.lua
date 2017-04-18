@@ -23,6 +23,8 @@ util.AddNetworkString('DSetNWPrecacheFull')
 util.AddNetworkString('DSetNWRequestID')
 util.AddNetworkString('DSetNWRemove')
 
+util.AddNetworkString('__setnw_panic')
+
 util.AddNetworkString('DNetUMSG')
 util.AddNetworkString('DNetUMSGFallback')
 util.AddNetworkString('DNetUMSGPrecache')
@@ -131,6 +133,9 @@ hook.Add('EntityRemoved', 'DNWClear', function(ent)
 	net.Broadcast()
 end)
 
+local umsgPanicTab = {'PoolString'}
+umsg.oldPoolString = umsg.oldPoolString or umsg.PoolString
+
 function umsg.PoolString(strName)
 	if D_UMSG_NETWORK_STRINGS_PRECACHE[strName] then return end
 	D_UMSG_NETWORK_STRINGS_PRECACHE[strName] = D_UMSG_NEXT_NETWORK_ID
@@ -163,6 +168,9 @@ net.Receive('DNetUMSGDestinationReachedFull', function(len, ply)
 end)
 
 local CURRENT_USERMESSAGES
+
+umsg.oldStart = umsg.oldStart or umsg.Start
+table.insert(umsgPanicTab, 'Start')
 
 function umsg.Start(strName, players)
 	players = players or player.GetAll()
@@ -262,6 +270,8 @@ function writeFuncs.VectorNormal(val)
 end
 
 for name, send in pairs(writeFuncs) do
+	umsg['old' .. name] = umsg['old' .. name] or umsg[name]
+	table.insert(umsgPanicTab, name)
 	umsg[name] = function(val)
 		if not CURRENT_USERMESSAGES then
 			print('UMSG ERROR: There is no any ongoing messages!')
@@ -272,6 +282,9 @@ for name, send in pairs(writeFuncs) do
 		table.insert(CURRENT_USERMESSAGES.writeTable, function() send(val) end)
 	end
 end
+
+umsg.oldEnd = umsg.oldEnd or umsg.End
+table.insert(umsgPanicTab, 'End')
 
 function umsg.End()
 	if not CURRENT_USERMESSAGES then
@@ -308,3 +321,45 @@ function umsg.End()
 	
 	CURRENT_USERMESSAGES = nil
 end
+
+concommand.Add('__umsg_panic', function(ply)
+	if IsValid(ply) and not ply:IsSuperAdmin() then return end
+	
+	for k, v in pairs(umsgPanicTab) do
+		umsg[v] = umsg['old' .. v]
+	end
+end)
+
+concommand.Add('__setnw_panic', function(ply)
+	if IsValid(ply) and not ply:IsSuperAdmin() then return end
+	
+	for k, data in pairs(SETNW_AVALIABLE_FUNCTIONS) do
+		local name = data[1]
+		entMeta['oldSet' .. name] = entMeta['oldSet' .. name] or entMeta['Set' .. name]
+		entMeta['oldGet' .. name] = entMeta['oldGet' .. name] or entMeta['Get' .. name]
+		entMeta['Set' .. name] = entMeta['oldSet' .. name]
+		entMeta['Get' .. name] = entMeta['oldGet' .. name]
+	end
+	
+	net.Start('__setnw_panic')
+	net.Broadcast()
+end)
+
+concommand.Add('__dnw_panic', function(ply)
+	if IsValid(ply) and not ply:IsSuperAdmin() then return end
+	
+	for k, v in pairs(umsgPanicTab) do
+		umsg[v] = umsg['old' .. v]
+	end
+	
+	for k, data in pairs(SETNW_AVALIABLE_FUNCTIONS) do
+		local name = data[1]
+		entMeta['oldSet' .. name] = entMeta['oldSet' .. name] or entMeta['Set' .. name]
+		entMeta['oldGet' .. name] = entMeta['oldGet' .. name] or entMeta['Get' .. name]
+		entMeta['Set' .. name] = entMeta['oldSet' .. name]
+		entMeta['Get' .. name] = entMeta['oldGet' .. name]
+	end
+	
+	net.Start('__setnw_panic')
+	net.Broadcast()
+end)
