@@ -43,6 +43,29 @@ class WaypointDataContainerTeams extends WaypointsDataContainer
 		data = @SaveData[id]
 		error("No such a waypoint with ID: #{id}") if not data
 		return [tonumber(v) for v in *string.Explode(data.teams,  ',')]
+	SetTeams: (id = 0, val = {}, triggerSave = true) =>
+		data = @GetPoint(id)
+		error("No such a waypoint with ID: #{id}") if not data
+		val = {val} if type(val) ~= 'table'
+		data.teams = table.concat(val,  ',')
+		@SetSaveData(id, data, triggerSave)
+	AddTeam: (id = 0, val = 1000, triggerSave = true) =>
+		data = @GetPoint(id)
+		error("No such a waypoint with ID: #{id}") if not data
+		teamsVals = [tonumber(v) for v in *string.Explode(',', data.teams)]
+		table.insert(teamsVals, val) if not table.HasValue(teamsVals, val)
+		data.teams = table.concat(teamsVals,  ',')
+		@SetSaveData(id, data, triggerSave)
+	RemoveTeam: (id = 0, val = 1000, triggerSave = true) =>
+		data = @GetPoint(id)
+		error("No such a waypoint with ID: #{id}") if not data
+		teamsVals = [tonumber(v) for v in *string.Explode(',', data.teams)]
+		for i, v in pairs teamsVals
+			if v == val
+				table.remove(teamsVals, i)
+				break
+		data.teams = table.concat(teamsVals,  ',')
+		@SetSaveData(id, data, triggerSave)
 	CreateSaveData: (teams = {}, ...) =>
 		newData = super(...)
 		teams = {teams} if type(teams) ~= 'table'

@@ -32,6 +32,8 @@ class TeamWaypoint extends WaypointsController
 		@teamsArray = {}
 		super(savedata)
 	
+	CheckTeam: (ply) => @teamCheck[ply\Team()] or false
+	CheckTeamNum: (num) => @teamCheck[num] or false
 	GetTeams: => @teamsArray
 	SetupSaveData: (data) =>
 		super(data)
