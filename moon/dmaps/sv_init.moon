@@ -67,6 +67,9 @@ ServersideFiles = {
 	'dmaps/server/classes/waypoints_holder_team.lua'
 	'dmaps/server/classes/waypoint_team.lua'
 	
+	'dmaps/server/classes/waypoints_holder_usergroup.lua'
+	'dmaps/server/classes/waypoint_usergroup.lua'
+	
 	'dmaps/server/functions.lua'
 	'dmaps/server/commands.lua'
 }
