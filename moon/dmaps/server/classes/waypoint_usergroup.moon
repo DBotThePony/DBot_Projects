@@ -32,9 +32,6 @@ class UsergroupWaypoint extends BasicWaypoint
 		@_array = {}
 		super(savedata)
 	
-	CheckTeam: (ply) => @teamCheck[ply\Team()] or false
-	CheckTeamNum: (num) => @teamCheck[num] or false
-	GetTeams: => @teamsArray
 	SetupSaveData: (data) =>
 		super(data)
 		@_array = string.Explode(',', data.ugroups)
