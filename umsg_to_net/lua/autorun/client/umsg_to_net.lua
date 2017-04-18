@@ -202,7 +202,7 @@ end
 
 local function CreateUMSGObject()
 	local object = setmetatable({}, {__index = UMSGObjectMeta})
-	local readData = net.ReadData(267)
+	local readData = net.ReadData(4095)
 	object.read = readData
 	object.readPos = 1
 	-- We are reading in 256 digit system
