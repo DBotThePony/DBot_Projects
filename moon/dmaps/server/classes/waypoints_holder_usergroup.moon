@@ -42,7 +42,7 @@ class WaypointDataContainerUsergroup extends WaypointsDataContainer
 	GetGroups: (id = 0) =>
 		data = @SaveData[id]
 		error("No such a waypoint with ID: #{id}") if not data
-		return string.Explode(data.ugroups,  ',')
+		return string.Explode(',', data.ugroups)
 	GetUserGroups: (...) => @GetGroups(...)
 	SetGroups: (id = 0, val = {}, triggerSave = true) =>
 		data = @GetPoint(id)
