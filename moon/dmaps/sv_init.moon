@@ -48,6 +48,8 @@ ClientsideFiles = {
 	'dmaps/common/icons.lua'
 	'dmaps/common/classes/networked_waypoint.lua'
 	
+	'dmaps/common/sh_cami.lua'
+	
 	'dmaps/cl_init.lua'
 	'dmaps/sh_init.lua'
 }

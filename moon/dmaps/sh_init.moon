@@ -19,3 +19,5 @@ export DMaps
 
 DMaps = DMaps or {}
 DMaps.HU_IN_METRE = 40
+
+include 'dmaps/common/sh_cami.lua'
