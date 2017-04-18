@@ -61,8 +61,12 @@ class NetworkedWaypoint
 	@NetworkedCreate = =>
 		return if SERVER
 		id = net.ReadUInt(@NETWORK_ID_LENGTH)
-		waypoint = NetworkedWaypoint("%WAYPOINT_NAME_#{id}%")
+		-- Remove old one if present
+		if @NETWORKED_WAYPOINTS[id]
+			@NETWORKED_WAYPOINTS[id]\Remove()
+			hook.Run('NetworkedWaypointRemoved', @NETWORKED_WAYPOINTS[id])
 		
+		waypoint = NetworkedWaypoint("%WAYPOINT_NAME_#{id}%")
 		waypoint.INITIALIZE = true
 		waypoint.ID = id
 		@NETWORKED_WAYPOINTS[waypoint.ID] = waypoint
