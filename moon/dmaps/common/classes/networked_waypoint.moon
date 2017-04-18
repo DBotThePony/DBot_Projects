@@ -261,9 +261,10 @@ class NetworkedWaypoint
 
 if SERVER
 	hook.Add 'PlayerInitialSpawn', 'DMaps.NetworkedWaypoint', (ply) ->
-		for i, waypoint in pairs NetworkedWaypoint.NETWORKED_WAYPOINTS
-			if waypoint.__class\PLAYER_FILTER_FUNC(waypoint, ply)
-				waypoint\AddPlayer(ply)
+		timer.Simple 5, -> -- wait before all other mods initialize their logic on player
+			for i, waypoint in pairs NetworkedWaypoint.NETWORKED_WAYPOINTS
+				if waypoint.__class\PLAYER_FILTER_FUNC(waypoint, ply)
+					waypoint\AddPlayer(ply)
 	hook.Add 'PlayerDisconnected', 'DMaps.NetworkedWaypoint', (ply) ->
 		waypoint\RemovePlayer(ply) for i, waypoint in pairs NetworkedWaypoint.NETWORKED_WAYPOINTS
 
