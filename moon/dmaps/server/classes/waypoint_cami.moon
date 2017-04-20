@@ -29,8 +29,6 @@ class CAMIGroupWaypoint extends BasicWaypoint
 	@CreateFromData: (data) => -- Override
 		@CONTAINER\CreateWaypoint(string.Explode(',', data.ugroups), data.name, data.posx, data.posy, data.posz, data.red, data.green, data.blue, data.icon)
 
-	@RegisterNetwork()
-
 	WriteNetworkData: =>
 		super()
 		with @savedata
@@ -40,6 +38,8 @@ class CAMIGroupWaypoint extends BasicWaypoint
 		read = super()
 		read.ugroups = net.ReadString()
 		return read
+
+	@RegisterNetwork()
 
 	@WAYPOINTS_SAVED = {} -- Redefine in subclasses
 	@CONTAINER = WaypointDataContainerCAMIGroups()

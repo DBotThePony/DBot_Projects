@@ -301,6 +301,8 @@ class ServerWaypointsContainer
 		return frame
 DMaps.ServerWaypointsContainer = ServerWaypointsContainer
 
+import CAMI from _G
+
 class ServerWaypointsContainerCAMI extends ServerWaypointsContainer
 	@NETWORK_STRING_PREFIX = 'DMaps.CAMIWaypoint'
 	@DISPLAY_NAME = 'CAMI usergroups'
@@ -325,10 +327,47 @@ class ServerWaypointsContainerCAMI extends ServerWaypointsContainer
 			\SizeToContents()
 			\SetMouseInputEnabled(true)
 			\SetTextColor(color_white)
+	CreateBox: =>
+		newBox = vgui.Create('DComboBox', @groupsSelect)
+		newBox\Dock(TOP)
+		newBox\SetValue('<no group>')
+		newBox\AddChoice('<no group>')
+		for groupName, groupData in pairs CAMI.GetUsergroups()
+			newBox\AddChoice(groupName)
+		newBox.OnSelect = (p, i, value) ->
+			if i == 1 and #@boxes > 1
+				for i, box in pairs @boxes
+					if box\GetSelectedID() == 1
+						table.remove(@boxes, i)
+						box\Remove()
+						@groupsSelect\SetSize(0, #@boxes * 20 + 20)
+						return
+			elseif i ~= 1
+				@CreateBox()
+		table.insert(@boxes, newBox)
+		newBox\SetSize(0, 20)
+		@groupsSelect\SetSize(0, #@boxes * 20 + 20)
 	CreateAdditionalMenus: (pnl) =>
+		@groupsSelect = vgui.Create('EditablePanel', pnl)
+		with @groupsSelect
+			\Dock(TOP)
+			.Paint = (w, h) =>
+				surface.SetDrawColor(100, 100, 100)
+				surface.DrawRect(0, 0, w, h)
+		lab = vgui.Create('DLabel', @groupsSelect)
+		lab\Dock(TOP)
+		lab\SetText('Groups are inherited')
+		lab\SetTextColor(color_white)
+		@boxes = {}
+		@CreateBox()
 	GrabData: (pnl) =>
 		data = super(pnl)
-		data.ugroups = ''
+		groups = {}
+		for box in *@boxes
+			if box\GetSelectedID() ~= 1
+				nm = box\GetSelected()
+				table.insert(groups, nm)
+		data.ugroups = table.concat(groups, ',')
 		return data
 
 DMaps.ServerWaypointsContainerCAMI = ServerWaypointsContainerCAMI
