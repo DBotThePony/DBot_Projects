@@ -42,7 +42,7 @@ class BasicWaypoint extends NetworkedWaypoint
 		if id
 			net.Start(@@SNETWORK_STRING_CREATE)
 			net.WriteUInt(id, 32)
-			@CONTAINER_TYPE\WriteNetworkData(data)
+			@CONTAINER.__class\WriteNetworkData(data)
 			net.Send(ply)
 	@NetworkOnRemove = (len, ply) =>
 		return if not IsValid(ply) or not ply\IsSuperAdmin()
@@ -60,7 +60,7 @@ class BasicWaypoint extends NetworkedWaypoint
 		if @CONTAINER\PointExists(netID)
 			@CONTAINER\SetSaveData(netID, readData)
 			net.Start(@SNETWORK_STRING_MODIFY)
-			@CONTAINER_TYPE\WriteNetworkData(readData)
+			@CONTAINER.__class\WriteNetworkData(readData)
 			net.Send(ply)
 
 	@RegisterNetwork = =>
