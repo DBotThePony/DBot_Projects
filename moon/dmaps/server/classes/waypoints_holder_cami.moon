@@ -38,15 +38,7 @@ class WaypointDataContainerCAMIGroups extends WaypointDataContainerUsergroup
 
 	new: (map) =>
 		super(map)
-
-	@WriteNetworkData: (data, writeID = true) =>
-		super(data, writeID)
-		net.WriteString(data.ugroups)
-	@ReadNetworkData: => -- Static function!
-		read = super()
-		read.ugroups = net.ReadString()
-		return read
-	
+		
 	GetGroups: (id = 0) =>
 		data = @SaveData[id]
 		error("No such a waypoint with ID: #{id}") if not data
