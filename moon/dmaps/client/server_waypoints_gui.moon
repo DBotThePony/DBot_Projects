@@ -20,14 +20,11 @@ import Icon from DMaps
 
 class ServerWaypointsContainer
 	@NETWORK_STRING_PREFIX = 'DMaps.BasicWaypoint'
-	@NETWORK_STRING = "#{@NETWORK_STRING_PREFIX}Load"
-	@NETWORK_STRING_MODIFY = "#{@NETWORK_STRING_PREFIX}Modify"
-	@NETWORK_STRING_CREATE = "#{@NETWORK_STRING_PREFIX}Create"
-	@NETWORK_STRING_DELETE = "#{@NETWORK_STRING_PREFIX}Delete"
 	@ROW_PART_NAME = 'DMapsWaypointRowServer'
 	@DISPLAY_NAME = 'serverside'
 
-	-- Do not override
+	@IsValid = => IsValid(@CURRENT_CLASS)
+
 	@OnLoad = =>
 		if not @IsValid()
 			@(true)
@@ -57,9 +54,11 @@ class ServerWaypointsContainer
 				@CURRENT_CLASS\BuildList()
 				return
 
-	@IsValid = => IsValid(@CURRENT_CLASS)
-
 	@RegisterNetwork = =>
+		@NETWORK_STRING = "#{@NETWORK_STRING_PREFIX}Load"
+		@NETWORK_STRING_MODIFY = "#{@NETWORK_STRING_PREFIX}Modify"
+		@NETWORK_STRING_CREATE = "#{@NETWORK_STRING_PREFIX}Create"
+		@NETWORK_STRING_DELETE = "#{@NETWORK_STRING_PREFIX}Delete"
 		net.Receive(@NETWORK_STRING, -> @OnLoad())
 		net.Receive(@NETWORK_STRING_CREATE, -> @OnCreated())
 		net.Receive(@NETWORK_STRING_DELETE, -> @OnRemoved())
@@ -96,7 +95,6 @@ class ServerWaypointsContainer
 		net.WriteUInt(data.green, 8)
 		net.WriteUInt(data.blue, 8)
 		net.WriteUInt(Icon\GetNetworkID(data.icon), 16)
-		return read
 	ReadData: =>
 		@data = {}
 		count = net.ReadUInt(16) -- loal 65k waypoints. khm
@@ -164,11 +162,11 @@ class ServerWaypointsContainer
 		
 		for point in *@list
 			str = vgui.Create(@@ROW_PART_NAME, @scrollPanel)
-			@AddRowButtons(str)
 			str\Dock(TOP)
 			str\SetData(point)
 			str.OnDelete = (pnl, id) -> @DoRemove(id)
 			str.OpenEdit = (pnl, data) -> @OpenEditMenu(data)
+			@AddRowButtons(str)
 			table.insert(@points, str)
 	CreateAdditionalMenus: (pnl) =>
 	OpenEditMenu: (data) =>
@@ -187,6 +185,7 @@ class ServerWaypointsContainer
 		local newData
 		
 		@OnClose = ->
+			return if not confirmed
 			newData.id = data.id if newData
 			local self
 			self = Self
@@ -302,3 +301,34 @@ class ServerWaypointsContainer
 		return frame
 DMaps.ServerWaypointsContainer = ServerWaypointsContainer
 
+class ServerWaypointsContainerCAMI extends ServerWaypointsContainer
+	@NETWORK_STRING_PREFIX = 'DMaps.CAMIWaypoint'
+	@DISPLAY_NAME = 'CAMI usergroups'
+
+	@RegisterNetwork()
+
+	new: (...) => super(...)
+
+	@ReadWaypointData: => -- Override with super()
+		read = super()
+		read.ugroups = net.ReadString()
+		return read
+	WriteWaypointData: (data, writeID = false) => -- Override with super()
+		super(data, writeID)
+		net.WriteString(data.ugroups)
+	AddRowButtons: (row) =>
+		row.groups = vgui.Create('DLabel', row)
+		with row.groups
+			\Dock(LEFT)
+			\SetText("Usergroups: #{row\GetData().ugroups}")
+			\SetTooltip("Usergroups: #{row\GetData().ugroups}")
+			\SizeToContents()
+			\SetMouseInputEnabled(true)
+			\SetTextColor(color_white)
+	CreateAdditionalMenus: (pnl) =>
+	GrabData: (pnl) =>
+		data = super(pnl)
+		data.ugroups = ''
+		return data
+
+DMaps.ServerWaypointsContainerCAMI = ServerWaypointsContainerCAMI

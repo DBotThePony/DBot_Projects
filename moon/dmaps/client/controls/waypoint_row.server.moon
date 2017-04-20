@@ -91,6 +91,7 @@ PANEL =
 		@data = table.Copy(data)
 		@id = @data.id
 		@UpdatePanels()
+	GetData: => @data
 	SetOnUpdate: (func = (->)) =>
 		@OnUpdate = func
 	UpdatePanels: =>
