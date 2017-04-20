@@ -39,6 +39,7 @@ class CAMIGroupWaypoint extends BasicWaypoint
 	@ReadNetworkData: => -- Static function!
 		read = super()
 		read.ugroups = net.ReadString()
+		return read
 
 	@WAYPOINTS_SAVED = {} -- Redefine in subclasses
 	@CONTAINER = WaypointDataContainerCAMIGroups()
