@@ -72,27 +72,6 @@ class BasicWaypoint extends NetworkedWaypoint
 	
 	@RegisterNetwork()
 
-	@STORED_WAYPOINTS = {}
-	@WAYPOINTS_SAVED = {} -- Redefine in subclasses
-	@CONTAINER = WaypointsDataContainer()
-	
-	@RegisterContainerFunctions = => -- Call in subclasses
-		@CONTAINER.CreateTrigger = (container, id, data) ->
-			waypoint = @(data)
-			waypoint\InitPoint()
-		@CONTAINER.UpdateTrigger = (container, id, data) -> @WAYPOINTS_SAVED[id]\SetupSaveData(data) if @WAYPOINTS_SAVED[id]
-		@CONTAINER.RemoveTrigger = (container, id, data) -> @WAYPOINTS_SAVED[id]\Remove() if @WAYPOINTS_SAVED[id]
-	
-	@RegisterContainerFunctions()
-	@CONTAINER\LoadWaypoints()
-	
-	new: (savedata) =>
-		super(savedata.name, savedata.posx, savedata.posy, savedata.posz, Color(savedata.red, savedata.green, savedata.blue), savedata.icon)
-		@@STORED_WAYPOINTS[@ID] = @
-		@SetupSaveData(savedata)
-		@SAVEID = savedata.id
-		@@WAYPOINTS_SAVED[@SAVEID] = @
-
 	WriteNetworkData: =>
 		with @savedata
 			net.WriteUInt(.id, 32)
@@ -117,7 +96,27 @@ class BasicWaypoint extends NetworkedWaypoint
 		read.blue = net.ReadUInt(8)
 		read.icon = Icon\GetIconName(net.ReadUInt(16))
 		return read
+
+	@STORED_WAYPOINTS = {}
+	@WAYPOINTS_SAVED = {} -- Redefine in subclasses
+	@CONTAINER = WaypointsDataContainer()
 	
+	@RegisterContainerFunctions = => -- Call in subclasses
+		@CONTAINER.CreateTrigger = (container, id, data) ->
+			waypoint = @(data)
+			waypoint\InitPoint()
+		@CONTAINER.UpdateTrigger = (container, id, data) -> @WAYPOINTS_SAVED[id]\SetupSaveData(data) if @WAYPOINTS_SAVED[id]
+		@CONTAINER.RemoveTrigger = (container, id, data) -> @WAYPOINTS_SAVED[id]\Remove() if @WAYPOINTS_SAVED[id]
+	
+	@RegisterContainerFunctions()
+	@CONTAINER\LoadWaypoints()
+	
+	new: (savedata) =>
+		super(savedata.name, savedata.posx, savedata.posy, savedata.posz, Color(savedata.red, savedata.green, savedata.blue), savedata.icon)
+		@@STORED_WAYPOINTS[@ID] = @
+		@SetupSaveData(savedata)
+		@SAVEID = savedata.id
+		@@WAYPOINTS_SAVED[@SAVEID] = @
 
 	SaveID: => @SAVEID
 	GetSaveID: => @SAVEID
