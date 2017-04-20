@@ -21,10 +21,6 @@ import WaypointDataContainerCAMIGroups, BasicWaypoint, Icon from DMaps
 class CAMIGroupWaypoint extends BasicWaypoint
 	@S_OPEN_MENU = 'dmaps_serverwaypoints_cami'
 	@SNETWORK_STRING_PREFIX = 'DMaps.CAMIWaypoint'
-	@SNETWORK_STRING_LOAD = "#{@SNETWORK_STRING_PREFIX}Load"
-	@SNETWORK_STRING_MODIFY = "#{@SNETWORK_STRING_PREFIX}Modify"
-	@SNETWORK_STRING_CREATE = "#{@SNETWORK_STRING_PREFIX}Create"
-	@SNETWORK_STRING_DELETE = "#{@SNETWORK_STRING_PREFIX}Delete"
 
 	@CreateFromData: (data) => -- Override
 		@CONTAINER\CreateWaypoint(string.Explode(',', data.ugroups), data.name, data.posx, data.posy, data.posz, data.red, data.green, data.blue, data.icon)

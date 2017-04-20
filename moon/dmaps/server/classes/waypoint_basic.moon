@@ -22,10 +22,6 @@ class BasicWaypoint extends NetworkedWaypoint
 	-- Edit network strings
 	@S_OPEN_MENU = 'dmaps_serverwaypoints'
 	@SNETWORK_STRING_PREFIX = 'DMaps.BasicWaypoint'
-	@SNETWORK_STRING_LOAD = "#{@SNETWORK_STRING_PREFIX}Load"
-	@SNETWORK_STRING_MODIFY = "#{@SNETWORK_STRING_PREFIX}Modify"
-	@SNETWORK_STRING_CREATE = "#{@SNETWORK_STRING_PREFIX}Create"
-	@SNETWORK_STRING_DELETE = "#{@SNETWORK_STRING_PREFIX}Delete"
 
 	@NetworkOnLoad = (len, ply) =>
 		return if not IsValid(ply) or not ply\IsSuperAdmin()
@@ -64,6 +60,10 @@ class BasicWaypoint extends NetworkedWaypoint
 			net.Send(ply)
 
 	@RegisterNetwork = =>
+		@SNETWORK_STRING_LOAD = "#{@SNETWORK_STRING_PREFIX}Load"
+		@SNETWORK_STRING_MODIFY = "#{@SNETWORK_STRING_PREFIX}Modify"
+		@SNETWORK_STRING_CREATE = "#{@SNETWORK_STRING_PREFIX}Create"
+		@SNETWORK_STRING_DELETE = "#{@SNETWORK_STRING_PREFIX}Delete"
 		net.Receive(@SNETWORK_STRING_LOAD, (...) ->   @NetworkOnLoad  (...))
 		concommand.Add(@S_OPEN_MENU, (ply) -> @NetworkOnLoad(nil, ply))
 		net.Receive(@SNETWORK_STRING_CREATE, (...) -> @NetworkOnCreate(...))

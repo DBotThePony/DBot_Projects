@@ -22,7 +22,7 @@ util.AddNetworkString 'DMaps.NetworkedWaypoint'
 util.AddNetworkString 'DMaps.NetworkedWaypointChanges'
 util.AddNetworkString 'DMaps.NetworkedWaypointRemoved'
 
-for str in *{'DMaps.BasicWaypoint', 'DMaps.CAMIWaypoint'}
+for str in *{'DMaps.BasicWaypoint', 'DMaps.CAMIWaypoint', 'DMaps.UsergroupWaypoint'}
 	util.AddNetworkString "#{str}Load"
 	util.AddNetworkString "#{str}Modify"
 	util.AddNetworkString "#{str}Create"

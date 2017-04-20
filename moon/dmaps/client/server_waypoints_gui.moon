@@ -354,10 +354,10 @@ class ServerWaypointsContainerCAMI extends ServerWaypointsContainer
 			.Paint = (w, h) =>
 				surface.SetDrawColor(100, 100, 100)
 				surface.DrawRect(0, 0, w, h)
-		lab = vgui.Create('DLabel', @groupsSelect)
-		lab\Dock(TOP)
-		lab\SetText('Groups are inherited')
-		lab\SetTextColor(color_white)
+		@notifylab = vgui.Create('DLabel', @groupsSelect)
+		@notifylab\Dock(TOP)
+		@notifylab\SetText('Groups are inherited')
+		@notifylab\SetTextColor(color_white)
 		@boxes = {}
 		@CreateBox()
 	GrabData: (pnl) =>
@@ -371,3 +371,16 @@ class ServerWaypointsContainerCAMI extends ServerWaypointsContainer
 		return data
 
 DMaps.ServerWaypointsContainerCAMI = ServerWaypointsContainerCAMI
+
+class ServerWaypointsContainerUsergroups extends ServerWaypointsContainerCAMI
+	@NETWORK_STRING_PREFIX = 'DMaps.UsergroupWaypoint'
+	@DISPLAY_NAME = 'usergroups'
+
+	@RegisterNetwork()
+
+	new: (...) => super(...)
+	CreateAdditionalMenus: (pnl) =>
+		super(pnl)
+		@notifylab\SetText('Usergroups are excplicit')
+
+DMaps.ServerWaypointsContainerUsergroups = ServerWaypointsContainerUsergroups
