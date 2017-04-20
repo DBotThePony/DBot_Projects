@@ -75,6 +75,12 @@ class CAMIGroupWaypoint extends BasicWaypoint
 	RecalculateGroups: =>
 		@_array = @GetGroups()
 		@_check = {v, true for v in *@_array}
+		if @INITIALIZE
+			for {ply, group} in *[{ply, ply\GetUserGroup()} for ply in *player.GetAll()]
+				if @_check[group]
+					@AddPlayer(ply)
+				else
+					@RemovePlayer(ply)
 	
 	SetupSaveData: (data) =>
 		super(data)
