@@ -22,6 +22,12 @@ util.AddNetworkString 'DMaps.NetworkedWaypoint'
 util.AddNetworkString 'DMaps.NetworkedWaypointChanges'
 util.AddNetworkString 'DMaps.NetworkedWaypointRemoved'
 
+for str in *{'DMaps.BasicWaypoint'}
+	util.AddNetworkString "#{str}Load"
+	util.AddNetworkString "#{str}Modify"
+	util.AddNetworkString "#{str}Create"
+	util.AddNetworkString "#{str}Delete"
+
 ClientsideFiles = {
 	'dmaps/client/classes/class_map.lua'
 	'dmaps/client/classes/class_map_point.lua'
@@ -38,10 +44,12 @@ ClientsideFiles = {
 	'dmaps/client/controls/control_buttons.lua'
 	'dmaps/client/controls/abstract_map_holder.lua'
 	'dmaps/client/controls/waypoint_row.lua'
+	'dmaps/client/controls/waypoint_row.server.lua'
 	'dmaps/client/controls/icons_list.lua'
 
 	'dmaps/client/default_gui.lua'
 	'dmaps/client/waypoints_controller.lua'
+	'dmaps/client/server_waypoints_gui.lua'
 	'dmaps/client/network.lua'
 	
 	'dmaps/common/functions.lua'

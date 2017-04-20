@@ -18,6 +18,8 @@
 import DMaps, pairs, table, sql, game, math, SQLStr, LocalPlayer from _G
 import Icon from DMaps
 
+-- I only now noticed that if i created a subclass WaypointData
+-- i will receive much more profit :s
 class WaypointsDataContainer
 	@TABLE_NAME = 'dmap_basic_waypoints'
 	@WaypointsTable = [[CREATE TABLE IF NOT EXISTS dmap_basic_waypoints (
@@ -85,12 +87,41 @@ class WaypointsDataContainer
 		@SetSaveData(id, data, triggerSave)
 	
 	GetData: => @SaveData
+	PointExists: (id = 0) => @SaveData[id] ~= nil
 	GetPoint: (id = 0) => table.Copy(@SaveData[id]) if @SaveData[id] else nil
 	GetWaypoint: (id = 0) => table.Copy(@SaveData[id]) if @SaveData[id] else nil
 	GetTable: => @SaveData
 	GetCount: => table.Count(@SaveData)
 	Clear: => for k, v in pairs @SaveData do @SaveData[k] = nil
 	SaveWaypoints: => @SaveWaypoint(k) for k, v in pairs @SaveData
+
+	@WriteNetworkData: (data, writeID = true) =>
+		net.WriteUInt(data.id, 32) if writeID
+		net.WriteString(data.name)
+		net.WriteInt(data.posx, 32)
+		net.WriteInt(data.posy, 32)
+		net.WriteInt(data.posz, 32)
+		net.WriteUInt(data.red, 8)
+		net.WriteUInt(data.green, 8)
+		net.WriteUInt(data.blue, 8)
+		net.WriteUInt(Icon\GetNetworkID(data.icon), 16)
+	WriteNetworkData: (id = 0) =>
+		data = @GetPoint(id)
+		error("No such a waypoint with ID: #{id}") if not data
+		@@WriteNetworkData(data)
+	
+	@ReadNetworkData: => -- Static function!
+		read = {}
+		read.id = net.ReadUInt(32)
+		read.name = net.ReadString()
+		read.posx = net.ReadInt(32)
+		read.posy = net.ReadInt(32)
+		read.posz = net.ReadInt(32)
+		read.red = net.ReadUInt(8)
+		read.green = net.ReadUInt(8)
+		read.blue = net.ReadUInt(8)
+		read.icon = Icon\GetIconName(net.ReadUInt(16))
+		return read
 	
 	SaveWaypoint: (id = 0) =>
 		waypoint = @SaveData[id]

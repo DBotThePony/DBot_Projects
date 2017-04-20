@@ -19,6 +19,59 @@ import DMaps, Color from _G
 import WaypointsDataContainer, Icon, NetworkedWaypoint from DMaps
 
 class BasicWaypoint extends NetworkedWaypoint
+	-- Edit network strings
+	@S_OPEN_MENU = 'dmaps_serverwaypoints'
+	@SNETWORK_STRING_PREFIX = 'DMaps.BasicWaypoint'
+	@SNETWORK_STRING_LOAD = "#{@SNETWORK_STRING_PREFIX}Load"
+	@SNETWORK_STRING_MODIFY = "#{@SNETWORK_STRING_PREFIX}Modify"
+	@SNETWORK_STRING_CREATE = "#{@SNETWORK_STRING_PREFIX}Create"
+	@SNETWORK_STRING_DELETE = "#{@SNETWORK_STRING_PREFIX}Delete"
+
+	@NetworkOnLoad = (len, ply) =>
+		return if not IsValid(ply) or not ply\IsSuperAdmin()
+		net.Start(@SNETWORK_STRING_LOAD)
+		net.WriteUInt(table.Count(@WAYPOINTS_SAVED), 16)
+		point\WriteNetworkData() for i, point in pairs @WAYPOINTS_SAVED
+		net.Send(ply)
+	@CreateFromData: (data) => -- Override
+		@CONTAINER\CreateWaypoint(data.name, data.posx, data.posy, data.posz, data.red, data.green, data.blue, data.icon)
+	@NetworkOnCreate = (len, ply) =>
+		return if not IsValid(ply) or not ply\IsSuperAdmin()
+		newData = @ReadNetworkData()
+		data, id = @CreateFromData(newData)
+		if id
+			net.Start(@@SNETWORK_STRING_CREATE)
+			net.WriteUInt(id, 32)
+			WaypointsDataContainer\WriteNetworkData(data)
+			net.Send(ply)
+	@NetworkOnRemove = (len, ply) =>
+		return if not IsValid(ply) or not ply\IsSuperAdmin()
+		netID = net.ReadUInt(32)
+		if @CONTAINER\PointExists(netID)
+			@CONTAINER\DeleteWaypoint(netID)
+			net.Start(@SNETWORK_STRING_DELETE)
+			net.WriteUInt(netID, 32)
+			net.Send(ply)
+	@NetworkOnModify = (len, ply) =>
+		return if not IsValid(ply) or not ply\IsSuperAdmin()
+		netID = net.ReadUInt(32)
+		readData = @ReadNetworkData()
+		readData.id = netID
+		if @CONTAINER\PointExists(netID)
+			@CONTAINER\SetSaveData(netID, readData)
+			net.Start(@SNETWORK_STRING_MODIFY)
+			WaypointsDataContainer\WriteNetworkData(readData)
+			net.Send(ply)
+
+	@RegisterNetwork = =>
+		net.Receive(@SNETWORK_STRING_LOAD, (...) ->   @NetworkOnLoad  (...))
+		concommand.Add(@S_OPEN_MENU, (ply) -> @NetworkOnLoad(nil, ply))
+		net.Receive(@SNETWORK_STRING_CREATE, (...) -> @NetworkOnCreate(...))
+		net.Receive(@SNETWORK_STRING_DELETE, (...) -> @NetworkOnRemove(...))
+		net.Receive(@SNETWORK_STRING_MODIFY, (...) -> @NetworkOnModify(...))
+	
+	@RegisterNetwork()
+
 	@STORED_WAYPOINTS = {}
 	@WAYPOINTS_SAVED = {} -- Redefine in subclasses
 	@CONTAINER = WaypointsDataContainer()
@@ -39,7 +92,33 @@ class BasicWaypoint extends NetworkedWaypoint
 		@SetupSaveData(savedata)
 		@SAVEID = savedata.id
 		@@WAYPOINTS_SAVED[@SAVEID] = @
+
+	WriteNetworkData: =>
+		with @savedata
+			net.WriteUInt(.id, 32)
+			net.WriteString(.name, 32)
+			net.WriteInt(.posx, 32)
+			net.WriteInt(.posy, 32)
+			net.WriteInt(.posz, 32)
+			net.WriteUInt(.red, 8)
+			net.WriteUInt(.green, 8)
+			net.WriteUInt(.blue, 8)
+			net.WriteUInt(Icon\GetNetworkID(.icon), 16)
 	
+	@ReadNetworkData: => -- Static function!
+		read = {}
+		-- read.id = net.ReadUInt(32)
+		read.name = net.ReadString()
+		read.posx = net.ReadInt(32)
+		read.posy = net.ReadInt(32)
+		read.posz = net.ReadInt(32)
+		read.red = net.ReadUInt(8)
+		read.green = net.ReadUInt(8)
+		read.blue = net.ReadUInt(8)
+		read.icon = Icon\GetIconName(net.ReadUInt(16))
+		return read
+	
+
 	SaveID: => @SAVEID
 	GetSaveID: => @SAVEID
 	
