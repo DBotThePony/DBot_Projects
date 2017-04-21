@@ -20,6 +20,8 @@ import CreateConVar from _G
 include 'dmaps/sh_init.lua'
 
 Files = {
+	'dmaps/client/cami_wrapper.lua'
+	
 	'dmaps/client/classes/class_map.lua'
 	'dmaps/client/classes/class_map_point.lua'
 	'dmaps/client/classes/class_map_entity_point.lua'

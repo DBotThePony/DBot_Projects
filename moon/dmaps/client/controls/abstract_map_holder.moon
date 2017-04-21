@@ -22,6 +22,8 @@ import DMaps, surface, gui, draw, table, unpack, vgui, math, DermaMenu from _G
 import DMapLocalPlayerPointer, DMapPlayerPointer, ClientsideWaypoint from DMaps
 import \RegisterWaypoints from ClientsideWaypoint
 
+DMaps.WatchPermission('teleport')
+
 PANEL = {}
 
 PANEL.GetButtons = =>
@@ -80,7 +82,7 @@ PANEL.OnMousePressed = (code) =>
 					data, id = ClientsideWaypoint.DataContainer\CreateWaypoint("New Waypoint At X: #{x}, Y: #{y}, Z: #{z}", x, y, z)
 					DMaps.OpenWaypointEditMenu(id, ClientsideWaypoint.DataContainer, -> ClientsideWaypoint.DataContainer\DeleteWaypoint(id)) if id
 				\AddOption('Create waypoint...', createWaypoint)
-				if LocalPlayer()\IsAdmin()
+				if DMaps.HasPermission('teleport')
 					\AddOption('Teleport to', -> RunConsoleCommand('dmaps_teleport', x, y, z))
 				\Open()
 	elseif code == MOUSE_LEFT

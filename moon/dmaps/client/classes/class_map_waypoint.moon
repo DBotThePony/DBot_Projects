@@ -21,6 +21,8 @@ import DMaps, surface, Color, math, draw, TEXT_ALIGN_CENTER from _G
 import math, Vector, Angle, render, cam, CreateConVar, table from _G
 import DMapPointer, HU_IN_METRE, Icon from DMaps
 
+DMaps.WatchPermission('teleport')
+
 DRAW_DISTANCE = DMaps.ClientsideOption('cl_dmap_draw_dist', '1', 'Draw distance under waypoint name')
 DRAW_BEAM = DMaps.ClientsideOption('cl_dmap_draw_beam', '1', 'Draw waypoint beam')
 DRAW_IN_WORLD = DMaps.ClientsideOption('cl_dmap_draw_waypoints', '1', 'Draw waypoints in world')
@@ -126,7 +128,10 @@ class DMapWaypoint extends DMapPointer
 	
 	OpenMenu: (menu = DermaMenu()) =>
 		with menu
-			\AddOption('Teleport to', -> RunConsoleCommand('dmaps_teleport', @x, @y, @z)) if LocalPlayer()\IsAdmin()
+			\AddOption('Teleport to', -> RunConsoleCommand('dmaps_teleport', @x, @y, @z)) if DMaps.HasPermission('teleport')
+			\AddOption('Copy XYZ position', -> SetClipboardText("X: #{@x}, Y: #{@y}, Z: #{@z}"))
+			\AddOption('Copy name', -> SetClipboardText(@name))
+			\AddOption('Copy Data string', -> SetClipboardText("Name: #{@name}, X: #{@x}, Y: #{@y}, Z: #{@z}"))
 			\Open()
 		return true
 	

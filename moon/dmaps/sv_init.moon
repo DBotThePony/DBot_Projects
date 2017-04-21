@@ -47,6 +47,7 @@ ClientsideFiles = {
 	'dmaps/client/controls/waypoint_row.server.lua'
 	'dmaps/client/controls/icons_list.lua'
 
+	'dmaps/client/cami_wrapper.lua'
 	'dmaps/client/default_gui.lua'
 	'dmaps/client/waypoints_controller.lua'
 	'dmaps/client/server_waypoints_gui.lua'

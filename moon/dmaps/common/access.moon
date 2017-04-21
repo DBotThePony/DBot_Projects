@@ -15,7 +15,7 @@
 -- limitations under the License.
 -- 
 
-import CAMI, table from _G
+import CAMI, table, DMaps from _G
 import insert from table
 
 accessToRegister = {
@@ -23,9 +23,19 @@ accessToRegister = {
     {'logs', 'Can see DMaps logs', 'admin'}
 }
 
+permHashMap = {}
+
 for access in *{'basic', 'cami', 'team', 'ugroup'}
     insert(accessToRegister, {"view_#{access}_waypoints", "Whatever user can view '#{access}' waypoints", 'superadmin'})
 	insert(accessToRegister, {"edit_#{access}_waypoints", "Whatever user can edit/create '#{access}' waypoints", 'superadmin'})
 	insert(accessToRegister, {"delete_#{access}_waypoints", "Whatever user can delete '#{access}' waypoints", 'superadmin'})
 
-CAMI.RegisterPrivilege({Name: "dmaps_#{Name}", :Description, :MinAccess}) for {Name, Description, MinAccess} in *accessToRegister
+DMaps.PermissionData = (name = '') -> permHashMap[name]
+DMaps.IsValidPermission = (name = '') -> permHashMap[name] ~= nil
+DMaps.TranslatePermission = (name = '') -> permHashMap[name].Name
+
+for {Name, Description, MinAccess} in *accessToRegister
+    dt = {Name: "dmaps_#{Name}", :Description, :MinAccess}
+    CAMI.RegisterPrivilege(dt)
+    permHashMap[Name] = dt
+    permHashMap["dmaps_#{Name}"] = dt
