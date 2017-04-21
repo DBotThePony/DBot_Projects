@@ -19,6 +19,7 @@ import DMaps, hook, string from _G
 import WaypointDataContainerTeams, BasicWaypoint, Icon from DMaps
 
 class TeamWaypoint extends BasicWaypoint
+	@EDIT_PERMISSION = 'team'
 	@S_OPEN_MENU = 'dmaps_serverwaypoints_teams'
 	@SNETWORK_STRING_PREFIX = 'DMaps.TeamWaypoint'
 

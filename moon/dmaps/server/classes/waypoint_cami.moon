@@ -20,6 +20,7 @@ import WaypointDataContainerCAMIGroups, BasicWaypoint, Icon from DMaps
 
 class CAMIGroupWaypoint extends BasicWaypoint
 	@S_OPEN_MENU = 'dmaps_serverwaypoints_cami'
+	@EDIT_PERMISSION = 'cami'
 	@SNETWORK_STRING_PREFIX = 'DMaps.CAMIWaypoint'
 
 	@CreateFromData: (data) => -- Override

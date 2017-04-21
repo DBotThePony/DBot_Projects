@@ -20,6 +20,7 @@ import SERVER, CLIENT, Vector from _G
 import WaypointDataContainerUsergroup, BasicWaypoint, Icon from DMaps
 
 class UsergroupWaypoint extends BasicWaypoint
+	@EDIT_PERMISSION = 'ugroup'
 	@S_OPEN_MENU = 'dmaps_serverwaypoints_ugroup'
 	@SNETWORK_STRING_PREFIX = 'DMaps.UsergroupWaypoint'
 

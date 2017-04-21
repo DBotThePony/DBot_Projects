@@ -57,6 +57,7 @@ ClientsideFiles = {
 	'dmaps/common/classes/networked_waypoint.lua'
 	
 	'dmaps/common/sh_cami.lua'
+	'dmaps/common/access.lua'
 	
 	'dmaps/cl_init.lua'
 	'dmaps/sh_init.lua'
@@ -67,8 +68,6 @@ AddCSLuaFile v for v in *ClientsideFiles
 ServersideFiles = {
 	'dmaps/sh_init.lua'
 	
-	'dmaps/common/icons.lua'
-	'dmaps/common/functions.lua'
 	'dmaps/common/classes/networked_waypoint.lua'
 	
 	'dmaps/server/classes/waypoints_holder.lua'

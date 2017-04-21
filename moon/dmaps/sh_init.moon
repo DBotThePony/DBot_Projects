@@ -21,3 +21,6 @@ DMaps = DMaps or {}
 DMaps.HU_IN_METRE = 40
 
 include 'dmaps/common/sh_cami.lua'
+include 'dmaps/common/access.lua'
+include 'dmaps/common/icons.lua'
+include 'dmaps/common/functions.lua'

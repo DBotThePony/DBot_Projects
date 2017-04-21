@@ -17,49 +17,59 @@
 
 import DMaps, Color from _G
 import WaypointsDataContainer, Icon, NetworkedWaypoint from DMaps
+import CAMI from _G
 
 class BasicWaypoint extends NetworkedWaypoint
 	-- Edit network strings
+	@EDIT_PERMISSION = 'basic'
 	@S_OPEN_MENU = 'dmaps_serverwaypoints'
 	@SNETWORK_STRING_PREFIX = 'DMaps.BasicWaypoint'
 
 	@NetworkOnLoad = (len, ply) =>
-		return if not IsValid(ply) or not ply\IsSuperAdmin()
-		net.Start(@SNETWORK_STRING_LOAD)
-		net.WriteUInt(table.Count(@WAYPOINTS_SAVED), 16)
-		point\WriteNetworkData() for i, point in pairs @WAYPOINTS_SAVED
-		net.Send(ply)
+		return if not IsValid(ply)
+		CAMI.PlayerHasAccess ply, @__PERM_VIEW, (has = false, reason = '') ->
+			return if not has
+			net.Start(@SNETWORK_STRING_LOAD)
+			net.WriteUInt(table.Count(@WAYPOINTS_SAVED), 16)
+			point\WriteNetworkData() for i, point in pairs @WAYPOINTS_SAVED
+			net.Send(ply)
 	@CreateFromData: (data) => -- Override
 		@CONTAINER\CreateWaypoint(data.name, data.posx, data.posy, data.posz, data.red, data.green, data.blue, data.icon)
 	@NetworkOnCreate = (len, ply) =>
-		return if not IsValid(ply) or not ply\IsSuperAdmin()
-		newData = @ReadNetworkData()
-		data, id = @CreateFromData(newData)
-		if id
-			net.Start(@@SNETWORK_STRING_CREATE)
-			net.WriteUInt(id, 32)
-			@CONTAINER.__class\WriteNetworkData(data)
-			net.Send(ply)
+		return if not IsValid(ply)
+		CAMI.PlayerHasAccess ply, @__PERM_EDIT, (has = false, reason = '') ->
+			newData = @ReadNetworkData()
+			data, id = @CreateFromData(newData)
+			if id
+				net.Start(@@SNETWORK_STRING_CREATE)
+				net.WriteUInt(id, 32)
+				@CONTAINER.__class\WriteNetworkData(data)
+				net.Send(ply)
 	@NetworkOnRemove = (len, ply) =>
-		return if not IsValid(ply) or not ply\IsSuperAdmin()
-		netID = net.ReadUInt(32)
-		if @CONTAINER\PointExists(netID)
-			@CONTAINER\DeleteWaypoint(netID)
-			net.Start(@SNETWORK_STRING_DELETE)
-			net.WriteUInt(netID, 32)
-			net.Send(ply)
+		return if not IsValid(ply)
+		CAMI.PlayerHasAccess ply, @__PERM_DELETE, (has = false, reason = '') ->
+			netID = net.ReadUInt(32)
+			if @CONTAINER\PointExists(netID)
+				@CONTAINER\DeleteWaypoint(netID)
+				net.Start(@SNETWORK_STRING_DELETE)
+				net.WriteUInt(netID, 32)
+				net.Send(ply)
 	@NetworkOnModify = (len, ply) =>
-		return if not IsValid(ply) or not ply\IsSuperAdmin()
-		netID = net.ReadUInt(32)
-		readData = @ReadNetworkData()
-		readData.id = netID
-		if @CONTAINER\PointExists(netID)
-			@CONTAINER\SetSaveData(netID, readData)
-			net.Start(@SNETWORK_STRING_MODIFY)
-			@CONTAINER.__class\WriteNetworkData(readData)
-			net.Send(ply)
+		return if not IsValid(ply)
+		CAMI.PlayerHasAccess ply, @__PERM_EDIT, (has = false, reason = '') ->
+			netID = net.ReadUInt(32)
+			readData = @ReadNetworkData()
+			readData.id = netID
+			if @CONTAINER\PointExists(netID)
+				@CONTAINER\SetSaveData(netID, readData)
+				net.Start(@SNETWORK_STRING_MODIFY)
+				@CONTAINER.__class\WriteNetworkData(readData)
+				net.Send(ply)
 
 	@RegisterNetwork = =>
+		@__PERM_VIEW = "dmaps_view_#{@EDIT_PERMISSION}_waypoints"
+		@__PERM_EDIT = "dmaps_edit_#{@EDIT_PERMISSION}_waypoints"
+		@__PERM_DELETE = "dmaps_delete_#{@EDIT_PERMISSION}_waypoints"
 		@SNETWORK_STRING_LOAD = "#{@SNETWORK_STRING_PREFIX}Load"
 		@SNETWORK_STRING_MODIFY = "#{@SNETWORK_STRING_PREFIX}Modify"
 		@SNETWORK_STRING_CREATE = "#{@SNETWORK_STRING_PREFIX}Create"

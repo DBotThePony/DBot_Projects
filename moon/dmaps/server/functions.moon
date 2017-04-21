@@ -15,10 +15,24 @@
 -- limitations under the License.
 -- 
 
-import DMaps, net from _G
+import DMaps, net, CAMI, player, hook from _G
+
+AVALIABLE_ADMINS_LOGS = {}
+
+UpdateLogAdminList = ->
+	for ply in *player.GetAll()
+		CAMI.PlayerHasAccess ply, 'dmaps_logs', (has = false, reason = '') ->
+			AVALIABLE_ADMINS_LOGS[ply] = true if has
+			AVALIABLE_ADMINS_LOGS[ply] = nil if not has
+	for i, bool in pairs AVALIABLE_ADMINS_LOGS
+		AVALIABLE_ADMINS_LOGS[i] = nil if not IsValid(i)
+
+timer.Create 'DMaps.AdminCheckup', 10, 0, UpdateLogAdminList
+hook.Add 'PlayerInitialSpawn', 'DMaps.Logs', -> timer.Simple(1, UpdateLogAdminList)
+hook.Add 'PlayerDisconnected', 'DMaps.Logs', -> timer.Simple(1, UpdateLogAdminList)
 
 DMaps.AdminEcho = (...) ->
 	DMaps.Message(...)
 	net.Start('DMaps.AdminEcho')
 	DMaps.WriteArray({...})
-	net.Send(DMaps.GetAdmins())
+	net.Send([k for k, v in pairs AVALIABLE_ADMINS_LOGS])

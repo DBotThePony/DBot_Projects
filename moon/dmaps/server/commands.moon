@@ -19,10 +19,11 @@ import concommand, Vector, MsgC, NULL, tonumber, team from _G
 
 TeleportTo = (ply, x, y, z) ->
 	if not ply\IsValid() return
-	if not ply\IsAdmin() return
-	if not x return
-	if not y return
-	if not z return
-	ply\SetPos(Vector(x, y, z))
-	DMaps.AdminEcho('Admin ', ply, ' has teleported to X: ', x, ' Y: ', y, ' Z: ', z)
+	CAMI.PlayerHasAccess ply, 'dmaps_teleport', (has = false, reason = '') ->
+		if not has return
+		if not x return
+		if not y return
+		if not z return
+		ply\SetPos(Vector(x, y, z))
+		DMaps.AdminEcho('Admin ', ply, ' has teleported to X: ', x, ' Y: ', y, ' Z: ', z)
 concommand.Add('dmaps_teleport', (ply = NULL, cmd = '', args = {}) -> TeleportTo(ply, tonumber(args[1]), tonumber(args[2]), tonumber(args[3])))
