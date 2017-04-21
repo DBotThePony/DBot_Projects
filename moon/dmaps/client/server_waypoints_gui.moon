@@ -291,7 +291,7 @@ class ServerWaypointsContainer
 				confirmed = true
 				@Close()
 		
-		Self\CreateAdditionalMenus(@)
+		Self\CreateAdditionalMenus(@, data)
 
 		@picker = vgui.Create('DColorMixer', @)
 		@picker\Dock(FILL)
@@ -327,27 +327,36 @@ class ServerWaypointsContainerCAMI extends ServerWaypointsContainer
 			\SizeToContents()
 			\SetMouseInputEnabled(true)
 			\SetTextColor(color_white)
-	CreateBox: =>
+	CreateBox: (select) =>
 		newBox = vgui.Create('DComboBox', @groupsSelect)
 		newBox\Dock(TOP)
 		newBox\SetValue('<no group>')
 		newBox\AddChoice('<no group>')
+		i = 1
+		newBox.groupsInv = {}
 		for groupName, groupData in pairs CAMI.GetUsergroups()
+			i += 1
 			newBox\AddChoice(groupName)
+			newBox.groupsInv[groupName] = i
+		newBox\ChooseOptionID(newBox.groupsInv[select]) if select and newBox.groupsInv[select]
 		newBox.OnSelect = (p, i, value) ->
+			hit = false
 			if i == 1 and #@boxes > 1
 				for i, box in pairs @boxes
 					if box\GetSelectedID() == 1
-						table.remove(@boxes, i)
-						box\Remove()
-						@groupsSelect\SetSize(0, #@boxes * 20 + 20)
-						return
+						if not hit
+							hit = true
+						else
+							table.remove(@boxes, i)
+							box\Remove()
+							@groupsSelect\SetSize(0, #@boxes * 20 + 20)
+							return
 			elseif i ~= 1
 				@CreateBox()
 		table.insert(@boxes, newBox)
 		newBox\SetSize(0, 20)
 		@groupsSelect\SetSize(0, #@boxes * 20 + 20)
-	CreateAdditionalMenus: (pnl) =>
+	CreateAdditionalMenus: (pnl, data) =>
 		@groupsSelect = vgui.Create('EditablePanel', pnl)
 		with @groupsSelect
 			\Dock(TOP)
@@ -359,6 +368,9 @@ class ServerWaypointsContainerCAMI extends ServerWaypointsContainer
 		@notifylab\SetText('Groups are inherited')
 		@notifylab\SetTextColor(color_white)
 		@boxes = {}
+		grps = string.Explode(',', data.ugroups)
+		if #grps ~= 0
+			@CreateBox(group) for group in *grps
 		@CreateBox()
 	GrabData: (pnl) =>
 		data = super(pnl)
@@ -366,7 +378,7 @@ class ServerWaypointsContainerCAMI extends ServerWaypointsContainer
 		for box in *@boxes
 			if box\GetSelectedID() ~= 1
 				nm = box\GetSelected()
-				table.insert(groups, nm)
+				table.insert(groups, nm) if not table.HasValue(groups, nm)
 		data.ugroups = table.concat(groups, ',')
 		return data
 
@@ -379,8 +391,8 @@ class ServerWaypointsContainerUsergroups extends ServerWaypointsContainerCAMI
 	@RegisterNetwork()
 
 	new: (...) => super(...)
-	CreateAdditionalMenus: (pnl) =>
-		super(pnl)
+	CreateAdditionalMenus: (pnl, data) =>
+		super(pnl, data)
 		@notifylab\SetText('Usergroups are excplicit')
 
 DMaps.ServerWaypointsContainerUsergroups = ServerWaypointsContainerUsergroups
