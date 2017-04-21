@@ -39,28 +39,34 @@ class TeamWaypoint extends BasicWaypoint
 
 	@WAYPOINTS_SAVED = {} -- Redefine in subclasses
 	@CONTAINER = WaypointDataContainerTeams()
-	@PLAYER_FILTER_FUNC = (waypoint, ply) => waypoint.teamCheck[ply\Team()]
+	@PLAYER_FILTER_FUNC = (waypoint, ply) => waypoint._check[ply\Team()]
 	
 	@RegisterContainerFunctions()
 	@CONTAINER\LoadWaypoints()
 	
 	new: (savedata) =>
-		@teamCheck = {}
-		@teamsArray = {}
+		@_check = {}
+		@_array = {}
 		super(savedata)
 	
-	CheckTeam: (ply) => @teamCheck[ply\Team()] or false
-	CheckTeamNum: (num) => @teamCheck[num] or false
-	GetTeams: => @teamsArray
+	CheckTeam: (ply) => @_check[ply\Team()] or false
+	CheckTeamNum: (num) => @_check[num] or false
+	GetTeams: => @_array
 	SetupSaveData: (data) =>
 		super(data)
-		@teamsArray = [tonumber(v) for v in *string.Explode(',', data.teams)]
-		@teamCheck = {v, true for v in *@teamsArray}
+		@_array = [tonumber(v) for v in *string.Explode(',', data.teams)]
+		@_check = {v, true for v in *@_array}
 		@teams = data.teams
+		if @INITIALIZE
+			for {ply, tm} in *[{ply, ply\Team()} for ply in *player.GetAll()]
+				if @_check[tm]
+					@AddPlayer(ply)
+				else
+					@RemovePlayer(ply)
 
 TeamChanges = (ply, newTeam) ->
 	for i, waypoint in pairs TeamWaypoint.WAYPOINTS_SAVED
-		if waypoint.teamCheck[newTeam]
+		if waypoint._check[newTeam]
 			waypoint\AddPlayer(ply)
 		else
 			waypoint\RemovePlayer(ply)
