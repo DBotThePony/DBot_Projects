@@ -384,6 +384,93 @@ class ServerWaypointsContainerCAMI extends ServerWaypointsContainer
 
 DMaps.ServerWaypointsContainerCAMI = ServerWaypointsContainerCAMI
 
+class ServerWaypointsContainerTeam extends ServerWaypointsContainer
+	@NETWORK_STRING_PREFIX = 'DMaps.TeamWaypoint'
+	@DISPLAY_NAME = 'teams waypoints'
+
+	@RegisterNetwork()
+
+	new: (...) => super(...)
+
+	@ReadWaypointData: => -- Override with super()
+		read = super()
+		read.teams = net.ReadString()
+		return read
+	WriteWaypointData: (data, writeID = false) => -- Override with super()
+		super(data, writeID)
+		net.WriteString(data.teams)
+	AddRowButtons: (row) =>
+		row.teams = vgui.Create('DLabel', row)
+		with row.teams
+			\Dock(LEFT)
+			teamStr = table.concat([team.GetName(tonumber(v)) or '%ERRORNAME%' for v in *string.Explode(',', row\GetData().teams)], ', ')
+			\SetText("Teams: #{teamStr}")
+			\SetTooltip("Teams: #{teamStr}")
+			\SizeToContents()
+			\SetMouseInputEnabled(true)
+			\SetTextColor(color_white)
+	CreateBox: (select) =>
+		newBox = vgui.Create('DComboBox', @teamsSelect)
+		newBox\Dock(TOP)
+		newBox\SetValue('<no team>')
+		newBox\AddChoice('<no team>')
+		i = 1
+		newBox.teamsMap = {}
+		newBox.teamsMap2 = {}
+		newBox.teamsMap3 = {}
+		for teamID, teamData in pairs team.GetAllTeams()
+			i += 1
+			newBox\AddChoice(teamData.Name)
+			newBox.teamsMap[teamData.Name] = i
+			newBox.teamsMap2[i] = teamID
+			newBox.teamsMap3[teamID] = i
+		newBox\ChooseOptionID(newBox.teamsMap3[select]) if select and newBox.teamsMap3[select]
+		newBox.GetTeam = => @teamsMap2[@GetSelectedID()]
+		newBox.OnSelect = (p, i, value) ->
+			hit = false
+			if i == 1 and #@boxes > 1
+				for i, box in pairs @boxes
+					if box\GetSelectedID() == 1
+						if not hit
+							hit = true
+						else
+							table.remove(@boxes, i)
+							box\Remove()
+							@teamsSelect\SetSize(0, #@boxes * 20 + 20)
+							return
+			elseif i ~= 1
+				@CreateBox()
+		table.insert(@boxes, newBox)
+		newBox\SetSize(0, 20)
+		@teamsSelect\SetSize(0, #@boxes * 20 + 20)
+	CreateAdditionalMenus: (pnl, data) =>
+		@teamsSelect = vgui.Create('EditablePanel', pnl)
+		with @teamsSelect
+			\Dock(TOP)
+			.Paint = (w, h) =>
+				surface.SetDrawColor(100, 100, 100)
+				surface.DrawRect(0, 0, w, h)
+		@notifylab = vgui.Create('DLabel', @teamsSelect)
+		@notifylab\Dock(TOP)
+		@notifylab\SetText('Teams has explicit match')
+		@notifylab\SetTextColor(color_white)
+		@boxes = {}
+		teams = [tonumber(v) for v in *string.Explode(',', data.teams)]
+		if #teams ~= 0
+			@CreateBox(tm) for tm in *teams
+		@CreateBox()
+	GrabData: (pnl) =>
+		data = super(pnl)
+		teams = {}
+		for box in *@boxes
+			if box\GetSelectedID() ~= 1
+				nm = box\GetTeam()
+				table.insert(teams, nm) if not table.HasValue(teams, nm)
+		data.teams = table.concat(teams, ',')
+		return data
+
+DMaps.ServerWaypointsContainerTeam = ServerWaypointsContainerTeam
+
 class ServerWaypointsContainerUsergroups extends ServerWaypointsContainerCAMI
 	@NETWORK_STRING_PREFIX = 'DMaps.UsergroupWaypoint'
 	@DISPLAY_NAME = 'usergroups'

@@ -39,6 +39,15 @@ class WaypointDataContainerTeams extends WaypointsDataContainer
 	new: (map) =>
 		super(map)
 	
+	@WriteNetworkData: (data, writeID = true) =>
+		super(data, writeID)
+		net.WriteString(data.teams)
+	
+	@ReadNetworkData: => -- Static function!
+		read = super()
+		read.teams = net.ReadString()
+		return read
+
 	GetTeams: (id = 0) =>
 		data = @SaveData[id]
 		error("No such a waypoint with ID: #{id}") if not data

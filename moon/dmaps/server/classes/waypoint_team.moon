@@ -19,6 +19,24 @@ import DMaps, hook, string from _G
 import WaypointDataContainerTeams, BasicWaypoint, Icon from DMaps
 
 class TeamWaypoint extends BasicWaypoint
+	@S_OPEN_MENU = 'dmaps_serverwaypoints_teams'
+	@SNETWORK_STRING_PREFIX = 'DMaps.TeamWaypoint'
+
+	@CreateFromData: (data) => -- Override
+		@CONTAINER\CreateWaypoint(string.Explode(',', data.teams), data.name, data.posx, data.posy, data.posz, data.red, data.green, data.blue, data.icon)
+
+	WriteNetworkData: =>
+		super()
+		with @savedata
+			net.WriteString(.teams)
+	
+	@ReadNetworkData: => -- Static function!
+		read = super()
+		read.teams = net.ReadString()
+		return read
+
+	@RegisterNetwork()
+
 	@WAYPOINTS_SAVED = {} -- Redefine in subclasses
 	@CONTAINER = WaypointDataContainerTeams()
 	@PLAYER_FILTER_FUNC = (waypoint, ply) => waypoint.teamCheck[ply\Team()]

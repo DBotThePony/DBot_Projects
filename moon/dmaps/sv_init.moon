@@ -22,11 +22,11 @@ util.AddNetworkString 'DMaps.NetworkedWaypoint'
 util.AddNetworkString 'DMaps.NetworkedWaypointChanges'
 util.AddNetworkString 'DMaps.NetworkedWaypointRemoved'
 
-for str in *{'DMaps.BasicWaypoint', 'DMaps.CAMIWaypoint', 'DMaps.UsergroupWaypoint'}
-	util.AddNetworkString "#{str}Load"
-	util.AddNetworkString "#{str}Modify"
-	util.AddNetworkString "#{str}Create"
-	util.AddNetworkString "#{str}Delete"
+for str in *{'BasicWaypoint', 'CAMIWaypoint', 'UsergroupWaypoint', 'TeamWaypoint'}
+	util.AddNetworkString "DMaps.#{str}Load"
+	util.AddNetworkString "DMaps.#{str}Modify"
+	util.AddNetworkString "DMaps.#{str}Create"
+	util.AddNetworkString "DMaps.#{str}Delete"
 
 ClientsideFiles = {
 	'dmaps/client/classes/class_map.lua'
