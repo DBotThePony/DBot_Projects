@@ -260,13 +260,20 @@ class NetworkedWaypoint
 		net.Send(@networkedClients)
 
 if SERVER
-	hook.Add 'PlayerInitialSpawn', 'DMaps.NetworkedWaypoint', (ply) ->
-		timer.Simple 5, -> -- wait before all other mods initialize their logic on player
-			for i, waypoint in pairs NetworkedWaypoint.NETWORKED_WAYPOINTS
-				if waypoint.__class\PLAYER_FILTER_FUNC(waypoint, ply)
-					waypoint\AddPlayer(ply)
 	hook.Add 'PlayerDisconnected', 'DMaps.NetworkedWaypoint', (ply) ->
 		waypoint\RemovePlayer(ply) for i, waypoint in pairs NetworkedWaypoint.NETWORKED_WAYPOINTS
+	concommand.Add '_dmaps_load_waypoints', (ply) ->
+		return if not ply\IsValid()
+		ply._dmaps_load_waypoints = ply._dmaps_load_waypoints or 0
+		if ply._dmaps_load_waypoints > RealTime() return
+		ply._dmaps_load_waypoints = RealTime() + 60
+		for i, waypoint in pairs NetworkedWaypoint.NETWORKED_WAYPOINTS
+			if waypoint.__class\PLAYER_FILTER_FUNC(waypoint, ply)
+				waypoint\AddPlayer(ply)
+else
+	hook.Add 'KeyPress', 'DMaps.TriggerLoad', ->
+		hook.Remove 'KeyPress', 'DMaps.TriggerLoad'
+		RunConsoleCommand('_dmaps_load_waypoints')
 
 net.Receive(NetworkedWaypoint.NETWORK_STRING, -> NetworkedWaypoint\NetworkedCreate())
 net.Receive(NetworkedWaypoint.NETWORK_STRING_CHANGED, -> NetworkedWaypoint\NetworkedChange())
