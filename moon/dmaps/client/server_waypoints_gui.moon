@@ -19,11 +19,14 @@ import DMaps from _G
 import Icon from DMaps
 
 class ServerWaypointsContainer
+	@EDIT_PERMISSION = 'basic'
+	@_NAME_ON_PANEL = 'Basic'
 	@NETWORK_STRING_PREFIX = 'DMaps.BasicWaypoint'
 	@ROW_PART_NAME = 'DMapsWaypointRowServer'
 	@DISPLAY_NAME = 'serverside'
 
 	@IsValid = => IsValid(@CURRENT_CLASS)
+	@GetContainer = => @CURRENT_CLASS
 
 	@OnLoad = =>
 		if not @IsValid()
@@ -55,6 +58,12 @@ class ServerWaypointsContainer
 				return
 
 	@RegisterNetwork = =>
+		@__PERM_VIEW = "dmaps_view_#{@EDIT_PERMISSION}_waypoints"
+		@__PERM_EDIT = "dmaps_edit_#{@EDIT_PERMISSION}_waypoints"
+		@__PERM_DELETE = "dmaps_delete_#{@EDIT_PERMISSION}_waypoints"
+		DMaps.WatchPermission(@__PERM_VIEW)
+		DMaps.WatchPermission(@__PERM_EDIT)
+		DMaps.WatchPermission(@__PERM_DELETE)
 		@NETWORK_STRING = "#{@NETWORK_STRING_PREFIX}Load"
 		@NETWORK_STRING_MODIFY = "#{@NETWORK_STRING_PREFIX}Modify"
 		@NETWORK_STRING_CREATE = "#{@NETWORK_STRING_PREFIX}Create"
@@ -67,6 +76,7 @@ class ServerWaypointsContainer
 	@RegisterNetwork()
 
 	new: (readData = true, openMenus = true) =>
+		return Derma_Message("You need '#{@@__PERM_VIEW}' permission!", 'Mission permissions', 'Okay') if not DMaps.HasPermission(@@__PERM_VIEW)
 		@data = {}
 		@list = {}
 		@points = {}
@@ -102,6 +112,7 @@ class ServerWaypointsContainer
 		@list = [@@ReadWaypointData() for i = 1, count]
 	IsValid: => IsValid(@frame)
 	DoRemove: (id = 0) =>
+		return Derma_Message("You need '#{@__PERM_DELETE}' permission!", 'Mission permissions', 'Okay') if not DMaps.HasPermission(@__PERM_DELETE)
 		net.Start(@@NETWORK_STRING_DELETE)
 		net.WriteUInt(id, 32)
 		net.SendToServer()
@@ -118,7 +129,7 @@ class ServerWaypointsContainer
 			blue: color.b
 			icon: @icon\GetIconName()
 		}
-	GenerateData: (posx = LocalPlayer()\GetPos().x, posy = LocalPlayer()\GetPos().y, posz = LocalPlayer()\GetPos().z) =>
+	@GenerateData: (posx = LocalPlayer()\GetPos().x, posy = LocalPlayer()\GetPos().y, posz = LocalPlayer()\GetPos().z) =>
 		posx, posy, posz = math.floor(posx), math.floor(posy), math.floor(posz)
 		{
 			name: "New Waypoint at X: #{posx}, Y #{posy}, Z: #{posz}"
@@ -148,7 +159,9 @@ class ServerWaypointsContainer
 		@createButton\Dock(LEFT)
 		@createButton\SetText('Create waypoint')
 		@createButton\SizeToContents()
-		@createButton.DoClick = -> @OpenEditMenu(@GenerateData())
+		@createButton.DoClick = ->
+			@OpenEditMenu(@@GenerateData()) if DMaps.HasPermission(@@__PERM_VIEW)
+			Derma_Message("You need '#{@@__PERM_EDIT}' permission!", 'Mission permissions', 'Okay') if not DMaps.HasPermission(@@__PERM_EDIT)
 		@BuildList()
 		return frame
 	AddRowButtons: (row) => -- Override
@@ -170,6 +183,7 @@ class ServerWaypointsContainer
 			table.insert(@points, str)
 	CreateAdditionalMenus: (pnl) =>
 	OpenEditMenu: (data) =>
+		return Derma_Message("You need '#{@@__PERM_EDIT}' permission!", 'Mission permissions', 'Okay') if not DMaps.HasPermission(@@__PERM_EDIT)
 		frame = vgui.Create('DFrame')
 		@editFrame = frame
 		Self = self
@@ -304,6 +318,8 @@ DMaps.ServerWaypointsContainer = ServerWaypointsContainer
 import CAMI from _G
 
 class ServerWaypointsContainerCAMI extends ServerWaypointsContainer
+	@EDIT_PERMISSION = 'cami'
+	@_NAME_ON_PANEL = 'CAMI usergroup'
 	@NETWORK_STRING_PREFIX = 'DMaps.CAMIWaypoint'
 	@DISPLAY_NAME = 'CAMI usergroups'
 
@@ -318,6 +334,10 @@ class ServerWaypointsContainerCAMI extends ServerWaypointsContainer
 	WriteWaypointData: (data, writeID = false) => -- Override with super()
 		super(data, writeID)
 		net.WriteString(data.ugroups)
+	@GenerateData: (...) =>
+		data = super(...)
+		data.ugroups = LocalPlayer()\GetUserGroup()
+		return data
 	AddRowButtons: (row) =>
 		row.groups = vgui.Create('DLabel', row)
 		with row.groups
@@ -389,6 +409,8 @@ class ServerWaypointsContainerCAMI extends ServerWaypointsContainer
 DMaps.ServerWaypointsContainerCAMI = ServerWaypointsContainerCAMI
 
 class ServerWaypointsContainerTeam extends ServerWaypointsContainer
+	@EDIT_PERMISSION = 'team'
+	@_NAME_ON_PANEL = 'team'
 	@NETWORK_STRING_PREFIX = 'DMaps.TeamWaypoint'
 	@DISPLAY_NAME = 'teams waypoints'
 
@@ -413,6 +435,10 @@ class ServerWaypointsContainerTeam extends ServerWaypointsContainer
 			\SizeToContents()
 			\SetMouseInputEnabled(true)
 			\SetTextColor(color_white)
+	@GenerateData: (...) =>
+		data = super(...)
+		data.teams = tostring(LocalPlayer()\Team())
+		return data
 	CreateBox: (select) =>
 		newBox = vgui.Create('DComboBox', @teamsSelect)
 		newBox\Dock(TOP)
@@ -481,6 +507,8 @@ class ServerWaypointsContainerTeam extends ServerWaypointsContainer
 DMaps.ServerWaypointsContainerTeam = ServerWaypointsContainerTeam
 
 class ServerWaypointsContainerUsergroups extends ServerWaypointsContainerCAMI
+	@EDIT_PERMISSION = 'ugroup'
+	@_NAME_ON_PANEL = 'usergroup'
 	@NETWORK_STRING_PREFIX = 'DMaps.UsergroupWaypoint'
 	@DISPLAY_NAME = 'usergroups'
 

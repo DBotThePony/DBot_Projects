@@ -62,6 +62,12 @@ PANEL.Init = =>
 	
 	@cursor_lastX = 0
 	@cursor_lastY = 0
+	@svWaypoints = {
+		DMaps.ServerWaypointsContainer
+		DMaps.ServerWaypointsContainerCAMI
+		DMaps.ServerWaypointsContainerTeam
+		DMaps.ServerWaypointsContainerUsergroups
+	}
 
 PANEL.OnMousePressed = (code) =>
 	if code == MOUSE_RIGHT
@@ -84,6 +90,20 @@ PANEL.OnMousePressed = (code) =>
 				\AddOption('Create waypoint...', createWaypoint)
 				if DMaps.HasPermission('teleport')
 					\AddOption('Teleport to', -> RunConsoleCommand('dmaps_teleport', x, y, z))
+				hit = false
+				sub = \AddSubMenu('Serverside waypoints')
+
+				for container in *@svWaypoints
+					if DMaps.HasPermission(container.__PERM_EDIT) and DMaps.HasPermission(container.__PERM_VIEW)
+						hit = true
+						sub\AddOption "Create #{container._NAME_ON_PANEL} waypoint", ->
+							containerObject = container\GetContainer()
+							if not container\IsValid()
+								containerObject = container(false, false)
+								net.Start(container.NETWORK_STRING)
+								net.SendToServer()
+							containerObject\OpenEditMenu(container\GenerateData(x, y, z))
+				sub\Remove() if not hit
 				\Open()
 	elseif code == MOUSE_LEFT
 		@hold = true

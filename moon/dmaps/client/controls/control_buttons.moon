@@ -17,13 +17,25 @@
 
 import vgui, DMaps, table from _G
 
+svPoints = {
+	{'basic', 'Basic', 'dmaps_serverwaypoints'}
+	{'cami', 'CAMI usergroups', 'dmaps_serverwaypoints_cami'}
+	{'ugroup', 'usergroups', 'dmaps_serverwaypoints_ugroup'}
+	{'team', 'teams', 'dmaps_serverwaypoints_teams'}
+}
+
 PANEL =
 	Init: =>
 		@buttons = {}
 		@waypoints = vgui.Create('DButton', @)
 		@options = vgui.Create('DButton', @)
 		@waypoints\SetText('Waypoints')
-		@waypoints.DoClick = DMaps.OpenWaypointsMenu
+		@waypoints.DoClick = ->
+			menu = DermaMenu()
+			menu\AddOption('Clientside waypoints', DMaps.OpenWaypointsMenu)
+			for {name, Desc, conCommand} in *svPoints
+				menu\AddOption("Serverside #{Desc} waypoints", -> RunConsoleCommand(conCommand)) if DMaps.HasPermission("dmaps_view_#{name}_waypoints")
+			menu\Open()
 		@options\SetText('Options')
 		@options.DoClick = DMaps.OpenOptions
 		table.insert(@buttons, @waypoints)
