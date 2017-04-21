@@ -379,9 +379,9 @@ class ServerWaypointsContainerCAMI extends ServerWaypointsContainer
 				@CreateBox() if not hit
 		table.insert(@boxes, newBox)
 		newBox\SetSize(0, 20)
-		@groupsSelect\SetSize(0, #@boxes * 20 + 20)
+		@groupsSelect\SetSize(0, math.min(#@boxes * 20 + 20, 120))
 	CreateAdditionalMenus: (pnl, data) =>
-		@groupsSelect = vgui.Create('EditablePanel', pnl)
+		@groupsSelect = vgui.Create('DScrollPanel', pnl)
 		with @groupsSelect
 			\Dock(TOP)
 			.Paint = (w, h) =>
@@ -477,9 +477,9 @@ class ServerWaypointsContainerTeam extends ServerWaypointsContainer
 
 		table.insert(@boxes, newBox)
 		newBox\SetSize(0, 20)
-		@teamsSelect\SetSize(0, #@boxes * 20 + 20)
+		@groupsSelect\SetSize(0, math.min(#@boxes * 20 + 20, 120))
 	CreateAdditionalMenus: (pnl, data) =>
-		@teamsSelect = vgui.Create('EditablePanel', pnl)
+		@teamsSelect = vgui.Create('DScrollPanel', pnl)
 		with @teamsSelect
 			\Dock(TOP)
 			.Paint = (w, h) =>
