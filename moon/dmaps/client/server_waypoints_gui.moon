@@ -343,7 +343,7 @@ class ServerWaypointsContainerCAMI extends ServerWaypointsContainer
 			hit = false
 			if i == 1 and #@boxes > 1
 				for i, box in pairs @boxes
-					if box\GetSelectedID() == 1
+					if not box\GetSelectedID() or box\GetSelectedID() == 1
 						if not hit
 							hit = true
 						else
@@ -352,7 +352,11 @@ class ServerWaypointsContainerCAMI extends ServerWaypointsContainer
 							@groupsSelect\SetSize(0, #@boxes * 20 + 20)
 							return
 			elseif i ~= 1
-				@CreateBox()
+				for i, box in pairs @boxes
+					if not box\GetSelectedID() or box\GetSelectedID() == 1
+						hit = true
+						break
+				@CreateBox() if not hit
 		table.insert(@boxes, newBox)
 		newBox\SetSize(0, 20)
 		@groupsSelect\SetSize(0, #@boxes * 20 + 20)
@@ -376,7 +380,7 @@ class ServerWaypointsContainerCAMI extends ServerWaypointsContainer
 		data = super(pnl)
 		groups = {}
 		for box in *@boxes
-			if box\GetSelectedID() ~= 1
+			if box\GetSelectedID() and box\GetSelectedID() ~= 1
 				nm = box\GetSelected()
 				table.insert(groups, nm) if not table.HasValue(groups, nm)
 		data.ugroups = table.concat(groups, ',')
@@ -430,7 +434,7 @@ class ServerWaypointsContainerTeam extends ServerWaypointsContainer
 			hit = false
 			if i == 1 and #@boxes > 1
 				for i, box in pairs @boxes
-					if box\GetSelectedID() == 1
+					if not box\GetSelectedID() or box\GetSelectedID() == 1
 						if not hit
 							hit = true
 						else
@@ -439,7 +443,12 @@ class ServerWaypointsContainerTeam extends ServerWaypointsContainer
 							@teamsSelect\SetSize(0, #@boxes * 20 + 20)
 							return
 			elseif i ~= 1
-				@CreateBox()
+				for i, box in pairs @boxes
+					if not box\GetSelectedID() or box\GetSelectedID() == 1
+						hit = true
+						break
+				@CreateBox() if not hit
+
 		table.insert(@boxes, newBox)
 		newBox\SetSize(0, 20)
 		@teamsSelect\SetSize(0, #@boxes * 20 + 20)
@@ -463,7 +472,7 @@ class ServerWaypointsContainerTeam extends ServerWaypointsContainer
 		data = super(pnl)
 		teams = {}
 		for box in *@boxes
-			if box\GetSelectedID() ~= 1
+			if box\GetSelectedID() and box\GetSelectedID() ~= 1
 				nm = box\GetTeam()
 				table.insert(teams, nm) if not table.HasValue(teams, nm)
 		data.teams = table.concat(teams, ',')
