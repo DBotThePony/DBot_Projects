@@ -21,9 +21,9 @@ PANEL.BACKGROUND_COLOR = Color(40, 40, 40, 255)
 PANEL.CONTROL_LOCKED = Color(230, 230, 230, 255)
 PANEL.CONTROL_TOOBIG = Color(80, 80, 170, 255)
 PANEL.CONTROL_UNLOCKED = Color(170, 170, 170, 255)
-PANEL.WIDTH = 64
+PANEL.WIDTH = 48
 PANEL.HEIGHT = 256
-PANEL.MIN_ZOOM = 400
+PANEL.MIN_ZOOM = 300
 PANEL.MAX_ZOOM = 3000
 PANEL.DELTA_ZOOM = PANEL.MAX_ZOOM - PANEL.MIN_ZOOM
 PANEL.MULT_ADD = PANEL.MIN_ZOOM / PANEL.DELTA_ZOOM
@@ -34,6 +34,12 @@ PANEL.Init = =>
 	@hold = false
 	@lock = false
 	@holdstart = 0
+	@SetSize(@WIDTH, @HEIGHT)
+
+PANEL.SetSizeMult = (mult = 1) =>
+	@sizeMult = mult
+	@WIDTH = 48 * mult
+	@HEIGHT = 256 * mult
 	@SetSize(@WIDTH, @HEIGHT)
 
 PANEL.OnMousePressed = (code) =>
@@ -108,7 +114,7 @@ PANEL.Paint = (w, h) =>
 	
 	-- Visual step markers
 	for i = step, h, step
-		surface.DrawRect(5, i, w - 10, 4)
+		surface.DrawRect(5, i, w - 10, 4 * @sizeMult)
 	
 	if @lock
 		surface.SetDrawColor(@CONTROL_LOCKED)
@@ -118,10 +124,10 @@ PANEL.Paint = (w, h) =>
 	mult = (1 - @displayZoom / @DELTA_ZOOM)
 	
 	if mult >= -0.1
-		surface.DrawRect(0, math.min(mult * h + 30, h - 10), w, 10)
+		surface.DrawRect(0, math.min(mult * h + 30, h - @sizeMult * 10), w, 10 * @sizeMult)
 	else
 		surface.SetDrawColor(@CONTROL_TOOBIG)
-		surface.DrawRect(0, 0, w, 10)
+		surface.DrawRect(0, 0, w, 10 * @sizeMult)
 
 DMaps.PANEL_MAP_ZOOM = PANEL
 vgui.Register('DMapsMapZoom', DMaps.PANEL_MAP_ZOOM, 'EditablePanel')

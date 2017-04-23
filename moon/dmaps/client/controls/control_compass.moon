@@ -59,9 +59,16 @@ generateCircle = (x = 0, y = 0, radius = 0) ->
 PANEL = {}
 
 PANEL.BACKGROUND_COLOR = Color(0, 0, 0, 150)
-PANEL.WIDTH = 128
-PANEL.HEIGHT = 128
+PANEL.WIDTH = 96
+PANEL.HEIGHT = 96
 PANEL.DIV = 64
+
+PANEL.SetSizeMult = (mult = 1) =>
+	@sizeMult = mult
+	@WIDTH = 96 * mult
+	@HEIGHT = 96 * mult
+	@SetSize(@WIDTH, @HEIGHT)
+	@UpdateCache(true)
 
 PANEL.CreateControlButtons = =>
 	buttonFollowAngles = vgui.Create('DButton')
@@ -90,7 +97,7 @@ PANEL.CreateControlButtons = =>
 PANEL.Init = =>
 	@UpdateCache!
 	@yaw = 0
-	@SetSize(128, 128)
+	@SetSize(96, 96)
 	@targetyaw = 0
 	
 	@followingPlayer = false
@@ -158,32 +165,32 @@ PANEL.Think = =>
 	if @mapObject\GetYaw! ~= @yaw
 		@mapObject\SetYaw(@yaw)
 
-PANEL.UpdateCache = =>
-	@BuildCircle!
-	@BuildTriangle!
+PANEL.UpdateCache = (force = false) =>
+	@BuildCircle(force)
+	@BuildTriangle(force)
 
 PANEL.InvalidateLayout = =>
 	@UpdateCache!
 
-PANEL.BuildTriangle = =>
-	if @__cahcedTopYaw ~= @yaw then
+PANEL.BuildTriangle = (force = false) =>
+	if @__cahcedTopYaw ~= @yaw or force
 		@__cahcedTopYaw = @yaw
-		w, h = @GetSize!
+		w, h = @WIDTH, @HEIGHT
 		@northPart = generateTriangle(w / 2, h / 2, @yaw - 90, w / 2.5)
 	
-	if @__cahcedBottomYaw ~= @yaw
+	if @__cahcedBottomYaw ~= @yaw or force
 		@__cahcedBottomYaw = @yaw
-		w, h = @GetSize!
+		w, h = @WIDTH, @HEIGHT
 		@southPart = generateTriangle(w / 2, h / 2, @yaw + 90, w / 2.5)
 	
 PANEL.BuildCircle = =>
-	w, h = @GetSize!
+	w, h = @WIDTH, @HEIGHT
 	
 	x = w / 2
 	y = h / 2
 	
-	@circleOuter = generateCircle(x, y, 64)
-	@circleInner = generateCircle(x, y, 58)
+	@circleOuter = generateCircle(x, y, @WIDTH / 2)
+	@circleInner = generateCircle(x, y, @WIDTH / 2 - @WIDTH * 0.05)
 
 PANEL.Paint = (w, h) =>
 	draw.NoTexture!

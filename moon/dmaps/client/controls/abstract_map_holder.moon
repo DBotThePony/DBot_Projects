@@ -167,9 +167,15 @@ PANEL.PerformLayout = (w, h) =>
 	@mapObject\SetSize(w, h)
 	@mapObject\SetDrawPos(@LocalToScreen(0, 0))
 	
-	@compass\SetPos(0, h - @compass.HEIGHT)
+	min = math.min(w, h)
+	guiMult = min / 800
+	@arrows\SetSizeMult(guiMult)
+	@compass\SetSizeMult(guiMult)
+	@zoom\SetSizeMult(guiMult)
+
+	@compass\SetPos(20, h - @compass.HEIGHT - 20)
 	@arrows\SetPos(w - @arrows.WIDTH - 25, 10)
-	@zoom\SetPos(w - @zoom.WIDTH - 40, @arrows.HEIGHT + 40)
+	@zoom\SetPos(w - @arrows.WIDTH / 2 - @zoom.WIDTH, @arrows.HEIGHT + 40)
 
 PANEL.Think = =>
 	if not @IsHovered!

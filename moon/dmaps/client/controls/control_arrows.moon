@@ -50,6 +50,7 @@ PANEL.DIV2 = 96 / 2.5
 
 PANEL.Init = =>
 	@SetSize(96, 96)
+	@sizeMult = 1
 	
 	@joystickPosX = 0
 	@joystickPosY = 0
@@ -58,6 +59,15 @@ PANEL.Init = =>
 	@move = false
 	@holdstart = 0
 	@UpdateCache!
+
+PANEL.SetSizeMult = (mult = 1) =>
+	@sizeMult = mult
+	@WIDTH = 96 * mult
+	@HEIGHT = 96 * mult
+	@DIV = @WIDTH / 2
+	@DIV2 = @WIDTH / 2.5
+	@SetSize(@WIDTH, @HEIGHT)
+	@UpdateCache(true)
 
 PANEL.OnMousePressed = (code) =>
 	if code == MOUSE_RIGHT or code == MOUSE_MIDDLE
@@ -133,19 +143,16 @@ PANEL.Think = =>
 			@mapObject\AddY(moveY)
 			@mapObject\LockView(true)
 
-PANEL.UpdateCache = =>
+PANEL.UpdateCache = (force = false) =>
 	w, h = @WIDTH, @HEIGHT
 	
-	if not @circleInner
+	if not @circleInner or force
 		@circleInner = generateCircle(w / 2, h / 2, w / 2.5)
 		
-	if not @circleOuter
+	if not @circleOuter or force
 		@circleOuter = generateCircle(w / 2, h / 2, w / 2)
 	
-	@joysticks = {}
-	
-	for i = 0, 6, 1
-		table.insert(@joysticks, {generateCircle(w / 2 + @joystickPosX, h / 2 + @joystickPosY, 16 - i), Color(230 - i * 2, 230 - i * 2, 230 - i * 2)})
+	@joysticks = [{generateCircle(w / 2 + @joystickPosX, h / 2 + @joystickPosY, 16 * @sizeMult - i), Color(230 - i * 2, 230 - i * 2, 230 - i * 2)} for i = 0, 6, 1]
 
 PANEL.InvalidateLayout = =>
 	@UpdateCache!
