@@ -421,7 +421,7 @@ class DMap
 		existingPlayers = {ply, ply for ply in *[obj\GetEntity() for i, obj in pairs @players]}
 		for ply in *player.GetAll()
 			if not existingPlayers[ply]
-				@AddObject(DMapPlayerPointer(ply))
+				@AddObject(DMaps.DMapPlayerPointer(ply))
 
 	Think: =>
 		if not @IsValid! then return
