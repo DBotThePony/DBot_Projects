@@ -48,6 +48,18 @@ DMaps.CreateMainFrame = ->
 	@MakePopup!
 	@SetDeleteOnClose(false)
 	@SetTitle('DMap')
+
+	@LAST_MINIMAP_STATUS = false
+	@OnClose = =>
+		DMaps.DISPLAY_AS_MINIMAP = @LAST_MINIMAP_STATUS
+		if not @LAST_MINIMAP_STATUS
+			@displayAsMinimap\SetText('Display as Minimap')
+			@displayAsMinimap\SetTooltip('Display as Minimap')
+			@displayAsMinimap.WhatToDo = true
+		else
+			@displayAsMinimap\SetText('Stop displaying as Minimap')
+			@displayAsMinimap\SetTooltip('Stop displaying as Minimap')
+			@displayAsMinimap.WhatToDo = false
 	
 	@mapHolder = vgui.Create('DMapsMapHolder', @)
 	@mapHolder\Dock(FILL)
@@ -58,23 +70,27 @@ DMaps.CreateMainFrame = ->
 
 	@displayAsMinimap = vgui.Create('DButton', @)
 	with @displayAsMinimap
+		.WhatToDo = true
 		\SetText('Display as minimap')
 		\SetTooltip('Display as minimap')
-		\SizeToContents()
-		W, H = \GetSize()
-		\SetSize(W + 20, 20)
-		\SetPos(w / 2 - W / 2, 5)
+		\SetSize(200, 20)
+		\SetPos(w / 2 - 100, 5)
 		.DoClick = ->
-			@Close()
-			DMaps.DISPLAY_AS_MINIMAP = true
-			map = @mapHolder\GetMap()
-			if IsValid(map)
-				map\LockZoom(false)
-				map\LockClip(false)
-				map\LockView(false)
-				map\SetMinimalAutoZoom(MINIMAP_ZOOM\GetInt())
-				AVERAGE_SPEED = [0 for i = 1, 100]
-				AVERAGE_SPEED_INDEX = 1
+			if .WhatToDo
+				@LAST_MINIMAP_STATUS = true
+				@Close()
+				map = @mapHolder\GetMap()
+				if IsValid(map)
+					map\LockZoom(false)
+					map\LockClip(false)
+					map\LockView(false)
+					map\SetMinimalAutoZoom(MINIMAP_ZOOM\GetInt())
+					AVERAGE_SPEED = [0 for i = 1, 100]
+					AVERAGE_SPEED_INDEX = 1
+			else
+				@LAST_MINIMAP_STATUS = false
+				\SetText('Display as minimap')
+				\SetTooltip('Display as minimap')
 	return @
 DMaps.OpenMap = ->
 	if not IsValid(DMaps.MainFrame)
