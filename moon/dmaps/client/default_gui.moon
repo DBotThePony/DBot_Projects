@@ -15,11 +15,15 @@
 -- limitations under the License.
 -- 
 
+MINIMAP_ZOOM = CreateConVar('cl_dmap_minimap_zoom', '1000', {FCVAR_ARCHIVE}, 'Minimal "minimap mode" zoom')
+
 if IsValid(DMaps.MainFrame)
 	DMaps.MainFrame\Remove!
 
 ASPECT_RATIO = 1.3
 ASPECT_RATIO_R = 1 / ASPECT_RATIO
+
+DMaps.DISPLAY_AS_MINIMAP = false
 
 DMaps.CreateMainFrame = ->
 	if IsValid(DMaps.MainFrame)
@@ -43,17 +47,38 @@ DMaps.CreateMainFrame = ->
 	@buttons = vgui.Create('DMapButtons', @)
 	@buttons\AddMultiButton(@mapHolder\GetButtons!)
 	@buttons\DoSetup(w, h, -5)
+
+	@displayAsMinimap = vgui.Create('DButton', @)
+	with @displayAsMinimap
+		\SetText('Display as minimap')
+		\SetTooltip('Display as minimap')
+		\SizeToContents()
+		W, H = \GetSize()
+		\SetPos(w / 2 - W / 2, 0)
+		.DoClick = ->
+			@Close()
+			DMaps.DISPLAY_AS_MINIMAP = true
+			map = @mapHolder\GetMap()
+			if IsValid(map)
+				map\LockZoom(false)
+				map\LockClip(false)
+				map\LockView(false)
+				map\SetMinimalAutoZoom(MINIMAP_ZOOM\GetInt())
 	return @
 DMaps.OpenMap = ->
 	if not IsValid(DMaps.MainFrame)
 		DMaps.CreateMainFrame!
 	
+	DMaps.DISPLAY_AS_MINIMAP = false
 	with DMaps.MainFrame
 		\SetVisible(true)
 		\SetMouseInputEnabled(true)
 		\SetKeyboardInputEnabled(true)
 		\RequestFocus!
 		\Center!
+		map = .mapHolder\GetMap()
+		if IsValid(map)
+			map\SetMinimalAutoZoom()
 DMaps.OpenOptions = ->
 	frame = vgui.Create('DFrame')
 	self = frame
@@ -76,3 +101,29 @@ DMaps.OpenOptions = ->
 		checkbox\DockMargin(3, 3, 3, 3)
 	return frame
 concommand.Add('dmaps_open', DMaps.OpenMap)
+hook.Add 'Think', 'DMaps.DrawAsMinimap', ->
+	if not DMaps.DISPLAY_AS_MINIMAP return
+	if not IsValid(DMaps.MainFrame) return
+	if not IsValid(DMaps.MainFrame.mapHolder) return
+	if not IsValid(DMaps.MainFrame.mapHolder\GetMap()) return
+	map = DMaps.MainFrame.mapHolder\GetMap()
+	map\StandartThink()
+	map\ThinkPlayer(DMaps.MainFrame.mapHolder.Spectating)
+	map\SetMouseActive(false)
+	map\SetMinimalAutoZoom(MINIMAP_ZOOM\GetInt())
+	map\Think()
+hook.Add 'HUDPaint', 'DMaps.DrawAsMinimap', ->
+	if not DMaps.DISPLAY_AS_MINIMAP return
+	if not IsValid(DMaps.MainFrame) return
+	if not IsValid(DMaps.MainFrame.mapHolder) return
+	if not IsValid(DMaps.MainFrame.mapHolder\GetMap()) return
+	w, h = ScrW(), ScrH()
+	min = math.min(w, h)
+	size = min * 0.25
+	map = DMaps.MainFrame.mapHolder\GetMap()
+	map\SetMouseActive(false)
+	map\SetWidth(size)
+	map\SetHeight(size)
+	map\SetDrawPos(w - size - 10, 10)
+	map\IsDrawnInPanel(false)
+	map\DrawHook()

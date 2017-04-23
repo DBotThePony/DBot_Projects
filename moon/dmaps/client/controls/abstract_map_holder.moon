@@ -51,10 +51,10 @@ PANEL.Init = =>
 	@zoom = vgui.Create('DMapsMapZoom', @)
 	@zoom\SetMap(@mapObject)
 	
-	@mapObject\IsDrawnInPanel(true)
 	@mapObject\AddObject(DMapLocalPlayerPointer!)
 	@mapObject\CloneNetworkWaypoints()
 	@mapObject\ListenNetworkWaypoints()
+	@mapObject\SetMinimalAutoZoom()
 	
 	@SetMouseInputEnabled(true)
 	
@@ -68,6 +68,7 @@ PANEL.Init = =>
 		DMaps.ServerWaypointsContainerTeam
 		DMaps.ServerWaypointsContainerUsergroups
 	}
+PANEL.GetMap = => @mapObject
 
 PANEL.OnMousePressed = (code) =>
 	if code == MOUSE_RIGHT
@@ -192,19 +193,10 @@ PANEL.Think = =>
 		\SetMousePos(getX, getY)
 		\PanelScreenPos(@LocalToScreen(0, 0))
 		\Think!
+		\StandartThink!
 		\ThinkPlayer(@Spectating)
 		
 		@mapX, @mapY = math.floor(getX), math.floor(getY)
-	
-	existingPlayers = {}
-	
-	for k, obj in pairs @mapObject.players
-		if IsValid(obj\GetEntity!)
-			existingPlayers[obj\GetEntity!] = obj\GetEntity!
-	
-	for k, ply in pairs player.GetAll!
-		if existingPlayers[ply] then continue
-		@mapObject\AddObject(DMapPlayerPointer(ply))
 	
 	if @hold
 		x, y = mouseX, mouseY
@@ -238,6 +230,7 @@ PANEL.Paint = (w, h) =>
 		.SetDrawColor(0, 0, 0)
 		.DrawRect(0, 0, w, h)
 	
+	@mapObject\IsDrawnInPanel(true)
 	@mapObject\SetWidth(w)
 	@mapObject\SetHeight(h)
 	

@@ -95,6 +95,9 @@ class DMap
 		@mapYaw = 0
 		@mapYawLerp = 0
 		
+		@MINIMAL_AUTO_ZOOM = @@MINIMAL_ZOOM
+		@zoomAdd = 0
+		@autoZoomMult = 1
 		@zoom = 1000
 		@lerpzoom = 1000
 		@currX = 0
@@ -126,6 +129,7 @@ class DMap
 	
 	IsMouseActive: => @mouseHit
 	MouseActive: => @mouseHit
+	SetMouseActive: (val = false) => @mouseHit = val
 	GetMouseX: => @mouseX
 	GetMouseY: => @mouseY
 	
@@ -156,6 +160,9 @@ class DMap
 	GetY: => @curry
 	GetZ: => @currZ
 	GetZoom: => @zoom
+	GetAutoZoomMult: => @autoZoomMult
+	GetMinimalAutoZoom: => @MINIMAL_AUTO_ZOOM
+	GetZoomAdd: => @zoomAdd
 	
 	GetZoomLock: => @lockZoom
 	GetClipLock: => @lockClip
@@ -184,6 +191,9 @@ class DMap
 		@lerpzoom = @zoom
 	
 	SetLerpZoom: (val = @@MINIMAL_ZOOM) => @lerpzoom = math.max(assert(val, 'number'), @@MINIMAL_ZOOM)
+	SetAutoZoomMult: (val = 1) => @autoZoomMult = val
+	SetZoomAdd: (val = 0) => @zoomAdd = val
+	SetMinimalAutoZoom: (val = @@MINIMAL_ZOOM) => @MINIMAL_AUTO_ZOOM = val
 	
 	GetFOV: => @fov
 	
@@ -379,7 +389,7 @@ class DMap
 			@currZ = Lerp(0.1, @currZ, pos.z + 20)
 			
 			if not @lockZoom
-				@zoom = Lerp(0.1, @zoom, math.min(math.abs(@clipLevelTop * 1.3), 300))
+				@zoom = Lerp(0.1, @zoom, math.max(math.abs(@clipLevelTop * 1.3) * @autoZoomMult + @zoomAdd, @@MINIMAL_ZOOM * @autoZoomMult, @MINIMAL_AUTO_ZOOM))
 			
 		else
 			@outside = false
@@ -407,6 +417,12 @@ class DMap
 					objectTab[k] = nil
 		return output
 	
+	StandartThink: =>
+		existingPlayers = {ply, ply for ply in *[obj\GetEntity() for i, obj in pairs @players]}
+		for ply in *player.GetAll()
+			if not existingPlayers[ply]
+				@AddObject(DMapPlayerPointer(ply))
+
 	Think: =>
 		if not @IsValid! then return
 		
