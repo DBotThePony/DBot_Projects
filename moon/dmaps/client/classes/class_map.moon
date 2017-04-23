@@ -201,7 +201,7 @@ class DMap
 	GetAbstractPos: => Vector(@abstractX, @abstractY, @abstractZ)
 	GetPosTop: => Vector(@currX, @currY, @clipLevelTop)
 	GetPosBottom: => Vector(@currX, @currY, @clipLevelBottom)
-	GetPosCurrent: => Vector(@currX, @currY, @currZ + 300)
+	GetPosCurrent: => Vector(@currX, @currY, @currZ + 100)
 	
 	GetDrawPos: => Vector(@currX, @currY, @zoom)
 	GetAngles: => @angle
@@ -378,8 +378,8 @@ class DMap
 			tr = util.TraceLine(trData)
 			deltaZ = tr.HitPos.z - (pos.z + 10)
 			
-			@clipLevelTop = Lerp(0.2, @clipLevelTop, pos.z + deltaZ * 0.8)
-			@clipLevelBottom = Lerp(0.2, @clipLevelBottom, pos.z - deltaZ * 0.3)
+			@clipLevelTop = Lerp(0.2, @clipLevelTop, pos.z + deltaZ * 0.9)
+			@clipLevelBottom = Lerp(0.2, @clipLevelBottom, pos.z - deltaZ * 0.9)
 			
 			@outside = not tr.Hit or tr.HitSky
 			
