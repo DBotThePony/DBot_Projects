@@ -500,10 +500,8 @@ class DMap
 		
 		render.EnableClipping(oldClipping)
 		
-	-- PostDraw
-	-- Called after all was drawn on the screen
 	PostDraw: (screenx = 0, screeny = 0, screenw = 0, screenh = 0) =>
-		-- Override
+		-- @DrawMapDirections(screenx, screeny, screenw, screenh)
 	
 	PreDraw2D: (screenx = 0, screeny = 0, screenw = 0, screenh = 0) =>
 		surface.SetFont('Default')
@@ -531,6 +529,105 @@ class DMap
 			.DrawText('Y')
 		
 		cam.End3D2D()
+	
+	
+	@ROTATED_TRIANGLE = (x = 0, y = 0, ang = 0, hypo = 20, myShift = 0) =>
+		sin = math.sin(math.rad(ang))
+		cos = math.cos(math.rad(ang))
+		
+		x -= myShift * cos
+		y -= myShift * sin
+		
+		Ax, Ay = -hypo * sin, hypo * cos
+		Bx, By = hypo * cos * 3, hypo * sin * 3
+		Cx, Cy = hypo * sin, -hypo * cos
+		
+		trigData = {
+			{x: x + Cx, y: y + Cy}
+			{x: x + Bx, y: y + By}
+			{x: x + Ax, y: y + Ay}
+		}
+		
+		return trigData
+
+	@DIRECTION_FONT = 'DMaps.SideFont'
+	surface.CreateFont(@DIRECTION_FONT, {
+		font: 'Roboto'
+		size: 24
+		weight: 600
+	})
+
+	@DIR_SIZE_MULT_X = .3
+	@DIR_SIZE_MULT_Y = .3
+	@DIR_SIZE_LEN = .7
+
+	-- just a test
+	DrawMapDirections: (screenx = 0, screeny = 0, screenw = 0, screenh = 0) =>
+		yawDeg = @GetYaw! - 125
+		yawNorthDeg = yawDeg
+		yawSouthDeg = yawDeg - 180
+		yawWestDeg = yawDeg - 90
+		yawEastDeg = yawDeg + 90
+
+		yawNorthDegRaw = yawNorthDeg + 125
+		yawSouthDegRaw = yawSouthDeg + 125
+		yawWestDegRaw = yawWestDeg + 125
+		yawEastDegRaw = yawEastDeg + 125
+
+		yawNorth = math.rad(yawNorthDeg)
+		yawSouth = math.rad(yawSouthDeg)
+		yawWest = math.rad(yawWestDeg)
+		yawEast = math.rad(yawEastDeg)
+
+		sin, cos = math.sin(math.rad(yawDeg - 22)), math.cos(math.rad(yawDeg - 22))
+		sinN, cosN = math.sin(yawNorth), math.cos(yawNorth)
+		sinS, cosS = math.sin(yawSouth), math.cos(yawSouth)
+		sinW, cosW = math.sin(yawWest), math.cos(yawWest)
+		sinE, cosE = math.sin(yawEast), math.cos(yawEast)
+
+		centerX, centerY = screenw / 2, screenh / 2
+
+		sizeX = screenw * @@DIR_SIZE_MULT_X
+		sizeY = screenh * @@DIR_SIZE_MULT_Y
+
+		northX = sizeX * cosN - sizeY * sinN + centerX
+		northY = sizeY * cosN + sizeX * sinN + centerY
+
+		southX = sizeX * cosS - sizeY * sinS + centerX
+		southY = sizeY * cosS + sizeX * sinS + centerY
+
+		westX = sizeX * cosW - sizeY * sinW + centerX
+		westY = sizeY * cosW + sizeX * sinW + centerY
+
+		eastX = sizeX * cosE - sizeY * sinE + centerX
+		eastY = sizeY * cosE + sizeX * sinE + centerY
+
+		draw.NoTexture()
+
+		with surface
+			.SetFont(@@DIRECTION_FONT)
+			.SetTextColor(200, 50, 50)
+			.SetDrawColor(255, 255, 255)
+			
+			w, h = .GetTextSize('N')
+			.SetTextPos(northX - w * cos * @@DIR_SIZE_LEN + h * sin * @@DIR_SIZE_LEN - w / 2, northY - h * cos * @@DIR_SIZE_LEN - w * sin * @@DIR_SIZE_LEN - h / 2)
+			.DrawPoly(@@ROTATED_TRIANGLE(northX, northY, yawNorthDegRaw - 90, 15))
+			.DrawText('N')
+			
+			w, h = .GetTextSize('S')
+			.SetTextPos(southX + w * cos * @@DIR_SIZE_LEN - h * sin * @@DIR_SIZE_LEN - w / 2, southY + h * cos * @@DIR_SIZE_LEN + w * sin * @@DIR_SIZE_LEN - h / 2)
+			.DrawPoly(@@ROTATED_TRIANGLE(southX, southY, yawSouthDegRaw - 90, 15))
+			.DrawText('S')
+			
+			w, h = .GetTextSize('W')
+			.SetTextPos(westX - w * cos * @@DIR_SIZE_LEN * 2 - h * sin * @@DIR_SIZE_LEN - w / 2, westY + h * cos * @@DIR_SIZE_LEN - w * sin * @@DIR_SIZE_LEN * 2 - h / 2)
+			.DrawPoly(@@ROTATED_TRIANGLE(westX, westY, yawWestDegRaw - 90, 15))
+			.DrawText('W')
+			
+			w, h = .GetTextSize('E')
+			.SetTextPos(eastX + w * cos * @@DIR_SIZE_LEN * 2 + h * sin * @@DIR_SIZE_LEN - w / 2, eastY - h * cos * @@DIR_SIZE_LEN + w * sin * @@DIR_SIZE_LEN * 2 - h / 2)
+			.DrawPoly(@@ROTATED_TRIANGLE(eastX, eastY, yawEastDegRaw - 90, 15))
+			.DrawText('E')
 	
 	-- When 1113 830
 	@CONSTANT_MULTIPLY = 1.6
