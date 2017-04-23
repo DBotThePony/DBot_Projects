@@ -40,6 +40,7 @@ Files = {
 	'dmaps/client/controls/waypoint_row.server.lua'
 	'dmaps/client/controls/icons_list.lua'
 
+	'dmaps/client/options.lua'
 	'dmaps/client/default_gui.lua'
 	'dmaps/client/waypoints_controller.lua'
 	'dmaps/client/server_waypoints_gui.lua'

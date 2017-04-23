@@ -55,11 +55,16 @@ DMaps.CreateMainFrame = ->
 		if not @LAST_MINIMAP_STATUS
 			@displayAsMinimap\SetText('Display as Minimap')
 			@displayAsMinimap\SetTooltip('Display as Minimap')
-			@displayAsMinimap.WhatToDo = true
 		else
 			@displayAsMinimap\SetText('Stop displaying as Minimap')
 			@displayAsMinimap\SetTooltip('Stop displaying as Minimap')
-			@displayAsMinimap.WhatToDo = false
+			map = @mapHolder\GetMap()
+			map\LockZoom(false)
+			map\LockClip(false)
+			map\LockView(false)
+			map\SetMinimalAutoZoom(MINIMAP_ZOOM\GetInt())
+			AVERAGE_SPEED = [0 for i = 1, 100]
+			AVERAGE_SPEED_INDEX = 1
 	
 	@mapHolder = vgui.Create('DMapsMapHolder', @)
 	@mapHolder\Dock(FILL)
@@ -91,6 +96,7 @@ DMaps.CreateMainFrame = ->
 				@LAST_MINIMAP_STATUS = false
 				\SetText('Display as minimap')
 				\SetTooltip('Display as minimap')
+			.WhatToDo = not .WhatToDo
 	return @
 DMaps.OpenMap = ->
 	if not IsValid(DMaps.MainFrame)
@@ -106,27 +112,6 @@ DMaps.OpenMap = ->
 		map = .mapHolder\GetMap()
 		if IsValid(map)
 			map\SetMinimalAutoZoom()
-DMaps.OpenOptions = ->
-	frame = vgui.Create('DFrame')
-	self = frame
-	@SetSize(400, ScrH! - 200)
-	@SetTitle('DMaps Clientside Options')
-	@Center()
-	@MakePopup()
-	
-	scroll = vgui.Create('DScrollPanel', @)
-	scroll\Dock(FILL)
-	scroll.Paint = (w, h) =>
-		surface.SetDrawColor(160, 160, 160)
-		surface.DrawRect(0, 0, w, h)
-	
-	for data in *DMaps.CONVARS_SETTINGS
-		checkbox = vgui.Create('DCheckBoxLabel', scroll)
-		checkbox\SetText(data[2])
-		checkbox\SetConVar(data[1])
-		checkbox\Dock(TOP)
-		checkbox\DockMargin(3, 3, 3, 3)
-	return frame
 concommand.Add('dmaps_open', DMaps.OpenMap)
 
 hook.Add 'Think', 'DMaps.DrawAsMinimap', ->
