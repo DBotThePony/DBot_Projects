@@ -80,4 +80,17 @@ DMaps.GetColor = (name, r = 0, g = 0, b = 0) ->
 	{:RED, :GREEN, :BLUE} = DMaps.CONVARS_COLORS[name]
 	return Clamp(RED\GetInt(), 0, 255), Clamp(GREEN\GetInt(), 0, 255), Clamp(BLUE\GetInt(), 0, 255)
 
+DMapsIconData =
+	title: 'DMaps',
+	icon: 'dmaps/map.png',
+	width: 960,
+	height: 700,
+	onewindow: true,
+	init: (icon, window) ->
+		window\Remove()
+		RunConsoleCommand('dmaps_open')
+
+list.Set('DesktopWindows', 'DMaps', DMapsIconData)
+CreateContextMenu() if IsValid(g_ContextMenu)
+
 include file for file in *Files

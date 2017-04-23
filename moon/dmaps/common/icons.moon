@@ -18,8 +18,8 @@
 import DMaps, file, Material, SERVER, CLIENT, ipairs from _G
 import surface, draw from _G
 
-DMaps.IconsPrefix = 'dmaps/'
-DMaps.IconsPrefixFull = 'materials/dmaps/'
+DMaps.IconsPrefix = 'dmaps/waypoint/'
+DMaps.IconsPrefixFull = 'materials/dmaps/waypoint/'
 
 class Icon
 	@IconsPrefix = DMaps.IconsPrefix
