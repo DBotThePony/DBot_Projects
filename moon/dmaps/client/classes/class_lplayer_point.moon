@@ -15,11 +15,12 @@
 -- limitations under the License.
 -- 
 
+import DMaps, Color, LocalPlayer, surface from _G
 import DMapPlayerPointer from DMaps
 
+POINTER_COLOR = DMaps.CreateColor(80, 80, 200, 'local_player', 'Local player arrow')
+
 class DMapLocalPlayerPointer extends DMapPlayerPointer
-	@PointerColor = Color(80, 80, 210)
-	
 	new: =>
 		super(LocalPlayer!)
 	
@@ -34,7 +35,7 @@ class DMapLocalPlayerPointer extends DMapPlayerPointer
 	Draw: (map) =>
 		trig = @@generateTriangle(@DRAW_X, @DRAW_Y, @yaw, 40, 50, 200)
 		
-		surface.SetDrawColor(@@PointerColor)
+		surface.SetDrawColor(POINTER_COLOR())
 		surface.DrawPoly(trig)
 		
 		surface.SetFont(@@FONT)

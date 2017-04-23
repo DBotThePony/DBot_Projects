@@ -23,9 +23,9 @@ import DMapPointer, HU_IN_METRE, Icon from DMaps
 
 DMaps.WatchPermission('teleport')
 
-DRAW_DISTANCE = DMaps.ClientsideOption('cl_dmap_draw_dist', '1', 'Draw distance under waypoint name')
-DRAW_BEAM = DMaps.ClientsideOption('cl_dmap_draw_beam', '1', 'Draw waypoint beam')
-DRAW_IN_WORLD = DMaps.ClientsideOption('cl_dmap_draw_waypoints', '1', 'Draw waypoints in world')
+DRAW_DISTANCE = DMaps.ClientsideOption('draw_dist', '1', 'Draw distance under waypoint name')
+DRAW_BEAM = DMaps.ClientsideOption('draw_beam', '1', 'Draw waypoint beam')
+DRAW_IN_WORLD = DMaps.ClientsideOption('draw_waypoints', '1', 'Draw waypoints in world')
 
 surface.CreateFont('DMaps.WaypointName', {
 	font: 'Roboto',

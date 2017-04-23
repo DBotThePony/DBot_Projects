@@ -15,12 +15,13 @@
 -- limitations under the License.
 -- 
 
+CONTROL_LOCKED = DMaps.CreateColor(230, 230, 230, 'zoom_locked', 'Zoom control "Locked"')
+CONTROL_UNLOCKED = DMaps.CreateColor(170, 170, 170, 'zoom_unlocked', 'Zoom control "Unlocked"')
+CONTROL_TOOBIG = DMaps.CreateColor(80, 80, 170, 'zoom_big', 'Zoom control "Too big"')
+CONTROL_BACKGROUND = DMaps.CreateColor(40, 40, 40, 'zoom_background', 'Zoom control background')
+
 PANEL = {}
 
-PANEL.BACKGROUND_COLOR = Color(40, 40, 40, 255)
-PANEL.CONTROL_LOCKED = Color(230, 230, 230, 255)
-PANEL.CONTROL_TOOBIG = Color(80, 80, 170, 255)
-PANEL.CONTROL_UNLOCKED = Color(170, 170, 170, 255)
 PANEL.WIDTH = 48
 PANEL.HEIGHT = 256
 PANEL.MIN_ZOOM = 300
@@ -105,7 +106,7 @@ PANEL.Paint = (w, h) =>
 	draw.NoTexture!
 	
 	-- Background
-	surface.SetDrawColor(@BACKGROUND_COLOR)
+	surface.SetDrawColor(CONTROL_BACKGROUND())
 	surface.DrawRect(3, 0, w - 6, h)
 	
 	step = h / 14
@@ -117,16 +118,16 @@ PANEL.Paint = (w, h) =>
 		surface.DrawRect(5, i, w - 10, 4 * @sizeMult)
 	
 	if @lock
-		surface.SetDrawColor(@CONTROL_LOCKED)
+		surface.SetDrawColor(CONTROL_LOCKED())
 	else
-		surface.SetDrawColor(@CONTROL_UNLOCKED)
+		surface.SetDrawColor(CONTROL_UNLOCKED())
 	
 	mult = (1 - @displayZoom / @DELTA_ZOOM)
 	
 	if mult >= -0.1
 		surface.DrawRect(0, math.min(mult * h + 30, h - @sizeMult * 10), w, 10 * @sizeMult)
 	else
-		surface.SetDrawColor(@CONTROL_TOOBIG)
+		surface.SetDrawColor(CONTROL_TOOBIG())
 		surface.DrawRect(0, 0, w, 10 * @sizeMult)
 
 DMaps.PANEL_MAP_ZOOM = PANEL

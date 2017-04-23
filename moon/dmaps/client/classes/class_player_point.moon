@@ -15,7 +15,10 @@
 -- limitations under the License.
 -- 
 
+import DMaps from _G
 import DMapEntityPointer from DMaps
+
+SHOULD_DRAW = DMaps.ClientsideOption('draw_players', '1', 'Draw players on map')
 
 surface.CreateFont('DMaps.PlayerInfoFont', {
 	font: 'Roboto',
@@ -66,7 +69,7 @@ class DMapPlayerPointer extends DMapEntityPointer
 		@teamID = 0
 		@teamName = '%PLAYERTEAM%'
 	
-	ShouldDraw: => @draw
+	ShouldDraw: => @draw and SHOULD_DRAW()
 	
 	CalcPlayerData: (map) =>
 		ply = @entity

@@ -15,7 +15,12 @@
 -- limitations under the License.
 -- 
 
-import draw, surface, LocalPlayer, gui from _G
+import draw, surface, LocalPlayer, gui, CreateConVar, DMaps from _G
+
+COLOR_OUTER = DMaps.CreateColor(40, 70, 180, 'compass_outer', 'Compass outer')
+COLOR_INNER = DMaps.CreateColor(200, 200, 200, 'compass_inner', 'Compass inner')
+COLOR_NORTH = DMaps.CreateColor(255, 0, 0, 'color_north', 'Compass north part')
+COLOR_SOUTH = DMaps.CreateColor(230, 230, 230, 'color_south', 'Compass south part')
 
 generateTriangle = (x = 0, y = 0, ang = 0, hypo = 30) ->
 	sin = math.sin(math.rad(ang))
@@ -194,20 +199,17 @@ PANEL.BuildCircle = =>
 
 PANEL.Paint = (w, h) =>
 	draw.NoTexture!
-	
-	--surface.SetDrawColor(@BACKGROUND_COLOR)
-	--surface.DrawRect(0, 0, w, h)
-	
-	surface.SetDrawColor(40, 70, 180)
+
+	surface.SetDrawColor(COLOR_OUTER())
 	surface.DrawPoly(@circleOuter)
 	
-	surface.SetDrawColor(200, 200, 200)
+	surface.SetDrawColor(COLOR_INNER())
 	surface.DrawPoly(@circleInner)
 	
-	surface.SetDrawColor(255, 0, 0)
+	surface.SetDrawColor(COLOR_NORTH())
 	surface.DrawPoly(@northPart)
 	
-	surface.SetDrawColor(230, 230, 230)
+	surface.SetDrawColor(COLOR_SOUTH())
 	surface.DrawPoly(@southPart)
 
 DMaps.PANEL_MAP_COMPASS = PANEL

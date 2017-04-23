@@ -15,7 +15,9 @@
 -- limitations under the License.
 -- 
 
--- Nope, its a joystick! Haha!
+COLOR_OUTER = DMaps.CreateColor(190, 190, 190, 'arrows_outer', 'Arrows (joystick) outer')
+COLOR_INNER = DMaps.CreateColor(170, 170, 170, 'arrows_inner', 'Arrows (joystick) inner')
+COLOR_CONTROL = DMaps.CreateColor(230, 230, 230, 'arrows_button', 'Arrows (joystick) middle button')
 
 generateCircle = (x = 0, y = 0, radius = 0) ->
 	reply = {}
@@ -143,6 +145,8 @@ PANEL.Think = =>
 			@mapObject\AddY(moveY)
 			@mapObject\LockView(true)
 
+ReduceColor = (i, r, g, b) -> Color(r - i, g - i, b - i)
+
 PANEL.UpdateCache = (force = false) =>
 	w, h = @WIDTH, @HEIGHT
 	
@@ -152,7 +156,7 @@ PANEL.UpdateCache = (force = false) =>
 	if not @circleOuter or force
 		@circleOuter = generateCircle(w / 2, h / 2, w / 2)
 	
-	@joysticks = [{generateCircle(w / 2 + @joystickPosX, h / 2 + @joystickPosY, 16 * @sizeMult - i), Color(230 - i * 2, 230 - i * 2, 230 - i * 2)} for i = 0, 6, 1]
+	@joysticks = [{generateCircle(w / 2 + @joystickPosX, h / 2 + @joystickPosY, 16 * @sizeMult - i), ReduceColor(i * 2, COLOR_CONTROL())} for i = 0, 6, 1]
 
 PANEL.InvalidateLayout = =>
 	@UpdateCache!
@@ -163,10 +167,10 @@ PANEL.Paint = (w, h) =>
 	--surface.SetDrawColor(@BACKGROUND_COLOR)
 	--surface.DrawRect(0, 0, w, h)
 	
-	surface.SetDrawColor(@OUTER_COLOR)
+	surface.SetDrawColor(COLOR_OUTER())
 	surface.DrawPoly(@circleOuter)
 	
-	surface.SetDrawColor(@INNER_COLOR)
+	surface.SetDrawColor(COLOR_INNER())
 	surface.DrawPoly(@circleInner)
 	
 	for i, joystickPart in pairs @joysticks
