@@ -33,7 +33,7 @@ class DMapLocalPlayerPointer extends DMapPlayerPointer
 	CalculatePlayerVisibility: => true
 	
 	Draw: (map) =>
-		trig = @@generateTriangle(@DRAW_X, @DRAW_Y, @yaw, 40, 50, 200)
+		trig = @@generateTriangle(@DRAW_X, @DRAW_Y, @yaw, 50, 50, 170)
 		
 		surface.SetDrawColor(POINTER_COLOR())
 		surface.DrawPoly(trig)

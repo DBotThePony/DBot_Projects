@@ -134,7 +134,7 @@ Armor: #{@armor}")
 	Draw: (map) =>
 		@CURRENT_MAP = map
 		
-		trig = @@generateTriangle(@DRAW_X, @DRAW_Y, @yaw, 30, 50, 160)
+		trig = @@generateTriangle(@DRAW_X, @DRAW_Y, @yaw, 40, 50, 130)
 		
 		newAlpha = 1
 		delta = @z - map\GetZ!

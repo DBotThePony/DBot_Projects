@@ -30,6 +30,8 @@ class DMapPointer
 	@generateTriangle = (x = 0, y = 0, ang = 0, hypo = 20, myShift = 30, height = 70) =>
 		sin = math.sin(math.rad(ang))
 		cos = math.cos(math.rad(ang))
+
+		hH = height * .2
 		
 		x -= myShift * cos
 		y -= myShift * sin
@@ -37,8 +39,10 @@ class DMapPointer
 		Ax, Ay = -hypo * sin, hypo * cos
 		Bx, By = height * cos, height * sin
 		Cx, Cy = hypo * sin, -hypo * cos
+		Dx, Dy = hH * cos, hH * sin
 		
 		trigData = {
+			{x: x + Dx, y: y + Dy}
 			{x: x + Cx, y: y + Cy}
 			{x: x + Bx, y: y + By}
 			{x: x + Ax, y: y + Ay}
