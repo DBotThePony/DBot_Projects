@@ -139,11 +139,11 @@ PANEL.Think = =>
 			
 			if deltaX < 64 and deltaX > -64 and deltaY < 64 and deltaY > -64
 				forward = deltaX / ((deltaX ^ 2 + deltaY ^ 2) ^ 0.5)
-				ang = math.deg(math.acos(-forward))
-				
-				if deltaY < 0 then ang = -ang
-				@targetyaw = ang - 90
-			
+				if forward == forward -- Divide by zero
+					ang = math.deg(math.acos(-forward))
+					
+					if deltaY < 0 then ang = -ang
+					@targetyaw = ang - 90
 	
 	if @yaw ~= @targetyaw
 		@yaw += math.AngleDifference(@targetyaw, @yaw) * 0.2
