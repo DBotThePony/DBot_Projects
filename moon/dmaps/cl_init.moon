@@ -26,6 +26,7 @@ Files = {
 	'dmaps/client/classes/class_map.lua'
 	'dmaps/client/classes/class_map_point.lua'
 	'dmaps/client/classes/class_map_entity_point.lua'
+	'dmaps/client/classes/player_filter.lua'
 	'dmaps/client/classes/class_player_point.lua'
 	'dmaps/client/classes/class_lplayer_point.lua'
 	'dmaps/client/classes/class_map_waypoint.lua'

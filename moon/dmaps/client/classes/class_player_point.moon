@@ -56,7 +56,8 @@ class DMapPlayerPointer extends DMapEntityPointer
 	
 	@__type = 'player'
 	
-	new: (ply = NULL) =>
+	new: (ply = NULL, filter = DMaps.GetPlayerFilter()) =>
+		@filter = filter(ply, @)
 		super(ply)
 		@playerName = '%PLAYERNAME%'
 		
@@ -68,8 +69,12 @@ class DMapPlayerPointer extends DMapEntityPointer
 		@color = Color(50, 50, 50)
 		@teamID = 0
 		@teamName = '%PLAYERTEAM%'
+
+	SetEntity: (ply) =>
+		super(ply)
+		@filter\SetPlayer(ply)
 	
-	ShouldDraw: => @draw and SHOULD_DRAW()
+	ShouldDraw: => @draw and SHOULD_DRAW\GetBool()
 	
 	CalcPlayerData: (map) =>
 		ply = @entity
@@ -87,40 +92,14 @@ class DMapPlayerPointer extends DMapEntityPointer
 		@pitch = ang.p
 		@yaw = -ang.y
 		@roll = ang.r
-	
-	CalculatePlayerVisibility: (map) =>
-		dh = @GetDeltaHeight!
 		
-		if dh > @@MAX_DELTA_HEIGHT or dh < -@@MAX_DELTA_HEIGHT
-			@draw = false
-		elseif map.abstractSetup
-			if map\GetAbstractPos!\Distance(@pos) > @@TRIGGER_FADE_DIST
-				trData = {
-					mask: MASK_BLOCKLOS
-					filter: ply
-					start: @pos
-					endpos: @pos + @@UP_VECTOR
-				}
-				
-				tr = util.TraceLine(trData)
-				
-				if not tr.Hit or tr.HitSky
-					@draw = true
-				else
-					@draw = false
-			else
-				@draw = true
-		else
-			@draw = true
-	
 	Think: (map) =>
 		@CURRENT_MAP = map
 		super(map)
 		
 		if not IsValid(@entity) return
 		@CalcPlayerData(map)
-		@CalculatePlayerVisibility(map)
-		
+		@draw = @filter\Filter(map)
 	
 	GetPlayerInfo: =>
 		text = AppenableString("#{@playerName}

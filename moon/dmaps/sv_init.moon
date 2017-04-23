@@ -28,10 +28,13 @@ for str in *{'BasicWaypoint', 'CAMIWaypoint', 'UsergroupWaypoint', 'TeamWaypoint
 	util.AddNetworkString "DMaps.#{str}Create"
 	util.AddNetworkString "DMaps.#{str}Delete"
 
+CreateConVar('sv_dmaps_players', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable player map arrows')
+
 ClientsideFiles = {
 	'dmaps/client/classes/class_map.lua'
 	'dmaps/client/classes/class_map_point.lua'
 	'dmaps/client/classes/class_map_entity_point.lua'
+	'dmaps/client/classes/player_filter.lua'
 	'dmaps/client/classes/class_player_point.lua'
 	'dmaps/client/classes/class_lplayer_point.lua'
 	'dmaps/client/classes/class_map_waypoint.lua'
