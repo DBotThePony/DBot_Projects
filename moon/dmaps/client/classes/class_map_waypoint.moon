@@ -92,8 +92,13 @@ class DMapWaypoint extends DMapPointer
 		@color = color
 		@zoom = 60
 		@visible = true
-		@BuildBoxes!
 	
+	@WORLD_BOXES = {}
+	for i = 30, 5, -10
+		mins = Vector(-i, -i, -2000)
+		maxs = Vector(i, i, 4000)
+		table.insert(@WORLD_BOXES, {:mins, :maxs})
+
 	SetIcon: (val = Icon.DefaultIconName) => @icon = Icon(val)
 	SetIconObject: (val) => @icon = val
 	GetIcon: => @icon
@@ -110,12 +115,6 @@ class DMapWaypoint extends DMapPointer
 	
 	@MAX_DRAW_DIST = 1000
 	
-	BuildBoxes: =>
-		@worldBoxes = {}
-		for i = 50, 10, -15
-			mins = Vector(-i, -i, -2000)
-			maxs = Vector(i, i, 4000)
-			table.insert(@worldBoxes, {:mins, :maxs})
 	OnDataChanged: =>
 		super!
 		@BuildBoxes!
@@ -149,7 +148,7 @@ class DMapWaypoint extends DMapPointer
 			render.SuppressEngineLighting(true)
 			render.SetMaterial(@@BOX_MATERIAL)
 			
-			for box in *@worldBoxes
+			for box in *@@WORLD_BOXES
 				render.DrawBox(pos, @@BOX_ANGLES, box.mins, box.maxs, Color(@color.r, @color.b, @color.g, 255 * @@BLEND), true)
 			
 			render.SuppressEngineLighting(false)
