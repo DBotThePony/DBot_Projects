@@ -76,7 +76,7 @@ local red = Color(190, 50, 50)
 
 local Dict = {
 	Fall = {
-		'%s fall from high place',
+		'%s fell from high place',
 		'%s hit the ground too hard',
 		"%s fell to their death",
 		"%s didn't bounce",
@@ -84,9 +84,9 @@ local Dict = {
 		"%s faceplanted the ground",
 		"%s left a small crater",
 		'%s likes to be smashed',
-		'%s forgot his parachute',
+		'%s forgot to open his parachute',
 		'%s forgot to open his wings',
-		'%s become an angel',
+		'%s became an angel',
 		'%s was falling too long',
 	},
 
@@ -103,7 +103,7 @@ local Dict = {
 		'%s likes to play with fire',
 		'%s burned to the crisp',
 		'%s burned to the death',
-		'%s become an ach',
+		'%s became an ach',
 		'%s was cooked alive',
 	},
 
@@ -150,7 +150,7 @@ local Dict = {
 
 	Poison = {
 		'%s was poisoned to the death',
-		'%s got too many positon in his veins',
+		'%s\'s veins was poisoned',
 		'%s blood were turned into water',
 	},
 
@@ -159,18 +159,18 @@ local Dict = {
 		'%s was digested',
 		'%s\'s vital organs were ruptured',
 		'%s got splitted',
-		'%s was disintegrated by acid',
-		'%s was disassembled',
+		'%s got disintegrated by acid',
+		'%s got disassembled',
 		'%s was oxidized',
 		'%s tried to swin in acid',
 	},
 
 	Suicide = {
-		'%s doesn\'t like life',
+		'%s don\'t like his life',
 		'%s don\'t wants to live anymore',
 		'%s wrecks his head',
 		'%s hads gone to hell',
-		'%s likes to shoot his head',
+		'%s likes to shoot his own head',
 		'%s feels upset and done suicide',
 		'%s forgot to unbind kill button',
 		'%s swinged his sword and his head torn off his body',
@@ -179,14 +179,14 @@ local Dict = {
 	},
 
 	Prop = {
-		'%s died from prop',
+		'%s got smashed',
 		'%s had their head removed',
 		'All %s\'s bones got broken',
-		'%s crunched',
-		'%s played with heavy things',
+		'%s is crunching',
+		'%s likes to play with heavy things',
 		'%s tried to throw locomotive',
 		'%s\'s head was removed by throwned prop',
-		'%s got thing stuck in his body',
+		'%s got a thing stuck in his body',
 	},
 	
 	Slash = {
@@ -195,6 +195,8 @@ local Dict = {
 		'%s was chopped up',
 		'%s was butchered by a knife',
 		'%s turned into meat steak',
+		'%s was butchered',
+		'%s catched a cleaver by his head',
 		"%s's face was torn off",
 		"%s was turned into a pile of flesh",
 		"%s had their head removed",
@@ -203,28 +205,29 @@ local Dict = {
 	},
 	
 	Electricity = {
-		'%s got hit by lighting',
-		'%s played with electricity',
-		'%s got shocked',
+		'%s was hit by lighting',
+		'%s played and died because of electricity',
+		'%s got shocked to the death',
 		'%s was zapped like a bee',
 		'%s was cooked by electricity',
-		'%s become a live battery',
-		'%s was charged',
+		'%s became a live battery',
+		'%s was charged by electrons',
 		'%s got plus and minus polarity',
 		'%s loves to play with electricity',
 		"%s didn't wear gloves while working with electricity",
 		'%s got a heart attack because of electricity',
 		'%s\'s heart got wrong electricity',
+		'%s got cooked',
 	},
 	
 	Laser = {
 		'%s got snapped in half',
-		'%s heated too much and melted',
-		'%s got melted',
-		'%s was perfectly cuted',
+		'%s received much heat and melted',
+		'%s was melted',
+		'%s was perfectly cut',
 		'%s\'s body got splitted',
-		'%s done with lazers forever',
-		'%s was cuted by a laser',
+		'%s fell at open laser',
+		'%s was cut by a laser',
 	},
 	
 	Disintegrated = {
@@ -234,6 +237,7 @@ local Dict = {
 		"%s disappeared",
 		"%s was disintegrated",
 		"%s's body was divided into atoms",
+		"%s's atmos disintegrated",
 	},
 	
 	Explosion = {
@@ -245,6 +249,8 @@ local Dict = {
 		"%s's meat was ripped off the bone",
 		'%s got impacted to second world',
 		'%s got dismembered',
+		'%s explodes',
+		'BOOM! Wee now can see %s\'s meat around',
 	},
 }
 
