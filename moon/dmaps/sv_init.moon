@@ -29,6 +29,7 @@ for str in *{'BasicWaypoint', 'CAMIWaypoint', 'UsergroupWaypoint', 'TeamWaypoint
 	util.AddNetworkString "DMaps.#{str}Delete"
 
 CreateConVar('sv_dmaps_players', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable player map arrows')
+CreateConVar('sv_dmaps_entities', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable map entities display')
 
 ClientsideFiles = {
 	'dmaps/client/classes/class_map.lua'

@@ -25,6 +25,8 @@ surface.CreateFont('DMaps.EntityInfoPoint', {
 	weight: 500
 })
 
+POINTS_ENABLED = CreateConVar('sv_dmaps_entities', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable map entities display')
+
 class DisplayedEntityBase extends DMapEntityPointer
 	@Entity = 'generic'
 	@Name = 'Perfectly generic item'
@@ -73,12 +75,14 @@ class DisplayedEntityBase extends DMapEntityPointer
 		hook.Run('DMaps.EntityPointCreated', @)
 	
 	Think: (map) =>
+		return if not POINTS_ENABLED\GetBool()
 		@CURRENT_MAP = map
 		if @GetPos()\DistToSqr(LocalPlayer()\GetPos()) > @@DefaultRangeQ
 			@Remove()
 			return
 		super(map)
 	Draw: (map) => -- Override
+		return if not POINTS_ENABLED\GetBool()
 		@CURRENT_MAP = map
 		render.SuppressEngineLighting(true)
 		render.SetBlend(@@ColorAModulation)
@@ -216,6 +220,7 @@ DMaps.RegisterMapEntity({'darkrp', 'sandbox'}, DefaultClass) for k, DefaultClass
 hook.Run('DMaps.RegisterMapEntities', DMaps.RegisterMapEntity, DisplayedEntityBase)
 
 timer.Create 'DMaps.DispalyedEntitiesUpdate', 1, 0, ->
+	return if not POINTS_ENABLED\GetBool()
 	gm = engine.ActiveGamemode()
 	if not DMaps.RegisteredMapEntities_map[gm] return
 	avaliable = DMaps.RegisteredMapEntities_map[gm]
