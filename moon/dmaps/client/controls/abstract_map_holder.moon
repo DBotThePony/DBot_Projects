@@ -54,6 +54,7 @@ PANEL.Init = =>
 	@mapObject\AddObject(DMapLocalPlayerPointer!)
 	@mapObject\CloneNetworkWaypoints()
 	@mapObject\ListenNetworkWaypoints()
+	@mapObject\WatchMapEntities()
 	@mapObject\SetMinimalAutoZoom()
 	
 	@SetMouseInputEnabled(true)

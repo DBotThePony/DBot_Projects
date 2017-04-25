@@ -32,6 +32,7 @@ Files = {
 	'dmaps/client/classes/class_map_waypoint.lua'
 	'dmaps/client/classes/waypoints_holder.lua'
 	'dmaps/client/classes/class_clientside_waypoint.lua'
+	'dmaps/client/classes/minimap_entities.lua'
 
 	'dmaps/client/controls/control_compass.lua'
 	'dmaps/client/controls/control_arrows.lua'

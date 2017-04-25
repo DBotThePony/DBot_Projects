@@ -115,8 +115,11 @@ class DMapPointer
 	Remove: => @removed = true
 	
 	Draw: (map) => -- Override
+		@CURRENT_MAP = map
 	PreDraw: (map) => -- Override
+		@CURRENT_MAP = map
 	PostDraw: (map) => -- Override
+		@CURRENT_MAP = map
 	
 	DrawHook: (map) =>
 		@PreDraw(map)
@@ -127,8 +130,8 @@ class DMapPointer
 	__eq: (other) =>
 		return @ == other
 	
-	Think: (map) =>
-		-- Override
+	Think: (map) => -- Override
+		@CURRENT_MAP = map
 	
 	IsValid: => not @removed
 	IsRemoved: => @removed

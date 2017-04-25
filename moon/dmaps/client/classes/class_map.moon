@@ -151,6 +151,7 @@ class DMap
 		if @removed then return
 		@removed = true
 		@UnregisterHooks!
+		hook.Remove 'DMaps.EntityPointCreated', tostring(@)
 	
 	SetDrawPos: (x = 0, y = 0) =>
 		@x = assert(x, 'number')
@@ -255,7 +256,13 @@ class DMap
 		border = @GetBorderBox!
 		return x > border.topLeftX and x < border.topRightX and
 			y < border.topLeftY and y > border.bottomLeftY
-	
+
+	WatchMapEntities: =>
+		hook.Add 'DMaps.EntityPointCreated', tostring(@), (obj) -> @AddObject(obj)
+		for i, point in pairs DMaps.DisplayedEntityBase.INSTANCES
+			if point\IsValid()
+				@AddObject(point)
+
 	AddObject: (object) =>
 		switch object.__class.__type
 			when 'waypoint' -- Waypoint object
@@ -347,13 +354,13 @@ class DMap
 	-- Call when you give the decidion about pointer draw
 	-- To the map object itself
 	PrefferDraw: (x = 0, y = 0, z = 0) =>
-		if not @PointIsVisible(x, y)
+		--if not @PointIsVisible(x, y)
+		--	return false
+		
+		if z < @clipLevelBottom or z > @clipLevelTop
 			return false
 		
-		minZoom = @zoom - 500
-		maxZoom = @zoom + 500
-		
-		if z < minZoom or z > maxZoom
+		if @zoom > z + 1000
 			return false
 		
 		return true

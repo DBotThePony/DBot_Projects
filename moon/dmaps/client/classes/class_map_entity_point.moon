@@ -72,6 +72,8 @@ class DMapEntityPointer extends DMapPointer
 		else
 			@entClass = 'NULL'
 	
+	GetClass: => @entClass
+
 	Draw: (map) =>
 		trig = @@generateTriangle(@DRAW_X - 25, @DRAW_Y - 25, @yaw)
 		
