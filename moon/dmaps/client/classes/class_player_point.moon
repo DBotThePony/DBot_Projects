@@ -75,6 +75,8 @@ class DMapPlayerPointer extends DMapEntityPointer
 		@filter\SetPlayer(ply)
 	
 	ShouldDraw: => @draw and SHOULD_DRAW\GetBool()
+
+	GetRenderPriority: => 100
 	
 	CalcPlayerData: (map) =>
 		ply = @entity

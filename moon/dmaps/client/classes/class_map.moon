@@ -411,7 +411,7 @@ class DMap
 	@PointFilter = (obj, radius) -> obj.__class.__type == 'points'
 	FindInRadius: (x = 0, y = 0, radius = 130, filter = ((obj, radius) -> true)) =>
 		output = {}
-		for k, objectTab in pairs @objectTables
+		for objectTab in *@objectTables
 			for k, object in pairs objectTab
 				if object\IsValid()
 					x1 = object\GetX()
@@ -747,15 +747,22 @@ class DMap
 				surface.DrawRect(x, y, @@MAP_2D_LIGHT_SIZE, @@MAP_2D_LIGHT_SIZE)
 				cam.End3D2D()
 	
-	-- Still have to create 3D2D context!
-	Draw2D: (screenx = 0, screeny = 0, screenw = 0, screenh = 0) =>
-		for k, objectTab in pairs @objectTables
+	BuildRenderList: =>
+		pre = {}
+		for objectTab in *@objectTables
 			for k, object in pairs objectTab
 				if object\IsValid()
 					if object\ShouldDraw(@)
-						object\DrawHook(@)
+						table.insert(pre, {object, object\GetRenderPriority()})
 				else
 					objectTab[k] = nil
+		
+		table.sort pre, (a, b) -> b[2] > a[2]
+		return [o[1] for o in *pre]
+
+	-- Still have to create 3D2D context!
+	Draw2D: (screenx = 0, screeny = 0, screenw = 0, screenh = 0) =>
+		object\DrawHook(@) for object in *@BuildRenderList()
 		
 		@DrawMapCenter(screenx, screeny, screenw, screenh)
 		@DrawMousePointer(screenx, screeny, screenw, screenh)
@@ -857,12 +864,7 @@ class DMap
 	PostDrawWorld: => -- Override
 	
 	DrawWorld: =>
-		for k, objectTab in pairs @objectTables
-			for k, object in pairs objectTab
-				if object\IsValid()
-					object\DrawWorldHook(@)
-				else
-					objectTab[k] = nil
+		object\DrawWorldHook(@) for object in *@BuildRenderList()
 	
 	DrawWorldHook: =>
 		xpcall(@PreDrawWorld, @@CatchError, @)

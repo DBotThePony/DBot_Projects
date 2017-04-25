@@ -112,6 +112,8 @@ class DMapWaypoint extends DMapPointer
 	SetDrawInWorld: (val = true) => @drawInWorld = val
 	GetDrawInWorld: => @drawInWorld
 	ShouldDrawInWorld: => @drawInWorld and @visible
+
+	GetRenderPriority: => 2
 	
 	@MAX_DRAW_DIST = 1000
 	

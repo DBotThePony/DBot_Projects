@@ -31,6 +31,8 @@ class DMapLocalPlayerPointer extends DMapPlayerPointer
 	ShouldDraw: => true
 	
 	CalculatePlayerVisibility: => true
+
+	GetRenderPriority: => 1000
 	
 	Draw: (map) =>
 		trig = @@generateTriangle(@DRAW_X, @DRAW_Y, @yaw, 50, 50, 170)

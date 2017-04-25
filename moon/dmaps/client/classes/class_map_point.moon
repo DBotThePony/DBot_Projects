@@ -88,6 +88,8 @@ class DMapPointer
 	PreDrawWorld: (map) => -- Override
 	PostDrawWorld: (map) => -- Override
 	DrawWorld: (map) => -- Override
+
+	GetRenderPriority: => 0
 	
 	SetX: (val = 0) =>
 		@x = assert(val, 'number')
