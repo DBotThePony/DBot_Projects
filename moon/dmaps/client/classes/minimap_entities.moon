@@ -29,16 +29,26 @@ class DisplayedEntityBase extends DMapEntityPointer
 	@Entity = 'generic'
 	@Name = 'Perfectly generic item'
 	@INSTANCES = {}
-	@KnownEntities = {} -- Redefine in subclasses
-
 	@DefaultRange = 1024
-	@DefaultRangeQ = @DefaultRange ^ 2
+	@DisplayText = true
 
 	@Color = Color(200, 200, 200)
-	@ColorRModulation = @Color.r / 255
-	@ColorGModulation = @Color.g / 255
-	@ColorBModulation = @Color.b / 255
-	@ColorAModulation = @Color.a / 255
+
+	@Setup = =>
+		@ColorRModulation = @Color.r / 255
+		@ColorGModulation = @Color.g / 255
+		@ColorBModulation = @Color.b / 255
+		@ColorAModulation = @Color.a / 255
+		@KnownEntities = {}
+		@DefaultRangeQ = @DefaultRange ^ 2
+
+		Ents = @Entity
+		Ents = {Ents} if type(Ents) ~= 'table'
+		Names = @Name
+		Names = {Names} if type(Names) ~= 'table'
+		@DefaultName = Names[1]
+		@NamesMap = {ent, Names[i] for i, ent in pairs Ents}
+	@Setup()
 
 	@BackgroundColor = Color(0, 0, 0, 100)
 	@TextColor = Color(255, 255, 255)
@@ -81,10 +91,11 @@ class DisplayedEntityBase extends DMapEntityPointer
 		render.SetColorModulation(1, 1, 1)
 		render.SuppressEngineLighting(false)
 
+		if not @@DisplayText return
 		lpos = LocalPlayer()\GetPos()
 		dist = @GetPos()\Distance(lpos)
 		delta = @z - lpos.z
-		text = "#{@@Name}\n#{math.floor(dist / DMaps.HU_IN_METRE * 10) / 10} metres away #{@GetText() or ''}"
+		text = "#{@@NamesMap[@GetClass()] or @@DefaultName}\n#{math.floor(dist / DMaps.HU_IN_METRE * 10) / 10} metres away #{@GetText() or ''}"
 		text ..= "\n#{math.floor(delta / DMaps.HU_IN_METRE * 10) / 10} metres upper" if delta > DMaps.HU_IN_METRE * 1.5
 		text ..= "\n#{math.floor(-delta / DMaps.HU_IN_METRE * 10) / 10} metres lower" if -delta > DMaps.HU_IN_METRE * 1.5
 
@@ -117,21 +128,91 @@ DMaps.RegisterMapEntity = (gamemodes = {}, mclass = DisplayedEntityBase) ->
 		table.insert(DMaps.RegisteredMapEntities[g], mclass)
 		DMaps.RegisteredMapEntities_map[g][e] = mclass for e in *entsArray
 
-class HealthKitPoint extends DisplayedEntityBase
-	@Entity = 'item_healthkit'
-	@Name = 'Health kit'
+DMaps.RegisterMapEntityEasy = (gamemodes = {}, classes = {}, names = {}, color = Color(200, 200, 200)) ->
+	local cName
+	if type(classes) == 'table'
+		cName = classes[1]
+	else
+		cName = classes
+	
+	cName = "E#{cName}Point"
+	newClass = class extends DisplayedEntityBase
+		@Entity = classes
+		@Name = names
+		@Color = color
+		@Setup()
+	newClass.__name = cName
+	DMaps.RegisterMapEntity(gamemodes, newClass)
+	return newClass
 
-	@Color = Color(30, 200, 30)
-	@ColorRModulation = @Color.r / 255
-	@ColorGModulation = @Color.g / 255
-	@ColorBModulation = @Color.b / 255
-	@ColorAModulation = @Color.a / 255
+easyToRegister = {
+	{
+		{'item_healthkit'}
+		{'Health Kit'}
+		Color(30, 200, 30)
+	}
 
-DMaps.DisplayedEntitiesDefaultClasses = {
-	:HealthKitPoint
+	{
+		{'item_healthvial'}
+		{'Health Vial'}
+		Color(30, 200, 30)
+	}
+
+	{
+		{'item_battery'}
+		{'Battery'}
+		Color(0, 190, 255)
+	}
+
+	{
+		{'grenade_helicopter', 'npc_grenade_frag'}
+		{'Helicopter grenade', 'Armed Grenade'}
+		Color(250, 102, 102)
+	}
+
+	{
+		{'combine_mine'}
+		{'Combine mine'}
+		Color(250, 102, 102)
+	}
+
+	{
+		{'sent_ball'}
+		{'Bouncy Ball'}
+		Color(0, 255, 230)
+	}
 }
 
-DMaps.RegisterMapEntity({'darkrp', 'sandbox'}, HealthKitPoint)
+HL2Ammo = {
+	'item_ammo_ar2': 'AR2 Ammo'
+	'item_ammo_ar2_large': 'AR2 Ammo (Large)'
+
+	'item_ammo_pistol': 'Pistol Ammo'
+	'item_ammo_pistol_large': 'Pistol Ammo (Large)'
+
+	'item_ammo_357': '357 Ammo'
+	'item_ammo_357_large': '357 Ammo (Large)'
+
+	'item_ammo_smg1': 'SMG Ammo'
+	'item_ammo_smg1_large': 'SMG Ammo (Large)'
+
+	'item_ammo_smg1_grenade': 'SMG Grenade'
+	'item_ammo_crossbow': 'Crossbow Bolts'
+	'item_box_buckshot': 'Shotgun Ammo'
+	'item_ammo_ar2_altfire': 'AR2 Orb'
+	'item_rpg_round': 'RPG Rocket'
+}
+
+for id, name in pairs HL2Ammo
+	table.insert(easyToRegister, {{id}, {name}, Color(255, 160, 0)})
+
+DMaps.DisplayedEntitiesDefaultClasses = {}
+
+for {classes, names, color} in *easyToRegister
+	reg = DMaps.RegisterMapEntityEasy({'darkrp', 'sandbox'}, classes, names, color)
+	DMaps.DisplayedEntitiesDefaultClasses[cls] = reg for cls in *classes
+
+DMaps.RegisterMapEntity({'darkrp', 'sandbox'}, DefaultClass) for k, DefaultClass in pairs DMaps.DisplayedEntitiesDefaultClasses
 hook.Run('DMaps.RegisterMapEntities', DMaps.RegisterMapEntity, DisplayedEntityBase)
 
 timer.Create 'DMaps.DispalyedEntitiesUpdate', 1, 0, ->
