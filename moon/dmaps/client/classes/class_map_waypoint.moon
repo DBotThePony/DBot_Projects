@@ -121,11 +121,14 @@ class DMapWaypoint extends DMapPointer
 		super!
 		@BuildBoxes!
 	
-	@BOX_MATERIAL = Material('models/debug/debugwhite')
 	@BLEND = 0.1
+	@BOX_MATERIAL = CreateMaterial('DMaps.MapWaypointBox', 'VertexLitGeneric', {
+		'$basetexture': 'models/debug/debugwhite'
+		'$alpha': @@BLEND
+	})
+	
 	@BOX_ANGLES = Angle(0, 0, 0)
 	@NORMAL_LEFT = Vector(0, 1, 0)
-	@BOX_MATERIAL\SetFloat('$alpha', @@BLEND)
 	
 	OpenMenu: (menu = DermaMenu()) =>
 		with menu

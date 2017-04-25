@@ -44,7 +44,7 @@ class DisplayedEntityBase extends DMapEntityPointer
 	@TextColor = Color(255, 255, 255)
 	@Font = 'DMaps.EntityInfoPoint'
 
-	@Material = Material('models/debug/debugwhite')
+	@Material = CreateMaterial('DMaps.MapEntityPoint', 'VertexLitGeneric', {'$basetexture': 'models/debug/debugwhite'})
 
 	@AddEntity = (ent) =>
 		if @KnownEntities[ent] return
@@ -126,6 +126,10 @@ class HealthKitPoint extends DisplayedEntityBase
 	@ColorGModulation = @Color.g / 255
 	@ColorBModulation = @Color.b / 255
 	@ColorAModulation = @Color.a / 255
+
+DMaps.DisplayedEntitiesDefaultClasses = {
+	:HealthKitPoint
+}
 
 DMaps.RegisterMapEntity({'darkrp', 'sandbox'}, HealthKitPoint)
 hook.Run('DMaps.RegisterMapEntities', DMaps.RegisterMapEntity, DisplayedEntityBase)
