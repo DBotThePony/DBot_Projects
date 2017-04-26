@@ -134,6 +134,7 @@ Armor: #{@armor}")
 	GetDeltaHeight: => @z - @CURRENT_MAP\GetZ!
 	
 	Draw: (map) =>
+		if not @GetEntity()\Alive() return
 		@CURRENT_MAP = map
 		
 		trig = @@generateTriangle(@DRAW_X, @DRAW_Y, @yaw, 40, 50, 130)
