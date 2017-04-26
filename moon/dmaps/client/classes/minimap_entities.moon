@@ -108,8 +108,9 @@ class DisplayedEntityBase extends DMapEntityPointer
 		x, y = @DRAW_X, @DRAW_Y
 		surface.SetDrawColor(@@BackgroundColor)
 		surface.SetFont(@@Font)
-		y -= 40
+		y -= 30
 		w, h = surface.GetTextSize(text)
+		y -= h
 		surface.DrawRect(x - 4 - w / 2, y - 4, w + 8, h + 8)
 		draw.DrawText(text, @@Font, x, y, @@TextColor, TEXT_ALIGN_CENTER)
 
