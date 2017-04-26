@@ -25,3 +25,6 @@ DMaps.DeltaString = (z = 0, newline = true) ->
 DMaps.ChatPrint = (...) ->
 	formated = DMaps.Format(...)
 	chat.AddText(DMaps.CHAT_PREFIX_COLOR, DMaps.CHAT_PREFIX, DMaps.CHAT_COLOR, unpack(formated))
+DMaps.WaypointAction = (x = 0, y = 0, z = 0) ->
+	data, id = DMaps.ClientsideWaypoint.DataContainer\CreateWaypoint("New Waypoint At X: #{@x}, Y: #{@y}, Z: #{@z}", @x, @y, @z)
+	DMaps.OpenWaypointEditMenu(id, DMaps.ClientsideWaypoint.DataContainer, (-> DMaps.ClientsideWaypoint.DataContainer\DeleteWaypoint(id))) if id

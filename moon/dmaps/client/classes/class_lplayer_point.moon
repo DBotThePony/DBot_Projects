@@ -32,6 +32,7 @@ class DMapLocalPlayerPointer extends DMapPlayerPointer
 	
 	CalculatePlayerVisibility: => true
 
+	OpenMenu: => false
 	GetRenderPriority: => 1000
 	
 	Draw: (map) =>

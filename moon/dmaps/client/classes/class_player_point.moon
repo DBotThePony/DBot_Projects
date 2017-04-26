@@ -59,16 +59,27 @@ class DMapPlayerPointer extends DMapEntityPointer
 	new: (ply = NULL, filter = DMaps.GetPlayerFilter()) =>
 		@filter = filter(ply, @)
 		super(ply)
-		@playerName = '%PLAYERNAME%'
-		
-		@hp = 100
-		@armor = 0
-		@maxhp = 100
 		@draw = true
-		
-		@color = Color(50, 50, 50)
-		@teamID = 0
-		@teamName = '%PLAYERTEAM%'
+		@CalcPlayerData()
+		@userid = ply\UserID()
+		@steamid = ply\SteamID()
+		@steamid64 = ply\SteamID64()
+		@uniqueid = ply\UniqueID()
+	
+	OpenMenu: (menu = DermaMenu()) =>
+		super(menu)
+		with menu
+			\AddSpacer()
+			\AddOption('Copy Nickname', -> SetClipboardText(tostring(@playerName)))
+			\AddOption('Copy coordinates', -> SetClipboardText("X: #{math.floor(@x)}, Y: #{math.floor(@y)}, Z: #{math.floor(@z)}"))
+			\AddOption('Copy UserID', -> SetClipboardText(tostring(@userid)))
+			\AddOption('Copy SteamID', -> SetClipboardText(tostring(@steamid)))
+			\AddOption('Copy SteamID64', -> SetClipboardText(tostring(@steamid64)))
+			\AddOption('Copy UniqueID', -> SetClipboardText(tostring(@uniqueid)))
+			\AddOption('Open steam profile', -> gui.OpenURL("http://steamcommunity.com/profiles/#{@steamid64}/"))
+			\AddOption 'Create waypoint...', -> DMaps.WaypointAction(math.floor(@x), math.floor(@y), math.floor(@z))
+			\Open()
+		return true
 
 	SetEntity: (ply) =>
 		super(ply)
