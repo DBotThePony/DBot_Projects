@@ -20,7 +20,7 @@ import render, surface, math, Color, color_white, CreateConVar from _G
 import DMapEntityPointer from DMaps
 
 surface.CreateFont('DMaps.EntityInfoPoint', {
-	font: 'Roboto',
+	font: 'Roboto'
 	size: 20
 	weight: 500
 })

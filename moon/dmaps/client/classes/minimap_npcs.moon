@@ -21,9 +21,17 @@ import DisplayedEntityBase from DMaps
 POINTS_ENABLED = CreateConVar('sv_dmaps_entities', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable map entities display')
 NPC_POINTS_ENABLED = CreateConVar('sv_dmaps_npcs', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable map NPCs display')
 
+surface.CreateFont('DMaps.NPCInfoPoint', {
+	font: 'Roboto'
+	size: 18
+	weight: 500
+})
+
 class NPCPointer extends DisplayedEntityBase
 	@Name = 'Perfectly generic NPC'
 	@Color = Color(170, 170, 170)
+	@TextBackgroundColor = Color(0, 0, 0, 150)
+	@TextColor = Color(255, 255, 255)
 	@PHypo = 15
 	@PShift = 15
 	@PHeight = 50
@@ -214,7 +222,7 @@ do -- Using default npcs lua file lol
 	timer.Simple 0, ->
 		for k, {:Name, :Class} in pairs list.Get('NPC')
 			if not Name continue
-			if not DMaps.__NPCs_Names[Class]
+			if not NPCPointer.__NPCs_Names[Class]
 				DMaps.RegisterNPCName(Class, Name)
 
 
