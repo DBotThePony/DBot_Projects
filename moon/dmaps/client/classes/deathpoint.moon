@@ -245,10 +245,11 @@ net.Receive 'DMaps.PlayerDeath', ->
 	if not IsValid(ply) return
 	if ply == LocalPlayer()
 		return if not REMEMBER_DEATH_POINT\GetBool()
+		x, y, z = math.floor(x), math.floor(y), math.floor(z)
 		LAST_DEATH_POINT\Remove() if IsValid(LAST_DEATH_POINT)
 		LAST_DEATH_POINT = DMapWaypoint('Latest death', x, y, z, Color(DEATH_POINT_COLOR()), 'skull_old')
 		hook.Run 'DMaps.PlayerDeath', ply, LAST_DEATH_POINT
-		chat.AddText(DMaps.CHAT_PREFIX_COLOR, DMaps.CHAT_PREFIX, DMaps.CHAT_COLOR, "You died at X: #{x} Y: #{y} Z: #{z}")
+		DMaps.ChatPrint('You died at X: ', x, ' Y: ', y, ' Z: ', z)
 		return
 	
 	point = PlayerDeathPointer(ply, x, y, z)
