@@ -74,7 +74,7 @@ PANEL.GetMap = => @mapObject
 PANEL.OnMousePressed = (code) =>
 	if code == MOUSE_RIGHT
 		x, y = math.floor(@mapObject.mouseX), math.floor(@mapObject.mouseY)
-		points = @mapObject\FindInRadius(x, y, 130)
+		points = @mapObject\FindInRadius(x, y, 90)
 		hit = false
 		for point in *points
 			status = point\OpenMenu()
