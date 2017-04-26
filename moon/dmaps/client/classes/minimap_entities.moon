@@ -101,7 +101,7 @@ class DisplayedEntityBase extends DMapEntityPointer
 		lpos = LocalPlayer()\GetPos()
 		dist = @GetPos()\Distance(lpos)
 		delta = @z - lpos.z
-		text = "#{@@NamesMap[@GetClass()] or @@DefaultName}\n#{math.floor(dist / DMaps.HU_IN_METRE * 10) / 10} metres away #{@GetText() or ''}"
+		text = "#{@@NamesMap[@GetClass()] or @@DefaultName} - #{math.floor(dist / DMaps.HU_IN_METRE * 10) / 10}m #{@GetText() or ''}"
 		text ..= "\n#{math.floor(delta / DMaps.HU_IN_METRE * 10) / 10} metres upper" if delta > DMaps.HU_IN_METRE * 1.5
 		text ..= "\n#{math.floor(-delta / DMaps.HU_IN_METRE * 10) / 10} metres lower" if -delta > DMaps.HU_IN_METRE * 1.5
 

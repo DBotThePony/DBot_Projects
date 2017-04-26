@@ -32,6 +32,7 @@ class NPCPointer extends DisplayedEntityBase
 	@Color = Color(170, 170, 170)
 	@TextBackgroundColor = Color(0, 0, 0, 150)
 	@TextColor = Color(255, 255, 255)
+	@Font = 'DMaps.NPCInfoPoint'
 	@PHypo = 15
 	@PShift = 15
 	@PHeight = 50
@@ -87,6 +88,21 @@ class NPCPointer extends DisplayedEntityBase
 		trig = @@generateTriangle(@DRAW_X, @DRAW_Y, -@eyesYaw, @@PHypo * multiplier, @@PShift * multiplier, @@PHeight * multiplier)
 		surface.SetDrawColor(@@Color)
 		surface.DrawPoly(trig)
+		lpos = LocalPlayer()\GetPos()
+		dist = lpos\Distance(@GetPos())
+		deltaZ = lpos.z - @z
+		name = @GetNPCName()
+		text = "#{name} - #{DMaps.FormatMetre(dist)} #{@GetText() or ''}"
+		text ..= "\n#{DMaps.FormatMetre(deltaZ)} lower" if deltaZ > 200
+		text ..= "\n#{DMaps.FormatMetre(-deltaZ)} upper" if -deltaZ > 200
+
+		x, y = @DRAW_X, @DRAW_Y
+		surface.SetDrawColor(@@TextBackgroundColor)
+		surface.SetFont(@@Font)
+		y -= 40
+		w, h = surface.GetTextSize(text)
+		surface.DrawRect(x - 4 - w / 2, y - 4, w + 8, h + 8)
+		draw.DrawText(text, @@Font, x, y, @@TextColor, TEXT_ALIGN_CENTER)
 
 class FriendlyNPCPointer extends NPCPointer
 	@Name = 'Perfectly generic friendly NPC'
@@ -102,6 +118,16 @@ class FriendlyNPCPointer extends NPCPointer
 
 	new: (...) =>
 		super(...)
+		@HP = 0
+		@MHP = 0
+	
+	Think: (map) =>
+		super(map)
+		if IsValid(@entity)
+			@HP = @entity\Health()
+			@MHP = @entity\GetMaxHealth()
+
+	GetText: => "(#{@HP}/#{@MHP} HP)"
 
 	@CheckNPC: (npc, nClass) =>
 		if @__NPCs_Friendly[nClass] return true

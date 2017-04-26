@@ -360,7 +360,7 @@ class DMap
 		if z < @clipLevelBottom or z > @clipLevelTop
 			return false
 		
-		if @zoom > z + 1000
+		if @zoom > z + 1400
 			return false
 		
 		return true
