@@ -16,7 +16,7 @@
 -- 
 
 import DMaps, timer, CreateConVar, draw, surface, Color from _G
-import DMapPointer from DMaps
+import DMapPointer, ClientsideWaypoint from DMaps
 
 surface.CreateFont('DMaps.DeathPointText', {
 	font: 'Roboto'
@@ -190,15 +190,54 @@ class DeathPointer extends DMapPointer
 		y -= h / 2
 		surface.DrawRect(x - 4 - w / 2, y - 4, w + 8, h + 8)
 		draw.DrawText(text, selectfont, x, y, @@TextColor, TEXT_ALIGN_CENTER)
+	OpenMenu: (menu = DermaMenu()) =>
+		with menu
+			\AddOption('Teleport to', -> RunConsoleCommand('dmaps_teleport', @x, @y, @z)) if DMaps.HasPermission('teleport')
+			\AddOption 'Create waypoint...', ->
+				data, id = ClientsideWaypoint.DataContainer\CreateWaypoint("New Waypoint At X: #{@x}, Y: #{@y}, Z: #{@z}", @x, @y, @z)
+				DMaps.OpenWaypointEditMenu(id, ClientsideWaypoint.DataContainer, (-> ClientsideWaypoint.DataContainer\DeleteWaypoint(id))) if id
+			\AddOption('Copy XYZ position', -> SetClipboardText("X: #{@x}, Y: #{@y}, Z: #{@z}"))
+			\AddOption('Copy name', -> SetClipboardText(@dName))
+			\AddOption('Copy death stamp', -> SetClipboardText(@start))
+			\AddOption 'Copy death date', ->
+				time = os.time()
+				delta = math.floor(CurTime() - @start)
+				timeStamp = time - delta
+				SetClipboardText(os.date('%H:%M:%S - %d/%m/%Y', timeStamp))
+			\AddOption('Copy point data string', -> SetClipboardText("Name: #{@dName}, X: #{@x}, Y: #{@y}, Z: #{@z}"))
+			\Open()
+		return true
+
+class PlayerDeathPointer extends DeathPointer
+	new: (ply = NULL, x = 0, y = 0, z = 0) =>
+		@ply = ply
+		super(@ply\Nick(), x, y, z, team.GetColor(@ply\Team()))
+		@SetLiveTime(15 * 60)
+		@nick = ply\Nick()
+		@userid = ply\UserID()
+		@steamid = ply\SteamID()
+		@steamid64 = ply\SteamID64()
+		@uniqueid = ply\UniqueID()
+	OpenMenu: (menu = DermaMenu()) =>
+		super(menu)
+		with menu
+			\AddSpacer()
+			\AddOption('Copy UserID', -> SetClipboardText(tostring(@userid)))
+			\AddOption('Copy SteamID', -> SetClipboardText(tostring(@steamid)))
+			\AddOption('Copy SteamID64', -> SetClipboardText(tostring(@steamid64)))
+			\AddOption('Copy UniqueID', -> SetClipboardText(tostring(@uniqueid)))
+			\AddOption('Open steam profile', -> gui.OpenURL("http://steamcommunity.com/profiles/#{@steamid64}/"))
+			\Open()
+		return true
+
 
 DMaps.DeathPointer = DeathPointer
+DMaps.PlayerDeathPointer = PlayerDeathPointer
 
 net.Receive 'DMaps.PlayerDeath', ->
 	ply = net.ReadEntity()
 	if not IsValid(ply) return
 	if ply == LocalPlayer() return
-	pos = net.ReadVector()
-	{:x, :y, :z} = pos
-	point = DeathPointer(ply\Nick(), x, y, z)
-	point\SetLiveTime(15 * 60)
+	{:x, :y, :z} = net.ReadVector()
+	point = PlayerDeathPointer(ply, x, y, z)
 	hook.Run 'DMaps.PlayerDeath', ply, point
