@@ -22,6 +22,10 @@ import DMaps, surface, gui, draw, table, unpack, vgui, math, DermaMenu from _G
 import DMapLocalPlayerPointer, DMapPlayerPointer, ClientsideWaypoint from DMaps
 import \RegisterWaypoints from ClientsideWaypoint
 
+ENABLE_SMOOTH = DMaps.ClientsideOption('smooth_animations', '1', 'Use smooth map animations')
+ENABLE_SMOOTH_MOVE = DMaps.ClientsideOption('smooth_animations_mv', '1', 'Use smooth map moving animation')
+ENABLE_SMOOTH_ZOOM = DMaps.ClientsideOption('smooth_animations_zoom', '1', 'Use smooth map zoom animation')
+
 DMaps.WatchPermission('teleport')
 
 PANEL = {}
@@ -131,7 +135,11 @@ PANEL.OnMouseReleased = (code) =>
 PANEL.OnMouseWheeled = (deltaWheel) =>
 	@mapObject\LockZoom(true)
 	@mapObject\LockView(true)
-	@mapObject\AddLerpZoom(-deltaWheel * math.max(math.abs(@mapObject\GetZoom!), 100) * 0.1)
+	addZoom = -deltaWheel * math.max(math.abs(@mapObject\GetZoom()), 100) * 0.1
+	if ENABLE_SMOOTH\GetBool() and ENABLE_SMOOTH_ZOOM\GetBool()
+		@mapObject\AddLerpZoom(addZoom)
+	else
+		@mapObject\AddZoom(addZoom) 
 	
 	mult = @mapObject\GetZoomMultiplier! * 0.05
 	yawDeg = @mapObject\GetYaw!
@@ -155,12 +163,20 @@ PANEL.OnMouseWheeled = (deltaWheel) =>
 		moveX = -moveX
 		moveY = -moveY
 	
-	if deltaWheel < 0
-		@mapObject\AddLerpX(-moveX)
-		@mapObject\AddLerpY(moveY)
+	if ENABLE_SMOOTH\GetBool() and ENABLE_SMOOTH_MOVE\GetBool()
+		if deltaWheel < 0
+			@mapObject\AddLerpX(-moveX)
+			@mapObject\AddLerpY(moveY)
+		else
+			@mapObject\AddLerpX(moveX)
+			@mapObject\AddLerpY(-moveY)
 	else
-		@mapObject\AddLerpX(moveX)
-		@mapObject\AddLerpY(-moveY)
+		if deltaWheel < 0
+			@mapObject\AddX(-moveX)
+			@mapObject\AddY(moveY)
+		else
+			@mapObject\AddX(moveX)
+			@mapObject\AddY(-moveY)
 
 PANEL.UpdateMapSizes = =>
 	@mapObject\SetSize(@GetSize!)
@@ -222,8 +238,12 @@ PANEL.Think = =>
 				moveX = -moveX
 				moveY = -moveY
 			
-			@mapObject\AddLerpX(moveX)
-			@mapObject\AddLerpY(moveY)
+			if ENABLE_SMOOTH\GetBool() and ENABLE_SMOOTH_MOVE\GetBool()
+				@mapObject\AddLerpX(moveX)
+				@mapObject\AddLerpY(moveY)
+			else
+				@mapObject\AddX(moveX)
+				@mapObject\AddY(moveY)
 		
 	
 PANEL.Paint = (w, h) =>

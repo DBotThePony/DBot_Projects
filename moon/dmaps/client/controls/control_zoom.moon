@@ -20,6 +20,12 @@ CONTROL_UNLOCKED = DMaps.CreateColor(170, 170, 170, 'zoom_unlocked', 'Zoom contr
 CONTROL_TOOBIG = DMaps.CreateColor(80, 80, 170, 'zoom_big', 'Zoom control "Too big"')
 CONTROL_BACKGROUND = DMaps.CreateColor(40, 40, 40, 'zoom_background', 'Zoom control background')
 
+ENABLE_SMOOTH = DMaps.ClientsideOption('smooth_animations', '1', 'Use smooth map animations')
+ENABLE_SMOOTH_ZOOM = DMaps.ClientsideOption('smooth_animations_zoom', '1', 'Use smooth map zoom animation')
+ENABLE_SMOOTH_ZOOM_BAR = DMaps.ClientsideOption('smooth_animations_bzoom', '1', 'Use smooth map ZOOM BAR animation')
+
+IsSmooth = -> ENABLE_SMOOTH\GetBool() and ENABLE_SMOOTH_ZOOM\GetBool() and ENABLE_SMOOTH_ZOOM_BAR\GetBool()
+
 PANEL = {}
 
 PANEL.WIDTH = 48
@@ -94,13 +100,19 @@ PANEL.Think = =>
 			
 			if deltaX < hw and deltaX > -hw and deltaY > 0 and deltaY < h
 				@zoom = @DELTA_ZOOM * deltaY / h + @MIN_ZOOM
-				@mapObject\SetZoom(Lerp(0.2, @mapObject\GetZoom!, @zoom))
+				if IsSmooth()
+					@mapObject\SetZoom(Lerp(0.1, @mapObject\GetZoom!, @zoom))
+				else
+					@mapObject\SetZoom(@zoom)
 		else
 			@zoom = @mapObject\GetZoom!
 	else
 		@zoom = @mapObject\GetZoom!
 	
-	@displayZoom = Lerp(0.2, @displayZoom, @zoom)
+	if IsSmooth()
+		@displayZoom = Lerp(0.1, @displayZoom, @zoom)
+	else
+		@displayZoom = @zoom
 
 PANEL.Paint = (w, h) =>
 	draw.NoTexture!
