@@ -25,7 +25,8 @@ surface.CreateFont('DMaps.EntityInfoPoint', {
 	weight: 500
 })
 
-POINTS_ENABLED = CreateConVar('sv_dmaps_entities', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable map entities display')
+POINTS_ENABLED = DMaps.ClientsideOption('entities', '1', 'Draw ANY entities on map')
+SV_POINTS_ENABLED = CreateConVar('sv_dmaps_entities', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Enable map entities display')
 
 class DisplayedEntityBase extends DMapEntityPointer
 	@Entity = 'generic'
@@ -78,6 +79,7 @@ class DisplayedEntityBase extends DMapEntityPointer
 	
 	Think: (map) =>
 		return if not POINTS_ENABLED\GetBool()
+		return if not SV_POINTS_ENABLED\GetBool()
 		@CURRENT_MAP = map
 		if @GetPos()\DistToSqr(LocalPlayer()\GetPos()) > @@DefaultRangeQ
 			@Remove()
@@ -85,6 +87,7 @@ class DisplayedEntityBase extends DMapEntityPointer
 		super(map)
 	Draw: (map) => -- Override
 		return if not POINTS_ENABLED\GetBool()
+		return if not SV_POINTS_ENABLED\GetBool()
 		@CURRENT_MAP = map
 		render.SuppressEngineLighting(true)
 		render.SetBlend(@@ColorAModulation)
@@ -224,6 +227,7 @@ hook.Run('DMaps.RegisterMapEntities', DMaps.RegisterMapEntity, DisplayedEntityBa
 
 timer.Create 'DMaps.DispalyedEntitiesUpdate', 0.5, 0, ->
 	return if not POINTS_ENABLED\GetBool()
+	return if not SV_POINTS_ENABLED\GetBool()
 	gm = engine.ActiveGamemode()
 	if not DMaps.RegisteredMapEntities_map[gm] return
 	avaliable = DMaps.RegisteredMapEntities_map[gm]

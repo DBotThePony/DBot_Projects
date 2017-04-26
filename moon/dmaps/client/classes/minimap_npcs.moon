@@ -18,8 +18,10 @@
 import DMaps, timer, CreateConVar, draw, surface, Color from _G
 import DisplayedEntityBase, DeathPointer from DMaps
 
-POINTS_ENABLED = CreateConVar('sv_dmaps_entities', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable map entities display')
-NPC_POINTS_ENABLED = CreateConVar('sv_dmaps_npcs', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable map NPCs display')
+POINTS_ENABLED = DMaps.ClientsideOption('entities', '1', 'Draw ANY entities on map')
+NPC_POINTS_ENABLED = DMaps.ClientsideOption('npcs', '1', 'Enable map NPCs display')
+SV_POINTS_ENABLED = CreateConVar('sv_dmaps_entities', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable map entities display')
+SV_NPC_POINTS_ENABLED = CreateConVar('sv_dmaps_npcs', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable map NPCs display')
 
 surface.CreateFont('DMaps.NPCInfoPoint', {
 	font: 'Roboto'
@@ -76,7 +78,9 @@ class NPCPointer extends DisplayedEntityBase
 	
 	Think: (map) =>
 		return if not POINTS_ENABLED\GetBool()
+		return if not SV_POINTS_ENABLED\GetBool()
 		return if not NPC_POINTS_ENABLED\GetBool()
+		return if not SV_NPC_POINTS_ENABLED\GetBool()
 		return if not @IsValid()
 		if IsValid(@entity) and @entity.__DMaps_Died
 			point = DeathPointer(@GetNPCName(), @x, @y, @z)
@@ -92,7 +96,9 @@ class NPCPointer extends DisplayedEntityBase
 	
 	Draw: (map) => -- Override
 		return if not POINTS_ENABLED\GetBool()
+		return if not SV_POINTS_ENABLED\GetBool()
 		return if not NPC_POINTS_ENABLED\GetBool()
+		return if not SV_NPC_POINTS_ENABLED\GetBool()
 		draw.NoTexture()
 		multiplier = @GetNPCSize()
 		trig = @@generateTriangle(@DRAW_X, @DRAW_Y, -@eyesYaw, @@PHypo * multiplier, @@PShift * multiplier, @@PHeight * multiplier)
@@ -152,7 +158,9 @@ class FriendlyNPCPointer extends NPCPointer
 
 	Draw: (map) => -- Override
 		return if not POINTS_ENABLED\GetBool()
+		return if not SV_POINTS_ENABLED\GetBool()
 		return if not NPC_POINTS_ENABLED\GetBool()
+		return if not SV_NPC_POINTS_ENABLED\GetBool()
 		super(map)
 		x, y = @DRAW_X, @DRAW_Y
 		y += 40
@@ -301,6 +309,10 @@ DMaps.IgnoreNPCs = {
 }
 
 timer.Create 'DMaps.DispalyedNPCSUpdate', 0.5, 0, ->
+	return if not POINTS_ENABLED\GetBool()
+	return if not SV_POINTS_ENABLED\GetBool()
+	return if not NPC_POINTS_ENABLED\GetBool()
+	return if not SV_NPC_POINTS_ENABLED\GetBool()
 	lpos = LocalPlayer()\GetPos()
 
 	for ent in *DMaps.__lastEntsGetAll

@@ -30,9 +30,13 @@ hook.Add 'OnNPCKilled', 'DMaps.Hooks', (npc = NULL, attacker = NULL, weapon = NU
 	net.Broadcast()
 
 hook.Add 'PlayerDeath', 'DMaps.Hooks', (ply = NULL, weapon = NULL, attacker = NULL) ->
-	return if not DISPLAY_DEATHS\GetBool()
-	return if not DISPLAY_DEATHS_PLAYER\GetBool()
 	return if not IsValid(ply)
+	if not DISPLAY_DEATHS\GetBool() or not DISPLAY_DEATHS_PLAYER\GetBool()
+		net.Start('DMaps.PlayerDeath')
+		net.WriteEntity(ply)
+		net.WriteVector(ply\GetPos())
+		net.Send(ply)
+		return
 	net.Start('DMaps.PlayerDeath')
 	net.WriteEntity(ply)
 	net.WriteVector(ply\GetPos())

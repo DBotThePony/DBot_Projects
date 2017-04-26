@@ -19,6 +19,15 @@ import DMaps from _G
 import DMapEntityPointer from DMaps
 
 SHOULD_DRAW = DMaps.ClientsideOption('draw_players', '1', 'Draw players on map')
+SHOULD_DRAW_INFO = DMaps.ClientsideOption('draw_players_info', '1', 'Draw players infos on map')
+SHOULD_DRAW_HEALTH = DMaps.ClientsideOption('draw_players_health', '1', 'Draw players health on map')
+SHOULD_DRAW_ARMOR = DMaps.ClientsideOption('draw_players_armor', '1', 'Draw players armor on map')
+SHOULD_DRAW_TEAM = DMaps.ClientsideOption('draw_players_team', '1', 'Draw players teams on map')
+
+SV_SHOULD_DRAW_INFO = CreateConVar('sv_dmaps_draw_players_info', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Draw players infos on map')
+SV_SHOULD_DRAW_HEALTH = CreateConVar('sv_dmaps_draw_players_health', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Draw players health on map')
+SV_SHOULD_DRAW_ARMOR = CreateConVar('sv_dmaps_draw_players_armor', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Draw players armor on map')
+SV_SHOULD_DRAW_TEAM = CreateConVar('sv_dmaps_draw_players_team', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Draw players teams on map')
 
 surface.CreateFont('DMaps.PlayerInfoFont', {
 	font: 'Roboto',
@@ -115,10 +124,11 @@ class DMapPlayerPointer extends DMapEntityPointer
 		@draw = @filter\Filter(map)
 	
 	GetPlayerInfo: =>
-		text = AppenableString("#{@playerName}
-Team: #{@teamName}
-HP: #{@hp}/#{@maxhp}
-Armor: #{@armor}")
+		str = @playerName
+		str ..= "\nTeam: #{@teamName}" if SHOULD_DRAW_TEAM\GetBool() and SV_SHOULD_DRAW_TEAM\GetBool()
+		str ..= "\nHP: #{@hp}/#{@maxhp}" if SHOULD_DRAW_HEALTH\GetBool() and SV_SHOULD_DRAW_HEALTH\GetBool()
+		str ..= "\nArmor: #{@armor}" if SHOULD_DRAW_ARMOR\GetBool() and SV_SHOULD_DRAW_ARMOR\GetBool()
+		text = AppenableString(str)
 		hook.Run('DMaps.AddPlayerInfo', @, AppenableString)
 		
 		newStr = text\GetString!
@@ -132,6 +142,7 @@ Armor: #{@armor}")
 		return newStr
 	
 	DrawPlayerInfo: (map, x = 0, y = 0, alpha = 1) =>
+		return if not SHOULD_DRAW_INFO\GetBool() or not SV_SHOULD_DRAW_INFO\GetBool()
 		y += 90
 		surface.SetFont(@@FONT)
 		

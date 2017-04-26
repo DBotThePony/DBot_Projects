@@ -15,25 +15,6 @@
 -- limitations under the License.
 -- 
 
-import util from _G
-
-util.AddNetworkString 'DMaps.AdminEcho'
-util.AddNetworkString 'DMaps.NetworkedWaypoint'
-util.AddNetworkString 'DMaps.NetworkedWaypointChanges'
-util.AddNetworkString 'DMaps.NetworkedWaypointRemoved'
-util.AddNetworkString 'DMaps.NPCDeath'
-util.AddNetworkString 'DMaps.PlayerDeath'
-
-for str in *{'BasicWaypoint', 'CAMIWaypoint', 'UsergroupWaypoint', 'TeamWaypoint'}
-	util.AddNetworkString "DMaps.#{str}Load"
-	util.AddNetworkString "DMaps.#{str}Modify"
-	util.AddNetworkString "DMaps.#{str}Create"
-	util.AddNetworkString "DMaps.#{str}Delete"
-
-CreateConVar('sv_dmaps_players', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable player map arrows')
-CreateConVar('sv_dmaps_entities', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable map entities display')
-CreateConVar('sv_dmaps_npcs', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable map NPCs display')
-
 ClientsideFiles = {
 	'dmaps/client/classes/class_map.lua'
 	'dmaps/client/classes/class_map_point.lua'
@@ -64,6 +45,7 @@ ClientsideFiles = {
 	'dmaps/client/waypoints_controller.lua'
 	'dmaps/client/server_waypoints_gui.lua'
 	'dmaps/client/network.lua'
+	'dmaps/client/misc.lua'
 	
 	'dmaps/common/functions.lua'
 	'dmaps/common/icons.lua'
@@ -80,6 +62,9 @@ AddCSLuaFile v for v in *ClientsideFiles
 
 ServersideFiles = {
 	'dmaps/sh_init.lua'
+
+	'dmaps/server/network.lua'
+	'dmaps/server/cvars.lua'
 	
 	'dmaps/common/classes/networked_waypoint.lua'
 	

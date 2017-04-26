@@ -61,12 +61,12 @@ Pages =
 	minimap:
 		name: 'Minimap options'
 		func: (sheet, frame) =>
-			@NumSlider('Default zoom', 'cl_dmap_minimap_zoom', 400, 2000, 0)
-			@NumSlider('Size', 'cl_dmap_minimap_size', 1, 80, 0)
-			@CheckBox('Dynamic zoom', 'cl_dmap_minimap_dynamic')
-			@NumSlider('Dynamic size multiplier', 'cl_dmap_minimap_dynamic_mult', 0, 10, 4)
-			@NumSlider('Minimal dynamic size', 'cl_dmap_minimap_dynamic_min', 0, 10, 4)
-			@NumSlider('Maximal dynamic size', 'cl_dmap_minimap_dynamic_max', 0, 10, 4)
+			@NumSlider('Default zoom', 'cl_dmaps_minimap_zoom', 400, 2000, 0)
+			@NumSlider('Size', 'cl_dmaps_minimap_size', 1, 80, 0)
+			@CheckBox('Dynamic zoom', 'cl_dmaps_minimap_dynamic')
+			@NumSlider('Dynamic size multiplier', 'cl_dmaps_minimap_dynamic_mult', 0, 10, 4)
+			@NumSlider('Minimal dynamic size', 'cl_dmaps_minimap_dynamic_min', 0, 10, 4)
+			@NumSlider('Maximal dynamic size', 'cl_dmaps_minimap_dynamic_max', 0, 10, 4)
 	colors:
 		name: 'Colors'
 		func: (sheet, frame) =>

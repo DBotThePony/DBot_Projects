@@ -15,12 +15,12 @@
 -- limitations under the License.
 -- 
 
-MINIMAP_ZOOM = CreateConVar('cl_dmap_minimap_zoom', '1000', {FCVAR_ARCHIVE}, 'Minimal "minimap mode" zoom')
-MINIMAP_SIZE = CreateConVar('cl_dmap_minimap_size', '25', {FCVAR_ARCHIVE}, 'Size in percents of minimap')
-MINIMAP_DYNAMIC = CreateConVar('cl_dmap_minimap_dynamic', '1', {FCVAR_ARCHIVE}, 'Is minimap dynamic in size')
-MINIMAP_DYNAMIC_MULT = CreateConVar('cl_dmap_minimap_dynamic_mult', '1', {FCVAR_ARCHIVE}, 'Minimap dynamic speed multiplier')
-MINIMAP_DYNAMIC_MIN = CreateConVar('cl_dmap_minimap_dynamic_min', '1', {FCVAR_ARCHIVE}, 'Minimap dynamic size')
-MINIMAP_DYNAMIC_MAX = CreateConVar('cl_dmap_minimap_dynamic_max', '5', {FCVAR_ARCHIVE}, 'Maximal dynamic size')
+MINIMAP_ZOOM = CreateConVar('cl_dmaps_minimap_zoom', '1000', {FCVAR_ARCHIVE}, 'Minimal "minimap mode" zoom')
+MINIMAP_SIZE = CreateConVar('cl_dmaps_minimap_size', '25', {FCVAR_ARCHIVE}, 'Size in percents of minimap')
+MINIMAP_DYNAMIC = CreateConVar('cl_dmaps_minimap_dynamic', '1', {FCVAR_ARCHIVE}, 'Is minimap dynamic in size')
+MINIMAP_DYNAMIC_MULT = CreateConVar('cl_dmaps_minimap_dynamic_mult', '1', {FCVAR_ARCHIVE}, 'Minimap dynamic speed multiplier')
+MINIMAP_DYNAMIC_MIN = CreateConVar('cl_dmaps_minimap_dynamic_min', '1', {FCVAR_ARCHIVE}, 'Minimap dynamic size')
+MINIMAP_DYNAMIC_MAX = CreateConVar('cl_dmaps_minimap_dynamic_max', '5', {FCVAR_ARCHIVE}, 'Maximal dynamic size')
 
 if IsValid(DMaps.MainFrame)
 	DMaps.MainFrame\Remove!
