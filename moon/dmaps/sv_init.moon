@@ -30,6 +30,7 @@ for str in *{'BasicWaypoint', 'CAMIWaypoint', 'UsergroupWaypoint', 'TeamWaypoint
 
 CreateConVar('sv_dmaps_players', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable player map arrows')
 CreateConVar('sv_dmaps_entities', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable map entities display')
+CreateConVar('sv_dmaps_npcs', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable map NPCs display')
 
 ClientsideFiles = {
 	'dmaps/client/classes/class_map.lua'
@@ -42,6 +43,7 @@ ClientsideFiles = {
 	'dmaps/client/classes/waypoints_holder.lua'
 	'dmaps/client/classes/class_clientside_waypoint.lua'
 	'dmaps/client/classes/minimap_entities.lua'
+	'dmaps/client/classes/minimap_npcs.lua'
 
 	'dmaps/client/controls/control_compass.lua'
 	'dmaps/client/controls/control_arrows.lua'

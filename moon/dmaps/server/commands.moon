@@ -24,6 +24,7 @@ TeleportTo = (ply, x, y, z) ->
 		if not x return
 		if not y return
 		if not z return
+		if not ply\Alive() return
 		ply\SetPos(Vector(x, y, z))
 		DMaps.AdminEcho('Admin ', ply, ' has teleported to X: ', x, ' Y: ', y, ' Z: ', z)
 concommand.Add('dmaps_teleport', (ply = NULL, cmd = '', args = {}) -> TeleportTo(ply, tonumber(args[1]), tonumber(args[2]), tonumber(args[3])))

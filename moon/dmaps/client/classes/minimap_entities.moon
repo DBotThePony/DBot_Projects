@@ -16,7 +16,7 @@
 -- 
 
 import DMaps, ents, IsValid, type, table, timer, engine from _G
-import render, surface, math, Color, color_white from _G
+import render, surface, math, Color, color_white, CreateConVar from _G
 import DMapEntityPointer from DMaps
 
 surface.CreateFont('DMaps.EntityInfoPoint', {
@@ -33,6 +33,8 @@ class DisplayedEntityBase extends DMapEntityPointer
 	@INSTANCES = {}
 	@DefaultRange = 1024
 	@DisplayText = true
+
+	GetRenderPriority: => 15
 
 	@Color = Color(200, 200, 200)
 
@@ -219,7 +221,7 @@ for {classes, names, color} in *easyToRegister
 DMaps.RegisterMapEntity({'darkrp', 'sandbox'}, DefaultClass) for k, DefaultClass in pairs DMaps.DisplayedEntitiesDefaultClasses
 hook.Run('DMaps.RegisterMapEntities', DMaps.RegisterMapEntity, DisplayedEntityBase)
 
-timer.Create 'DMaps.DispalyedEntitiesUpdate', 1, 0, ->
+timer.Create 'DMaps.DispalyedEntitiesUpdate', 0.5, 0, ->
 	return if not POINTS_ENABLED\GetBool()
 	gm = engine.ActiveGamemode()
 	if not DMaps.RegisteredMapEntities_map[gm] return
@@ -228,7 +230,8 @@ timer.Create 'DMaps.DispalyedEntitiesUpdate', 1, 0, ->
 	lplayer = LocalPlayer()
 	lpos = lplayer\GetPos()
 
-	for ent in *ents.GetAll()
+	DMaps.__lastEntsGetAll = ents.GetAll()
+	for ent in *DMaps.__lastEntsGetAll
 		if not IsValid(ent) continue
 		mClass = ent\GetClass()
 		if not mClass continue

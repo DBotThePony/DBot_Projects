@@ -113,7 +113,7 @@ class DMapWaypoint extends DMapPointer
 	GetDrawInWorld: => @drawInWorld
 	ShouldDrawInWorld: => @drawInWorld and @visible
 
-	GetRenderPriority: => 2
+	GetRenderPriority: => 30
 	
 	@MAX_DRAW_DIST = 1000
 	
