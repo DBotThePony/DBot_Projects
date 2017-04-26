@@ -17,8 +17,11 @@
 
 DMaps.DeltaString = (z = 0, newline = true) ->
 	delta = LocalPlayer()\GetPos().z - z
-	"#{DMaps.FormatMetre(delta)} lower" if delta > 200 and not newline
-	"\n#{DMaps.FormatMetre(delta)} lower" if delta > 200 and newline
-	"#{DMaps.FormatMetre(-delta)} upper" if -delta > 200 and not newline
-	"\n#{DMaps.FormatMetre(-delta)} upper" if -delta > 200 and newline
-	''
+	return "#{DMaps.FormatMetre(delta)} lower" if delta > 200 and not newline
+	return "\n#{DMaps.FormatMetre(delta)} lower" if delta > 200 and newline
+	return "#{DMaps.FormatMetre(-delta)} upper" if -delta > 200 and not newline
+	return "\n#{DMaps.FormatMetre(-delta)} upper" if -delta > 200 and newline
+	return ''
+DMaps.ChatPrint = (...) ->
+	formated = DMaps.Format(...)
+	chat.AddText(DMaps.CHAT_PREFIX_COLOR, DMaps.CHAT_PREFIX, DMaps.CHAT_COLOR, unpack(formated))
