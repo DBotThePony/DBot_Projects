@@ -20,8 +20,6 @@ export DMaps
 DMaps = DMaps or {}
 DMaps.HU_IN_METRE = 40
 
-DMaps.FormatMetre = (m = 0) -> "#{math.floor(m / DMaps.HU_IN_METRE * 10) / 10}m"
-
 include 'dmaps/common/sh_cami.lua'
 include 'dmaps/common/access.lua'
 include 'dmaps/common/icons.lua'

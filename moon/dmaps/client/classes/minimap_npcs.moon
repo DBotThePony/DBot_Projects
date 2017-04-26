@@ -107,10 +107,16 @@ class NPCPointer extends DisplayedEntityBase
 class FriendlyNPCPointer extends NPCPointer
 	@Name = 'Perfectly generic friendly NPC'
 	@Color = Color(106, 199, 12)
+	@HealthBarColorBG = Color(209, 223, 187)
+	@HealthBarColorFirst = Color(128, 206, 73)
+	@HealthBarColorLast = Color(213, 77, 56)
 	@DefaultRange = 2048
 	@PHypo = 20
 	@PShift = 20
 	@PHeight = 80
+
+	@HPBarW = 100
+	@HPBarH = 10
 
 	GetRenderPriority: => 25
 	
@@ -128,6 +134,25 @@ class FriendlyNPCPointer extends NPCPointer
 			@MHP = @entity\GetMaxHealth()
 
 	GetText: => "(#{@HP}/#{@MHP} HP)"
+
+	Draw: (map) => -- Override
+		return if not POINTS_ENABLED\GetBool()
+		return if not NPC_POINTS_ENABLED\GetBool()
+		super(map)
+		x, y = @DRAW_X, @DRAW_Y
+		y += 40
+		div = 1
+		div = @MHP if @MHP ~= 0
+		divR = @HP / div
+		@divRLerp = Lerp(0.2, @divRLerp or divR, divR)
+		w, h = @@HPBarW, @@HPBarH
+		surface.SetDrawColor(@@TextBackgroundColor)
+		surface.DrawRect(x - w / 2 - 4, y - 2, w + 8, h + 4)
+		surface.SetDrawColor(@@HealthBarColorBG)
+		surface.DrawRect(x - w / 2, y, w, h)
+		colr = DMaps.DeltaColor(@@HealthBarColorFirst, @@HealthBarColorLast, @divRLerp)
+		surface.SetDrawColor(colr)
+		surface.DrawRect(x - w / 2, y, w * @divRLerp, h)
 
 	@CheckNPC: (npc, nClass) =>
 		if @__NPCs_Friendly[nClass] return true

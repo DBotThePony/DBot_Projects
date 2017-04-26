@@ -24,6 +24,14 @@ PREFIX_STRING = '[DMaps] '
 DEFAULT_COLOR = Color(200, 200, 200)
 NUMBER_COLOR = Color(255, 128, 0)
 
+DMaps.FormatMetre = (m = 0) -> "#{math.floor(m / DMaps.HU_IN_METRE * 10) / 10}m"
+DMaps.DeltaColor = (first = Color(255, 255, 255), endColor = Color(0, 0, 0), delta = 0.5) ->
+	delta2 = 1 - delta
+	r = first.r * delta + endColor.r * delta2
+	g = first.g * delta + endColor.g * delta2
+	b = first.b * delta + endColor.b * delta2
+	a = first.a * delta + endColor.a * delta2
+	return Color(r, g, b, a)
 DMaps.Message = (...) ->
 	MsgC(PREFIX_COLOR, PREFIX_STRING, DEFAULT_COLOR, unpack(DMaps.Format(...)))
 	MsgC('\n')
