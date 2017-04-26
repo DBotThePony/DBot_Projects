@@ -221,6 +221,11 @@ do -- Using default npcs lua file lol
 hook.Run('DMaps.RegisterNPCsDictionary', DMaps.RegisterNPC)
 hook.Run('DMaps.RegisterNPCsHandlers', DMaps.RegisterNPCHandler)
 
+DMaps.IgnoreNPCs = {
+	npc_bullseye: true
+	npc_grenade_frag: true
+}
+
 timer.Create 'DMaps.DispalyedNPCSUpdate', 0.5, 0, ->
 	lpos = LocalPlayer()\GetPos()
 
@@ -228,6 +233,7 @@ timer.Create 'DMaps.DispalyedNPCSUpdate', 0.5, 0, ->
 		if not IsValid(ent) continue
 		nClass = ent\GetClass()
 		if not nClass continue
+		if DMaps.IgnoreNPCs[nClass] continue
 		if not ent\IsNPC() continue
 		pos = ent\GetPos()
 		if not pos continue
@@ -235,8 +241,12 @@ timer.Create 'DMaps.DispalyedNPCSUpdate', 0.5, 0, ->
 		dist = pos\DistToSqr(lpos)
 		hit = false
 		for handler in *DMaps.NPCsHandlers
-			if dist > handler.DefaultRangeQ continue
-			if not handler\CheckNPC(ent, nClass) continue
+			reply = handler\CheckNPC(ent, nClass)
+			if dist > handler.DefaultRangeQ and reply
+				hit = true
+				break
+			elseif not reply
+				continue
 			handler\AddEntity(ent)
 			hit = true
 			break
