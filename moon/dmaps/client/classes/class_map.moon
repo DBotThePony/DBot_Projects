@@ -101,10 +101,13 @@ class DMap
 		@zoom = 1000
 		@lerpzoom = 1000
 		@currX = 0
+		@currXLerp = 0
 		@abstractX = 0
 		@currY = 0
+		@currYLerp = 0
 		@abstractY = 0
 		@currZ = 0
+		@currZLerp = 0
 		@abstractZ = 0
 		@abstractSetup = false
 		@isDrawinInPanel = false
@@ -182,16 +185,31 @@ class DMap
 		@panelx = assert(x, 'number')
 		@panely = assert(y, 'number')
 	
-	AddX: (val = 0) => @currX += assert(val, 'number')
-	AddY: (val = 0) => @currY += assert(val, 'number')
-	AddZ: (val = 0) => @zoom += assert(val, 'number')
+	AddX: (val = 0) =>
+		@currXLerp += assert(val, 'number')
+		@currX += assert(val, 'number')
+	AddY: (val = 0) =>
+		@currY += assert(val, 'number')
+		@currYLerp += assert(val, 'number')
+	AddZ: (val = 0) =>
+		@zoom += assert(val, 'number')
+		@lerpzoom += assert(val, 'number')
+	AddLerpX: (val = 0) =>
+		@currXLerp += assert(val, 'number')
+	AddLerpY: (val = 0) =>
+		@currYLerp += assert(val, 'number')
+	AddLerpZ: (val = 0) =>
+		@lerpzoom += assert(val, 'number')
 	DeltaZoomMultiplier: => @zoom / @@MINIMAL_ZOOM
-	AddZoom: (val = 0) => @zoom = math.max(@zoom + assert(val, 'number'), @@MINIMAL_ZOOM)
+	AddZoom: (val = 0) =>
+		@lerpzoom = math.max(@lerpzoom + assert(val, 'number'), @@MINIMAL_ZOOM)
+		@zoom = math.max(@zoom + assert(val, 'number'), @@MINIMAL_ZOOM)
 	SetZoom: (val = @@MINIMAL_ZOOM) =>
 		@zoom = math.max(assert(val, 'number'), @@MINIMAL_ZOOM)
 		@lerpzoom = @zoom
 	
 	SetLerpZoom: (val = @@MINIMAL_ZOOM) => @lerpzoom = math.max(assert(val, 'number'), @@MINIMAL_ZOOM)
+	AddLerpZoom: (val = 0) => @lerpzoom = math.max(@lerpzoom + assert(val, 'number'), @@MINIMAL_ZOOM)
 	SetAutoZoomMult: (val = 1) => @autoZoomMult = val
 	SetZoomAdd: (val = 0) => @zoomAdd = val
 	SetMinimalAutoZoom: (val = @@MINIMAL_ZOOM) => @MINIMAL_AUTO_ZOOM = val
@@ -401,16 +419,20 @@ class DMap
 				@skyHeight = deltaZ
 			
 			@currZ = Lerp(0.1, @currZ, pos.z + 20)
+			@currZLerp = @currZ
 			
 			if not @lockZoom
 				@zoom = Lerp(0.1, @zoom, math.max(math.abs(@clipLevelTop * 1.3) * @autoZoomMult + @zoomAdd, @@MINIMAL_ZOOM * @autoZoomMult, @MINIMAL_AUTO_ZOOM))
+				@lerpzoom = @zoom
 			
 		else
 			@outside = false
 		
 		if not @lockView
 			@currX = Lerp(0.1, @currX, pos.x)
+			@currXLerp = @currX
 			@currY = Lerp(0.1, @currY, pos.y)
+			@currYLerp = @currY
 	
 	@WaypointsFilter = (obj, radius) -> obj.__class.__type == 'waypoint'
 	@EntityFilter = (obj, radius) -> obj.__class.__type == 'entity'
@@ -451,6 +473,13 @@ class DMap
 		if @mapYawLerp ~= @mapYaw
 			@mapYaw = Lerp(0.2, @mapYaw, @mapYawLerp)
 			@angle = Angle(90, 90 + @mapYaw, 0) + @angleOffset
+		
+		if @lerpzoom ~= @zoom
+			@zoom = Lerp(0.1, @zoom, @lerpzoom)
+		
+		@currX = Lerp(0.2, @currX, @currXLerp) if @currXLerp ~= @currX
+		@currY = Lerp(0.2, @currY, @currYLerp) if @currYLerp ~= @currY
+		@currZ = Lerp(0.2, @currZ, @currZLerp) if @currZLerp ~= @currZ
 		
 		for k, objectTab in pairs @objectTables
 			for k, object in pairs objectTab

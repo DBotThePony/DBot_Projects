@@ -131,7 +131,7 @@ PANEL.OnMouseReleased = (code) =>
 PANEL.OnMouseWheeled = (deltaWheel) =>
 	@mapObject\LockZoom(true)
 	@mapObject\LockView(true)
-	@mapObject\AddZoom(-deltaWheel * math.max(math.abs(@mapObject\GetZoom!), 100) * 0.1)
+	@mapObject\AddLerpZoom(-deltaWheel * math.max(math.abs(@mapObject\GetZoom!), 100) * 0.1)
 	
 	mult = @mapObject\GetZoomMultiplier! * 0.05
 	yawDeg = @mapObject\GetYaw!
@@ -156,11 +156,11 @@ PANEL.OnMouseWheeled = (deltaWheel) =>
 		moveY = -moveY
 	
 	if deltaWheel < 0
-		@mapObject\AddX(-moveX)
-		@mapObject\AddY(moveY)
+		@mapObject\AddLerpX(-moveX)
+		@mapObject\AddLerpY(moveY)
 	else
-		@mapObject\AddX(moveX)
-		@mapObject\AddY(-moveY)
+		@mapObject\AddLerpX(moveX)
+		@mapObject\AddLerpY(-moveY)
 
 PANEL.UpdateMapSizes = =>
 	@mapObject\SetSize(@GetSize!)
@@ -222,8 +222,8 @@ PANEL.Think = =>
 				moveX = -moveX
 				moveY = -moveY
 			
-			@mapObject\AddX(moveX)
-			@mapObject\AddY(moveY)
+			@mapObject\AddLerpX(moveX)
+			@mapObject\AddLerpY(moveY)
 		
 	
 PANEL.Paint = (w, h) =>
