@@ -25,9 +25,6 @@ MINIMAP_DYNAMIC_MAX = CreateConVar('cl_dmap_minimap_dynamic_max', '5', {FCVAR_AR
 if IsValid(DMaps.MainFrame)
 	DMaps.MainFrame\Remove!
 
-ASPECT_RATIO = 1.3
-ASPECT_RATIO_R = 1 / ASPECT_RATIO
-
 DMaps.DISPLAY_AS_MINIMAP = false
 
 AVERAGE_SPEED = [0 for i = 1, 100]
@@ -40,9 +37,7 @@ DMaps.CreateMainFrame = ->
 	DMaps.MainFrame = vgui.Create('DFrame')
 	self = DMaps.MainFrame
 	
-	mins = math.min(ScrW!, ScrH!) * 0.96
-	
-	w, h = mins * ASPECT_RATIO, mins
+	w, h = ScrW() - 100, ScrH() - 100
 	@SetSize(w, h)
 	@Center!
 	@MakePopup!
