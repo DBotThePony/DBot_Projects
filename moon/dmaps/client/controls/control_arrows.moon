@@ -19,6 +19,12 @@ COLOR_OUTER = DMaps.CreateColor(190, 190, 190, 'arrows_outer', 'Arrows (joystick
 COLOR_INNER = DMaps.CreateColor(170, 170, 170, 'arrows_inner', 'Arrows (joystick) inner')
 COLOR_CONTROL = DMaps.CreateColor(230, 230, 230, 'arrows_button', 'Arrows (joystick) middle button')
 
+ENABLE_SMOOTH = DMaps.ClientsideOption('smooth_animations', '1', 'Use smooth map animations')
+ENABLE_SMOOTH_MOVE = DMaps.ClientsideOption('smooth_animations_mv', '1', 'Use smooth map moving animation')
+ENABLE_SMOOTH_MOVE_ARROWS = DMaps.ClientsideOption('smooth_animations_amv', '1', 'Use smooth map MOVING JOYSTICK animation')
+
+IsSmooth = -> ENABLE_SMOOTH\GetBool() and ENABLE_SMOOTH_MOVE\GetBool() and ENABLE_SMOOTH_MOVE_ARROWS\GetBool()
+
 generateCircle = (x = 0, y = 0, radius = 0) ->
 	reply = {}
 	
@@ -112,18 +118,34 @@ PANEL.Think = =>
 			lineX = deltaX / ((deltaX ^ 2 + deltaY ^ 2) ^ 0.5) * @DIV2
 			lineY = deltaY / ((deltaX ^ 2 + deltaY ^ 2) ^ 0.5) * @DIV2
 		
-		if deltaX < @DIV and deltaX > -@DIV and deltaY < @DIV and deltaY > -@DIV
-			@joystickPosX = Lerp(0.1, @joystickPosX, lineX)
-			@joystickPosY = Lerp(0.1, @joystickPosY, lineY)
+		if IsSmooth()
+			if deltaX < @DIV and deltaX > -@DIV and deltaY < @DIV and deltaY > -@DIV
+				@joystickPosX = Lerp(0.1, @joystickPosX, lineX)
+				@joystickPosY = Lerp(0.1, @joystickPosY, lineY)
+			else
+				@joystickPosX = Lerp(0.1, @joystickPosX, 0)
+				@joystickPosY = Lerp(0.1, @joystickPosY, 0)
 		else
+			if deltaX < @DIV and deltaX > -@DIV and deltaY < @DIV and deltaY > -@DIV
+				@joystickPosX = lineX
+				@joystickPosY = lineY
+			else
+				upd = @joystickPosX ~= 0 or @joystickPosY ~= 0
+				@joystickPosX = 0
+				@joystickPosY = 0
+				@UpdateCache() if upd
+	else
+		if IsSmooth()
 			@joystickPosX = Lerp(0.1, @joystickPosX, 0)
 			@joystickPosY = Lerp(0.1, @joystickPosY, 0)
-	else
-		@joystickPosX = Lerp(0.1, @joystickPosX, 0)
-		@joystickPosY = Lerp(0.1, @joystickPosY, 0)
+		else
+			upd = @joystickPosX ~= 0 or @joystickPosY ~= 0
+			@joystickPosX = 0
+			@joystickPosY = 0
+			@UpdateCache() if upd
 	
 	if @joystickPosX ~= 0 or @joystickPosY ~= 0
-		@UpdateCache!
+		@UpdateCache()
 		
 		if @move
 			yawDeg = @mapObject\GetYaw!
@@ -141,8 +163,12 @@ PANEL.Think = =>
 				moveX = -moveX
 				moveY = -moveY
 			
-			@mapObject\AddX(moveX)
-			@mapObject\AddY(moveY)
+			if IsSmooth()
+				@mapObject\AddLerpX(moveX)
+				@mapObject\AddLerpY(moveY)
+			else
+				@mapObject\AddX(moveX)
+				@mapObject\AddY(moveY)
 			@mapObject\LockView(true)
 
 ReduceColor = (i, r, g, b) -> Color(r - i, g - i, b - i)
