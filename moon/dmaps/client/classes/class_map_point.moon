@@ -75,12 +75,13 @@ class DMapPointer
 		return false
 	
 	IsNearMouse: =>
-		if not @map.mouseHit return false
-		deltaX = @map.mouseX - @x
-		deltaY = @map.mouseY - @y
+		if not @CURRENT_MAP.mouseHit return false
+		deltaX = @CURRENT_MAP.mouseX - @x
+		deltaY = @CURRENT_MAP.mouseY - @y
 		return deltaX > -@@MOUSE_CONSTANT and deltaX < @@MOUSE_CONSTANT and deltaY > -@@MOUSE_CONSTANT and deltaY < @@MOUSE_CONSTANT
 	
 	DrawWorldHook: (map) =>
+		@CURRENT_MAP = map
 		@PreDrawWorld(map)
 		@DrawWorld(map)
 		@PostDrawWorld(map)
@@ -124,6 +125,7 @@ class DMapPointer
 		@CURRENT_MAP = map
 	
 	DrawHook: (map) =>
+		@CURRENT_MAP = map
 		@PreDraw(map)
 		@Draw(map)
 		@PostDraw(map)

@@ -16,7 +16,7 @@
 -- 
 
 import DMaps, timer, CreateConVar, draw, surface, Color from _G
-import DisplayedEntityBase from DMaps
+import DisplayedEntityBase, DeathPointer from DMaps
 
 POINTS_ENABLED = CreateConVar('sv_dmaps_entities', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable map entities display')
 NPC_POINTS_ENABLED = CreateConVar('sv_dmaps_npcs', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable map NPCs display')
@@ -77,6 +77,16 @@ class NPCPointer extends DisplayedEntityBase
 	Think: (map) =>
 		return if not POINTS_ENABLED\GetBool()
 		return if not NPC_POINTS_ENABLED\GetBool()
+		return if not @IsValid()
+		if IsValid(@entity) and @entity.__DMaps_Died
+			point = DeathPointer(@GetNPCName(), @x, @y, @z)
+			point\SetYaw(@eyesYaw)
+			point\SetLiveTime(DeathPointer\GetDefaultTime() * @GetNPCSize())
+			point\SetSize(@GetNPCSize() * 0.5)
+			map\AddObject(point)
+			@entity.__dmaps_ignore = true
+			@Remove()
+			return
 		super(map)
 		@eyesYaw = @entity\EyeAngles().y if IsValid(@entity)
 	
@@ -104,6 +114,10 @@ class NPCPointer extends DisplayedEntityBase
 		y -= h
 		surface.DrawRect(x - 4 - w / 2, y - 4, w + 8, h + 8)
 		draw.DrawText(text, @@Font, x, y, @@TextColor, TEXT_ALIGN_CENTER)
+
+net.Receive 'DMaps.NPCDeath', ->
+	ent = net.ReadEntity()
+	ent.__DMaps_Died = true if IsValid(ent)
 
 class FriendlyNPCPointer extends NPCPointer
 	@Name = 'Perfectly generic friendly NPC'
@@ -295,6 +309,7 @@ timer.Create 'DMaps.DispalyedNPCSUpdate', 0.5, 0, ->
 		if not nClass continue
 		if DMaps.IgnoreNPCs[nClass] continue
 		if not ent\IsNPC() continue
+		if ent.__dmaps_ignore continue
 		pos = ent\GetPos()
 		if not pos continue
 

@@ -277,7 +277,7 @@ class DMap
 				if not table.HasValue(@players, object)
 					table.insert(@players, object)
 					object.map = @
-			when 'points' -- Simple pointer
+			when 'point' -- Simple pointer
 				if not table.HasValue(@points, object)
 					table.insert(@points, object)
 					object.map = @
@@ -289,6 +289,12 @@ class DMap
 	
 	RegisterHooks: =>
 		hookID = tostring(@)
+
+		hook.Add 'DMaps.PlayerDeath', hookID, (ply, point) ->
+			for i, p in pairs @players
+				if p\GetEntity() == ply
+					@AddObject(point)
+					return
 		
 		preDrawFunc = (a, b) ->
 			if a or b return
@@ -350,6 +356,7 @@ class DMap
 			hook.Remove(hookName, hookID)
 		
 		hook.Remove('PreDrawTranslucentRenderables', hookID)
+		hook.Remove('DMaps.PlayerDeath', hookID)
 	
 	-- Call when you give the decidion about pointer draw
 	-- To the map object itself

@@ -21,6 +21,8 @@ util.AddNetworkString 'DMaps.AdminEcho'
 util.AddNetworkString 'DMaps.NetworkedWaypoint'
 util.AddNetworkString 'DMaps.NetworkedWaypointChanges'
 util.AddNetworkString 'DMaps.NetworkedWaypointRemoved'
+util.AddNetworkString 'DMaps.NPCDeath'
+util.AddNetworkString 'DMaps.PlayerDeath'
 
 for str in *{'BasicWaypoint', 'CAMIWaypoint', 'UsergroupWaypoint', 'TeamWaypoint'}
 	util.AddNetworkString "DMaps.#{str}Load"
@@ -35,6 +37,7 @@ CreateConVar('sv_dmaps_npcs', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable ma
 ClientsideFiles = {
 	'dmaps/client/classes/class_map.lua'
 	'dmaps/client/classes/class_map_point.lua'
+	'dmaps/client/classes/deathpoint.lua'
 	'dmaps/client/classes/class_map_entity_point.lua'
 	'dmaps/client/classes/player_filter.lua'
 	'dmaps/client/classes/class_player_point.lua'
@@ -55,6 +58,7 @@ ClientsideFiles = {
 	'dmaps/client/controls/icons_list.lua'
 
 	'dmaps/client/cami_wrapper.lua'
+	'dmaps/client/functions.lua'
 	'dmaps/client/options.lua'
 	'dmaps/client/default_gui.lua'
 	'dmaps/client/waypoints_controller.lua'
@@ -91,6 +95,7 @@ ServersideFiles = {
 	
 	'dmaps/server/functions.lua'
 	'dmaps/server/commands.lua'
+	'dmaps/server/hooks.lua'
 }
 
 include v for v in *ServersideFiles
