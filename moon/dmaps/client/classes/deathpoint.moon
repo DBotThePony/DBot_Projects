@@ -16,7 +16,7 @@
 -- 
 
 import DMaps, timer, CreateConVar, draw, surface, Color from _G
-import DMapPointer, ClientsideWaypoint from DMaps
+import DMapPointer, ClientsideWaypoint, DMapWaypoint, Icon from DMaps
 
 surface.CreateFont('DMaps.DeathPointText', {
 	font: 'Roboto'
@@ -234,10 +234,22 @@ class PlayerDeathPointer extends DeathPointer
 DMaps.DeathPointer = DeathPointer
 DMaps.PlayerDeathPointer = PlayerDeathPointer
 
+local LAST_DEATH_POINT
+REMEMBER_DEATH_POINT = DMaps.ClientsideOption('remember_death', '1', 'Remember last death point')
+DEATH_POINT_COLOR = DMaps.CreateColor(255, 255, 255, 'remember_death', 'Latest death point color')
+
 net.Receive 'DMaps.PlayerDeath', ->
 	ply = net.ReadEntity()
-	if not IsValid(ply) return
-	if ply == LocalPlayer() return
 	{:x, :y, :z} = net.ReadVector()
+
+	if not IsValid(ply) return
+	if ply == LocalPlayer()
+		return if not REMEMBER_DEATH_POINT\GetBool()
+		LAST_DEATH_POINT\Remove() if IsValid(LAST_DEATH_POINT)
+		LAST_DEATH_POINT = DMapWaypoint('Latest death', x, y, z, Color(DEATH_POINT_COLOR()), 'skull_old')
+		hook.Run 'DMaps.PlayerDeath', ply, LAST_DEATH_POINT
+		chat.AddText(DMaps.CHAT_PREFIX_COLOR, DMaps.CHAT_PREFIX, DMaps.CHAT_COLOR, "You died at X: #{x} Y: #{y} Z: #{z}")
+		return
+	
 	point = PlayerDeathPointer(ply, x, y, z)
 	hook.Run 'DMaps.PlayerDeath', ply, point

@@ -19,6 +19,9 @@ export DMaps
 
 DMaps = DMaps or {}
 DMaps.HU_IN_METRE = 40
+DMaps.CHAT_PREFIX = '[DMaps] '
+DMaps.CHAT_PREFIX_COLOR = Color(10, 200, 10)
+DMaps.CHAT_COLOR = Color(200, 200, 200)
 
 include 'dmaps/common/sh_cami.lua'
 include 'dmaps/common/access.lua'
