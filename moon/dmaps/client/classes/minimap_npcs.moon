@@ -166,8 +166,8 @@ class FriendlyNPCPointer extends NPCPointer
 		y += 40
 		div = 1
 		div = @MHP if @MHP ~= 0
-		divR = @HP / div
-		@divRLerp = Lerp(0.2, @divRLerp or divR, divR)
+		divR = math.Clamp(@HP / div, 0, 1)
+		@divRLerp = Lerp(0.1, @divRLerp or divR, divR)
 		w, h = @@HPBarW, @@HPBarH
 		surface.SetDrawColor(@@TextBackgroundColor)
 		surface.DrawRect(x - w / 2 - 4, y - 2, w + 8, h + 4)

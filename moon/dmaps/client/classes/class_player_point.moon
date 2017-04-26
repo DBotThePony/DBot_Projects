@@ -23,6 +23,7 @@ SHOULD_DRAW_INFO = DMaps.ClientsideOption('draw_players_info', '1', 'Draw player
 SHOULD_DRAW_HEALTH = DMaps.ClientsideOption('draw_players_health', '1', 'Draw players health on map')
 SHOULD_DRAW_ARMOR = DMaps.ClientsideOption('draw_players_armor', '1', 'Draw players armor on map')
 SHOULD_DRAW_TEAM = DMaps.ClientsideOption('draw_players_team', '1', 'Draw players teams on map')
+SHOULD_DRAW_BAR = DMaps.ClientsideOption('draw_players_hpbar', '1', 'Draw players HP bars on map')
 
 SV_SHOULD_DRAW_INFO = CreateConVar('sv_dmaps_draw_players_info', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Draw players infos on map')
 SV_SHOULD_DRAW_HEALTH = CreateConVar('sv_dmaps_draw_players_health', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Draw players health on map')
@@ -62,6 +63,13 @@ class DMapPlayerPointer extends DMapEntityPointer
 	@FADE_VALUE_HEIGHT = 400
 	@FADE_VALUE_HEIGHT_DIV = 200
 	@TRIGGER_FADE_DIST = 800
+
+	@HEALTH_COLOR_FIRST = Color(21, 225, 13)
+	@HEALTH_COLOR_LAST = Color(118, 53, 49)
+	@HEALTH_COLOR_BACKGROUND = Color(132, 163, 20)
+	@HPBarW = 200
+	@HPBarH = 10
+	@HPBarShift = 90
 	
 	@__type = 'player'
 	
@@ -175,6 +183,22 @@ class DMapPlayerPointer extends DMapEntityPointer
 		
 		x, y = @DRAW_X, @DRAW_Y
 		@DrawPlayerInfo(map, x, y, newAlpha)
+
+		if SV_SHOULD_DRAW_HEALTH\GetBool() and SHOULD_DRAW_HEALTH\GetBool() and SHOULD_DRAW_BAR\GetBool()
+			y -= @@HPBarShift
+			div = 1
+			div = @maxhp if @maxhp ~= 0
+			divR = math.Clamp(@hp / div, 0, 1)
+			@divRLerp = Lerp(0.1, @divRLerp or divR, divR)
+			w, h = @@HPBarW, @@HPBarH
+			surface.SetDrawColor(@@BACKGROUND_COLOR.r, @@BACKGROUND_COLOR.g, @@BACKGROUND_COLOR.b, @@BACKGROUND_COLOR.a * newAlpha)
+			surface.DrawRect(x - w / 2 - 4, y - 2, w + 8, h + 4)
+			surface.SetDrawColor(@@HEALTH_COLOR_BACKGROUND.r, @@HEALTH_COLOR_BACKGROUND.g, @@HEALTH_COLOR_BACKGROUND.b, @@HEALTH_COLOR_BACKGROUND.a * newAlpha)
+			surface.DrawRect(x - w / 2, y, w, h)
+			colr = DMaps.DeltaColor(@@HEALTH_COLOR_FIRST, @@HEALTH_COLOR_LAST, @divRLerp)
+			colr.a *= newAlpha
+			surface.SetDrawColor(colr)
+			surface.DrawRect(x - w / 2, y, w * @divRLerp, h)
 		
 		@CURRENT_MAP = nil
 
