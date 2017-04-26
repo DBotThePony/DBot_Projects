@@ -18,6 +18,10 @@
 import DMaps, timer, CreateConVar, draw, surface, Color from _G
 import DMapPointer, ClientsideWaypoint, DMapWaypoint, Icon from DMaps
 
+SV_DEATH_POINT_DURATION = CreateConVar('sv_dmaps_deathpoints_duration', '15', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Player death point live time in minutes')
+DRAW_DEATHPOINTS = DMaps.ClientsideOption('draw_deathpoints', '1', 'Draw deathpoints on map')
+DRAW_DEATHPOINTS_PLAYERS = DMaps.ClientsideOption('draw_deathpoints_player', '1', 'Draw player deathpoints on map')
+
 surface.CreateFont('DMaps.DeathPointText', {
 	font: 'Roboto'
 	size: 36
@@ -171,6 +175,7 @@ class DeathPointer extends DMapPointer
 		@@DEATH_POINTS[@_dPointID] = nil
 
 	Draw: (map) =>
+		return if not DRAW_DEATHPOINTS\GetBool()
 		x, y = @DRAW_X, @DRAW_Y
 		selectfont = @@Font if @size >= 1
 		selectfont = @@FontSmaller if @size < 1 and @size > 0.5
@@ -212,7 +217,7 @@ class PlayerDeathPointer extends DeathPointer
 	new: (ply = NULL, x = 0, y = 0, z = 0) =>
 		@ply = ply
 		super(@ply\Nick(), x, y, z, team.GetColor(@ply\Team()))
-		@SetLiveTime(15 * 60)
+		@SetLiveTime(SV_DEATH_POINT_DURATION\GetFloat() * 60)
 		@nick = ply\Nick()
 		@userid = ply\UserID()
 		@steamid = ply\SteamID()
@@ -229,6 +234,9 @@ class PlayerDeathPointer extends DeathPointer
 			\AddOption('Open steam profile', -> gui.OpenURL("http://steamcommunity.com/profiles/#{@steamid64}/"))
 			\Open()
 		return true
+	Draw: (map) =>
+		return if not DRAW_DEATHPOINTS_PLAYERS\GetBool()
+		super(map)
 
 
 DMaps.DeathPointer = DeathPointer

@@ -23,11 +23,28 @@ NPC_POINTS_ENABLED = DMaps.ClientsideOption('npcs', '1', 'Enable map NPCs displa
 SV_POINTS_ENABLED = CreateConVar('sv_dmaps_entities', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable map entities display')
 SV_NPC_POINTS_ENABLED = CreateConVar('sv_dmaps_npcs', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable map NPCs display')
 
+DRAW_DEATHPOINTS_NPCS = DMaps.ClientsideOption('draw_deathpoints_npc', '1', 'Draw NPCs deathpoints on map')
+
 surface.CreateFont('DMaps.NPCInfoPoint', {
 	font: 'Roboto'
 	size: 18
 	weight: 500
 })
+
+class NPCDeathPoint extends DeathPointer
+	@Font = 'DMaps.NPCInfoPoint'
+	@FontSmaller = 'DMaps.NPCInfoPoint'
+	@FontSmall = 'DMaps.NPCInfoPoint'
+	@FontTiny = 'DMaps.NPCInfoPoint'
+
+	new: (point) =>
+		super(point\GetNPCName(), point.x, point.y, point.z)
+		@SetYaw(point.eyesYaw)
+		@SetLiveTime(@@GetDefaultTime() * point\GetNPCSize())
+		@SetSize(point\GetNPCSize() * 0.5)
+	Draw: (map) =>
+		return if not DRAW_DEATHPOINTS_NPCS\GetBool()
+		super(map)
 
 class NPCPointer extends DisplayedEntityBase
 	@Name = 'Perfectly generic NPC'
@@ -81,12 +98,8 @@ class NPCPointer extends DisplayedEntityBase
 		return if not SV_POINTS_ENABLED\GetBool()
 		return if not NPC_POINTS_ENABLED\GetBool()
 		return if not SV_NPC_POINTS_ENABLED\GetBool()
-		return if not @IsValid()
-		if IsValid(@entity) and @entity.__DMaps_Died
-			point = DeathPointer(@GetNPCName(), @x, @y, @z)
-			point\SetYaw(@eyesYaw)
-			point\SetLiveTime(DeathPointer\GetDefaultTime() * @GetNPCSize())
-			point\SetSize(@GetNPCSize() * 0.5)
+		if @entity.__DMaps_Died and DRAW_DEATHPOINTS_NPCS\GetBool()
+			point = NPCDeathPoint(@)
 			map\AddObject(point)
 			@entity.__dmaps_ignore = true
 			@Remove()

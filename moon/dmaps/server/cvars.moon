@@ -28,3 +28,5 @@ CreateConVar('draw_players_info', '1', 'Draw players infos on map')
 CreateConVar('draw_players_health', '1', 'Draw players health on map')
 CreateConVar('draw_players_armor', '1', 'Draw players armor on map')
 CreateConVar('draw_players_team', '1', 'Draw players teams on map')
+
+CreateConVar('deathpoints_duration', '15', 'Player death point live time in minutes')
