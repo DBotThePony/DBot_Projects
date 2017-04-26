@@ -42,8 +42,11 @@ class DMapLocalPlayerPointer extends DMapPlayerPointer
 		
 		surface.SetFont(@@FONT)
 		
-		text = "Local Player (#{@playerName})"
+		text = @playerName
 		w, h = surface.GetTextSize(text)
+
+		surface.SetDrawColor(@@BACKGROUND_COLOR)
+		surface.DrawRect(@DRAW_X - w / 2 - 6, @DRAW_Y + 46, w + 12, h + 8)
 		
 		surface.SetTextPos(@DRAW_X - w / 2, @DRAW_Y + 50)
 		surface.SetTextColor(color_white)
