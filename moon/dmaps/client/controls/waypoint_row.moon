@@ -19,10 +19,18 @@ PANEL =
 	Init: =>
 		@SetSize(400, 25)
 		@DockMargin(5, 2, 5, 2)
-		@name = vgui.Create('DLabel', @)
 		@OnUpdate = ->
 		@data = {}
+
+		@wp = vgui.Create('DMapsIcon', @)
+		with @wp
+			\Dock(LEFT)
+			\DockMargin(5, 0, 5, 0)
+			\SetSize(20, 20)
+			\SetColor(color_white)
+			\SetMouseInputEnabled(false)
 		
+		@name = vgui.Create('DLabel', @)
 		with @name
 			\SetText('%WAYPOINTNAME%')
 			\Dock(LEFT)
@@ -116,6 +124,8 @@ PANEL =
 		@posx\SetText("X: #{@data.posx}")
 		@posy\SetText("Y: #{@data.posy}")
 		@posz\SetText("Z: #{@data.posz}")
+		@wp\SetIcon(@data.icon)
+		@wp\SetColor(Color(@data.red, @data.green, @data.blue))
 		if @data.visible
 			@visible\SetText('Make invisible')
 		else

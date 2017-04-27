@@ -63,7 +63,9 @@ PANEL_ICON =
 		surface.SetDrawColor(220, 220, 220) if @hold
 		surface.DrawRect(0, 0, w, h)
 		surface.SetDrawColor(@color)
-		@icon\Draw(0, 0, 1, false)
+		size = math.min(w, h) / 32
+		align = h * (1 - size) * .5
+		@icon\Draw(0, align, size, false)
 
 PANEL = 
 	Close: =>

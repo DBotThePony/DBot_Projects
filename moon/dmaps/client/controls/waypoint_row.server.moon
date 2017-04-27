@@ -24,6 +24,14 @@ PANEL =
 		@data = {}
 		@CreateDefaultPanels()
 	CreateDefaultPanels: =>
+		@wp = vgui.Create('DMapsIcon', @)
+		with @wp
+			\Dock(LEFT)
+			\DockMargin(5, 0, 5, 0)
+			\SetSize(20, 20)
+			\SetColor(color_white)
+			\SetMouseInputEnabled(false)
+		
 		@name = vgui.Create('DLabel', @)
 		with @name
 			\SetText('%WAYPOINTNAME%')
@@ -99,6 +107,8 @@ PANEL =
 		@posx\SetText("X: #{@data.posx}")
 		@posy\SetText("Y: #{@data.posy}")
 		@posz\SetText("Z: #{@data.posz}")
+		@wp\SetIcon(@data.icon)
+		@wp\SetColor(Color(@data.red, @data.green, @data.blue))
 DMaps.PANEL_CUSTOM_WAYPOINT_ROW = PANEL
 vgui.Register('DMapsWaypointRowServer', PANEL, 'EditablePanel')
 return PANEL
