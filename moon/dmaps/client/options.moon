@@ -57,7 +57,12 @@ vgui.Register('DMapsOptionsPanel', PanelMeta, 'EditablePanel')
 Pages =
 	generic:
 		name: 'Generic Options'
-		func: (sheet, frame) => @CheckBox(text, "cl_dmaps_#{cvar}") for {cvar, text} in *DMaps.CONVARS_SETTINGS
+		func: (sheet, frame) =>
+			scroll = vgui.Create('DScrollPanel', @)
+			scroll\Dock(FILL)
+			for {cvar, text} in *DMaps.CONVARS_SETTINGS
+				checkbox = @CheckBox(text, "cl_dmaps_#{cvar}")
+				checkbox\SetParent(scroll)
 	minimap:
 		name: 'Minimap options'
 		func: (sheet, frame) =>
