@@ -29,6 +29,14 @@ hook.Add 'OnNPCKilled', 'DMaps.Hooks', (npc = NULL, attacker = NULL, weapon = NU
 	net.WriteEntity(npc)
 	net.Broadcast()
 
+hook.Add 'PlayerEnteredVehicle', 'DMaps.Hooks', (ply = NULL, veh = NULL, role = 0) ->
+	if not IsValid(ply) or not IsValid(veh) return
+	veh\SetNWEntity('DMaps.Driver', ply)
+
+hook.Add 'PlayerLeaveVehicle', 'DMaps.Hooks', (ply = NULL, veh = NULL) ->
+	if not IsValid(ply) or not IsValid(veh) return
+	veh\SetNWEntity('DMaps.Driver', NULL)
+
 hook.Add 'PlayerDeath', 'DMaps.Hooks', (ply = NULL, weapon = NULL, attacker = NULL) ->
 	return if not IsValid(ply)
 	if not DISPLAY_DEATHS\GetBool() or not DISPLAY_DEATHS_PLAYER\GetBool()

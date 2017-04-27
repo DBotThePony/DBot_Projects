@@ -28,3 +28,6 @@ DMaps.ChatPrint = (...) ->
 DMaps.WaypointAction = (x = 0, y = 0, z = 0) ->
 	data, id = DMaps.ClientsideWaypoint.DataContainer\CreateWaypoint("New Waypoint At X: #{@x}, Y: #{@y}, Z: #{@z}", @x, @y, @z)
 	DMaps.OpenWaypointEditMenu(id, DMaps.ClientsideWaypoint.DataContainer, (-> DMaps.ClientsideWaypoint.DataContainer\DeleteWaypoint(id))) if id
+
+vehMeta = FindMetaTable('Vehicle')
+vehMeta.GetDriver = => @GetNWEntity('DMaps.Driver')
