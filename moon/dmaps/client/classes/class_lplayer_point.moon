@@ -36,6 +36,9 @@ class DMapLocalPlayerPointer extends DMapPlayerPointer
 	GetRenderPriority: => 1000
 	
 	Draw: (map) =>
+		if @entity\InVehicle()
+			veh = @entity\GetVehicle()
+			if IsValid(veh) and veh\GetClass() ~= 'prop_vehicle_prisoner_pod' return
 		trig = @@generateTriangle(@DRAW_X, @DRAW_Y, @yaw, 50, 50, 170)
 		
 		surface.SetDrawColor(POINTER_COLOR())

@@ -165,6 +165,9 @@ class DMapPlayerPointer extends DMapEntityPointer
 	
 	Draw: (map) =>
 		if not @GetEntity()\Alive() return
+		if @entity\InVehicle()
+			veh = @entity\GetVehicle()
+			if IsValid(veh) and veh\GetClass() ~= 'prop_vehicle_prisoner_pod' return
 		@CURRENT_MAP = map
 		
 		trig = @@generateTriangle(@DRAW_X, @DRAW_Y, @yaw, 40, 50, 130)
