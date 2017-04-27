@@ -26,6 +26,7 @@ class PlayerFilterBase
 	IsValid: => IsValid(@ply) and IsValid(@waypoint)
 	Filter: => false
 	SetPlayer: (ply) => @ply = ply
+	GetPlayer: => @ply
 	GetPos: => @ply\GetPos()
 	EyePos: => @ply\EyePos()
 
@@ -69,6 +70,15 @@ class SandboxPlayerFilter extends PlayerFilterBase
 		else
 			return true
 
+class DarkRPPlayerFilter extends SandboxPlayerFilter
+	new: (ply, waypoint) =>
+		super(ply, waypoint)
+	
+	Filter: (map) =>
+		return false if @ply.isWanted and @ply\isWanted()
+		return false if @ply.isArrested and @ply\isArrested()
+		return super(map)
+
 class ZSPlayerFilter extends SandboxPlayerFilter
 	new: (ply, waypoint) =>
 		super(ply, waypoint)
@@ -79,6 +89,7 @@ class ZSPlayerFilter extends SandboxPlayerFilter
 		return super()
 
 DMaps.SandboxPlayerFilter = SandboxPlayerFilter
+DMaps.DarkRPPlayerFilter = DarkRPPlayerFilter
 DMaps.ZSPlayerFilter = ZSPlayerFilter
 
 DMaps.PLAYER_FILTRES = {}
@@ -88,7 +99,8 @@ DMaps.RegisterPlayerFilter = (gamemodes = {}, filter = PlayerFilterBase) ->
 
 DMaps.GetPlayerFilter = (g = engine.ActiveGamemode()) -> DMaps.PLAYER_FILTRES[g\lower()] or PlayerFilterBase
 
-DMaps.RegisterPlayerFilter({'sandbox', 'darkrp'}, SandboxPlayerFilter)
+DMaps.RegisterPlayerFilter({'sandbox'}, SandboxPlayerFilter)
+DMaps.RegisterPlayerFilter({'darkrp'}, DarkRPPlayerFilter)
 DMaps.RegisterPlayerFilter({'base', 'terrortown'}, PlayerFilterBase)
 DMaps.RegisterPlayerFilter({'zombiesurvival'}, ZSPlayerFilter) -- example
 hook.Run('DMaps.RegisterPlayerFilters', DMaps.RegisterPlayerFilter, PlayerFilterBase)
