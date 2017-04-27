@@ -57,7 +57,7 @@ vgui.Register('DMapsOptionsPanel', PanelMeta, 'EditablePanel')
 Pages =
 	generic:
 		name: 'Generic Options'
-		func: (sheet, frame) => @CheckBox(text, cvar) for {cvar, text} in *DMaps.CONVARS_SETTINGS
+		func: (sheet, frame) => @CheckBox(text, "cl_dmaps_#{cvar}") for {cvar, text} in *DMaps.CONVARS_SETTINGS
 	minimap:
 		name: 'Minimap options'
 		func: (sheet, frame) =>
