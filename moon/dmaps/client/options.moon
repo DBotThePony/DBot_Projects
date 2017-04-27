@@ -120,7 +120,8 @@ DMaps.OpenOptions = ->
 	
 	for id, page in pairs Pages
 		panel = vgui.Create('DMapsOptionsPanel', sheet)
-		sheet\AddSheet(page.name, panel)
+		addedSheet = sheet\AddSheet(page.name, panel)
+		sheet\SetActiveTab(addedSheet.Tab) if id == 'generic'
 		panel\Dock(FILL)
 		panel\DockMargin(5, 5, 5, 5)
 		panel\DockPadding(5, 5, 5, 5)
