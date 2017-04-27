@@ -22,7 +22,13 @@ DMaps.CONVARS_SETTINGS = {}
 
 DMaps.ClientsideOption = (cvar, default, desc) ->
 	object = CreateConVar("cl_dmaps_#{cvar}", default, {FCVAR_ARCHIVE}, desc)
-	table.insert(DMaps.CONVARS_SETTINGS, {cvar, desc})
+	hit = false
+	for data in *DMaps.CONVARS_SETTINGS
+		if data[1] == cvar
+			hit = true
+			break
+	if not hit
+		table.insert(DMaps.CONVARS_SETTINGS, {cvar, desc})
 	return object
 
 DMaps.CONVARS_COLORS = {}
