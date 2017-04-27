@@ -133,11 +133,12 @@ class DMapPlayerPointer extends DMapEntityPointer
 	
 	GetPlayerInfo: =>
 		str = @playerName
-		str ..= "\nTeam: #{@teamName}" if SHOULD_DRAW_TEAM\GetBool() and SV_SHOULD_DRAW_TEAM\GetBool()
-		str ..= "\nHP: #{@hp}/#{@maxhp}" if SHOULD_DRAW_HEALTH\GetBool() and SV_SHOULD_DRAW_HEALTH\GetBool()
-		str ..= "\nArmor: #{@armor}" if SHOULD_DRAW_ARMOR\GetBool() and SV_SHOULD_DRAW_ARMOR\GetBool()
+		if @IsNearMouse()
+			str ..= "\nTeam: #{@teamName}" if SHOULD_DRAW_TEAM\GetBool() and SV_SHOULD_DRAW_TEAM\GetBool()
+			str ..= "\nHP: #{@hp}/#{@maxhp}" if SHOULD_DRAW_HEALTH\GetBool() and SV_SHOULD_DRAW_HEALTH\GetBool()
+			str ..= "\nArmor: #{@armor}" if SHOULD_DRAW_ARMOR\GetBool() and SV_SHOULD_DRAW_ARMOR\GetBool()
 		text = AppenableString(str)
-		hook.Run('DMaps.AddPlayerInfo', @, AppenableString)
+		hook.Run('DMaps.AddPlayerInfo', @, text)
 		
 		newStr = text\GetString!
 		delta = @GetDeltaHeight!
