@@ -235,14 +235,19 @@ timer.Create 'DMaps.DispalyedEntitiesUpdate', 0.5, 0, ->
 	lplayer = LocalPlayer()
 	lpos = lplayer\GetPos()
 
-	DMaps.__lastEntsGetAll = ents.GetAll()
-	for ent in *DMaps.__lastEntsGetAll
+	DMaps.__lastEntsGetAll = {}
+	for ent in *ents.GetAll()
 		if not IsValid(ent) continue
 		mClass = ent\GetClass()
 		if not mClass continue
-		if not avaliable[mClass] continue
-		if ent\GetSolid() == SOLID_NONE continue
+		if not ent\GetSolid() == SOLID_NONE continue
 		pos = ent\GetPos()
 		if not pos continue
+		mdl = ent\GetModel()
+		if not mdl continue
+		table.insert(DMaps.__lastEntsGetAll, {ent, mClass, pos, mdl})
+
+	for {ent, mClass, pos, mdl} in *DMaps.__lastEntsGetAll
+		if not avaliable[mClass] continue
 		if pos\DistToSqr(lpos) > avaliable[mClass].DefaultRangeQ continue
 		avaliable[mClass]\AddEntity(ent)
