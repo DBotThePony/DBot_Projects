@@ -245,9 +245,9 @@ timer.Create 'DMaps.DispalyedEntitiesUpdate', 0.5, 0, ->
 		if not pos continue
 		mdl = ent\GetModel()
 		if not mdl continue
-		table.insert(DMaps.__lastEntsGetAll, {ent, mClass, pos, mdl})
+		table.insert(DMaps.__lastEntsGetAll, {ent, mClass, pos, mdl, pos\DistToSqr(lpos)})
 
-	for {ent, mClass, pos, mdl} in *DMaps.__lastEntsGetAll
+	for {ent, mClass, pos, mdl, dist} in *DMaps.__lastEntsGetAll
 		if not avaliable[mClass] continue
-		if pos\DistToSqr(lpos) > avaliable[mClass].DefaultRangeQ continue
+		if dist > avaliable[mClass].DefaultRangeQ continue
 		avaliable[mClass]\AddEntity(ent)

@@ -326,14 +326,11 @@ timer.Create 'DMaps.DispalyedNPCSUpdate', 0.5, 0, ->
 	return if not SV_POINTS_ENABLED\GetBool()
 	return if not NPC_POINTS_ENABLED\GetBool()
 	return if not SV_NPC_POINTS_ENABLED\GetBool()
-	lpos = LocalPlayer()\GetPos()
-
-	for {ent, mClass, pos, mdl} in *DMaps.__lastEntsGetAll
+	for {ent, mClass, pos, mdl, dist} in *DMaps.__lastEntsGetAll
 		if DMaps.IgnoreNPCs[nClass] continue
 		if not ent\IsNPC() continue
 		if ent.__dmaps_ignore continue
 
-		dist = pos\DistToSqr(lpos)
 		hit = false
 		for handler in *DMaps.NPCsHandlers
 			reply = handler\CheckNPC(ent, nClass)
