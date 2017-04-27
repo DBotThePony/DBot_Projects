@@ -113,7 +113,7 @@ timer.Simple 0, ->
 	timer.Simple 0, ->
 		timer.Simple 0, ->
 			DMaps.OpenMap()
-			DMaps.MainFrame\Close()
+			timer.Simple 0, -> DMaps.MainFrame\Close()
 
 hook.Add 'Think', 'DMaps.DrawAsMinimap', ->
 	if not DMaps.DISPLAY_AS_MINIMAP return
