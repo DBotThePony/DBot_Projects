@@ -34,6 +34,7 @@ class DisplayedEntityBase extends DMapEntityPointer
 	@INSTANCES = {}
 	@DefaultRange = 1024
 	@DisplayText = true
+	@ManualRange = false
 
 	GetRenderPriority: => 15
 
@@ -81,7 +82,7 @@ class DisplayedEntityBase extends DMapEntityPointer
 		return if not POINTS_ENABLED\GetBool()
 		return if not SV_POINTS_ENABLED\GetBool()
 		@CURRENT_MAP = map
-		if @GetPos()\DistToSqr(LocalPlayer()\GetPos()) > @@DefaultRangeQ
+		if not @@ManualRange and @GetPos()\DistToSqr(LocalPlayer()\GetPos()) > @@DefaultRangeQ
 			@Remove()
 			return
 		super(map)

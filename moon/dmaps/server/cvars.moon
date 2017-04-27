@@ -23,6 +23,7 @@ CreateConVar = (name = '', df = '', desc = '') -> _CreateConVar("sv_dmaps_#{name
 CreateConVar('players', '1', 'Enable player map arrows')
 CreateConVar('entities', '1', 'Enable map entities display')
 CreateConVar('npcs', '1', 'Enable map NPCs display')
+CreateConVar('vehicles', '1', 'Enable map vehicles display')
 
 CreateConVar('draw_players_info', '1', 'Draw players infos on map')
 CreateConVar('draw_players_health', '1', 'Draw players health on map')
@@ -30,3 +31,6 @@ CreateConVar('draw_players_armor', '1', 'Draw players armor on map')
 CreateConVar('draw_players_team', '1', 'Draw players teams on map')
 
 CreateConVar('deathpoints_duration', '15', 'Player death point live time in minutes')
+
+CreateConVar('vehicles_undriven', '512', 'Undriven vehicle map track range')
+CreateConVar('vehicles_driven', '3000', 'Driven vehicle map track range')

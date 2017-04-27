@@ -36,6 +36,7 @@ DMaps.CONVARS_COLORS_GROUP = {}
 DMaps.CONVARS_COLORS_ARRAY = {}
 
 DMaps.CreateColor = (r = 220, g = 220, b = 220, name = 'generic', desc = 'ERROR_COLOR_NAME', group = 'generic') ->
+	if DMaps.CONVARS_COLORS[name] return -> DMaps.GetColor(name)
 	RED = CreateConVar("cl_dmaps_color_#{name}_r", tostring(r), {FCVAR_ARCHIVE}, "#{desc} 'Red' channel color")
 	GREEN = CreateConVar("cl_dmaps_color_#{name}_g", tostring(g), {FCVAR_ARCHIVE}, "#{desc} 'Green' channel color")
 	BLUE = CreateConVar("cl_dmaps_color_#{name}_b", tostring(b), {FCVAR_ARCHIVE}, "#{desc} 'Blue' channel color")

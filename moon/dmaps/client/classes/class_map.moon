@@ -378,14 +378,14 @@ class DMap
 	
 	-- Call when you give the decidion about pointer draw
 	-- To the map object itself
-	PrefferDraw: (x = 0, y = 0, z = 0) =>
+	PrefferDraw: (x = 0, y = 0, z = 0, zMult = 1) =>
 		--if not @PointIsVisible(x, y)
 		--	return false
 		
 		if z < @clipLevelBottom or z > @clipLevelTop
 			return false
 		
-		if @zoom > z + 1400
+		if @zoom > z + 1400 * zMult
 			return false
 		
 		return true

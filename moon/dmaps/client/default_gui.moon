@@ -113,7 +113,7 @@ timer.Simple 0, ->
 	timer.Simple 0, ->
 		timer.Simple 0, ->
 			DMaps.OpenMap()
-			timer.Simple 0, -> DMaps.MainFrame\Close()
+			timer.Simple 0.1, -> DMaps.MainFrame\Close()
 
 hook.Add 'Think', 'DMaps.DrawAsMinimap', ->
 	if not DMaps.DISPLAY_AS_MINIMAP return
@@ -128,7 +128,8 @@ hook.Add 'Think', 'DMaps.DrawAsMinimap', ->
 		AVERAGE_SPEED_INDEX += 1
 		AVERAGE_SPEED_INDEX = 1 if AVERAGE_SPEED_INDEX > 100
 		ply = DMaps.MainFrame.mapHolder.Spectating
-		speed = ply\GetVelocity()\Length()
+		speed = ply\GetVelocity()\Length() if not ply\InVehicle()
+		speed = ply\GetVehicle()\GetVelocity()\Length() if ply\InVehicle()
 		AVERAGE_SPEED[AVERAGE_SPEED_INDEX] = speed
 		average = 0
 		average += v for v in *AVERAGE_SPEED
