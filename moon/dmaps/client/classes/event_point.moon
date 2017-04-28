@@ -165,19 +165,13 @@ class EventPointer extends DMapPointer
 		super(map)
 		map\Stop2D()
 
-	Draw: (map) =>
+	DrawText: (map) =>
+		if not @IsNearMouse() return
 		x, y = @DRAW_X, @DRAW_Y
 		selectfont = @@Font if @size >= 1
 		selectfont = @@FontSmaller if @size < 1 and @size > 0.5
 		selectfont = @@FontSmall if @size <= 0.5 and @size > 0.25
 		selectfont = @@FontTiny if @size <= 0.25
-		surface.SetDrawColor(@color)
-		draw.NoTexture()
-		p1, p2 = @@GenerateCross(x, y, @size, @yaw)
-		surface.DrawPoly(p1)
-		surface.DrawPoly(p2)
-		if not @IsNearMouse() return
-
 		surface.SetDrawColor(@@BackgroundColor)
 		surface.SetFont(selectfont)
 		text = @GetText()
@@ -185,6 +179,16 @@ class EventPointer extends DMapPointer
 		y -= h / 2
 		surface.DrawRect(x - 4 - w / 2, y - 4, w + 8, h + 8)
 		draw.DrawText(text, selectfont, x, y, @@TextColor, TEXT_ALIGN_CENTER)
+	DrawCross: (map) =>
+		x, y = @DRAW_X, @DRAW_Y
+		surface.SetDrawColor(@color)
+		draw.NoTexture()
+		p1, p2 = @@GenerateCross(x, y, @size, @yaw)
+		surface.DrawPoly(p1)
+		surface.DrawPoly(p2)
+	Draw: (map) =>
+		@DrawCross(map)
+		@DrawText(map)
 	OpenMenu: (menu = DermaMenu()) =>
 		with menu
 			\AddOption('Teleport to', -> RunConsoleCommand('dmaps_teleport', @x, @y, @z)) if DMaps.HasPermission('teleport')
