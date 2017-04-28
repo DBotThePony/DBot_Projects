@@ -58,11 +58,21 @@ class VehiclePointer extends DisplayedEntityBase
 	@TEXT_COLOR = Color(255, 255, 255)
 
 	GetRenderPriority: => 21
-	ShouldDraw: (map) => map\PrefferDraw(@x, @y, @z, 2)
+	ShouldDraw: (map) => map\PrefferDraw(@x, @y, @z, 4)
+	ShouldDrawText: (map) => map\PrefferDraw(@x, @y, @z, 1.5)
+
+	@__Vehicle_Names = {}
+
+	@GetVehicleName = (model = '') => @__Vehicle_Names[model] or 'Vehicle'
+	GetVehicleName: => @@GetVehicleName(@model)
+	@RegisterVehicleName = (models = {}, names = {'Perfectly generic Vehicle'}) =>
+		models = {models} if type(models) ~= 'table'
+		names = {names} if type(names) ~= 'table'
+		@__Vehicle_Names[models[i]\lower()] = (names[i] or names[1] or 'Perfectly generic Vehicle') for i = 1, #models
 
 	new: (entity = NULL) =>
 		super(entity)
-		@model = entity\GetModel()
+		@model = entity\GetModel()\lower()
 		@mins, @maxs = entity\OBBMins(), entity\OBBMaxs()
 		@size = math.Clamp(@mins\Distance(@maxs) / 200, 0.4, 3)
 		@color = Color(88, 211, 179)
@@ -159,10 +169,11 @@ class VehiclePointer extends DisplayedEntityBase
 				surface.DrawLine(lastX, lastY, data.x, data.y)
 				lastX, lastY = data.x, data.y
 
+		if not @ShouldDrawText(map) return
 		lpos = LocalPlayer()\GetPos()
 		dist = lpos\Distance(@GetPos())
 		deltaZ = lpos.z - @z
-		text = "Vehicle - #{DMaps.FormatMetre(dist)} #{@GetText() or ''}"
+		text = "#{@GetVehicleName()} - #{DMaps.FormatMetre(dist)} #{@GetText() or ''}"
 		text ..= "\n#{DMaps.FormatMetre(deltaZ)} lower" if deltaZ > 200
 		text ..= "\n#{DMaps.FormatMetre(-deltaZ)} upper" if -deltaZ > 200
 
@@ -178,7 +189,13 @@ class VehiclePointer extends DisplayedEntityBase
 		surface.DrawRect(x - 4 - w / 2, y - 4, w + 8, h + 8)
 		draw.DrawText(text, @@Font, x, y, @@TEXT_COLOR, TEXT_ALIGN_CENTER)
 
+DMaps.RegisterVehicleName = (...) -> VehiclePointer\RegisterVehicleName(...)
 DMaps.VehiclePointer = VehiclePointer
+
+timer.Simple 0, ->
+	timer.Simple 0, ->
+		for k, {:Name, :Model} in pairs list.Get('Vehicles')
+			DMaps.RegisterVehicleName(Model, Name)
 
 timer.Create 'DMaps.DisplayedVehiclesUpdate', 0.5, 0, ->
 	return if not POINTS_ENABLED\GetBool()
