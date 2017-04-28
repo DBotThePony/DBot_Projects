@@ -84,6 +84,7 @@ class ArrestEventPointer extends EventPointer
 			@steamid64 = ply\SteamID64()
 			@uniqueid = ply\UniqueID()
 			@team = ply\Team()
+			@SteamName = ply\SteamName() if ply.SteamName
 
 		if IsValid(actioner)
 			@actioner_nick = actioner\Nick()
@@ -92,6 +93,7 @@ class ArrestEventPointer extends EventPointer
 			@actioner_steamid64 = actioner\SteamID64()
 			@actioner_uniqueid = actioner\UniqueID()
 			@actioner_team = actioner\Team()
+			@actioner_SteamName = actioner\SteamName() if actioner.SteamName
 		
 		super(@nick, x, y, z, team.GetColor(@team))
 		@_dPointID = table.insert(@@ARREST_POINTS, @)
@@ -101,12 +103,15 @@ class ArrestEventPointer extends EventPointer
 		super(menu)
 		with menu
 			\AddSpacer()
+			\AddOption('Copy Steam name', -> SetClipboardText(tostring(@SteamName))) if @SteamName
 			\AddOption('Copy UserID', -> SetClipboardText(tostring(@userid)))
 			\AddOption('Copy SteamID', -> SetClipboardText(tostring(@steamid)))
 			\AddOption('Copy SteamID64', -> SetClipboardText(tostring(@steamid64)))
 			\AddOption('Copy UniqueID', -> SetClipboardText(tostring(@uniqueid)))
 			\AddOption('Open steam profile', -> gui.OpenURL("http://steamcommunity.com/profiles/#{@steamid64}/"))
 			\AddSpacer()
+			\AddOption('Copy Arrester\'s Name', -> SetClipboardText(tostring(@actioner_nick)))
+			\AddOption('Copy Arrester\'s Steam name', -> SetClipboardText(tostring(@actioner_SteamName))) if @actioner_SteamName
 			\AddOption('Copy Arrester\'s UserID', -> SetClipboardText(tostring(@actioner_userid)))
 			\AddOption('Copy Arrester\'s SteamID', -> SetClipboardText(tostring(@actioner_steamid)))
 			\AddOption('Copy Arrester\'s SteamID64', -> SetClipboardText(tostring(@actioner_steamid64)))
@@ -146,6 +151,7 @@ class UnArrestEventPointer extends EventPointer
 			@steamid64 = ply\SteamID64()
 			@uniqueid = ply\UniqueID()
 			@team = ply\Team()
+			@SteamName = ply\SteamName() if ply.SteamName
 
 		if IsValid(actioner)
 			@actioner_nick = actioner\Nick()
@@ -154,6 +160,7 @@ class UnArrestEventPointer extends EventPointer
 			@actioner_steamid64 = actioner\SteamID64()
 			@actioner_uniqueid = actioner\UniqueID()
 			@actioner_team = actioner\Team()
+			@actioner_SteamName = actioner\SteamName() if actioner.SteamName
 		
 		super(@nick, x, y, z, team.GetColor(@team))
 		@_dPointID = table.insert(@@UNARREST_POINTS, @)
@@ -166,6 +173,7 @@ class UnArrestEventPointer extends EventPointer
 		super(menu)
 		with menu
 			\AddSpacer()
+			\AddOption('Copy Steam name', -> SetClipboardText(tostring(@SteamName))) if @SteamName
 			\AddOption('Copy UserID', -> SetClipboardText(tostring(@userid)))
 			\AddOption('Copy SteamID', -> SetClipboardText(tostring(@steamid)))
 			\AddOption('Copy SteamID64', -> SetClipboardText(tostring(@steamid64)))
@@ -173,6 +181,8 @@ class UnArrestEventPointer extends EventPointer
 			\AddOption('Open steam profile', -> gui.OpenURL("http://steamcommunity.com/profiles/#{@steamid64}/"))
 			if @hasUnarrester
 				\AddSpacer()
+				\AddOption('Copy Unarrester\'s Name', -> SetClipboardText(tostring(@actioner_nick)))
+				\AddOption('Copy Unarrester\'s Steam name', -> SetClipboardText(tostring(@actioner_SteamName))) if @actioner_SteamName
 				\AddOption('Copy Unarrester\'s UserID', -> SetClipboardText(tostring(@actioner_userid)))
 				\AddOption('Copy Unarrester\'s SteamID', -> SetClipboardText(tostring(@actioner_steamid)))
 				\AddOption('Copy Unarrester\'s SteamID64', -> SetClipboardText(tostring(@actioner_steamid64)))

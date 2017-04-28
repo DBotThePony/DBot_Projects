@@ -88,6 +88,7 @@ class DMapPlayerPointer extends DMapEntityPointer
 		with menu
 			\AddSpacer()
 			\AddOption('Copy Nickname', -> SetClipboardText(tostring(@playerName)))
+			\AddOption('Copy Steam name', -> SetClipboardText(tostring(@SteamName))) if @SteamName
 			\AddOption('Copy coordinates', -> SetClipboardText("X: #{math.floor(@x)}, Y: #{math.floor(@y)}, Z: #{math.floor(@z)}"))
 			\AddOption('Copy UserID', -> SetClipboardText(tostring(@userid)))
 			\AddOption('Copy SteamID', -> SetClipboardText(tostring(@steamid)))
@@ -111,6 +112,7 @@ class DMapPlayerPointer extends DMapEntityPointer
 		
 		ang = ply\EyeAngles!
 		@playerName = ply\Nick()
+		@SteamName = ply\SteamName() if ply.SteamName
 		@teamID = ply\Team!
 		@color = team.GetColor(@teamID)
 		@teamName = team.GetName(@teamID)

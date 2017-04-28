@@ -53,10 +53,12 @@ class PlayerDeathPointer extends DeathPointer
 		@steamid = ply\SteamID()
 		@steamid64 = ply\SteamID64()
 		@uniqueid = ply\UniqueID()
+		@SteamName = ply\SteamName() if ply.SteamName
 	OpenMenu: (menu = DermaMenu()) =>
 		super(menu)
 		with menu
 			\AddSpacer()
+			\AddOption('Copy Steam Name', -> SetClipboardText(tostring(@SteamName))) if @SteamName
 			\AddOption('Copy UserID', -> SetClipboardText(tostring(@userid)))
 			\AddOption('Copy SteamID', -> SetClipboardText(tostring(@steamid)))
 			\AddOption('Copy SteamID64', -> SetClipboardText(tostring(@steamid64)))
