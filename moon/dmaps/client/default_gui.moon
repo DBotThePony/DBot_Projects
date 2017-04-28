@@ -30,12 +30,19 @@ DMaps.DISPLAY_AS_MINIMAP = false
 AVERAGE_SPEED = [0 for i = 1, 100]
 AVERAGE_SPEED_INDEX = 1
 
+DMaps.GetMainMap = ->
+	return false if not IsValid(DMaps.MainFrame)
+	return false if not IsValid(DMaps.MainFrame.mapHolder)
+	return false if not IsValid(DMaps.MainFrame.mapHolder\GetMap())
+	return DMaps.MainFrame.mapHolder\GetMap()
+
 DMaps.CreateMainFrame = ->
 	if IsValid(DMaps.MainFrame)
 		DMaps.MainFrame\Remove!
 	
 	DMaps.MainFrame = vgui.Create('DFrame')
 	self = DMaps.MainFrame
+	@GetMap = => @mapHolder\GetMap()
 	
 	w, h = ScrW() - 100, ScrH() - 100
 	@SetSize(w, h)

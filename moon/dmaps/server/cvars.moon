@@ -31,6 +31,7 @@ CreateConVar('draw_players_armor', '1', 'Draw players armor on map')
 CreateConVar('draw_players_team', '1', 'Draw players teams on map')
 
 CreateConVar('deathpoints_duration', '15', 'Player death point live time in minutes')
+CreateConVar('arrest_duration', '5', 'Player arrest event pointer live time in minutes')
 
 CreateConVar('vehicles_undriven', '512', 'Undriven vehicle map track range')
 CreateConVar('vehicles_driven', '3000', 'Driven vehicle map track range')

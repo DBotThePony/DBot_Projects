@@ -16,16 +16,19 @@
 -- 
 
 import util from _G
+import AddNetworkString from util
+_AddNetworkString = AddNetworkString
+AddNetworkString = (n) -> _AddNetworkString "DMaps.#{n}"
 
-util.AddNetworkString 'DMaps.AdminEcho'
-util.AddNetworkString 'DMaps.NetworkedWaypoint'
-util.AddNetworkString 'DMaps.NetworkedWaypointChanges'
-util.AddNetworkString 'DMaps.NetworkedWaypointRemoved'
-util.AddNetworkString 'DMaps.NPCDeath'
-util.AddNetworkString 'DMaps.PlayerDeath'
+AddNetworkString 'AdminEcho'
+AddNetworkString 'NetworkedWaypoint'
+AddNetworkString 'NetworkedWaypointChanges'
+AddNetworkString 'NetworkedWaypointRemoved'
+AddNetworkString 'NPCDeath'
+AddNetworkString 'PlayerDeath'
 
 for str in *{'BasicWaypoint', 'CAMIWaypoint', 'UsergroupWaypoint', 'TeamWaypoint'}
-	util.AddNetworkString "DMaps.#{str}Load"
-	util.AddNetworkString "DMaps.#{str}Modify"
-	util.AddNetworkString "DMaps.#{str}Create"
-	util.AddNetworkString "DMaps.#{str}Delete"
+	AddNetworkString "#{str}Load"
+	AddNetworkString "#{str}Modify"
+	AddNetworkString "#{str}Create"
+	AddNetworkString "#{str}Delete"

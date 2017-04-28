@@ -15,44 +15,48 @@
 -- limitations under the License.
 -- 
 
-include 'dmaps/sh_init.lua'
-
 Files = {
-	'dmaps/client/misc.lua'
-	'dmaps/client/cami_wrapper.lua'
-	'dmaps/client/functions.lua'
+	'sh_init.lua'
+	'client/misc.lua'
+	'client/cami_wrapper.lua'
+	'client/functions.lua'
 	
-	'dmaps/client/classes/class_map.lua'
-	'dmaps/client/classes/class_map_point.lua'
-	'dmaps/client/classes/class_map_entity_point.lua'
-	'dmaps/client/classes/player_filter.lua'
-	'dmaps/client/classes/class_player_point.lua'
-	'dmaps/client/classes/class_lplayer_point.lua'
-	'dmaps/client/classes/class_map_waypoint.lua'
-	'dmaps/client/classes/event_point.lua'
-	'dmaps/client/classes/deathpoint.lua'
-	'dmaps/client/classes/waypoints_holder.lua'
-	'dmaps/client/classes/class_clientside_waypoint.lua'
-	'dmaps/client/classes/minimap_entities.lua'
-	'dmaps/client/classes/minimap_npcs.lua'
-	'dmaps/client/classes/minimap_vehicles.lua'
+	'client/classes/class_map.lua'
+	'client/classes/class_map_point.lua'
+	'client/classes/class_map_entity_point.lua'
+	'client/classes/player_filter.lua'
+	'client/classes/class_player_point.lua'
+	'client/classes/class_lplayer_point.lua'
+	'client/classes/class_map_waypoint.lua'
+	'client/classes/event_point.lua'
+	'client/classes/deathpoint.lua'
+	'client/classes/waypoints_holder.lua'
+	'client/classes/class_clientside_waypoint.lua'
+	'client/classes/minimap_entities.lua'
+	'client/classes/minimap_npcs.lua'
+	'client/classes/minimap_vehicles.lua'
 
-	'dmaps/client/controls/control_compass.lua'
-	'dmaps/client/controls/control_arrows.lua'
-	'dmaps/client/controls/control_zoom.lua'
-	'dmaps/client/controls/control_buttons.lua'
-	'dmaps/client/controls/abstract_map_holder.lua'
-	'dmaps/client/controls/waypoint_row.lua'
-	'dmaps/client/controls/waypoint_row.server.lua'
-	'dmaps/client/controls/icons_list.lua'
+	'client/controls/control_compass.lua'
+	'client/controls/control_arrows.lua'
+	'client/controls/control_zoom.lua'
+	'client/controls/control_buttons.lua'
+	'client/controls/abstract_map_holder.lua'
+	'client/controls/waypoint_row.lua'
+	'client/controls/waypoint_row.server.lua'
+	'client/controls/icons_list.lua'
 
-	'dmaps/client/options.lua'
-	'dmaps/client/default_gui.lua'
-	'dmaps/client/waypoints_controller.lua'
-	'dmaps/client/server_waypoints_gui.lua'
-	'dmaps/client/network.lua'
+	'client/options.lua'
+	'client/default_gui.lua'
+	'client/waypoints_controller.lua'
+	'client/server_waypoints_gui.lua'
+	'client/network.lua'
 	
-	'dmaps/common/classes/networked_waypoint.lua'
+	'common/classes/networked_waypoint.lua'
 }
 
-include file for file in *Files
+PostFiles = {
+	'client/darkrp_event_points.lua'
+}
+
+include "dmaps/#{File}" for File in *Files
+timer.Simple 0, -> include "dmaps/#{File}" for File in *PostFiles
