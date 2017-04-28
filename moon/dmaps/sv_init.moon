@@ -18,6 +18,7 @@
 ClientsideFiles = {
 	'dmaps/client/classes/class_map.lua'
 	'dmaps/client/classes/class_map_point.lua'
+	'dmaps/client/classes/event_point.lua'
 	'dmaps/client/classes/deathpoint.lua'
 	'dmaps/client/classes/class_map_entity_point.lua'
 	'dmaps/client/classes/player_filter.lua'
