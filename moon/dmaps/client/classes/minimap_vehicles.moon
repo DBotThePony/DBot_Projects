@@ -96,6 +96,23 @@ class VehiclePointer extends DisplayedEntityBase
 		g = math.Clamp(g % 255, 0, 255)
 		b = math.Clamp(b % 255, 0, 255)
 		@color = Color(r, g, b)
+
+	OpenMenu: (menu = DermaMenu()) =>
+		super(menu)
+		with menu
+			\AddOption('Copy vehicle name', -> SetClipboardText(tostring(@GetVehicleName())))
+			\AddOption('Copy vehicle model', -> SetClipboardText(tostring(@model)))
+			if @isDriven
+				ply = @driver
+				\AddSpacer()
+				\AddOption('Copy Driver\'s Steam name', -> SetClipboardText(tostring(ply\SteamName()))) if ply.SteamName
+				\AddOption('Copy Driver\'s UserID', -> SetClipboardText(tostring(ply\UserID())))
+				\AddOption('Copy Driver\'s SteamID', -> SetClipboardText(tostring(ply\SteamID())))
+				\AddOption('Copy Driver\'s SteamID64', -> SetClipboardText(tostring(ply\SteamID64())))
+				\AddOption('Copy Driver\'s UniqueID', -> SetClipboardText(tostring(ply\UniqueID())))
+				\AddOption('Open Driver\'s Steam profile', -> gui.OpenURL("http://steamcommunity.com/profiles/#{ply\SteamID64()}/"))
+			\Open()
+		return true
 	
 	Think: (map) =>
 		return if not POINTS_ENABLED\GetBool()
