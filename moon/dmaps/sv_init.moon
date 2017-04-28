@@ -72,6 +72,7 @@ ServersideFiles = {
 	
 	'common/classes/networked_waypoint.lua'
 	
+	'server/classes/a_star_searcher.lua'
 	'server/classes/waypoints_holder.lua'
 	'server/classes/waypoints_holder_team.lua'
 	'server/classes/waypoints_holder_usergroup.lua'
