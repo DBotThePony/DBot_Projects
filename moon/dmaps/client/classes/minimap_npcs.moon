@@ -20,8 +20,9 @@ import DisplayedEntityBase, DeathPointer from DMaps
 
 POINTS_ENABLED = DMaps.ClientsideOption('entities', '1', 'Draw ANY entities on map')
 NPC_POINTS_ENABLED = DMaps.ClientsideOption('npcs', '1', 'Enable map NPCs display')
-SV_POINTS_ENABLED = CreateConVar('sv_dmaps_entities', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable map entities display')
-SV_NPC_POINTS_ENABLED = CreateConVar('sv_dmaps_npcs', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable map NPCs display')
+SV_POINTS_ENABLED = CreateConVar('sv_dmaps_entities', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Enable map entities display')
+SV_NPC_POINTS_ENABLED = CreateConVar('sv_dmaps_npcs', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Enable map NPCs display')
+SV_NPC_POINTS_TIME = CreateConVar('sv_dmaps_npc_death_duration', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'NPC death point live time in minutes')
 
 DRAW_DEATHPOINTS_NPCS = DMaps.ClientsideOption('draw_deathpoints_npc', '1', 'Draw NPCs deathpoints on map')
 
@@ -40,7 +41,7 @@ class NPCDeathPoint extends DeathPointer
 	new: (point) =>
 		super(point\GetNPCName(), point.x, point.y, point.z)
 		@SetYaw(point.eyesYaw)
-		@SetLiveTime(@@GetDefaultTime() * point\GetNPCSize())
+		@SetLiveTime(SV_NPC_POINTS_TIME\GetFloat() * point\GetNPCSize())
 		@SetSize(point\GetNPCSize() * 0.5)
 	Draw: (map) =>
 		return if not DRAW_DEATHPOINTS_NPCS\GetBool()
