@@ -21,6 +21,35 @@ DISPLAY_DEATHS = CreateConVar('sv_dmaps_deathpoints', '1', {FCVAR_ARCHIVE, FCVAR
 DISPLAY_DEATHS_NPC = CreateConVar('sv_dmaps_deathpoints_npc', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Enable NPCs death points')
 DISPLAY_DEATHS_PLAYER = CreateConVar('sv_dmaps_deathpoints_player', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Enable Players death points')
 
+netDMGTable = {
+	DMG_BLAST
+	DMG_BLAST_SURFACE
+	DMG_SLASH
+	DMG_CLUB
+	DMG_ENERGYBEAM
+	DMG_PLASMA
+	DMG_DISSOLVE
+	DMG_SHOCK
+	DMG_GENERIC
+	DMG_BULLET
+	DMG_BUCKSHOT
+	DMG_DIRECT
+	DMG_CRUSH
+	DMG_PHYSGUN
+	DMG_BURN
+	DMG_SLOWBURN
+	DMG_DROWN
+	DMG_DROWNRECOVER
+	DMG_FALL
+	DMG_PARALYZE
+	DMG_NERVEGAS
+	DMG_POISON
+	DMG_ACID
+	DMG_RADIATION
+}
+
+netDMGTableBackward = {v, k for k, v in pairs netDMGTable}
+
 hook.Add 'OnNPCKilled', 'DMaps.Hooks', (npc = NULL, attacker = NULL, weapon = NULL) ->
 	return if not DISPLAY_DEATHS\GetBool()
 	return if not DISPLAY_DEATHS_NPC\GetBool()
@@ -37,7 +66,7 @@ hook.Add 'PlayerLeaveVehicle', 'DMaps.Hooks', (ply = NULL, veh = NULL) ->
 	if not IsValid(ply) or not IsValid(veh) return
 	veh\SetNWEntity('DMaps.Driver', NULL)
 
-hook.Add 'PlayerDeath', 'DMaps.Hooks', (ply = NULL, weapon = NULL, attacker = NULL) ->
+hook.Add 'DoPlayerDeath', 'DMaps.Hooks', (ply = NULL, attacker = NULL, dmg = DamageInfo()) ->
 	return if not IsValid(ply)
 	if not DISPLAY_DEATHS\GetBool() or not DISPLAY_DEATHS_PLAYER\GetBool()
 		net.Start('DMaps.PlayerDeath')
@@ -48,4 +77,7 @@ hook.Add 'PlayerDeath', 'DMaps.Hooks', (ply = NULL, weapon = NULL, attacker = NU
 	net.Start('DMaps.PlayerDeath')
 	net.WriteEntity(ply)
 	net.WriteVector(ply\GetPos())
+	dmgType = netDMGTableBackward[dmg\GetDamageType() or DMG_GENERIC]
+	net.WriteBool(dmgType ~= nil)
+	net.WriteUInt(dmgType, 8) if dmgType
 	net.Broadcast()
