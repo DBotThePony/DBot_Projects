@@ -327,13 +327,13 @@ timer.Create 'DMaps.DispalyedNPCSUpdate', 0.5, 0, ->
 	return if not NPC_POINTS_ENABLED\GetBool()
 	return if not SV_NPC_POINTS_ENABLED\GetBool()
 	for {ent, mClass, pos, mdl, dist} in *DMaps.__lastEntsGetAll
-		if DMaps.IgnoreNPCs[nClass] continue
+		if DMaps.IgnoreNPCs[mClass] continue
 		if not ent\IsNPC() continue
 		if ent.__dmaps_ignore continue
 
 		hit = false
 		for handler in *DMaps.NPCsHandlers
-			reply = handler\CheckNPC(ent, nClass)
+			reply = handler\CheckNPC(ent, mClass)
 			if dist > handler.DefaultRangeQ and reply
 				hit = true
 				break
