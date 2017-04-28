@@ -24,6 +24,8 @@ assert = (arg, tp) ->
 	_assert(type(arg) == tp, 'must be ' .. tp)
 	return arg
 
+LIGHT_COLOR = DMaps.CreateColor(230, 230, 230, 'light', 'Map hightlight (bottom light) color')
+
 class DMap
 	@MAP_2D_SIZE = 8000
 	@MAP_2D_STEP_LIMIT = 1000
@@ -770,26 +772,15 @@ class DMap
 		
 		cam.End3D2D()
 	
-	@MAP_2D_LIGHT_SIZE = 1000
-	@MAP_2D_LIGHT_SIZING = 16000
-	@MAP_2D_LIGHT_START_X = -@MAP_2D_LIGHT_SIZING
-	@MAP_2D_LIGHT_END_X = @MAP_2D_LIGHT_SIZING
-	@MAP_2D_LIGHT_START_Y = -@MAP_2D_LIGHT_SIZING
-	@MAP_2D_LIGHT_END_Y = @MAP_2D_LIGHT_SIZING
-	@MAP_2D_LIGHT_Z = -1600
 	@MAP_2D_LIGHT_ANGLE_CONST = Angle(0, 0, 0)
 	
-	-- Better not override that
 	Draw2DLight: =>
-		if true then return -- just a test
-		draw.NoTexture!
-		surface.SetDrawColor(255, 255, 255)
-		for x = @@MAP_2D_LIGHT_START_X, @@MAP_2D_LIGHT_END_X, @@MAP_2D_LIGHT_SIZE
-			for y = @@MAP_2D_LIGHT_START_Y, @@MAP_2D_LIGHT_END_Y, @@MAP_2D_LIGHT_SIZE
-				vec = Vector(x, y, @@MAP_2D_LIGHT_Z)
-				cam.Start3D2D(vec, @@MAP_2D_LIGHT_ANGLE_CONST, 10)
-				surface.DrawRect(x, y, @@MAP_2D_LIGHT_SIZE, @@MAP_2D_LIGHT_SIZE)
-				cam.End3D2D()
+		draw.NoTexture()
+		surface.SetDrawColor(LIGHT_COLOR())
+		vec = Vector(-50000, 50000, @clipLevelBottom + 10)
+		cam.Start3D2D(vec, @@MAP_2D_LIGHT_ANGLE_CONST, 200)
+		surface.DrawRect(0, 0, 400, 400)
+		cam.End3D2D()
 	
 	BuildRenderList: =>
 		pre = {}
