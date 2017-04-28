@@ -169,6 +169,8 @@ class DMap
 	GetAutoZoomMult: => @autoZoomMult
 	GetMinimalAutoZoom: => @MINIMAL_AUTO_ZOOM
 	GetZoomAdd: => @zoomAdd
+	GetClipLevelBottom: => @clipLevelBottom
+	GetClipLevelTop: => @clipLevelTop
 	
 	GetZoomLock: => @lockZoom
 	GetClipLock: => @lockClip
@@ -215,6 +217,9 @@ class DMap
 	SetAutoZoomMult: (val = 1) => @autoZoomMult = val
 	SetZoomAdd: (val = 0) => @zoomAdd = val
 	SetMinimalAutoZoom: (val = @@MINIMAL_ZOOM) => @MINIMAL_AUTO_ZOOM = val
+
+	SetClipLevelBottom: (val = 0) => @clipLevelBottom = val
+	SetClipLevelTop: (val = 0) => @clipLevelTop = val
 	
 	GetFOV: => @fov
 	
@@ -223,6 +228,7 @@ class DMap
 	GetPosTop: => Vector(@currX, @currY, @clipLevelTop)
 	GetPosBottom: => Vector(@currX, @currY, @clipLevelBottom)
 	GetPosCurrent: => Vector(@currX, @currY, @currZ + 100)
+	
 	
 	GetDrawPos: => Vector(@currX, @currY, @zoom)
 	GetAngles: => @angle

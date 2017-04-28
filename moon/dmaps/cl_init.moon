@@ -39,6 +39,7 @@ Files = {
 	'client/controls/control_compass.lua'
 	'client/controls/control_arrows.lua'
 	'client/controls/control_zoom.lua'
+	'client/controls/control_clip.lua'
 	'client/controls/control_buttons.lua'
 	'client/controls/abstract_map_holder.lua'
 	'client/controls/waypoint_row.lua'

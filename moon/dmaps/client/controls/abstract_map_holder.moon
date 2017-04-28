@@ -55,6 +55,12 @@ PANEL.Init = =>
 	@zoom = vgui.Create('DMapsMapZoom', @)
 	@zoom\SetMap(@mapObject)
 	
+	@bottomClip = vgui.Create('DMapsMapClipBottom', @)
+	@bottomClip\SetMap(@mapObject)
+	
+	@topClip = vgui.Create('DMapsMapClipTop', @)
+	@topClip\SetMap(@mapObject)
+	
 	@mapObject\AddObject(DMapLocalPlayerPointer!)
 	@mapObject\CloneNetworkWaypoints()
 	@mapObject\ListenNetworkWaypoints()
@@ -190,10 +196,14 @@ PANEL.PerformLayout = (w, h) =>
 	@arrows\SetSizeMult(guiMult)
 	@compass\SetSizeMult(guiMult)
 	@zoom\SetSizeMult(guiMult)
+	@bottomClip\SetSizeMult(guiMult)
+	@topClip\SetSizeMult(guiMult)
 
 	@compass\SetPos(20, h - @compass.HEIGHT - 20)
 	@arrows\SetPos(w - @arrows.WIDTH - 25, 10)
 	@zoom\SetPos(w - @arrows.WIDTH / 2 - @zoom.WIDTH, @arrows.HEIGHT + 40)
+	@bottomClip\SetPos(w - @arrows.WIDTH / 2 - @zoom.WIDTH - 10, @arrows.HEIGHT + 60 + @zoom.HEIGHT)
+	@topClip\SetPos(w - @arrows.WIDTH / 2 - @zoom.WIDTH + @bottomClip.WIDTH + 10, @arrows.HEIGHT + 60 + @zoom.HEIGHT)
 
 PANEL.Think = =>
 	if not @IsHovered!
