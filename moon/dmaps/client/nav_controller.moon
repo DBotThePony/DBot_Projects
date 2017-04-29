@@ -27,7 +27,7 @@ DMaps.NavigationStart = Vector(0, 0, 0)
 DMaps.NavigationEnd = Vector(0, 0, 0)
 
 NAV_POINT_COLOR = DMaps.CreateColor(255, 255, 255, 'nav_target', 'Navigation target point color')
-DRAW_DIST = CreateConVar('cl_dmaps_nav_line_dist', '1600', {FCVAR_ARCHIVE}, 'How far navigation path should draw')
+DRAW_DIST = CreateConVar('cl_dmaps_nav_line_dist', '1000', {FCVAR_ARCHIVE}, 'How far navigation path should draw')
 
 ARROW_DATA_1 = {
 	{x: 0, y: 15}
@@ -72,9 +72,8 @@ hook.Add 'DrawDMapWorld', 'DMaps.Navigation', =>
 	surface.SetDrawColor(34, 209, 217)
 
 	for {point, nDist, :approx} in *DMaps.NavigationPoints
-		if nDist - 40 > dist break
 		if nDist + mDist < dist continue
-		--if last\DistToSqr(v) < 400 continue
+		if nDist - mDist > dist continue
 		for {v, deltaAng} in *approx
 			cam.Start3D2D(v, deltaAng, 1)
 			surface.DrawPoly(ARROW_DATA_1)
