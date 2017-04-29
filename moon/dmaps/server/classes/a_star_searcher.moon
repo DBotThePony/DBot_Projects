@@ -51,7 +51,7 @@ class AStarNode
 class AStarTracer
 	@nextID = 1
 
-	new: (startPos = Vector(0, 0, 0), endPos = Vector(0, 0, 0), loopsPerIteration = 50, limit = 6000) =>
+	new: (startPos = Vector(0, 0, 0), endPos = Vector(0, 0, 0), loopsPerIteration = 50, limit = 6000, frameThersold = 30, timeThersold = 3000) =>
 		@ID = @@nextID
 		@@nextID += 1
 		@working = false
@@ -68,6 +68,9 @@ class AStarTracer
 		@loopsPerIteration = loopsPerIteration
 		@limit = limit
 		@hasLimit = limit ~= 0
+		@frameThersold = frameThersold
+		@timeThersold = timeThersold
+		@totalTime = 0
 		@callbackFail = =>
 		@callbackSuccess = =>
 		@callbackStop = =>
@@ -143,6 +146,7 @@ class AStarTracer
 		
 		@working = true
 		@iterations = 0
+		@totalTime = 0
 		newNode = AStarNode(@firstNodeNav, @startPos\DistToSqr(@firstNodeNav\GetCenter()), @endPos)
 		@opened = {newNode}
 		@database = {newNode}
@@ -178,8 +182,11 @@ class AStarTracer
 		if #@opened == 0
 			@OnFailure()
 			return
+		
+		calculationTime = 0
 
 		for i = 1, @loopsPerIteration
+			sTime = SysTime()
 			@iterations += 1
 			if @iterations > @limit
 				@OnFailure()
@@ -213,6 +220,14 @@ class AStarTracer
 					nodeObject\SetFrom(nearest)
 					@AddNode(nodeObject)
 					table.insert(@opened, nodeObject)
+			cTime = (SysTime() - sTime) * 1000
+			calculationTime += cTime
+			@totalTime += cTime
+			if @totalTime >= @timeThersold
+				@OnFailure()
+				return
+			if calculationTime >= @frameThersold
+				break
 
 DMaps.AStarTracer = AStarTracer
 DMaps.AStarNode = AStarNode
