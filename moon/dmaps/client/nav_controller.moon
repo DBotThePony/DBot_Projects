@@ -71,15 +71,15 @@ hook.Add 'DrawDMapWorld', 'DMaps.Navigation', =>
 	draw.NoTexture()
 	surface.SetDrawColor(34, 209, 217)
 
-	for {v, nDist, last, delta, deltaAng} in *DMaps.NavigationPoints
+	for {point, nDist, :approx} in *DMaps.NavigationPoints
 		if nDist - 40 > dist break
 		if nDist + mDist < dist continue
-		if not last continue
 		--if last\DistToSqr(v) < 400 continue
-		cam.Start3D2D(v, deltaAng, 1)
-		surface.DrawPoly(ARROW_DATA_1)
-		surface.DrawPoly(ARROW_DATA_2)
-		cam.End3D2D()
+		for {v, deltaAng} in *approx
+			cam.Start3D2D(v, deltaAng, 1)
+			surface.DrawPoly(ARROW_DATA_1)
+			surface.DrawPoly(ARROW_DATA_2)
+			cam.End3D2D()
 	
 	cam.IgnoreZ(false)
 
@@ -148,6 +148,7 @@ net.Receive 'DMaps.Navigation.Require', ->
 			Derma_Message('Server is unable to find a path to requested point\n:(', 'DMaps navigation failure', 'OK')
 		return
 	else
+		sysTime = SysTime()
 		points = [Vector(net.ReadInt(16), net.ReadInt(16), net.ReadInt(16)) for i = 1, net.ReadUInt(16)]
 		if points[1]\Distance(points[2]) < 300
 			table.remove(points, 2)
@@ -171,17 +172,18 @@ net.Receive 'DMaps.Navigation.Require', ->
 
 		local last
 		DMaps.NavigationPoints = for point in *newPoints
-			lastIn = last
-			last = point
-			output = {point, point\Distance(DMaps.NavigationEnd), lastIn}
-			if lastIn
-				delta = lastIn - point
-				deltaAng = delta\Angle()
-				deltaAng\RotateAroundAxis(deltaAng\Forward(), 90)
-				deltaAng\RotateAroundAxis(deltaAng\Right(), 90)
-				deltaAng\RotateAroundAxis(deltaAng\Forward(), -90)
-				table.insert(output, delta)
-				table.insert(output, deltaAng)
+			last = last or point
+			output = {point, point\Distance(DMaps.NavigationEnd), approx: {}}
+			distBetween = last\Distance(point)
+			if distBetween >= 50
+				for i = 50, distBetween, 50
+					calcVector = LerpVector(i / distBetween, last, point)
+					deltaAng = (last - calcVector)\Angle()
+					deltaAng\RotateAroundAxis(deltaAng\Forward(), 90)
+					deltaAng\RotateAroundAxis(deltaAng\Right(), 90)
+					deltaAng\RotateAroundAxis(deltaAng\Forward(), -90)
+					table.insert(output.approx, {calcVector, deltaAng})
+				last = point
 			output
 
 		{:x, :y, :z} = DMaps.NavigationEnd
@@ -189,3 +191,4 @@ net.Receive 'DMaps.Navigation.Require', ->
 		map = DMaps.GetMainMap()
 		map\AddObject(lastNavPoint) if map
 		DMaps.NavRequestWindow\Remove() if DMaps.LastNavRequestWindow and IsValid(DMaps.NavRequestWindow)
+		DMaps.Message('Clientside navigation processing took ', math.floor((SysTime() - sysTime) * 10000) / 10, ' milliseconds')
