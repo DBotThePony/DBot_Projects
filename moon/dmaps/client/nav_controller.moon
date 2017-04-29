@@ -27,6 +27,7 @@ DMaps.NavigationStart = Vector(0, 0, 0)
 DMaps.NavigationEnd = Vector(0, 0, 0)
 
 NAV_POINT_COLOR = DMaps.CreateColor(255, 255, 255, 'nav_target', 'Navigation target point color')
+DRAW_DIST = CreateConVar('cl_dmaps_nav_line_dist', '1600', {FCVAR_ARCHIVE}, 'How far navigation path should draw')
 
 local lastNavPoint
 
@@ -50,10 +51,12 @@ hook.Add 'DrawDMapWorld', 'DMaps.Navigation', =>
 	color = Color(255, 255, 255)
 	pos = LocalPlayer()\GetPos()
 	dist = DMaps.NavigationEnd\Distance(pos)
+	mDist = DRAW_DIST\GetInt()
 	local last
 	
 	for {v, nDist} in *DMaps.NavigationPoints
-		if nDist > dist break
+		if nDist - 40 > dist break
+		if nDist + mDist < dist continue
 		last = last or v
 		render.DrawLine(last, v, color)
 		last = v
@@ -124,6 +127,8 @@ net.Receive 'DMaps.Navigation.Require', ->
 		return
 	else
 		points = [Vector(net.ReadInt(16), net.ReadInt(16), net.ReadInt(16)) for i = 1, net.ReadUInt(16)]
+		if points[1]\Distance(points[2]) < 300
+			table.remove(points, 2)
 		newPoints = {}
 
 		for i = 2, #points, 2
