@@ -16,7 +16,7 @@
 -- 
 
 import DMaps, timer, CreateConVar, draw, surface, Color from _G
-import EventPointer, Icon from DMaps
+import EventPointer, Icon, DMapWaypoint from DMaps
 
 SV_DEATH_POINT_DURATION = CreateConVar('sv_dmaps_deathpoints_duration', '15', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Player death point live time in minutes')
 DRAW_DEATHPOINTS = DMaps.ClientsideOption('draw_deathpoints', '1', 'Draw deathpoints on map')
