@@ -58,6 +58,7 @@ class AStarTracer
 		@hasfinished = false
 		@failure = false
 		@success = false
+		@stop = false
 		@opened = {}
 		@closed = {}
 		@database = {}
@@ -70,6 +71,13 @@ class AStarTracer
 		@callbackFail = =>
 		@callbackSuccess = =>
 		@callbackStop = =>
+	
+	IsStopped: => @stop
+	IsWorking: => @working
+	IsSuccess: => @success
+	IsFailure: => @failure
+	IsFinished: => @hasfinished
+	HasFinished: => @hasfinished
 
 	SetSuccessCallback: (val = (=>)) =>
 		@callbackSuccess = val
@@ -104,6 +112,8 @@ class AStarTracer
 	Stop: =>
 		return if not @working
 		@working = false
+		@stop = true
+		@hasfinished = true
 		hook.Remove 'Think', tostring(@)
 		@callbackStop()
 	

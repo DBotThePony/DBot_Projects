@@ -50,6 +50,7 @@ ClientsideFiles = {
 	'client/server_waypoints_gui.lua'
 	'client/network.lua'
 	'client/misc.lua'
+	'client/nav_controller.lua'
 	
 	'common/functions.lua'
 	'common/icons.lua'
@@ -86,6 +87,7 @@ ServersideFiles = {
 	'server/functions.lua'
 	'server/commands.lua'
 	'server/hooks.lua'
+	'server/nav_controller.lua'
 }
 
 PostFiles = {

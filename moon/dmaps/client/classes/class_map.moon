@@ -831,7 +831,7 @@ class DMap
 		pos1 = vec1Check\ToScreen!
 		pos2 = vec2Check\ToScreen!
 		
-		render.SetViewPort(unpack(@CURENT_RENDER_PORT))
+		render.SetViewPort(unpack(@CURRENT_RENDER_PORT))
 		
 		@xHUPerPixel = (pos2.x - pos1.x) / 50
 		@xHUPerPixelOriginal = (pos2.x - pos1.x) / 40
@@ -839,8 +839,11 @@ class DMap
 		@yHUPerPixelOriginal = (pos1.y - pos2.y) / 40
 		
 		oldClipping = render.EnableClipping(false)
+		xpcall(hook.Run, @@CatchError, 'PreDrawDMap2D', @, screenx, screeny, screenw, screen)
 		xpcall(@PreDraw2D, @@CatchError, @, screenx, screeny, screenw, screenh)
+		xpcall(hook.Run, @@CatchError, 'DrawDMap2D', @, screenx, screeny, screenw, screen)
 		xpcall(@Draw2D, @@CatchError, @, screenx, screeny, screenw, screenh)
+		xpcall(hook.Run, @@CatchError, 'PostDrawDMap2D', @, screenx, screeny, screenw, screen)
 		xpcall(@PostDraw2D, @@CatchError, @, screenx, screeny, screenw, screenh)
 		render.EnableClipping(oldClipping)
 	
@@ -884,16 +887,19 @@ class DMap
 		
 		render.SuppressEngineLighting(true)
 		@PREVIOUS_RENDER_PORT = {0, 0, oldW, oldH}
-		@CURENT_RENDER_PORT = {newX, newY, newWidth, newHeight}
+		@CURRENT_RENDER_PORT = {newX, newY, newWidth, newHeight}
 		
 		@REAL_SCRW = oldW
 		@REAL_SCRH = oldH
 		
-		render.SetViewPort(unpack(@CURENT_RENDER_PORT))
+		render.SetViewPort(unpack(@CURRENT_RENDER_PORT))
 		
 		xpcall(@PreDraw, @@CatchError, @, @DRAW_X, newY, newWidth, newHeight)
+		xpcall(hook.Run, @@CatchError, 'PreDrawDMap', @, @DRAW_X, newY, newWidth, newHeight)
 		xpcall(@Draw, @@CatchError, @, @DRAW_X, newY, newWidth, newHeight)
+		xpcall(hook.Run, @@CatchError, 'DrawDMap', @, @DRAW_X, newY, newWidth, newHeight)
 		xpcall(@PostDraw, @@CatchError, @, @DRAW_X, newY, newWidth, newHeight)
+		xpcall(hook.Run, @@CatchError, 'PostDrawDMap', @, @DRAW_X, newY, newWidth, newHeight)
 		
 		render.SetViewPort(unpack(@PREVIOUS_RENDER_PORT))
 		render.SuppressEngineLighting(false)
@@ -909,8 +915,11 @@ class DMap
 	
 	DrawWorldHook: =>
 		xpcall(@PreDrawWorld, @@CatchError, @)
+		xpcall(hook.Run, @@CatchError, 'PreDrawDMapWorld', @)
 		xpcall(@DrawWorld, @@CatchError, @)
+		xpcall(hook.Run, @@CatchError, 'DrawDMapWorld', @)
 		xpcall(@PostDrawWorld, @@CatchError, @)
+		xpcall(hook.Run, @@CatchError, 'PostDrawDMapWorld', @)
 		
 DMaps.DMap = DMap
 return DMap

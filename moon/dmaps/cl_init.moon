@@ -51,6 +51,7 @@ Files = {
 	'client/waypoints_controller.lua'
 	'client/server_waypoints_gui.lua'
 	'client/network.lua'
+	'client/nav_controller.lua'
 	
 	'common/classes/networked_waypoint.lua'
 }
