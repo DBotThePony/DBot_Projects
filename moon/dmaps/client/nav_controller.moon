@@ -27,6 +27,7 @@ DMaps.NavigationStart = Vector(0, 0, 0)
 DMaps.NavigationEnd = Vector(0, 0, 0)
 
 NAV_POINT_COLOR = DMaps.CreateColor(255, 255, 255, 'nav_target', 'Navigation target point color')
+NAV_ARROW_COLOR = DMaps.CreateColor(34, 209, 217, 'nav_arrow', 'Navigation arrows color')
 DRAW_DIST = CreateConVar('cl_dmaps_nav_line_dist', '1000', {FCVAR_ARCHIVE}, 'How far navigation path should draw')
 
 ARROW_DATA_1 = {
@@ -62,14 +63,12 @@ hook.Add 'DrawDMap2D', 'DMaps.Navigation', (x, y, w, h) =>
 hook.Add 'DrawDMapWorld', 'DMaps.Navigation', =>
 	return if not DMaps.NAV_ENABLE\GetBool()
 	return if not DMaps.IsNavigating
-	color = Color(255, 255, 255)
-	pos = LocalPlayer()\GetPos()
-	dist = DMaps.NavigationEnd\Distance(pos)
+	dist = DMaps.NavigationEnd\Distance(LocalPlayer()\GetPos())
 	mDist = DRAW_DIST\GetInt()
 	
 	cam.IgnoreZ(true)
 	draw.NoTexture()
-	surface.SetDrawColor(34, 209, 217)
+	surface.SetDrawColor(NAV_ARROW_COLOR())
 
 	for {point, nDist, :approx} in *DMaps.NavigationPoints
 		if nDist + mDist < dist continue
