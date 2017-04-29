@@ -178,11 +178,13 @@ net.Receive 'DMaps.Navigation.Require', ->
 			if distBetween >= 50
 				for i = 50, distBetween, 50
 					calcVector = LerpVector(i / distBetween, last, point)
+					add = Vector(-20, 0, 0)
 					deltaAng = (last - calcVector)\Angle()
 					deltaAng\RotateAroundAxis(deltaAng\Forward(), 90)
 					deltaAng\RotateAroundAxis(deltaAng\Right(), 90)
 					deltaAng\RotateAroundAxis(deltaAng\Forward(), -90)
-					table.insert(output.approx, {calcVector, deltaAng})
+					add\Rotate(deltaAng)
+					table.insert(output.approx, {calcVector + add, deltaAng})
 				last = point
 			output
 
