@@ -33,21 +33,29 @@ local lastNavPoint
 hook.Add 'DrawDMap2D', 'DMaps.Navigation', (x, y, w, h) =>
 	return if not DMaps.NAV_ENABLE\GetBool()
 	return if not DMaps.IsNavigating
+	color = Color(255, 255, 255)
+	pos = LocalPlayer()\GetPos()
+	dist = DMaps.NavigationEnd\Distance(pos)
 	local last
 	
-	for v in *DMaps.NavigationPoints
+	for {v, nDist} in *DMaps.NavigationPoints
+		if nDist > dist break
 		last = last or v
-		render.DrawLine(last, v, Color(255, 255, 255))
+		render.DrawLine(last, v, color)
 		last = v
 
 hook.Add 'DrawDMapWorld', 'DMaps.Navigation', =>
 	return if not DMaps.NAV_ENABLE\GetBool()
 	return if not DMaps.IsNavigating
+	color = Color(255, 255, 255)
+	pos = LocalPlayer()\GetPos()
+	dist = DMaps.NavigationEnd\Distance(pos)
 	local last
 	
-	for v in *DMaps.NavigationPoints
+	for {v, nDist} in *DMaps.NavigationPoints
+		if nDist > dist break
 		last = last or v
-		render.DrawLine(last, v, Color(255, 255, 255))
+		render.DrawLine(last, v, color)
 		last = v
 
 hook.Add 'Think', 'DMaps.Navigation', ->
@@ -95,6 +103,17 @@ DMaps.RequireNavigation = (target = Vector(0, 0, 0), displayWindow = true) ->
 		@label\Dock(FILL)
 		@label\SetText('The Server is calculating path to required point...')
 
+Bezier = (vec1 = Vector(0, 0, 0), vec2 = Vector(0, 0, 0), vec3 = Vector(0, 0, 0), step = 0.1) ->
+	{x: x1, y: y1, z: z1} = vec1
+	{x: x2, y: y2, z: z2} = vec2
+	{x: x3, y: y3, z: z3} = vec3
+	output = for t = 0, 1, step
+		x = (1 - t) ^ 2 * x1 + 2 * t * (1 - t) * x2 + t ^ 2 * x3
+		y = (1 - t) ^ 2 * y1 + 2 * t * (1 - t) * y2 + t ^ 2 * y3
+		z = (1 - t) ^ 2 * z1 + 2 * t * (1 - t) * z2 + t ^ 2 * z3
+		Vector(x, y, z)
+	return output
+
 net.Receive 'DMaps.Navigation.Require', ->
 	status = net.ReadBool()
 
@@ -105,12 +124,25 @@ net.Receive 'DMaps.Navigation.Require', ->
 		return
 	else
 		points = [Vector(net.ReadInt(16), net.ReadInt(16), net.ReadInt(16)) for i = 1, net.ReadUInt(16)]
-		DMaps.NavigationStart = points[#points]
-		DMaps.NavigationEnd = points[1]
+		newPoints = {}
+
+		for i = 2, #points, 2
+			point1 = points[i - 1]
+			point2 = points[i]
+			point3 = points[i + 1]
+			if not point1 or not point2 or not point3
+				table.insert(newPoints, point1) if point1
+				table.insert(newPoints, point2) if point2
+				table.insert(newPoints, point3) if point3
+				break
+			for point in *Bezier(point1, point2, point3)
+				table.insert(newPoints, point)
+		DMaps.NavigationStart = newPoints[#newPoints]
+		DMaps.NavigationEnd = newPoints[1]
 		{:x, :y, :z} = DMaps.NavigationEnd
 		lastNavPoint = DMapWaypoint('Navigation target', x, y, z, Color(NAV_POINT_COLOR()), 'gear_in')
 		map = DMaps.GetMainMap()
 		map\AddObject(lastNavPoint) if map
 		DMaps.IsNavigating = true
-		DMaps.NavigationPoints = points
+		DMaps.NavigationPoints = [{point, point\Distance(DMaps.NavigationEnd)} for point in *newPoints]
 		DMaps.NavRequestWindow\Remove() if DMaps.LastNavRequestWindow and IsValid(DMaps.NavRequestWindow)
