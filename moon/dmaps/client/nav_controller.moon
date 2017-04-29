@@ -29,6 +29,20 @@ DMaps.NavigationEnd = Vector(0, 0, 0)
 NAV_POINT_COLOR = DMaps.CreateColor(255, 255, 255, 'nav_target', 'Navigation target point color')
 DRAW_DIST = CreateConVar('cl_dmaps_nav_line_dist', '1600', {FCVAR_ARCHIVE}, 'How far navigation path should draw')
 
+ARROW_DATA_1 = {
+	{x: 0, y: 15}
+	{x: 20, y: 0}
+	{x: 20, y: 5}
+	{x: 0, y: 20}
+}
+
+ARROW_DATA_2 = {
+	{x: 20, y: 0}
+	{x: 40, y: 15}
+	{x: 40, y: 20}
+	{x: 20, y: 5}
+}
+
 local lastNavPoint
 
 hook.Add 'DrawDMap2D', 'DMaps.Navigation', (x, y, w, h) =>
@@ -52,14 +66,22 @@ hook.Add 'DrawDMapWorld', 'DMaps.Navigation', =>
 	pos = LocalPlayer()\GetPos()
 	dist = DMaps.NavigationEnd\Distance(pos)
 	mDist = DRAW_DIST\GetInt()
-	local last
 	
-	for {v, nDist} in *DMaps.NavigationPoints
+	cam.IgnoreZ(true)
+	draw.NoTexture()
+	surface.SetDrawColor(34, 209, 217)
+
+	for {v, nDist, last, delta, deltaAng} in *DMaps.NavigationPoints
 		if nDist - 40 > dist break
 		if nDist + mDist < dist continue
-		last = last or v
-		render.DrawLine(last, v, color)
-		last = v
+		if not last continue
+		--if last\DistToSqr(v) < 400 continue
+		cam.Start3D2D(v, deltaAng, 1)
+		surface.DrawPoly(ARROW_DATA_1)
+		surface.DrawPoly(ARROW_DATA_2)
+		cam.End3D2D()
+	
+	cam.IgnoreZ(false)
 
 hook.Add 'Think', 'DMaps.Navigation', ->
 	return if not DMaps.NAV_ENABLE\GetBool()
@@ -110,7 +132,7 @@ Bezier = (vec1 = Vector(0, 0, 0), vec2 = Vector(0, 0, 0), vec3 = Vector(0, 0, 0)
 	{x: x1, y: y1, z: z1} = vec1
 	{x: x2, y: y2, z: z2} = vec2
 	{x: x3, y: y3, z: z3} = vec3
-	output = for t = 0, 1, step
+	output = for t = step, 1 - step, step
 		x = (1 - t) ^ 2 * x1 + 2 * t * (1 - t) * x2 + t ^ 2 * x3
 		y = (1 - t) ^ 2 * y1 + 2 * t * (1 - t) * y2 + t ^ 2 * y3
 		z = (1 - t) ^ 2 * z1 + 2 * t * (1 - t) * z2 + t ^ 2 * z3
@@ -142,12 +164,28 @@ net.Receive 'DMaps.Navigation.Require', ->
 				break
 			for point in *Bezier(point1, point2, point3)
 				table.insert(newPoints, point)
+
 		DMaps.NavigationStart = newPoints[#newPoints]
 		DMaps.NavigationEnd = newPoints[1]
+		DMaps.IsNavigating = true
+
+		local last
+		DMaps.NavigationPoints = for point in *newPoints
+			lastIn = last
+			last = point
+			output = {point, point\Distance(DMaps.NavigationEnd), lastIn}
+			if lastIn
+				delta = lastIn - point
+				deltaAng = delta\Angle()
+				deltaAng\RotateAroundAxis(deltaAng\Forward(), 90)
+				deltaAng\RotateAroundAxis(deltaAng\Right(), 90)
+				deltaAng\RotateAroundAxis(deltaAng\Forward(), -90)
+				table.insert(output, delta)
+				table.insert(output, deltaAng)
+			output
+
 		{:x, :y, :z} = DMaps.NavigationEnd
 		lastNavPoint = DMapWaypoint('Navigation target', x, y, z, Color(NAV_POINT_COLOR()), 'gear_in')
 		map = DMaps.GetMainMap()
 		map\AddObject(lastNavPoint) if map
-		DMaps.IsNavigating = true
-		DMaps.NavigationPoints = [{point, point\Distance(DMaps.NavigationEnd)} for point in *newPoints]
 		DMaps.NavRequestWindow\Remove() if DMaps.LastNavRequestWindow and IsValid(DMaps.NavRequestWindow)
