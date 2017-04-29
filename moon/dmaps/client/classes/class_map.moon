@@ -461,9 +461,9 @@ class DMap
 					objectTab[k] = nil
 		table.sort output, (a, b) ->
 			Ax = a\GetX()
-			Ay = a\Gety()
+			Ay = a\GetY()
 			Bx = b\GetX()
-			By = b\Gety()
+			By = b\GetY()
 			DistA = ((Ax - x) ^ 2 + (Ay - y) ^ 2)
 			DistB = ((Bx - x) ^ 2 + (By - y) ^ 2)
 			DistA < DistB
