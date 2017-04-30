@@ -116,11 +116,12 @@ DMaps.OpenMap = ->
 			map\SetMinimalAutoZoom()
 concommand.Add('dmaps_open', DMaps.OpenMap)
 
-timer.Simple 0, ->
-	timer.Simple 0, ->
-		timer.Simple 0, ->
-			DMaps.OpenMap()
-			timer.Simple 0.1, -> DMaps.MainFrame\Close()
+timer.Simple 0.1, ->
+	timer.Simple 0.1, ->
+		timer.Simple 0.1, ->
+			timer.Simple 0.1, ->
+				DMaps.OpenMap()
+				timer.Simple 0.2, -> DMaps.MainFrame\Close()
 
 hook.Add 'Think', 'DMaps.DrawAsMinimap', ->
 	if not DMaps.DISPLAY_AS_MINIMAP return
