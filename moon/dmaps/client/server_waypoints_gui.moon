@@ -112,7 +112,7 @@ class ServerWaypointsContainer
 		@list = [@@ReadWaypointData() for i = 1, count]
 	IsValid: => IsValid(@frame)
 	DoRemove: (id = 0) =>
-		return Derma_Message("You need '#{@__PERM_DELETE}' permission!", 'Mission permissions', 'Okay') if not DMaps.HasPermission(@__PERM_DELETE)
+		return Derma_Message("You need '#{@@__PERM_DELETE}' permission!", 'Mission permissions', 'Okay') if not DMaps.HasPermission(@@__PERM_DELETE)
 		net.Start(@@NETWORK_STRING_DELETE)
 		net.WriteUInt(id, 32)
 		net.SendToServer()
