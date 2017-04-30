@@ -15,6 +15,8 @@
 -- limitations under the License.
 -- 
 
+resource.AddWorkshop('916067750')
+
 ClientsideFiles = {
 	'client/classes/class_map.lua'
 	'client/classes/class_map_point.lua'
