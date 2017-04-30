@@ -77,16 +77,24 @@ hook.Add 'DrawDMapWorld', 'DMaps.Navigation', =>
 	return if not DMaps.IsNavigating
 	dist = DMaps.NavigationEnd\Distance(LocalPlayer()\GetPos())
 	mDist = DRAW_DIST\GetInt()
+	colorR, colorG, colorB = NAV_ARROW_COLOR()
+	colorRInv, colorGInv, colorBInv = 255 - colorR, 255 - colorG, 255 - colorB
+	--surface.SetDrawColor(colorR, colorG, colorB)
 	
 	cam.IgnoreZ(true)
 	draw.NoTexture()
-	surface.SetDrawColor(NAV_ARROW_COLOR())
 
 	for {point, nDist, :approx} in *DMaps.NavigationPoints
 		if nDist + mDist < dist continue
 		if nDist - mDist > dist continue
-		for {v, deltaAng} in *approx
+		for {v, deltaAng, v2, deltaAngRotate} in *approx
+			surface.SetDrawColor(colorR, colorG, colorB)
 			cam.Start3D2D(v, deltaAng, 1)
+			surface.DrawPoly(ARROW_DATA_1)
+			surface.DrawPoly(ARROW_DATA_2)
+			cam.End3D2D()
+			surface.SetDrawColor(colorRInv, colorGInv, colorBInv)
+			cam.Start3D2D(v2, deltaAngRotate, 1)
 			surface.DrawPoly(ARROW_DATA_1)
 			surface.DrawPoly(ARROW_DATA_2)
 			cam.End3D2D()
@@ -191,12 +199,18 @@ net.Receive 'DMaps.Navigation.Require', ->
 				for i = 50, distBetween, 50
 					calcVector = LerpVector(i / distBetween, last, point)
 					add = Vector(-20, 0, 0)
+					add2 = Vector(-20, 0, 0)
 					deltaAng = (last - calcVector)\Angle()
 					deltaAng\RotateAroundAxis(deltaAng\Forward(), 90)
 					deltaAng\RotateAroundAxis(deltaAng\Right(), 90)
 					deltaAng\RotateAroundAxis(deltaAng\Forward(), -90)
 					add\Rotate(deltaAng)
-					table.insert(output.approx, {calcVector + add, deltaAng})
+					{:p, :y, :r} = deltaAng
+					deltaAngRotate = Angle(p, y, r)
+					deltaAngRotate\RotateAroundAxis(deltaAngRotate\Forward(), 180)
+					deltaAngRotate\RotateAroundAxis(deltaAngRotate\Up(), 180)
+					add2\Rotate(deltaAngRotate)
+					table.insert(output.approx, {calcVector + add, deltaAng, calcVector + add2, deltaAngRotate})
 				last = point
 			output
 
