@@ -91,6 +91,7 @@ PANEL.Init = =>
 PANEL.GetMap = => @mapObject
 
 PANEL.ResetButtons = =>	@pressedButtons = {}
+PANEL.IsKeyPressed = (code = KEY_NONE) => @pressedButtons[code] or false
 
 PANEL.OnKeyCodePressed = (code = KEY_NONE) =>
 	return if code == KEY_NONE
@@ -98,6 +99,21 @@ PANEL.OnKeyCodePressed = (code = KEY_NONE) =>
 	switch code
 		when KEY_F1
 			@showHelp = not @showHelp
+		when KEY_R
+			if @IsKeyPressed(KEY_LCONTROL) or @IsKeyPressed(KEY_RCONTROL)
+				@mapObject\LockClip(false)
+				@mapObject\LockZoom(false)
+				@mapObject\LockView(false)
+		when KEY_LCONTROL
+			if @IsKeyPressed(KEY_R)
+				@mapObject\LockClip(false)
+				@mapObject\LockZoom(false)
+				@mapObject\LockView(false)
+		when KEY_RCONTROL
+			if @IsKeyPressed(KEY_R)
+				@mapObject\LockClip(false)
+				@mapObject\LockZoom(false)
+				@mapObject\LockView(false)
 
 PANEL.OnKeyCodeReleased = (code = KEY_NONE) =>
 	return if code == KEY_NONE
@@ -318,7 +334,7 @@ PANEL.Think = =>
 					bMoveY -= FrameTime() * MOVE_MULT\GetInt()
 		bMoveX *= multX
 		bMoveY *= multY
-		
+
 		if bMoveX ~= 0 or bMoveY ~= 0
 			@mapObject\LockView(true)
 			yawDeg = @mapObject\GetYaw!
