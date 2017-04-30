@@ -61,12 +61,12 @@ hook.Add 'DrawDMap2D', 'DMaps.Navigation', =>
 			yaw = math.rad(-deltaAng.y)
 			sin, cos = math.sin(yaw), math.cos(yaw)
 			alpha = 1
-			alpha = math.Clamp((deltaZ - 50) / 150, 0.2, 1) if deltaZ > 50
+			alpha = math.Clamp(1 - (deltaZ - 50) / 150, 0.2, 1) if deltaZ > 50
 			surface.SetDrawColor(colorR, colorG, colorB, 255 * alpha)
 
 			xDraw, yDraw = @Start2D(x, y)
-			newArrow1 = [{x: (xC - 20) * cos - yC * sin + xDraw, y: yC * cos + (xC - 20) * sin + yDraw} for {x: xC, y: yC} in *ARROW_DATA_1]
-			newArrow2 = [{x: (xC - 20) * cos - yC * sin + xDraw, y: yC * cos + (xC - 20) * sin + yDraw} for {x: xC, y: yC} in *ARROW_DATA_2]
+			newArrow1 = [{x: (xC - 10) * cos - yC * sin + xDraw, y: yC * cos + (xC - 10) * sin + yDraw} for {x: xC, y: yC} in *ARROW_DATA_1]
+			newArrow2 = [{x: (xC - 10) * cos - yC * sin + xDraw, y: yC * cos + (xC - 10) * sin + yDraw} for {x: xC, y: yC} in *ARROW_DATA_2]
 			surface.DrawPoly(newArrow1)
 			surface.DrawPoly(newArrow2)
 			cam.End3D2D()
