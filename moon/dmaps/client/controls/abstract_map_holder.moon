@@ -100,20 +100,9 @@ PANEL.OnKeyCodePressed = (code = KEY_NONE) =>
 		when KEY_F1
 			@showHelp = not @showHelp
 		when KEY_R
-			if @IsKeyPressed(KEY_LCONTROL) or @IsKeyPressed(KEY_RCONTROL)
-				@mapObject\LockClip(false)
-				@mapObject\LockZoom(false)
-				@mapObject\LockView(false)
-		when KEY_LCONTROL
-			if @IsKeyPressed(KEY_R)
-				@mapObject\LockClip(false)
-				@mapObject\LockZoom(false)
-				@mapObject\LockView(false)
-		when KEY_RCONTROL
-			if @IsKeyPressed(KEY_R)
-				@mapObject\LockClip(false)
-				@mapObject\LockZoom(false)
-				@mapObject\LockView(false)
+			@mapObject\LockClip(false)
+			@mapObject\LockZoom(false)
+			@mapObject\LockView(false)
 
 PANEL.OnKeyCodeReleased = (code = KEY_NONE) =>
 	return if code == KEY_NONE
