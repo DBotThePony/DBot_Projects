@@ -34,26 +34,26 @@ class AStarNode
 		@g = g
 		@h = target\DistToSqr(@pos)
 		@f = @g + @h
-		for side in *@@SIDES
-			getPos = nav\GetCorner(side)
-			getPos -= @pos
-			getPos *= .5
-			getPos += @pos
-			table.insert(@positions, getPos)
-		@gArray = [@g for i = 1, #@positions]
-		@hArray = [@h for i = 1, #@positions]
-		@fArray = [@f for i = 1, #@positions]
+		--for side in *@@SIDES
+		--	getPos = nav\GetCorner(side)
+		--	getPos -= @pos
+		--	getPos *= .5
+		--	getPos += @pos
+		--	table.insert(@positions, getPos)
+		--@gArray = [@g for i = 1, #@positions]
+		--@hArray = [@h for i = 1, #@positions]
+		--@fArray = [@f for i = 1, #@positions]
 	
-	Nearest: (pos = @pos) =>
-		local min
-		local output
-		
-		for mPos in *@positions
-			dist = mPos\DistToSqr(pos)
-			if not min or min > dist
-				min = dist
-				output = mPos
-		return output
+	--Nearest: (pos = @pos) =>
+	--	local min
+	--	local output
+	--	
+	--	for mPos in *@positions
+	--		dist = mPos\DistToSqr(pos)
+	--		if not min or min > dist
+	--			min = dist
+	--			output = mPos
+	--	return output
 
 	SetG: (val = 0) =>
 		@g = val
@@ -63,26 +63,27 @@ class AStarNode
 		@f = @g + @h
 	SetFrom: (val) =>
 		@from = val
-		@fromPos = @from\GetPos(1)
-		min = @fromPos\DistToSqr(@pos)
-		for pos in *@from\GetPositions()
-			for mPos in *@positions
-				dist = mPos\DistToSqr(pos)
-				if dist < min
-					@fromPos = pos
-					min = dist
-	SetFromPos: (index = 1) =>
-		@fromPos = @from\GetPos(index)
+		--@fromPos = @from\GetPos(1)
+		--min = @fromPos\DistToSqr(@pos)
+		--for pos in *@from\GetPositions()
+		--	for mPos in *@positions
+		--		dist = mPos\DistToSqr(pos)
+		--		if dist < min
+		--			@fromPos = pos
+		--			min = dist
+	--SetFromPos: (index = 1) =>
+	--	@fromPos = @from\GetPos(index)
 	
 	__tostring: => "[DMaps:AStarNode:#{@nav}]"
 
 	GetG: => @g
 	GetH: => @h
 	GetF: => @f
-	GetPos: (index = 1) => @positions[index] or @pos
-	GetPositions: => [pos for pos in *@positions]
+	--GetPos: (index = 1) => @positions[index] or @pos
+	GetPos: => @pos
+	--GetPositions: => [pos for pos in *@positions]
 	GetFrom: => @from
-	GetFromPos: => @Nearest(@fromPos)
+	--GetFromPos: => @Nearest(@fromPos)
 	HasParent: => @from ~= nil
 	GetParent: => @from
 	GetAdjacentAreas: => @nav\GetAdjacentAreas()
