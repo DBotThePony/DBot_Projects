@@ -73,7 +73,6 @@ hook.Add 'DrawDMap2D', 'DMaps.Navigation', =>
 			surface.DrawPoly(newArrow1)
 			surface.DrawPoly(newArrow2)
 			cam.End3D2D()
-			
 
 hook.Add 'DrawDMapWorld', 'DMaps.Navigation', =>
 	return if not DMaps.NAV_ENABLE\GetBool()
@@ -84,22 +83,24 @@ hook.Add 'DrawDMapWorld', 'DMaps.Navigation', =>
 	posZ = eyePos.z
 	colorR, colorG, colorB = NAV_ARROW_COLOR()
 	colorRInv, colorGInv, colorBInv = 255 - colorR, 255 - colorG, 255 - colorB
-	--surface.SetDrawColor(colorR, colorG, colorB)
-	
-	cam.IgnoreZ(true)
 	draw.NoTexture()
+
+	oldBlend = render.GetBlend()
+	prevClip = render.EnableClipping(false)
+	render.SetBlend(1)
+	cam.IgnoreZ(true)
 
 	for {point, nDist, :approx} in *DMaps.NavigationPoints
 		if nDist + mDist < dist continue
 		if nDist - mDist > dist continue
-		if point.z < posZ
+		if point.z - 40 < posZ
 			for {v, deltaAng, v2, deltaAngRotate} in *approx
 				surface.SetDrawColor(colorR, colorG, colorB)
 				cam.Start3D2D(v, deltaAng, 1)
 				surface.DrawPoly(ARROW_DATA_1)
 				surface.DrawPoly(ARROW_DATA_2)
 				cam.End3D2D()
-		else
+		if point.z + 40 > posZ
 			for {v, deltaAng, v2, deltaAngRotate} in *approx
 				surface.SetDrawColor(colorRInv, colorGInv, colorBInv)
 				cam.Start3D2D(v2, deltaAngRotate, 1)
@@ -108,6 +109,8 @@ hook.Add 'DrawDMapWorld', 'DMaps.Navigation', =>
 				cam.End3D2D()
 	
 	cam.IgnoreZ(false)
+	render.EnableClipping(prevClip)
+	render.SetBlend(oldBlend)
 
 hook.Add 'Think', 'DMaps.Navigation', ->
 	return if not DMaps.NAV_ENABLE\GetBool()
