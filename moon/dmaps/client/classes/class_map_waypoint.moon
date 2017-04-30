@@ -92,6 +92,7 @@ class DMapWaypoint extends DMapPointer
 		@color = color
 		@zoom = 60
 		@visible = true
+		@alphaLerp = 1
 	
 	@WORLD_BOXES = {}
 	for i = 30, 5, -10
@@ -212,7 +213,10 @@ class DMapWaypoint extends DMapPointer
 			draw.DrawText(text, pickFont, x, y + @zoom * size + 10, Color(@@TEXT_COLOR.r, @@TEXT_COLOR.g, @@TEXT_COLOR.b, @@TEXT_COLOR.a * alpha), TEXT_ALIGN_CENTER)
 	Draw: (map) =>
 		x, y = @DRAW_X, @DRAW_Y
-		@DrawInternal(x, y)
+		alpha = 1
+		alpha = 0.3 if not @visible and not @IsNearMouse()
+		@alphaLerp = Lerp(10 * FrameTime(), @alphaLerp, alpha)
+		@DrawInternal(x, y, 1, @alphaLerp)
 
 DMaps.DMapWaypoint = DMapWaypoint
 return DMapWaypoint

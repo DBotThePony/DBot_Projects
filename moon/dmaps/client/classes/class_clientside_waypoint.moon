@@ -121,7 +121,7 @@ class ClientsideWaypoint extends DMapWaypoint
 			@z = .posz
 			@name = .name
 			@pointName = .name
-			@visible = .visible
+			@visible = tobool(.visible)
 			@icon = Icon(.icon)
 		@nosave = false
 	
