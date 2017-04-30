@@ -322,6 +322,10 @@ class DMap
 					@AddObject(point)
 					return
 		
+		lastDrawnFrame = 0
+		currentFrameCount = 0
+		lastFrameCount = 0
+
 		preDrawFunc = (a, b) ->
 			if a or b return
 			if not @MAP_DRAW
@@ -330,6 +334,22 @@ class DMap
 				@INSIDE_3D_DRAW = false
 				return
 			
+			cFrame = FrameTime()
+			lastFrameCount = currentFrameCount
+			if cFrame == lastDrawnFrame
+				currentFrameCount += 1
+				lastDrawnFrame = cFrame
+			else
+				lastDrawnFrame = cFrame
+				currentFrameCount = 1
+			
+			if lastFrameCount > 1
+				return true
+			
+			lastFrameWasDrawn = true
+			lastDrawnFrame = cFrame
+			
+
 			@INSIDE_2D_DRAW = true
 			
 			@Draw2DLight!
