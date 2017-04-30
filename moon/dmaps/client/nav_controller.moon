@@ -56,15 +56,18 @@ hook.Add 'DrawDMap2D', 'DMaps.Navigation', =>
 	for {point, nDist, :approx} in *DMaps.NavigationPoints
 		for {node, deltaAng} in *approx
 			{:x, :y, :z} = node
-			deltaZ = math.abs(z - Z)
+			deltaZRaw = z - Z
+			deltaZ = math.abs(deltaZRaw)
 			if deltaZ > 200 continue
 			yaw = math.rad(-deltaAng.y)
 			sin, cos = math.sin(yaw), math.cos(yaw)
 			alpha = 1
+			sizeMult = 1
 			alpha = math.Clamp(1 - (deltaZ - 50) / 150, 0.2, 1) if deltaZ > 50
+			sizeMult = math.Clamp(1.2 + (deltaZRaw) / 300, 0.2, 2) if deltaZ > 70
 			surface.SetDrawColor(colorR, colorG, colorB, 255 * alpha)
 
-			xDraw, yDraw = @Start2D(x, y)
+			xDraw, yDraw = @Start2D(x, y, @@MAP_2D_START_MULTIPLIER * sizeMult)
 			newArrow1 = [{x: (xC - 10) * cos - yC * sin + xDraw, y: yC * cos + (xC - 10) * sin + yDraw} for {x: xC, y: yC} in *ARROW_DATA_1]
 			newArrow2 = [{x: (xC - 10) * cos - yC * sin + xDraw, y: yC * cos + (xC - 10) * sin + yDraw} for {x: xC, y: yC} in *ARROW_DATA_2]
 			surface.DrawPoly(newArrow1)
