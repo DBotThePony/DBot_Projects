@@ -23,7 +23,13 @@ surface.CreateFont('DMaps.ColorOptionHint', {
 	weight: 500
 })
 
-PanelMeta = 
+MINIMAP_POSITION_X = CreateConVar('cl_dmaps_minimap_pos_x', '98', {FCVAR_ARCHIVE}, 'Minimap % position of X')
+MINIMAP_POSITION_Y = CreateConVar('cl_dmaps_minimap_pos_y', '40', {FCVAR_ARCHIVE}, 'Maximal % position of Y')
+MINIMAP_SIZE = CreateConVar('cl_dmaps_minimap_size', '25', {FCVAR_ARCHIVE}, 'Size in percents of minimap')
+
+MINIMAP_BORDER = DMaps.CreateColor(160, 160, 160, 'minimap_border', 'Minimap border color')
+
+PanelMeta =
 	NumSlider: (name = 'DNum Slider', cvar = '', min = 0, max = 1, decimals = 0) =>
 		slider = vgui.Create('DNumSlider', @)
 		with slider
@@ -54,6 +60,61 @@ PanelMeta =
 
 vgui.Register('DMapsOptionsPanel', PanelMeta, 'EditablePanel')
 
+MINIMAP_DISPLAY_PANEL =
+	Init: =>
+		@w = ScrW()
+		@W = @w
+		@h = ScrH()
+		@H = @h
+		@aspectRatio = @w / @h
+		@min = math.min(@w, @h)
+		@posx = 0
+		@posy = 0
+		@SetSize(@wCurrent, @hCurrent)
+		@SetMouseInputEnabled(true)
+	InitSize: (width = 1, height = 1) =>
+		@initWidth = width
+		@initHeight = height
+		aspectRatio = width / height
+		newW, newH = @w * height / @h, height if aspectRatio > @aspectRatio
+		newW, newH = width, @h * width / @w if aspectRatio <= @aspectRatio
+		@min = math.min(newW, newH)
+		@W, @H = newW, newH
+		@SetSize(newW, newH)
+	OnMousePressed: =>
+		@mPosX, @mPosY = gui.MousePos()
+		@hold = true
+	OnMouseReleased: =>
+		@hold = false
+	Think: =>
+		w, h = @GetSize()
+		@InitSize(w, h) if w ~= @initWidth or h ~= @initHeight
+		@size = @min * MINIMAP_SIZE\GetInt() / 100
+		@posx, @posy = @W * MINIMAP_POSITION_X\GetInt() / 100 - @size, @H * MINIMAP_POSITION_Y\GetInt() / 100
+		@posx -= 5
+		@posy -= 5
+		@size += 10
+
+		if @hold
+			deltaW, deltaH = w - @W, h - @H
+			deltaW /= 2
+			deltaH /= 2
+			lX, lY = @LocalToScreen(deltaW, deltaH)
+			x, y = gui.MousePos()
+			multX = math.Clamp(x - lX + @size + 10, 0, @W) / @W
+			multY = math.Clamp(y - lY + 10, 0, @H) / @H
+			RunConsoleCommand('cl_dmaps_minimap_pos_x', "#{math.floor multX * 100}")
+			RunConsoleCommand('cl_dmaps_minimap_pos_y', "#{math.floor multY * 100}")
+	Paint: (w, h) =>
+		deltaW, deltaH = w - @W, h - @H
+		deltaW /= 2
+		deltaH /= 2
+		surface.SetDrawColor(70, 70, 70)
+		surface.DrawRect(deltaW, deltaH, @W, @H)
+		surface.SetDrawColor(MINIMAP_BORDER())
+		surface.DrawRect(@posx + deltaW, @posy + deltaH, @size, @size)
+vgui.Register('DMapsMinimapPosPreview', MINIMAP_DISPLAY_PANEL, 'EditablePanel')
+
 Pages =
 	generic:
 		name: 'Generic Options'
@@ -64,6 +125,13 @@ Pages =
 				checkbox = @CheckBox(text, "cl_dmaps_#{cvar}")
 				checkbox\SetParent(scroll)
 	minimap:
+		name: 'Minimap position'
+		func: (sheet, frame) =>
+			@NumSlider('X position in % of screen Width', 'cl_dmaps_minimap_pos_x', 0, 100, 0)
+			@NumSlider('Y position in % of screen Height', 'cl_dmaps_minimap_pos_y', 0, 100, 0)
+			@preview = vgui.Create('DMapsMinimapPosPreview', @)
+			@preview\Dock(FILL)
+	minimap_pos:
 		name: 'Minimap options'
 		func: (sheet, frame) =>
 			@NumSlider('Default zoom', 'cl_dmaps_minimap_zoom', 400, 2000, 0)

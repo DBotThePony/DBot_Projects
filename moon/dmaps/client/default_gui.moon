@@ -22,6 +22,11 @@ MINIMAP_DYNAMIC_MULT = CreateConVar('cl_dmaps_minimap_dynamic_mult', '1', {FCVAR
 MINIMAP_DYNAMIC_MIN = CreateConVar('cl_dmaps_minimap_dynamic_min', '1', {FCVAR_ARCHIVE}, 'Minimap dynamic size')
 MINIMAP_DYNAMIC_MAX = CreateConVar('cl_dmaps_minimap_dynamic_max', '5', {FCVAR_ARCHIVE}, 'Maximal dynamic size')
 
+MINIMAP_POSITION_X = CreateConVar('cl_dmaps_minimap_pos_x', '98', {FCVAR_ARCHIVE}, 'Minimap % position of X')
+MINIMAP_POSITION_Y = CreateConVar('cl_dmaps_minimap_pos_y', '40', {FCVAR_ARCHIVE}, 'Maximal % position of Y')
+
+MINIMAP_BORDER = DMaps.CreateColor(160, 160, 160, 'minimap_border', 'Minimap border color')
+
 if IsValid(DMaps.MainFrame)
 	DMaps.MainFrame\Remove!
 
@@ -167,9 +172,9 @@ hook.Add 'HUDPaint', 'DMaps.DrawAsMinimap', ->
 	w, h = ScrW(), ScrH()
 	min = math.min(w, h)
 	size = min * MINIMAP_SIZE\GetInt() / 100
-	posx, posy = w - size - 20, 20
+	posx, posy = w * MINIMAP_POSITION_X\GetInt() / 100 - size, h * MINIMAP_POSITION_Y\GetInt() / 100
 
-	surface.SetDrawColor(160, 160, 160)
+	surface.SetDrawColor(MINIMAP_BORDER())
 	surface.DrawRect(posx - 5, posy - 5, size + 10, size + 10)
 
 	map = DMaps.MainFrame.mapHolder\GetMap()
