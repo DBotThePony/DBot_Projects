@@ -41,7 +41,7 @@ class NPCDeathPoint extends DeathPointer
 	new: (point) =>
 		super(point\GetNPCName(), point.x, point.y, point.z)
 		@SetYaw(point.eyesYaw)
-		@SetLiveTime(SV_NPC_POINTS_TIME\GetFloat() * point\GetNPCSize())
+		@SetLiveTime(SV_NPC_POINTS_TIME\GetFloat() * point\GetNPCSize() * 60)
 		@SetSize(point\GetNPCSize() * 0.5)
 	Draw: (map) =>
 		return if not DRAW_DEATHPOINTS_NPCS\GetBool()
