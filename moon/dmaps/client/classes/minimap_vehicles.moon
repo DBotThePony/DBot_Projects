@@ -127,7 +127,7 @@ class VehiclePointer extends DisplayedEntityBase
 			@isDriven = IsValid(@driver)
 			if @isDriven
 				if @driver ~= LocalPlayer()
-					@lineColor = team.GetColor(@entity\GetDriver())
+					@lineColor = team.GetColor(@entity\GetDriver()\Team())
 				else
 					@lineColor = Color(POINTER_COLOR())
 			dist = @GetPos()\DistToSqr(lpos)
