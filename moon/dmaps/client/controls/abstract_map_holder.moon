@@ -74,6 +74,8 @@ PANEL.Init = =>
 	@showHelp = true
 	@helpAlpha = 1
 	@pressedButtons = {}
+
+	@notifications = {}
 	
 	@SetMouseInputEnabled(true)
 	@SetKeyboardInputEnabled(true)
@@ -93,6 +95,18 @@ PANEL.GetMap = => @mapObject
 PANEL.ResetButtons = =>	@pressedButtons = {}
 PANEL.IsKeyPressed = (code = KEY_NONE) => @pressedButtons[code] or false
 
+PANEL.AddNotification = (text = '', time = #text / 10) =>
+	time = math.Clamp(time, 3, 6)
+	rTime = RealTime()
+	table.insert(@notifications, {
+		:text
+		:time
+		start: rTime
+		startTime: rTime + .5
+		endTime: rTime + time
+		fadeStart: rTime + time - .5
+	})
+
 PANEL.OnKeyCodePressed = (code = KEY_NONE) =>
 	return if code == KEY_NONE
 	@pressedButtons[code] = true
@@ -103,6 +117,33 @@ PANEL.OnKeyCodePressed = (code = KEY_NONE) =>
 			@mapObject\LockClip(false)
 			@mapObject\LockZoom(false)
 			@mapObject\LockView(false)
+		when KEY_N
+			x, y = @mapObject.mouseX, @mapObject.mouseY
+			tr = @mapObject\Trace2DPoint(x, y)
+			z = math.floor(tr.HitPos.z + 10)
+			DMaps.RequireNavigation(Vector(x, y, z))
+		when KEY_V
+			return if @IsKeyPressed(KEY_RCONTROL)
+			x, y = @mapObject.mouseX, @mapObject.mouseY
+			tr = @mapObject\Trace2DPoint(x, y)
+			z = math.floor(tr.HitPos.z + 10)
+			if @IsKeyPressed(KEY_LALT)
+				SetClipboardText("Vector(#{math.floor x}, #{math.floor y}, #{math.floor z})")
+				@AddNotification('Compied Vector(x.x, y.y, z.z)')
+			else
+				SetClipboardText("Vector(#{x}, #{y}, #{z})")
+				@AddNotification('Compied Vector(x, y, z)')
+		when KEY_C
+			return if @IsKeyPressed(KEY_RCONTROL)
+			x, y = @mapObject.mouseX, @mapObject.mouseY
+			tr = @mapObject\Trace2DPoint(x, y)
+			z = math.floor(tr.HitPos.z + 10)
+			if @IsKeyPressed(KEY_LALT)
+				SetClipboardText("X: #{x} Y: #{y} Z: #{z})")
+				@AddNotification('Compied X.X Y.Y Z.Z')
+			else
+				SetClipboardText("X: #{math.floor x} Y: #{math.floor y} Z: #{math.floor z})")
+				@AddNotification('Compied X Y Z')
 
 PANEL.OnKeyCodeReleased = (code = KEY_NONE) =>
 	return if code == KEY_NONE
@@ -129,6 +170,7 @@ PANEL.OnMousePressed = (code) =>
 				\AddOption('Create waypoint...', createWaypoint)
 				\AddOption('Navigate to...', -> DMaps.RequireNavigation(Vector(x, y, z))) if DMaps.NAV_ENABLE\GetBool()
 				\AddOption('Stop navigation', DMaps.StopNavigation) if DMaps.IsNavigating
+				\AddOption 'Look At', -> LocalPlayer()\SetEyeAngles((Vector(x, y, z) - LocalPlayer()\EyePos())\Angle())
 				if DMaps.HasPermission('teleport')
 					\AddOption('Teleport to', -> RunConsoleCommand('dmaps_teleport', x, y, z))
 				hit = false
@@ -145,6 +187,7 @@ PANEL.OnMousePressed = (code) =>
 								net.SendToServer()
 							containerObject\OpenEditMenu(container\GenerateData(x, y, z))
 				sub\Remove() if not hit
+				DMaps.CopyMenus(menu, x, y, z)
 				\Open()
 	elseif code == MOUSE_LEFT
 		@hold = true
@@ -377,6 +420,21 @@ PANEL.Paint = (w, h) =>
 			.SetDrawColor(0, 0, 0, 100 * @helpAlpha)
 			.DrawRect(w / 2 - tw / 2 - 4, 0, tw + 8, th + 8)
 			draw.DrawText(text, 'Default', w / 2, 4, Color(255, 255, 255, 255 * @helpAlpha), TEXT_ALIGN_CENTER)
+	
+	rTime = RealTime()
+	shiftY = 0
+	for i, {:text, :time, :start, :endTime, :fadeStart, :startTime} in pairs @notifications
+		if endTime < rTime
+			@notifications[i] = nil
+			continue
+		alpha = 1
+		alpha = math.Clamp((0.5 - (startTime - rTime))  * 2, 0, 1) if startTime > rTime
+		alpha = math.Clamp((endTime - rTime) * 2, 0, 1) if fadeStart < rTime
+		tw, th = surface.GetTextSize(text)
+		surface.SetDrawColor(0, 0, 0, 100 * alpha)
+		surface.DrawRect(6, 0, tw + 8, th + 8 + shiftY)
+		draw.DrawText(text, 'Default', 10, 4 + shiftY, Color(255, 255, 255, 255 * alpha))
+		shiftY += th + 8
 	
 PANEL.OnRemove = =>
 	@mapObject\Remove!

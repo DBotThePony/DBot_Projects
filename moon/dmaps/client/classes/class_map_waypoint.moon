@@ -135,8 +135,10 @@ class DMapWaypoint extends DMapPointer
 			\AddOption('Teleport to', -> RunConsoleCommand('dmaps_teleport', @x, @y, @z)) if DMaps.HasPermission('teleport')
 			\AddOption('Navigate to...', -> DMaps.RequireNavigation(Vector(@x, @y, @z))) if DMaps.NAV_ENABLE\GetBool()
 			\AddOption('Copy XYZ position', -> SetClipboardText("X: #{@x}, Y: #{@y}, Z: #{@z}"))
+			DMaps.CopyMenus(menu, @x, @y, @z)
 			\AddOption('Copy name', -> SetClipboardText(@name))
 			\AddOption('Copy Data string', -> SetClipboardText("Name: #{@name}, X: #{@x}, Y: #{@y}, Z: #{@z}"))
+			\AddOption 'Look At', -> LocalPlayer()\SetEyeAngles((@GetPos() - LocalPlayer()\EyePos())\Angle())
 			\Open()
 		return true
 	

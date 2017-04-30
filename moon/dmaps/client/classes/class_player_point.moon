@@ -97,6 +97,9 @@ class DMapPlayerPointer extends DMapEntityPointer
 			\AddOption('Open steam profile', -> gui.OpenURL("http://steamcommunity.com/profiles/#{@steamid64}/"))
 			\AddOption 'Create waypoint...', -> DMaps.WaypointAction(math.floor(@x), math.floor(@y), math.floor(@z))
 			\AddOption('Navigate to...', -> DMaps.RequireNavigation(Vector(@x, @y, @z))) if DMaps.NAV_ENABLE\GetBool()
+			\AddOption 'Look At', -> LocalPlayer()\SetEyeAngles((@EyePos() - LocalPlayer()\EyePos())\Angle())
+			DMaps.CopyMenus(menu, @eyeX, @eyeY, @eyeZ, 'Copy using eyes pos...')
+			DMaps.CopyMenus(menu, @x, @y, @z)
 			\Open()
 		return true
 
@@ -106,6 +109,14 @@ class DMapPlayerPointer extends DMapEntityPointer
 	
 	ShouldDraw: => @draw and SHOULD_DRAW\GetBool()
 
+	GetEyeX: => @eyeX
+	EyeX: => @eyeX
+	GetEyeY: => @eyeY
+	EyeY: => @eyeY
+	GetEyeZ: => @eyeZ
+	EyeZ: => @eyeZ
+	GetEyePos: => Vector(@eyeX, @eyeY, @eyeZ)
+	EyePos: => Vector(@eyeX, @eyeY, @eyeZ)
 	GetRenderPriority: => 100
 	
 	CalcPlayerData: (map) =>
@@ -125,6 +136,11 @@ class DMapPlayerPointer extends DMapEntityPointer
 		@pitch = ang.p
 		@yaw = -ang.y
 		@roll = ang.r
+
+		{:x, :y, :z} = ply\EyePos()
+		@eyeX = x
+		@eyeY = y
+		@eyeZ = z
 		
 	Think: (map) =>
 		@CURRENT_MAP = map

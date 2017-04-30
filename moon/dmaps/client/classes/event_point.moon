@@ -197,6 +197,7 @@ class EventPointer extends DMapPointer
 				DMaps.OpenWaypointEditMenu(id, DMaps.ClientsideWaypoint.DataContainer, (-> DMaps.ClientsideWaypoint.DataContainer\DeleteWaypoint(id))) if id
 			\AddOption('Navigate to...', -> DMaps.RequireNavigation(@GetPos())) if DMaps.NAV_ENABLE\GetBool()
 			\AddOption('Copy XYZ position', -> SetClipboardText("X: #{@x}, Y: #{@y}, Z: #{@z}"))
+			DMaps.CopyMenus(menu, @x, @y, @z)
 			\AddOption('Copy name', -> SetClipboardText(@dName))
 			\AddOption('Copy stamp', -> SetClipboardText(@start))
 			\AddOption 'Copy date', ->
@@ -205,6 +206,7 @@ class EventPointer extends DMapPointer
 				timeStamp = time - delta
 				SetClipboardText(os.date('%H:%M:%S - %d/%m/%Y', timeStamp))
 			\AddOption('Copy point data string', -> SetClipboardText("Name: #{@dName}, X: #{@x}, Y: #{@y}, Z: #{@z}"))
+			\AddOption 'Look At', -> LocalPlayer()\SetEyeAngles((@GetPos() - LocalPlayer()\EyePos())\Angle())
 			\Open()
 		return true
 
