@@ -92,7 +92,7 @@ class AStarNode
 class AStarTracer
 	@nextID = 1
 
-	new: (startPos = Vector(0, 0, 0), endPos = Vector(0, 0, 0), loopsPerIteration = 50, limit = 2000, frameThersold = 5, timeThersold = 1500) =>
+	new: (startPos = Vector(0, 0, 0), endPos = Vector(0, 0, 0), loopsPerIteration = 50, limit = 3000, frameThersold = 5, timeThersold = 1500) =>
 		@ID = @@nextID
 		@@nextID += 1
 		@working = false
