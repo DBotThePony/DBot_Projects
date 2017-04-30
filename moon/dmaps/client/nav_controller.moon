@@ -78,8 +78,10 @@ hook.Add 'DrawDMap2D', 'DMaps.Navigation', =>
 hook.Add 'DrawDMapWorld', 'DMaps.Navigation', =>
 	return if not DMaps.NAV_ENABLE\GetBool()
 	return if not DMaps.IsNavigating
+	eyePos = LocalPlayer()\EyePos()
 	dist = DMaps.NavigationEnd\Distance(LocalPlayer()\GetPos())
 	mDist = DRAW_DIST\GetInt()
+	posZ = eyePos.z
 	colorR, colorG, colorB = NAV_ARROW_COLOR()
 	colorRInv, colorGInv, colorBInv = 255 - colorR, 255 - colorG, 255 - colorB
 	--surface.SetDrawColor(colorR, colorG, colorB)
@@ -90,17 +92,20 @@ hook.Add 'DrawDMapWorld', 'DMaps.Navigation', =>
 	for {point, nDist, :approx} in *DMaps.NavigationPoints
 		if nDist + mDist < dist continue
 		if nDist - mDist > dist continue
-		for {v, deltaAng, v2, deltaAngRotate} in *approx
-			surface.SetDrawColor(colorR, colorG, colorB)
-			cam.Start3D2D(v, deltaAng, 1)
-			surface.DrawPoly(ARROW_DATA_1)
-			surface.DrawPoly(ARROW_DATA_2)
-			cam.End3D2D()
-			surface.SetDrawColor(colorRInv, colorGInv, colorBInv)
-			cam.Start3D2D(v2, deltaAngRotate, 1)
-			surface.DrawPoly(ARROW_DATA_1)
-			surface.DrawPoly(ARROW_DATA_2)
-			cam.End3D2D()
+		if point.z < posZ
+			for {v, deltaAng, v2, deltaAngRotate} in *approx
+				surface.SetDrawColor(colorR, colorG, colorB)
+				cam.Start3D2D(v, deltaAng, 1)
+				surface.DrawPoly(ARROW_DATA_1)
+				surface.DrawPoly(ARROW_DATA_2)
+				cam.End3D2D()
+		else
+			for {v, deltaAng, v2, deltaAngRotate} in *approx
+				surface.SetDrawColor(colorRInv, colorGInv, colorBInv)
+				cam.Start3D2D(v2, deltaAngRotate, 1)
+				surface.DrawPoly(ARROW_DATA_1)
+				surface.DrawPoly(ARROW_DATA_2)
+				cam.End3D2D()
 	
 	cam.IgnoreZ(false)
 
