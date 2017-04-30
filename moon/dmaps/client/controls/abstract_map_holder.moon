@@ -26,6 +26,10 @@ ENABLE_SMOOTH = DMaps.ClientsideOption('smooth_animations', '1', 'Use smooth map
 ENABLE_SMOOTH_MOVE = DMaps.ClientsideOption('smooth_animations_mv', '1', 'Use smooth map moving animation')
 ENABLE_SMOOTH_ZOOM = DMaps.ClientsideOption('smooth_animations_zoom', '1', 'Use smooth map zoom animation')
 
+MOVE_MULT = CreateConVar('cl_dmaps_wasd_speed', '850', {FCVAR_ARCHIVE}, 'Sensivity of WASD buttons on map')
+SHIFT_MULT = CreateConVar('cl_dmaps_wasd_shift', '2', {FCVAR_ARCHIVE}, 'Sensivity of shift button on map')
+CTRL_MULT = CreateConVar('cl_dmaps_wasd_ctrl', '0.5', {FCVAR_ARCHIVE}, 'Sensivity of ctrl button on map')
+
 DMaps.WatchPermission('teleport')
 
 PANEL = {}
@@ -69,6 +73,7 @@ PANEL.Init = =>
 
 	@showHelp = true
 	@helpAlpha = 1
+	@pressedButtons = {}
 	
 	@SetMouseInputEnabled(true)
 	@SetKeyboardInputEnabled(true)
@@ -85,11 +90,18 @@ PANEL.Init = =>
 	}
 PANEL.GetMap = => @mapObject
 
+PANEL.ResetButtons = =>	@pressedButtons = {}
+
 PANEL.OnKeyCodePressed = (code = KEY_NONE) =>
 	return if code == KEY_NONE
+	@pressedButtons[code] = true
 	switch code
 		when KEY_F1
 			@showHelp = not @showHelp
+
+PANEL.OnKeyCodeReleased = (code = KEY_NONE) =>
+	return if code == KEY_NONE
+	@pressedButtons[code] = false
 
 PANEL.OnMousePressed = (code) =>
 	if code == MOUSE_RIGHT
@@ -266,6 +278,69 @@ PANEL.Think = =>
 			else
 				@mapObject\AddX(moveX)
 				@mapObject\AddY(moveY)
+	do
+		bMoveX = 0
+		bMoveY = 0
+
+		multX = 1
+		multY = 1
+
+		for code, bool in pairs @pressedButtons
+			if not bool continue
+			switch code
+				when KEY_LSHIFT
+					multX *= SHIFT_MULT\GetFloat()
+					multY *= SHIFT_MULT\GetFloat()
+				when KEY_RSHIFT
+					multX *= SHIFT_MULT\GetFloat()
+					multY *= SHIFT_MULT\GetFloat()
+				when KEY_LCONTROL
+					multX *= CTRL_MULT\GetFloat()
+					multY *= CTRL_MULT\GetFloat()
+				when KEY_RCONTROL
+					multX *= CTRL_MULT\GetFloat()
+					multY *= CTRL_MULT\GetFloat()
+				when KEY_LEFT
+					bMoveX -= FrameTime() * MOVE_MULT\GetInt()
+				when KEY_RIGHT
+					bMoveX += FrameTime() * MOVE_MULT\GetInt()
+				when KEY_UP
+					bMoveY += FrameTime() * MOVE_MULT\GetInt()
+				when KEY_DOWN
+					bMoveY -= FrameTime() * MOVE_MULT\GetInt()
+				when KEY_A
+					bMoveX -= FrameTime() * MOVE_MULT\GetInt()
+				when KEY_D
+					bMoveX += FrameTime() * MOVE_MULT\GetInt()
+				when KEY_W
+					bMoveY += FrameTime() * MOVE_MULT\GetInt()
+				when KEY_S
+					bMoveY -= FrameTime() * MOVE_MULT\GetInt()
+		bMoveX *= multX
+		bMoveY *= multY
+		
+		if bMoveX ~= 0 or bMoveY ~= 0
+			@mapObject\LockView(true)
+			yawDeg = @mapObject\GetYaw!
+			yaw = math.rad(yawDeg)
+			sin, cos = math.sin(yaw), math.cos(yaw)
+			
+			bMoveX *= @mapObject.xHUPerPixel * (@mapObject\DeltaZoomMultiplier! ^ 2) * @mapObject.__class.CONSTANT_ZOOM_MOVE
+			bMoveY *= @mapObject.yHUPerPixel * (@mapObject\DeltaZoomMultiplier! ^ 2) * @mapObject.__class.CONSTANT_ZOOM_MOVE
+
+			moveX = bMoveX * cos - bMoveY * sin
+			moveY = bMoveX * sin + bMoveY * cos
+			
+			if yawDeg < -180
+				moveX = -moveX
+				moveY = -moveY
+			
+			if ENABLE_SMOOTH\GetBool() and ENABLE_SMOOTH_MOVE\GetBool()
+				@mapObject\AddLerpX(moveX)
+				@mapObject\AddLerpY(moveY)
+			else
+				@mapObject\AddX(moveX)
+				@mapObject\AddY(moveY)
 		
 	
 PANEL.Paint = (w, h) =>
@@ -292,7 +367,7 @@ PANEL.Paint = (w, h) =>
 		@helpAlpha = math.min(@helpAlpha + FrameTime() * 3, 1) if @showHelp and @helpAlpha ~= 1
 		@helpAlpha = math.max(@helpAlpha - FrameTime() * 3, 0) if not @showHelp and @helpAlpha ~= 0
 		if @helpAlpha > 0
-			text = "Drag map using your mouse\nSingle click on controler to reset it's value\nJoystick resets map position\nCompass resets map angles\nBars at right resets map zoom/clip levels\nPress F1 to hide/show this help"
+			text = "Drag map using your mouse or WASD (arrows works too)\nSingle click on controler to reset it's value\nJoystick resets map position\nCompass resets map angles\nBars at right resets map zoom/clip levels\nPress F1 to hide/show this help"
 			tw, th = .GetTextSize(text)
 			.SetDrawColor(0, 0, 0, 100 * @helpAlpha)
 			.DrawRect(w / 2 - tw / 2 - 4, 0, tw + 8, th + 8)

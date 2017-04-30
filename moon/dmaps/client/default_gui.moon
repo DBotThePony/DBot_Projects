@@ -52,10 +52,12 @@ DMaps.CreateMainFrame = ->
 	@SetTitle('DMap')
 
 	@OnKeyCodePressed = (code = KEY_NONE) => @mapHolder\OnKeyCodePressed(code)
+	@OnKeyCodeReleased = (code = KEY_NONE) => @mapHolder\OnKeyCodeReleased(code)
 
 	@LAST_MINIMAP_STATUS = false
 	@OnClose = =>
 		DMaps.DISPLAY_AS_MINIMAP = @LAST_MINIMAP_STATUS
+		@mapHolder\ResetButtons()
 		if not @LAST_MINIMAP_STATUS
 			@displayAsMinimap\SetText('Display as Minimap')
 			@displayAsMinimap\SetTooltip('Display as Minimap')
@@ -113,6 +115,7 @@ DMaps.OpenMap = ->
 		\SetKeyboardInputEnabled(true)
 		\RequestFocus!
 		\Center!
+		.mapHolder\ResetButtons()
 		map = .mapHolder\GetMap()
 		if IsValid(map)
 			map\SetMinimalAutoZoom()
