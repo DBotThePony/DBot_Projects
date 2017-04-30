@@ -256,8 +256,13 @@ class AStarTracer
 
 				if nodeObject
 					dist = nodeObject\GetPos()\DistToSqr(nearest\GetPos())
-					distG = nearest\GetG() + dist
-					distG += dist * .75 if nodeObject\Underwater()
+					lengthMultiplier = 1
+					lengthMultiplier += 20 if nodeObject\Underwater()
+					deltaZ = nodeObject\GetPos().z - nearest\GetPos().z
+					lengthMultiplier += math.max(0, deltaZ) if deltaZ > 0
+					lengthMultiplier += math.max(0, -deltaZ) if deltaZ < 0
+
+					distG = nearest\GetG() + dist * lengthMultiplier
 					if nodeObject\GetG() > distG
 						nodeObject\SetG(distG)
 						nodeObject\SetFrom(nearest)
