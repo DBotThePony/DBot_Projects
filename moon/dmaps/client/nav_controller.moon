@@ -96,7 +96,7 @@ hook.Add 'DrawDMapWorld', 'DMaps.Navigation', =>
 hook.Add 'Think', 'DMaps.Navigation', ->
 	return if not DMaps.NAV_ENABLE\GetBool()
 	return if not DMaps.IsNavigating
-	if LocalPlayer()\GetPos()\Distance(DMaps.NavigationEnd) < 250
+	if LocalPlayer()\GetPos()\Distance(DMaps.NavigationEnd) < 125
 		DMaps.IsNavigating = false
 		lastNavPoint\Remove() if IsValid(lastNavPoint)
 
