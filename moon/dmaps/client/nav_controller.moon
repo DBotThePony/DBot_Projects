@@ -31,17 +31,17 @@ NAV_ARROW_COLOR = DMaps.CreateColor(34, 209, 217, 'nav_arrow', 'Navigation arrow
 DRAW_DIST = CreateConVar('cl_dmaps_nav_line_dist', '1000', {FCVAR_ARCHIVE}, 'How far navigation path should draw')
 
 ARROW_DATA_1 = {
-	{x: 0, y: 15}
-	{x: 20, y: 0}
-	{x: 20, y: 5}
 	{x: 0, y: 20}
+	{x: 20, y: 0}
+	{x: 20, y: 10}
+	{x: 0, y: 25}
 }
 
 ARROW_DATA_2 = {
 	{x: 20, y: 0}
-	{x: 40, y: 15}
 	{x: 40, y: 20}
-	{x: 20, y: 5}
+	{x: 40, y: 25}
+	{x: 20, y: 10}
 }
 
 local lastNavPoint
