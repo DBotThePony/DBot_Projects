@@ -46,19 +46,31 @@ ARROW_DATA_2 = {
 
 local lastNavPoint
 
-hook.Add 'DrawDMap2D', 'DMaps.Navigation', (x, y, w, h) =>
+hook.Add 'DrawDMap2D', 'DMaps.Navigation', =>
 	return if not DMaps.NAV_ENABLE\GetBool()
 	return if not DMaps.IsNavigating
-	color = Color(255, 255, 255)
-	pos = LocalPlayer()\GetPos()
-	dist = DMaps.NavigationEnd\Distance(pos)
-	local last
+	colorR, colorG, colorB = NAV_ARROW_COLOR()
+	dist = DMaps.NavigationEnd\Distance(LocalPlayer()\GetPos())
+	Z = @GetZ()
 	
-	for {v, nDist} in *DMaps.NavigationPoints
-		if nDist > dist break
-		last = last or v
-		render.DrawLine(last, v, color)
-		last = v
+	for {point, nDist, :approx} in *DMaps.NavigationPoints
+		for {node, deltaAng} in *approx
+			{:x, :y, :z} = node
+			deltaZ = math.abs(z - Z)
+			if deltaZ > 200 continue
+			yaw = math.rad(-deltaAng.y)
+			sin, cos = math.sin(yaw), math.cos(yaw)
+			alpha = 1
+			alpha = math.Clamp((deltaZ - 50) / 150, 0.2, 1) if deltaZ > 50
+			surface.SetDrawColor(colorR, colorG, colorB, 255 * alpha)
+
+			xDraw, yDraw = @Start2D(x, y)
+			newArrow1 = [{x: (xC - 20) * cos - yC * sin + xDraw, y: yC * cos + (xC - 20) * sin + yDraw} for {x: xC, y: yC} in *ARROW_DATA_1]
+			newArrow2 = [{x: (xC - 20) * cos - yC * sin + xDraw, y: yC * cos + (xC - 20) * sin + yDraw} for {x: xC, y: yC} in *ARROW_DATA_2]
+			surface.DrawPoly(newArrow1)
+			surface.DrawPoly(newArrow2)
+			cam.End3D2D()
+			
 
 hook.Add 'DrawDMapWorld', 'DMaps.Navigation', =>
 	return if not DMaps.NAV_ENABLE\GetBool()
@@ -187,7 +199,7 @@ net.Receive 'DMaps.Navigation.Require', ->
 			output
 
 		{:x, :y, :z} = DMaps.NavigationEnd
-		lastNavPoint = DMapWaypoint('Navigation target', x, y, z, Color(NAV_POINT_COLOR()), 'gear_in')
+		lastNavPoint = DMapWaypoint('Navigation target', math.floor(x), math.floor(y), math.floor(z), Color(NAV_POINT_COLOR()), 'gear_in')
 		map = DMaps.GetMainMap()
 		map\AddObject(lastNavPoint) if map
 		DMaps.NavRequestWindow\Remove() if DMaps.LastNavRequestWindow and IsValid(DMaps.NavRequestWindow)
