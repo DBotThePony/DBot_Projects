@@ -8,9 +8,13 @@
 		"*.vcproj",
 		"*.svn*",
 		"*.git*",
+		".gitlab-ci.yml",
 		"moon*",
 		"build.sh",
 		"README.md",
+		"FATCOW_ICONS_LICENSE",
+		"lint.txt",
+		"lint.sh",
 		"LICENSE"
 	]
 }
