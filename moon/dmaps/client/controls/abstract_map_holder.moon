@@ -101,6 +101,7 @@ PANEL.OnMousePressed = (code) =>
 					DMaps.OpenWaypointEditMenu(id, ClientsideWaypoint.DataContainer, -> ClientsideWaypoint.DataContainer\DeleteWaypoint(id)) if id
 				\AddOption('Create waypoint...', createWaypoint)
 				\AddOption('Navigate to...', -> DMaps.RequireNavigation(Vector(x, y, z))) if DMaps.NAV_ENABLE\GetBool()
+				\AddOption('Stop navigation', DMaps.StopNavigation) if DMaps.IsNavigating
 				if DMaps.HasPermission('teleport')
 					\AddOption('Teleport to', -> RunConsoleCommand('dmaps_teleport', x, y, z))
 				hit = false

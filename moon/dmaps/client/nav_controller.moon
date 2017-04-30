@@ -116,6 +116,11 @@ hook.Add 'Think', 'DMaps.Navigation', ->
 		DMaps.IsNavigating = false
 		lastNavPoint\Remove() if IsValid(lastNavPoint)
 
+DMaps.StopNavigation = ->
+	lastNavPoint\Remove() if IsValid(lastNavPoint)
+	DMaps.IsNavigating = false
+	DMaps.NavigationPoints = {}
+
 DMaps.RequireNavigation = (target = Vector(0, 0, 0), displayWindow = true) ->
 	return if not DMaps.NAV_ENABLE\GetBool()
 	lastNavPoint\Remove() if IsValid(lastNavPoint)
