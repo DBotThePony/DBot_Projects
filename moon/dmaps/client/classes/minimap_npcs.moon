@@ -214,11 +214,64 @@ class EnemyNPCPointer extends NPCPointer
 		if @__NPCs_Enemy[nClass] return true
 		return false
 
+class TurrentNPCPointer extends NPCPointer
+	@Name = 'Turret'
+	@Color = Color(216, 85, 40)
+	@DefaultRange = 900
+	@PHypo = 20
+	@PShift = 20
+	@PHeight = 80
+	GetRenderPriority: => 26
+	@Setup()
+
+	@__TURRET_LINE1 = {
+		{-40, 10}
+		{40, 10}
+		{40, 20}
+		{-40, 20}
+	}
+
+	@__TURRET_LINE2 = {
+		{-10, 0}
+		{10, 0}
+		{10, 40}
+		{-10, 40}
+	}
+
+	new: (...) =>
+		super(...)
+	
+	@CheckNPC: (npc, nClass) =>
+		return nClass == 'npc_turret_floor' or
+			nClass == 'npc_turret_ground' or
+			nClass == 'npc_turret_ceiling' or
+			nClass == 'npc_portal_turret_floor' or
+			nClass == 'npc_rocket_turret' or
+			nClass == 'monster_turret' or
+			nClass == 'monster_miniturret' or
+			nClass == 'monster_sentry'
+	
+	Draw: (map) => -- Override
+		return if not POINTS_ENABLED\GetBool()
+		return if not SV_POINTS_ENABLED\GetBool()
+		return if not NPC_POINTS_ENABLED\GetBool()
+		return if not SV_NPC_POINTS_ENABLED\GetBool()
+		x, y = @DRAW_X, @DRAW_Y
+		yaw = math.rad(@yaw + 90)
+		sin, cos = math.sin(yaw), math.cos(yaw)
+		line1 = [{x: xC * cos - yC * sin + x, y: yC * cos + xC * sin + y} for {xC, yC} in *@@__TURRET_LINE1]
+		line2 = [{x: xC * cos - yC * sin + x, y: yC * cos + xC * sin + y} for {xC, yC} in *@@__TURRET_LINE2]
+		surface.SetDrawColor(@@Color)
+		surface.DrawPoly(line1)
+		surface.DrawPoly(line2)
+		super(map)
+		
+
 DMaps.NPCPointer = NPCPointer
 DMaps.FriendlyNPCPointer = FriendlyNPCPointer
 DMaps.EnemyNPCPointer = EnemyNPCPointer
 
-DMaps.NPCsHandlers = {FriendlyNPCPointer, EnemyNPCPointer}
+DMaps.NPCsHandlers = {FriendlyNPCPointer, EnemyNPCPointer, TurrentNPCPointer}
 DMaps.GetNPCName = (...) -> NPCPointer\GetNPCName(...)
 DMaps.GetNPCSize = (...) -> NPCPointer\GetNPCSize(...)
 DMaps.RegisterNPCName = (...) -> NPCPointer\RegisterNPCName(...)
@@ -270,7 +323,7 @@ do -- Using default npcs lua file lol
 	AddNPC({Name: 'Seagull', Class: 'npc_seagull', Size: 0.4})
 	AddNPC({Name: 'Metro Police', Class: 'npc_metropolice', Type: false})
 	AddNPC({Name: 'Rollermine', Class: 'npc_rollermine', Type: false})
-	AddNPC({Name: 'Turret', Class: 'npc_turret_floor', Type: false})
+	AddNPC({Name: 'Turret', Class: 'npc_turret_floor'})
 	AddNPC({Name: 'Combine Soldier', Class: 'npc_combine_s', Type: false})
 	AddNPC({Name: 'City Scanner', Class: 'npc_cscanner', Type: false})
 	AddNPC({Name: 'Shield Scanner', Class: 'npc_clawscanner', Type: false})
@@ -278,7 +331,7 @@ do -- Using default npcs lua file lol
 	AddNPC({Name: 'Combine Dropship', Class: 'npc_combinedropship', Type: false})
 	AddNPC({Name: 'Hunter-Chopper', Class: 'npc_helicopter', Type: false})
 	AddNPC({Name: 'Camera', Class: 'npc_combine_camera', Type: false, Size: 0.6})
-	AddNPC({Name: 'Ceiling Turret', Class: 'npc_turret_ceiling', Type: false})
+	AddNPC({Name: 'Ceiling Turret', Class: 'npc_turret_ceiling'})
 	AddNPC({Name: 'Strider', Class: 'npc_strider', Type: false, Size: 3})
 	AddNPC({Name: 'Stalker', Class: 'npc_stalker', Type: false})
 	AddNPC({Name: 'Manhack', Class: 'npc_manhack', Type: false, Size: 0.4})
@@ -303,9 +356,9 @@ do -- Using default npcs lua file lol
 	AddNPC({Name: 'Controller', Class: 'monster_alien_controller', Type: true})
 	AddNPC({Name: 'Security Officer', Class: 'monster_barney', Type: true})
 
-	AddNPC({Name: 'Turret', Class: 'monster_turret', Type: false})
-	AddNPC({Name: 'Mini Turret', Class: 'monster_miniturret', Type: false})
-	AddNPC({Name: 'Sentry', Class: 'monster_sentry', Type: false})
+	AddNPC({Name: 'Turret', Class: 'monster_turret'})
+	AddNPC({Name: 'Mini Turret', Class: 'monster_miniturret'})
+	AddNPC({Name: 'Sentry', Class: 'monster_sentry'})
 
 	timer.Simple 0, ->
 		for k, {:Name, :Class} in pairs list.Get('NPC')
