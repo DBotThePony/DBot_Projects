@@ -19,14 +19,42 @@ import DMaps, navmesh, table from _G
 import Vector from _G
 
 class AStarNode
+	@NORTH_WEST = 0
+	@NORTH_EAST = 1
+	@SOUTH_EAST = 2
+	@SOUTH_WEST = 3
+
+	@SIDES = {@NORTH_EAST, @NORTH_WEST, @SOUTH_EAST, @SOUTH_WEST}
+
 	new: (nav, g = 0, target = Vector(0, 0, 0)) =>
 		@nav = nav
 		@pos = @nav\GetCenter()
+		@positions = {@pos}
 		@target = target
 		@g = g
 		@h = target\DistToSqr(@pos)
 		@f = @g + @h
+		for side in *@@SIDES
+			getPos = nav\GetCorner(side)
+			getPos -= @pos
+			getPos *= .5
+			getPos += @pos
+			table.insert(@positions, getPos)
+		@gArray = [@g for i = 1, #@positions]
+		@hArray = [@h for i = 1, #@positions]
+		@fArray = [@f for i = 1, #@positions]
 	
+	Nearest: (pos = @pos) =>
+		local min
+		local output
+		
+		for mPos in *@positions
+			dist = mPos\DistToSqr(pos)
+			if not min or min > dist
+				min = dist
+				output = mPos
+		return output
+
 	SetG: (val = 0) =>
 		@g = val
 		@f = @g + @h
@@ -35,14 +63,26 @@ class AStarNode
 		@f = @g + @h
 	SetFrom: (val) =>
 		@from = val
+		@fromPos = @from\GetPos(1)
+		min = @fromPos\DistToSqr(@pos)
+		for pos in *@from\GetPositions()
+			for mPos in *@positions
+				dist = mPos\DistToSqr(pos)
+				if dist < min
+					@fromPos = pos
+					min = dist
+	SetFromPos: (index = 1) =>
+		@fromPos = @from\GetPos(index)
 	
 	__tostring: => "[DMaps:AStarNode:#{@nav}]"
 
 	GetG: => @g
 	GetH: => @h
 	GetF: => @f
-	GetPos: => @pos
+	GetPos: (index = 1) => @positions[index] or @pos
+	GetPositions: => [pos for pos in *@positions]
 	GetFrom: => @from
+	GetFromPos: => @Nearest(@fromPos)
 	HasParent: => @from ~= nil
 	GetParent: => @from
 	GetAdjacentAreas: => @nav\GetAdjacentAreas()
@@ -224,7 +264,10 @@ class AStarTracer
 					nodeObject = AStarNode(node, nearest\GetG() + node\GetCenter()\DistToSqr(nearest\GetPos()), @endPos)
 					nodeObject\SetFrom(nearest)
 					@AddNode(nodeObject)
-					table.insert(@opened, nodeObject)
+					if node\IsValid()
+						table.insert(@opened, nodeObject)
+					else
+						table.insert(@closed, nodeObject)
 			cTime = (SysTime() - sTime) * 1000
 			calculationTime += cTime
 			@totalTime += cTime
