@@ -96,6 +96,7 @@ class DMapPlayerPointer extends DMapEntityPointer
 			\AddOption('Copy UniqueID', -> SetClipboardText(tostring(@uniqueid)))
 			\AddOption('Open steam profile', -> gui.OpenURL("http://steamcommunity.com/profiles/#{@steamid64}/"))
 			\AddOption 'Create waypoint...', -> DMaps.WaypointAction(math.floor(@x), math.floor(@y), math.floor(@z))
+			\AddOption('Navigate to...', -> DMaps.RequireNavigation(Vector(@x, @y, @z))) if DMaps.NAV_ENABLE\GetBool()
 			\Open()
 		return true
 

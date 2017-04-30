@@ -103,10 +103,12 @@ hook.Add 'Think', 'DMaps.Navigation', ->
 DMaps.RequireNavigation = (target = Vector(0, 0, 0), displayWindow = true) ->
 	return if not DMaps.NAV_ENABLE\GetBool()
 	lastNavPoint\Remove() if IsValid(lastNavPoint)
+	{:x, :y, :z} = target
+	x, y, z = math.floor(x), math.floor(y), math.floor(z)
 	DMaps.IsNavigating = false
 	DMaps.NavigationPoints = {}
 	net.Start('DMaps.Navigation.Require')
-	net.WriteVector(target)
+	net.WriteVector(Vector(x, y, z))
 	net.SendToServer()
 	DMaps.LastNavRequestWindow = displayWindow
 
