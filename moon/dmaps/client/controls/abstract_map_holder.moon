@@ -66,8 +66,12 @@ PANEL.Init = =>
 	@mapObject\ListenNetworkWaypoints()
 	@mapObject\WatchMapEntities()
 	@mapObject\SetMinimalAutoZoom()
+
+	@showHelp = true
+	@helpAlpha = 1
 	
 	@SetMouseInputEnabled(true)
+	@SetKeyboardInputEnabled(true)
 	
 	@Spectating = LocalPlayer!
 	
@@ -80,6 +84,12 @@ PANEL.Init = =>
 		DMaps.ServerWaypointsContainerUsergroups
 	}
 PANEL.GetMap = => @mapObject
+
+PANEL.OnKeyCodePressed = (code = KEY_NONE) =>
+	return if code == KEY_NONE
+	switch code
+		when KEY_F1
+			@showHelp = not @showHelp
 
 PANEL.OnMousePressed = (code) =>
 	if code == MOUSE_RIGHT
@@ -279,6 +289,14 @@ PANEL.Paint = (w, h) =>
 		.DrawRect(w - tw - 8, h - th - 8, tw + 8, th + 8)
 		.SetTextPos(w - tw - 4, h - th - 4)
 		.DrawText(text)
+		@helpAlpha = math.min(@helpAlpha + FrameTime() * 3, 1) if @showHelp and @helpAlpha ~= 1
+		@helpAlpha = math.max(@helpAlpha - FrameTime() * 3, 0) if not @showHelp and @helpAlpha ~= 0
+		if @helpAlpha > 0
+			text = "Drag map using your mouse\nSingle click on controler to reset it's value\nJoystick resets map position\nCompass resets map angles\nBars at right resets map zoom/clip levels\nPress F1 to hide/show this help"
+			tw, th = .GetTextSize(text)
+			.SetDrawColor(0, 0, 0, 100 * @helpAlpha)
+			.DrawRect(w / 2 - tw / 2 - 4, 0, tw + 8, th + 8)
+			draw.DrawText(text, 'Default', w / 2, 4, Color(255, 255, 255, 255 * @helpAlpha), TEXT_ALIGN_CENTER)
 	
 PANEL.OnRemove = =>
 	@mapObject\Remove!

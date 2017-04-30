@@ -40,6 +40,7 @@ PANEL =
 		@START = 0
 		@END = 0
 		@SetSize(@WIDTH, @HEIGHT)
+		@SetTooltip('Single click to reset map bottom clip level')
 
 	SetSizeMult: (mult = 1) =>
 		@sizeMult = mult
@@ -159,6 +160,7 @@ PANEL =
 		@START = 0
 		@END = 0
 		@SetSize(@WIDTH, @HEIGHT)
+		@SetTooltip('Single click to reset map top clip level')
 
 	SetSizeMult: (mult = 1) =>
 		@sizeMult = mult

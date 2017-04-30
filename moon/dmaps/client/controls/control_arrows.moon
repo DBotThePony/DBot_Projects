@@ -67,6 +67,7 @@ PANEL.Init = =>
 	@move = false
 	@holdstart = 0
 	@UpdateCache!
+	@SetTooltip('Single click to reset map position to local player')
 
 PANEL.SetSizeMult = (mult = 1) =>
 	@sizeMult = mult

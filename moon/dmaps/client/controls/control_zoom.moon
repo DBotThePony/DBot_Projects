@@ -42,6 +42,7 @@ PANEL.Init = =>
 	@lock = false
 	@holdstart = 0
 	@SetSize(@WIDTH, @HEIGHT)
+	@SetTooltip('Single click to reset map zoom')
 
 PANEL.SetSizeMult = (mult = 1) =>
 	@sizeMult = mult

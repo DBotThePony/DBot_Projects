@@ -51,6 +51,8 @@ DMaps.CreateMainFrame = ->
 	@SetDeleteOnClose(false)
 	@SetTitle('DMap')
 
+	@OnKeyCodePressed = (code = KEY_NONE) => @mapHolder\OnKeyCodePressed(code)
+
 	@LAST_MINIMAP_STATUS = false
 	@OnClose = =>
 		DMaps.DISPLAY_AS_MINIMAP = @LAST_MINIMAP_STATUS

@@ -108,6 +108,7 @@ PANEL.Init = =>
 	@followingPlayer = false
 	@hold = false
 	@holdstart = 0
+	@SetTooltip('Single click to reset map angles.\nThis also disables "Follow player angles" option')
 
 PANEL.OnMousePressed = (code) =>
 	if code == MOUSE_RIGHT or code == MOUSE_MIDDLE
