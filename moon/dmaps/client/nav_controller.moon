@@ -141,6 +141,7 @@ DMaps.RequireNavigation = (target = Vector(0, 0, 0), displayWindow = true) ->
 		@bar\Dock(BOTTOM)
 		@bar.currentPos = 0
 		@bar.action = true
+		@bar\SetSize(0, 40)
 		@bar.Paint = (pnl, w, h) ->
 			if @bar.action
 				@bar.currentPos += FrameTime() * 200
@@ -153,8 +154,19 @@ DMaps.RequireNavigation = (target = Vector(0, 0, 0), displayWindow = true) ->
 			surface.SetDrawColor(146, 176, 172)
 			surface.DrawRect(@bar.currentPos, 0, 15, h)
 		@label = vgui.Create('DLabel', @)
-		@label\Dock(FILL)
-		@label\SetText('The Server is calculating path to required point...')
+		@label\SetText('The Server is calculating')
+		@label\SetFont('Trebuchet24')
+		@label\SizeToContents()
+		@label\Center()
+		labX, labY = @label\GetPos()
+		@label\SetPos(labX, labY - 30)
+		@label2 = vgui.Create('DLabel', @)
+		@label2\SetText('path to required point...')
+		@label2\SetFont('Trebuchet24')
+		@label2\SizeToContents()
+		@label2\Center()
+		labX, labY = @label2\GetPos()
+		@label2\SetPos(labX, labY)
 
 Bezier = (vec1 = Vector(0, 0, 0), vec2 = Vector(0, 0, 0), vec3 = Vector(0, 0, 0), step = 0.1) ->
 	{x: x1, y: y1, z: z1} = vec1
