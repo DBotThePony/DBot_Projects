@@ -195,6 +195,7 @@ class EventPointer extends DMapPointer
 			\AddOption 'Create waypoint...', ->
 				data, id = DMaps.ClientsideWaypoint.DataContainer\CreateWaypoint("New Waypoint At X: #{@x}, Y: #{@y}, Z: #{@z}", @x, @y, @z)
 				DMaps.OpenWaypointEditMenu(id, DMaps.ClientsideWaypoint.DataContainer, (-> DMaps.ClientsideWaypoint.DataContainer\DeleteWaypoint(id))) if id
+			\AddOption('Navigate to...', -> DMaps.RequireNavigation(@GetPos())) if DMaps.NAV_ENABLE\GetBool()
 			\AddOption('Copy XYZ position', -> SetClipboardText("X: #{@x}, Y: #{@y}, Z: #{@z}"))
 			\AddOption('Copy name', -> SetClipboardText(@dName))
 			\AddOption('Copy stamp', -> SetClipboardText(@start))
