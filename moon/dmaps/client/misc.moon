@@ -18,6 +18,9 @@
 import CreateConVar, math, DMaps from _G
 import Clamp from math
 
+DMaps.FLAGS = ["icon16/flag_#{color}.png" for color in *{'blue', 'green', 'orange', 'pink', 'purple', 'red', 'yellow'}]
+DMaps.BUGS_ICONS = ["icon16/#{n}.png" for n in *{'bug', 'bug_go', 'bug_delete', 'bug_error'}]
+
 DMaps.CONVARS_SETTINGS = {}
 
 DMaps.ClientsideOption = (cvar, default, desc) ->

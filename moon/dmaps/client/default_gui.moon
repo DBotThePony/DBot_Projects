@@ -54,23 +54,24 @@ DBUTTON_DO_CLICK = =>
 	menu = DermaMenu()
 
 	with menu
-		\AddOption 'Close', -> frame\Close()
-		waypoints = \AddSubMenu('Waypoints', DMaps.OpenWaypointsMenu)
-		\AddOption('Options', DMaps.OpenOptions)
+		\AddOption('Close', -> @frame\Close())\SetIcon('icon16/cross.png')
+		\AddOption('Options', DMaps.OpenOptions)\SetIcon('icon16/wrench.png')
+		\AddSpacer()
+		\AddOption('Clientside waypoints', DMaps.OpenWaypointsMenu)\SetIcon(table.Random(DMaps.FLAGS))
 		for {name, Desc, conCommand} in *svPoints
-			waypoints\AddOption("Serverside #{Desc} waypoints", -> RunConsoleCommand(conCommand)) if DMaps.HasPermission("dmaps_view_#{name}_waypoints")
+			\AddOption("Serverside #{Desc} waypoints", -> RunConsoleCommand(conCommand))\SetIcon(table.Random(DMaps.FLAGS)) if DMaps.HasPermission("dmaps_view_#{name}_waypoints")
 		\AddSpacer()
-		if not mapHolder.compass.followingPlayer then \AddOption 'Follow player angles', -> mapHolder.compass.followingPlayer = true
-		if mapHolder.compass.followingPlayer then \AddOption 'Stop following player angles', -> mapHolder.compass.followingPlayer = false
-		\AddOption 'Reset map Zoom', -> mapHolder\GetMap()\LockZoom(false)
-		\AddOption 'Reset map Clip', -> mapHolder\GetMap()\LockClip(false)
-		\AddOption 'Reset map Position', -> mapHolder\GetMap()\LockView(false)
-		\AddOption 'Reset map Angles', -> mapHolder\GetMap()\SetYaw(0)
+		if not mapHolder.compass.followingPlayer then \AddOption('Follow player angles', -> mapHolder.compass.followingPlayer = true)\SetIcon('icon16/user_go.png')
+		if mapHolder.compass.followingPlayer then \AddOption('Stop following player angles', -> mapHolder.compass.followingPlayer = false)\SetIcon('icon16/user_delete.png')
+		\AddOption('Reset map Zoom', -> mapHolder\GetMap()\LockZoom(false))\SetIcon('icon16/zoom_out.png')
+		\AddOption('Reset map Clip', -> mapHolder\GetMap()\LockClip(false))\SetIcon('icon16/magifier_zoom_out.png')
+		\AddOption('Reset map Position', -> mapHolder\GetMap()\LockView(false))\SetIcon('icon16/vector_delete.png')
+		\AddOption('Reset map Angles', -> mapHolder.compass.targetyaw = 0)\SetIcon('icon16/arrow_refresh.png')
 		\AddSpacer()
-		\AddOption 'GitLab', -> gui.OpenURL('https://git.dbot.serealia.ca/dbot/DMaps')
-		\AddOption 'Issues/suggestions', -> gui.OpenURL('https://git.dbot.serealia.ca/dbot/DMaps/issues')
-		\AddOption 'Workshop (please ★★★★★)', -> gui.OpenURL('https://steamcommunity.com/sharedfiles/filedetails/?id=916067750')
-		\AddOption 'Creator of DMaps', -> gui.OpenURL('https://steamcommunity.com/id/roboderpy/')
+		\AddOption('GitLab', -> gui.OpenURL('https://git.dbot.serealia.ca/dbot/DMaps'))\SetIcon('icon16/script_code.png')
+		\AddOption('Issues/suggestions', -> gui.OpenURL('https://git.dbot.serealia.ca/dbot/DMaps/issues'))\SetIcon(table.Random(DMaps.BUGS_ICONS))
+		\AddOption('Workshop (please ★★★★★)', -> gui.OpenURL('https://steamcommunity.com/sharedfiles/filedetails/?id=916067750'))\SetIcon('icon16/heart.png')
+		\AddOption('Creator of DMaps', -> gui.OpenURL('https://steamcommunity.com/id/roboderpy/'))\SetIcon('icon16/page_code.png')
 		\Open()
 		\SetPos(x, y)
 
