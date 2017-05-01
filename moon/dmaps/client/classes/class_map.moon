@@ -569,10 +569,13 @@ class DMap
 		if @outside
 			newView.origin.z += @skyHeight
 			newView.zfar = 4000 + @skyHeight
+		else
+			newView.zfar = newView.origin.z - @clipLevelBottom
+			newView.znear = newView.origin.z - @clipLevelTop
 		
 		if not @caveMode
 			newView.origin.z = math.max(1000, newView.origin.z)
-			newView.znear = -2000
+			newView.znear = 0
 			newView.zfar = 4000 + @skyHeight
 		
 		@MAP_DRAW = true
