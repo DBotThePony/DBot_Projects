@@ -128,6 +128,7 @@ class DMap
 		
 		@removed = false
 		
+		@caveMode = true
 		@outside = false
 		
 		@RegisterHooks!
@@ -178,6 +179,16 @@ class DMap
 	GetLockZoom: => @lockZoom
 	GetLockClip: => @lockClip
 	GetLockView: => @lockView
+
+	GetIsOutside: => @outside
+	IsOutside: => @outside
+	Outside: => @outside
+	IsCaveModeEnabled: => @caveMode
+	IsCaveMode: => @caveMode
+	CaveMode: => @caveMode
+	GetCaveMode: => @caveMode
+	GetIsCaveMode: => @caveMode
+	GetIsCaveModeEnabled: => @caveMode
 	
 	SetMousePos: (x = 0, y = 0) =>
 		@mouseX = assert(x, 'number')
@@ -237,6 +248,11 @@ class DMap
 	LockClip: (val = false) => @lockClip = assert(val, 'boolean')
 	LockView: (val = false) => @lockView = assert(val, 'boolean')
 	LockZoom: (val = false) => @lockZoom = assert(val, 'boolean')
+
+	SetIsCaveMode: (val = true) => @caveMode = assert(val, 'boolean')
+	SetCaveMode: (val = true) => @caveMode = assert(val, 'boolean')
+	SetCaveModeEnabled: (val = true) => @caveMode = assert(val, 'boolean')
+	SetIsCaveModeEnabled: (val = true) => @caveMode = assert(val, 'boolean')
 	
 	GetWidth: => @width
 	GetHeight: => @height
@@ -441,7 +457,10 @@ class DMap
 			@clipLevelTop = Lerp(0.2, @clipLevelTop, pos.z + deltaZ * 0.9)
 			@clipLevelBottom = Lerp(0.2, @clipLevelBottom, pos.z - deltaZ * 0.9)
 			
-			@outside = not tr.Hit or tr.HitSky
+			if @caveMode
+				@outside = not tr.Hit or tr.HitSky
+			else
+				@outside = true
 			
 			if @outside
 				@skyHeight = deltaZ
@@ -454,7 +473,7 @@ class DMap
 				@lerpzoom = @zoom
 			
 		else
-			@outside = false
+			@outside = not @caveMode
 		
 		if not @lockView
 			@currX = Lerp(0.1, @currX, pos.x)
@@ -549,6 +568,11 @@ class DMap
 		
 		if @outside
 			newView.origin.z += @skyHeight
+			newView.zfar = 4000 + @skyHeight
+		
+		if not @caveMode
+			newView.origin.z = math.max(1000, newView.origin.z)
+			newView.znear = -2000
 			newView.zfar = 4000 + @skyHeight
 		
 		@MAP_DRAW = true

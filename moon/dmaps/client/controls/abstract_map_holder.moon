@@ -31,7 +31,6 @@ SHIFT_MULT = CreateConVar('cl_dmaps_wasd_shift', '2', {FCVAR_ARCHIVE}, 'Sensivit
 CTRL_MULT = CreateConVar('cl_dmaps_wasd_ctrl', '0.5', {FCVAR_ARCHIVE}, 'Sensivity of ctrl button on map')
 
 DMaps.WatchPermission('teleport')
-
 PANEL = {}
 
 PANEL.GetButtons = =>
@@ -70,6 +69,25 @@ PANEL.Init = =>
 	@mapObject\ListenNetworkWaypoints()
 	@mapObject\WatchMapEntities()
 	@mapObject\SetMinimalAutoZoom()
+
+	@caveModeButton = vgui.Create('DButton', @)
+	@caveModeButton\SetText('Enable cave mode')
+	@caveModeButton\SetTooltip('Enable cave mode')
+	@caveModeButton\SetSize(120, 17)
+	@caveModeButton.lastStatus = false
+	@caveModeButton.DoClick = ->
+		@mapObject\SetIsCaveModeEnabled(not @mapObject\IsCaveModeEnabled())
+		@Think()
+	@caveModeButton.Think = ->
+		status = @mapObject\IsCaveModeEnabled()
+		if status == @caveModeButton.lastStatus return
+		@caveModeButton.lastStatus = status
+		text = if status
+			'Disable cave mode'
+		else
+			'Enable cave mode'
+		@caveModeButton\SetText(text)
+		@caveModeButton\SetTooltip(text)
 
 	@showHelp = true
 	@helpAlpha = 1
@@ -277,6 +295,7 @@ PANEL.PerformLayout = (w, h) =>
 	@zoom\SetPos(w - @arrows.WIDTH / 2 - @zoom.WIDTH, @arrows.HEIGHT + 40)
 	@bottomClip\SetPos(w - @arrows.WIDTH / 2 - @zoom.WIDTH - 10, @arrows.HEIGHT + 60 + @zoom.HEIGHT)
 	@topClip\SetPos(w - @arrows.WIDTH / 2 - @zoom.WIDTH + @bottomClip.WIDTH + 10, @arrows.HEIGHT + 60 + @zoom.HEIGHT)
+	@caveModeButton\SetPos(w - @arrows.WIDTH / 2 - @zoom.WIDTH - 40, @arrows.HEIGHT + 80 + @zoom.HEIGHT + @topClip.HEIGHT)
 
 PANEL.Think = =>
 	if not @IsHovered!

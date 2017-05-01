@@ -67,6 +67,8 @@ DBUTTON_DO_CLICK = =>
 		\AddOption('Reset map Clip', -> mapHolder\GetMap()\LockClip(false))\SetIcon('icon16/magifier_zoom_out.png')
 		\AddOption('Reset map Position', -> mapHolder\GetMap()\LockView(false))\SetIcon('icon16/vector_delete.png')
 		\AddOption('Reset map Angles', -> mapHolder.compass.targetyaw = 0)\SetIcon('icon16/arrow_refresh.png')
+		\AddOption('Disable cave mode', -> mapHolder\GetMap()\SetIsCaveMode(false))\SetIcon('icon16/map_delete.png') if mapHolder\GetMap()\IsCaveModeEnabled()
+		\AddOption('Enable cave mode', -> mapHolder\GetMap()\SetIsCaveMode(true))\SetIcon('icon16/map_magnify.png') if not mapHolder\GetMap()\IsCaveModeEnabled()
 		\AddSpacer()
 		\AddOption('GitLab', -> gui.OpenURL('https://git.dbot.serealia.ca/dbot/DMaps'))\SetIcon('icon16/script_code.png')
 		\AddOption('Issues/suggestions', -> gui.OpenURL('https://git.dbot.serealia.ca/dbot/DMaps/issues'))\SetIcon(table.Random(DMaps.BUGS_ICONS))
