@@ -375,12 +375,12 @@ DMaps.IgnoreNPCs = {
 	npc_grenade_frag: true
 }
 
-timer.Create 'DMaps.DispalyedNPCSUpdate', 0.5, 0, ->
+hook.Add 'DMaps.DispalyedEntitiesUpdate', 'DMaps.NPCs', (list, lpos) ->
 	return if not POINTS_ENABLED\GetBool()
 	return if not SV_POINTS_ENABLED\GetBool()
 	return if not NPC_POINTS_ENABLED\GetBool()
 	return if not SV_NPC_POINTS_ENABLED\GetBool()
-	for {ent, mClass, pos, mdl, dist} in *DMaps.__lastEntsGetAll
+	for {ent, mClass, pos, mdl, dist} in *list
 		if DMaps.IgnoreNPCs[mClass] continue
 		if not ent\IsNPC() continue
 		if ent.__dmaps_ignore continue

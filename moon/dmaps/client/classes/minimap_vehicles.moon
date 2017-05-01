@@ -214,14 +214,14 @@ timer.Simple 0, ->
 		for k, {:Name, :Model} in pairs list.Get('Vehicles')
 			DMaps.RegisterVehicleName(Model, Name)
 
-timer.Create 'DMaps.DisplayedVehiclesUpdate', 0.5, 0, ->
+hook.Add 'DMaps.DispalyedEntitiesUpdate', 'DMaps.Vehicles', (list, lpos) ->
 	return if not POINTS_ENABLED\GetBool()
 	return if not SV_POINTS_ENABLED\GetBool()
 	return if not VEHICLE_POINTS_ENABLED\GetBool()
 	return if not SV_VEHICLE_POINTS_ENABLED\GetBool()
-	lpos = LocalPlayer()\GetPos()
 
-	for {ent, mClass, pos, mdl, dist} in *DMaps.__lastEntsGetAll
+	for {ent, mClass, pos, mdl, dist} in *list
+		if not IsValid(ent) continue
 		if not ent\IsVehicle() continue
 		if mClass == 'prop_vehicle_prisoner_pod' continue
 

@@ -234,6 +234,7 @@ timer.Create 'DMaps.DispalyedEntitiesUpdate', 0.5, 0, ->
 	avaliable = DMaps.RegisteredMapEntities_map[gm]
 
 	lplayer = LocalPlayer()
+	if not IsValid(lplayer) return
 	lpos = lplayer\GetPos()
 
 	DMaps.__lastEntsGetAll = {}
@@ -252,3 +253,5 @@ timer.Create 'DMaps.DispalyedEntitiesUpdate', 0.5, 0, ->
 		if not avaliable[mClass] continue
 		if dist > avaliable[mClass].DefaultRangeQ continue
 		avaliable[mClass]\AddEntity(ent)
+	
+	hook.Run('DMaps.DispalyedEntitiesUpdate', DMaps.__lastEntsGetAll, lpos)
