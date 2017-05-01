@@ -191,22 +191,23 @@ class EventPointer extends DMapPointer
 		@DrawText(map)
 	OpenMenu: (menu = DermaMenu()) =>
 		with menu
-			\AddOption('Teleport to', -> RunConsoleCommand('dmaps_teleport', @x, @y, @z)) if DMaps.HasPermission('teleport')
-			\AddOption 'Create waypoint...', ->
+			\AddOption('Teleport to', -> RunConsoleCommand('dmaps_teleport', @x, @y, @z))\SetIcon('icon16/arrow_in.png') if DMaps.HasPermission('teleport')
+			\AddOption('Create waypoint...', ->
 				data, id = DMaps.ClientsideWaypoint.DataContainer\CreateWaypoint("New Waypoint At X: #{@x}, Y: #{@y}, Z: #{@z}", @x, @y, @z)
 				DMaps.OpenWaypointEditMenu(id, DMaps.ClientsideWaypoint.DataContainer, (-> DMaps.ClientsideWaypoint.DataContainer\DeleteWaypoint(id))) if id
-			\AddOption('Navigate to...', -> DMaps.RequireNavigation(@GetPos())) if DMaps.NAV_ENABLE\GetBool()
-			\AddOption('Copy XYZ position', -> SetClipboardText("X: #{@x}, Y: #{@y}, Z: #{@z}"))
+			)\SetIcon(table.Random(DMaps.FLAGS))
+			\AddOption('Navigate to...', -> DMaps.RequireNavigation(@GetPos()))\SetIcon('icon16/arrow_in.png') if DMaps.NAV_ENABLE\GetBool()
 			DMaps.CopyMenus(menu, @x, @y, @z)
-			\AddOption('Copy name', -> SetClipboardText(@dName))
-			\AddOption('Copy stamp', -> SetClipboardText(@start))
-			\AddOption 'Copy date', ->
+			\AddOption('Copy name', -> SetClipboardText(@dName))\SetIcon(table.Random(DMaps.TAGS_ICONS))
+			\AddOption('Copy stamp', -> SetClipboardText(@start))\SetIcon(table.Random(DMaps.TAGS_ICONS))
+			\AddOption('Copy date', ->
 				time = os.time()
 				delta = math.floor(CurTime() - @start)
 				timeStamp = time - delta
 				SetClipboardText(os.date('%H:%M:%S - %d/%m/%Y', timeStamp))
-			\AddOption('Copy point data string', -> SetClipboardText("Name: #{@dName}, X: #{@x}, Y: #{@y}, Z: #{@z}"))
-			\AddOption 'Look At', -> LocalPlayer()\SetEyeAngles((@GetPos() - LocalPlayer()\EyePos())\Angle())
+			)\SetIcon(table.Random(DMaps.TAGS_ICONS))
+			\AddOption('Copy point data string', -> SetClipboardText("Name: #{@dName}, X: #{@x}, Y: #{@y}, Z: #{@z}"))\SetIcon(table.Random(DMaps.TAGS_ICONS))
+			\AddOption('Look At', -> LocalPlayer()\SetEyeAngles((@GetPos() - LocalPlayer()\EyePos())\Angle()))\SetIcon('icon16/arrow_in.png')
 			\Open()
 		return true
 

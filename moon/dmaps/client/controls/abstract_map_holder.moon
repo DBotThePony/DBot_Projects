@@ -167,25 +167,26 @@ PANEL.OnMousePressed = (code) =>
 				createWaypoint = ->
 					data, id = ClientsideWaypoint.DataContainer\CreateWaypoint("New Waypoint At X: #{x}, Y: #{y}, Z: #{z}", x, y, z)
 					DMaps.OpenWaypointEditMenu(id, ClientsideWaypoint.DataContainer, -> ClientsideWaypoint.DataContainer\DeleteWaypoint(id)) if id
-				\AddOption('Create waypoint...', createWaypoint)
-				\AddOption('Navigate to...', -> DMaps.RequireNavigation(Vector(x, y, z))) if DMaps.NAV_ENABLE\GetBool()
-				\AddOption('Stop navigation', DMaps.StopNavigation) if DMaps.IsNavigating
-				\AddOption 'Look At', -> LocalPlayer()\SetEyeAngles((Vector(x, y, z) - LocalPlayer()\EyePos())\Angle())
+				\AddOption('Create waypoint...', createWaypoint)\SetIcon(table.Random(DMaps.FLAGS))
+				\AddOption('Navigate to...', -> DMaps.RequireNavigation(Vector(x, y, z)))\SetIcon('icon16/map_go.png') if DMaps.NAV_ENABLE\GetBool()
+				\AddOption('Stop navigation', DMaps.StopNavigation)\SetIcon('icon16/map_delete.png') if DMaps.IsNavigating
+				\AddOption('Look At', -> LocalPlayer()\SetEyeAngles((Vector(x, y, z) - LocalPlayer()\EyePos())\Angle()))\SetIcon('icon16/arrow_in.png')
 				if DMaps.HasPermission('teleport')
-					\AddOption('Teleport to', -> RunConsoleCommand('dmaps_teleport', x, y, z))
+					\AddOption('Teleport to', -> RunConsoleCommand('dmaps_teleport', x, y, z))\SetIcon('icon16/arrow_in.png')
 				hit = false
 				sub = \AddSubMenu('Serverside waypoints')
 
 				for container in *@svWaypoints
 					if DMaps.HasPermission(container.__PERM_EDIT) and DMaps.HasPermission(container.__PERM_VIEW)
 						hit = true
-						sub\AddOption "Create #{container._NAME_ON_PANEL} waypoint", ->
+						sub\AddOption("Create #{container._NAME_ON_PANEL} waypoint", ->
 							containerObject = container\GetContainer()
 							if not container\IsValid()
 								containerObject = container(false, false)
 								net.Start(container.NETWORK_STRING)
 								net.SendToServer()
 							containerObject\OpenEditMenu(container\GenerateData(x, y, z))
+						)\SetIcon(table.Random(DMaps.FLAGS))
 				sub\Remove() if not hit
 				DMaps.CopyMenus(menu, x, y, z)
 				\Open()

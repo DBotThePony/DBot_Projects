@@ -173,21 +173,21 @@ class UnArrestEventPointer extends EventPointer
 		super(menu)
 		with menu
 			\AddSpacer()
-			\AddOption('Copy Steam name', -> SetClipboardText(tostring(@SteamName))) if @SteamName
-			\AddOption('Copy UserID', -> SetClipboardText(tostring(@userid)))
-			\AddOption('Copy SteamID', -> SetClipboardText(tostring(@steamid)))
-			\AddOption('Copy SteamID64', -> SetClipboardText(tostring(@steamid64)))
-			\AddOption('Copy UniqueID', -> SetClipboardText(tostring(@uniqueid)))
-			\AddOption('Open steam profile', -> gui.OpenURL("http://steamcommunity.com/profiles/#{@steamid64}/"))
+			\AddOption('Copy Steam name', -> SetClipboardText(tostring(@SteamName)))\SetIcon(table.Random(DMaps.TAGS_ICONS)) if @SteamName
+			\AddOption('Copy UserID', -> SetClipboardText(tostring(@userid)))\SetIcon(table.Random(DMaps.TAGS_ICONS))
+			\AddOption('Copy SteamID', -> SetClipboardText(tostring(@steamid)))\SetIcon(table.Random(DMaps.TAGS_ICONS))
+			\AddOption('Copy SteamID64', -> SetClipboardText(tostring(@steamid64)))\SetIcon(table.Random(DMaps.TAGS_ICONS))
+			\AddOption('Copy UniqueID', -> SetClipboardText(tostring(@uniqueid)))\SetIcon(table.Random(DMaps.TAGS_ICONS))
+			\AddOption('Open steam profile', -> gui.OpenURL("http://steamcommunity.com/profiles/#{@steamid64}/"))\SetIcon('icon16/link.png')
 			if @hasUnarrester
 				\AddSpacer()
-				\AddOption('Copy Unarrester\'s Name', -> SetClipboardText(tostring(@actioner_nick)))
-				\AddOption('Copy Unarrester\'s Steam name', -> SetClipboardText(tostring(@actioner_SteamName))) if @actioner_SteamName
-				\AddOption('Copy Unarrester\'s UserID', -> SetClipboardText(tostring(@actioner_userid)))
-				\AddOption('Copy Unarrester\'s SteamID', -> SetClipboardText(tostring(@actioner_steamid)))
-				\AddOption('Copy Unarrester\'s SteamID64', -> SetClipboardText(tostring(@actioner_steamid64)))
-				\AddOption('Copy Unarrester\'s UniqueID', -> SetClipboardText(tostring(@actioner_uniqueid)))
-				\AddOption('Open Unarrester\'s steam profile', -> gui.OpenURL("http://steamcommunity.com/profiles/#{@actioner_steamid64}/"))
+				\AddOption('Copy Unarrester\'s Name', -> SetClipboardText(tostring(@actioner_nick)))\SetIcon(table.Random(DMaps.TAGS_ICONS))
+				\AddOption('Copy Unarrester\'s Steam name', -> SetClipboardText(tostring(@actioner_SteamName)))\SetIcon(table.Random(DMaps.TAGS_ICONS)) if @actioner_SteamName
+				\AddOption('Copy Unarrester\'s UserID', -> SetClipboardText(tostring(@actioner_userid)))\SetIcon(table.Random(DMaps.TAGS_ICONS))
+				\AddOption('Copy Unarrester\'s SteamID', -> SetClipboardText(tostring(@actioner_steamid)))\SetIcon(table.Random(DMaps.TAGS_ICONS))
+				\AddOption('Copy Unarrester\'s SteamID64', -> SetClipboardText(tostring(@actioner_steamid64)))\SetIcon(table.Random(DMaps.TAGS_ICONS))
+				\AddOption('Copy Unarrester\'s UniqueID', -> SetClipboardText(tostring(@actioner_uniqueid)))\SetIcon(table.Random(DMaps.TAGS_ICONS))
+				\AddOption('Open Unarrester\'s steam profile', -> gui.OpenURL("http://steamcommunity.com/profiles/#{@actioner_steamid64}/"))\SetIcon('icon16/link.png')
 			\Open()
 		return true
 	Remove: =>

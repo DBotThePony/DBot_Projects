@@ -255,12 +255,12 @@ class PlayerDeathPointer extends DeathPointer
 		super(menu)
 		with menu
 			\AddSpacer()
-			\AddOption('Copy Steam Name', -> SetClipboardText(tostring(@SteamName))) if @SteamName
-			\AddOption('Copy UserID', -> SetClipboardText(tostring(@userid)))
-			\AddOption('Copy SteamID', -> SetClipboardText(tostring(@steamid)))
-			\AddOption('Copy SteamID64', -> SetClipboardText(tostring(@steamid64)))
-			\AddOption('Copy UniqueID', -> SetClipboardText(tostring(@uniqueid)))
-			\AddOption('Open steam profile', -> gui.OpenURL("http://steamcommunity.com/profiles/#{@steamid64}/"))
+			\AddOption('Copy Steam Name', -> SetClipboardText(tostring(@SteamName)))\SetIcon(table.Random(DMaps.TAGS_ICONS)) if @SteamName
+			\AddOption('Copy UserID', -> SetClipboardText(tostring(@userid)))\SetIcon(table.Random(DMaps.TAGS_ICONS))
+			\AddOption('Copy SteamID', -> SetClipboardText(tostring(@steamid)))\SetIcon(table.Random(DMaps.TAGS_ICONS))
+			\AddOption('Copy SteamID64', -> SetClipboardText(tostring(@steamid64)))\SetIcon(table.Random(DMaps.TAGS_ICONS))
+			\AddOption('Copy UniqueID', -> SetClipboardText(tostring(@uniqueid)))\SetIcon(table.Random(DMaps.TAGS_ICONS))
+			\AddOption('Open steam profile', -> gui.OpenURL("http://steamcommunity.com/profiles/#{@steamid64}/"))\SetIcon('icon16/link.png')
 			\Open()
 		return true
 	Draw: (map) =>
