@@ -29,9 +29,12 @@ DMaps.WatchPermission = (perm = '') ->
         CAMI.PlayerHasAccess LocalPlayer(), perm, (has = false, reason = '') -> WATCHING_PERMISSIONS_MAP[perm] = has
 
 DMaps.HasPermission = (perm = '') ->
+    sPerm = perm
     error("Invalid permission to check: #{perm}") if not DMaps.IsValidPermission(perm)
     perm = DMaps.TranslatePermission(perm)
-    error("Permission is not tracked: #{perm}") if WATCHING_PERMISSIONS_MAP[perm] == nil
+    if WATCHING_PERMISSIONS_MAP[perm] == nil
+        DMaps.WatchPermission(sPerm)
+        return false
     return WATCHING_PERMISSIONS_MAP[perm]
 
 timer.Create 'DMaps.ClientsidePermissionsWatchdog', 10, 0, ->
