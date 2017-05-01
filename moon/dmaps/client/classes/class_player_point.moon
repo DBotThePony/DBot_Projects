@@ -84,6 +84,7 @@ class DMapPlayerPointer extends DMapEntityPointer
 		@uniqueid = ply\UniqueID()
 	
 	OpenMenu: (menu = DermaMenu()) =>
+		if not @GetEntity()\Alive() return false
 		super(menu)
 		with menu
 			\AddSpacer()
