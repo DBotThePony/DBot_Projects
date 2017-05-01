@@ -17,30 +17,9 @@
 
 import vgui, DMaps, table from _G
 
-svPoints = {
-	{'basic', 'Basic', 'dmaps_serverwaypoints'}
-	{'cami', 'CAMI usergroups', 'dmaps_serverwaypoints_cami'}
-	{'ugroup', 'usergroups', 'dmaps_serverwaypoints_ugroup'}
-	{'team', 'teams', 'dmaps_serverwaypoints_teams'}
-}
-
 PANEL =
 	Init: =>
 		@buttons = {}
-		@waypoints = vgui.Create('DButton', @)
-		@options = vgui.Create('DButton', @)
-		@waypoints\SetText('Waypoints')
-		@waypoints.DoClick = ->
-			menu = DermaMenu()
-			menu\AddOption('Clientside waypoints', DMaps.OpenWaypointsMenu)
-			for {name, Desc, conCommand} in *svPoints
-				menu\AddOption("Serverside #{Desc} waypoints", -> RunConsoleCommand(conCommand)) if DMaps.HasPermission("dmaps_view_#{name}_waypoints")
-			menu\Open()
-		@options\SetText('Options')
-		@options.DoClick = DMaps.OpenOptions
-		table.insert(@buttons, @waypoints)
-		table.insert(@buttons, @options)
-		
 		@setup = false
 		@knownW = 0
 		@knownH = 0
@@ -61,7 +40,7 @@ PANEL =
 		@knownW = w
 		@knownH = h
 		@knownAdd = addH
-		mw, mh = w / 3, 30
+		mw, mh = w / 4, 30
 		@SetSize(mw, mh)
 		@SetPos(w / 2 - mw / 2, h - mh + addH)
 		step = mw / (#@buttons)

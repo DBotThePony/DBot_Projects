@@ -41,6 +41,56 @@ DMaps.GetMainMap = ->
 	return false if not IsValid(DMaps.MainFrame.mapHolder\GetMap())
 	return DMaps.MainFrame.mapHolder\GetMap()
 
+svPoints = {
+	{'basic', 'Basic', 'dmaps_serverwaypoints'}
+	{'cami', 'CAMI usergroups', 'dmaps_serverwaypoints_cami'}
+	{'ugroup', 'usergroups', 'dmaps_serverwaypoints_ugroup'}
+	{'team', 'teams', 'dmaps_serverwaypoints_teams'}
+}
+
+DBUTTON_DO_CLICK = =>
+	mapHolder = @frame.mapHolder
+	x, y = @LocalToScreen(0, 20)
+	menu = DermaMenu()
+
+	with menu
+		\AddOption 'Close', -> frame\Close()
+		waypoints = \AddSubMenu('Waypoints', DMaps.OpenWaypointsMenu)
+		\AddOption('Options', DMaps.OpenOptions)
+		for {name, Desc, conCommand} in *svPoints
+			waypoints\AddOption("Serverside #{Desc} waypoints", -> RunConsoleCommand(conCommand)) if DMaps.HasPermission("dmaps_view_#{name}_waypoints")
+		\AddSpacer()
+		if not mapHolder.compass.followingPlayer then \AddOption 'Follow player angles', -> mapHolder.compass.followingPlayer = true
+		if mapHolder.compass.followingPlayer then \AddOption 'Stop following player angles', -> mapHolder.compass.followingPlayer = false
+		\AddOption 'Reset map Zoom', -> mapHolder\GetMap()\LockZoom(false)
+		\AddOption 'Reset map Clip', -> mapHolder\GetMap()\LockClip(false)
+		\AddOption 'Reset map Position', -> mapHolder\GetMap()\LockView(false)
+		\AddOption 'Reset map Angles', -> mapHolder\GetMap()\SetYaw(0)
+		\AddSpacer()
+		\AddOption 'GitLab', -> gui.OpenURL('https://git.dbot.serealia.ca/dbot/DMaps')
+		\AddOption 'Issues/suggestions', -> gui.OpenURL('https://git.dbot.serealia.ca/dbot/DMaps/issues')
+		\AddOption 'Workshop (please ★★★★★)', -> gui.OpenURL('https://steamcommunity.com/sharedfiles/filedetails/?id=916067750')
+		\AddOption 'Creator of DMaps', -> gui.OpenURL('https://steamcommunity.com/id/roboderpy/')
+		\Open()
+		\SetPos(x, y)
+
+DFRAME_ON_CLOSE = =>
+	DMaps.DISPLAY_AS_MINIMAP = @LAST_MINIMAP_STATUS
+	@mapHolder\ResetButtons()
+	if not @LAST_MINIMAP_STATUS
+		@displayAsMinimap\SetText('Display as Minimap')
+		@displayAsMinimap\SetTooltip('Display as Minimap')
+	else
+		@displayAsMinimap\SetText('Stop displaying as Minimap')
+		@displayAsMinimap\SetTooltip('Stop displaying as Minimap')
+		map = @mapHolder\GetMap()
+		map\LockZoom(false)
+		map\LockClip(false)
+		map\LockView(false)
+		map\SetMinimalAutoZoom(MINIMAP_ZOOM\GetInt())
+		AVERAGE_SPEED = [0 for i = 1, 100]
+		AVERAGE_SPEED_INDEX = 1
+
 DMaps.CreateMainFrame = ->
 	if IsValid(DMaps.MainFrame)
 		DMaps.MainFrame\Remove!
@@ -60,28 +110,20 @@ DMaps.CreateMainFrame = ->
 	@OnKeyCodeReleased = (code = KEY_NONE) => @mapHolder\OnKeyCodeReleased(code)
 
 	@LAST_MINIMAP_STATUS = false
-	@OnClose = =>
-		DMaps.DISPLAY_AS_MINIMAP = @LAST_MINIMAP_STATUS
-		@mapHolder\ResetButtons()
-		if not @LAST_MINIMAP_STATUS
-			@displayAsMinimap\SetText('Display as Minimap')
-			@displayAsMinimap\SetTooltip('Display as Minimap')
-		else
-			@displayAsMinimap\SetText('Stop displaying as Minimap')
-			@displayAsMinimap\SetTooltip('Stop displaying as Minimap')
-			map = @mapHolder\GetMap()
-			map\LockZoom(false)
-			map\LockClip(false)
-			map\LockView(false)
-			map\SetMinimalAutoZoom(MINIMAP_ZOOM\GetInt())
-			AVERAGE_SPEED = [0 for i = 1, 100]
-			AVERAGE_SPEED_INDEX = 1
+	@OnClose = DFRAME_ON_CLOSE
 	
 	@mapHolder = vgui.Create('DMapsMapHolder', @)
 	@mapHolder\Dock(FILL)
 	
+	@topMenu = vgui.Create('DButton', @)
+	@topMenu.frame = @
+	@topMenu\SetPos(4, 4)
+	@topMenu\SetSize(80, 20)
+	@topMenu\SetText('≡ DMaps')
+	@topMenu.DoClick = DBUTTON_DO_CLICK
+	
 	@buttons = vgui.Create('DMapButtons', @)
-	@buttons\AddMultiButton(@mapHolder\GetButtons!)
+	@buttons\AddMultiButton(@mapHolder\GetButtons())
 	@buttons\DoSetup(w, h, -5)
 
 	@displayAsMinimap = vgui.Create('DButton', @)
