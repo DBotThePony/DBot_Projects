@@ -350,7 +350,7 @@ class DMap
 				@INSIDE_3D_DRAW = false
 				return
 			
-			cFrame = FrameTime()
+			cFrame = FrameNumber()
 			lastFrameCount = currentFrameCount
 			if cFrame == lastDrawnFrame
 				currentFrameCount += 1
@@ -392,10 +392,25 @@ class DMap
 			if @MAP_DRAW
 				return true
 		
+		HUDPaint = ->
+			if @MAP_DRAW return
+			if @LAST_FRAME_DRAW ~= FrameNumber() return
+			if hook.Run('HUDShouldDraw', 'CHudCrosshair') == false return
+			ply = LocalPlayer()
+			weapon = ply\GetActiveWeapon() if ply\Alive()
+			if IsValid(weapon) and weapon.HUDShouldDraw and weapon\HUDShouldDraw('CHudCrosshair') == false return
+			surface.SetDrawColor(255, 255, 255)
+			w, h = ScrW(), ScrH()
+			w /= 2
+			h /= 2
+			surface.DrawLine(w - 8, h, w + 9, h)
+			surface.DrawLine(w, h - 8, w, h + 9)
+		
 		for k, hookName in pairs @@hooksToDisable
 			hook.Add(hookName, hookID, disableFunc)
 		
 		hook.Add('PreDrawTranslucentRenderables', hookID, preDrawFunc)
+		hook.Add('HUDPaint', hookID, HUDPaint)
 	
 	CloneNetworkWaypoints: =>
 		@AddObject(point\CloneWaypoint()) for point in *DMaps.NetworkedWaypoint\GetWaypoints()
@@ -418,6 +433,7 @@ class DMap
 			hook.Remove(hookName, hookID)
 		
 		hook.Remove('PreDrawTranslucentRenderables', hookID)
+		hook.Remove('HUDPaint', hookID)
 		hook.Remove('DMaps.PlayerDeath', hookID)
 	
 	-- Call when you give the decidion about pointer draw
@@ -565,6 +581,8 @@ class DMap
 			orthotop: -hh * localZoom
 			orthobottom: hh * localZoom
 		}
+
+		@LAST_FRAME_DRAW = FrameNumber()
 		
 		if @outside
 			newView.origin.z += @skyHeight
