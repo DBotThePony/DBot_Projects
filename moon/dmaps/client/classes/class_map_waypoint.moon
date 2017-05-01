@@ -134,7 +134,7 @@ class DMapWaypoint extends DMapPointer
 	OpenMenu: (menu = DermaMenu()) =>
 		with menu
 			\AddOption('Teleport to', -> RunConsoleCommand('dmaps_teleport', @x, @y, @z))\SetIcon('icon16/arrow_in.png') if DMaps.HasPermission('teleport')
-			\AddOption('Navigate to...', -> DMaps.RequireNavigation(Vector(@x, @y, @z)))\SetIcon('icon16/arrow_in.png') if DMaps.NAV_ENABLE\GetBool()
+			\AddOption('Navigate to...', -> DMaps.RequireNavigation(@GetPos(), true, true))\SetIcon('icon16/arrow_in.png') if DMaps.NAV_ENABLE\GetBool()
 			DMaps.CopyMenus(menu, @x, @y, @z)
 			\AddOption('Copy name', -> SetClipboardText(@name))\SetIcon(table.Random(DMaps.TAGS_ICONS))
 			\AddOption('Copy Data string', -> SetClipboardText("Name: #{@name}, X: #{@x}, Y: #{@y}, Z: #{@z}"))\SetIcon(table.Random(DMaps.TAGS_ICONS))

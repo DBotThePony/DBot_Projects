@@ -23,6 +23,7 @@ DMaps.NAV_ENABLE = CreateConVar('sv_dmaps_nav_enable', '1', {FCVAR_REPLICATED, F
 DMaps.IsNavigating = false
 DMaps.NavigationPoints = {}
 DMaps.LastNavRequestWindow = true
+DMaps.LastDisplayNavPoint = true
 DMaps.NavigationStart = Vector(0, 0, 0)
 DMaps.NavigationEnd = Vector(0, 0, 0)
 
@@ -124,7 +125,7 @@ DMaps.StopNavigation = ->
 	DMaps.IsNavigating = false
 	DMaps.NavigationPoints = {}
 
-DMaps.RequireNavigation = (target = Vector(0, 0, 0), displayWindow = true) ->
+DMaps.RequireNavigation = (target = Vector(0, 0, 0), displayWindow = true, dontDisplayPoint = false) ->
 	return if not DMaps.NAV_ENABLE\GetBool()
 	lastNavPoint\Remove() if IsValid(lastNavPoint)
 	{:x, :y, :z} = target
@@ -135,6 +136,7 @@ DMaps.RequireNavigation = (target = Vector(0, 0, 0), displayWindow = true) ->
 	net.WriteVector(Vector(x, y, z))
 	net.SendToServer()
 	DMaps.LastNavRequestWindow = displayWindow
+	DMaps.LastDisplayNavPoint = not dontDisplayPoint
 
 	if displayWindow
 		DMaps.NavRequestWindow\Remove() if IsValid(DMaps.NavRequestWindow)
@@ -243,8 +245,9 @@ net.Receive 'DMaps.Navigation.Require', ->
 			output
 
 		{:x, :y, :z} = DMaps.NavigationEnd
-		lastNavPoint = DMapWaypoint('Navigation target', math.floor(x), math.floor(y), math.floor(z), Color(NAV_POINT_COLOR()), 'gear_in')
-		map = DMaps.GetMainMap()
-		map\AddObject(lastNavPoint) if map
+		if DMaps.LastDisplayNavPoint
+			lastNavPoint = DMapWaypoint('Navigation target', math.floor(x), math.floor(y), math.floor(z), Color(NAV_POINT_COLOR()), 'gear_in')
+			map = DMaps.GetMainMap()
+			map\AddObject(lastNavPoint) if map
 		DMaps.NavRequestWindow\Remove() if DMaps.LastNavRequestWindow and IsValid(DMaps.NavRequestWindow)
 		DMaps.Message('Clientside navigation processing took ', math.floor((SysTime() - sysTime) * 10000) / 10, ' milliseconds')
