@@ -42,6 +42,8 @@ surface.CreateFont('DMaps.EventPointTextTiny', {
 	weight: 500
 })
 
+MAXIMAL_AMOUNT = CreateConVar('cl_dmaps_max_events', '120', {FCVAR_ARCHIVE}, 'Maximal amount of event points')
+
 class EventPointer extends DMapPointer
 	@NiceTime: (time = 0) =>
 		time = math.floor(time)
@@ -130,6 +132,9 @@ class EventPointer extends DMapPointer
 	@DefaultColor = Color(14, 201, 174)
 	@GetDefaultTime = => @DefaultLiveTime
 
+	@EVENT_POINTS = {}
+	@EVENT_POINTS_AMOUNT = 0
+
 	new: (name = 'Perfectly generic event', x = 0, y = 0, z = 0, color = @@DefaultColor, yaw = 0, size = 1) =>
 		super(x, y, z)
 		@eName = name
@@ -138,6 +143,16 @@ class EventPointer extends DMapPointer
 		@yaw = yaw
 		@color = color
 		@SetLiveTime(@@DefaultLiveTime)
+		@eTabId = table.insert(@@EVENT_POINTS, @)
+		@@EVENT_POINTS_AMOUNT += 1
+		maximal = MAXIMAL_AMOUNT\GetInt()
+		return if maximal <= 0
+		return if @@EVENT_POINTS_AMOUNT <= maximal
+		timer.Create 'DMaps.ClearEventPoints', 0, 1, ->
+			objects = [obj for index, obj in pairs @@EVENT_POINTS]
+			table.sort(objects, (a, b) -> a\GetStamp() < b\GetStamp())
+			objects[i]\Remove() for i = 1, @@EVENT_POINTS_AMOUNT - maximal
+
 	GetName: => @eName
 	GetYaw: => @yaw
 	GetSize: => @size
@@ -210,5 +225,9 @@ class EventPointer extends DMapPointer
 			\AddOption('Look At', -> LocalPlayer()\SetEyeAngles((@GetPos() - LocalPlayer()\EyePos())\Angle()))\SetIcon('icon16/arrow_in.png')
 			\Open()
 		return true
+	Remove: =>
+		super()
+		@@EVENT_POINTS[@eTabId] = nil
+		@@EVENT_POINTS_AMOUNT -= 1
 
 DMaps.EventPointer = EventPointer

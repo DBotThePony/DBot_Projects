@@ -59,7 +59,13 @@ class DMapPointer
 		@y = y
 		@z = z
 		@removed = false
+		@creationstamp = RealTime()
+		@creationstampSync = CurTime()
 	
+	CurTime: => CurTime() - @creationstampSync
+	RealTime: => RealTime() - @creationstamp
+	GetStamp: => @creationstamp
+	GetSyncStamp: => @creationstampSync
 	-- Called internally
 	PositionChanged: => -- Override
 	OnDataChanged: => -- Override
