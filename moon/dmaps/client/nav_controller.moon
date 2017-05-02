@@ -211,7 +211,7 @@ net.Receive 'DMaps.Navigation.Require', ->
 				when NAV_STATUS_GENERIC_FAILURE
 					err = 'Generic error'
 				when NAV_STATUS_FAILURE_TIME_LIMIT
-					err = 'Time limit exceeded'
+					err = 'Calculation time limit exceeded'
 				when NAV_STATUS_FAILURE_OPEN_NODES_LIMIT
 					err = 'Too many open nodes'
 				when NAV_STATUS_FAILURE_LOOPS_LIMIT

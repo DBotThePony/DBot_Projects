@@ -44,7 +44,7 @@ net.Receive 'DMaps.Navigation.Require', (len, ply) ->
 		tracer\Stop()
 		hook.Remove 'Think', hookID
 
-	tracer\SetFailureCallback((code) ->
+	tracer\SetFailureCallback((code) =>
 		if not IsValid(ply) return
 		net.Start('DMaps.Navigation.Require')
 		net.WriteBool(false)
