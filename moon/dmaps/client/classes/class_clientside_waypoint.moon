@@ -131,8 +131,8 @@ class ClientsideWaypoint extends DMapWaypoint
 	GetSaveID: => @SAVEID
 	OpenMenu: (menu = DermaMenu()) =>
 		with menu
-			\AddOption('Edit...', -> DMaps.OpenWaypointEditMenu(@SAVEID, @@DataContainer))
-			\AddSubMenu('Delete')\AddOption('Confirm?', -> @@DataContainer\DeleteWaypoint(@SAVEID))
+			\AddOption('Edit...', -> DMaps.OpenWaypointEditMenu(@SAVEID, @@DataContainer))\SetIcon('icon16/pencil.png')
+			\AddSubMenu('Delete')\AddOption('Confirm?', -> @@DataContainer\DeleteWaypoint(@SAVEID))\SetIcon('icon16/cross.png')
 			\Open()
 		return super(menu)
 	Remove: =>
