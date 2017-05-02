@@ -199,6 +199,20 @@ Bezier = (vec1 = Vector(0, 0, 0), vec2 = Vector(0, 0, 0), vec3 = Vector(0, 0, 0)
 		Vector(x, y, z)
 	return output
 
+
+class DMapsNavigationTarget extends DMapWaypoint
+	new: (x = 0, y = 0, z = 0) =>
+		x, y, z = math.floor(x), math.floor(y), math.floor(z)
+		super('Navigation target', x, y, z, Color(NAV_POINT_COLOR()), 'gear_in')
+	
+	OpenMenu: (menu = DermaMenu()) =>
+		super(menu)
+		with menu
+			\AddOption('Stop navigation', DMaps.StopNavigation)\SetIcon('icon16/map_delete.png')
+			\AddOption('Remove target point', -> @Remove())\SetIcon('icon16/cross.png')
+			\Open()
+		return true
+
 net.Receive 'DMaps.Navigation.Require', ->
 	status = net.ReadBool()
 
@@ -269,7 +283,7 @@ net.Receive 'DMaps.Navigation.Require', ->
 
 		{:x, :y, :z} = DMaps.NavigationEnd
 		if DMaps.LastDisplayNavPoint
-			lastNavPoint = DMapWaypoint('Navigation target', math.floor(x), math.floor(y), math.floor(z), Color(NAV_POINT_COLOR()), 'gear_in')
+			lastNavPoint = DMapsNavigationTarget(x, y, z)
 			map = DMaps.GetMainMap()
 			map\AddObject(lastNavPoint) if map
 		DMaps.NavRequestWindow\Remove() if DMaps.LastNavRequestWindow and IsValid(DMaps.NavRequestWindow)

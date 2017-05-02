@@ -302,6 +302,17 @@ netDMGTable = {
 	DMG_RADIATION
 }
 
+class DMapsLocalDeathPoint extends DMapWaypoint
+	new: (x = 0, y = 0, z = 0) =>
+		super('Latest death', x, y, z, Color(DEATH_POINT_COLOR()), 'skull_old')
+	
+	OpenMenu: (menu = DermaMenu()) =>
+		super(menu)
+		with menu
+			\AddOption('Remove death point', -> @Remove())\SetIcon('icon16/cross.png')
+			\Open()
+		return true
+
 net.Receive 'DMaps.PlayerDeath', ->
 	ply = net.ReadEntity()
 	{:x, :y, :z} = net.ReadVector()
@@ -311,7 +322,7 @@ net.Receive 'DMaps.PlayerDeath', ->
 		return if not REMEMBER_DEATH_POINT\GetBool()
 		x, y, z = math.floor(x), math.floor(y), math.floor(z)
 		LAST_DEATH_POINT\Remove() if IsValid(LAST_DEATH_POINT)
-		LAST_DEATH_POINT = DMapWaypoint('Latest death', x, y, z, Color(DEATH_POINT_COLOR()), 'skull_old')
+		LAST_DEATH_POINT = DMapsLocalDeathPoint(x, y, z)
 		hook.Run 'DMaps.PlayerDeath', ply, LAST_DEATH_POINT
 		DMaps.ChatPrint('You died at X: ', x, ' Y: ', y, ' Z: ', z)
 		return
