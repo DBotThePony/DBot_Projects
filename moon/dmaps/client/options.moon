@@ -72,6 +72,7 @@ MINIMAP_DISPLAY_PANEL =
 		@posy = 0
 		@SetSize(@wCurrent, @hCurrent)
 		@SetMouseInputEnabled(true)
+		@SetCursor('hand')
 	InitSize: (width = 1, height = 1) =>
 		@initWidth = width
 		@initHeight = height
@@ -84,8 +85,10 @@ MINIMAP_DISPLAY_PANEL =
 	OnMousePressed: =>
 		@mPosX, @mPosY = gui.MousePos()
 		@hold = true
+		@SetCursor('sizeall')
 	OnMouseReleased: =>
 		@hold = false
+		@SetCursor('hand')
 	Think: =>
 		w, h = @GetSize()
 		@InitSize(w, h) if w ~= @initWidth or h ~= @initHeight
