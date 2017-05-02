@@ -89,10 +89,26 @@ class AStarNode
 	GetAdjacentAreas: => @nav\GetAdjacentAreas()
 	Underwater: => @nav\IsUnderwater()
 
+NAV_LOOPS_PER_FRAME = CreateConVar('sv_dmaps_nav_loops_per_frame', '50', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'A* Searcher iterations per frame')
+NAV_OPEN_LIMIT = CreateConVar('sv_dmaps_nav_open_limit', '700', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'A* Searcher "open" nodes limit (at same time)')
+NAV_LIMIT = CreateConVar('sv_dmaps_nav_limit', '4000', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'A* Searcher total iterations limit')
+FRAME_THERSOLD = CreateConVar('sv_dmaps_nav_frame_limit', '5', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'A* Searcher time limit (in milliseconds) per calculation per frame')
+TIME_LIMIT = CreateConVar('sv_dmaps_nav_time_limit', '2500', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'A* Searcher total time limit (in milliseconds) per one search')
+
 class AStarTracer
 	@nextID = 1
 
-	new: (startPos = Vector(0, 0, 0), endPos = Vector(0, 0, 0), loopsPerIteration = 50, limit = 3000, frameThersold = 5, timeThersold = 1500) =>
+	@NAV_STATUS_IDLE = -1
+	@NAV_STATUS_SUCCESS = 0
+	@NAV_STATUS_GENERIC_FAILURE = 1
+	@NAV_STATUS_WORKING = 2
+	@NAV_STATUS_FAILURE_TIME_LIMIT = 3
+	@NAV_STATUS_FAILURE_OPEN_NODES_LIMIT = 4
+	@NAV_STATUS_FAILURE_LOOPS_LIMIT = 5
+	@NAV_STATUS_FAILURE_NO_OPEN_NODES = 6
+	@NAV_STATUS_INTERRUPT = 7
+
+	new: (startPos = Vector(0, 0, 0), endPos = Vector(0, 0, 0), loopsPerIteration = NAV_LOOPS_PER_FRAME\GetInt(), nodesLimit = NAV_OPEN_LIMIT\GetInt(), limit = NAV_LIMIT\GetInt(), frameThersold = FRAME_THERSOLD\GetFloat(), timeThersold = TIME_LIMIT\GetFloat()) =>
 		@ID = @@nextID
 		@@nextID += 1
 		@working = false
@@ -112,10 +128,11 @@ class AStarTracer
 		@frameThersold = frameThersold
 		@timeThersold = timeThersold
 		@totalTime = 0
-		@nodesLimit = 400
+		@nodesLimit = nodesLimit
 		@callbackFail = =>
 		@callbackSuccess = =>
 		@callbackStop = =>
+		@status = @@NAV_STATUS_IDLE
 	
 	IsStopped: => @stop
 	IsWorking: => @working
@@ -156,6 +173,7 @@ class AStarTracer
 	
 	Stop: =>
 		return if not @working
+		@status = @@NAV_STATUS_INTERRUPT
 		@working = false
 		@stop = true
 		@hasfinished = true
@@ -163,6 +181,7 @@ class AStarTracer
 		@callbackStop()
 	
 	OnSuccess: (node) =>
+		@status = @@NAV_STATUS_SUCCESS
 		@lastNode = node
 		@working = false
 		@success = true
@@ -171,19 +190,23 @@ class AStarTracer
 		@RecalcPath()
 		@callbackSuccess()
 	
-	OnFailure: =>
+	OnFailure: (status = @@NAV_STATUS_GENERIC_FAILURE) =>
 		@working = false
 		@failure = true
 		@hasfinished = true
+		@status = status
 		hook.Remove 'Think', tostring(@)
-		@callbackFail()
+		@callbackFail(status)
+	
+	GetStatus: => @status
 
 	Start: =>
 		@lastNodeNav = navmesh.Find(@endPos, 1, 20, 20)[1]
 		@firstNodeNav = navmesh.Find(@startPos, 1, 20, 20)[1]
+		@status = @@NAV_STATUS_WORKING
 
 		if not @lastNodeNav or not @firstNodeNav
-			@OnFailure()
+			@OnFailure(@@NAV_STATUS_FAILURE_NO_OPEN_NODES)
 			return
 		
 		@working = true
@@ -222,11 +245,11 @@ class AStarTracer
 			return
 		
 		if #@opened == 0
-			@OnFailure()
+			@OnFailure(@@NAV_STATUS_FAILURE_NO_OPEN_NODES)
 			return
 		
 		if #@opened >= @nodesLimit
-			@OnFailure()
+			@OnFailure(@@NAV_STATUS_FAILURE_OPEN_NODES_LIMIT)
 			return
 		
 		calculationTime = 0
@@ -234,8 +257,8 @@ class AStarTracer
 		for i = 1, @loopsPerIteration
 			sTime = SysTime()
 			@iterations += 1
-			if @iterations > @limit
-				@OnFailure()
+			if @hasLimit and @iterations > @limit
+				@OnFailure(@@NAV_STATUS_FAILURE_LOOPS_LIMIT)
 				return
 			
 			nearest = @GetNearestNode()
@@ -278,7 +301,7 @@ class AStarTracer
 			calculationTime += cTime
 			@totalTime += cTime
 			if @totalTime >= @timeThersold
-				@OnFailure()
+				@OnFailure(@@NAV_STATUS_FAILURE_TIME_LIMIT)
 				return
 			if calculationTime >= @frameThersold
 				break

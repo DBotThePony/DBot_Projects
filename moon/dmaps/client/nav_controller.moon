@@ -18,6 +18,16 @@
 import DMaps from _G
 import DMapWaypoint from DMaps
 
+NAV_STATUS_IDLE = -1
+NAV_STATUS_SUCCESS = 0
+NAV_STATUS_GENERIC_FAILURE = 1
+NAV_STATUS_WORKING = 2
+NAV_STATUS_FAILURE_TIME_LIMIT = 3
+NAV_STATUS_FAILURE_OPEN_NODES_LIMIT = 4
+NAV_STATUS_FAILURE_LOOPS_LIMIT = 5
+NAV_STATUS_FAILURE_NO_OPEN_NODES = 6
+NAV_STATUS_INTERRUPT = 7
+
 DMaps.NAV_ENABLE = CreateConVar('sv_dmaps_nav_enable', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Enable navigation support (if map has nav file)')
 
 DMaps.IsNavigating = false
@@ -195,7 +205,20 @@ net.Receive 'DMaps.Navigation.Require', ->
 	if not status
 		if DMaps.LastNavRequestWindow
 			DMaps.NavRequestWindow\Remove() if IsValid(DMaps.NavRequestWindow)
-			Derma_Message('Server is unable to find a path to requested point\n:(', 'DMaps navigation failure', 'OK')
+			err = '%ERRORNAME%'
+			errCode = net.ReadUInt(8)
+			switch errCode
+				when NAV_STATUS_GENERIC_FAILURE
+					err = 'Generic error'
+				when NAV_STATUS_FAILURE_TIME_LIMIT
+					err = 'Time limit exceeded'
+				when NAV_STATUS_FAILURE_OPEN_NODES_LIMIT
+					err = 'Too many open nodes'
+				when NAV_STATUS_FAILURE_LOOPS_LIMIT
+					err = 'Total iterations limit hit'
+				when NAV_STATUS_FAILURE_NO_OPEN_NODES
+					err = 'No open nodes (dead end)'
+			Derma_Message("Server is unable to find a path to requested point\n:(\nError: '#{err}' (#{errCode})", 'DMaps navigation failure', 'OK')
 		return
 	else
 		sysTime = SysTime()
