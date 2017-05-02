@@ -187,6 +187,35 @@ PANEL.OnMousePressed = (code) =>
 					DMaps.OpenWaypointEditMenu(id, ClientsideWaypoint.DataContainer, -> ClientsideWaypoint.DataContainer\DeleteWaypoint(id)) if id
 				\AddOption('Create waypoint...', createWaypoint)\SetIcon(table.Random(DMaps.FLAGS))
 				\AddOption('Navigate to...', -> DMaps.RequireNavigation(Vector(x, y, z)))\SetIcon('icon16/map_go.png') if DMaps.NAV_ENABLE\GetBool()
+				\AddOption('Hightlight this postion', ->
+					tpos = Vector(x, y, z)
+					@mapObject\TargetPosition(tpos)
+					tpos.z += 600
+					@mapObject\LockZoom(true)
+					@mapObject\LockView(true)
+					if ENABLE_SMOOTH\GetBool() and ENABLE_SMOOTH_MOVE\GetBool()
+						@mapObject\SetLerpPos(tpos)
+					else
+						@mapObject\SetPos(tpos)
+				)\SetIcon(table.Random(DMaps.FLAGS))
+				\AddOption('Hightlight...', ->
+					final = (text = '') ->
+						X, Y, Z = DMaps.ParseCoordinates(text)
+						if not X
+							Derma_Message('Failed to parse inputted coordinates', 'Hightlight failed', 'Okay')
+						else
+							tpos = Vector(X, Y, Z)
+							@mapObject\TargetPosition(tpos)
+							tpos.z += 600
+							@mapObject\LockZoom(true)
+							@mapObject\LockView(true)
+							if ENABLE_SMOOTH\GetBool() and ENABLE_SMOOTH_MOVE\GetBool()
+								@mapObject\SetLerpPos(tpos)
+							else
+								@mapObject\SetPos(tpos)
+					Derma_StringRequest('Hightlight...', 'Put coordinates string', '0, 0, 0', final)
+				)\SetIcon(table.Random(DMaps.FLAGS))
+				\AddOption('Remove highlight', -> @mapObject\StopHighlight())\SetIcon('icon16/cross.png') if @mapObject\HasHighlightPoint()
 				\AddOption('Stop navigation', DMaps.StopNavigation)\SetIcon('icon16/map_delete.png') if DMaps.IsNavigating
 				\AddOption('Look At', -> LocalPlayer()\SetEyeAngles((Vector(x, y, z) - LocalPlayer()\EyePos())\Angle()))\SetIcon('icon16/arrow_in.png')
 				if DMaps.HasPermission('teleport')

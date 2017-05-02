@@ -85,3 +85,54 @@ DMaps.WriteArray = (tab) ->
 	net.WriteUInt(#tab, 16)
 	net.WriteType(val) for val in *tab
 DMaps.ReadArray = -> [net.ReadType() for i = 1, net.ReadUInt(16)]
+
+PARSE_PATTERNS = {
+	{
+		pattern: '-?[0-9.]+, ?-?[0-9.]+, ?-?[0-9.]+'
+		func: (str = '', X = false, Y, Z) ->
+			local x, y, z
+			{x, y, z} = [tonumber(exp\Trim()) for exp in *string.Explode(',', str)]
+			return x or X, y or Y, z or Z
+	}
+	
+	{
+		pattern: '-?[0-9.]+ -?[0-9.]+ -?[0-9.]+'
+		func: (str = '', X = false, Y, Z) ->
+			local x, y, z
+			{x, y, z} = [tonumber(exp\Trim()) for exp in *string.Explode(' ', str)]
+			return x or X, y or Y, z or Z
+	}
+
+	{
+		pattern: '-?[0-9.]+; ?-?[0-9.]+; ?-?[0-9.]+'
+		func: (str = '', X = false, Y, Z) ->
+			local x, y, z
+			{x, y, z} = [tonumber(exp\Trim()) for exp in *string.Explode(';', str)]
+			return x or X, y or Y, z or Z
+	}
+
+	{
+		pattern: 'X:? ?-?[0-9.]+, ?Y:? ?-?[0-9.]+, ?Z:? ?-?[0-9.]+'
+		func: (str = '', X = false, Y, Z) ->
+			local x, y, z
+			exps = string.Explode(',', str)
+			{x, y, z} = [tonumber(exp\match('[0-9.]+')\Trim()) for exp in *exps]
+			return x or X, y or Y, z or Z
+	}
+
+	{
+		pattern: 'X:? ?-?[0-9.]+, ?Z:? ?-?[0-9.]+, ?Y:? ?-?[0-9.]+'
+		func: (str = '', X = false, Y, Z) ->
+			local x, y, z
+			exps = string.Explode(',', str)
+			{x, z, y} = [tonumber(exp\match('[0-9.]+')\Trim()) for exp in *exps]
+			return x or X, y or Y, z or Z
+	}
+}
+
+DMaps.ParseCoordinates = (str = '', x = false, y, z) ->
+	for {:pattern, :func} in *PARSE_PATTERNS
+		match = str\match(pattern)
+		if not match continue
+		return func(match, x, y, z)
+	return x, y, z

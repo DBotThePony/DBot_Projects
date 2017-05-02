@@ -218,4 +218,20 @@ class DMapWaypoint extends DMapPointer
 		@DrawInternal(x, y, 1, @alphaLerp)
 
 DMaps.DMapWaypoint = DMapWaypoint
+
+TARGET_COLOR = DMaps.CreateColor(255, 127, 107, 'target_point', 'Highlight waypoint color')
+
+class DMapsHightlight extends DMapWaypoint
+	new: (x = 0, y = 0, z = 0) =>
+		x, y, z = math.floor(x), math.floor(y), math.floor(z)
+		super("X: #{x}, Y: #{y}, Z: #{z}", x, y, z, Color(TARGET_COLOR()), 'magnet')
+	
+	OpenMenu: (menu = DermaMenu()) =>
+		super(menu)
+		with menu
+			\AddOption('Remove highlight', -> @Remove())\SetIcon('icon16/cross.png')
+			\Open()
+		return true
+
+DMaps.DMapsHightlight = DMapsHightlight
 return DMapWaypoint

@@ -209,12 +209,42 @@ class DMap
 	AddZ: (val = 0) =>
 		@zoom += assert(val, 'number')
 		@lerpzoom += assert(val, 'number')
+	SetX: (val = 0) =>
+		@currXLerp = assert(val, 'number')
+		@currX = assert(val, 'number')
+	SetY: (val = 0) =>
+		@currY = assert(val, 'number')
+		@currYLerp = assert(val, 'number')
+	SetZ: (val = 0) =>
+		@zoom = assert(val, 'number')
+		@lerpzoom = assert(val, 'number')
+	SetPos: (val = Vector(0, 0, 0)) =>
+		{:x, :y, :z} = val
+		@SetX(x)
+		@SetY(y)
+		@SetZ(z)
 	AddLerpX: (val = 0) =>
 		@currXLerp += assert(val, 'number')
 	AddLerpY: (val = 0) =>
 		@currYLerp += assert(val, 'number')
 	AddLerpZ: (val = 0) =>
 		@lerpzoom += assert(val, 'number')
+	SetLerpX: (val = 0) =>
+		@currXLerp = assert(val, 'number')
+	SetLerpY: (val = 0) =>
+		@currYLerp = assert(val, 'number')
+	SetLerpZ: (val = 0) =>
+		@lerpzoom = assert(val, 'number')
+	SetLerpPos: (val = Vector(0, 0, 0)) =>
+		{:x, :y, :z} = val
+		@SetLerpX(x)
+		@SetLerpY(y)
+		@SetLerpZ(z)
+	AddLerpPos: (val = Vector(0, 0, 0)) =>
+		{:x, :y, :z} = val
+		@AddLerpX(x)
+		@AddLerpY(y)
+		@AddLerpZ(z)
 	DeltaZoomMultiplier: => @zoom / @@MINIMAL_ZOOM
 	AddZoom: (val = 0) =>
 		@lerpzoom = math.max(@lerpzoom + assert(val, 'number'), @@MINIMAL_ZOOM)
@@ -449,6 +479,16 @@ class DMap
 			return false
 		
 		return true
+	
+	HasTargetPoint: => IsValid(@lastTargetPosition)
+	HasHighlightPoint: => IsValid(@lastTargetPosition)
+	StopHighlight: => @lastTargetPosition\Remove() if IsValid(@lastTargetPosition)
+	TargetPosition: (pos = Vector(0, 0, 0)) =>
+		@lastTargetPosition\Remove() if IsValid(@lastTargetPosition)
+		{:x, :y, :z} = pos
+		@lastTargetPosition = DMaps.DMapsHightlight(x, y, z)
+		@AddObject(@lastTargetPosition)
+		return @lastTargetPosition
 	
 	ThinkPlayer: (ply = LocalPlayer!) =>
 		if not @IsValid! then return
