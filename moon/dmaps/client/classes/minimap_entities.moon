@@ -27,6 +27,7 @@ surface.CreateFont('DMaps.EntityInfoPoint', {
 
 POINTS_ENABLED = DMaps.ClientsideOption('entities', '1', 'Draw ANY entities on map')
 SV_POINTS_ENABLED = CreateConVar('sv_dmaps_entities', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Enable map entities display')
+SV_ENTITY_POINTS_RANGE = CreateConVar('sv_dmaps_entities_range', '1024', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Default range of map entities display')
 
 class DisplayedEntityBase extends DMapEntityPointer
 	@Entity = 'generic'
@@ -39,6 +40,10 @@ class DisplayedEntityBase extends DMapEntityPointer
 	GetRenderPriority: => 15
 
 	@Color = Color(200, 200, 200)
+
+	hook.Add 'Think', 'DMaps.DisplayedEntity', ->
+		@DefaultRange = SV_ENTITY_POINTS_RANGE\GetInt()
+		@DefaultRangeQ = @DefaultRange ^ 2
 
 	@Setup = =>
 		@ColorRModulation = @Color.r / 255

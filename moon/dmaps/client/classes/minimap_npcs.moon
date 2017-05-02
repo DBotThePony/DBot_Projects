@@ -25,6 +25,9 @@ SV_NPC_POINTS_ENABLED = CreateConVar('sv_dmaps_npcs', '1', {FCVAR_REPLICATED, FC
 SV_NPC_POINTS_TIME = CreateConVar('sv_dmaps_npc_death_duration', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'NPC death point live time in minutes')
 
 DRAW_DEATHPOINTS_NPCS = DMaps.ClientsideOption('draw_deathpoints_npc', '1', 'Draw NPCs deathpoints on map')
+SV_NPCS_POINTS_RANGE = CreateConVar('sv_dmaps_npcs_range', '1024', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Range of NPCs display')
+SV_ENEMY_NPCS_POINTS_RANGE = CreateConVar('sv_dmaps_enpcs_range', '512', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Range of enemy NPCs display')
+SV_FRIENDLY_NPCS_POINTS_RANGE = CreateConVar('sv_dmaps_enpcs_range', '2048', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Range of friendly NPCs display')
 
 surface.CreateFont('DMaps.NPCInfoPoint', {
 	font: 'Roboto'
@@ -57,6 +60,10 @@ class NPCPointer extends DisplayedEntityBase
 	@PShift = 15
 	@PHeight = 50
 	@Setup()
+
+	hook.Add 'Think', 'DMaps.NPCPointer', ->
+		@DefaultRange = SV_NPCS_POINTS_RANGE\GetInt()
+		@DefaultRangeQ = @DefaultRange ^ 2
 
 	GetRenderPriority: => 20
 
@@ -153,6 +160,10 @@ class FriendlyNPCPointer extends NPCPointer
 	@HPBarW = 100
 	@HPBarH = 10
 
+	hook.Add 'Think', 'DMaps.NPCPointer', ->
+		@DefaultRange = SV_FRIENDLY_NPCS_POINTS_RANGE\GetInt()
+		@DefaultRangeQ = @DefaultRange ^ 2
+
 	GetRenderPriority: => 25
 	
 	@Setup()
@@ -202,6 +213,10 @@ class EnemyNPCPointer extends NPCPointer
 	@PHypo = 20
 	@PShift = 20
 	@PHeight = 80
+
+	hook.Add 'Think', 'DMaps.NPCPointer', ->
+		@DefaultRange = SV_ENEMY_NPCS_POINTS_RANGE\GetInt()
+		@DefaultRangeQ = @DefaultRange ^ 2
 
 	GetRenderPriority: => 26
 	

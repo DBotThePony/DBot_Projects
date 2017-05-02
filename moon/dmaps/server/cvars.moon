@@ -36,3 +36,13 @@ CreateConVar('npc_death_duration', '1', 'NPC death point live time in minutes')
 
 CreateConVar('vehicles_undriven', '512', 'Undriven vehicle map track range')
 CreateConVar('vehicles_driven', '3000', 'Driven vehicle map track range')
+
+CreateConVar('npcs_range', '1024', 'Range of NPCs display')
+CreateConVar('enpcs_range', '512', 'Range of enemy NPCs display')
+CreateConVar('fnpcs_range', '2048', 'Range of friendly NPCs display')
+
+CreateConVar('players_street', '1', 'Sandbox Player Filter: Enable player "is on street" check')
+CreateConVar('players_street_dist', '9999', 'Sandbox Player Filter: "is on street" check max draw distance (Hammer units)')
+CreateConVar('players_max_delta', '600', 'Sandbox Player Filter: Max distance (Hammer units) in Z "height", before hiding player')
+CreateConVar('players_start_fade', '200', 'Sandbox Player Filter: Distance (Hammer units) in Z "height", before starting player fade')
+CreateConVar('players_start_hide', '800', 'Sandbox Player Filter: Distance (Hammer units)')

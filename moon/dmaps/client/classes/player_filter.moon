@@ -17,7 +17,14 @@
 
 import DMaps from _G
 
-POINTS_ENABLED = CreateConVar('sv_dmaps_players', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable player map arrows')
+FLAGS = {FCVAR_REPLICATED, FCVAR_NOTIFY, FCVAR_ARCHIVE}
+
+POINTS_ENABLED = CreateConVar('sv_dmaps_players', '1', FLAGS, 'Enable player map arrows')
+ENABLE_STREET_CHECK = CreateConVar('sv_dmaps_players_street', '1', FLAGS, 'Sandbox Player Filter: Enable player "is on street" check')
+STREET_CHECK_DIST = CreateConVar('sv_dmaps_players_street_dist', '9999', FLAGS, 'Sandbox Player Filter: "is on street" check max draw distance (Hammer units)')
+MAX_DELTA = CreateConVar('sv_dmaps_players_max_delta', '600', FLAGS, 'Sandbox Player Filter: Max distance (Hammer units) in Z "height", before hiding player')
+START_FADE = CreateConVar('sv_dmaps_players_start_fade', '200', FLAGS, 'Sandbox Player Filter: Distance (Hammer units) in Z "height", before starting player fade')
+START_HIDE = CreateConVar('sv_dmaps_players_start_hide', '800', FLAGS, 'Sandbox Player Filter: Distance (Hammer units)')
 
 class PlayerFilterBase
 	new: (ply = NULL, waypoint) =>
@@ -39,6 +46,15 @@ class SandboxPlayerFilter extends PlayerFilterBase
 	@FADE_VALUE_HEIGHT = 400
 	@FADE_VALUE_HEIGHT_DIV = 200
 	@TRIGGER_FADE_DIST = 800
+	@SREET_DISTANCE = 9999
+	@CHECK_TRACE = true
+
+	hook.Add 'Think', 'DMaps.SandboxPlayerFilter', ->
+		@MAX_DELTA_HEIGHT = MAX_DELTA\GetInt()
+		@START_FADE_HEIGHT = START_FADE\GetInt()
+		@TRIGGER_FADE_DIST = START_HIDE\GetInt()
+		@SREET_DISTANCE = STREET_CHECK_DIST\GetInt()
+		@CHECK_TRACE = ENABLE_STREET_CHECK\GetBool()
 	
 	new: (ply, waypoint) =>
 		super(ply, waypoint)
@@ -51,18 +67,22 @@ class SandboxPlayerFilter extends PlayerFilterBase
 			return false
 		elseif map.abstractSetup
 			pos = @waypoint\GetPos()
-			if map\GetAbstractPos!\Distance(pos) > @@TRIGGER_FADE_DIST
-				trData = {
-					mask: MASK_BLOCKLOS
-					filter: ply
-					start: pos
-					endpos: pos + @@UP_VECTOR
-				}
-				
-				tr = util.TraceLine(trData)
-				
-				if not tr.Hit or tr.HitSky
-					return true
+			dist = map\GetAbstractPos()\Distance(pos)
+			if dist > @@TRIGGER_FADE_DIST
+				if @@CHECK_TRACE and dist < @@SREET_DISTANCE
+					trData = {
+						mask: MASK_BLOCKLOS
+						filter: ply
+						start: pos
+						endpos: pos + @@UP_VECTOR
+					}
+					
+					tr = util.TraceLine(trData)
+					
+					if not tr.Hit or tr.HitSky
+						return true
+					else
+						return false
 				else
 					return false
 			else
