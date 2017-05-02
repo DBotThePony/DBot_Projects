@@ -107,7 +107,7 @@ DMaps.CreateMainFrame = ->
 	@Center!
 	@MakePopup!
 	@SetDeleteOnClose(false)
-	@SetTitle('DMap')
+	@SetTitle('')
 
 	@OnKeyCodePressed = (code = KEY_NONE) => @mapHolder\OnKeyCodePressed(code)
 	@OnKeyCodeReleased = (code = KEY_NONE) => @mapHolder\OnKeyCodeReleased(code)
