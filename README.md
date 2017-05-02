@@ -40,11 +40,24 @@ sv_dmaps_draw_players_armor              : 1        // Draw players armor on map
 sv_dmaps_draw_players_health             : 1        // Draw players health on map
 sv_dmaps_draw_players_info               : 1        // Draw players infos on map
 sv_dmaps_draw_players_team               : 1        // Draw players teams on map
+sv_dmaps_enpcs_range                     : 512      // Range of enemy NPCs display
 sv_dmaps_entities                        : 1        // Enable map entities display
+sv_dmaps_fnpcs_range                     : 2048     // Range of friendly NPCs display
 sv_dmaps_nav_enable                      : 1        // Enable navigation support (if map has nav file)
+sv_dmaps_nav_frame_limit                 : 5        // A* Searcher time limit (in milliseconds) per calculation per frame
+sv_dmaps_nav_limit                       : 4000     // A* Searcher total iterations limit
+sv_dmaps_nav_loops_per_frame             : 50       // A* Searcher iterations per frame
+sv_dmaps_nav_open_limit                  : 700      // A* Searcher 'open' nodes limit (at same time)
+sv_dmaps_nav_time_limit                  : 2500     // A* Searcher total time limit (in milliseconds) per one search
 sv_dmaps_npc_death_duration              : 1        // NPC death point live time in minutes
 sv_dmaps_npcs                            : 1        // Enable map NPCs display
+sv_dmaps_npcs_range                      : 1024     // Range of NPCs display
 sv_dmaps_players                         : 1        // Enable player map arrows
+sv_dmaps_players_max_delta               : 600      // Sandbox Player Filter: Max distance (Hammer units) in Z 'height', before hiding player
+sv_dmaps_players_start_fade              : 200      // Sandbox Player Filter: Distance (Hammer units) in Z 'height', before starting player fade
+sv_dmaps_players_start_hide              : 800      // Sandbox Player Filter: Distance (Hammer units)
+sv_dmaps_players_street                  : 1        // Sandbox Player Filter: Enable player 'is on street' check
+sv_dmaps_players_street_dist             : 9999     // Sandbox Player Filter: 'is on street' check max draw distance (Hammer units)
 sv_dmaps_vehicles                        : 1        // Enable map vehicles display
 sv_dmaps_vehicles_driven                 : 3000     // Driven vehicle map track range
 sv_dmaps_vehicles_undriven               : 512      // Undriven vehicle map track range
