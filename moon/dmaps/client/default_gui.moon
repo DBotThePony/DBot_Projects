@@ -208,7 +208,10 @@ hook.Add 'Think', 'DMaps.DrawAsMinimap', ->
 	map\ThinkPlayer()
 	map\SetMouseActive(false)
 	map\Think()
-hook.Add 'HUDPaint', 'DMaps.DrawAsMinimap', ->
+
+SKIP_FRAME = false
+hook.Add 'PostDrawHUD', 'DMaps.DrawAsMinimap', ->
+	if SKIP_FRAME return
 	if not DMaps.DISPLAY_AS_MINIMAP return
 	if not IsValid(DMaps.MainFrame) return
 	if not IsValid(DMaps.MainFrame.mapHolder) return
@@ -228,4 +231,6 @@ hook.Add 'HUDPaint', 'DMaps.DrawAsMinimap', ->
 	map\SetHeight(size)
 	map\SetDrawPos(posx, posy)
 	map\IsDrawnInPanel(false)
+	SKIP_FRAME = true
 	map\DrawHook()
+	SKIP_FRAME = false
