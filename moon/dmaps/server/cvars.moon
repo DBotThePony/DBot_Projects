@@ -24,6 +24,7 @@ CreateConVar('players', '1', 'Enable player map arrows')
 CreateConVar('entities', '1', 'Enable map entities display')
 CreateConVar('npcs', '1', 'Enable map NPCs display')
 CreateConVar('vehicles', '1', 'Enable map vehicles display')
+CreateConVar('allow_minimap', '1', 'Allow minimap mode')
 
 CreateConVar('draw_players_info', '1', 'Draw players infos on map')
 CreateConVar('draw_players_health', '1', 'Draw players health on map')

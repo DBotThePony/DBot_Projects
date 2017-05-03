@@ -25,6 +25,8 @@ MINIMAP_DYNAMIC_MAX = CreateConVar('cl_dmaps_minimap_dynamic_max', '5', {FCVAR_A
 MINIMAP_POSITION_X = CreateConVar('cl_dmaps_minimap_pos_x', '98', {FCVAR_ARCHIVE}, 'Minimap % position of X')
 MINIMAP_POSITION_Y = CreateConVar('cl_dmaps_minimap_pos_y', '40', {FCVAR_ARCHIVE}, 'Maximal % position of Y')
 
+ALLOW_MINIMAP = CreateConVar('sv_dmaps_allow_minimap', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Allow minimap mode')
+
 MINIMAP_BORDER = DMaps.CreateColor(160, 160, 160, 'minimap_border', 'Minimap border color')
 
 if IsValid(DMaps.MainFrame)
@@ -132,11 +134,13 @@ DMaps.CreateMainFrame = ->
 	@displayAsMinimap = vgui.Create('DButton', @)
 	with @displayAsMinimap
 		.WhatToDo = true
+		.isVisible = true
 		\SetText('Display as minimap')
 		\SetTooltip('Display as minimap')
 		\SetSize(200, 20)
 		\SetPos(w / 2 - 100, 5)
 		.DoClick = ->
+			if not ALLOW_MINIMAP\GetBool() return
 			if .WhatToDo
 				@LAST_MINIMAP_STATUS = true
 				@Close()
@@ -153,6 +157,17 @@ DMaps.CreateMainFrame = ->
 				\SetText('Display as minimap')
 				\SetTooltip('Display as minimap')
 			.WhatToDo = not .WhatToDo
+	
+	@oldThink = @Think
+	@Think = =>
+		@oldThink() if @oldThink
+		minimap = ALLOW_MINIMAP\GetBool()
+		if not minimap and @displayAsMinimap.isVisible
+			@displayAsMinimap\SetVisible(false)
+			@displayAsMinimap.isVisible = false
+		elseif minimap and not @displayAsMinimap.isVisible
+			@displayAsMinimap\SetVisible(true)
+			@displayAsMinimap.isVisible = true
 	return @
 DMaps.OpenMap = ->
 	if not IsValid(DMaps.MainFrame)
@@ -181,6 +196,7 @@ timer.Simple 0.1, ->
 hook.Add 'Think', 'DMaps.DrawAsMinimap', ->
 	if not DMaps.DISPLAY_AS_MINIMAP return
 	if not IsValid(DMaps.MainFrame) return
+	if not ALLOW_MINIMAP\GetBool() return
 	if not IsValid(DMaps.MainFrame.mapHolder) return
 	if not IsValid(DMaps.MainFrame.mapHolder\GetMap()) return
 
@@ -213,6 +229,7 @@ SKIP_FRAME = false
 hook.Add 'PostDrawHUD', 'DMaps.DrawAsMinimap', ->
 	if SKIP_FRAME return
 	if not DMaps.DISPLAY_AS_MINIMAP return
+	if not ALLOW_MINIMAP\GetBool() return
 	if not IsValid(DMaps.MainFrame) return
 	if not IsValid(DMaps.MainFrame.mapHolder) return
 	if not IsValid(DMaps.MainFrame.mapHolder\GetMap()) return
