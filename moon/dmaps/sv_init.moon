@@ -33,6 +33,7 @@ ClientsideFiles = {
 	'client/classes/minimap_npcs.lua'
 	'client/classes/minimap_vehicles.lua'
 
+	'client/controls/progress_bar.lua'
 	'client/controls/control_compass.lua'
 	'client/controls/control_arrows.lua'
 	'client/controls/control_zoom.lua'
