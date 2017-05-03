@@ -28,6 +28,8 @@ AddNetworkString 'NPCDeath'
 AddNetworkString 'PlayerDeath'
 AddNetworkString 'Navigation.Require'
 AddNetworkString 'Navigation.NotInstalled'
+AddNetworkString 'Navigation.Info'
+AddNetworkString 'Navigation.Stop'
 
 for str in *{'BasicWaypoint', 'CAMIWaypoint', 'UsergroupWaypoint', 'TeamWaypoint'}
 	AddNetworkString "#{str}Load"

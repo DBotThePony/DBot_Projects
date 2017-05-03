@@ -207,8 +207,8 @@ class DMap
 		@currY += assert(val, 'number')
 		@currYLerp += assert(val, 'number')
 	AddZ: (val = 0) =>
-		@zoom += assert(val, 'number')
-		@lerpzoom += assert(val, 'number')
+		@zoom = math.max(@zoom + assert(val, 'number'), @@MINIMAL_ZOOM)
+		@lerpzoom = math.max(@lerpzoom + assert(val, 'number'), @@MINIMAL_ZOOM)
 	SetX: (val = 0) =>
 		@currXLerp = assert(val, 'number')
 		@currX = assert(val, 'number')
@@ -216,8 +216,8 @@ class DMap
 		@currY = assert(val, 'number')
 		@currYLerp = assert(val, 'number')
 	SetZ: (val = 0) =>
-		@zoom = assert(val, 'number')
-		@lerpzoom = assert(val, 'number')
+		@zoom = math.max(assert(val, 'number'), @@MINIMAL_ZOOM)
+		@lerpzoom = @zoom
 	SetPos: (val = Vector(0, 0, 0)) =>
 		{:x, :y, :z} = val
 		@SetX(x)
@@ -228,13 +228,13 @@ class DMap
 	AddLerpY: (val = 0) =>
 		@currYLerp += assert(val, 'number')
 	AddLerpZ: (val = 0) =>
-		@lerpzoom += assert(val, 'number')
+		@lerpzoom = math.max(@lerpzoom + assert(val, 'number'), @@MINIMAL_ZOOM)
 	SetLerpX: (val = 0) =>
 		@currXLerp = assert(val, 'number')
 	SetLerpY: (val = 0) =>
 		@currYLerp = assert(val, 'number')
 	SetLerpZ: (val = 0) =>
-		@lerpzoom = assert(val, 'number')
+		@lerpzoom = math.max(assert(val, 'number'), @@MINIMAL_ZOOM)
 	SetLerpPos: (val = Vector(0, 0, 0)) =>
 		{:x, :y, :z} = val
 		@SetLerpX(x)

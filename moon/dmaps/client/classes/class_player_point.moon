@@ -96,7 +96,7 @@ class DMapPlayerPointer extends DMapEntityPointer
 			\AddOption('Copy UniqueID', -> SetClipboardText(tostring(@uniqueid)))\SetIcon(table.Random(DMaps.TAGS_ICONS))
 			\AddOption('Open steam profile', -> gui.OpenURL("http://steamcommunity.com/profiles/#{@steamid64}/"))\SetIcon('icon16/link.png')
 			\AddOption('Create waypoint...', -> DMaps.WaypointAction(math.floor(@x), math.floor(@y), math.floor(@z)))\SetIcon(table.Random(DMaps.FLAGS))
-			\AddOption('Navigate to...', -> DMaps.RequireNavigation(Vector(@x, @y, @z)))\SetIcon('icon16/arrow_in.png') if DMaps.NAV_ENABLE\GetBool()
+			\AddOption('Navigate to...', -> DMaps.RequireNavigation(Vector(@x, @y, @z)))\SetIcon('icon16/map_go.png') if DMaps.NAV_ENABLE\GetBool()
 			\AddOption('Look At', -> LocalPlayer()\SetEyeAngles((@EyePos() - LocalPlayer()\EyePos())\Angle()))\SetIcon('icon16/arrow_in.png')
 			DMaps.CopyMenus(menu, @eyeX, @eyeY, @eyeZ, 'Copy using eyes pos...')
 			DMaps.CopyMenus(menu, @x, @y, @z)

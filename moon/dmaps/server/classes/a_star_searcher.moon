@@ -89,10 +89,10 @@ class AStarNode
 	GetAdjacentAreas: => @nav\GetAdjacentAreas()
 	Underwater: => @nav\IsUnderwater()
 
-NAV_LOOPS_PER_FRAME = CreateConVar('sv_dmaps_nav_loops_per_frame', '50', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'A* Searcher iterations per frame')
+NAV_LOOPS_PER_FRAME = CreateConVar('sv_dmaps_nav_loops_per_frame', '50', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'A* Searcher iterations per frame')
 NAV_OPEN_LIMIT = CreateConVar('sv_dmaps_nav_open_limit', '700', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'A* Searcher "open" nodes limit (at same time)')
 NAV_LIMIT = CreateConVar('sv_dmaps_nav_limit', '4000', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'A* Searcher total iterations limit')
-FRAME_THERSOLD = CreateConVar('sv_dmaps_nav_frame_limit', '5', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'A* Searcher time limit (in milliseconds) per calculation per frame')
+FRAME_THERSOLD = CreateConVar('sv_dmaps_nav_frame_limit', '5', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'A* Searcher time limit (in milliseconds) per calculation per frame')
 TIME_LIMIT = CreateConVar('sv_dmaps_nav_time_limit', '2500', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'A* Searcher total time limit (in milliseconds) per one search')
 
 class AStarTracer
@@ -122,18 +122,40 @@ class AStarTracer
 		@points = {startPos, endPos}
 		@startPos = startPos
 		@endPos = endPos
+		@distToEnd = endPos\Distance(startPos)
 		@loopsPerIteration = loopsPerIteration
 		@limit = limit
 		@hasLimit = limit ~= 0
 		@frameThersold = frameThersold
 		@timeThersold = timeThersold
 		@totalTime = 0
+		@iterations = 0
 		@nodesLimit = nodesLimit
 		@callbackFail = =>
 		@callbackSuccess = =>
 		@callbackStop = =>
 		@status = @@NAV_STATUS_IDLE
+		@currentG = 0
 	
+	GetOpenNodes: => @opened
+	GetOpenNodesCount: => #@opened
+	CopyOpenNodes: => [node for node in *@opened]
+	
+	GetClosedNodes: => @closed
+	GetClosedNodesCount: => #@closed
+	CopyClosedNodes: => [node for node in *@closed]
+	
+	GetTotalNodes: => @database
+	GetTotalNodesCount: => #@database
+	CopyTotalNodes: => [node for node in *@database]
+
+	GetIterations: => @iterations
+	GetTotalIterations: => @iterations
+	GetCalculationTime: => @totalTime
+	GetCurrentG: => @currentG
+	GetLeftDistance: => math.max(@distToEnd - math.sqrt(@currentG), 0)
+	GetDistance: => @distToEnd
+	Distance: => @distToEnd
 	IsStopped: => @stop
 	IsWorking: => @working
 	IsSuccess: => @success
@@ -266,7 +288,8 @@ class AStarTracer
 			if nearest.nav == @lastNodeNav
 				@OnSuccess(nearest)
 				return
-
+			
+			@currentG = nearest\GetG()
 			for node in *nearest\GetAdjacentAreas()
 				hitClosed = false
 				for cl in *@closed

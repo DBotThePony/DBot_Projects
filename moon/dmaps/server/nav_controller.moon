@@ -20,6 +20,10 @@ import AStarTracer from DMaps
 
 NAV_ENABLE = CreateConVar('sv_dmaps_nav_enable', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Enable navigation support (if map has nav file)')
 
+net.Receive 'DMaps.Navigation.Stop', (len, ply) ->
+	return if not ply.__DMaps_AStarTracer or ply.__DMaps_AStarTracer\HasFinished()
+	ply.__DMaps_AStarTracer\Stop()
+
 net.Receive 'DMaps.Navigation.Require', (len, ply) ->
 	return if not NAV_ENABLE\GetBool()
 	if not navmesh.IsLoaded()
@@ -32,17 +36,28 @@ net.Receive 'DMaps.Navigation.Require', (len, ply) ->
 	return if ply.__DMaps_AStarTracer and not ply.__DMaps_AStarTracer\HasFinished()
 	
 	pos = ply\GetPos()
-	endPos = net.ReadVector()
+	endPos = Vector(net.ReadInt(32), net.ReadInt(32), net.ReadInt(32))
+	sendInfos = net.ReadBool()
 	tracer = AStarTracer(pos, endPos)
 	ply.__DMaps_AStarTracer = tracer
+	ply.__DMaps_SendTracingInfos = sendInfos
 
 	hook.Add 'Think', hookID, ->
 		if tracer\HasFinished()
 			hook.Remove 'Think', hookID
 			return
-		if IsValid(ply) return
-		tracer\Stop()
-		hook.Remove 'Think', hookID
+		if not IsValid(ply)
+			tracer\Stop()
+			hook.Remove 'Think', hookID
+			return
+		net.Start('DMaps.Navigation.Info')
+		net.WriteInt(tracer\GetIterations(), 16)
+		net.WriteInt(tracer\GetOpenNodesCount(), 16)
+		net.WriteInt(tracer\GetClosedNodesCount(), 16)
+		net.WriteInt(tracer\GetTotalNodesCount(), 16)
+		net.WriteInt(math.floor(tracer\GetCalculationTime()), 16)
+		net.WriteInt(math.floor(tracer\GetLeftDistance()), 16)
+		net.Send(ply)
 
 	tracer\SetFailureCallback((code) =>
 		if not IsValid(ply) return

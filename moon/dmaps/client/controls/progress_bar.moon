@@ -24,8 +24,8 @@ import DeltaColor from DMaps
 PANEL =
 	Init: =>
 		@colorThinking = Color(146, 176, 172)
-		@colorFirst = Color(253, 196, 163)
-		@colorFinal = Color(143, 200, 29)
+		@colorFirst = Color(233, 98, 40)
+		@colorFinal = Color(132, 242, 75)
 		@background = Color(220, 220, 220)
 		@SetSize(200, 20)
 		@thinking = true
@@ -63,8 +63,8 @@ PANEL =
 			SetDrawColor(@colorThinking)
 			DrawRect(@currentPos, 0, @thinkSize, h)
 		else
-			col = DeltaColor(@colorFirst, @colorFinal, @percent)
-			SetDrawColor(@currentPos, 0, @thinkSize, h)
-			DrawRect(@currentPos, 0, @thinkSize, h)
+			col = DeltaColor(@colorFinal, @colorFirst, @percent)
+			SetDrawColor(col)
+			DrawRect(0, 0, w * @percent, h)
 vgui.Register('DMapProgressBar', PANEL, 'EditablePanel')
 return PANEL

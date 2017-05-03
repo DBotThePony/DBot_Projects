@@ -15,7 +15,7 @@
 -- limitations under the License.
 --
 
-import DMaps from _G
+import DMaps, surface, color, Vector, render, draw, CreateConVar, CreateMaterial from _G
 import DMapWaypoint from DMaps
 
 NAV_STATUS_IDLE = -1
@@ -135,6 +135,30 @@ DMaps.StopNavigation = ->
 	DMaps.IsNavigating = false
 	DMaps.NavigationPoints = {}
 
+ENABLE_SMOOTH = DMaps.ClientsideOption('smooth_animations', '1', 'Use smooth map animations')
+ENABLE_SMOOTH_MOVE = DMaps.ClientsideOption('smooth_animations_mv', '1', 'Use smooth map moving animation')
+SCREEN_COLOR = CreateMaterial('DMaps.ScreenColorEffect', 'g_colourmodify', {
+	'$fbtexture': '_rt_FullFrameFB'
+	'$ignorez': '1'
+	'$pp_colour_addr': 0,
+	'$pp_colour_addg': 0,
+	'$pp_colour_addb': 0,
+	'$pp_colour_brightness': 0,
+	'$pp_colour_contrast': 1,
+	'$pp_colour_colour': 0.3,
+	'$pp_colour_mulr': 0,
+	'$pp_colour_mulg': 0,
+	'$pp_colour_mulb': 0
+})
+
+hook.Add 'RenderScreenspaceEffects', 'DMaps.RequireNavigationEffect', ->
+	return if not IsValid(DMaps.NavRequestWindow)
+	render.UpdateScreenEffectTexture()
+	SCREEN_COLOR\SetFloat('$pp_colour_colour', 1 - DMaps.NavRequestWindow.alpha / 160)
+	SCREEN_COLOR\SetFloat('$pp_colour_contrast', 1 - DMaps.NavRequestWindow.alpha / 160 * .3)
+	render.SetMaterial(SCREEN_COLOR)
+	render.DrawScreenQuad()
+
 DMaps.RequireNavigation = (target = Vector(0, 0, 0), displayWindow = true, dontDisplayPoint = false) ->
 	return if not DMaps.NAV_ENABLE\GetBool()
 	lastNavPoint\Remove() if IsValid(lastNavPoint)
@@ -143,50 +167,185 @@ DMaps.RequireNavigation = (target = Vector(0, 0, 0), displayWindow = true, dontD
 	DMaps.IsNavigating = false
 	DMaps.NavigationPoints = {}
 	net.Start('DMaps.Navigation.Require')
-	net.WriteVector(Vector(x, y, z))
+	net.WriteInt(x, 32)
+	net.WriteInt(y, 32)
+	net.WriteInt(z, 32)
+	net.WriteBool(displayWindow)
 	net.SendToServer()
 	DMaps.LastNavRequestWindow = displayWindow
 	DMaps.LastDisplayNavPoint = not dontDisplayPoint
 
 	if displayWindow
+		map = DMaps.GetMainMap()
+		if IsValid(map)
+			tpos = Vector(x, y, z + 600)
+			map\LockZoom(true)
+			map\LockView(true)
+			if ENABLE_SMOOTH\GetBool() and ENABLE_SMOOTH_MOVE\GetBool()
+				map\SetLerpPos(tpos)
+			else
+				map\SetPos(tpos)
 		DMaps.NavRequestWindow\Remove() if IsValid(DMaps.NavRequestWindow)
 		DMaps.NavRequestWindow = vgui.Create('DFrame')
 		with DMaps.NavRequestWindow
-			\SetSize(400, 200)
+			\SetSize(400, 300)
 			\Center()
 			\MakePopup()
 			\SetTitle('DMaps navigation request')
 		self = DMaps.NavRequestWindow
-		@bar = vgui.Create('EditablePanel', @)
+		@bar = vgui.Create('DMapProgressBar', @)
 		@bar\Dock(BOTTOM)
-		@bar.currentPos = 0
-		@bar.action = true
 		@bar\SetSize(0, 40)
-		@bar.Paint = (pnl, w, h) ->
-			if @bar.action
-				@bar.currentPos += FrameTime() * 200
-			else
-				@bar.currentPos -= FrameTime() * 200
-			if @bar.currentPos < 0 or @bar.currentPos > w - 15
-				@bar.action = not @bar.action
-			surface.SetDrawColor(220, 220, 220)
-			surface.DrawRect(0, 0, w, h)
-			surface.SetDrawColor(146, 176, 172)
-			surface.DrawRect(@bar.currentPos, 0, 15, h)
+
+		@OnClose = ->
+			net.Start('DMaps.Navigation.Stop')
+			net.SendToServer()
+		
+		@oldPaint = @Paint
+		@alpha = 0
+		@Paint = (pnl, w, h) ->
+			@alpha = math.min(@alpha + FrameTime() * 100, 160)
+			surface.SetDrawColor(70, 70, 70, @alpha * .7)
+			surface.DisableClipping(true)
+			x, y = @LocalToScreen(0, 0)
+			sw, sh = ScrW(), ScrH()
+			surface.DrawRect(-x, -y, sw, sh)
+			surface.DisableClipping(false)
+			@oldPaint(w, h) if @oldPaint
+		
 		@label = vgui.Create('DLabel', @)
 		@label\SetText('The Server is calculating')
 		@label\SetFont('Trebuchet24')
 		@label\SizeToContents()
 		@label\Center()
 		labX, labY = @label\GetPos()
-		@label\SetPos(labX, labY - 30)
+
+		@label\SetPos(labX, 20)
 		@label2 = vgui.Create('DLabel', @)
 		@label2\SetText('path to required point...')
 		@label2\SetFont('Trebuchet24')
 		@label2\SizeToContents()
 		@label2\Center()
 		labX, labY = @label2\GetPos()
-		@label2\SetPos(labX, labY)
+		@label2\SetPos(labX, 40)
+
+		yShift = 80
+
+		@totalIterations = vgui.Create('DLabel', @)
+		with @totalIterations
+			\SetPos(10, yShift)
+			\SetText('Total iterations: ???')
+			\SetSize(180, 20)
+		@totalIterationsBar = vgui.Create('DMapProgressBar', @)
+		with @totalIterationsBar
+			\SetPos(200, yShift + 2)
+			\SetSize(180, 15)
+			\InvertColors()
+		yShift += 20
+
+		@openNodes = vgui.Create('DLabel', @)
+		with @openNodes
+			\SetPos(10, yShift)
+			\SetText('Open nodes: ???')
+			\SetSize(180, 20)
+		@openNodesBar = vgui.Create('DMapProgressBar', @)
+		with @openNodesBar
+			\SetPos(200, yShift + 2)
+			\SetSize(180, 15)
+			\InvertColors()
+		yShift += 20
+
+		@closedNodes = vgui.Create('DLabel', @)
+		with @closedNodes
+			\SetPos(10, yShift)
+			\SetText('Closed nodes: ???')
+			\SetSize(180, 20)
+		@closedNodesBar = vgui.Create('DMapProgressBar', @)
+		with @closedNodesBar
+			\SetPos(200, yShift + 2)
+			\SetSize(180, 15)
+			\InvertColors()
+		yShift += 20
+
+		@totalNodes = vgui.Create('DLabel', @)
+		with @totalNodes
+			\SetPos(10, yShift)
+			\SetText('Total nodes: ???')
+			\SetSize(180, 20)
+		@totalNodesBar = vgui.Create('DMapProgressBar', @)
+		with @totalNodesBar
+			\SetPos(200, yShift + 2)
+			\SetSize(180, 15)
+			\InvertColors()
+		yShift += 20
+
+		@totalTime = vgui.Create('DLabel', @)
+		with @totalTime
+			\SetPos(10, yShift)
+			\SetText('Total calculation time: ???ms')
+			\SetSize(180, 20)
+		@totalTimeBar = vgui.Create('DMapProgressBar', @)
+		with @totalTimeBar
+			\SetPos(200, yShift + 2)
+			\SetSize(180, 15)
+			\InvertColors()
+		yShift += 35
+
+		@requiredPointDistance = target\Distance(LocalPlayer()\GetPos())
+		@requiredPointDistanceFormat = DMaps.FormatMetre(@requiredPointDistance)
+		@distanceLeft = vgui.Create('DLabel', @)
+		with @distanceLeft
+			\SetPos(10, yShift)
+			\SetText('Distance left: ???')
+			\SetSize(180, 20)
+		@distanceLeftBar = vgui.Create('DMapProgressBar', @)
+		with @distanceLeftBar
+			\SetPos(200, yShift + 2)
+			\SetSize(180, 15)
+		yShift += 25
+
+		timer.Simple 1, ->
+			if not IsValid(@) return
+			@cancelButton = vgui.Create('DButton', @)
+			@cancelButton\SetText('Cancel')
+			@cancelButton\SetSize(380, 30)
+			@cancelButton\SetPos(10, yShift)
+			@cancelButton.DoClick = -> @Close()
+
+NAV_OPEN_LIMIT = CreateConVar('sv_dmaps_nav_open_limit', '700', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'A* Searcher "open" nodes limit (at same time)')
+NAV_LIMIT = CreateConVar('sv_dmaps_nav_limit', '4000', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'A* Searcher total iterations limit')
+TIME_LIMIT = CreateConVar('sv_dmaps_nav_time_limit', '2500', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'A* Searcher total time limit (in milliseconds) per one search')
+
+net.Receive 'DMaps.Navigation.Info', ->
+	return if not IsValid(DMaps.NavRequestWindow)
+	self = DMaps.NavRequestWindow
+
+	iterations = net.ReadInt(16)
+	onodes = net.ReadInt(16)
+	cnodes = net.ReadInt(16)
+	tnodes = net.ReadInt(16)
+	calctime = net.ReadInt(16)
+	distLeft = net.ReadInt(16)
+	iterationsPercent = iterations / NAV_LIMIT\GetInt()
+	onodesPercent = onodes / NAV_OPEN_LIMIT\GetInt()
+	cnodesPercent = cnodes / (NAV_OPEN_LIMIT\GetInt() * 3)
+	tnodesPercent = tnodes / (NAV_OPEN_LIMIT\GetInt() * 4)
+	calctimePercent = calctime / TIME_LIMIT\GetInt()
+	distanceLeftPercent = distLeft / @requiredPointDistance
+
+	@totalIterations\SetText("Total iterations: #{iterations}/#{NAV_LIMIT\GetInt()}")
+	@totalIterationsBar\SetPercent(iterationsPercent)
+	@openNodes\SetText("Open nodes: #{onodes}/#{NAV_OPEN_LIMIT\GetInt()}")
+	@openNodesBar\SetPercent(onodesPercent)
+	@closedNodes\SetText("Open nodes: #{cnodes}")
+	@closedNodesBar\SetPercent(cnodesPercent)
+	@totalNodes\SetText("Total nodes: #{tnodes}")
+	@totalNodesBar\SetPercent(tnodesPercent)
+	@totalTime\SetText("Total calculation time: #{calctime}/#{TIME_LIMIT\GetInt()}ms")
+	@totalTimeBar\SetPercent(calctimePercent)
+	@distanceLeft\SetText("Distance left: #{DMaps.FormatMetre(distLeft)}/#{@requiredPointDistanceFormat}")
+	@distanceLeftBar\SetPercent(distanceLeftPercent)
+
 
 Bezier = (vec1 = Vector(0, 0, 0), vec2 = Vector(0, 0, 0), vec3 = Vector(0, 0, 0), step = 0.1) ->
 	{x: x1, y: y1, z: z1} = vec1
