@@ -18,6 +18,7 @@
 import DMaps, hook, CreateConVar from _G
 
 DISPLAY_DEATHS = CreateConVar('sv_dmaps_deathpoints', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Enable death points (players/NPCs)')
+DISPLAY_DEATHS_FORCE_DIABLE = CreateConVar('sv_dmaps_deathpoints_fdisable', '0', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Force disable of ANY death waypoints')
 DISPLAY_DEATHS_NPC = CreateConVar('sv_dmaps_deathpoints_npc', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Enable NPCs death points')
 DISPLAY_DEATHS_PLAYER = CreateConVar('sv_dmaps_deathpoints_player', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Enable Players death points')
 
@@ -51,6 +52,7 @@ netDMGTable = {
 netDMGTableBackward = {v, k for k, v in pairs netDMGTable}
 
 hook.Add 'OnNPCKilled', 'DMaps.Hooks', (npc = NULL, attacker = NULL, weapon = NULL) ->
+	return if DISPLAY_DEATHS_FORCE_DIABLE\GetBool()
 	return if not DISPLAY_DEATHS\GetBool()
 	return if not DISPLAY_DEATHS_NPC\GetBool()
 	return if not IsValid(npc)
@@ -68,6 +70,7 @@ hook.Add 'PlayerLeaveVehicle', 'DMaps.Hooks', (ply = NULL, veh = NULL) ->
 
 hook.Add 'DoPlayerDeath', 'DMaps.Hooks', (ply = NULL, attacker = NULL, dmg = DamageInfo()) ->
 	return if not IsValid(ply)
+	return if DISPLAY_DEATHS_FORCE_DIABLE\GetBool()
 	if not DISPLAY_DEATHS\GetBool() or not DISPLAY_DEATHS_PLAYER\GetBool()
 		net.Start('DMaps.PlayerDeath')
 		net.WriteEntity(ply)
