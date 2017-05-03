@@ -30,10 +30,12 @@ DMaps is influenced by [GMaps](https://www.gmodstore.com/scripts/view/2375), [Vo
 # Serverside console variables
 
 ```
+sv_dmaps_allow_minimap                   : 1        // Allow minimap mode
 sv_dmaps_arrest_duration                 : 5        // Player arrest event pointer live time in minutes
 sv_dmaps_arrest_enable                   : 1        // Enable DarkRP arrest events display
 sv_dmaps_deathpoints                     : 1        // Enable death points (players/NPCs)
 sv_dmaps_deathpoints_duration            : 15       // Player death point live time in minutes
+sv_dmaps_deathpoints_fdisable            : 0        // Force disable of ANY death waypoints
 sv_dmaps_deathpoints_npc                 : 1        // Enable NPCs death points
 sv_dmaps_deathpoints_player              : 1        // Enable Players death points
 sv_dmaps_draw_players_armor              : 1        // Draw players armor on map
@@ -117,6 +119,9 @@ cl_dmaps_color_nav_target_r              : 255       // Navigation target point 
 cl_dmaps_color_remember_death_b          : 255       // Latest death point color 'Blue' channel color
 cl_dmaps_color_remember_death_g          : 255       // Latest death point color 'Green' channel color
 cl_dmaps_color_remember_death_r          : 255       // Latest death point color 'Red' channel color
+cl_dmaps_color_target_point_b            : 107       // Highlight waypoint color 'Blue' channel color
+cl_dmaps_color_target_point_g            : 127       // Highlight waypoint color 'Green' channel color
+cl_dmaps_color_target_point_r            : 255       // Highlight waypoint color 'Red' channel color
 cl_dmaps_color_zoom_background_b         : 40        // Zoom control background 'Blue' channel color
 cl_dmaps_color_zoom_background_g         : 40        // Zoom control background 'Green' channel color
 cl_dmaps_color_zoom_background_r         : 40        // Zoom control background 'Red' channel color
@@ -143,6 +148,7 @@ cl_dmaps_draw_players_info               : 1         // Draw players infos on ma
 cl_dmaps_draw_players_team               : 1         // Draw players teams on map
 cl_dmaps_draw_waypoints                  : 1         // Draw waypoints in world
 cl_dmaps_entities                        : 1         // Draw ANY entities on map
+cl_dmaps_max_events                      : 120       // Maximal amount of event points
 cl_dmaps_minimap_dynamic                 : 1         // Is minimap dynamic in size
 cl_dmaps_minimap_dynamic_max             : 5         // Maximal dynamic size
 cl_dmaps_minimap_dynamic_min             : 1         // Minimap dynamic size
