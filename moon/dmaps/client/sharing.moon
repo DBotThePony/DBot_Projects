@@ -21,6 +21,7 @@ import DMapWaypoint, ENABLE_SMOOTH, ENABLE_SMOOTH_MOVE from DMaps
 local LAST_SHARE_WAYPOINT
 SHARING_DATABASE = {}
 SHARE_COLOR = DMaps.CreateColor(123, 204, 204, 'share', 'Shared waypoint color')
+SHARE_NOTIFY = DMaps.ClientsideOption('share_notify', '1', 'Notify in chat when player shares a waypoint to you')
 
 class SharedWaypoint extends DMapWaypoint
 	new: (id = 0, data) =>
@@ -104,7 +105,10 @@ net.Receive 'DMaps.Sharing', ->
 	steamname = sharer\SteamName() if sharer.SteamName
 	data = {:x, :y, :z, :sharer, :nick, :steamid, :steamid64, :uniqueid, :steamname}
 	id = table.insert(SHARING_DATABASE, data)
-	DMaps.ChatPrint(sharer, ' has just shared a world position with you! X: ', x, ' Y: ', y, ' Z: ', z, '\nTo highlight (activate) it, type "dmaps_s ', id, '" in your console!')
+	if SHARE_NOTIFY\GetBool()
+		DMaps.ChatPrint(sharer, ' has just shared a world position with you! X: ', x, ' Y: ', y, ' Z: ', z, '\nTo highlight (activate) it, type "dmaps_s ', id, '" in your console!')
+	else
+		DMaps.Message(sharer, ' has just shared a world position with you! X: ', x, ' Y: ', y, ' Z: ', z, '\nTo highlight (activate) it, type "dmaps_s ', id, '" in your console!')
 
 PANEL =
 	textCol: Color(255, 255, 255)
