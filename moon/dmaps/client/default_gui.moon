@@ -58,6 +58,7 @@ DBUTTON_DO_CLICK = =>
 	with menu
 		\AddOption('Close', -> @frame\Close())\SetIcon('icon16/cross.png')
 		\AddOption('Options', DMaps.OpenOptions)\SetIcon('icon16/wrench.png')
+		\AddOption('Waypoints shared with you', DMaps.OpenSharedMenu)\SetIcon('icon16/heart.png')
 		\AddSpacer()
 		\AddOption('Clientside waypoints', DMaps.OpenWaypointsMenu)\SetIcon(table.Random(DMaps.FLAGS))
 		for {name, Desc, conCommand} in *svPoints

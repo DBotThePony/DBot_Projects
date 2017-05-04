@@ -103,8 +103,14 @@ net.Receive 'DMaps.Sharing', ->
 	steamid64 = sharer\SteamID64()
 	uniqueid = sharer\UniqueID()
 	steamname = sharer\SteamName() if sharer.SteamName
-	data = {:x, :y, :z, :sharer, :nick, :steamid, :steamid64, :uniqueid, :steamname}
+	data = {
+		:x, :y, :z, :sharer, :nick, :steamid, :steamid64, :uniqueid, :steamname
+		time: RealTime()
+		stamp: os.time()
+		stampText: os.date('%H:%M:%S - %d/%m/%Y', os.time())
+	}
 	id = table.insert(SHARING_DATABASE, data)
+	data.id = id
 	if SHARE_NOTIFY\GetBool()
 		DMaps.ChatPrint(sharer, ' has just shared a world position with you! X: ', x, ' Y: ', y, ' Z: ', z, '\nTo highlight (activate) it, type "dmaps_s ', id, '" in your console!')
 	else
@@ -149,6 +155,127 @@ PANEL =
 		surface.SetDrawColor(170, 170, 170)
 		surface.DrawRect(0, 0, w, h)
 vgui.Register('DMapsSharingPlayerRow', PANEL, 'EditablePanel')
+
+PANEL =
+	textCol: Color(255, 255, 255)
+	Init: =>
+		@DockPadding(5, 0, 0, 0)
+		@DockMargin(5, 5, 5, 5)
+		@id = vgui.Create('DLabel', @)
+		with @id
+			\Dock(LEFT)
+			\DockMargin(5, 0, 0, 0)
+			\SetText('%ID%')
+			\SetTextColor(@textCol)
+		@avatar = vgui.Create('DMaps_Avatar', @)
+		@avatar\Dock(LEFT)
+		@avatar\DockMargin(5, 0, 0, 0)
+		@nick = vgui.Create('DLabel', @)
+		with @nick
+			\Dock(LEFT)
+			\DockMargin(5, 0, 0, 0)
+			\SetText('Sharer: %PLAYERNAME%')
+			\SetTextColor(@textCol)
+			\SetSize(200, 32)
+
+		@XLab = vgui.Create('DLabel', @)
+		with @XLab
+			\Dock(LEFT)
+			\DockMargin(5, 0, 0, 0)
+			\SetText('X: ???')
+			\SetTextColor(@textCol)
+			\SetSize(40, 32)
+		@YLab = vgui.Create('DLabel', @)
+		with @YLab
+			\Dock(LEFT)
+			\DockMargin(5, 0, 0, 0)
+			\SetText('Y: ???')
+			\SetTextColor(@textCol)
+			\SetSize(40, 32)
+		@ZLab = vgui.Create('DLabel', @)
+		with @ZLab
+			\Dock(LEFT)
+			\DockMargin(5, 0, 0, 0)
+			\SetText('Z: ???')
+			\SetTextColor(@textCol)
+			\SetSize(40, 32)
+		@sAt = vgui.Create('DLabel', @)
+		with @sAt
+			\Dock(LEFT)
+			\DockMargin(5, 0, 0, 0)
+			\SetText('Shared at: ???')
+			\SetTextColor(@textCol)
+			\SetSize(180, 32)
+
+		@SteamProfile = vgui.Create('DButton', @)
+		with @SteamProfile
+			\Dock(RIGHT)
+			\DockMargin(5, 5, 5, 5)
+			\SetText('Open Steam profile')
+			\SetSize(120, 32)
+			.DoClick = -> gui.OpenURL("http://steamcommunity.com/profiles/#{@steamid64}/")
+
+		@action = vgui.Create('DButton', @)
+		with @action
+			\Dock(RIGHT)
+			\DockMargin(5, 5, 5, 5)
+			\SetText('Highlight')
+			\SetSize(120, 32)
+			.DoClick = ->
+				RunConsoleCommand('dmaps_s', "#{@dID}")
+				@OnAction()
+		@SetSize(200, 32)
+	SetData: (id = 0, data) =>
+		{:x, :y, :z, sharer: @ply, nick: @nnick, steamid: @steamid, steamid64: @steamid64, uniqueid: @uniqueid, steamname: @steamname, stampText: @stampText} = data
+		@dID = id
+		@id\SetText("ID: #{id}")
+		@XLab\SetText("X: #{x}")
+		@YLab\SetText("Y: #{y}")
+		@ZLab\SetText("Z: #{z}")
+		@sAt\SetText("Shared at: #{@stampText}")
+		@avatar\SetSteamID(@steamid, 32)
+		@avatar\SetSize(32, 32)
+		@nick\SetText("Sharer: #{@nnick}")
+	OnAction: =>
+	Paint: (w, h) =>
+		surface.SetDrawColor(170, 170, 170)
+		surface.DrawRect(0, 0, w, h)
+vgui.Register('DMapsSharedPlayerRow', PANEL, 'EditablePanel')
+
+DMaps.OpenSharedMenu = ->
+	self = vgui.Create('DFrame')
+	@SetTitle('Shared waypoints')
+	@SetSize(ScrW() - 100, ScrH() - 100)
+	@Center()
+	@MakePopup()
+	scroll = vgui.Create('DScrollPanel', @)
+	scroll\Dock(FILL)
+
+	if #SHARING_DATABASE == 0
+		@rows = {}
+		@nothing = vgui.Create('DLabel', @)
+		with @nothing
+			\SetText('Nothing here ;w;')
+			\SetFont('DermaLarge')
+			\SizeToContents()
+			\Center()
+		@nothingClose = vgui.Create('DButton', @)
+		with @nothingClose
+			\SetText('Close')
+			\SetSize(100, 25)
+			\Center()
+			.DoClick = -> @Close()
+			x, y = \GetPos()
+			\SetPos(x, y + 40)
+
+		return
+	else
+		@rows = for data in *SHARING_DATABASE
+			pnl = vgui.Create('DMapsSharedPlayerRow', scroll)
+			pnl\Dock(TOP)
+			pnl\SetData(data.id, data)
+			pnl.OnAction = -> @Close()
+			pnl
 
 DMaps.OpenShareMenu = (x = 0, y = 0, z = 0) ->
 	x, y, z = math.floor(x), math.floor(y), math.floor(z)
