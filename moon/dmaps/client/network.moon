@@ -16,4 +16,11 @@
 -- 
 
 import DMaps, net from _G
-net.Receive('DMaps.AdminEcho', -> DMaps.Message(unpack(DMaps.ReadArray())))
+net.Receive 'DMaps.AdminEcho', -> DMaps.Message(unpack(DMaps.ReadArray()))
+net.Receive 'DMaps.ConsoleMessage', -> DMaps.Message(unpack(DMaps.ReadArray()))
+net.Receive 'DMaps.ChatMessage', -> DMaps.ChatPrint(unpack(DMaps.ReadArray()))
+net.Receive 'DMaps.Notify', ->
+    Type = net.ReadUInt(8)
+    Time = net.ReadUInt(8)
+    Contents = DMaps.ReadArray()
+    DMaps.Notify(Contents, Type, Time)

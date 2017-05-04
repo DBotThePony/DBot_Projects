@@ -17,6 +17,18 @@
 
 resource.AddWorkshop('916067750')
 
+export NOTIFY_GENERIC
+export NOTIFY_ERROR
+export NOTIFY_UNDO
+export NOTIFY_HINT
+export NOTIFY_CLEANUP
+
+NOTIFY_GENERIC = 0
+NOTIFY_ERROR = 1
+NOTIFY_UNDO = 2
+NOTIFY_HINT = 3
+NOTIFY_CLEANUP = 4
+
 ClientsideFiles = {
 	'client/classes/class_map.lua'
 	'client/classes/class_map_point.lua'
@@ -34,6 +46,7 @@ ClientsideFiles = {
 	'client/classes/minimap_vehicles.lua'
 
 	'client/controls/progress_bar.lua'
+	'client/controls/dscoreboard2_avatar.lua'
 	'client/controls/control_compass.lua'
 	'client/controls/control_arrows.lua'
 	'client/controls/control_zoom.lua'
@@ -54,6 +67,7 @@ ClientsideFiles = {
 	'client/network.lua'
 	'client/misc.lua'
 	'client/nav_controller.lua'
+	'client/sharing.lua'
 	
 	'common/functions.lua'
 	'common/icons.lua'

@@ -220,14 +220,14 @@ DMaps.RequireNavigation = (target = Vector(0, 0, 0), displayWindow = true, dontD
 		@label\Center()
 		labX, labY = @label\GetPos()
 
-		@label\SetPos(labX, 20)
+		@label\SetPos(labX, 25)
 		@label2 = vgui.Create('DLabel', @)
 		@label2\SetText('path to required point...')
 		@label2\SetFont('Trebuchet24')
 		@label2\SizeToContents()
 		@label2\Center()
 		labX, labY = @label2\GetPos()
-		@label2\SetPos(labX, 40)
+		@label2\SetPos(labX, 45)
 
 		yShift = 80
 
@@ -331,13 +331,13 @@ net.Receive 'DMaps.Navigation.Info', ->
 	cnodesPercent = cnodes / (NAV_OPEN_LIMIT\GetInt() * 3)
 	tnodesPercent = tnodes / (NAV_OPEN_LIMIT\GetInt() * 4)
 	calctimePercent = calctime / TIME_LIMIT\GetInt()
-	distanceLeftPercent = distLeft / @requiredPointDistance
+	distanceLeftPercent = 1 - distLeft / @requiredPointDistance
 
 	@totalIterations\SetText("Total iterations: #{iterations}/#{NAV_LIMIT\GetInt()}")
 	@totalIterationsBar\SetPercent(iterationsPercent)
 	@openNodes\SetText("Open nodes: #{onodes}/#{NAV_OPEN_LIMIT\GetInt()}")
 	@openNodesBar\SetPercent(onodesPercent)
-	@closedNodes\SetText("Open nodes: #{cnodes}")
+	@closedNodes\SetText("Closed nodes: #{cnodes}")
 	@closedNodesBar\SetPercent(cnodesPercent)
 	@totalNodes\SetText("Total nodes: #{tnodes}")
 	@totalNodesBar\SetPercent(tnodesPercent)

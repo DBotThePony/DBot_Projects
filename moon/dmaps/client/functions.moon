@@ -62,5 +62,30 @@ DMaps.CopyMenus = (menu, x = 0, y = 0, z = 0, text = 'Copy...') ->
 		)\SetIcon(table.Random(DMaps.TAGS_ICONS))
 	return subCopy
 
+LastSound = 0
+
+DMaps.Notify = (message, Type, time = 5) ->
+	if LastSound < RealTime()
+		if Type == NOTIFY_ERROR
+			surface.PlaySound('buttons/button10.wav')
+		elseif Type == NOTIFY_UNDO
+			surface.PlaySound('buttons/button15.wav')
+		else
+			surface.PlaySound('npc/turret_floor/click1.wav')
+		LastSound = RealTime() + 0.1
+
+	if type(message) == 'table'
+		DMaps.Message(unpack(message))
+		str = ''
+		
+		for v in *message
+			if type(v) == 'string'
+				if v\sub(1, 6) ~= '<STEAM'
+					str ..= v
+		notification.AddLegacy(str, Type, time)
+	else
+		DMaps.Message(message)
+		notification.AddLegacy(message, Type, time)
+
 vehMeta = FindMetaTable('Vehicle')
 vehMeta.GetDriver = => @GetNWEntity('DMaps.Driver')

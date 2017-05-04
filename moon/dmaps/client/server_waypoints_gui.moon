@@ -520,3 +520,18 @@ class ServerWaypointsContainerUsergroups extends ServerWaypointsContainerCAMI
 		@notifylab\SetText('Usergroups are excplicit')
 
 DMaps.ServerWaypointsContainerUsergroups = ServerWaypointsContainerUsergroups
+
+DMaps.ServerWaypointsContainers = {
+	ServerWaypointsContainer
+	ServerWaypointsContainerCAMI
+	ServerWaypointsContainerTeam
+	ServerWaypointsContainerUsergroups
+}
+
+DMaps.RegisterSVPointsContainer = (nclass) ->
+	for c in *DMaps.ServerWaypointsContainers
+		if c.__name == nclass.__name
+			return false
+	id = table.insert(DMaps.ServerWaypointsContainers, nclass)
+	return true, id
+hook.Run 'DMaps.RegisterSVPointsContainers', DMaps.RegisterSVPointsContainer, ServerWaypointsContainer

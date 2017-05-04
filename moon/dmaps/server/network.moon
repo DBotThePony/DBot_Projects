@@ -30,6 +30,10 @@ AddNetworkString 'Navigation.Require'
 AddNetworkString 'Navigation.NotInstalled'
 AddNetworkString 'Navigation.Info'
 AddNetworkString 'Navigation.Stop'
+AddNetworkString 'ConsoleMessage'
+AddNetworkString 'Notify'
+AddNetworkString 'ChatMessage'
+AddNetworkString 'Sharing'
 
 for str in *{'BasicWaypoint', 'CAMIWaypoint', 'UsergroupWaypoint', 'TeamWaypoint'}
 	AddNetworkString "#{str}Load"

@@ -31,6 +31,21 @@ timer.Create 'DMaps.AdminCheckup', 10, 0, UpdateLogAdminList
 hook.Add 'PlayerInitialSpawn', 'DMaps.Logs', -> timer.Simple(1, UpdateLogAdminList)
 hook.Add 'PlayerDisconnected', 'DMaps.Logs', -> timer.Simple(1, UpdateLogAdminList)
 
+DMaps.Print = (ply, ...) ->
+	net.Start('DMaps.ConsoleMessage')
+	DMaps.WriteArray({...})
+	net.Send(ply)
+DMaps.ChatPrint = (ply, ...) ->
+	net.Start('DMaps.ChatMessage')
+	DMaps.WriteArray({...})
+	net.Send(ply)
+DMaps.Notify = (ply = player.GetAll(), message = {}, Type = NOTIFY_GENERIC, time = 5) ->
+	message = {message} if type(message) ~= 'table'
+	net.Start('DMaps.ChatMessage')
+	net.WriteUInt(Type, 8)
+	net.WriteUInt(time, 8)
+	DMaps.WriteArray(message)
+	net.Send(ply)
 DMaps.AdminEcho = (...) ->
 	DMaps.Message(...)
 	net.Start('DMaps.AdminEcho')

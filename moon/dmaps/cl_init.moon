@@ -37,6 +37,7 @@ Files = {
 	'client/classes/minimap_vehicles.lua'
 
 	'client/controls/progress_bar.lua'
+	'client/controls/dscoreboard2_avatar.lua'
 	'client/controls/control_compass.lua'
 	'client/controls/control_arrows.lua'
 	'client/controls/control_zoom.lua'
@@ -53,6 +54,7 @@ Files = {
 	'client/server_waypoints_gui.lua'
 	'client/network.lua'
 	'client/nav_controller.lua'
+	'client/sharing.lua'
 	
 	'common/classes/networked_waypoint.lua'
 }

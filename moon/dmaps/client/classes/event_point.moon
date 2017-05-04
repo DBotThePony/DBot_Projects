@@ -211,6 +211,7 @@ class EventPointer extends DMapPointer
 				data, id = DMaps.ClientsideWaypoint.DataContainer\CreateWaypoint("New Waypoint At X: #{@x}, Y: #{@y}, Z: #{@z}", @x, @y, @z)
 				DMaps.OpenWaypointEditMenu(id, DMaps.ClientsideWaypoint.DataContainer, (-> DMaps.ClientsideWaypoint.DataContainer\DeleteWaypoint(id))) if id
 			)\SetIcon(table.Random(DMaps.FLAGS))
+			\AddOption('Share position...', -> DMaps.OpenShareMenu(@x, @y, @z))\SetIcon(table.Random(DMaps.FLAGS))
 			\AddOption('Navigate to...', -> DMaps.RequireNavigation(@GetPos()))\SetIcon('icon16/map_go.png') if DMaps.NAV_ENABLE\GetBool()
 			DMaps.CopyMenus(menu, @x, @y, @z)
 			\AddOption('Copy name', -> SetClipboardText(@dName))\SetIcon(table.Random(DMaps.TAGS_ICONS))

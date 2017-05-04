@@ -30,6 +30,10 @@ MOVE_MULT = CreateConVar('cl_dmaps_wasd_speed', '850', {FCVAR_ARCHIVE}, 'Sensivi
 SHIFT_MULT = CreateConVar('cl_dmaps_wasd_shift', '2', {FCVAR_ARCHIVE}, 'Sensivity of shift button on map')
 CTRL_MULT = CreateConVar('cl_dmaps_wasd_ctrl', '0.5', {FCVAR_ARCHIVE}, 'Sensivity of ctrl button on map')
 
+DMaps.ENABLE_SMOOTH = ENABLE_SMOOTH
+DMaps.ENABLE_SMOOTH_MOVE = ENABLE_SMOOTH_MOVE
+DMaps.ENABLE_SMOOTH_ZOOM = ENABLE_SMOOTH_ZOOM
+
 DMaps.WatchPermission('teleport')
 PANEL = {}
 
@@ -102,12 +106,6 @@ PANEL.Init = =>
 	
 	@cursor_lastX = 0
 	@cursor_lastY = 0
-	@svWaypoints = {
-		DMaps.ServerWaypointsContainer
-		DMaps.ServerWaypointsContainerCAMI
-		DMaps.ServerWaypointsContainerTeam
-		DMaps.ServerWaypointsContainerUsergroups
-	}
 PANEL.GetMap = => @mapObject
 
 PANEL.ResetButtons = =>	@pressedButtons = {}
@@ -186,6 +184,7 @@ PANEL.OnMousePressed = (code) =>
 					data, id = ClientsideWaypoint.DataContainer\CreateWaypoint("New Waypoint At X: #{x}, Y: #{y}, Z: #{z}", x, y, z)
 					DMaps.OpenWaypointEditMenu(id, ClientsideWaypoint.DataContainer, -> ClientsideWaypoint.DataContainer\DeleteWaypoint(id)) if id
 				\AddOption('Create waypoint...', createWaypoint)\SetIcon(table.Random(DMaps.FLAGS))
+				\AddOption('Share position...', -> DMaps.OpenShareMenu(x, y, z))\SetIcon(table.Random(DMaps.FLAGS))
 				\AddOption('Navigate to...', -> DMaps.RequireNavigation(Vector(x, y, z)))\SetIcon('icon16/map_go.png') if DMaps.NAV_ENABLE\GetBool()
 				\AddOption('Hightlight this postion', ->
 					tpos = Vector(x, y, z)
@@ -223,7 +222,7 @@ PANEL.OnMousePressed = (code) =>
 				hit = false
 				sub = \AddSubMenu('Serverside waypoints')
 
-				for container in *@svWaypoints
+				for container in *DMaps.ServerWaypointsContainers
 					if DMaps.HasPermission(container.__PERM_EDIT) and DMaps.HasPermission(container.__PERM_VIEW)
 						hit = true
 						sub\AddOption("Create #{container._NAME_ON_PANEL} waypoint", ->
