@@ -283,7 +283,7 @@ DMaps.GetBindString = (bindid = '') ->
 
 	return output or '<no key found>'
 
-DMaps.SaveKeybindings = -> file.Write('dmaps_keybinds.txt', util.TableToJSON(DMaps.Keybindings))
+DMaps.SaveKeybindings = -> file.Write('dmaps_keybinds.txt', util.TableToJSON(DMaps.Keybindings, true))
 DMaps.LoadKeybindings = ->
 	DMaps.Keybindings = nil
 	settingsExists = file.Exists('dmaps_keybinds.txt', 'DATA')

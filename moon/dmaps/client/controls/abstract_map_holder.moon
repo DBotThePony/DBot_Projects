@@ -425,12 +425,11 @@ PANEL.Paint = (w, h) =>
 		@helpAlpha = math.min(@helpAlpha + FrameTime() * 3, 1) if @showHelp and @helpAlpha ~= 1
 		@helpAlpha = math.max(@helpAlpha - FrameTime() * 3, 0) if not @showHelp and @helpAlpha ~= 0
 		if @helpAlpha > 0
-			if not @helpText
-				@helpText = "Drag map using your mouse or #{DMaps.GetBindString('up')}, #{DMaps.GetBindString('down')}, #{DMaps.GetBindString('left')}, #{DMaps.GetBindString('down')}\nSingle click on controler to reset it's value; or press #{DMaps.GetBindString('reset')}\nJoystick resets map position\nCompass resets map angles\nBars at right resets map zoom/clip levels\nPress F1 to hide/show this help"
-			tw, th = .GetTextSize(@helpText)
+			text = "Drag map using your mouse or #{DMaps.GetBindString('up')}, #{DMaps.GetBindString('down')}, #{DMaps.GetBindString('left')}, #{DMaps.GetBindString('down')}\nSingle click on controler to reset it's value; or press #{DMaps.GetBindString('reset')}\nJoystick resets map position\nCompass resets map angles\nBars at right resets map zoom/clip levels\nPress #{DMaps.GetBindString('help')} to hide/show this help"
+			tw, th = .GetTextSize(text)
 			.SetDrawColor(0, 0, 0, 100 * @helpAlpha)
 			.DrawRect(w / 2 - tw / 2 - 4, 0, tw + 8, th + 8)
-			draw.DrawText(@helpText, 'Default', w / 2, 4, Color(255, 255, 255, 255 * @helpAlpha), TEXT_ALIGN_CENTER)
+			draw.DrawText(text, 'Default', w / 2, 4, Color(255, 255, 255, 255 * @helpAlpha), TEXT_ALIGN_CENTER)
 	
 	rTime = RealTime()
 	shiftY = 0
