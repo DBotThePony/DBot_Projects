@@ -55,7 +55,8 @@ Files = {
 	'client/network.lua'
 	'client/nav_controller.lua'
 	'client/sharing.lua'
-	
+	'client/key_controls.lua'
+
 	'common/classes/networked_waypoint.lua'
 }
 

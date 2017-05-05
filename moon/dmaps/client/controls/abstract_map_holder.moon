@@ -108,9 +108,6 @@ PANEL.Init = =>
 	@cursor_lastY = 0
 PANEL.GetMap = => @mapObject
 
-PANEL.ResetButtons = =>	@pressedButtons = {}
-PANEL.IsKeyPressed = (code = KEY_NONE) => @pressedButtons[code] or false
-
 PANEL.AddNotification = (text = '', time = #text / 10) =>
 	time = math.Clamp(time, 3, 6)
 	rTime = RealTime()
@@ -125,45 +122,24 @@ PANEL.AddNotification = (text = '', time = #text / 10) =>
 
 PANEL.OnKeyCodePressed = (code = KEY_NONE) =>
 	return if code == KEY_NONE
-	@pressedButtons[code] = true
-	switch code
-		when KEY_F1
-			@showHelp = not @showHelp
-		when KEY_R
-			@mapObject\LockClip(false)
-			@mapObject\LockZoom(false)
-			@mapObject\LockView(false)
-		when KEY_N
-			x, y = @mapObject.mouseX, @mapObject.mouseY
-			tr = @mapObject\Trace2DPoint(x, y)
-			z = math.floor(tr.HitPos.z + 10)
-			DMaps.RequireNavigation(Vector(x, y, z))
-		when KEY_V
-			return if @IsKeyPressed(KEY_RCONTROL)
-			x, y = @mapObject.mouseX, @mapObject.mouseY
-			tr = @mapObject\Trace2DPoint(x, y)
-			z = math.floor(tr.HitPos.z + 10)
-			if @IsKeyPressed(KEY_LALT)
-				SetClipboardText("Vector(#{math.floor x}, #{math.floor y}, #{math.floor z})")
-				@AddNotification('Compied Vector(x.x, y.y, z.z)')
-			else
-				SetClipboardText("Vector(#{x}, #{y}, #{z})")
-				@AddNotification('Compied Vector(x, y, z)')
-		when KEY_C
-			return if @IsKeyPressed(KEY_RCONTROL)
-			x, y = @mapObject.mouseX, @mapObject.mouseY
-			tr = @mapObject\Trace2DPoint(x, y)
-			z = math.floor(tr.HitPos.z + 10)
-			if @IsKeyPressed(KEY_LALT)
-				SetClipboardText("X: #{x} Y: #{y} Z: #{z})")
-				@AddNotification('Compied X.X Y.Y Z.Z')
-			else
-				SetClipboardText("X: #{math.floor x} Y: #{math.floor y} Z: #{math.floor z})")
-				@AddNotification('Compied X Y Z')
-
-PANEL.OnKeyCodeReleased = (code = KEY_NONE) =>
-	return if code == KEY_NONE
-	@pressedButtons[code] = false
+	DMaps.UpdateKeysMap()
+	if DMaps.IsBindDown('help')
+		@showHelp = not @showHelp
+	if DMaps.IsBindDown('reset')
+		@mapObject\LockClip(false)
+		@mapObject\LockZoom(false)
+		@mapObject\LockView(false)
+	if DMaps.IsBindDown('quick_navigation')
+		x, y = @mapObject.mouseX, @mapObject.mouseY
+		tr = @mapObject\Trace2DPoint(x, y)
+		z = math.floor(tr.HitPos.z + 10)
+		DMaps.RequireNavigation(Vector(x, y, z))
+	if DMaps.IsBindDown('copy_vector')
+		x, y = @mapObject.mouseX, @mapObject.mouseY
+		tr = @mapObject\Trace2DPoint(x, y)
+		z = math.floor(tr.HitPos.z + 10)
+		SetClipboardText("Vector(#{x}, #{y}, #{z})")
+		@AddNotification("Copied Vector(#{x}, #{y}, #{z})")
 
 PANEL.OnMousePressed = (code) =>
 	if code == MOUSE_RIGHT
@@ -381,37 +357,23 @@ PANEL.Think = =>
 		multX = 1
 		multY = 1
 
-		for code, bool in pairs @pressedButtons
-			if not bool continue
-			switch code
-				when KEY_LSHIFT
-					multX *= SHIFT_MULT\GetFloat()
-					multY *= SHIFT_MULT\GetFloat()
-				when KEY_RSHIFT
-					multX *= SHIFT_MULT\GetFloat()
-					multY *= SHIFT_MULT\GetFloat()
-				when KEY_LCONTROL
-					multX *= CTRL_MULT\GetFloat()
-					multY *= CTRL_MULT\GetFloat()
-				when KEY_RCONTROL
-					multX *= CTRL_MULT\GetFloat()
-					multY *= CTRL_MULT\GetFloat()
-				when KEY_LEFT
-					bMoveX -= FrameTime() * MOVE_MULT\GetInt()
-				when KEY_RIGHT
-					bMoveX += FrameTime() * MOVE_MULT\GetInt()
-				when KEY_UP
-					bMoveY += FrameTime() * MOVE_MULT\GetInt()
-				when KEY_DOWN
-					bMoveY -= FrameTime() * MOVE_MULT\GetInt()
-				when KEY_A
-					bMoveX -= FrameTime() * MOVE_MULT\GetInt()
-				when KEY_D
-					bMoveX += FrameTime() * MOVE_MULT\GetInt()
-				when KEY_W
-					bMoveY += FrameTime() * MOVE_MULT\GetInt()
-				when KEY_S
-					bMoveY -= FrameTime() * MOVE_MULT\GetInt()
+		if DMaps.IsBindDown('speed')
+			multX *= SHIFT_MULT\GetFloat()
+			multY *= SHIFT_MULT\GetFloat()
+
+		if DMaps.IsBindDown('duck')
+			multX *= CTRL_MULT\GetFloat()
+			multY *= CTRL_MULT\GetFloat()
+		
+		if DMaps.IsBindDown('left')
+			bMoveX -= FrameTime() * MOVE_MULT\GetInt()
+		if DMaps.IsBindDown('right')
+			bMoveX += FrameTime() * MOVE_MULT\GetInt()
+		if DMaps.IsBindDown('up')
+			bMoveY += FrameTime() * MOVE_MULT\GetInt()
+		if DMaps.IsBindDown('down')
+			bMoveY -= FrameTime() * MOVE_MULT\GetInt()
+		
 		bMoveX *= multX
 		bMoveY *= multY
 
@@ -463,11 +425,12 @@ PANEL.Paint = (w, h) =>
 		@helpAlpha = math.min(@helpAlpha + FrameTime() * 3, 1) if @showHelp and @helpAlpha ~= 1
 		@helpAlpha = math.max(@helpAlpha - FrameTime() * 3, 0) if not @showHelp and @helpAlpha ~= 0
 		if @helpAlpha > 0
-			text = "Drag map using your mouse or WASD (arrows works too)\nSingle click on controler to reset it's value\nJoystick resets map position\nCompass resets map angles\nBars at right resets map zoom/clip levels\nPress F1 to hide/show this help"
-			tw, th = .GetTextSize(text)
+			if not @helpText
+				@helpText = "Drag map using your mouse or #{DMaps.GetBindString('up')}, #{DMaps.GetBindString('down')}, #{DMaps.GetBindString('left')}, #{DMaps.GetBindString('down')}\nSingle click on controler to reset it's value; or press #{DMaps.GetBindString('reset')}\nJoystick resets map position\nCompass resets map angles\nBars at right resets map zoom/clip levels\nPress F1 to hide/show this help"
+			tw, th = .GetTextSize(@helpText)
 			.SetDrawColor(0, 0, 0, 100 * @helpAlpha)
 			.DrawRect(w / 2 - tw / 2 - 4, 0, tw + 8, th + 8)
-			draw.DrawText(text, 'Default', w / 2, 4, Color(255, 255, 255, 255 * @helpAlpha), TEXT_ALIGN_CENTER)
+			draw.DrawText(@helpText, 'Default', w / 2, 4, Color(255, 255, 255, 255 * @helpAlpha), TEXT_ALIGN_CENTER)
 	
 	rTime = RealTime()
 	shiftY = 0

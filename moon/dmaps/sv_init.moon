@@ -57,6 +57,7 @@ ClientsideFiles = {
 	'client/controls/waypoint_row.server.lua'
 	'client/controls/icons_list.lua'
 
+	'client/key_controls.lua'
 	'client/darkrp_event_points.lua'
 	'client/cami_wrapper.lua'
 	'client/functions.lua'
