@@ -79,6 +79,8 @@ class DMapPointer
 	-- False - Point has no menu
 	OpenMenu: => -- Override
 		return false
+	KeyPress: (code = KEY_NONE) => -- Override
+		return false
 	
 	IsNearMouse: =>
 		if not @CURRENT_MAP.mouseHit return false

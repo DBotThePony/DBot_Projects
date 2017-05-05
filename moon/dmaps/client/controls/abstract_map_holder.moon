@@ -27,6 +27,7 @@ ENABLE_SMOOTH_MOVE = DMaps.ClientsideOption('smooth_animations_mv', '1', 'Use sm
 ENABLE_SMOOTH_ZOOM = DMaps.ClientsideOption('smooth_animations_zoom', '1', 'Use smooth map zoom animation')
 
 MOVE_MULT = CreateConVar('cl_dmaps_wasd_speed', '850', {FCVAR_ARCHIVE}, 'Sensivity of WASD buttons on map')
+ZOOM_BIND_MULT = CreateConVar('cl_dmaps_zoom_bind', '25', {FCVAR_ARCHIVE}, 'Sensivity of zoom in/out buttons on map')
 SHIFT_MULT = CreateConVar('cl_dmaps_wasd_shift', '2', {FCVAR_ARCHIVE}, 'Sensivity of shift button on map')
 CTRL_MULT = CreateConVar('cl_dmaps_wasd_ctrl', '0.5', {FCVAR_ARCHIVE}, 'Sensivity of ctrl button on map')
 
@@ -123,23 +124,51 @@ PANEL.AddNotification = (text = '', time = #text / 10) =>
 PANEL.OnKeyCodePressed = (code = KEY_NONE) =>
 	return if code == KEY_NONE
 	DMaps.UpdateKeysMap()
+	x, y = math.floor(@mapObject.mouseX), math.floor(@mapObject.mouseY)
+	points = @mapObject\FindInRadius(x, y, 90)
+	for point in *points
+		return if point\KeyPress(code)
+
+	tr = @mapObject\Trace2DPoint(x, y)
+	z = math.floor(tr.HitPos.z + 10)
+	
 	if DMaps.IsBindDown('help')
 		@showHelp = not @showHelp
+		return
+	if DMaps.IsBindDown('new_point')
+		data, id = ClientsideWaypoint.DataContainer\CreateWaypoint("New Waypoint At X: #{x}, Y: #{y}, Z: #{z}", x, y, z)
+		DMaps.OpenWaypointEditMenu(id, ClientsideWaypoint.DataContainer, -> ClientsideWaypoint.DataContainer\DeleteWaypoint(id)) if id
+		return
+	if DMaps.IsBindDown('teleport') and DMaps.HasPermission('teleport')
+		tpos = Vector(x, y, z)
+		tpos.z += 600
+		@mapObject\LockZoom(true)
+		@mapObject\LockView(true)
+		if ENABLE_SMOOTH\GetBool() and ENABLE_SMOOTH_MOVE\GetBool()
+			@mapObject\SetLerpPos(tpos)
+		else
+			@mapObject\SetPos(tpos)
+		RunConsoleCommand('dmaps_teleport', x, y, z)
+		return
 	if DMaps.IsBindDown('reset')
 		@mapObject\LockClip(false)
 		@mapObject\LockZoom(false)
 		@mapObject\LockView(false)
+		return
 	if DMaps.IsBindDown('quick_navigation')
 		x, y = @mapObject.mouseX, @mapObject.mouseY
 		tr = @mapObject\Trace2DPoint(x, y)
 		z = math.floor(tr.HitPos.z + 10)
 		DMaps.RequireNavigation(Vector(x, y, z))
+		return
 	if DMaps.IsBindDown('copy_vector')
 		x, y = @mapObject.mouseX, @mapObject.mouseY
 		tr = @mapObject\Trace2DPoint(x, y)
 		z = math.floor(tr.HitPos.z + 10)
 		SetClipboardText("Vector(#{x}, #{y}, #{z})")
 		@AddNotification("Copied Vector(#{x}, #{y}, #{z})")
+		return
+	
 
 PANEL.OnMousePressed = (code) =>
 	if code == MOUSE_RIGHT
@@ -194,7 +223,17 @@ PANEL.OnMousePressed = (code) =>
 				\AddOption('Stop navigation', DMaps.StopNavigation)\SetIcon('icon16/map_delete.png') if DMaps.IsNavigating
 				\AddOption('Look At', -> LocalPlayer()\SetEyeAngles((Vector(x, y, z) - LocalPlayer()\EyePos())\Angle()))\SetIcon('icon16/arrow_in.png')
 				if DMaps.HasPermission('teleport')
-					\AddOption('Teleport to', -> RunConsoleCommand('dmaps_teleport', x, y, z))\SetIcon('icon16/arrow_in.png')
+					\AddOption('Teleport to', ->
+						tpos = Vector(x, y, z)
+						tpos.z += 600
+						@mapObject\LockZoom(true)
+						@mapObject\LockView(true)
+						if ENABLE_SMOOTH\GetBool() and ENABLE_SMOOTH_MOVE\GetBool()
+							@mapObject\SetLerpPos(tpos)
+						else
+							@mapObject\SetPos(tpos)
+						RunConsoleCommand('dmaps_teleport', x, y, z)
+					)\SetIcon('icon16/arrow_in.png')
 				hit = false
 				sub = \AddSubMenu('Serverside waypoints')
 
@@ -354,16 +393,22 @@ PANEL.Think = =>
 		bMoveX = 0
 		bMoveY = 0
 
-		multX = 1
+		mult = 1
 		multY = 1
 
+		deltaZoom = 0
+
 		if DMaps.IsBindDown('speed')
-			multX *= SHIFT_MULT\GetFloat()
-			multY *= SHIFT_MULT\GetFloat()
+			mult *= SHIFT_MULT\GetFloat()
 
 		if DMaps.IsBindDown('duck')
-			multX *= CTRL_MULT\GetFloat()
-			multY *= CTRL_MULT\GetFloat()
+			mult *= CTRL_MULT\GetFloat()
+		
+		if DMaps.IsBindDown('zoomin')
+			deltaZoom = -FrameTime() * ZOOM_BIND_MULT\GetInt()
+		
+		if DMaps.IsBindDown('zoomout')
+			deltaZoom = FrameTime() * ZOOM_BIND_MULT\GetInt()
 		
 		if DMaps.IsBindDown('left')
 			bMoveX -= FrameTime() * MOVE_MULT\GetInt()
@@ -374,8 +419,9 @@ PANEL.Think = =>
 		if DMaps.IsBindDown('down')
 			bMoveY -= FrameTime() * MOVE_MULT\GetInt()
 		
-		bMoveX *= multX
-		bMoveY *= multY
+		bMoveX *= mult
+		bMoveY *= mult
+		deltaZoom *= mult
 
 		if bMoveX ~= 0 or bMoveY ~= 0
 			@mapObject\LockView(true)
@@ -399,7 +445,14 @@ PANEL.Think = =>
 			else
 				@mapObject\AddX(moveX)
 				@mapObject\AddY(moveY)
-		
+		if deltaZoom ~= 0
+			@mapObject\LockZoom(true)
+			@mapObject\LockView(true)
+			addZoom = deltaZoom * math.max(math.abs(@mapObject\GetZoom()), 100) * 0.1
+			if ENABLE_SMOOTH\GetBool() and ENABLE_SMOOTH_ZOOM\GetBool()
+				@mapObject\AddLerpZoom(addZoom)
+			else
+				@mapObject\AddZoom(addZoom) 
 	
 PANEL.Paint = (w, h) =>
 	with surface

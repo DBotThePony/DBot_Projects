@@ -206,6 +206,24 @@ DMaps.KeybindingsMap =
 		name: 'Copy a vector'
 		desc: 'Copies Vector(x.x, y.y, z.z) of hovered position'
 		primary: {KEY_LCONTROL, KEY_C}
+	
+	teleport:
+		name: 'Teleport'
+		desc: 'Quick teleport to hovered position'
+		primary: {KEY_T}
+	
+	zoomin:
+		name: 'Zoom in'
+		desc: 'Zoom in hovered location'
+		primary: {KEY_Q}
+	zoomout:
+		name: 'Zoom out'
+		desc: 'Zoom out hovered location'
+		primary: {KEY_E}
+	new_point:
+		name: 'New waypoint'
+		desc: 'Quickly create a new clientside waypoint at hovered location'
+		primary: {KEY_F}
 
 DMaps.RegisterBind = (id, name = '%ERRNAME%', desc = '', primary = {}, secondary = {}) ->
 	error('No ID specified!') if not id
@@ -314,11 +332,14 @@ DMaps.LoadKeybindings = ->
 					valid = false
 					break
 				hits[data.name] = true
+			shouldSave = false
 			if valid
 				for data in *defaultBinds
 					if not hits[data.name]
 						table.insert(DMaps.Keybindings, data)
+						shouldSave = true
 				DMaps.UpdateKeysMap()
+				DMaps.SaveKeybindings() if shouldSave
 			else
 				DMaps.Keybindings = nil
 

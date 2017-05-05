@@ -195,6 +195,7 @@ class ServerWaypointsContainer
 		@SetTitle("Waypoint №#{data.id or '...'} edit menu")
 		@Center()
 		@MakePopup()
+		@OnKeyCodePressed = (code = KEY_NONE) => @Close() if code == KEY_ESCAPE
 
 		local newData
 		
@@ -249,6 +250,12 @@ class ServerWaypointsContainer
 				\SetText(tostring(field[2]))
 			table.insert(@fields, fieldPanel)
 		
+		timer.Simple 0.1, ->
+			if IsValid(@) and IsValid(@fields[1])
+				input.SetCursorPos(@fields[1]\LocalToScreen(5, 10))
+				timer.Simple 0.1, -> gui.InternalMouseDoublePressed(MOUSE_LEFT)
+				timer.Simple 0.2, -> gui.InternalMousePressed(MOUSE_LEFT)
+
 		@iconStr = vgui.Create('EditablePanel', @)
 		@iconStr\Dock(TOP)
 		@iconStr\SetSize(0, 32)
