@@ -239,6 +239,11 @@ DMaps.KeybindingsMap =
 		desc: 'Quickly create a new clientside waypoint at hovered location'
 		primary: {KEY_F}
 		order: 12
+	cave:
+		name: 'Switch cave mode'
+		desc: 'Quicky switch cave mode ON/OFF'
+		primary: {KEY_X}
+		order: 20
 
 for name, data in pairs DMaps.KeybindingsMap
 	data.secondary = data.secondary or {}
@@ -578,7 +583,7 @@ vgui.Register('DMapsBindRow', PANEL_BIND_INFO, 'EditablePanel')
 DMaps.OpenKeybindsMenu = ->
 	frame = vgui.Create('DFrame')
 	self = frame
-	@SetSize(450, ScrH() - 200)
+	@SetSize(470, ScrH() - 200)
 	@SetTitle('DMap Keybinds')
 	@Center()
 	@MakePopup()

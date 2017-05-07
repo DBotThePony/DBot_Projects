@@ -135,6 +135,9 @@ PANEL.OnKeyCodePressed = (code = KEY_NONE) =>
 	if DMaps.IsBindDown('help')
 		@showHelp = not @showHelp
 		return
+	if DMaps.IsBindDown('cave')
+		@caveModeButton\DoClick()
+		return
 	if DMaps.IsBindDown('new_point')
 		data, id = ClientsideWaypoint.DataContainer\CreateWaypoint("New Waypoint At X: #{x}, Y: #{y}, Z: #{z}", x, y, z)
 		DMaps.OpenWaypointEditMenu(id, ClientsideWaypoint.DataContainer, -> ClientsideWaypoint.DataContainer\DeleteWaypoint(id)) if id
