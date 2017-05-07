@@ -346,8 +346,10 @@ net.Receive 'DMaps.Navigation.Info', ->
 	@distanceLeft\SetText("Distance left: #{DMaps.FormatMetre(distLeft)}/#{@requiredPointDistanceFormat}")
 	@distanceLeftBar\SetPercent(distanceLeftPercent)
 
+ENABLE_BEZIER = DMaps.ClientsideOption('smooth_nav_path', '1', 'Smooth navigation pathway by using Bezier formula')
 
 Bezier = (vec1 = Vector(0, 0, 0), vec2 = Vector(0, 0, 0), vec3 = Vector(0, 0, 0), step = 0.1) ->
+	return {vec1, vec2, vec3} if not ENABLE_BEZIER\GetBool()
 	{x: x1, y: y1, z: z1} = vec1
 	{x: x2, y: y2, z: z2} = vec2
 	{x: x3, y: y3, z: z3} = vec3
@@ -400,17 +402,20 @@ net.Receive 'DMaps.Navigation.Require', ->
 			table.remove(points, 2)
 		newPoints = {}
 
-		for i = 2, #points, 2
-			point1 = points[i - 1]
-			point2 = points[i]
-			point3 = points[i + 1]
-			if not point1 or not point2 or not point3
-				table.insert(newPoints, point1) if point1
-				table.insert(newPoints, point2) if point2
-				table.insert(newPoints, point3) if point3
-				break
-			for point in *Bezier(point1, point2, point3)
-				table.insert(newPoints, point)
+		if ENABLE_BEZIER\GetBool()
+			for i = 2, #points, 2
+				point1 = points[i - 1]
+				point2 = points[i]
+				point3 = points[i + 1]
+				if not point1 or not point2 or not point3
+					table.insert(newPoints, point1) if point1
+					table.insert(newPoints, point2) if point2
+					table.insert(newPoints, point3) if point3
+					break
+				for point in *Bezier(point1, point2, point3)
+					table.insert(newPoints, point)
+		else
+			newPoints = [point for point in *points]
 
 		DMaps.NavigationStart = newPoints[#newPoints]
 		DMaps.NavigationEnd = newPoints[1]
