@@ -389,7 +389,7 @@ PANEL.Think = =>
 			else
 				@mapObject\AddX(moveX)
 				@mapObject\AddY(moveY)
-	do
+	if @HasFocus()
 		bMoveX = 0
 		bMoveY = 0
 
