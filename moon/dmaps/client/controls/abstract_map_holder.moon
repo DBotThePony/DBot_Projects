@@ -123,7 +123,7 @@ PANEL.AddNotification = (text = '', time = #text / 10) =>
 
 PANEL.OnKeyCodePressed = (code = KEY_NONE) =>
 	return if code == KEY_NONE
-	DMaps.UpdateKeysMap()
+	DMaps.UpdateKeysStatus()
 	x, y = math.floor(@mapObject.mouseX), math.floor(@mapObject.mouseY)
 	points = @mapObject\FindInRadius(x, y, 90)
 	for point in *points

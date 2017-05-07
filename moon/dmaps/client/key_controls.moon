@@ -256,11 +256,11 @@ DMaps.GetDefaultBindings = ->
 	return output
 
 DMaps.UpdateKeysMap = ->
-	watch = {key, true for data in *DMaps.Keybindings for key in *data.primary}
-	watch[key] = true for data in *DMaps.Keybindings for key in *data.secondary
+	watchButtons = {key, true for data in *DMaps.Keybindings for key in *data.primary}
+	watchButtons[key] = true for data in *DMaps.Keybindings for key in *data.secondary
 	DMaps.KeybindingsUserMap = {data.name, data for data in *DMaps.Keybindings}
 	DMaps.KeybindingsUserMapCheck = {data.name, {name: data.name, primary: DMaps.UnSerealizeKeys(data.primary), secondary: DMaps.UnSerealizeKeys(data.secondary)} for data in *DMaps.Keybindings}
-	DMaps.WatchingButtons = [DMaps.KeyMapReverse[key] for key, bool in pairs watch]
+	DMaps.WatchingButtons = [DMaps.KeyMapReverse[key] for key, bool in pairs watchButtons]
 	DMaps.PressedButtons = {key, false for key in *DMaps.WatchingButtons}
 	DMaps.WatchingButtonsPerBinding = {key, {} for key in *DMaps.WatchingButtons}
 	DMaps.BindPressStatus = {data.name, false for data in *DMaps.Keybindings}
@@ -385,7 +385,7 @@ DMaps.LoadKeybindings = ->
 
 DMaps.LoadKeybindings()
 
-DMaps.UpdateKeysMap = ->
+DMaps.UpdateKeysStatus = ->
 	if not DMaps.WatchingButtons return
 	for key in *DMaps.WatchingButtons
 		oldStatus = DMaps.PressedButtons[key]
@@ -404,7 +404,7 @@ DMaps.UpdateKeysMap = ->
 						else
 							hook.Run('DMaps.BindPressed', name)
 
-hook.Add 'Think', 'DMaps.Keybinds', DMaps.UpdateKeysMap
+hook.Add 'Think', 'DMaps.Keybinds', DMaps.UpdateKeysStatus
 
 PANEL_BIND_FIELD =
 	Init: =>
