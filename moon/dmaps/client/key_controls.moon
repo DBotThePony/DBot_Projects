@@ -163,78 +163,99 @@ DMaps.KeybindingsMap =
 		desc: 'Move map to left side'
 		primary: {KEY_A}
 		secondary: {KEY_LEFT}
+		order: 2
 	right:
 		name: 'Right'
 		desc: 'Move map to right side'
 		primary: {KEY_D}
 		secondary: {KEY_RIGHT}
+		order: 3
 	up:
 		name: 'Up'
 		desc: 'Move map to up side'
 		primary: {KEY_W}
 		secondary: {KEY_UP}
+		order: 0
 	down:
 		name: 'Down'
 		desc: 'Move map to down side'
 		primary: {KEY_S}
 		secondary: {KEY_DOWN}
+		order: 1
 
 	duck:
 		name: 'Duck'
 		desc: 'Move map slower using WASD'
 		primary: {KEY_LCONTROL}
 		secondary: {KEY_RCONTROL}
+		order: 5
 	speed:
 		name: 'Speed'
 		desc: 'Move map faster using WASD'
 		primary: {KEY_LSHIFT}
 		secondary: {KEY_RSHIFT}
+		order: 4
 	reset:
 		name: 'Reset'
 		desc: 'Quick reset map zoom, clip and position'
 		primary: {KEY_R}
+		order: 6
 	quick_navigation:
 		name: 'Quick navigation'
 		desc: 'Quick navigate to hovered point'
 		primary: {KEY_N}
+		order: 8
 	
 	help:
 		name: 'Help label'
 		desc: ''
 		primary: {KEY_F1}
+		order: 7
 	
 	copy_vector:
 		name: 'Copy a vector'
 		desc: 'Copies Vector(x.x, y.y, z.z) of hovered position'
 		primary: {KEY_LCONTROL, KEY_C}
+		order: 13
 	
 	teleport:
 		name: 'Teleport'
 		desc: 'Quick teleport to hovered position'
 		primary: {KEY_T}
+		order: 9
 	
 	zoomin:
 		name: 'Zoom in'
 		desc: 'Zoom in hovered location'
 		primary: {KEY_Q}
+		order: 10
 	zoomout:
 		name: 'Zoom out'
 		desc: 'Zoom out hovered location'
 		primary: {KEY_E}
+		order: 11
 	new_point:
 		name: 'New waypoint'
 		desc: 'Quickly create a new clientside waypoint at hovered location'
 		primary: {KEY_F}
+		order: 12
 
-DMaps.RegisterBind = (id, name = '#BINDNAME?', desc = '#BINDDESC?', primary = {}, secondary = {}) ->
-	error('No ID specified!') if not id
-	DMaps.KeybindingsMap[id] = {:name, :desc, :primary, :secondary}
-
-hook.Run('DMaps.RegisterBindings', DMaps.RegisterBind)
 for name, data in pairs DMaps.KeybindingsMap
 	data.secondary = data.secondary or {}
+	data.id = name
 	data.name = data.name or '#BINDNAME?'
 	data.desc = data.desc or '#BINDDESC?'
+	data.order = data.order or 100
+
+DMaps.KeybindingsOrdered = [data for name, data in pairs DMaps.KeybindingsMap]
+table.sort(DMaps.KeybindingsOrdered, (a, b) -> a.order < b.order)
+DMaps.RegisterBind = (id, name = '#BINDNAME?', desc = '#BINDDESC?', primary = {}, secondary = {}, order = 100) ->
+	error('No ID specified!') if not id
+	DMaps.KeybindingsMap[id] = {:name, :desc, :primary, :secondary, :order, :id}
+	DMaps.KeybindingsOrdered = [data for name, data in pairs DMaps.KeybindingsMap]
+	table.sort(DMaps.KeybindingsOrdered, (a, b) -> a.order < b.order)
+
+hook.Run('DMaps.RegisterBindings', DMaps.RegisterBind)
 
 DMaps.SerealizeKeys = (keys = {}) ->
 	output = for k in *keys
@@ -416,6 +437,7 @@ PANEL_BIND_FIELD =
 		@combinationNew = {}
 		@SetMouseInputEnabled(true)
 		--@SetKeyboardInputEnabled(true)
+		@SetTooltip('Double RIGHT mouse press to clear binding\nDouble LEFT mouse press to change binding\nWhen changing binding, press needed buttons WITHOUT releasing.\nRelease one of pressed buttons to save.\nTo cancel, press ESCAPE')
 		@combinationLabel = vgui.Create('DLabel', @)
 		@addColor = 0
 		with @combinationLabel
@@ -513,6 +535,7 @@ PANEL_BIND_INFO =
 			\SetSize(200, 0)
 			\SetTooltip(' #DESCRIPTION?')
 			\SetTextColor(color_white)
+			\SetMouseInputEnabled(true)
 		
 		@primary = vgui.Create('DMapsBindField', @)
 		with @primary
@@ -555,7 +578,7 @@ vgui.Register('DMapsBindRow', PANEL_BIND_INFO, 'EditablePanel')
 DMaps.OpenKeybindsMenu = ->
 	frame = vgui.Create('DFrame')
 	self = frame
-	@SetSize(500, ScrH() - 200)
+	@SetSize(450, ScrH() - 200)
 	@SetTitle('DMap Keybinds')
 	@Center()
 	@MakePopup()
@@ -564,10 +587,9 @@ DMaps.OpenKeybindsMenu = ->
 	@scroll = vgui.Create('DScrollPanel', @)
 	@scroll\Dock(FILL)
 
-	@rows = for {:name} in *DMaps.Keybindings
-		if not DMaps.KeybindingsMap[name] continue
+	@rows = for {:id} in *DMaps.KeybindingsOrdered
 		row = vgui.Create('DMapsBindRow', @scroll)
-		row\SetBindID(name)
+		row\SetBindID(id)
 		row\Dock(TOP)
 		row
 
