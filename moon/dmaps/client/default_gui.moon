@@ -223,6 +223,9 @@ hook.Add 'Think', 'DMaps.DrawAsMinimap', ->
 	map\StandartThink()
 	map\ThinkPlayer()
 	map\SetMouseActive(false)
+	map\LockZoom(false)
+	map\LockClip(false)
+	map\LockView(false)
 	map\Think()
 
 SKIP_FRAME = false
