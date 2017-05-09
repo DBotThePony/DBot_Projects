@@ -27,6 +27,7 @@ ENT.Initialize = =>
 	@PhysicsInitSphere(32)
 	@SetSolid(SOLID_VPHYSICS)
 	@SetMoveType(SOLID_VPHYSICS)
+	@SetBallColor(Vector(math.random(0, 255) / 255, math.random(0, 255) / 255, math.random(0, 255) / 255))
 	
 	timer.Simple 0, ->
 		phys = @GetPhysicsObject()

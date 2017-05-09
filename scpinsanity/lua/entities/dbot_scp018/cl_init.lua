@@ -11,8 +11,12 @@ ENT.Draw = function(self)
   SuppressEngineLighting(true)
   ModelMaterialOverride(debugwtite)
   ResetModelLighting(1, 1, 1)
-  local col = self:GetColor()
-  SetColorModulation(col.r / 255, col.g / 255, col.b / 255)
+  local r, g, b
+  do
+    local _obj_0 = self:GetBallColor()
+    r, g, b = _obj_0.x, _obj_0.y, _obj_0.z
+  end
+  SetColorModulation(r, g, b)
   self:DrawModel()
   ModelMaterialOverride()
   return SuppressEngineLighting(false)

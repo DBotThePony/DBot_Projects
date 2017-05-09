@@ -24,3 +24,6 @@ ENT.Category = 'SCP Insanity'
 ENT.Spawnable = true
 ENT.AdminSpawnable = true
 ENT.AdminOnly = true
+
+ENT.SetupDataTables = =>
+	@NetworkVar('Vector', 0, 'BallColor', {KeyName: 'ballcolor', Edit: {type: 'VectorColor', order: 1}})

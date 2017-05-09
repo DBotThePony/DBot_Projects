@@ -8,6 +8,7 @@ ENT.Initialize = function(self)
   self:PhysicsInitSphere(32)
   self:SetSolid(SOLID_VPHYSICS)
   self:SetMoveType(SOLID_VPHYSICS)
+  self:SetBallColor(Vector(math.random(0, 255) / 255, math.random(0, 255) / 255, math.random(0, 255) / 255))
   return timer.Simple(0, function()
     local phys = self:GetPhysicsObject()
     if IsValid(phys) then
