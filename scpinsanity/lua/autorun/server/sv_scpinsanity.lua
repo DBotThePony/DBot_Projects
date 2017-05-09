@@ -135,4 +135,11 @@ ENT.Author = 'DBot'
 ENT.Type = 'point'
 scripted_ents.Register(ENT, 'dbot_scp173_killer')
 hook.Add('OnNPCKilled', 'DBot.SCPInsanity', OnNPCKilled)
-return hook.Add('PlayerDeath', 'DBot.SCPInsanity', PlayerDeath)
+hook.Add('PlayerDeath', 'DBot.SCPInsanity', PlayerDeath)
+return hook.Add('ACF_BulletDamage', 'DBot.SCPInsanity', function(Activated, Entity, Energy, FrAera, Angle, Inflictor, Bone, Gun)
+  if string.find({
+    Entity = GetClass()
+  }, 'scp') then
+    return false
+  end
+end)

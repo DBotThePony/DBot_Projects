@@ -74,3 +74,6 @@ scripted_ents.Register(ENT, 'dbot_scp173_killer')
 
 hook.Add('OnNPCKilled', 'DBot.SCPInsanity', OnNPCKilled)
 hook.Add('PlayerDeath', 'DBot.SCPInsanity', PlayerDeath)
+
+hook.Add 'ACF_BulletDamage', 'DBot.SCPInsanity', (Activated, Entity, Energy, FrAera, Angle, Inflictor, Bone, Gun) ->
+	if string.find(Entity:GetClass(), 'scp') return false
