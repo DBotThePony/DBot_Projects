@@ -123,7 +123,7 @@ ENT.Wreck = function(self, ply)
     ply.SCP_Killed = true
     self:EmitSound('snap.wav', 100)
     if ply:IsPlayer() then
-      PrintMessage(HUD_PRINTTALK, ply:Nick() .. ' should be dead now, but he is not \c')
+      PrintMessage(HUD_PRINTTALK, ply:Nick() .. ' should be dead now, but he is not :c')
     else
       ply.SCP_SLAYED = true
     end

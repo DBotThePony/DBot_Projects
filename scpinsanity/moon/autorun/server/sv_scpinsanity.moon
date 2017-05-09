@@ -35,19 +35,18 @@ SCP_HaveZeroHP = {
 	npc_rollermine: true
 }
 
-SCP_INSANITY_ATTACK_PLAYERS = CreateConVar('sv_scpi_players', '1', FCVAR_ARCHIVE, 'Whatever attack players')
+SCP_INSANITY_ATTACK_PLAYERS = CreateConVar('sv_scpi_players', '1', {FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Whatever attack players')
 VALID_NPCS = {}
 
-concommand.Add 'dbot_reset173', (ply) ->
+concommand.Add 'scpi_reset173', (ply) ->
 	if not ply\IsAdmin() return
 	v.SCP_Killed = nil for v in *player.GetAll()
 
-timer.Create 'dbot_SCP_UpdateNPCs', 1, 0, ->
-	SCP_ATTACK_PLAYERS = dbot_scp_player:GetBool()
+timer.Create 'SCPInsanity.UpdateNPCs', 1, 0, ->
 	VALID_NPCS = for ent in *ents.GetAll()
-		if not v\IsNPC() continue
-		if v\GetNPCState() == NPC_STATE_DEAD continue
-        if SCP_Ignore[v\GetClass()] continue
+		if not ent\IsNPC() continue
+		if ent\GetNPCState() == NPC_STATE_DEAD continue
+        if SCP_Ignore[ent\GetClass()] continue
         ent
 
 SCP_GetTargets = ->

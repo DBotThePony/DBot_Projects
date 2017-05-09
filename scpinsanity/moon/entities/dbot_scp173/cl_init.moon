@@ -39,12 +39,12 @@ ENT.DrawTranslucent = =>
 	surface.SetTextColor(color_white)
 	surface.SetFont('DermaLarge')
 	surface.SetTextPos(0, 0)
-	surface.DrawText('Kills\ ' .. @GetFrags())
+	surface.DrawText('Kills: ' .. @GetFrags())
 	
 	surface.SetTextPos(0, 30)
-	surface.DrawText('Player Kills\ ' .. @GetPFrags())
+	surface.DrawText('Player Kills: ' .. @GetPFrags())
 	
 	surface.SetTextPos(0, 60)
-	surface.DrawText('Total Kills\ ' .. (@GetFrags() + @GetPFrags()))
+	surface.DrawText('Total Kills: ' .. (@GetFrags() + @GetPFrags()))
 	
 	cam.End3D2D()

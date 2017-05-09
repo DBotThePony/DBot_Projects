@@ -23,9 +23,12 @@ SCP_Ignore = {
 SCP_HaveZeroHP = {
   npc_rollermine = true
 }
-SCP_INSANITY_ATTACK_PLAYERS = CreateConVar('sv_scpi_players', '1', FCVAR_ARCHIVE, 'Whatever attack players')
+SCP_INSANITY_ATTACK_PLAYERS = CreateConVar('sv_scpi_players', '1', {
+  FCVAR_NOTIFY,
+  FCVAR_ARCHIVE
+}, 'Whatever attack players')
 local VALID_NPCS = { }
-concommand.Add('dbot_reset173', function(ply)
+concommand.Add('scpi_reset173', function(ply)
   if not ply:IsAdmin() then
     return 
   end
@@ -35,10 +38,7 @@ concommand.Add('dbot_reset173', function(ply)
     v.SCP_Killed = nil
   end
 end)
-timer.Create('dbot_SCP_UpdateNPCs', 1, 0, function()
-  local SCP_ATTACK_PLAYERS = {
-    dbot_scp_player = GetBool()
-  }
+timer.Create('SCPInsanity.UpdateNPCs', 1, 0, function()
   do
     local _accum_0 = { }
     local _len_0 = 1
@@ -47,15 +47,15 @@ timer.Create('dbot_SCP_UpdateNPCs', 1, 0, function()
       local _continue_0 = false
       repeat
         local ent = _list_0[_index_0]
-        if not v:IsNPC() then
+        if not ent:IsNPC() then
           _continue_0 = true
           break
         end
-        if v:GetNPCState() == NPC_STATE_DEAD then
+        if ent:GetNPCState() == NPC_STATE_DEAD then
           _continue_0 = true
           break
         end
-        if SCP_Ignore[v:GetClass()] then
+        if SCP_Ignore[ent:GetClass()] then
           _continue_0 = true
           break
         end

@@ -129,7 +129,7 @@ ENT.Wreck = (ply) =>
 		@EmitSound('snap.wav', 100)
 		
 		if ply\IsPlayer()
-			PrintMessage(HUD_PRINTTALK, ply\Nick() .. ' should be dead now, but he is not \c')
+			PrintMessage(HUD_PRINTTALK, ply\Nick() .. ' should be dead now, but he is not :c')
 		else
 			ply.SCP_SLAYED = true
 		return
