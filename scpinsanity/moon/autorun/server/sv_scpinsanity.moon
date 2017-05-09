@@ -58,9 +58,9 @@ SCP_GetTargets = ->
     
 	if SCP_INSANITY_ATTACK_PLAYERS\GetBool() then
 		for ply in *player.GetAll()
-			if v\HasGodMode() continue
-			if v.SCP_Killed continue
-			table.insert(reply, v)
+			if ply\HasGodMode() continue
+			if ply.SCP_Killed continue
+			table.insert(reply, ply)
 	
 	return reply
 

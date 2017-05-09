@@ -211,11 +211,10 @@ ENT.RealDropToFloor = =>
 ENT.Think = =>
 	if CLIENT return 
 	
-	for ply in *SCP_GetTargets()
+	plys = SCP_GetTargets()
+	for ply in *plys
 		if @CanSeeMe(ply)
 			@RealDropToFloor()
-			@SetNWEntity('SeeMe', ply)
-			@SetNWEntity('AttackingEntity', NULL)
 			return
 	
 	lpos = @GetPos()
@@ -226,13 +225,13 @@ ENT.Think = =>
         if ply\IsPlayer()
             if not ply\Alive() continue
             if ply\InVehicle()
-                if v\GetVehicle()\GetParent() == @
-                    @Wreck(v)
+                if ply\GetVehicle()\GetParent() == @
+                    @Wreck(ply)
                     continue
 		
-		dist = v\GetPos()\Distance(lpos)
+		dist = ply\GetPos()\Distance(lpos)
 		if dist < min
-			ply = v
+			ply = ply
 			min = dist
 	
 	if not ply return
@@ -253,8 +252,8 @@ ENT.Think = =>
 	start = lpos + Vector(0, 0, 40)
 	filter = {@, ply}
 	
-	table.insert(filter, v) for v in *ents.FindByClass('dbot_scp173')
-	table.insert(filter, v) for v in *player.GetAll()
+	table.insert(filter, val) for val in *ents.FindByClass('dbot_scp173')
+	table.insert(filter, val) for val in *player.GetAll()
 	
 	tr = util.TraceHull({
 		start: start

@@ -216,40 +216,37 @@ ENT.Think = function(self)
   if CLIENT then
     return 
   end
-  local _list_0 = SCP_GetTargets()
-  for _index_0 = 1, #_list_0 do
-    local ply = _list_0[_index_0]
+  local plys = SCP_GetTargets()
+  for _index_0 = 1, #plys do
+    local ply = plys[_index_0]
     if self:CanSeeMe(ply) then
       self:RealDropToFloor()
-      self:SetNWEntity('SeeMe', ply)
-      self:SetNWEntity('AttackingEntity', NULL)
       return 
     end
   end
   local lpos = self:GetPos()
   local ply
   local min = 99999
-  local _list_1 = plys
-  for _index_0 = 1, #_list_1 do
+  for _index_0 = 1, #plys do
     local _continue_0 = false
     repeat
-      local ply = _list_1[_index_0]
+      local ply = plys[_index_0]
       if ply:IsPlayer() then
         if not ply:Alive() then
           _continue_0 = true
           break
         end
         if ply:InVehicle() then
-          if v:GetVehicle():GetParent() == self then
-            self:Wreck(v)
+          if ply:GetVehicle():GetParent() == self then
+            self:Wreck(ply)
             _continue_0 = true
             break
           end
         end
       end
-      local dist = v:GetPos():Distance(lpos)
+      local dist = ply:GetPos():Distance(lpos)
       if dist < min then
-        ply = v
+        ply = ply
         min = dist
       end
       _continue_0 = true
@@ -276,15 +273,15 @@ ENT.Think = function(self)
     self,
     ply
   }
-  local _list_2 = ents.FindByClass('dbot_scp173')
-  for _index_0 = 1, #_list_2 do
-    local v = _list_2[_index_0]
-    table.insert(filter, v)
+  local _list_0 = ents.FindByClass('dbot_scp173')
+  for _index_0 = 1, #_list_0 do
+    local val = _list_0[_index_0]
+    table.insert(filter, val)
   end
-  local _list_3 = player.GetAll()
-  for _index_0 = 1, #_list_3 do
-    local v = _list_3[_index_0]
-    table.insert(filter, v)
+  local _list_1 = player.GetAll()
+  for _index_0 = 1, #_list_1 do
+    local val = _list_1[_index_0]
+    table.insert(filter, val)
   end
   local tr = util.TraceHull({
     start = start,

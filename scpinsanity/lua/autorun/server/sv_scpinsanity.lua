@@ -109,15 +109,15 @@ SCP_GetTargets = function()
       local _continue_0 = false
       repeat
         local ply = _list_0[_index_0]
-        if v:HasGodMode() then
+        if ply:HasGodMode() then
           _continue_0 = true
           break
         end
-        if v.SCP_Killed then
+        if ply.SCP_Killed then
           _continue_0 = true
           break
         end
-        table.insert(reply, v)
+        table.insert(reply, ply)
         _continue_0 = true
       until true
       if not _continue_0 then
