@@ -266,7 +266,7 @@ function DSit.Sit(ply, tr, lpos, eyes, epos, ignore, notify)
 	
 	pos, Ang = DSit.TrickPos(ply, pos, Ang, tr)
 	
-	local ValidAngle = Ang1.p < 15 and Ang1.p > -15
+	local ValidAngle = Ang1.p < 15 and Ang1.p > -15 or (IsValid(tr.Entity) and not tr.Entity:GetClass():find('func') and not tr.Entity:GetClass():find('prop_door'))
 	local OnCeiling = Ang1.r > 170 or Ang1.r < -170
 	
 	local ALLOW_ANY = ALLOW_ANY:GetBool()
@@ -277,19 +277,21 @@ function DSit.Sit(ply, tr, lpos, eyes, epos, ignore, notify)
 			return 
 		end
 		
-		if OnCeiling and not FUNNY_SIT:GetBool() then
-			if notify then ply:PrintMessage(HUD_PRINTCENTER, '[DSit] Sitting on ceiling is disabled') end
-			return
-		end
-		
-		if not OnCeiling and not IsPosSituable(pos, ply, tr) then 
-			if notify then ply:PrintMessage(HUD_PRINTCENTER, '[DSit] Something is obstructing your sit position') end
-			return 
-		end
-		
-		if OnCeiling and not IsPosSituableCeiling(pos, ply, tr) then 
-			if notify then ply:PrintMessage(HUD_PRINTCENTER, '[DSit] Something is obstructing your sit position') end
-			return 
+		if OnCeiling then
+			if not FUNNY_SIT:GetBool() then
+				if notify then ply:PrintMessage(HUD_PRINTCENTER, '[DSit] Sitting on ceiling is disabled') end
+				return
+			end
+
+			if not IsPosSituableCeiling(pos, ply, tr) then 
+				if notify then ply:PrintMessage(HUD_PRINTCENTER, '[DSit] Something is obstructing your sit position') end
+				return 
+			end
+		else
+			if not IsPosSituable(pos, ply, tr) then 
+				if notify then ply:PrintMessage(HUD_PRINTCENTER, '[DSit] Something is obstructing your sit position') end
+				return 
+			end
 		end
 	end
 	
@@ -302,7 +304,6 @@ function DSit.Sit(ply, tr, lpos, eyes, epos, ignore, notify)
 	end
 	
 	local ent = DSit.CreateVehicle(pos, Ang, ply)
-	
 	local can = hook.Run('CanPlayerEnterVehicle', ply, ent)
 	
 	if can == false then
@@ -310,7 +311,7 @@ function DSit.Sit(ply, tr, lpos, eyes, epos, ignore, notify)
 		
 		if notify then 
 			ply:PrintMessage(HUD_PRINTCENTER, '[DSit] You can not sit right now')
-			DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'You can not sit right now')
+			DSit.AddPText(ply, 'You can not sit right now')
 		end
 		
 		return
@@ -328,9 +329,7 @@ function DSit.Sit(ply, tr, lpos, eyes, epos, ignore, notify)
 	
 	if WEAPONS then
 		ply.DSit_LastWeaponMode = ply:GetAllowWeaponsInVehicle()
-		
 		ply:SetAllowWeaponsInVehicle(true)
-		
 		IsFlashlightOn = ply:FlashlightIsOn()
 	end
 	
@@ -339,7 +338,9 @@ function DSit.Sit(ply, tr, lpos, eyes, epos, ignore, notify)
 	if WEAPONS then
 		if IsFlashlightOn then ply:Flashlight(true) end
 	end
+
 	ply:SetCollisionGroup(COLLISION_GROUP_WEAPON)
+	timer.Simple(1, function() ply:SetCollisionGroup(COLLISION_GROUP_WEAPON) end) -- Kill stupid addons
 	
 	if IsValid(tr.Entity) then
 		ent:SetParent(tr.Entity)
@@ -350,7 +351,6 @@ function DSit.Sit(ply, tr, lpos, eyes, epos, ignore, notify)
 	end
 	
 	ply:SetEyeAngles(NewEyeAngles)
-	
 	ply.DSit_Vehicle = ent
 	ply:SetNWEntity('DSit_Vehicle', ent)
 end
@@ -376,7 +376,7 @@ function DSit.SitOnPlayerLegs(ply, tr, lpos, eyes, epos)
 		
 		if notify then 
 			ply:PrintMessage(HUD_PRINTCENTER, '[DSit] You can not sit right now')
-			DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'You can not sit right now')
+			DSit.AddPText(ply, 'You can not sit right now')
 		end
 		
 		return
@@ -394,9 +394,7 @@ function DSit.SitOnPlayerLegs(ply, tr, lpos, eyes, epos)
 	
 	if WEAPONS then
 		ply.DSit_LastWeaponMode = ply:GetAllowWeaponsInVehicle()
-		
 		ply:SetAllowWeaponsInVehicle(true)
-		
 		IsFlashlightOn = ply:FlashlightIsOn()
 	end
 	
@@ -405,7 +403,9 @@ function DSit.SitOnPlayerLegs(ply, tr, lpos, eyes, epos)
 	if WEAPONS then
 		if IsFlashlightOn then ply:Flashlight(true) end
 	end
+
 	ply:SetCollisionGroup(COLLISION_GROUP_WEAPON)
+	timer.Simple(1, function() ply:SetCollisionGroup(COLLISION_GROUP_WEAPON) end) -- Kill stupid addons
 	
 	ent:SetParent(veh)
 	ply:SetNWEntity('DSit_Vehicle_Parent', veh)
@@ -414,7 +414,6 @@ function DSit.SitOnPlayerLegs(ply, tr, lpos, eyes, epos)
 	
 	ply.DSit_Vehicle = ent
 	ply:SetNWEntity('DSit_Vehicle', ent)
-	
 	ent.__IsSittingOnPlayer = true
 	ent.__SittingPlayer = target
 end
@@ -477,7 +476,7 @@ function DSit.SitOnPlayer(ply, tr, lpos, eyes, epos, notify)
 	if cl_dsit_allow_on_me and cl_dsit_allow_on_me == '0' then
 		if notify then 
 			ply:PrintMessage(HUD_PRINTCENTER, '[DSit] You disallowed sitting on players')
-			DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'You disallowed sitting on players')
+			DSit.AddPText(ply, 'You disallowed sitting on players')
 		end
 		
 		return
@@ -490,7 +489,7 @@ function DSit.SitOnPlayer(ply, tr, lpos, eyes, epos, notify)
 	if cl_dsit_allow_on_me and cl_dsit_allow_on_me == '0' then
 		if notify then 
 			ply:PrintMessage(HUD_PRINTCENTER, '[DSit] Target disallowed sitting on him')
-			DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'Target disallowed sitting on him')
+			DSit.AddPText(ply, 'Target disallowed sitting on him')
 		end
 		
 		return
@@ -507,7 +506,7 @@ function DSit.SitOnPlayer(ply, tr, lpos, eyes, epos, notify)
 	if table.HasValue(__dsit_blocked_self, Ply) then
 		if notify then 
 			ply:PrintMessage(HUD_PRINTCENTER, '[DSit] You blacklisted this player')
-			DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'You blacklisted this player')
+			DSit.AddPText(ply, 'You blacklisted this player')
 		end
 		
 		return
@@ -516,7 +515,7 @@ function DSit.SitOnPlayer(ply, tr, lpos, eyes, epos, notify)
 	if table.HasValue(__dsit_blocked_target, ply) then
 		if notify then 
 			ply:PrintMessage(HUD_PRINTCENTER, '[DSit] Target blacklisted you')
-			DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'Target blacklisted you')
+			DSit.AddPText(ply, 'Target blacklisted you')
 		end
 		
 		return
@@ -525,7 +524,7 @@ function DSit.SitOnPlayer(ply, tr, lpos, eyes, epos, notify)
 	if (friends_self and friends_self ~= '0' and friends_self ~= '' or friends_target and friends_target ~= '0' and friends_target ~= '') and (not table.HasValue(__dsit_friends_target, ply) or not table.HasValue(__dsit_friends_self, Ply)) then
 		if notify then 
 			ply:PrintMessage(HUD_PRINTCENTER, '[DSit] One or both players has cl_dsit_friendsonly set to 1 and you are not friends')
-			DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'One or both players has cl_dsit_friendsonly set to 1 and you are not friends')
+			DSit.AddPText(ply, 'One or both players has cl_dsit_friendsonly set to 1 and you are not friends')
 		end
 		
 		return
@@ -534,7 +533,7 @@ function DSit.SitOnPlayer(ply, tr, lpos, eyes, epos, notify)
 	if cl_dsit_allow_on_me and cl_dsit_allow_on_me == '0' then
 		if notify then 
 			ply:PrintMessage(HUD_PRINTCENTER, '[DSit] Target disallowed sitting on him')
-			DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'Target disallowed sitting on him')
+			DSit.AddPText(ply, 'Target disallowed sitting on him')
 		end
 		
 		return
@@ -545,7 +544,7 @@ function DSit.SitOnPlayer(ply, tr, lpos, eyes, epos, notify)
 	if maxonme and maxonme > 0 and #calculatePlayers(Ply) >= maxonme then
 		if notify then 
 			ply:PrintMessage(HUD_PRINTCENTER, '[DSit] Player restricted maximal amount of players on him')
-			DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'Player restricted maximal amount of players on him')
+			DSit.AddPText(ply, 'Player restricted maximal amount of players on him')
 		end
 		
 		return
@@ -570,7 +569,7 @@ function DSit.SitOnPlayer(ply, tr, lpos, eyes, epos, notify)
 		
 		if notify then 
 			ply:PrintMessage(HUD_PRINTCENTER, '[DSit] You can not sit right now')
-			DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'You can not sit right now')
+			DSit.AddPText(ply, 'You can not sit right now')
 		end
 		
 		return
@@ -654,13 +653,13 @@ local function Request(ply)
 	
 	if ply:GetMoveType() == MOVETYPE_NONE then
 		ply:PrintMessage(HUD_PRINTCENTER, '[DSit] You can not sit right now')
-		DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'You can not sit right now')
+		DSit.AddPText(ply, 'You can not sit right now')
 		return
 	end
 	
 	if ply:GetVelocity():Length() > 350 then
 		ply:PrintMessage(HUD_PRINTCENTER, '[DSit] You are moving too fast to sit right now')
-		DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'You are moving too fast to sit right now')
+		DSit.AddPText(ply, 'You are moving too fast to sit right now')
 		return
 	end
 	
@@ -707,7 +706,7 @@ local function Request(ply)
 	if can == false then
 		if reason then
 			ply:PrintMessage(HUD_PRINTCENTER, reason)
-			DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), reason)
+			DSit.AddPText(ply, reason)
 		end
 		
 		return
@@ -730,14 +729,14 @@ local function Request(ply)
 		if not IsPlayer then
 			if not ALLOW_ON_ENTITIES:GetBool() then
 				ply:PrintMessage(HUD_PRINTCENTER, '[DSit] Server owner has disabled ability to sit on entities')
-				DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'Server owner has disabled ability to sit on entities')
+				DSit.AddPText(ply, 'Server owner has disabled ability to sit on entities')
 				return
 			end
 			
 			if ALLOW_ON_ENTITIES_OWNER:GetBool() and ent.CPPIGetOwner then
 				if ent:CPPIGetOwner() ~= ply then
 					ply:PrintMessage(HUD_PRINTCENTER, '[DSit] Server owner has disabled ability to sit on entities not owned by you')
-					DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'Server owner has disabled ability to sit on entities not owned by you')
+					DSit.AddPText(ply, 'Server owner has disabled ability to sit on entities not owned by you')
 					return
 				end
 			end
@@ -745,7 +744,7 @@ local function Request(ply)
 			if ALLOW_ON_ENTITIES_WORLD_ONLY:GetBool() and ent.CPPIGetOwner then
 				if ent:CPPIGetOwner() ~= NULL and ent:CPPIGetOwner() ~= nil then
 					ply:PrintMessage(HUD_PRINTCENTER, '[DSit] Server owner has disabled ability to sit on owned entities')
-					DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'Server owner has disabled ability to sit on owned entities')
+					DSit.AddPText(ply, 'Server owner has disabled ability to sit on owned entities')
 					return
 				end
 			end
@@ -827,8 +826,8 @@ local function FindPos(ply, pos, oldpos, H, vehpos, trCheck)
 		endpos = pos + Vector(0, 0, heigt),
 		filter = function(ent)
 			if ent == ply then return false end
-			if ent:GetCollisionGroup() == COLLISION_GROUP_WEAPON or ent:GetCollisionGroup() == COLLISION_GROUP_WORLD then return false end
-			return true
+			local col = ent:GetCollisionGroup()
+			return col ~= COLLISION_GROUP_WEAPON and col ~= COLLISION_GROUP_WORLD
 		end,
 		
 		mins = mins,
@@ -914,10 +913,7 @@ local function FindPos(ply, pos, oldpos, H, vehpos, trCheck)
 						local result = util.TraceLine(trCheck)
 						if result.Hit then continue end
 					end
-					
-					--validpos = tr.HitPos
-					--hit = true
-					--break
+
 					table.insert(ValidPositions, tr.HitPos)
 				end
 				
@@ -948,8 +944,8 @@ local function PostLeaveVehicle(ply, tr, vehpos)
 	if not IsValid(ply) then return end
 	ply:SetAllowWeaponsInVehicle(ply.DSit_LastWeaponMode)
 	ply:SetCollisionGroup(ply.DSit_LastCollisionGroup)
-	
 	ply:SetEyeAngles(ply.DSit_LastAngles)
+
 	local H = ply:OBBMaxs().z - ply:OBBMins().z
 	
 	local status, newPlyPos = FindPos(ply, ply:GetPos(), ply.DSit_LastPos, H, vehpos, table.Copy(tr))
@@ -957,16 +953,12 @@ local function PostLeaveVehicle(ply, tr, vehpos)
 	if status then
 		tr.endpos = newPlyPos
 		
-		if PREVENT_EXPLOIT:GetBool() then
-			local tr2 = util.TraceLine(tr)
-			
-			if tr2.Hit then
-				ply:SetPos(ply.DSit_LastPos)
-				DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'You go through wall and was teleported to previous location')
-			end
+		if PREVENT_EXPLOIT:GetBool() and util.TraceLine(tr).Hit then
+			ply:SetPos(ply.DSit_LastPos)
+			DSit.AddPText(ply, 'You go through wall and was teleported to previous location')
 		end
 	else
-		DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'You were stuck and teleported to previous location')
+		DSit.AddPText(ply, 'You were stuck and teleported to previous location')
 	end
 	
 	ply:SetNWEntity('DSit_Vehicle_Parent', NULL)
@@ -986,6 +978,7 @@ local function DoUsualCheck(ply, ent)
 			ply = d
 		end
 	end
+
 	if isValid(ent:GetNWEntity('DSit_Vehicle_Parented')) then return true end
 	
 	if ply then
@@ -1011,14 +1004,8 @@ function RecalculateConstrained(ent, ply)
 		if DoUsualCheck(ply, result[k]) then hit = true break end
 	end
 	
-	if hit then
-		for k = 1, size do
-			result[k]:SetNWBool('DSit_IsConstrained', true)
-		end
-	else
-		for k = 1, size do
-			result[k]:SetNWBool('DSit_IsConstrained', false)
-		end
+	for k = 1, size do
+		result[k]:SetNWBool('DSit_IsConstrained', hit)
 	end
 end
 
@@ -1036,7 +1023,7 @@ local function EntityRemoved(ent)
 end
 
 local function OnEntityCreated(ent)
-	if not ent:IsConstraint() then return end
+	if not ent.IsConstraint or not ent:IsConstraint() then return end
 	
 	timer.Simple(0, function()
 		local ent1, ent2 = ent:GetConstrainedEntities()
@@ -1054,13 +1041,13 @@ local function PlayerLeaveVehicle(ply, ent)
 	if not IsValid(ent) then return end
 	if not ent.IsSittingVehicle then return end
 	
-	ply.NoClip = nil
-	
+	ply.NoClip = nil -- ULX
 	ent.DSIT_IGNORE = true
+
 	local parent = ent:GetParent()
 	
 	if IsValid(parent) and not parent:IsPlayer() then
-		timer.Simple(2, function()
+		timer.Simple(0.5, function()
 			RecalculateConstrained(parent, ply)
 		end)
 	end
@@ -1108,13 +1095,11 @@ end
 
 local function PlayerDeath(ply)
 	if ply.DSit_Vehicle and IsValid(ply.DSit_Vehicle) then SafeRemoveEntity(ply.DSit_Vehicle) end
-	
 	ply:SetNWEntity('DSit_Vehicle_Parent', NULL)
 end
 
 local function PlayerDisconnected(ply)
 	if ply.DSit_Vehicle and IsValid(ply.DSit_Vehicle) then SafeRemoveEntity(ply.DSit_Vehicle) end
-	
 	ply:SetNWEntity('DSit_Vehicle_Parent', NULL)
 end
 
@@ -1186,7 +1171,7 @@ local function PhysgunPickup(ply, ent)
 	
 	if ent:GetNWBool('DSit_IsConstrained') then 
 		if LastSay + 1 < CurTime() then
-			DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'That entity is constrained with chair')
+			DSit.AddPText(ply, 'That entity is constrained with chair')
 			LastSay = CurTime()
 		end
 		
@@ -1218,7 +1203,7 @@ do
 		end
 		
 		if hit then
-			DSit.AddPText(ply, Color(0, 200, 0), '[DSit] ', Color(200, 200, 200), 'Next time you should type in console "dsit_getoff" or spawn menu > Utilities > User > DSit > Get off player on you')
+			DSit.AddPText(ply, 'Next time you should type in console "dsit_getoff" or spawn menu > Utilities > User > DSit > Get off player on you')
 		end
 	end
 
