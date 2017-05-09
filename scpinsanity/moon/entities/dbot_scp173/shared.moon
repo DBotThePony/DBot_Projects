@@ -23,7 +23,7 @@ ENT.Author = 'DBot'
 ENT.Spawnable = true
 ENT.AdminSpawnable = true
 ENT.AdminOnly = true
-ENT.Category = 'DBot'
+ENT.Category = 'SCP Insanity'
 ENT.IsSCP173 = true
 ENT.RenderGroup = RENDERGROUP_BOTH
 
