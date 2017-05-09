@@ -26,7 +26,7 @@ ENT.Initialize = =>
 	@Killer\SetPos(@GetPos())
 	@Killer\Spawn()
 	@Killer\Activate()
-	@Killer\SetParent(self)
+	@Killer\SetParent(@)
 	
 	@PhysicsInitBox(Vector(-16, -16, 0), Vector(16, 16, 80))
 	@SetMoveType(MOVETYPE_NONE)
@@ -34,7 +34,6 @@ ENT.Initialize = =>
 	
 	@LastMove = 0
 	@JumpTries = 0
-
 
 interval = (val, min, max) -> val > min and val <= max
 ENT.GetRealAngle = (pos) => (@GetPos() - pos)\Angle()
@@ -75,7 +74,7 @@ ENT.CanSeeMe = (ply) =>
 		start: epos,
 		endpos: lpos + Vector(0, 0, 40),
 		filter: (ent) ->
-			if ent == self 
+			if ent == @
                 hit = true
                 return true 
 			if ent == ply return false 
@@ -97,29 +96,29 @@ ENT.CanSeeMe = (ply) =>
 INT = 2^31 - 1
 
 DAMAGE_TYPES = {
-	DMG_GENERIC,
-	DMG_CRUSH,
-	DMG_BULLET,
-	DMG_SLASH,
-	DMG_VEHICLE,
-	DMG_BLAST,
-	DMG_CLUB,
-	DMG_ENERGYBEAM,
-	DMG_ALWAYSGIB,
-	DMG_PARALYZE,
-	DMG_NERVEGAS,
-	DMG_POISON,
-	DMG_ACID,
-	DMG_AIRBOAT,
-	DMG_BLAST_SURFACE,
-	DMG_BUCKSHOT,
-	DMG_DIRECT,
-	DMG_DISSOLVE,
-	DMG_DROWNRECOVER,
-	DMG_PHYSGUN,
-	DMG_PLASMA,
-	DMG_RADIATION,
-	DMG_SLOWBURN,
+	DMG_GENERIC
+	DMG_CRUSH
+	DMG_BULLET
+	DMG_SLASH
+	DMG_VEHICLE
+	DMG_BLAST
+	DMG_CLUB
+	DMG_ENERGYBEAM
+	DMG_ALWAYSGIB
+	DMG_PARALYZE
+	DMG_NERVEGAS
+	DMG_POISON
+	DMG_ACID
+	DMG_AIRBOAT
+	DMG_BLAST_SURFACE
+	DMG_BUCKSHOT
+	DMG_DIRECT
+	DMG_DISSOLVE
+	DMG_DROWNRECOVER
+	DMG_PHYSGUN
+	DMG_PLASMA
+	DMG_RADIATION
+	DMG_SLOWBURN
 }
 
 ENT.Wreck = (ply) =>
@@ -133,17 +132,15 @@ ENT.Wreck = (ply) =>
 			PrintMessage(HUD_PRINTTALK, ply\Nick() .. ' should be dead now, but he is not \c')
 		else
 			ply.SCP_SLAYED = true
-		
 		return
 	
-	
-	ply\TakeDamage(INT, self, @Killer)
+	ply\TakeDamage(INT, @, @Killer)
 	
 	for k, v in pairs(DAMAGE_TYPES) do
 		dmg = DamageInfo()
 		
 		dmg\SetDamage(INT)
-		dmg\SetAttacker(self)
+		dmg\SetAttacker(@)
 		dmg\SetInflictor(@Killer)
 		dmg\SetDamageType(v)
 		
@@ -165,6 +162,7 @@ ENT.Wreck = (ply) =>
 	
 	if not ply\IsPlayer()
 		ply.SCP_SLAYED = true
+
 ENT.Jumpscare = =>
 	lpos = @GetPos()
 	rand = table.Random(SCP_GetTargets())
@@ -184,20 +182,19 @@ ENT.TryMoveTo = (pos) =>
 	tr = util.TraceHull({
 		start: @GetPos()
 		endpos: pos
+        mins: @OBBMins()
+		maxs: @OBBMaxs()
 		filter: (ent) ->
-			if ent == self return false
+			if ent == @ return false
 			if not IsValid(ent) return true
 			if ent\IsPlayer() return false
 			if ent\IsNPC() return false
 			if ent\IsVehicle() return false
 			if ent\GetClass() == 'dbot_scp173' return false
 			return true
-		mins: @OBBMins()
-		maxs: @OBBMaxs()
 	})
 	
 	@SetPos(tr.HitPos + tr.HitNormal)
-
 
 ENT.TurnTo = (pos) =>
 	ang = @GetRealAngle(pos)
@@ -225,12 +222,13 @@ ENT.Think = =>
 	local ply
 	min = 99999
 	
-	for k, v in pairs(plys) do
-		if v\IsPlayer() and not v\Alive() continue
-		if v\IsPlayer() and v\InVehicle()
-			if v\GetVehicle()\GetParent() == self
-				@Wreck(v)
-				continue
+	for ply in *plys
+        if ply\IsPlayer()
+            if not ply\Alive() continue
+            if ply\InVehicle()
+                if v\GetVehicle()\GetParent() == @
+                    @Wreck(v)
+                    continue
 		
 		dist = v\GetPos()\Distance(lpos)
 		if dist < min
@@ -252,20 +250,18 @@ ENT.Think = =>
 	@TurnTo(pos)
 	
 	lerp = LerpVector(0.3, lpos, pos)
-	
 	start = lpos + Vector(0, 0, 40)
-	
-	filter = {self, ply}
+	filter = {@, ply}
 	
 	table.insert(filter, v) for v in *ents.FindByClass('dbot_scp173')
 	table.insert(filter, v) for v in *player.GetAll()
 	
 	tr = util.TraceHull({
-		start: start,
-		endpos: lerp + @OBBMaxs(),
-		filter: filter,
-		mins: @OBBMins(),
-		maxs: @OBBMaxs(),
+		start: start
+		endpos: lerp + @OBBMaxs()
+		filter: filter
+		mins: @OBBMins()
+		maxs: @OBBMaxs()
 	})
 	
 	if tr.Hit and not IsValid(tr.Entity) and start == tr.HitPos

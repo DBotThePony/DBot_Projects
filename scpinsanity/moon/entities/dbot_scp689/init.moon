@@ -170,15 +170,16 @@ ENT.Think = =>
 			@TARGETS[k] = nil
 			continue
 		
-		if v\IsPlayer() and not v\Alive()
-            @TARGETS[k] = nil
-            continue
-		
-		if v\IsPlayer() and v\InVehicle()
-			if v\GetVehicle()\GetParent() == self -- DSit
-				@Wreck(v)
+		if v\IsPlayer()
+			if not v\Alive()
 				@TARGETS[k] = nil
 				continue
+			
+			if v\InVehicle()
+				if v\GetVehicle()\GetParent() == self -- DSit
+					@Wreck(v)
+					@TARGETS[k] = nil
+					continue
 	
 	ply = table.Random(@TARGETS)
 	if not ply return

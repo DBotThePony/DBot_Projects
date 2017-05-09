@@ -194,17 +194,19 @@ ENT.Think = function(self)
         _continue_0 = true
         break
       end
-      if v:IsPlayer() and not v:Alive() then
-        self.TARGETS[k] = nil
-        _continue_0 = true
-        break
-      end
-      if v:IsPlayer() and v:InVehicle() then
-        if v:GetVehicle():GetParent() == self then
-          self:Wreck(v)
+      if v:IsPlayer() then
+        if not v:Alive() then
           self.TARGETS[k] = nil
           _continue_0 = true
           break
+        end
+        if v:InVehicle() then
+          if v:GetVehicle():GetParent() == self then
+            self:Wreck(v)
+            self.TARGETS[k] = nil
+            _continue_0 = true
+            break
+          end
         end
       end
       _continue_0 = true

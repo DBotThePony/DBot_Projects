@@ -28,7 +28,12 @@ ENT.Think = function(self)
     self:objRemove()
     return 
   end
-  obj:TakeDamage(math.max(10, obj:Health() * .1), IsValid(self.Crystal) and self.Crystal or self, self)
+  local dmg = DamageInfo()
+  dmg:SetDamage(math.max(10, obj:Health() * .1))
+  dmg:SetAttacker(IsValid(self.Crystal) and self.Crystal or self)
+  dmg:SetInflictor(self)
+  dmg:SetDamageType(DMG_ACID)
+  obj:TakeDamageInfo(dmg)
   if obj:IsPlayer() then
     obj:GodDisable()
   end
@@ -38,10 +43,12 @@ end
 ENT.OnRemove = function(self)
   for i = 1, math.random(1, 4) do
     local ent = ents.Create('dbot_scp409_fragment')
-    ent:SetPos(self:GetPos())
-    ent:Spawn()
-    ent:Push()
-    ent.Crystal = self.Crystal
+    do
+      ent:SetPos(self:GetPos())
+      ent:Spawn()
+      ent:Push()
+      ent.Crystal = self.Crystal
+    end
   end
   if not IsValid(self:GetParent()) then
     return 

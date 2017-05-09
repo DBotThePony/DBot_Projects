@@ -35,7 +35,14 @@ ENT.Think = =>
 		@objRemove() 
 		return
 	
-	obj\TakeDamage(math.max(10, obj\Health() * .1), IsValid(@Crystal) and @Crystal or @, @)
+	dmg = DamageInfo()
+	
+	dmg\SetDamage(math.max(10, obj\Health() * .1))
+	dmg\SetAttacker(IsValid(@Crystal) and @Crystal or @)
+	dmg\SetInflictor(@)
+	dmg\SetDamageType(DMG_ACID)
+	obj\TakeDamageInfo(dmg)
+	
 	if obj\IsPlayer() then obj\GodDisable()
 	@NextThink(CurTime() + .3)
 	return true
@@ -43,9 +50,10 @@ ENT.Think = =>
 ENT.OnRemove = =>
 	for i = 1, math.random(1, 4)
 		ent = ents.Create('dbot_scp409_fragment')
-		ent\SetPos(self\GetPos())
-		ent\Spawn()
-		ent\Push()
-		ent.Crystal = self.Crystal
+		with ent
+			\SetPos(@GetPos())
+			\Spawn()
+			\Push()
+			.Crystal = @Crystal
 	if not IsValid(@GetParent()) return
 	@GetParent().CRYSTALIZING = false

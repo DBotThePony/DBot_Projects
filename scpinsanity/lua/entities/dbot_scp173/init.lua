@@ -177,6 +177,8 @@ ENT.TryMoveTo = function(self, pos)
   local tr = util.TraceHull({
     start = self:GetPos(),
     endpos = pos,
+    mins = self:OBBMins(),
+    maxs = self:OBBMaxs(),
     filter = function(ent)
       if ent == self then
         return false
@@ -197,9 +199,7 @@ ENT.TryMoveTo = function(self, pos)
         return false
       end
       return true
-    end,
-    mins = self:OBBMins(),
-    maxs = self:OBBMaxs()
+    end
   })
   return self:SetPos(tr.HitPos + tr.HitNormal)
 end
@@ -229,18 +229,22 @@ ENT.Think = function(self)
   local lpos = self:GetPos()
   local ply
   local min = 99999
-  for k, v in pairs(plys) do
+  local _list_1 = plys
+  for _index_0 = 1, #_list_1 do
     local _continue_0 = false
     repeat
-      if v:IsPlayer() and not v:Alive() then
-        _continue_0 = true
-        break
-      end
-      if v:IsPlayer() and v:InVehicle() then
-        if v:GetVehicle():GetParent() == self then
-          self:Wreck(v)
+      local ply = _list_1[_index_0]
+      if ply:IsPlayer() then
+        if not ply:Alive() then
           _continue_0 = true
           break
+        end
+        if ply:InVehicle() then
+          if v:GetVehicle():GetParent() == self then
+            self:Wreck(v)
+            _continue_0 = true
+            break
+          end
         end
       end
       local dist = v:GetPos():Distance(lpos)
@@ -272,14 +276,14 @@ ENT.Think = function(self)
     self,
     ply
   }
-  local _list_1 = ents.FindByClass('dbot_scp173')
-  for _index_0 = 1, #_list_1 do
-    local v = _list_1[_index_0]
-    table.insert(filter, v)
-  end
-  local _list_2 = player.GetAll()
+  local _list_2 = ents.FindByClass('dbot_scp173')
   for _index_0 = 1, #_list_2 do
     local v = _list_2[_index_0]
+    table.insert(filter, v)
+  end
+  local _list_3 = player.GetAll()
+  for _index_0 = 1, #_list_3 do
+    local v = _list_3[_index_0]
     table.insert(filter, v)
   end
   local tr = util.TraceHull({
