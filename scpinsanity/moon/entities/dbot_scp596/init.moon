@@ -46,10 +46,14 @@ ENT.Think = =>
 
 ENT.PhysicsCollide = (data) =>
 	ent = data.HitEntity
-	if not IsValid(ent) return 
+	if not IsValid(ent) return
 	
-	if ent == @CurrentPly return 
-	if not ent\IsPlayer() return 
+	if ent == @CurrentPly return
+	if not ent\IsPlayer() return
+
+	if not SCP_INSANITY_ATTACK_PLAYERS\GetBool() return
+	if SCP_INSANITY_ATTACK_NADMINS\GetBool() and ent\IsAdmin() return
+	if SCP_INSANITY_ATTACK_NSUPER_ADMINS\GetBool() and ent\IsSuperAdmin() return
 	
 	if IsValid(@CurrentPly) and @CurrentPly\Alive()
 		@CurrentPly\Kill()

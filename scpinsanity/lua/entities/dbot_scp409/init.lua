@@ -19,28 +19,44 @@ ENT.Initialize = function(self)
   return self:SetMoveType(MOVETYPE_NONE)
 end
 ENT.Think = function(self)
-  for k, v in pairs(ents.FindInSphere(self:GetPos(), 64)) do
+  local _list_0 = ents.FindInSphere(self:GetPos(), 64)
+  for _index_0 = 1, #_list_0 do
     local _continue_0 = false
     repeat
-      if IsValid(v:GetParent()) then
+      local ent = _list_0[_index_0]
+      if IsValid(ent:GetParent()) then
         _continue_0 = true
         break
       end
-      if v == self then
+      if ent == self then
         _continue_0 = true
         break
       end
-      if v:Health() <= 0 then
-        if v:GetClass() ~= 'prop_physics' then
+      if ent:IsPlayer() then
+        if not SCP_INSANITY_ATTACK_PLAYERS:GetBool() then
           _continue_0 = true
           break
         end
-        self:Attack(v)
-        SafeRemoveEntity(v)
+        if SCP_INSANITY_ATTACK_NADMINS:GetBool() and ent:IsAdmin() then
+          _continue_0 = true
+          break
+        end
+        if SCP_INSANITY_ATTACK_NSUPER_ADMINS:GetBool() and ent:IsSuperAdmin() then
+          _continue_0 = true
+          break
+        end
+      end
+      if ent:Health() <= 0 then
+        if ent:GetClass() ~= 'prop_physics' then
+          _continue_0 = true
+          break
+        end
+        self:Attack(ent)
+        SafeRemoveEntity(ent)
         _continue_0 = true
         break
       end
-      self:Attack(v)
+      self:Attack(ent)
       _continue_0 = true
     until true
     if not _continue_0 then

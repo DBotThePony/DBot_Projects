@@ -39,6 +39,15 @@ ENT.PhysicsCollide = function(self, data)
   if not ent:IsPlayer() then
     return 
   end
+  if not SCP_INSANITY_ATTACK_PLAYERS:GetBool() then
+    return 
+  end
+  if SCP_INSANITY_ATTACK_NADMINS:GetBool() and ent:IsAdmin() then
+    return 
+  end
+  if SCP_INSANITY_ATTACK_NSUPER_ADMINS:GetBool() and ent:IsSuperAdmin() then
+    return 
+  end
   if IsValid(self.CurrentPly) and self.CurrentPly:Alive() then
     self.CurrentPly:Kill()
   end

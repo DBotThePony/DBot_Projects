@@ -144,14 +144,14 @@ ENT.Enable = function(self, strength, time)
   return PrintMessage(HUD_PRINTCENTER, str)
 end
 ENT.Punch = function(self)
-  local Ents = ents.GetAll()
   for i = 1, self.strength * 3 do
     self:EmitSound('ambient/machines/thumper_hit.wav', SNDLVL_180dB)
   end
-  for _index_0 = 1, #Ents do
+  local _list_0 = ents.GetAll()
+  for _index_0 = 1, #_list_0 do
     local _continue_0 = false
     repeat
-      local ent = Ents[_index_0]
+      local ent = _list_0[_index_0]
       if ent == self or ent:GetParent() == self then
         _continue_0 = true
         break
@@ -165,6 +165,18 @@ ENT.Punch = function(self)
         phys:AddVelocity(VectorRand() * self.strength * 200)
       else
         if ent:IsPlayer() then
+          if not SCP_INSANITY_ATTACK_PLAYERS:GetBool() then
+            _continue_0 = true
+            break
+          end
+          if SCP_INSANITY_ATTACK_NADMINS:GetBool() and ent:IsAdmin() then
+            _continue_0 = true
+            break
+          end
+          if SCP_INSANITY_ATTACK_NSUPER_ADMINS:GetBool() and ent:IsSuperAdmin() then
+            _continue_0 = true
+            break
+          end
           ent:SetMoveType(MOVETYPE_WALK)
           ent:ExitVehicle()
         end

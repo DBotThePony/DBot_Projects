@@ -157,12 +157,10 @@ ENT.Enable = (strength, time) =>
 	PrintMessage(HUD_PRINTCENTER, str)
 
 ENT.Punch = =>
-	Ents = ents.GetAll()
-	
 	for i = 1, @strength * 3
 		@EmitSound('ambient/machines/thumper_hit.wav', SNDLVL_180dB)
 	
-	for ent in *Ents
+	for ent in *ents.GetAll()
 		if ent == self or ent\GetParent() == self continue
 		phys = ent\GetPhysicsObject()
 		if not IsValid(phys) continue
@@ -171,6 +169,9 @@ ENT.Punch = =>
 			phys\AddVelocity(VectorRand() * @strength * 200)
 		else
 			if ent\IsPlayer()
+				if not SCP_INSANITY_ATTACK_PLAYERS\GetBool() continue
+				if SCP_INSANITY_ATTACK_NADMINS\GetBool() and ent\IsAdmin() continue
+				if SCP_INSANITY_ATTACK_NSUPER_ADMINS\GetBool() and ent\IsSuperAdmin() continue
 				ent\SetMoveType(MOVETYPE_WALK)
 				ent\ExitVehicle()
 			ent\SetVelocity(VectorRand() * @strength * 200)

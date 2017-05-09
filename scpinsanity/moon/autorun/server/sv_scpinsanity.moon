@@ -25,7 +25,8 @@ import table from _G
 import ents from _G
 import player from _G
 
-export SCP_NoKill, SCP_Ignore, SCP_HaveZeroHP, SCP_INSANITY_ATTACK_PLAYERS, SCP_GetTargets
+export SCP_NoKill, SCP_Ignore, SCP_HaveZeroHP, SCP_INSANITY_ATTACK_PLAYERS, SCP_GetTargets, SCP_INSANITY_ATTACK_NADMINS
+export SCP_INSANITY_ATTACK_NSUPER_ADMINS
 
 SCP_NoKill = false
 SCP_Ignore = {
@@ -36,6 +37,8 @@ SCP_HaveZeroHP = {
 }
 
 SCP_INSANITY_ATTACK_PLAYERS = CreateConVar('sv_scpi_players', '1', {FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Whatever attack players')
+SCP_INSANITY_ATTACK_NADMINS = CreateConVar('sv_scpi_not_admins', '0', {FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Whatever to NOT to attack admins')
+SCP_INSANITY_ATTACK_NSUPER_ADMINS = CreateConVar('sv_scpi_not_superadmins', '0', {FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Whatever to NOT to attack superadmins')
 VALID_NPCS = {}
 
 concommand.Add 'scpi_reset173', (ply) ->
@@ -56,10 +59,12 @@ SCP_GetTargets = ->
 		if ent.SCP_Killed continue
 		ent
     
-	if SCP_INSANITY_ATTACK_PLAYERS\GetBool() then
+	if SCP_INSANITY_ATTACK_PLAYERS\GetBool()
 		for ply in *player.GetAll()
 			if ply\HasGodMode() continue
 			if ply.SCP_Killed continue
+			if SCP_INSANITY_ATTACK_NADMINS\GetBool() and ply\IsAdmin() continue
+			if SCP_INSANITY_ATTACK_NSUPER_ADMINS\GetBool() and ply\IsSuperAdmin() continue
 			table.insert(reply, ply)
 	
 	return reply

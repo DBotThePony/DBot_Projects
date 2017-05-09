@@ -32,15 +32,19 @@ ENT.Initialize = =>
 	@SetMoveType(MOVETYPE_NONE)
 
 ENT.Think = =>
-	for k, v in pairs(ents.FindInSphere(@GetPos(), 64)) do
-		if IsValid(v\GetParent()) continue 
-		if v == self continue 
-		if v\Health() <= 0
-			if v\GetClass() ~= 'prop_physics' continue 
-			@Attack(v)
-			SafeRemoveEntity(v)
+	for ent in *ents.FindInSphere(@GetPos(), 64)
+		if IsValid(ent\GetParent()) continue 
+		if ent == @ continue 
+		if ent\IsPlayer()
+			if not SCP_INSANITY_ATTACK_PLAYERS\GetBool() continue
+			if SCP_INSANITY_ATTACK_NADMINS\GetBool() and ent\IsAdmin() continue
+			if SCP_INSANITY_ATTACK_NSUPER_ADMINS\GetBool() and ent\IsSuperAdmin() continue
+		if ent\Health() <= 0
+			if ent\GetClass() ~= 'prop_physics' continue 
+			@Attack(ent)
+			SafeRemoveEntity(ent)
 			continue 
-		@Attack(v)
+		@Attack(ent)
 
 ENT.Attack = (ent) =>
 	if ent.CRYSTALIZING return 
@@ -51,5 +55,5 @@ ENT.Attack = (ent) =>
 	point\SetParent(ent)
 	point\Spawn()
 	point\Activate()
-	point.Crystal = self
+	point.Crystal = @
 	return point

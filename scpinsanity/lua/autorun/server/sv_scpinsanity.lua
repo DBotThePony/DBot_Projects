@@ -27,6 +27,14 @@ SCP_INSANITY_ATTACK_PLAYERS = CreateConVar('sv_scpi_players', '1', {
   FCVAR_NOTIFY,
   FCVAR_ARCHIVE
 }, 'Whatever attack players')
+SCP_INSANITY_ATTACK_NADMINS = CreateConVar('sv_scpi_not_admins', '0', {
+  FCVAR_NOTIFY,
+  FCVAR_ARCHIVE
+}, 'Whatever to NOT to attack admins')
+SCP_INSANITY_ATTACK_NSUPER_ADMINS = CreateConVar('sv_scpi_not_superadmins', '0', {
+  FCVAR_NOTIFY,
+  FCVAR_ARCHIVE
+}, 'Whatever to NOT to attack superadmins')
 local VALID_NPCS = { }
 concommand.Add('scpi_reset173', function(ply)
   if not ply:IsAdmin() then
@@ -114,6 +122,14 @@ SCP_GetTargets = function()
           break
         end
         if ply.SCP_Killed then
+          _continue_0 = true
+          break
+        end
+        if SCP_INSANITY_ATTACK_NADMINS:GetBool() and ply:IsAdmin() then
+          _continue_0 = true
+          break
+        end
+        if SCP_INSANITY_ATTACK_NSUPER_ADMINS:GetBool() and ply:IsSuperAdmin() then
           _continue_0 = true
           break
         end
