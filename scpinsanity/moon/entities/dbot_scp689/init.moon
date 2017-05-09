@@ -30,7 +30,7 @@ ENT.Initialize = =>
 	@PhysicsInitBox(Vector(-4, -4, 0), Vector(4, 4, 16))
 	@SetMoveType(MOVETYPE_NONE)
 	@SetCollisionGroup(COLLISION_GROUP_WEAPON)
-	@ARGETS = {}
+	@TARGETS = {}
 
 interval = (val, min, max) -> val > min and val <= max
 
@@ -114,7 +114,7 @@ DAMAGE_TYPES = {
 	DMG_SLOWBURN,
 }
 
-ENT.Wreck = (ply) ->
+ENT.Wreck = (ply) =>
 	@EmitSound('snap.wav', 100)
 	ply\TakeDamage(INT, self, self)
 	

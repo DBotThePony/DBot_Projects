@@ -11,7 +11,7 @@ ENT.Initialize = function(self)
   self:PhysicsInitBox(Vector(-4, -4, 0), Vector(4, 4, 16))
   self:SetMoveType(MOVETYPE_NONE)
   self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
-  self.ARGETS = { }
+  self.TARGETS = { }
 end
 local interval
 interval = function(val, min, max)
@@ -116,7 +116,7 @@ local DAMAGE_TYPES = {
   DMG_RADIATION,
   DMG_SLOWBURN
 }
-ENT.Wreck = function(ply)
+ENT.Wreck = function(self, ply)
   self:EmitSound('snap.wav', 100)
   ply:TakeDamage(INT, self, self)
   for _index_0 = 1, #DAMAGE_TYPES do
