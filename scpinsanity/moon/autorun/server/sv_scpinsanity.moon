@@ -58,7 +58,7 @@ SCP_GetTargets = ->
     
 	if SCP_INSANITY_ATTACK_PLAYERS\GetBool() then
 		for ply in *player.GetAll()
-			if v:HasGodMode() continue
+			if v\HasGodMode() continue
 			if v.SCP_Killed continue
 			table.insert(reply, v)
 	
@@ -75,4 +75,4 @@ hook.Add('OnNPCKilled', 'DBot.SCPInsanity', OnNPCKilled)
 hook.Add('PlayerDeath', 'DBot.SCPInsanity', PlayerDeath)
 
 hook.Add 'ACF_BulletDamage', 'DBot.SCPInsanity', (Activated, Entity, Energy, FrAera, Angle, Inflictor, Bone, Gun) ->
-	if string.find(Entity:GetClass(), 'scp') return false
+	if Entity\GetClass()\find('scp') return false

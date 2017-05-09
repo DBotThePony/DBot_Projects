@@ -109,9 +109,7 @@ SCP_GetTargets = function()
       local _continue_0 = false
       repeat
         local ply = _list_0[_index_0]
-        if {
-          v = HasGodMode()
-        } then
+        if v:HasGodMode() then
           _continue_0 = true
           break
         end
@@ -137,9 +135,7 @@ scripted_ents.Register(ENT, 'dbot_scp173_killer')
 hook.Add('OnNPCKilled', 'DBot.SCPInsanity', OnNPCKilled)
 hook.Add('PlayerDeath', 'DBot.SCPInsanity', PlayerDeath)
 return hook.Add('ACF_BulletDamage', 'DBot.SCPInsanity', function(Activated, Entity, Energy, FrAera, Angle, Inflictor, Bone, Gun)
-  if string.find({
-    Entity = GetClass()
-  }, 'scp') then
+  if Entity:GetClass():find('scp') then
     return false
   end
 end)
