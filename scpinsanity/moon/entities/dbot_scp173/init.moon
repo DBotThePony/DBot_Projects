@@ -130,19 +130,20 @@ ENT.Wreck = (ply) =>
 		
 		if ply\IsPlayer()
 			PrintMessage(HUD_PRINTTALK, ply\Nick() .. ' should be dead now, but he is not :c')
+			@SetPFrags(@GetPFrags() + 1)
 		else
 			ply.SCP_SLAYED = true
 		return
 	
 	ply\TakeDamage(INT, @, @Killer)
 	
-	for k, v in pairs(DAMAGE_TYPES) do
+	for dtype in *DAMAGE_TYPES
 		dmg = DamageInfo()
 		
 		dmg\SetDamage(INT)
 		dmg\SetAttacker(@)
 		dmg\SetInflictor(@Killer)
-		dmg\SetDamageType(v)
+		dmg\SetDamageType(dtype)
 		
 		ply\TakeDamageInfo(dmg)
 		
@@ -152,9 +153,11 @@ ENT.Wreck = (ply) =>
 			if ply\Health() <= 0 break 
 	
 	if not ply\IsPlayer()
+		@SetFrags(@GetFrags() + 1)
 		if ply\GetClass() == 'npc_turret_floor' or ply\GetClass() == 'npc_combinedropship'
 			ply\Fire('SelfDestruct')
 	else
+		@SetPFrags(@GetPFrags() + 1)
 		if ply\Alive()
             ply\Kill() 
 	
@@ -205,8 +208,7 @@ ENT.TurnTo = (pos) =>
 	@SetAngles(ang)
 
 
-ENT.RealDropToFloor = =>
-	@TryMoveTo(@GetPos() + Vector(0, 0, -8000))
+ENT.RealDropToFloor = => @TryMoveTo(@GetPos() + Vector(0, 0, -8000))
 
 ENT.Think = =>
 	if CLIENT return 

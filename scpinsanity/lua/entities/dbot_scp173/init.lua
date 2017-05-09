@@ -124,18 +124,20 @@ ENT.Wreck = function(self, ply)
     self:EmitSound('snap.wav', 100)
     if ply:IsPlayer() then
       PrintMessage(HUD_PRINTTALK, ply:Nick() .. ' should be dead now, but he is not :c')
+      self:SetPFrags(self:GetPFrags() + 1)
     else
       ply.SCP_SLAYED = true
     end
     return 
   end
   ply:TakeDamage(INT, self, self.Killer)
-  for k, v in pairs(DAMAGE_TYPES) do
+  for _index_0 = 1, #DAMAGE_TYPES do
+    local dtype = DAMAGE_TYPES[_index_0]
     local dmg = DamageInfo()
     dmg:SetDamage(INT)
     dmg:SetAttacker(self)
     dmg:SetInflictor(self.Killer)
-    dmg:SetDamageType(v)
+    dmg:SetDamageType(dtype)
     ply:TakeDamageInfo(dmg)
     if ply:IsPlayer() then
       if not ply:Alive() then
@@ -148,10 +150,12 @@ ENT.Wreck = function(self, ply)
     end
   end
   if not ply:IsPlayer() then
+    self:SetFrags(self:GetFrags() + 1)
     if ply:GetClass() == 'npc_turret_floor' or ply:GetClass() == 'npc_combinedropship' then
       ply:Fire('SelfDestruct')
     end
   else
+    self:SetPFrags(self:GetPFrags() + 1)
     if ply:Alive() then
       ply:Kill()
     end
