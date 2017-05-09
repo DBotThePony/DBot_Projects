@@ -374,6 +374,10 @@ class DMapsNavigationTarget extends DMapWaypoint
 			\Open()
 		return true
 
+net.Receive 'DMaps.Navigation.NotInstalled', ->
+	if DMaps.LastNavRequestWindow
+		DMaps.NavRequestWindow\Remove() if IsValid(DMaps.NavRequestWindow)
+		Derma_Message('Server has no navmesh map for current game map!', 'Oops!', 'OK')
 net.Receive 'DMaps.Navigation.Require', ->
 	status = net.ReadBool()
 
