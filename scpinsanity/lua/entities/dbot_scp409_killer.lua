@@ -38,17 +38,9 @@ end
 ENT.OnRemove = function(self)
   for i = 1, math.random(1, 4) do
     local ent = ents.Create('dbot_scp409_fragment')
-    local _ = {
-      ent = SetPos({
-        self = GetPos()
-      })
-    }
-    _ = {
-      ent = Spawn()
-    }
-    _ = {
-      ent = Push()
-    }
+    ent:SetPos(self:GetPos())
+    ent:Spawn()
+    ent:Push()
     ent.Crystal = self.Crystal
   end
   if not IsValid(self:GetParent()) then

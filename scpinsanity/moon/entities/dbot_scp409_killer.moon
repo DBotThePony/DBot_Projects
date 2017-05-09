@@ -43,9 +43,9 @@ ENT.Think = =>
 ENT.OnRemove = =>
 	for i = 1, math.random(1, 4)
 		ent = ents.Create('dbot_scp409_fragment')
-		ent:SetPos(self:GetPos())
-		ent:Spawn()
-		ent:Push()
+		ent\SetPos(self\GetPos())
+		ent\Spawn()
+		ent\Push()
 		ent.Crystal = self.Crystal
 	if not IsValid(@GetParent()) return
 	@GetParent().CRYSTALIZING = false
