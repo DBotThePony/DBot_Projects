@@ -38,11 +38,11 @@ SCP_HaveZeroHP = {
 SCP_INSANITY_ATTACK_PLAYERS = CreateConVar('sv_scpi_players', '1', FCVAR_ARCHIVE, 'Whatever attack players')
 VALID_NPCS = {}
 
-concommand.Add('dbot_reset173', (ply) ->
+concommand.Add 'dbot_reset173', (ply) ->
 	if not ply\IsAdmin() return
 	v.SCP_Killed = nil for v in *player.GetAll()
 
-timer.Create('dbot_SCP_UpdateNPCs', 1, 0, ->
+timer.Create 'dbot_SCP_UpdateNPCs', 1, 0, ->
 	SCP_ATTACK_PLAYERS = dbot_scp_player:GetBool()
 	VALID_NPCS = for ent in *ents.GetAll()
 		if not v\IsNPC() continue

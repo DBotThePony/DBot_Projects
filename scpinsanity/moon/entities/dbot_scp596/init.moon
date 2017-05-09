@@ -24,7 +24,7 @@ ENT.Spawnable = true
 ENT.AdminSpawnable = true
 ENT.AdminOnly = true
 
-ENT.Initialize()
+ENT.Initialize = =>
 	@SetModel('models/props_combine/breenbust.mdl')
 	@PhysicsInit(SOLID_VPHYSICS)
 	@SetSolid(SOLID_VPHYSICS)
@@ -45,7 +45,7 @@ ENT.Think = =>
 	return true
 
 ENT.PhysicsCollide = (data) =>
-	local ent = data.HitEntity
+	ent = data.HitEntity
 	if not IsValid(ent) return 
 	
 	if ent == @CurrentPly return 
