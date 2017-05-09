@@ -218,7 +218,7 @@ ENT.Think = =>
 			return
 	
 	lpos = @GetPos()
-	local ply
+	local plyTarget
 	min = 99999
 	
 	for ply in *plys
@@ -231,12 +231,10 @@ ENT.Think = =>
 		
 		dist = ply\GetPos()\Distance(lpos)
 		if dist < min
-			ply = ply
+			plyTarget = ply
 			min = dist
 	
-	if not ply return
-	
-	@SetNWEntity('AttackingEntity', ply)
+	if not plyTarget return
 	
 	if @LastMove + 10 - CurTime() < 0
 		@Jumpscare()
@@ -245,12 +243,12 @@ ENT.Think = =>
 	
 	@LastMove = CurTime()
 	
-	pos = ply\GetPos()
+	pos = plyTarget\GetPos()
 	@TurnTo(pos)
 	
 	lerp = LerpVector(0.3, lpos, pos)
 	start = lpos + Vector(0, 0, 40)
-	filter = {@, ply}
+	filter = {@, plyTarget}
 	
 	table.insert(filter, val) for val in *ents.FindByClass('dbot_scp173')
 	table.insert(filter, val) for val in *player.GetAll()
@@ -281,4 +279,4 @@ ENT.Think = =>
 		@JumpTries = 0
 	
 	if @GetPos()\Distance(pos) < 128
-		@Wreck(ply)
+		@Wreck(plyTarget)

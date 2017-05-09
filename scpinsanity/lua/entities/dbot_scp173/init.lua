@@ -225,7 +225,7 @@ ENT.Think = function(self)
     end
   end
   local lpos = self:GetPos()
-  local ply
+  local plyTarget
   local min = 99999
   for _index_0 = 1, #plys do
     local _continue_0 = false
@@ -246,7 +246,7 @@ ENT.Think = function(self)
       end
       local dist = ply:GetPos():Distance(lpos)
       if dist < min then
-        ply = ply
+        plyTarget = ply
         min = dist
       end
       _continue_0 = true
@@ -255,23 +255,22 @@ ENT.Think = function(self)
       break
     end
   end
-  if not ply then
+  if not plyTarget then
     return 
   end
-  self:SetNWEntity('AttackingEntity', ply)
   if self.LastMove + 10 - CurTime() < 0 then
     self:Jumpscare()
     self.LastMove = CurTime()
     return 
   end
   self.LastMove = CurTime()
-  local pos = ply:GetPos()
+  local pos = plyTarget:GetPos()
   self:TurnTo(pos)
   local lerp = LerpVector(0.3, lpos, pos)
   local start = lpos + Vector(0, 0, 40)
   local filter = {
     self,
-    ply
+    plyTarget
   }
   local _list_0 = ents.FindByClass('dbot_scp173')
   for _index_0 = 1, #_list_0 do
@@ -308,6 +307,6 @@ ENT.Think = function(self)
     self.JumpTries = 0
   end
   if self:GetPos():Distance(pos) < 128 then
-    return self:Wreck(ply)
+    return self:Wreck(plyTarget)
   end
 end
