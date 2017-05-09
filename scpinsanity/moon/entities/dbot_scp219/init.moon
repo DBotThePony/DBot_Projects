@@ -20,11 +20,11 @@ include('shared.lua')
 
 do
     model = 'models/props_wasteland/laundry_washer003.mdl'
-    ENT.ModelsToSpawn = for x = 0, 1
+    ENT.ModelsToSpawn = {}
+	for x = 0, 1
         for y = -1, 1
             for z = 0, 1
-                data = {:model, pos: Vector(x * 100 - 200, y * 40, z * 40)}
-                data
+                table.insert(ENT.ModelsToSpawn, {:model, pos: Vector(x * 100 - 200, y * 40, z * 40)})
 
 do
 	height = 80
@@ -81,32 +81,31 @@ ENT.MovePistonTo = (z) =>
 		ent\SetPos(ent.RealPos + vec)
 
 ENT.CreatePart = (num) =>
-	k = num
-	v = @ModelsToSpawn[num]
-	
+	data = @ModelsToSpawn[num]
 	ent = ents.Create('prop_physics')
 	
 	lang = @GetAngles()
-	newpos = Vector(v.pos.x, v.pos.y, v.pos.z)
+	{:x, :y, :z} = data.pos
+	newpos = Vector(x, y, z)
 	newpos\Rotate(lang)
 	
 	ent\SetPos(@GetPos() + newpos)
 	
-	if v.ang then
-		ent\SetAngles(lang + v.ang)
+	if data.ang then
+		ent\SetAngles(lang + data.ang)
 	else
 		ent\SetAngles(lang)
 	
-	ent\SetModel(v.model)
+	ent\SetModel(data.model)
 	ent\Spawn()
 	ent\Activate()
-	ent.RealPos = v.pos
+	ent.RealPos = data.pos
 	ent\SetParent(self)
 	
 	if ent.CPPISetOwner then
 		ent\CPPISetOwner(@CPPIGetOwner())
 	
-	@props[k] = ent
+	@props[num] = ent
 
 ENT.CheckParts = =>
 	for k, v in pairs(@ModelsToSpawn)
@@ -171,7 +170,9 @@ ENT.Punch = =>
 		if not ent\IsPlayer() and not ent\IsNPC()
 			phys\AddVelocity(VectorRand() * @strength * 200)
 		else
-			if ent\IsPlayer() then ent\SetMoveType(MOVETYPE_WALK) ent\ExitVehicle()
+			if ent\IsPlayer()
+				ent\SetMoveType(MOVETYPE_WALK)
+				ent\ExitVehicle()
 			ent\SetVelocity(VectorRand() * @strength * 200)
 
 ENT.Think = =>

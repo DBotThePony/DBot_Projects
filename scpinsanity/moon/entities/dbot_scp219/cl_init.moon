@@ -23,7 +23,7 @@ net.Receive 'SCP-219Menu', ->
 	if not IsValid(ent) return
 	
 	self = vgui.Create('DFrame')
-	@SetSize(200, 200)
+	@SetSize(200, 150)
 	@SetTitle('SCP-219')
 	@Center()
 	@MakePopup()
@@ -35,6 +35,8 @@ net.Receive 'SCP-219Menu', ->
 	entry = @Add('DTextEntry')
 	entry\SetText('1')
 	entry\Dock(TOP)
+
+	timer.Simple 0.1, -> input.SetCursorPos(entry\LocalToScreen(5, 8))
 	
 	lab = @Add('DLabel')
 	lab\SetText('Duration (min 6):')

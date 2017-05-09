@@ -2,35 +2,16 @@ AddCSLuaFile('cl_init.lua')
 include('shared.lua')
 do
   local model = 'models/props_wasteland/laundry_washer003.mdl'
-  do
-    local _accum_0 = { }
-    local _len_0 = 1
-    for x = 0, 1 do
-      do
-        local _accum_1 = { }
-        local _len_1 = 1
-        for y = -1, 1 do
-          do
-            local _accum_2 = { }
-            local _len_2 = 1
-            for z = 0, 1 do
-              local data = {
-                model = model,
-                pos = Vector(x * 100 - 200, y * 40, z * 40)
-              }
-              local _value_0 = data
-              _accum_2[_len_2] = _value_0
-              _len_2 = _len_2 + 1
-            end
-            _accum_1[_len_1] = _accum_2
-          end
-          _len_1 = _len_1 + 1
-        end
-        _accum_0[_len_0] = _accum_1
+  ENT.ModelsToSpawn = { }
+  for x = 0, 1 do
+    for y = -1, 1 do
+      for z = 0, 1 do
+        table.insert(ENT.ModelsToSpawn, {
+          model = model,
+          pos = Vector(x * 100 - 200, y * 40, z * 40)
+        })
       end
-      _len_0 = _len_0 + 1
     end
-    ENT.ModelsToSpawn = _accum_0
   end
 end
 do
@@ -87,27 +68,31 @@ ENT.MovePistonTo = function(self, z)
   end
 end
 ENT.CreatePart = function(self, num)
-  local k = num
-  local v = self.ModelsToSpawn[num]
+  local data = self.ModelsToSpawn[num]
   local ent = ents.Create('prop_physics')
   local lang = self:GetAngles()
-  local newpos = Vector(v.pos.x, v.pos.y, v.pos.z)
+  local x, y, z
+  do
+    local _obj_0 = data.pos
+    x, y, z = _obj_0.x, _obj_0.y, _obj_0.z
+  end
+  local newpos = Vector(x, y, z)
   newpos:Rotate(lang)
   ent:SetPos(self:GetPos() + newpos)
-  if v.ang then
-    ent:SetAngles(lang + v.ang)
+  if data.ang then
+    ent:SetAngles(lang + data.ang)
   else
     ent:SetAngles(lang)
   end
-  ent:SetModel(v.model)
+  ent:SetModel(data.model)
   ent:Spawn()
   ent:Activate()
-  ent.RealPos = v.pos
+  ent.RealPos = data.pos
   ent:SetParent(self)
   if ent.CPPISetOwner then
     ent:CPPISetOwner(self:CPPIGetOwner())
   end
-  self.props[k] = ent
+  self.props[num] = ent
 end
 ENT.CheckParts = function(self)
   for k, v in pairs(self.ModelsToSpawn) do
@@ -180,7 +165,8 @@ ENT.Punch = function(self)
         phys:AddVelocity(VectorRand() * self.strength * 200)
       else
         if ent:IsPlayer() then
-          ent:SetMoveType(MOVETYPE_WALK)(ent:ExitVehicle())
+          ent:SetMoveType(MOVETYPE_WALK)
+          ent:ExitVehicle()
         end
         ent:SetVelocity(VectorRand() * self.strength * 200)
       end
