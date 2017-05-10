@@ -17,6 +17,7 @@ SCP (Secure, Contain, Protect) - is a collection of fictional "objects" that hav
  * [SCP-522](http://www.scp-wiki.net/scp-522) [*](http://scpfoundation.ru/scp-522)
  * [SCP-596](http://www.scp-wiki.net/scp-596) [*](http://scpfoundation.ru/scp-596)
  * [SCP-689](http://www.scp-wiki.net/scp-689) [*](http://scpfoundation.ru/scp-689)
+ * [SCP-761](http://www.scp-wiki.net/scp-761) [*](http://scpfoundation.ru/scp-761)
 
 ## License
 [Apache software foundation License 2.0](LICENSE) ([web version](https://www.apache.org/licenses/LICENSE-2.0))
@@ -27,6 +28,7 @@ Please note that models used in this addon are licensed under their licenses
  * [Key model](https://steamcommunity.com/sharedfiles/filedetails/?id=248051620) by [Spartex117](https://steamcommunity.com/id/Spartex117)
  * [Umbrella model](http://steamcommunity.com/sharedfiles/filedetails/?id=741617318) by [SpicyApple](http://steamcommunity.com/id/SpicyApple)
  * [MLP Buildspace Models](http://steamcommunity.com/sharedfiles/filedetails/?id=263892204) by [Maximo](http://steamcommunity.com/id/maximo_009)
+ * [Trampoline](http://steamcommunity.com/sharedfiles/filedetails/?id=104540875) by [Gmod Tower creators](http://www.gmtower.org/)
 
 # Thanks
  * [Leafo](https://github.com/leafo) for his awesome [Moonscript](http://moonscript.org/)!
