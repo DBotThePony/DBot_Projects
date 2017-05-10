@@ -14,6 +14,7 @@ SCP (Secure, Contain, Protect) - is a collection of fictional "objects" that hav
  * [SCP-219](http://www.scp-wiki.net/scp-219) [*](http://scpfoundation.ru/scp-219)
  * [SCP-409](http://www.scp-wiki.net/scp-409) [*](http://scpfoundation.ru/scp-409)
  * [SCP-512](http://www.scp-wiki.net/scp-512) [*](http://scpfoundation.ru/scp-512)
+ * [SCP-522](http://www.scp-wiki.net/scp-522) [*](http://scpfoundation.ru/scp-522)
  * [SCP-596](http://www.scp-wiki.net/scp-596) [*](http://scpfoundation.ru/scp-596)
  * [SCP-689](http://www.scp-wiki.net/scp-689) [*](http://scpfoundation.ru/scp-689)
 
