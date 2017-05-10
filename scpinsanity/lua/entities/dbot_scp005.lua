@@ -1,3 +1,8 @@
+local FOLLOW_CPPI = CreateConVar('sv_scpi_005_followcppi', '0', {
+  FCVAR_ARCHIVE,
+  FCVAR_REPLICATED,
+  FCVAR_NOTIFY
+}, 'Whatever SCP 005 (The Key) should obey Prop Protection')
 AddCSLuaFile()
 ENT.Type = 'anim'
 ENT.PrintName = 'SCP-005'
@@ -20,6 +25,17 @@ ENT.TryOpenDoor = function(self, ent)
     return 
   end
   ent.SCP_INSANITY_LAST_OPEN = CurTime() + 5
+  if FOLLOW_CPPI:GetBool() and self.CPPIGetOwner and IsValid(self:CPPIGetOwner()) then
+    if not (hook.Run('CanProperty', self:CPPIGetOwner(), 'unlock', ent)) then
+      return 
+    end
+    if not (hook.Run('CanProperty', self:CPPIGetOwner(), 'unlockdoor', ent)) then
+      return 
+    end
+    if not (hook.Run('CanProperty', self:CPPIGetOwner(), 'opendoor', ent)) then
+      return 
+    end
+  end
   ent:Fire('unlock', '', 0)
   self:EmitSound("npc/metropolice/gear" .. tostring(math.random(1, 7)) .. ".wav")
   return timer.Simple(0.5, function()

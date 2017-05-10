@@ -15,6 +15,8 @@
 -- limitations under the License.
 --
 
+FOLLOW_CPPI = CreateConVar('sv_scpi_005_followcppi', '0', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Whatever SCP 005 (The Key) should obey Prop Protection')
+
 AddCSLuaFile()
 
 ENT.Type = 'anim'
@@ -35,6 +37,10 @@ ENT.TryOpenDoor = (ent) =>
     ent.SCP_INSANITY_LAST_OPEN = ent.SCP_INSANITY_LAST_OPEN or 0
     if ent.SCP_INSANITY_LAST_OPEN > CurTime() return
     ent.SCP_INSANITY_LAST_OPEN = CurTime() + 5
+    if FOLLOW_CPPI\GetBool() and @CPPIGetOwner and IsValid(@CPPIGetOwner())
+        return unless hook.Run('CanProperty', @CPPIGetOwner(), 'unlock', ent)
+        return unless hook.Run('CanProperty', @CPPIGetOwner(), 'unlockdoor', ent)
+        return unless hook.Run('CanProperty', @CPPIGetOwner(), 'opendoor', ent)
     ent\Fire('unlock', '', 0)
     @EmitSound("npc/metropolice/gear#{math.random(1, 7)}.wav")
     timer.Simple 0.5, -> ent\Fire('Open', '', 0) if IsValid(ent)
