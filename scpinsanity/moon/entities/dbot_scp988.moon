@@ -18,7 +18,7 @@
 AddCSLuaFile()
 
 ENT.Type = 'anim'
-ENT.PrintName = 'SCP-998'
+ENT.PrintName = 'SCP-988'
 ENT.Author = 'DBot'
 ENT.Category = 'SCP Insanity'
 ENT.Spawnable = true
