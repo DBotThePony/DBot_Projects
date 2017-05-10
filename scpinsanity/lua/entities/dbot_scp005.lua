@@ -17,7 +17,15 @@ ENT.Initialize = function(self)
     return 
   end
   self:SetSolid(SOLID_VPHYSICS)
-  return self:SetMoveType(SOLID_VPHYSICS)
+  self:SetMoveType(MOVETYPE_VPHYSICS)
+  self:PhysicsInit(SOLID_VPHYSICS)
+  self.phys = self:GetPhysicsObject()
+  self:SetUseType(SIMPLE_USE)
+  self:UseTriggerBounds(true, 24)
+  if IsValid(self.phys) then
+    self.phys:SetMass(5)
+    return self.phys:Wake()
+  end
 end
 ENT.TryOpenDoor = function(self, ent)
   ent.SCP_INSANITY_LAST_OPEN = ent.SCP_INSANITY_LAST_OPEN or 0
@@ -43,6 +51,14 @@ ENT.TryOpenDoor = function(self, ent)
       return ent:Fire('Open', '', 0)
     end
   end)
+end
+ENT.Use = function(self, ply)
+  if self:IsPlayerHolding() then
+    return 
+  end
+  if self:GetPos():Distance(ply:GetPos()) < 130 then
+    return ply:PickupObject(self)
+  end
 end
 ENT.PhysicsCollide = function(self, data)
   local ent = data.HitEntity

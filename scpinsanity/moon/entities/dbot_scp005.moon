@@ -32,7 +32,14 @@ ENT.Initialize = =>
     if CLIENT return
 	
 	@SetSolid(SOLID_VPHYSICS)
-	@SetMoveType(SOLID_VPHYSICS)
+	@SetMoveType(MOVETYPE_VPHYSICS)
+    @PhysicsInit(SOLID_VPHYSICS)
+    @phys = @GetPhysicsObject()
+    @SetUseType(SIMPLE_USE)
+    @UseTriggerBounds(true, 24)
+    if IsValid(@phys)
+        @phys\SetMass(5)
+        @phys\Wake()
 ENT.TryOpenDoor = (ent) =>
     ent.SCP_INSANITY_LAST_OPEN = ent.SCP_INSANITY_LAST_OPEN or 0
     if ent.SCP_INSANITY_LAST_OPEN > CurTime() return
@@ -44,6 +51,9 @@ ENT.TryOpenDoor = (ent) =>
     ent\Fire('unlock', '', 0)
     @EmitSound("npc/metropolice/gear#{math.random(1, 7)}.wav")
     timer.Simple 0.5, -> ent\Fire('Open', '', 0) if IsValid(ent)
+ENT.Use = (ply) =>
+    return if @IsPlayerHolding()
+    ply\PickupObject(@) if @GetPos()\Distance(ply\GetPos()) < 130
 ENT.PhysicsCollide = (data) =>
 	ent = data.HitEntity
     return if not IsValid(ent)
