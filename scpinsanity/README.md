@@ -13,6 +13,7 @@ SCP (Secure, Contain, Protect) - is a collection of fictional "objects" that hav
  * [SCP-173](http://www.scp-wiki.net/scp-173) [*](http://scpfoundation.ru/scp-173)
  * [SCP-219](http://www.scp-wiki.net/scp-219) [*](http://scpfoundation.ru/scp-219)
  * [SCP-409](http://www.scp-wiki.net/scp-409) [*](http://scpfoundation.ru/scp-409)
+ * [SCP-512](http://www.scp-wiki.net/scp-512) [*](http://scpfoundation.ru/scp-512)
  * [SCP-596](http://www.scp-wiki.net/scp-596) [*](http://scpfoundation.ru/scp-596)
  * [SCP-689](http://www.scp-wiki.net/scp-689) [*](http://scpfoundation.ru/scp-689)
 
@@ -24,6 +25,7 @@ Please note that models used in this addon are licensed under their licenses
 # Models
  * [Key model](https://steamcommunity.com/sharedfiles/filedetails/?id=248051620) by [Spartex117](https://steamcommunity.com/id/Spartex117)
  * [Umbrella model](http://steamcommunity.com/sharedfiles/filedetails/?id=741617318) by [SpicyApple](http://steamcommunity.com/id/SpicyApple)
+ * [MLP Buildspace Models](http://steamcommunity.com/sharedfiles/filedetails/?id=263892204) by [Maximo](http://steamcommunity.com/id/maximo_009)
 
 # Thanks
  * [Leafo](https://github.com/leafo) for his awesome [Moonscript](http://moonscript.org/)!
