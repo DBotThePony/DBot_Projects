@@ -35,3 +35,5 @@ Please note that models used in this addon are licensed under their licenses
 # Thanks
  * [Leafo](https://github.com/leafo) for his awesome [Moonscript](http://moonscript.org/)!
  * [Russian SCP Foundation](http://scpfoundation.ru) for their awesome russian translation of SCP!
+ * [Russian SCP-Game wiki](http://ru.scpcontainmentbreach.wikia.com/wiki/SCP_-_Containment_Breach)
+ * [SCP – Containment Breach](http://www.scpcbgame.com/)
