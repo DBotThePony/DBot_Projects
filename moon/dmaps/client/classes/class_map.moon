@@ -423,9 +423,9 @@ class DMap
 				return true
 		
 		for k, hookName in pairs @@hooksToDisable
-			hook.Add(hookName, hookID, disableFunc)
+			hook.Add(hookName, hookID, disableFunc, -1)
 		
-		hook.Add('PreDrawTranslucentRenderables', hookID, preDrawFunc)
+		hook.Add('PreDrawTranslucentRenderables', hookID, preDrawFunc, -1)
 	
 	CloneNetworkWaypoints: =>
 		@AddObject(point\CloneWaypoint()) for point in *DMaps.NetworkedWaypoint\GetWaypoints()

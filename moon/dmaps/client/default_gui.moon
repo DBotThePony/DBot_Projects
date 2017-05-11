@@ -229,7 +229,7 @@ hook.Add 'Think', 'DMaps.DrawAsMinimap', ->
 	map\Think()
 
 SKIP_FRAME = false
-hook.Add 'PostDrawHUD', 'DMaps.DrawAsMinimap', ->
+hook.Add 'PostDrawHUD', 'DMaps.DrawAsMinimap', (->
 	if SKIP_FRAME return
 	if not DMaps.DISPLAY_AS_MINIMAP return
 	if not ALLOW_MINIMAP\GetBool() return
@@ -254,3 +254,4 @@ hook.Add 'PostDrawHUD', 'DMaps.DrawAsMinimap', ->
 	SKIP_FRAME = true
 	map\DrawHook()
 	SKIP_FRAME = false
+), 2
