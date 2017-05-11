@@ -50,7 +50,7 @@ net.Receive 'DMaps.Navigation.Require', (len, ply) ->
 			tracer\Stop()
 			hook.Remove 'Think', hookID
 			return
-		net.Start('DMaps.Navigation.Info')
+		net.Start('DMaps.Navigation.Info', true)
 		net.WriteInt(tracer\GetIterations(), 16)
 		net.WriteInt(tracer\GetOpenNodesCount(), 16)
 		net.WriteInt(tracer\GetClosedNodesCount(), 16)
