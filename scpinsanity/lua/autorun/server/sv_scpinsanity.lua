@@ -178,11 +178,16 @@ SCP_CreateNPCTargets = function(self)
       do
         local _with_0 = ents.Create('npc_bullseye')
         _with_0:SetKeyValue('targetname', nclass)
+        _with_0:SetKeyValue('spawnflags', '131072')
         _with_0:SetPos(self:LocalToWorld(vec))
         _with_0:Spawn()
         _with_0:Activate()
-        _with_0:SetParent(self)
+        _with_0:SetCollisionGroup(COLLISION_GROUP_WORLD)
+        _with_0:PhysicsInitBox(Vector(-2, -2, -2), Vector(2, 2, 2))
         _with_0:SetHealth(2 ^ 31 - 1)
+        _with_0:SetParent(self)
+        _with_0.SCPInsanity = true
+        _with_0.SCPParent = self
         _accum_0[_len_0] = _with_0
       end
       _len_0 = _len_0 + 1

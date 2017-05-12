@@ -60,7 +60,6 @@ UpdateNPCs = ->
 		if ent\GetNPCState() == NPC_STATE_DEAD continue
 		if SCP_Ignore[nclass] continue
 		ent
-
 SCP_GetTargets = ->
 	reply = for ent in *VALID_NPCS
 		if not IsValid(ent) continue
@@ -100,12 +99,16 @@ SCP_CreateNPCTargets = =>
 	@bullseyes = for vec in *box
 		with ents.Create('npc_bullseye')
 			\SetKeyValue('targetname', nclass)
+			\SetKeyValue('spawnflags', '131072')
 			\SetPos(@LocalToWorld(vec))
 			\Spawn()
 			\Activate()
-			\SetParent(@)
-			--\SetNotSolid(true)
+			\SetCollisionGroup(COLLISION_GROUP_WORLD)
+			\PhysicsInitBox(Vector(-2, -2, -2), Vector(2, 2, 2))
 			\SetHealth(2 ^ 31 - 1)
+			\SetParent(@)
+			.SCPInsanity = true
+			.SCPParent = @
 
 
 concommand.Add 'scpi_reset173', (ply) ->
@@ -136,6 +139,7 @@ OnEntityCreated = =>
 		return if not IsValid(@)
 		return if not @IsNPC()
 		entClass = @GetClass()
+
 		return if SCP_INSANITY_RELATIONSHIPS[entClass]
 		return if SCP_Ignore[entClass]
 		
