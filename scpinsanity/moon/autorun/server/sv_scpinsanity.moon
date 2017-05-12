@@ -27,6 +27,39 @@ import player from _G
 
 export SCP_NoKill, SCP_Ignore, SCP_HaveZeroHP, SCP_INSANITY_ATTACK_PLAYERS, SCP_GetTargets, SCP_INSANITY_ATTACK_NADMINS
 export SCP_INSANITY_ATTACK_NSUPER_ADMINS
+export SCP_INSANITY_RELATIONSHIPS
+
+-- ai_relationship does not work for me :s
+-- SCP_INSANITY_RELATIONSHIPS = SCP_INSANITY_RELATIONSHIPS or {}
+
+-- for ship in *SCP_INSANITY_RELATIONSHIPS
+-- 	ship\Remove() if IsValid(ship)
+
+-- -- 1 - Hate
+-- -- 2 - Fear
+-- -- 3 - Like
+-- -- 4 - Neutral
+
+-- SCP_Relations = {
+-- 	{'173', '2'}
+-- }
+
+-- SCP_INSANITY_RELATIONSHIP = for {scpName, Relation} in *SCP_Relations
+-- 	with ents.Create('ai_relationship')
+-- 		\SetKeyValue('subject', 'npc_*')
+-- 		\SetKeyValue('target', "dbot_scp#{scpName}")
+-- 		\SetKeyValue('StartActive', '1')
+-- 		\SetKeyValue('StartActive', '1')
+-- 		\SetKeyValue('Reciprocal', '1')
+-- 		\Spawn()
+-- 		\Activate()
+-- 		.SCPName = "dbot_scp#{scpName}"
+
+SCP_Relations = {
+ 	{'173', D_FR}
+}
+
+rel[1] = "dbot_scp#{rel[1]}" for rel in *SCP_Relations
 
 SCP_NoKill = false
 SCP_Ignore = {
@@ -46,11 +79,25 @@ concommand.Add 'scpi_reset173', (ply) ->
 	v.SCP_Killed = nil for v in *player.GetAll()
 
 timer.Create 'SCPInsanity.UpdateNPCs', 1, 0, ->
+	relationTables = {npc, {tab: {}, tp: relation} for {npc, relation} in *SCP_Relations}
+
 	VALID_NPCS = for ent in *ents.GetAll()
+		nclass = ent\GetClass()
+		if not nclass continue
+		if relationTables[nclass]
+			table.insert(relationTables[nclass].tab, ent)
+			continue
 		if not ent\IsNPC() continue
 		if ent\GetNPCState() == NPC_STATE_DEAD continue
-        if SCP_Ignore[ent\GetClass()] continue
+        if SCP_Ignore[nclass] continue
         ent
+
+	relationTablesIterable = [{npc, tab, tp} for npc, {:tab, :tp} in pairs relationTables]
+
+	for ent in *VALID_NPCS
+		for {npc, tab, tp} in *relationTablesIterable
+			for scp in *tab
+				ent\AddEntityRelationship(scp, tp)
 
 SCP_GetTargets = ->
 	reply = for ent in *VALID_NPCS

@@ -16,6 +16,16 @@ local ents
 ents = _G.ents
 local player
 player = _G.player
+local SCP_Relations = {
+  {
+    '173',
+    D_FR
+  }
+}
+for _index_0 = 1, #SCP_Relations do
+  local rel = SCP_Relations[_index_0]
+  rel[1] = "dbot_scp" .. tostring(rel[1])
+end
 SCP_NoKill = false
 SCP_Ignore = {
   bullseye_strider_focus = true
@@ -47,6 +57,20 @@ concommand.Add('scpi_reset173', function(ply)
   end
 end)
 timer.Create('SCPInsanity.UpdateNPCs', 1, 0, function()
+  local relationTables
+  do
+    local _tbl_0 = { }
+    for _index_0 = 1, #SCP_Relations do
+      local _des_0 = SCP_Relations[_index_0]
+      local npc, relation
+      npc, relation = _des_0[1], _des_0[2]
+      _tbl_0[npc] = {
+        tab = { },
+        tp = relation
+      }
+    end
+    relationTables = _tbl_0
+  end
   do
     local _accum_0 = { }
     local _len_0 = 1
@@ -55,6 +79,16 @@ timer.Create('SCPInsanity.UpdateNPCs', 1, 0, function()
       local _continue_0 = false
       repeat
         local ent = _list_0[_index_0]
+        local nclass = ent:GetClass()
+        if not nclass then
+          _continue_0 = true
+          break
+        end
+        if relationTables[nclass] then
+          table.insert(relationTables[nclass].tab, ent)
+          _continue_0 = true
+          break
+        end
         if not ent:IsNPC() then
           _continue_0 = true
           break
@@ -63,7 +97,7 @@ timer.Create('SCPInsanity.UpdateNPCs', 1, 0, function()
           _continue_0 = true
           break
         end
-        if SCP_Ignore[ent:GetClass()] then
+        if SCP_Ignore[nclass] then
           _continue_0 = true
           break
         end
@@ -77,6 +111,34 @@ timer.Create('SCPInsanity.UpdateNPCs', 1, 0, function()
       end
     end
     VALID_NPCS = _accum_0
+  end
+  local relationTablesIterable
+  do
+    local _accum_0 = { }
+    local _len_0 = 1
+    for npc, _des_0 in pairs(relationTables) do
+      local tab, tp
+      tab, tp = _des_0.tab, _des_0.tp
+      _accum_0[_len_0] = {
+        npc,
+        tab,
+        tp
+      }
+      _len_0 = _len_0 + 1
+    end
+    relationTablesIterable = _accum_0
+  end
+  for _index_0 = 1, #VALID_NPCS do
+    local ent = VALID_NPCS[_index_0]
+    for _index_1 = 1, #relationTablesIterable do
+      local _des_0 = relationTablesIterable[_index_1]
+      local npc, tab, tp
+      npc, tab, tp = _des_0[1], _des_0[2], _des_0[3]
+      for _index_2 = 1, #tab do
+        local scp = tab[_index_2]
+        ent:AddEntityRelationship(scp, tp)
+      end
+    end
   end
 end)
 SCP_GetTargets = function()
