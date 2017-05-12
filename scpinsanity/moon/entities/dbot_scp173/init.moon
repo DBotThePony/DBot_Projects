@@ -26,7 +26,7 @@ ENT.Initialize = =>
 	@SetMoveType(MOVETYPE_NONE)
 	@SetCollisionGroup(COLLISION_GROUP_WEAPON)
 	
-	SCP_INSANITY_CREATE_BULLSEYES(@)
+	SCP_CreateNPCTargets(@)
 
 	@LastMove = 0
 	@JumpTries = 0

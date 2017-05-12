@@ -41,6 +41,7 @@ ENT.Initialize = =>
 		@phys\SetMass(64)
 		@phys\Wake()
 		@mins, @maxs = @OBBMins(), @OBBMaxs()
+	SCP_CreateNPCTargets(@)
 if SERVER
 	ENT.ClearEnts = (ent) =>
 		for i, Ent in pairs @ATTACKED_ENTITIES
@@ -69,8 +70,8 @@ if SERVER
 			filter: (ent) ->
 				return false if ent == @
 				return true if not IsValid(ent)
-				if  ent\IsPlayer() and ent\Alive() and not ent\HasGodMode() or
-					ent\IsNPC() and ent\GetNPCState() ~= NPC_STATE_DEAD
+				if (ent\IsPlayer() and ent\Alive() and not ent\HasGodMode() or
+					ent\IsNPC() and ent\GetNPCState() ~= NPC_STATE_DEAD) and SCP_IsValidTarget(ent)
 					return true
 				return false
 		}

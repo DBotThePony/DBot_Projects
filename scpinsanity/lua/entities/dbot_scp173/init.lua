@@ -5,7 +5,7 @@ ENT.Initialize = function(self)
   self:PhysicsInitBox(Vector(-16, -16, 0), Vector(16, 16, 80))
   self:SetMoveType(MOVETYPE_NONE)
   self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
-  SCP_INSANITY_CREATE_BULLSEYES(self)
+  SCP_CreateNPCTargets(self)
   self.LastMove = 0
   self.JumpTries = 0
 end

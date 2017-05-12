@@ -24,6 +24,7 @@ ENT.Initialize = function(self)
     self.phys:Wake()
     self.mins, self.maxs = self:OBBMins(), self:OBBMaxs()
   end
+  return SCP_CreateNPCTargets(self)
 end
 if SERVER then
   ENT.ClearEnts = function(self, ent)
@@ -75,7 +76,7 @@ if SERVER then
         if not IsValid(ent) then
           return true
         end
-        if ent:IsPlayer() and ent:Alive() and not ent:HasGodMode() or ent:IsNPC() and ent:GetNPCState() ~= NPC_STATE_DEAD then
+        if (ent:IsPlayer() and ent:Alive() and not ent:HasGodMode() or ent:IsNPC() and ent:GetNPCState() ~= NPC_STATE_DEAD) and SCP_IsValidTarget(ent) then
           return true
         end
         return false

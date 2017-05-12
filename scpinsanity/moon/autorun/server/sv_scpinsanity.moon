@@ -27,52 +27,17 @@ import player from _G
 
 export SCP_NoKill, SCP_Ignore, SCP_HaveZeroHP, SCP_INSANITY_ATTACK_PLAYERS, SCP_GetTargets, SCP_INSANITY_ATTACK_NADMINS
 export SCP_INSANITY_ATTACK_NSUPER_ADMINS
-export SCP_INSANITY_RELATIONSHIPS
-export SCP_INSANITY_CREATE_BULLSEYES
-
-for ship in *ents.FindByClass('ai_relationship')
- 	ship\Remove() if ship.SCP_INSANITY
-
--- 1 - Hate D_HT
--- 2 - Fear D_FR
--- 3 - Like D_LI
--- 4 - Neutral D_NU
-
-Relations = {
-	{
-		scp: '173'
-		target: 'npc_*'
-		relation: D_FR
-	}
-}
-
-for {:scp, :target, :relation} in *Relations
-	with ents.Create('ai_relationship')
-		\SetKeyValue('subject', 'npc_monk')
-		\SetKeyValue('target', "dbot_scp#{scp}_bullseye")
-		\SetKeyValue('StartActive', '1')
-		\SetKeyValue('Disposition', "#{relation}")
-		\SetKeyValue('Reciprocal', '1')
-		\Spawn()
-		\Activate()
-		\Fire('ApplyRelationship', '', 0)
-		.SCPName = "dbot_scp#{scp}"
-		.NPCName = "dbot_scp#{scp}_bullseye"
-		.SCP_INSANITY = true
-
---if VLL
---	VLL.LoadGMA('gma/key_248051620')
---	VLL.LoadGMA('gma/mlp_scenebuild_props_263892204')
---	VLL.LoadGMA('gma/trampoline_104540875')
---	VLL.LoadGMA('gma/treasure_chest_with_collision_548282263')
---	VLL.LoadGMA('gma/umbrella_741617318')
---	VLL.LoadGMA('173')
+export SCP_CreateNPCTargets
+export SCP_IsValidTarget
 
 SCP_NoKill = false
+
 SCP_Ignore = {
 	bullseye_strider_focus: true
 	npc_bullseye: true
+	ai_relationship: true
 }
+
 SCP_HaveZeroHP = {
 	npc_rollermine: true
 }
@@ -82,18 +47,19 @@ SCP_INSANITY_ATTACK_NADMINS = CreateConVar('sv_scpi_not_admins', '0', {FCVAR_NOT
 SCP_INSANITY_ATTACK_NSUPER_ADMINS = CreateConVar('sv_scpi_not_superadmins', '0', {FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Whatever to NOT to attack superadmins')
 VALID_NPCS = {}
 
-concommand.Add 'scpi_reset173', (ply) ->
-	if not ply\IsAdmin() return
-	v.SCP_Killed = nil for v in *player.GetAll()
+SCP_IsValidTarget = (ent) ->
+	return false unless IsValid(ent)
+	return false if SCP_Ignore[ent\GetClass()]
+	return true
 
-timer.Create 'SCPInsanity.UpdateNPCs', 1, 0, ->
+UpdateNPCs = ->
 	VALID_NPCS = for ent in *ents.GetAll()
 		nclass = ent\GetClass()
 		if not nclass continue
 		if not ent\IsNPC() continue
 		if ent\GetNPCState() == NPC_STATE_DEAD continue
-        if SCP_Ignore[nclass] continue
-        ent
+		if SCP_Ignore[nclass] continue
+		ent
 
 SCP_GetTargets = ->
 	reply = for ent in *VALID_NPCS
@@ -112,7 +78,7 @@ SCP_GetTargets = ->
 	
 	return reply
 
-SCP_INSANITY_CREATE_BULLSEYES = =>
+SCP_CreateNPCTargets = =>
 	mins, maxs, center = @OBBMins(), @OBBMaxs(), @OBBCenter()
 
 	box = {
@@ -138,11 +104,57 @@ SCP_INSANITY_CREATE_BULLSEYES = =>
 			\Spawn()
 			\Activate()
 			\SetParent(@)
-			\SetNotSolid(true)
+			--\SetNotSolid(true)
 			\SetHealth(2 ^ 31 - 1)
 
+
+concommand.Add 'scpi_reset173', (ply) ->
+	if not ply\IsAdmin() return
+	v.SCP_Killed = nil for v in *player.GetAll()
+
+timer.Create 'SCPInsanity.UpdateNPCs', 1, 0, UpdateNPCs
 hook.Add('OnNPCKilled', 'DBot.SCPInsanity', OnNPCKilled)
 hook.Add('PlayerDeath', 'DBot.SCPInsanity', PlayerDeath)
+
+for ship in *ents.FindByClass('ai_relationship')
+ 	ship\Remove() if ship.SCP_INSANITY
+
+SCP_INSANITY_RELATIONSHIPS = {}
+
+-- 1 - Hate D_HT
+-- 2 - Fear D_FR
+-- 3 - Like D_LI
+-- 4 - Neutral D_NU
+TO_ATTACK = {
+	{'173', D_FR}
+	{'689', D_FR}
+	{'522', D_FR}
+}
+
+OnEntityCreated = =>
+	timer.Simple 0, ->
+		return if not IsValid(@)
+		return if not @IsNPC()
+		entClass = @GetClass()
+		return if SCP_INSANITY_RELATIONSHIPS[entClass]
+		return if SCP_Ignore[entClass]
+		
+		SCP_INSANITY_RELATIONSHIPS[entClass] = for {scp, relation} in *TO_ATTACK
+			with ents.Create('ai_relationship')
+				\SetKeyValue('subject', entClass)
+				\SetKeyValue('target', "dbot_scp#{scp}_bullseye")
+				\SetKeyValue('StartActive', '1')
+				\SetKeyValue('Disposition', "#{relation}")
+				\SetKeyValue('Reciprocal', '1')
+				\Spawn()
+				\Activate()
+				\Fire('ApplyRelationship', '', 0)
+				.SCPName = "dbot_scp#{scp}"
+				.NPCName = entClass
+				.SCP_INSANITY = true
+
+OnEntityCreated(ent) for ent in *ents.GetAll()
+hook.Add 'OnEntityCreated', 'SCPInsanity.Relationships', OnEntityCreated
 
 hook.Add 'ACF_BulletDamage', 'DBot.SCPInsanity', (Activated, Entity, Energy, FrAera, Angle, Inflictor, Bone, Gun) ->
 	if Entity\GetClass()\find('scp') return false

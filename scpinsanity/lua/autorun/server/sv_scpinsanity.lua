@@ -16,43 +16,11 @@ local ents
 ents = _G.ents
 local player
 player = _G.player
-local _list_0 = ents.FindByClass('ai_relationship')
-for _index_0 = 1, #_list_0 do
-  local ship = _list_0[_index_0]
-  if ship.SCP_INSANITY then
-    ship:Remove()
-  end
-end
-local Relations = {
-  {
-    scp = '173',
-    target = 'npc_*',
-    relation = D_FR
-  }
-}
-for _index_0 = 1, #Relations do
-  local _des_0 = Relations[_index_0]
-  local scp, target, relation
-  scp, target, relation = _des_0.scp, _des_0.target, _des_0.relation
-  do
-    local _with_0 = ents.Create('ai_relationship')
-    _with_0:SetKeyValue('subject', 'npc_monk')
-    _with_0:SetKeyValue('target', "dbot_scp" .. tostring(scp) .. "_bullseye")
-    _with_0:SetKeyValue('StartActive', '1')
-    _with_0:SetKeyValue('Disposition', tostring(relation))
-    _with_0:SetKeyValue('Reciprocal', '1')
-    _with_0:Spawn()
-    _with_0:Activate()
-    _with_0:Fire('ApplyRelationship', '', 0)
-    _with_0.SCPName = "dbot_scp" .. tostring(scp)
-    _with_0.NPCName = "dbot_scp" .. tostring(scp) .. "_bullseye"
-    _with_0.SCP_INSANITY = true
-  end
-end
 SCP_NoKill = false
 SCP_Ignore = {
   bullseye_strider_focus = true,
-  npc_bullseye = true
+  npc_bullseye = true,
+  ai_relationship = true
 }
 SCP_HaveZeroHP = {
   npc_rollermine = true
@@ -70,25 +38,25 @@ SCP_INSANITY_ATTACK_NSUPER_ADMINS = CreateConVar('sv_scpi_not_superadmins', '0',
   FCVAR_ARCHIVE
 }, 'Whatever to NOT to attack superadmins')
 local VALID_NPCS = { }
-concommand.Add('scpi_reset173', function(ply)
-  if not ply:IsAdmin() then
-    return 
+SCP_IsValidTarget = function(ent)
+  if not (IsValid(ent)) then
+    return false
   end
-  local _list_1 = player.GetAll()
-  for _index_0 = 1, #_list_1 do
-    local v = _list_1[_index_0]
-    v.SCP_Killed = nil
+  if SCP_Ignore[ent:GetClass()] then
+    return false
   end
-end)
-timer.Create('SCPInsanity.UpdateNPCs', 1, 0, function()
+  return true
+end
+local UpdateNPCs
+UpdateNPCs = function()
   do
     local _accum_0 = { }
     local _len_0 = 1
-    local _list_1 = ents.GetAll()
-    for _index_0 = 1, #_list_1 do
+    local _list_0 = ents.GetAll()
+    for _index_0 = 1, #_list_0 do
       local _continue_0 = false
       repeat
-        local ent = _list_1[_index_0]
+        local ent = _list_0[_index_0]
         local nclass = ent:GetClass()
         if not nclass then
           _continue_0 = true
@@ -117,7 +85,7 @@ timer.Create('SCPInsanity.UpdateNPCs', 1, 0, function()
     end
     VALID_NPCS = _accum_0
   end
-end)
+end
 SCP_GetTargets = function()
   local reply
   do
@@ -151,11 +119,11 @@ SCP_GetTargets = function()
     reply = _accum_0
   end
   if SCP_INSANITY_ATTACK_PLAYERS:GetBool() then
-    local _list_1 = player.GetAll()
-    for _index_0 = 1, #_list_1 do
+    local _list_0 = player.GetAll()
+    for _index_0 = 1, #_list_0 do
       local _continue_0 = false
       repeat
-        local ply = _list_1[_index_0]
+        local ply = _list_0[_index_0]
         if ply:HasGodMode() then
           _continue_0 = true
           break
@@ -182,7 +150,7 @@ SCP_GetTargets = function()
   end
   return reply
 end
-SCP_INSANITY_CREATE_BULLSEYES = function(self)
+SCP_CreateNPCTargets = function(self)
   local mins, maxs, center = self:OBBMins(), self:OBBMaxs(), self:OBBCenter()
   local box = {
     Vector(0, 0, mins.z),
@@ -193,9 +161,9 @@ SCP_INSANITY_CREATE_BULLSEYES = function(self)
     Vector(center.x, -mins.y, center.z)
   }
   if self.bullseyes then
-    local _list_1 = self.bullseyes
-    for _index_0 = 1, #_list_1 do
-      local eye = _list_1[_index_0]
+    local _list_0 = self.bullseyes
+    for _index_0 = 1, #_list_0 do
+      local eye = _list_0[_index_0]
       if IsValid(eye) then
         eye:Remove()
       end
@@ -214,7 +182,7 @@ SCP_INSANITY_CREATE_BULLSEYES = function(self)
         _with_0:Spawn()
         _with_0:Activate()
         _with_0:SetParent(self)
-        _with_0:SetNotSolid(true)
+        _with_0:SetHealth(2 ^ 31 - 1)
         _accum_0[_len_0] = _with_0
       end
       _len_0 = _len_0 + 1
@@ -222,8 +190,91 @@ SCP_INSANITY_CREATE_BULLSEYES = function(self)
     self.bullseyes = _accum_0
   end
 end
+concommand.Add('scpi_reset173', function(ply)
+  if not ply:IsAdmin() then
+    return 
+  end
+  local _list_0 = player.GetAll()
+  for _index_0 = 1, #_list_0 do
+    local v = _list_0[_index_0]
+    v.SCP_Killed = nil
+  end
+end)
+timer.Create('SCPInsanity.UpdateNPCs', 1, 0, UpdateNPCs)
 hook.Add('OnNPCKilled', 'DBot.SCPInsanity', OnNPCKilled)
 hook.Add('PlayerDeath', 'DBot.SCPInsanity', PlayerDeath)
+local _list_0 = ents.FindByClass('ai_relationship')
+for _index_0 = 1, #_list_0 do
+  local ship = _list_0[_index_0]
+  if ship.SCP_INSANITY then
+    ship:Remove()
+  end
+end
+local SCP_INSANITY_RELATIONSHIPS = { }
+local TO_ATTACK = {
+  {
+    '173',
+    D_FR
+  },
+  {
+    '689',
+    D_FR
+  },
+  {
+    '522',
+    D_FR
+  }
+}
+local OnEntityCreated
+OnEntityCreated = function(self)
+  return timer.Simple(0, function()
+    if not IsValid(self) then
+      return 
+    end
+    if not self:IsNPC() then
+      return 
+    end
+    local entClass = self:GetClass()
+    if SCP_INSANITY_RELATIONSHIPS[entClass] then
+      return 
+    end
+    if SCP_Ignore[entClass] then
+      return 
+    end
+    do
+      local _accum_0 = { }
+      local _len_0 = 1
+      for _index_0 = 1, #TO_ATTACK do
+        local _des_0 = TO_ATTACK[_index_0]
+        local scp, relation
+        scp, relation = _des_0[1], _des_0[2]
+        do
+          local _with_0 = ents.Create('ai_relationship')
+          _with_0:SetKeyValue('subject', entClass)
+          _with_0:SetKeyValue('target', "dbot_scp" .. tostring(scp) .. "_bullseye")
+          _with_0:SetKeyValue('StartActive', '1')
+          _with_0:SetKeyValue('Disposition', tostring(relation))
+          _with_0:SetKeyValue('Reciprocal', '1')
+          _with_0:Spawn()
+          _with_0:Activate()
+          _with_0:Fire('ApplyRelationship', '', 0)
+          _with_0.SCPName = "dbot_scp" .. tostring(scp)
+          _with_0.NPCName = entClass
+          _with_0.SCP_INSANITY = true
+          _accum_0[_len_0] = _with_0
+        end
+        _len_0 = _len_0 + 1
+      end
+      SCP_INSANITY_RELATIONSHIPS[entClass] = _accum_0
+    end
+  end)
+end
+local _list_1 = ents.GetAll()
+for _index_0 = 1, #_list_1 do
+  local ent = _list_1[_index_0]
+  OnEntityCreated(ent)
+end
+hook.Add('OnEntityCreated', 'SCPInsanity.Relationships', OnEntityCreated)
 return hook.Add('ACF_BulletDamage', 'DBot.SCPInsanity', function(Activated, Entity, Energy, FrAera, Angle, Inflictor, Bone, Gun)
   if Entity:GetClass():find('scp') then
     return false
