@@ -60,14 +60,14 @@ UpdateNPCs = ->
 		if ent\GetNPCState() == NPC_STATE_DEAD continue
 		if SCP_Ignore[nclass] continue
 		ent
-SCP_GetTargets = ->
+SCP_GetTargets = (noPlayers = false) ->
 	reply = for ent in *VALID_NPCS
 		if not IsValid(ent) continue
 		if ent.SCP_SLAYED continue
 		if ent.SCP_Killed continue
 		ent
     
-	if SCP_INSANITY_ATTACK_PLAYERS\GetBool()
+	if SCP_INSANITY_ATTACK_PLAYERS\GetBool() and not noPlayers
 		for ply in *player.GetAll()
 			if ply\HasGodMode() continue
 			if ply.SCP_Killed continue

@@ -86,7 +86,10 @@ UpdateNPCs = function()
     VALID_NPCS = _accum_0
   end
 end
-SCP_GetTargets = function()
+SCP_GetTargets = function(noPlayers)
+  if noPlayers == nil then
+    noPlayers = false
+  end
   local reply
   do
     local _accum_0 = { }
@@ -118,7 +121,7 @@ SCP_GetTargets = function()
     end
     reply = _accum_0
   end
-  if SCP_INSANITY_ATTACK_PLAYERS:GetBool() then
+  if SCP_INSANITY_ATTACK_PLAYERS:GetBool() and not noPlayers then
     local _list_0 = player.GetAll()
     for _index_0 = 1, #_list_0 do
       local _continue_0 = false
