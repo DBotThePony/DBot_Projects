@@ -21,7 +21,8 @@ ENT.Initialize = function(self)
   self.LAST_SOUND = 0
   if IsValid(self.phys) then
     self.phys:SetMass(64)
-    self.phys:Wake()
+    self.phys:Sleep()
+    self.phys:EnableMotion(false)
     self.mins, self.maxs = self:OBBMins(), self:OBBMaxs()
   end
   return SCP_CreateNPCTargets(self)
@@ -110,6 +111,9 @@ if SERVER then
     end
     ent.SCP522_MOVETYPE = ent.SCP522_MOVETYPE or ent:GetMoveType()
     ent:SetMoveType(MOVETYPE_NONE)
+    if IsValid(self.phys) then
+      self.phys:EnableMotion(false)
+    end
     local deltaPos = ent:EyePos() - pos
     ent:SetPos(pos - Vector(0, 0, (deltaPos.z + 10) * stage))
     return self:ClearEnts(ent)

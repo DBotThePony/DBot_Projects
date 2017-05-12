@@ -39,7 +39,8 @@ ENT.Initialize = =>
 	@LAST_SOUND = 0
 	if IsValid(@phys)
 		@phys\SetMass(64)
-		@phys\Wake()
+		@phys\Sleep()
+		@phys\EnableMotion(false)
 		@mins, @maxs = @OBBMins(), @OBBMaxs()
 	SCP_CreateNPCTargets(@)
 if SERVER
@@ -101,6 +102,7 @@ if SERVER
 			ent\SetNWEntity('SCP522.ENT', @)
 		ent.SCP522_MOVETYPE = ent.SCP522_MOVETYPE or ent\GetMoveType()
 		ent\SetMoveType(MOVETYPE_NONE)
+		@phys\EnableMotion(false) if IsValid(@phys)
 		
 		deltaPos = ent\EyePos() - pos
 		ent\SetPos(pos - Vector(0, 0, (deltaPos.z + 10) * stage))
