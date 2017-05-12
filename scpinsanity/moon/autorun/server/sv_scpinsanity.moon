@@ -30,6 +30,8 @@ export SCP_INSANITY_ATTACK_NSUPER_ADMINS
 export SCP_CreateNPCTargets
 export SCP_IsValidTarget
 
+resource.AddWorkshop('924100738')
+
 SCP_NoKill = false
 
 SCP_Ignore = {

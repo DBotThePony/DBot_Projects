@@ -16,6 +16,7 @@ local ents
 ents = _G.ents
 local player
 player = _G.player
+resource.AddWorkshop('924100738')
 SCP_NoKill = false
 SCP_Ignore = {
   bullseye_strider_focus = true,
