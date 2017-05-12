@@ -1,8 +1,14 @@
+local SCP_INSANITY_ATTACK_PLAYERS = CreateConVar('cl_scpi_173stats', '0', {
+  FCVAR_ARCHIVE
+}, 'Show 173 frags statistics')
 include('shared.lua')
 ENT.Draw = function(self)
   return self:DrawModel()
 end
 ENT.DrawTranslucent = function(self)
+  if not SCP_INSANITY_ATTACK_PLAYERS:GetBool() then
+    return 
+  end
   local pos = self:GetPos()
   local lpos = LocalPlayer():GetPos()
   if lpos:Distance(pos) > 400 then

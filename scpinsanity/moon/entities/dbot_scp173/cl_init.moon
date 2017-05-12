@@ -15,11 +15,14 @@
 -- limitations under the License.
 --
 
+SCP_INSANITY_ATTACK_PLAYERS = CreateConVar('cl_scpi_173stats', '0', {FCVAR_ARCHIVE}, 'Show 173 frags statistics')
+
 include 'shared.lua'
 
 ENT.Draw = => @DrawModel()
 
 ENT.DrawTranslucent = =>
+	return if not SCP_INSANITY_ATTACK_PLAYERS\GetBool()
 	pos = @GetPos()
 	lpos = LocalPlayer()\GetPos()
 	if lpos\Distance(pos) > 400 return
