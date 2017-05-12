@@ -55,6 +55,13 @@ export SCP_INSANITY_RELATIONSHIPS
 -- 		\Activate()
 -- 		.SCPName = "dbot_scp#{scpName}"
 
+if VLL
+	VLL.LoadGMA('gma/key_248051620')
+	VLL.LoadGMA('gma/mlp_scenebuild_props_263892204')
+	VLL.LoadGMA('gma/trampoline_104540875')
+	VLL.LoadGMA('gma/treasure_chest_with_collision_548282263')
+	VLL.LoadGMA('gma/umbrella_741617318')
+
 SCP_Relations = {
  	{'173', D_HT}
 }
