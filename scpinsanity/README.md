@@ -7,9 +7,9 @@ This is a Garry's Mod addon that adds various SCP objects
 ## What is [SCP](http://www.scp-wiki.net/faq)?
 SCP (Secure, Contain, Protect) - is a collection of fictional "objects" that have abnormal properties
 
-About SCP objects you can find info [there](http://www.scp-wiki.net/scp-series#001) [*](http://scpfoundation.ru/scp-list)
+About SCP objects you can find info [here](http://www.scp-wiki.net/scp-series#001) [*](http://scpfoundation.ru/scp-list)
 
-About SCP objects that can be found in SPC game you can read [there](http://containmentbreach.wikia.com/wiki/Main_Page) [(But there's much more infos on russian wiki)](http://ru.scpcontainmentbreach.wikia.com/wiki/SCP_-_Containment_Breach)
+About SCP objects that can be found in SPC game you can read [here](http://containmentbreach.wikia.com/wiki/Main_Page) [(But there's much more infos on russian wiki)](http://ru.scpcontainmentbreach.wikia.com/wiki/SCP_-_Containment_Breach)
 
 ## SCP List
 ### It provides all additional links, even if they send you to 404 pages
