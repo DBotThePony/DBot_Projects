@@ -35,6 +35,7 @@ Please note that models used in this addon are licensed under their licenses
  * [MLP Buildspace Models](http://steamcommunity.com/sharedfiles/filedetails/?id=263892204) by [Maximo](http://steamcommunity.com/id/maximo_009)
  * [Trampoline](http://steamcommunity.com/sharedfiles/filedetails/?id=104540875) by [Gmod Tower creators](http://www.gmtower.org/)
  * [Treasure Chest With Collision](http://steamcommunity.com/sharedfiles/filedetails/?id=548282263) by [TooLzor](http://steamcommunity.com/id/toolzor)
+ * Pen as part of [Misc prop pack](http://steamcommunity.com/sharedfiles/filedetails/?id=104477476) by [lt_commander](http://steamcommunity.com/id/lt_commander) and [fury_161](http://steamcommunity.com/id/fury_161)
 
 # Thanks
  * [Leafo](https://github.com/leafo) for his awesome [Moonscript](http://moonscript.org/)!
