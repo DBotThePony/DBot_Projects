@@ -28,45 +28,45 @@ import player from _G
 export SCP_NoKill, SCP_Ignore, SCP_HaveZeroHP, SCP_INSANITY_ATTACK_PLAYERS, SCP_GetTargets, SCP_INSANITY_ATTACK_NADMINS
 export SCP_INSANITY_ATTACK_NSUPER_ADMINS
 export SCP_INSANITY_RELATIONSHIPS
+export SCP_INSANITY_CREATE_BULLSEYES
 
--- ai_relationship does not work for me :s
--- SCP_INSANITY_RELATIONSHIPS = SCP_INSANITY_RELATIONSHIPS or {}
+for ship in *ents.FindByClass('ai_relationship')
+ 	ship\Remove() if ship.SCP_INSANITY
 
--- for ship in *SCP_INSANITY_RELATIONSHIPS
--- 	ship\Remove() if IsValid(ship)
+-- 1 - Hate D_HT
+-- 2 - Fear D_FR
+-- 3 - Like D_LI
+-- 4 - Neutral D_NU
 
--- -- 1 - Hate
--- -- 2 - Fear
--- -- 3 - Like
--- -- 4 - Neutral
-
--- SCP_Relations = {
--- 	{'173', '2'}
--- }
-
--- SCP_INSANITY_RELATIONSHIP = for {scpName, Relation} in *SCP_Relations
--- 	with ents.Create('ai_relationship')
--- 		\SetKeyValue('subject', 'npc_*')
--- 		\SetKeyValue('target', "dbot_scp#{scpName}")
--- 		\SetKeyValue('StartActive', '1')
--- 		\SetKeyValue('StartActive', '1')
--- 		\SetKeyValue('Reciprocal', '1')
--- 		\Spawn()
--- 		\Activate()
--- 		.SCPName = "dbot_scp#{scpName}"
-
-if VLL
-	VLL.LoadGMA('gma/key_248051620')
-	VLL.LoadGMA('gma/mlp_scenebuild_props_263892204')
-	VLL.LoadGMA('gma/trampoline_104540875')
-	VLL.LoadGMA('gma/treasure_chest_with_collision_548282263')
-	VLL.LoadGMA('gma/umbrella_741617318')
-
-SCP_Relations = {
- 	{'173', D_HT}
+Relations = {
+	{
+		scp: '173'
+		target: 'npc_*'
+		relation: D_FR
+	}
 }
 
-rel[1] = "dbot_scp#{rel[1]}" for rel in *SCP_Relations
+for {:scp, :target, :relation} in *Relations
+	with ents.Create('ai_relationship')
+		\SetKeyValue('subject', 'npc_monk')
+		\SetKeyValue('target', "dbot_scp#{scp}_bullseye")
+		\SetKeyValue('StartActive', '1')
+		\SetKeyValue('Disposition', "#{relation}")
+		\SetKeyValue('Reciprocal', '1')
+		\Spawn()
+		\Activate()
+		\Fire('ApplyRelationship', '', 0)
+		.SCPName = "dbot_scp#{scp}"
+		.NPCName = "dbot_scp#{scp}_bullseye"
+		.SCP_INSANITY = true
+
+--if VLL
+--	VLL.LoadGMA('gma/key_248051620')
+--	VLL.LoadGMA('gma/mlp_scenebuild_props_263892204')
+--	VLL.LoadGMA('gma/trampoline_104540875')
+--	VLL.LoadGMA('gma/treasure_chest_with_collision_548282263')
+--	VLL.LoadGMA('gma/umbrella_741617318')
+--	VLL.LoadGMA('173')
 
 SCP_NoKill = false
 SCP_Ignore = {
@@ -87,27 +87,13 @@ concommand.Add 'scpi_reset173', (ply) ->
 	v.SCP_Killed = nil for v in *player.GetAll()
 
 timer.Create 'SCPInsanity.UpdateNPCs', 1, 0, ->
-	relationTables = {npc, {tab: {}, tp: relation} for {npc, relation} in *SCP_Relations}
-
 	VALID_NPCS = for ent in *ents.GetAll()
 		nclass = ent\GetClass()
 		if not nclass continue
-		if relationTables[nclass]
-			table.insert(relationTables[nclass].tab, ent)
-			continue
 		if not ent\IsNPC() continue
 		if ent\GetNPCState() == NPC_STATE_DEAD continue
         if SCP_Ignore[nclass] continue
         ent
-
-	relationTablesIterable = [{npc, tab, tp} for npc, {:tab, :tp} in pairs relationTables]
-
-	for ent in *VALID_NPCS
-		for {npc, tab, tp} in *relationTablesIterable
-			for scp in *tab
-				ent\AddEntityRelationship(scp, tp)
-				if IsValid(scp.npc_bullseye)
-					ent\AddEntityRelationship(scp.npc_bullseye, tp)
 
 SCP_GetTargets = ->
 	reply = for ent in *VALID_NPCS
@@ -126,12 +112,34 @@ SCP_GetTargets = ->
 	
 	return reply
 
-ENT = {}
-ENT.PrintName = 'MAGIC'
-ENT.Author = 'DBot'
-ENT.Type = 'point'
+SCP_INSANITY_CREATE_BULLSEYES = =>
+	mins, maxs, center = @OBBMins(), @OBBMaxs(), @OBBCenter()
 
-scripted_ents.Register(ENT, 'dbot_scp173_killer')
+	box = {
+		Vector(0, 0, mins.z)
+		Vector(0, 0, maxs.z)
+
+		Vector(mins.x, center.y, center.z)
+		Vector(-mins.x, center.y, center.z)
+
+		Vector(center.x, mins.y, center.z)
+		Vector(center.x, -mins.y, center.z)
+	}
+
+	if @bullseyes
+		for eye in *@bullseyes
+			eye\Remove() if IsValid(eye)
+
+	nclass = "#{@GetClass()}_bullseye"
+	@bullseyes = for vec in *box
+		with ents.Create('npc_bullseye')
+			\SetKeyValue('targetname', nclass)
+			\SetPos(@LocalToWorld(vec))
+			\Spawn()
+			\Activate()
+			\SetParent(@)
+			\SetNotSolid(true)
+			\SetHealth(2 ^ 31 - 1)
 
 hook.Add('OnNPCKilled', 'DBot.SCPInsanity', OnNPCKilled)
 hook.Add('PlayerDeath', 'DBot.SCPInsanity', PlayerDeath)

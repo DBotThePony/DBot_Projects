@@ -22,26 +22,12 @@ AddCSLuaFile 'cl_init.lua'
 ENT.Initialize = =>
 	@SetModel('models/new173/new173.mdl')
 	
-	@Killer = ents.Create('dbot_scp173_killer')
-	@Killer\SetPos(@GetPos())
-	@Killer\Spawn()
-	@Killer\Activate()
-	@Killer\SetParent(@)
-	
 	@PhysicsInitBox(Vector(-16, -16, 0), Vector(16, 16, 80))
 	@SetMoveType(MOVETYPE_NONE)
 	@SetCollisionGroup(COLLISION_GROUP_WEAPON)
-
-	@npc_bullseye = ents.Create('npc_bullseye')
-	with @npc_bullseye
-		--\SetKeyValue('Relationship', 'npc_* D_HT 1000') -- Maximal F3AR
-		--\SetKeyValue('name', "npc_bullseye_#{@}")
-		--\SetKeyValue('target', "npc_bullseye_#{@}")
-		\SetPos(@OBBCenter() + @GetPos())
-		\SetParent(@)
-		\Spawn()
-		\Activate()
 	
+	SCP_INSANITY_CREATE_BULLSEYES(@)
+
 	@LastMove = 0
 	@JumpTries = 0
 
@@ -145,14 +131,14 @@ ENT.Wreck = (ply) =>
 			ply.SCP_SLAYED = true
 		return
 	
-	ply\TakeDamage(INT, @, @Killer)
+	ply\TakeDamage(INT, @, @)
 	
 	for dtype in *DAMAGE_TYPES
 		dmg = DamageInfo()
 		
 		dmg\SetDamage(INT)
 		dmg\SetAttacker(@)
-		dmg\SetInflictor(@Killer)
+		dmg\SetInflictor(@)
 		dmg\SetDamageType(dtype)
 		
 		ply\TakeDamageInfo(dmg)

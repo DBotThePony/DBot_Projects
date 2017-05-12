@@ -2,22 +2,10 @@ include('shared.lua')
 AddCSLuaFile('cl_init.lua')
 ENT.Initialize = function(self)
   self:SetModel('models/new173/new173.mdl')
-  self.Killer = ents.Create('dbot_scp173_killer')
-  self.Killer:SetPos(self:GetPos())
-  self.Killer:Spawn()
-  self.Killer:Activate()
-  self.Killer:SetParent(self)
   self:PhysicsInitBox(Vector(-16, -16, 0), Vector(16, 16, 80))
   self:SetMoveType(MOVETYPE_NONE)
   self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
-  self.npc_bullseye = ents.Create('npc_bullseye')
-  do
-    local _with_0 = self.npc_bullseye
-    _with_0:SetPos(self:OBBCenter() + self:GetPos())
-    _with_0:SetParent(self)
-    _with_0:Spawn()
-    _with_0:Activate()
-  end
+  SCP_INSANITY_CREATE_BULLSEYES(self)
   self.LastMove = 0
   self.JumpTries = 0
 end
@@ -138,13 +126,13 @@ ENT.Wreck = function(self, ply)
     end
     return 
   end
-  ply:TakeDamage(INT, self, self.Killer)
+  ply:TakeDamage(INT, self, self)
   for _index_0 = 1, #DAMAGE_TYPES do
     local dtype = DAMAGE_TYPES[_index_0]
     local dmg = DamageInfo()
     dmg:SetDamage(INT)
     dmg:SetAttacker(self)
-    dmg:SetInflictor(self.Killer)
+    dmg:SetInflictor(self)
     dmg:SetDamageType(dtype)
     ply:TakeDamageInfo(dmg)
     if ply:IsPlayer() then
