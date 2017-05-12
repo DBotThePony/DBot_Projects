@@ -10,6 +10,14 @@ ENT.Initialize = function(self)
   self:PhysicsInitBox(Vector(-16, -16, 0), Vector(16, 16, 80))
   self:SetMoveType(MOVETYPE_NONE)
   self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
+  self.npc_bullseye = ents.Create('npc_bullseye')
+  do
+    local _with_0 = self.npc_bullseye
+    _with_0:SetPos(self:OBBCenter() + self:GetPos())
+    _with_0:SetParent(self)
+    _with_0:Spawn()
+    _with_0:Activate()
+  end
   self.LastMove = 0
   self.JumpTries = 0
 end

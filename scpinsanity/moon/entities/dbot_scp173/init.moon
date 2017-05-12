@@ -31,6 +31,16 @@ ENT.Initialize = =>
 	@PhysicsInitBox(Vector(-16, -16, 0), Vector(16, 16, 80))
 	@SetMoveType(MOVETYPE_NONE)
 	@SetCollisionGroup(COLLISION_GROUP_WEAPON)
+
+	@npc_bullseye = ents.Create('npc_bullseye')
+	with @npc_bullseye
+		--\SetKeyValue('Relationship', 'npc_* D_HT 1000') -- Maximal F3AR
+		--\SetKeyValue('name', "npc_bullseye_#{@}")
+		--\SetKeyValue('target', "npc_bullseye_#{@}")
+		\SetPos(@OBBCenter() + @GetPos())
+		\SetParent(@)
+		\Spawn()
+		\Activate()
 	
 	@LastMove = 0
 	@JumpTries = 0
@@ -75,8 +85,8 @@ ENT.CanSeeMe = (ply) =>
 		endpos: lpos + Vector(0, 0, 40),
 		filter: (ent) ->
 			if ent == @
-                hit = true
-                return true 
+				hit = true
+				return true 
 			if ent == ply return false 
 			
 			if not IsValid(ent) return true 
@@ -159,7 +169,7 @@ ENT.Wreck = (ply) =>
 	else
 		@SetPFrags(@GetPFrags() + 1)
 		if ply\Alive()
-            ply\Kill() 
+			ply\Kill() 
 	
 	@EmitSound('snap.wav', 100)
 	
@@ -185,7 +195,7 @@ ENT.TryMoveTo = (pos) =>
 	tr = util.TraceHull({
 		start: @GetPos()
 		endpos: pos
-        mins: @OBBMins()
+		mins: @OBBMins()
 		maxs: @OBBMaxs()
 		filter: (ent) ->
 			if ent == @ return false
@@ -224,12 +234,12 @@ ENT.Think = =>
 	min = 99999
 	
 	for ply in *plys
-        if ply\IsPlayer()
-            if not ply\Alive() continue
-            if ply\InVehicle()
-                if ply\GetVehicle()\GetParent() == @
-                    @Wreck(ply)
-                    continue
+		if ply\IsPlayer()
+			if not ply\Alive() continue
+			if ply\InVehicle()
+				if ply\GetVehicle()\GetParent() == @
+					@Wreck(ply)
+					continue
 		
 		dist = ply\GetPos()\Distance(lpos)
 		if dist < min

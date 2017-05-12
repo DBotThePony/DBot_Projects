@@ -19,7 +19,7 @@ player = _G.player
 local SCP_Relations = {
   {
     '173',
-    D_FR
+    D_HT
   }
 }
 for _index_0 = 1, #SCP_Relations do
@@ -28,7 +28,8 @@ for _index_0 = 1, #SCP_Relations do
 end
 SCP_NoKill = false
 SCP_Ignore = {
-  bullseye_strider_focus = true
+  bullseye_strider_focus = true,
+  npc_bullseye = true
 }
 SCP_HaveZeroHP = {
   npc_rollermine = true
@@ -137,6 +138,9 @@ timer.Create('SCPInsanity.UpdateNPCs', 1, 0, function()
       for _index_2 = 1, #tab do
         local scp = tab[_index_2]
         ent:AddEntityRelationship(scp, tp)
+        if IsValid(scp.npc_bullseye) then
+          ent:AddEntityRelationship(scp.npc_bullseye, tp)
+        end
       end
     end
   end

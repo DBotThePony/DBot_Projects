@@ -56,7 +56,7 @@ export SCP_INSANITY_RELATIONSHIPS
 -- 		.SCPName = "dbot_scp#{scpName}"
 
 SCP_Relations = {
- 	{'173', D_FR}
+ 	{'173', D_HT}
 }
 
 rel[1] = "dbot_scp#{rel[1]}" for rel in *SCP_Relations
@@ -64,6 +64,7 @@ rel[1] = "dbot_scp#{rel[1]}" for rel in *SCP_Relations
 SCP_NoKill = false
 SCP_Ignore = {
 	bullseye_strider_focus: true
+	npc_bullseye: true
 }
 SCP_HaveZeroHP = {
 	npc_rollermine: true
@@ -98,6 +99,8 @@ timer.Create 'SCPInsanity.UpdateNPCs', 1, 0, ->
 		for {npc, tab, tp} in *relationTablesIterable
 			for scp in *tab
 				ent\AddEntityRelationship(scp, tp)
+				if IsValid(scp.npc_bullseye)
+					ent\AddEntityRelationship(scp.npc_bullseye, tp)
 
 SCP_GetTargets = ->
 	reply = for ent in *VALID_NPCS
