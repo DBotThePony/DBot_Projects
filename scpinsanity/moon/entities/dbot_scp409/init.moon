@@ -51,7 +51,7 @@ ENT.Attack = (ent) =>
 	if ent\GetClass()\find('scp') return 
 	ent.CRYSTALIZING = true
 	point = ents.Create('dbot_scp409_killer')
-	point\SetPos(ENT.GetPos())
+	point\SetPos(ent\GetPos())
 	point\SetParent(ent)
 	point\Spawn()
 	point\Activate()

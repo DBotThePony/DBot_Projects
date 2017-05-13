@@ -73,7 +73,7 @@ ENT.Attack = function(self, ent)
   end
   ent.CRYSTALIZING = true
   local point = ents.Create('dbot_scp409_killer')
-  point:SetPos(ENT.GetPos())
+  point:SetPos(ent:GetPos())
   point:SetParent(ent)
   point:Spawn()
   point:Activate()
