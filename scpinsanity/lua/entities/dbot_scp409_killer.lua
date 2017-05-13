@@ -25,7 +25,7 @@ ENT.Think = function(self)
     self:Remove()
     return 
   elseif obj:IsPlayer() and not obj:Alive() then
-    self:objRemove()
+    self:Remove()
     return 
   end
   local dmg = DamageInfo()

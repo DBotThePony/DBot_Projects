@@ -28,11 +28,11 @@ ENT.Think = =>
 	if CLIENT return
 	obj = @GetParent()
 	
-	if not IsValid(obj) then 
+	if not IsValid(obj)
 		@Remove() 
 		return
-	elseif obj\IsPlayer() and not obj\Alive() then 
-		@objRemove() 
+	elseif obj\IsPlayer() and not obj\Alive()
+		@Remove() 
 		return
 	
 	dmg = DamageInfo()
