@@ -117,7 +117,9 @@ local function Draw()
 					ent:ManipulateBonePosition(boneId, ply:GetManipulateBonePosition(boneId))
 				end
 			else
-				PPM.RescaleModel(ent, ply.ponydata)
+				if PPM then
+					PPM.RescaleModel(ent, ply.ponydata)
+				end
 			end
 			
 			for _, group in pairs(ply:GetBodyGroups()) do
