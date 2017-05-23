@@ -125,6 +125,10 @@ end
 if CLIENT then
   local DOWN = Vector(0, 0, 1)
   hook.Add('PrePlayerDraw', 'SCPInsanity.SCP522', function(self)
+    if self.SCP522_CLIP then
+      self.SCP522_CLIP = false
+      render.PopCustomClipPlane()
+    end
     if not IsValid(self:GetNWEntity('SCP522.ENT')) then
       return 
     end

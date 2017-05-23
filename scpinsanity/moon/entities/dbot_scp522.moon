@@ -112,6 +112,9 @@ if SERVER
 if CLIENT
 	DOWN = Vector(0, 0, 1)
 	hook.Add 'PrePlayerDraw', 'SCPInsanity.SCP522', =>
+		if @SCP522_CLIP
+			@SCP522_CLIP = false
+			render.PopCustomClipPlane()
 		return if not IsValid(@GetNWEntity('SCP522.ENT'))
 		hp = @Health()
 		mhp = @GetMaxHealth()
