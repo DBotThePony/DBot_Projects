@@ -102,8 +102,7 @@ ENT.CreatePart = (num) =>
 	ent.RealPos = data.pos
 	ent\SetParent(self)
 	
-	if ent.CPPISetOwner then
-		ent\CPPISetOwner(@CPPIGetOwner())
+	ent\CPPISetOwner(@CPPIGetOwner()) if @CPPIGetOwner and ent.CPPISetOwner
 	
 	@props[num] = ent
 

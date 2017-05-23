@@ -89,7 +89,7 @@ ENT.CreatePart = function(self, num)
   ent:Activate()
   ent.RealPos = data.pos
   ent:SetParent(self)
-  if ent.CPPISetOwner then
+  if self.CPPIGetOwner and ent.CPPISetOwner then
     ent:CPPISetOwner(self:CPPIGetOwner())
   end
   self.props[num] = ent
