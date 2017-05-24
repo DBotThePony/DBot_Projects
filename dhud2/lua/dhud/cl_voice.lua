@@ -139,6 +139,7 @@ local function BuildVoicePanel()
 	VoicePanel:SetRenderInScreenshots(false)
 	VoicePanel:SetPos(DHUD2.GetPosition('voice'))
 	VoicePanel:SetSize(250, ScrH() - 350)
+	VoicePanel.Think = function() VoicePanel:SetPos(DHUD2.GetPosition('voice')) end
 end
 
 local function Check()
