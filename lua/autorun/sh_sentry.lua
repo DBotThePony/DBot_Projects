@@ -81,8 +81,7 @@ ENT.AdminOnly = true
 function ENT:Initialize()
 	if CLIENT then return end
 	self:SetModel('models/jaanus/wiretool/wiretool_siren.mdl')
-	self:PhysicsInit(SOLID_VPHYSICS)
-	self:SetSolid(SOLID_VPHYSICS)
+	self:PhysicsInitBox(Vector(-10, -10, 0), Vector(10, 10, 10))
 	self:SetMoveType(MOVETYPE_VPHYSICS)
 	
 	local phys = self:GetPhysicsObject()
