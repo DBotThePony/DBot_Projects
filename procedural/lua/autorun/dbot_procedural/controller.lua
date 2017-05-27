@@ -40,9 +40,15 @@ local DungeonGeneratorController
 do
   local _class_0
   local _base_0 = {
-    AddRoom = function(self, room)
+    AddRoom = function(self, room, position)
+      if position == nil then
+        position = Vector(0, 0, 0)
+      end
       table.insert(self.rooms, room)
-      return room:SetSkin(self.skin)
+      room:SetSkin(self.skin)
+      room:SetPos(self.pos, false)
+      room:SetRelativePos(position * self.__class.GRID_SIZE, false)
+      return room:UpdatePos()
     end,
     SetOwner = function(self, val)
       if val == nil then
@@ -96,7 +102,8 @@ do
       self.skin = skin
       self.random = DProcedural.Random(self.seed)
       self.rooms = { }
-      self:AddRoom(DungeonMainRoom(pos))
+      self.pos = pos
+      self:AddRoom(DungeonMainRoom())
       self.CPPIOwner = NULL
       self.entities = { }
     end,
@@ -111,6 +118,8 @@ do
     end
   })
   _base_0.__class = _class_0
+  local self = _class_0
+  self.GRID_SIZE = 400
   DungeonGeneratorController = _class_0
 end
 DProcedural.Generator = DungeonGeneratorController

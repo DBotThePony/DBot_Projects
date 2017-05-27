@@ -19,18 +19,23 @@ class DungeonMainRoom extends DProcedural.BasicRoom
     new: (...) => super(...)
 
 class DungeonGeneratorController
+    @GRID_SIZE = 400
     new: (seed = math.random(1, 1000), pos = Vector(), skin = DProcedural.BuildingSkin(@)) =>
         @seed = seed
         @skin = skin
         @random = DProcedural.Random(@seed)
         @rooms = {}
-        @AddRoom(DungeonMainRoom(pos))
+        @pos = pos
+        @AddRoom(DungeonMainRoom())
         @CPPIOwner = NULL
         @entities = {}
     
-    AddRoom: (room) =>
+    AddRoom: (room, position = Vector(0, 0, 0)) =>
         table.insert(@rooms, room)
         room\SetSkin(@skin)
+        room\SetPos(@pos, false)
+        room\SetRelativePos(position * @@GRID_SIZE, false)
+        room\UpdatePos()
     
     SetOwner: (val = NULL) =>
         @CPPIOwner = val

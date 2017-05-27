@@ -2,6 +2,44 @@ local BasicRoom
 do
   local _class_0
   local _base_0 = {
+    SetPos = function(self, pos, update)
+      if pos == nil then
+        pos = Vector()
+      end
+      if update == nil then
+        update = true
+      end
+      self.pos = pos
+      if update then
+        return self:UpdatePos()
+      end
+    end,
+    SetRelativePos = function(self, pos, update)
+      if pos == nil then
+        pos = Vector()
+      end
+      if update == nil then
+        update = true
+      end
+      self.relativePos = relativePos
+      if update then
+        return self:UpdatePos()
+      end
+    end,
+    UpdatePos = function(self)
+      if IsValid(self.floorModel) then
+        self.floorModel:SetPos(self.pos + self.floorModel.relativePos + self.relativePos)
+      end
+      if IsValid(self.ceilingModel) then
+        self.ceilingModel:SetMaterial(self.pos + self.ceilingModel.relativePos + self.relativePos)
+      end
+      for side, data in pairs(self.walls) do
+        for _index_0 = 1, #data do
+          local wall = data[_index_0]
+          wall:SetMaterial(wall.relativePos + self.pos + self.relativePos)
+        end
+      end
+    end,
     SetSkin = function(self, skin)
       self.skin = skin
       if not skin then
@@ -106,6 +144,7 @@ do
         end
         _with_0:SetModel(self.__class.FLOOR_MODEL)
         _with_0:SetPos(self.pos)
+        _with_0.relativePos = Vector()
         _with_0:Spawn()
         _with_0:Activate()
         _with_0:GetPhysicsObject():EnableMotion(false)
@@ -119,7 +158,8 @@ do
           _with_0:SetMaterial(self.skin:GetCeiling(self.ceilingModel))
         end
         _with_0:SetModel(self.__class.CEILING_MODEL)
-        _with_0:SetPos(self.pos + Vector(0, 0, self:GetHeight()))
+        _with_0.relativePos = Vector(0, 0, self:GetHeight())
+        _with_0:SetPos(self.pos + _with_0.relativePos)
         _with_0:Spawn()
         _with_0:Activate()
         _with_0:GetPhysicsObject():EnableMotion(false)
@@ -143,6 +183,7 @@ do
                 newEnt:SetMaterial(self.skin:GetWall(direction, newEnt))
               end
               newEnt:SetModel(model)
+              newEnt.relativePos = pos
               newEnt:SetPos(self.pos + pos)
               newEnt:SetAngles(ang)
               newEnt:Spawn()
@@ -226,6 +267,7 @@ do
       self.closeW = closeW
       self.closeE = closeE
       self.pos = pos
+      self.relativePos = Vector()
       self.CPPIOwner = NULL
       self.entities = { }
       self.walls = {

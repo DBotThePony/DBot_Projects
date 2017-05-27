@@ -85,6 +85,7 @@ class BasicRoom
         @closeW = closeW
         @closeE = closeE
         @pos = pos
+        @relativePos = Vector()
         @CPPIOwner = NULL
         @entities = {}
         @walls = {
@@ -93,6 +94,18 @@ class BasicRoom
             [DProcedural.DIRECTION_WEST]: {}
             [DProcedural.DIRECTION_EAST]: {}
         }
+    
+    SetPos: (pos = Vector(), update = true) =>
+        @pos = pos
+        @UpdatePos() if update
+    SetRelativePos: (pos = Vector(), update = true) =>
+        @relativePos = relativePos
+        @UpdatePos() if update
+    
+    UpdatePos: =>
+        @floorModel\SetPos(@pos + @floorModel.relativePos + @relativePos) if IsValid(@floorModel)
+        @ceilingModel\SetMaterial(@pos + @ceilingModel.relativePos + @relativePos) if IsValid(@ceilingModel)
+        wall\SetMaterial(wall.relativePos + @pos + @relativePos) for side, data in pairs @walls for wall in *data
     
     SetSkin: (skin) =>
         @skin = skin
@@ -139,6 +152,7 @@ class BasicRoom
             \SetMaterial(@skin\GetFloor(@floorModel)) if @skin
             \SetModel(@@FLOOR_MODEL)
             \SetPos(@pos)
+            .relativePos = Vector()
             \Spawn()
             \Activate()
             \GetPhysicsObject()\EnableMotion(false)
@@ -148,7 +162,8 @@ class BasicRoom
         with @ceilingModel
             \SetMaterial(@skin\GetCeiling(@ceilingModel)) if @skin
             \SetModel(@@CEILING_MODEL)
-            \SetPos(@pos + Vector(0, 0, @GetHeight()))
+            .relativePos = Vector(0, 0, @GetHeight())
+            \SetPos(@pos + .relativePos)
             \Spawn()
             \Activate()
             \GetPhysicsObject()\EnableMotion(false)
@@ -161,6 +176,7 @@ class BasicRoom
                 with newEnt
                     \SetMaterial(@skin\GetWall(direction, newEnt)) if @skin
                     \SetModel(model)
+                    .relativePos = pos
                     \SetPos(@pos + pos)
                     \SetAngles(ang)
                     \Spawn()
