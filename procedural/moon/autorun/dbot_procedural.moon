@@ -28,6 +28,19 @@ DProcedural.DIRECTION_EAST = 1
 DProcedural.DIRECTION_NORTH = 2
 DProcedural.DIRECTION_SOUTH = 3
 
+DProcedural.DIRECTION_NORTH_VECTOR = Vector(0, 1, 0)
+DProcedural.DIRECTION_SOUTH_VECTOR = Vector(0, -1, 0)
+DProcedural.DIRECTION_WEST_VECTOR = Vector(1, 0, 0)
+DProcedural.DIRECTION_EAST_VECTOR = Vector(-1, 0, 0)
+
+DProcedural.GetSideByVector = (vec) ->
+    switch vec
+        when DProcedural.DIRECTION_NORTH_VECTOR then return DProcedural.DIRECTION_NORTH
+        when DProcedural.DIRECTION_SOUTH_VECTOR then return DProcedural.DIRECTION_SOUTH
+        when DProcedural.DIRECTION_WEST_VECTOR then return DProcedural.DIRECTION_WEST
+        when DProcedural.DIRECTION_EAST_VECTOR then return DProcedural.DIRECTION_EAST
+    return DProcedural.DIRECTION_NORTH
+
 include 'autorun/dbot_procedural/random.lua'
 include 'autorun/dbot_procedural/space.lua'
 

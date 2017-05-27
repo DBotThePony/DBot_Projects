@@ -2,6 +2,9 @@ local BasicRoom
 do
   local _class_0
   local _base_0 = {
+    GetID = function(self)
+      return self.id
+    end,
     SetPos = function(self, pos, update)
       if pos == nil then
         pos = Vector()
@@ -21,7 +24,7 @@ do
       if update == nil then
         update = true
       end
-      self.relativePos = relativePos
+      self.relativePos = pos
       if update then
         return self:UpdatePos()
       end
@@ -104,15 +107,33 @@ do
       end
       local _exp_0 = side
       if DProcedural.DIRECTION_NORTH == _exp_0 then
-        local _ = not self.closeN
+        return not self.closeN
       elseif DProcedural.DIRECTION_SOUTH == _exp_0 then
-        local _ = not self.closeS
+        return not self.closeS
       elseif DProcedural.DIRECTION_EAST == _exp_0 then
-        local _ = not self.closeE
+        return not self.closeE
       elseif DProcedural.DIRECTION_WEST == _exp_0 then
-        local _ = not self.closeW
+        return not self.closeW
       end
       return false
+    end,
+    SetSideOpen = function(self, side, status)
+      if side == nil then
+        side = DProcedural.DIRECTION_NORTH
+      end
+      if status == nil then
+        status = false
+      end
+      local _exp_0 = side
+      if DProcedural.DIRECTION_NORTH == _exp_0 then
+        self.closeN = not status
+      elseif DProcedural.DIRECTION_SOUTH == _exp_0 then
+        self.closeS = not status
+      elseif DProcedural.DIRECTION_EAST == _exp_0 then
+        self.closeE = not status
+      elseif DProcedural.DIRECTION_WEST == _exp_0 then
+        self.closeW = not status
+      end
     end,
     UpdateOwner = function(self)
       local _list_0 = self.entities
@@ -143,7 +164,7 @@ do
           _with_0:SetMaterial(self.skin:GetFloor(self.floorModel))
         end
         _with_0:SetModel(self.__class.FLOOR_MODEL)
-        _with_0:SetPos(self.pos)
+        _with_0:SetPos(self.pos + self.relativePos)
         _with_0.relativePos = Vector()
         _with_0:Spawn()
         _with_0:Activate()
@@ -159,7 +180,7 @@ do
         end
         _with_0:SetModel(self.__class.CEILING_MODEL)
         _with_0.relativePos = Vector(0, 0, self:GetHeight())
-        _with_0:SetPos(self.pos + _with_0.relativePos)
+        _with_0:SetPos(self.pos + _with_0.relativePos + self.relativePos)
         _with_0:Spawn()
         _with_0:Activate()
         _with_0:GetPhysicsObject():EnableMotion(false)
@@ -184,7 +205,7 @@ do
               end
               newEnt:SetModel(model)
               newEnt.relativePos = pos
-              newEnt:SetPos(self.pos + pos)
+              newEnt:SetPos(self.pos + pos + self.relativePos)
               newEnt:SetAngles(ang)
               newEnt:Spawn()
               newEnt:Activate()
@@ -262,6 +283,8 @@ do
       if closeE == nil then
         closeE = true
       end
+      self.id = self.__class.NEXT_ROOM_ID
+      self.__class.NEXT_ROOM_ID = self.__class.NEXT_ROOM_ID + 1
       self.closeN = closeN
       self.closeS = closeS
       self.closeW = closeW
@@ -297,6 +320,7 @@ do
   self.EAST = Vector(100, 0, 0)
   self.CEILING_MODEL = 'models/hunter/plates/plate8x8.mdl'
   self.FLOOR_MODEL = 'models/hunter/plates/plate8x8.mdl'
+  self.NEXT_ROOM_ID = 0
   self.ReplicateWallStructure = function(self)
     local structure = self.WALL_STRUCTURE[DProcedural.DIRECTION_NORTH]
     do

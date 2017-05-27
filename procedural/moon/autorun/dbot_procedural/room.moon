@@ -27,6 +27,8 @@ class BasicRoom
     @CEILING_MODEL = 'models/hunter/plates/plate8x8.mdl'
     @FLOOR_MODEL = 'models/hunter/plates/plate8x8.mdl'
 
+    @NEXT_ROOM_ID = 0
+
     @ReplicateWallStructure: =>
         structure = @WALL_STRUCTURE[DProcedural.DIRECTION_NORTH]
         @WALL_STRUCTURE[DProcedural.DIRECTION_SOUTH] = for {:door, :pos, :ang, :model} in *structure
@@ -80,6 +82,8 @@ class BasicRoom
     @ReplicateWallStructure()
 
     new: (pos = Vector(), closeN = true, closeS = true, closeW = true, closeE = true) =>
+        @id = @@NEXT_ROOM_ID
+        @@NEXT_ROOM_ID += 1
         @closeN = closeN
         @closeS = closeS
         @closeW = closeW
@@ -95,11 +99,12 @@ class BasicRoom
             [DProcedural.DIRECTION_EAST]: {}
         }
     
+    GetID: => @id
     SetPos: (pos = Vector(), update = true) =>
         @pos = pos
         @UpdatePos() if update
     SetRelativePos: (pos = Vector(), update = true) =>
-        @relativePos = relativePos
+        @relativePos = pos
         @UpdatePos() if update
     
     UpdatePos: =>
@@ -131,11 +136,17 @@ class BasicRoom
     IsSideClosed: (side = DProcedural.DIRECTION_NORTH) => not @IsSideOpen(side)
     IsSideOpen: (side = DProcedural.DIRECTION_NORTH) =>
         switch side
-            when DProcedural.DIRECTION_NORTH then not @closeN
-            when DProcedural.DIRECTION_SOUTH then not @closeS
-            when DProcedural.DIRECTION_EAST then not @closeE
-            when DProcedural.DIRECTION_WEST then not @closeW
+            when DProcedural.DIRECTION_NORTH then return not @closeN
+            when DProcedural.DIRECTION_SOUTH then return not @closeS
+            when DProcedural.DIRECTION_EAST then return not @closeE
+            when DProcedural.DIRECTION_WEST then return not @closeW
         return false
+    SetSideOpen: (side = DProcedural.DIRECTION_NORTH, status = false) =>
+        switch side
+            when DProcedural.DIRECTION_NORTH then @closeN = not status
+            when DProcedural.DIRECTION_SOUTH then @closeS = not status
+            when DProcedural.DIRECTION_EAST then @closeE = not status
+            when DProcedural.DIRECTION_WEST then @closeW = not status
     
     UpdateOwner: =>
         for ent in *@entities
@@ -151,7 +162,7 @@ class BasicRoom
         with @floorModel
             \SetMaterial(@skin\GetFloor(@floorModel)) if @skin
             \SetModel(@@FLOOR_MODEL)
-            \SetPos(@pos)
+            \SetPos(@pos + @relativePos)
             .relativePos = Vector()
             \Spawn()
             \Activate()
@@ -163,7 +174,7 @@ class BasicRoom
             \SetMaterial(@skin\GetCeiling(@ceilingModel)) if @skin
             \SetModel(@@CEILING_MODEL)
             .relativePos = Vector(0, 0, @GetHeight())
-            \SetPos(@pos + .relativePos)
+            \SetPos(@pos + .relativePos + @relativePos)
             \Spawn()
             \Activate()
             \GetPhysicsObject()\EnableMotion(false)
@@ -177,7 +188,7 @@ class BasicRoom
                     \SetMaterial(@skin\GetWall(direction, newEnt)) if @skin
                     \SetModel(model)
                     .relativePos = pos
-                    \SetPos(@pos + pos)
+                    \SetPos(@pos + pos + @relativePos)
                     \SetAngles(ang)
                     \Spawn()
                     \Activate()
