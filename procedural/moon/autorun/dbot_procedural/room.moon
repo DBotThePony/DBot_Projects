@@ -1,0 +1,122 @@
+
+--
+-- Copyright (C) 2017 DBot
+--
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+--
+--     http://www.apache.org/licenses/LICENSE-2.0
+--
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
+--
+
+class BasicRoom
+    @MINS = Vector(-190, -190, 0)
+    @MAXS = Vector(190, 190, 190)
+
+    @NORTH = Vector(0, 100, 0)
+    @SOUTH = Vector(0, -100, 0)
+    @WEST = Vector(-100, 0, 0)
+    @EAST = Vector(100, 0, 0)
+
+    @CEILING_MODEL = 'models/hunter/plates/plate8x8.mdl'
+    @FLOOR_MODEL = 'models/hunter/plates/plate8x8.mdl'
+
+    @WALL_STRUCTURE = {
+        [DProcedural.DIRECTION_NORTH]: {
+            {
+                'door': false
+                'pos': Vector(190 - 95 / 2, 190, 95)
+                'ang': Angle(0, 180, 90)
+                'model': 'models/hunter/plates/plate3x8.mdl'
+            }
+        }
+    }
+
+    new: (pos = Vector(), closeN = true, closeS = true, closeW = true, closeE = true) =>
+        @closeN = closeN
+        @closeS = closeS
+        @closeW = closeW
+        @closeE = closeE
+        @pos = pos
+        @CPPIOwner = NULL
+        @entities = {}
+    
+    SetOwner: (owner = NULL) =>
+        @CPPIOwner = owner
+        for ent in *@entities
+            ent\CPPISetOwner(owner) if ent\IsValid() and ent.CPPISetOwner
+    GetOwner: => @CPPIOwner
+    
+    IsNorthOpen: => not @closeN
+    IsSouthOpen: => not @closeS
+    IsEastOpen: => not @closeE
+    IsWestOpen: => not @closeW
+    
+    UpdateOwner: =>
+        for ent in *@entities
+            ent\CPPISetOwner(@GetOwner()) if ent\IsValid() and ent.CPPISetOwner
+    Remove: =>
+        for ent in *@entities
+            ent\Remove() if ent\IsValid()
+        @entities = {}
+    SpawnInWorld: (tableTarget) =>
+        @floorModel = ents.Create('prop_physics')
+        table.insert(tableTarget, @floorModel)
+        table.insert(@entities, @floorModel)
+        with @floorModel
+            \SetModel(@@FLOOR_MODEL)
+            \SetPos(@pos)
+            \Spawn()
+            \Activate()
+            \GetPhysicsObject()\EnableMotion(false)
+        @ceilingModel = ents.Create('prop_physics')
+        table.insert(tableTarget, @ceilingModel)
+        table.insert(@entities, @ceilingModel)
+        with @ceilingModel
+            \SetModel(@@CEILING_MODEL)
+            \SetPos(@pos + Vector(0, 0, @GetHeight()))
+            \Spawn()
+            \Activate()
+            \GetPhysicsObject()\EnableMotion(false)
+        for direction, data in pairs @@WALL_STRUCTURE
+            for {:door, :pos, :ang, :model} in *data
+                newEnt = ents.Create('prop_physics')
+                table.insert(tableTarget, newEnt)
+                table.insert(@entities, newEnt)
+                with newEnt
+                    \SetModel(model)
+                    \SetPos(@pos + pos)
+                    \SetAngles(ang)
+                    \Spawn()
+                    \Activate()
+                    \GetPhysicsObject()\EnableMotion(false)
+        @UpdateOwner()
+
+    GetMins: => @@MINS
+    GetMaxs: => @@MAXS
+    GetHeight: => @GetMaxs().z - @GetMins().z
+    GetWest: => @@WEST
+    GetEast: => @@EAST
+    GetNorth: => @@NORTH
+    GetSouth: => @@SOUTH
+
+    GetSideAt: (side = DProcedural.DIRECTION_NORTH) =>
+        switch side
+            when DProcedural.DIRECTION_NORTH
+                @GetNorth()
+            when DProcedural.DIRECTION_SOUTH
+                @GetSouth()
+            when DProcedural.DIRECTION_EAST
+                @GetEast()
+            when DProcedural.DIRECTION_WEST
+                @GetWest()
+            else
+                @GetNorth()
+
+DProcedural.BasicRoom = BasicRoom
