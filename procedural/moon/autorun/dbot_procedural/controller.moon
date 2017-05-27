@@ -23,9 +23,14 @@ class DungeonGeneratorController
         @seed = seed
         @skin = skin
         @random = DProcedural.Random(@seed)
-        @rooms = {DungeonMainRoom(pos)}
+        @rooms = {}
+        @AddRoom(DungeonMainRoom(pos))
         @CPPIOwner = NULL
         @entities = {}
+    
+    AddRoom: (room) =>
+        table.insert(@rooms, room)
+        room\SetSkin(@skin)
     
     SetOwner: (val = NULL) =>
         @CPPIOwner = val

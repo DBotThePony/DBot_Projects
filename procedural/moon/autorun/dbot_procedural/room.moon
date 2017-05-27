@@ -27,6 +27,31 @@ class BasicRoom
     @CEILING_MODEL = 'models/hunter/plates/plate8x8.mdl'
     @FLOOR_MODEL = 'models/hunter/plates/plate8x8.mdl'
 
+    @ReplicateWallStructure: =>
+        structure = @WALL_STRUCTURE[DProcedural.DIRECTION_NORTH]
+        @WALL_STRUCTURE[DProcedural.DIRECTION_SOUTH] = for {:door, :pos, :ang, :model} in *structure
+            {:x, :y, :z} = pos
+            y = -y
+            {:door, pos: Vector(x, y, z), :ang, :model}
+
+        @WALL_STRUCTURE[DProcedural.DIRECTION_WEST] = for {:door, :pos, :ang, :model} in *structure
+            newPos = Vector(pos)
+            {:p, :y, :r} = ang
+            newAng = Angle(p, y, r)
+            newAng\RotateAroundAxis(newAng\Right(), 90)
+            newPos\Rotate(newAng)
+            newPos.x *= 2
+            {:door, pos: newPos, ang: newAng, :model}
+
+        @WALL_STRUCTURE[DProcedural.DIRECTION_EAST] = for {:door, :pos, :ang, :model} in *structure
+            newPos = Vector(pos)
+            {:p, :y, :r} = ang
+            newAng = Angle(p, y, r)
+            newAng\RotateAroundAxis(newAng\Right(), -90)
+            newPos\Rotate(newAng)
+            newPos.x *= 2
+            {:door, pos: newPos, ang: newAng, :model}
+
     @WALL_STRUCTURE = {
         [DProcedural.DIRECTION_NORTH]: {
             {
@@ -35,8 +60,24 @@ class BasicRoom
                 'ang': Angle(0, 180, 90)
                 'model': 'models/hunter/plates/plate3x8.mdl'
             }
+
+            {
+                'door': false
+                'pos': Vector(-190 + 95 / 2, 190, 95)
+                'ang': Angle(0, 180, 90)
+                'model': 'models/hunter/plates/plate3x8.mdl'
+            }
+
+            {
+                'door': true
+                'pos': Vector(0, 190, 95)
+                'ang': Angle(0, 180, 90)
+                'model': 'models/hunter/plates/plate3x8.mdl'
+            }
         }
     }
+
+    @ReplicateWallStructure()
 
     new: (pos = Vector(), closeN = true, closeS = true, closeW = true, closeE = true) =>
         @closeN = closeN
@@ -46,7 +87,24 @@ class BasicRoom
         @pos = pos
         @CPPIOwner = NULL
         @entities = {}
+        @walls = {
+            [DProcedural.DIRECTION_NORTH]: {}
+            [DProcedural.DIRECTION_SOUTH]: {}
+            [DProcedural.DIRECTION_WEST]: {}
+            [DProcedural.DIRECTION_EAST]: {}
+        }
     
+    SetSkin: (skin) =>
+        @skin = skin
+        return if not skin
+        @UpdateSkin()
+    
+    UpdateSkin: =>
+        return if not @skin
+        @floorModel\SetMaterial(@skin\GetFloor(@floorModel)) if IsValid(@floorModel)
+        @ceilingModel\SetMaterial(@skin\GetCeiling(@ceilingModel)) if IsValid(@ceilingModel)
+        wall\SetMaterial(@skin\GetWall(side, wall)) for side, data in pairs @walls for wall in *data
+
     SetOwner: (owner = NULL) =>
         @CPPIOwner = owner
         for ent in *@entities
@@ -57,6 +115,14 @@ class BasicRoom
     IsSouthOpen: => not @closeS
     IsEastOpen: => not @closeE
     IsWestOpen: => not @closeW
+    IsSideClosed: (side = DProcedural.DIRECTION_NORTH) => not @IsSideOpen(side)
+    IsSideOpen: (side = DProcedural.DIRECTION_NORTH) =>
+        switch side
+            when DProcedural.DIRECTION_NORTH then not @closeN
+            when DProcedural.DIRECTION_SOUTH then not @closeS
+            when DProcedural.DIRECTION_EAST then not @closeE
+            when DProcedural.DIRECTION_WEST then not @closeW
+        return false
     
     UpdateOwner: =>
         for ent in *@entities
@@ -70,6 +136,7 @@ class BasicRoom
         table.insert(tableTarget, @floorModel)
         table.insert(@entities, @floorModel)
         with @floorModel
+            \SetMaterial(@skin\GetFloor(@floorModel)) if @skin
             \SetModel(@@FLOOR_MODEL)
             \SetPos(@pos)
             \Spawn()
@@ -79,6 +146,7 @@ class BasicRoom
         table.insert(tableTarget, @ceilingModel)
         table.insert(@entities, @ceilingModel)
         with @ceilingModel
+            \SetMaterial(@skin\GetCeiling(@ceilingModel)) if @skin
             \SetModel(@@CEILING_MODEL)
             \SetPos(@pos + Vector(0, 0, @GetHeight()))
             \Spawn()
@@ -86,17 +154,21 @@ class BasicRoom
             \GetPhysicsObject()\EnableMotion(false)
         for direction, data in pairs @@WALL_STRUCTURE
             for {:door, :pos, :ang, :model} in *data
+                continue if door and @IsSideOpen(direction)
                 newEnt = ents.Create('prop_physics')
                 table.insert(tableTarget, newEnt)
                 table.insert(@entities, newEnt)
                 with newEnt
+                    \SetMaterial(@skin\GetWall(direction, newEnt)) if @skin
                     \SetModel(model)
                     \SetPos(@pos + pos)
                     \SetAngles(ang)
                     \Spawn()
                     \Activate()
                     \GetPhysicsObject()\EnableMotion(false)
+                table.insert(@walls[direction], newEnt) if @walls[direction]
         @UpdateOwner()
+        timer.Simple 0, -> @UpdateSkin()
 
     GetMins: => @@MINS
     GetMaxs: => @@MAXS

@@ -23,8 +23,8 @@ DProcedural.SIDE_RIGHT = 1
 DProcedural.SIDE_FORWARD = 2
 DProcedural.SIDE_BACKWARD = 3
 
-DProcedural.SIDE_WEST = 0
-DProcedural.SIDE_EAST = 1
+DProcedural.DIRECTION_WEST = 0
+DProcedural.DIRECTION_EAST = 1
 DProcedural.DIRECTION_NORTH = 2
 DProcedural.DIRECTION_SOUTH = 3
 

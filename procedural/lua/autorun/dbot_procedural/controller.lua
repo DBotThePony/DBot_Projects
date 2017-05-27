@@ -40,6 +40,10 @@ local DungeonGeneratorController
 do
   local _class_0
   local _base_0 = {
+    AddRoom = function(self, room)
+      table.insert(self.rooms, room)
+      return room:SetSkin(self.skin)
+    end,
     SetOwner = function(self, val)
       if val == nil then
         val = NULL
@@ -91,9 +95,8 @@ do
       self.seed = seed
       self.skin = skin
       self.random = DProcedural.Random(self.seed)
-      self.rooms = {
-        DungeonMainRoom(pos)
-      }
+      self.rooms = { }
+      self:AddRoom(DungeonMainRoom(pos))
       self.CPPIOwner = NULL
       self.entities = { }
     end,
