@@ -24,7 +24,15 @@ ENT.Author = 'DBot'
 ENT.Category = 'TF2'
 
 ENT.BuildModel1 = 'models/buildables/sentry1_heavy.mdl'
+ENT.IdleModel1 = 'models/buildables/sentry1.mdl'
 ENT.BuildModel2 = 'models/buildables/sentry2_heavy.mdl'
+ENT.IdleModel2 = 'models/buildables/sentry2.mdl'
 ENT.BuildModel3 = 'models/buildables/sentry3_heavy.mdl'
+ENT.IdleModel3 = 'models/buildables/sentry3.mdl'
 
 ENT.BuildTime = 5
+
+ENT.SetupDataTables = =>
+    @BaseClass.SetupDataTables(@)
+    @NetworkVar('Int', 2, 'AimPitch')
+    @NetworkVar('Int', 3, 'AimYaw')

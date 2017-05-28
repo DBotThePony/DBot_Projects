@@ -15,14 +15,16 @@
 -- limitations under the License.
 --
 
+include 'shared.lua'
+
 ENT.Initialize = =>
-    @SetModel(@BuildModel1)
+    @SetModel(@IdleModel1)
     @SetHP(@HealthLevel1)
     @SetMHP(@HealthLevel1)
     
     @buildSequence = @LookupSequence('build')
     @upgradeSequence = @LookupSequence('upgrade')
-    @lastSeqModel = @BuildModel1
+    @lastSeqModel = @IdleModel1
     @lastAnimTick = CurTime()
 
 ENT.Think = =>
@@ -40,4 +42,3 @@ ENT.Draw = =>
     @lastAnimTick = ctime
 
     @DrawModel()
-    

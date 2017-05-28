@@ -15,25 +15,32 @@
 -- limitations under the License.
 --
 
+include 'shared.lua'
+AddCSLuaFile 'shared.lua'
+
 ENT.Initialize = =>
-    @SetModel(@BuildModel1)
+    @SetModel(@IdleModel1)
     @SetHP(@HealthLevel1)
     @SetMHP(@HealthLevel1)
     @mLevel = 1
 
-    @SetMoveType(MOVETYPE_NONE)
     @PhysicsInitBox(@BuildingMins, @BuildingMaxs)
+    @SetMoveType(MOVETYPE_NONE)
+    @GetPhysicsObject()\EnableMotion(false)
 
     @SetIsBuilding(false)
     @SetnwLevel(1)
     @SetBuildSpeedup(false)
-    @buildSequence = @LookupSequence('build')
-    @upgradeSequence = @LookupSequence('upgrade')
-    @idleSequence = @LookupSequence(@IDLE_ANIM)
     @lastThink = CurTime()
     @buildSpeedupUntil = 0
     @buildFinishAt = 0
     @upgradeFinishAt = 0
+    @UpdateSequenceList()
+
+ENT.UpdateSequenceList = =>
+    @buildSequence = @LookupSequence('build')
+    @upgradeSequence = @LookupSequence('upgrade')
+    @idleSequence = @LookupSequence(@IDLE_ANIM)
 
 ENT.GetLevel = => @GetnwLevel()
 ENT.SetLevel = (val = 1, playAnimation = true) =>
@@ -42,32 +49,35 @@ ENT.SetLevel = (val = 1, playAnimation = true) =>
     @mLevel = val
     switch val
         when 1
-            @SetModel(@BuildModel1)
+            @SetModel(@IdleModel1)
             @SetHP(@HealthLevel1)
             @SetMHP(@HealthLevel1)
-            @buildSequence = @LookupSequence('build')
+            @UpdateSequenceList()
         when 2
-            @SetModel(@BuildModel2)
+            @SetModel(@IdleModel2)
             @SetHP(@HealthLevel2) if @GetHP() == @GetMHP()
             @SetMHP(@HealthLevel2)
-            @upgradeSequence = @LookupSequence('upgrade')
+            @UpdateSequenceList()
             @PlayUpgradeAnimation() if playAnimation
         when 3
-            @SetModel(@BuildModel3)
+            @SetModel(@IdleModel3)
             @SetHP(@HealthLevel3)
             @SetMHP(@HealthLevel3)
-            @upgradeSequence = @LookupSequence('upgrade')
+            @UpdateSequenceList()
             @PlayUpgradeAnimation() if playAnimation
 
 ENT.PlayUpgradeAnimation = =>
     return false if @GetLevel() == 1
     @SetIsUpgrading(true)
-    @ResetSequence(@upgradeSequence)
     switch @GetLevel()
         when 2
             @upgradeFinishAt = CurTime() + @UPGRADE_TIME_2
+            @SetModel(@BuildModel2)
         when 3
             @upgradeFinishAt = CurTime() + @UPGRADE_TIME_3
+            @SetModel(@BuildModel3)
+    @UpdateSequenceList()
+    @ResetSequence(@upgradeSequence)
     return true
 
 ENT.SetBuildStatus = (status = false) =>
@@ -75,12 +85,16 @@ ENT.SetBuildStatus = (status = false) =>
     return false if @GetIsBuilding() == status
     @SetIsBuilding(status)
     if status
+        @SetModel(@BuildModel1)
+        @UpdateSequenceList()
         @SetBuildSpeedup(false)
         @buildSpeedupUntil = 0
         @ResetSequence(@buildSequence)
         @buildFinishAt = CurTime() + @BuildTime
         @OnBuildStart()
     else
+        @SetModel(@IdleModel1)
+        @UpdateSequenceList()
         @ResetSequence(@idleSequence)
         @OnBuildFinish()
     return true
@@ -101,11 +115,20 @@ ENT.Think = =>
         if @buildFinishAt < cTime
             @SetBuildSpeedup(false)
             @SetIsBuilding(false)
+            @SetModel(@IdleModel1)
+            @UpdateSequenceList()
             @ResetSequence(@idleSequence)
             @OnBuildFinish()
     elseif @GetIsUpgrading()
         if @upgradeFinishAt < cTime
             @SetBuildSpeedup(false)
             @SetIsUpgrading(false)
+            switch @GetLevel()
+                when 2
+                    @SetModel(@IdleModel2)
+                when 3
+                    @SetModel(@IdleModel3)
+            @UpdateSequenceList()
             @ResetSequence(@idleSequence)
             @OnUpgradeFinish()
+            

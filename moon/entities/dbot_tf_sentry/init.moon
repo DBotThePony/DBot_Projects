@@ -15,6 +15,9 @@
 -- limitations under the License.
 --
 
+include 'shared.lua'
+AddCSLuaFile 'shared.lua'
+
 util.AddNetworkString('DTF2.SentryWing')
 
 VALID_TARGETS = {}
@@ -34,7 +37,7 @@ ENT.Initialize = =>
     @BaseClass.Initialize(@)
     @targetAngle = Angle(0, 0, 0)
     @currentAngle = Angle(0, 0, 0)
-    @moveSpeed = 0.1
+    @moveSpeed = 2
     @idleAnim = true
     @idleAngle = Angle(0, 0, 0)
     @idleDirection = false
@@ -43,6 +46,7 @@ ENT.Initialize = =>
     @currentTarget = NULL
     @idleWaitOnAngle = 0
     @lastSentryThink = CurTime()
+    @nextTargetUpdate = 0
 
 ENT.GetTargetsVisible = =>
     output = {}
@@ -114,18 +118,21 @@ ENT.Think = =>
         @currentTarget = NULL
         return
     
-    newTarget = @GetFirstVisible()
-    if newTarget ~= @currentTarget
-        @currentTarget = newTarget
-        if IsValid(newTarget)
-            net.Start('DTF2.SentryWing', true)
-            net.WriteEntity(@)
-            net.WriteEntity(newTarget)
-            net.Broadcast()
+    if @nextTargetUpdate < cTime
+        @nextTargetUpdate = cTime + 0.1
+        newTarget = @GetFirstVisible()
+        if newTarget ~= @currentTarget
+            @currentTarget = newTarget
+            if IsValid(newTarget)
+                net.Start('DTF2.SentryWing', true)
+                net.WriteEntity(@)
+                net.WriteEntity(newTarget)
+                net.Broadcast()
     
     if IsValid(@currentTarget)
+        @currentTargetPosition = @currentTarget\GetPos() + @currentTarget\OBBCenter()
         @idleWaitOnAngle = cTime + 2
-        @targetAngle = (@GetPos() - @currentTarget\GetPos())\Angle()
+        @targetAngle = (@currentTargetPosition - @GetPos())\Angle()
         @idleAngle = @targetAngle
         @idleAnim = false
         @idleDirection = false
@@ -140,7 +147,16 @@ ENT.Think = =>
         @idleDirection = not @idleDirection if @idleYaw > 30 or @idleYaw < -30
         {:p, :y, :r} = @idleAngle
         @targetAngle = Angle(p, y + @idleYaw, r)
-    @currentAngle = LerpAngle(@moveSpeed, @currentAngle, @targetAngle)
+    
+    diffPitch = math.Clamp(math.AngleDifference(@currentAngle.p, @targetAngle.p), -2, 2)
+    diffYaw = math.Clamp(math.AngleDifference(@currentAngle.y, @targetAngle.y), -2, 2)
+    @currentAngle = Angle(@currentAngle.p - diffPitch, @currentAngle.y - diffYaw, 0)
     {:p, :y, :r} = @currentAngle
-    @SetPoseParameter('aim_yaw', y)
-    @SetPoseParameter('aim_pitch', p)
+    {p: cp, y: cy, r: cr} = @GetAngles()
+    posePitch = math.floor(math.NormalizeAngle(cp - p))
+    poseYaw = math.floor(math.NormalizeAngle(cy - y))
+    
+    @SetAimPitch(posePitch)
+    @SetAimYaw(poseYaw)
+    @NextThink(cTime)
+    return true

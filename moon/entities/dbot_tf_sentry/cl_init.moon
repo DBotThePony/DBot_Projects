@@ -15,4 +15,24 @@
 -- limitations under the License.
 --
 
+include 'shared.lua'
+
+ENT.Initialize = =>
+    @BaseClass.Initialize(@)
+    @SetAimPitch(0)
+    @SetAimYaw(0)
+
+ENT.Draw = =>
+    @SetPoseParameter('aim_pitch', @GetAimPitch())
+    @SetPoseParameter('aim_yaw', @GetAimYaw())
+    @InvalidateBoneCache()
+    @BaseClass.Draw(@)
+
 net.Receive 'DTF2.SentryWing', ->
+    sentry = net.ReadEntity()
+    return if not IsValid
+    target = net.ReadEntity()
+    if target ~= LocalPlayer()
+        sentry\EmitSound('weapons/sentry_spot.wav', SNDLVL_85dB)
+    else
+        sentry\EmitSound('weapons/sentry_spot_client.wav', SNDLVL_105dB)
