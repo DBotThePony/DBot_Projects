@@ -109,6 +109,15 @@ ENT.GetFirstVisible = =>
 
     return NULL
 
+ENT.PlayScanSound = =>
+    switch @GetLevel()
+        when 1
+            @EmitSound('weapons/sentry_scan.wav')
+        when 2
+            @EmitSound('weapons/sentry_scan2.wav')
+        when 3
+            @EmitSound('weapons/sentry_scan3.wav')
+
 ENT.Think = =>
     cTime = CurTime()
     delta = cTime - @lastSentryThink
@@ -132,7 +141,7 @@ ENT.Think = =>
     if IsValid(@currentTarget)
         @currentTargetPosition = @currentTarget\GetPos() + @currentTarget\OBBCenter()
         @idleWaitOnAngle = cTime + 2
-        @targetAngle = (@currentTargetPosition - @GetPos())\Angle()
+        @targetAngle = (@currentTargetPosition - @GetPos() - @obbcenter)\Angle()
         @idleAngle = @targetAngle
         @idleAnim = false
         @idleDirection = false
@@ -140,23 +149,31 @@ ENT.Think = =>
     else
         @idleAnim = true
         if @idleWaitOnAngle < cTime
-            @idleAngle = Angle(0, 0, 0)
+            @idleAngle = @GetAngles()
         
-        @idleYaw += delta if @idleDirection
-        @idleYaw -= delta if not @idleDirection
-        @idleDirection = not @idleDirection if @idleYaw > 30 or @idleYaw < -30
+        @idleYaw += delta * @SENTRY_SCAN_YAW_MULT if @idleDirection
+        @idleYaw -= delta * @SENTRY_SCAN_YAW_MULT if not @idleDirection
+        if @idleYaw > @SENTRY_SCAN_YAW_CONST or @idleYaw < -@SENTRY_SCAN_YAW_CONST
+            @idleDirection = not @idleDirection
+            @PlayScanSound()
         {:p, :y, :r} = @idleAngle
         @targetAngle = Angle(p, y + @idleYaw, r)
     
-    diffPitch = math.Clamp(math.AngleDifference(@currentAngle.p, @targetAngle.p), -2, 2)
-    diffYaw = math.Clamp(math.AngleDifference(@currentAngle.y, @targetAngle.y), -2, 2)
-    @currentAngle = Angle(@currentAngle.p - diffPitch, @currentAngle.y - diffYaw, 0)
-    {:p, :y, :r} = @currentAngle
+    diffPitch = math.Clamp(math.AngleDifference(@currentAngle.p, @targetAngle.p), -1, 1)
+    diffYaw = math.Clamp(math.AngleDifference(@currentAngle.y, @targetAngle.y), -1, 1)
+    newPitch = @currentAngle.p - diffPitch * delta * @SENTRY_ANGLE_CHANGE_MULT
+    newYaw = @currentAngle.y - diffYaw * delta * @SENTRY_ANGLE_CHANGE_MULT
+    @currentAngle = Angle(newPitch, newYaw, 0)
     {p: cp, y: cy, r: cr} = @GetAngles()
-    posePitch = math.floor(math.NormalizeAngle(cp - p))
-    poseYaw = math.floor(math.NormalizeAngle(cy - y))
+    posePitch = math.floor(math.NormalizeAngle(cp - newPitch))
+    poseYaw = math.floor(math.NormalizeAngle(cy - newYaw))
     
     @SetAimPitch(posePitch)
     @SetAimYaw(poseYaw)
+
+    if IsValid(@currentTarget)
+        lookingAtTarget = math.floor(newPitch) == math.floor(@targetAngle.p) and math.floor(newYaw) == math.floor(@targetAngle.y)
+        print lookingAtTarget
+        print math.floor(newPitch), math.floor(@targetAngle.p), math.floor(newYaw), math.floor(@targetAngle.y)
     @NextThink(cTime)
     return true

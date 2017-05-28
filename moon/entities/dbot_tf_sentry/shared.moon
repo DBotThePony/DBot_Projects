@@ -32,6 +32,10 @@ ENT.IdleModel3 = 'models/buildables/sentry3.mdl'
 
 ENT.BuildTime = 5
 
+ENT.SENTRY_ANGLE_CHANGE_MULT = 30
+ENT.SENTRY_SCAN_YAW_MULT = 30
+ENT.SENTRY_SCAN_YAW_CONST = 30
+
 ENT.SetupDataTables = =>
     @BaseClass.SetupDataTables(@)
     @NetworkVar('Int', 2, 'AimPitch')

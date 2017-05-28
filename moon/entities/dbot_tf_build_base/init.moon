@@ -27,6 +27,7 @@ ENT.Initialize = =>
     @PhysicsInitBox(@BuildingMins, @BuildingMaxs)
     @SetMoveType(MOVETYPE_NONE)
     @GetPhysicsObject()\EnableMotion(false)
+    @obbcenter = @OBBCenter()
 
     @SetIsBuilding(false)
     @SetnwLevel(1)

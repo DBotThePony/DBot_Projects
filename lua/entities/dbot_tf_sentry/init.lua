@@ -164,6 +164,16 @@ ENT.GetFirstVisible = function(self)
   end
   return NULL
 end
+ENT.PlayScanSound = function(self)
+  local _exp_0 = self:GetLevel()
+  if 1 == _exp_0 then
+    return self:EmitSound('weapons/sentry_scan.wav')
+  elseif 2 == _exp_0 then
+    return self:EmitSound('weapons/sentry_scan2.wav')
+  elseif 3 == _exp_0 then
+    return self:EmitSound('weapons/sentry_scan3.wav')
+  end
+end
 ENT.Think = function(self)
   local cTime = CurTime()
   local delta = cTime - self.lastSentryThink
@@ -189,7 +199,7 @@ ENT.Think = function(self)
   if IsValid(self.currentTarget) then
     self.currentTargetPosition = self.currentTarget:GetPos() + self.currentTarget:OBBCenter()
     self.idleWaitOnAngle = cTime + 2
-    self.targetAngle = (self.currentTargetPosition - self:GetPos()):Angle()
+    self.targetAngle = (self.currentTargetPosition - self:GetPos() - self.obbcenter):Angle()
     self.idleAngle = self.targetAngle
     self.idleAnim = false
     self.idleDirection = false
@@ -197,16 +207,17 @@ ENT.Think = function(self)
   else
     self.idleAnim = true
     if self.idleWaitOnAngle < cTime then
-      self.idleAngle = Angle(0, 0, 0)
+      self.idleAngle = self:GetAngles()
     end
     if self.idleDirection then
-      self.idleYaw = self.idleYaw + delta
+      self.idleYaw = self.idleYaw + (delta * self.SENTRY_SCAN_YAW_MULT)
     end
     if not self.idleDirection then
-      self.idleYaw = self.idleYaw - delta
+      self.idleYaw = self.idleYaw - (delta * self.SENTRY_SCAN_YAW_MULT)
     end
-    if self.idleYaw > 30 or self.idleYaw < -30 then
+    if self.idleYaw > self.SENTRY_SCAN_YAW_CONST or self.idleYaw < -self.SENTRY_SCAN_YAW_CONST then
       self.idleDirection = not self.idleDirection
+      self:PlayScanSound()
     end
     local p, y, r
     do
@@ -215,23 +226,25 @@ ENT.Think = function(self)
     end
     self.targetAngle = Angle(p, y + self.idleYaw, r)
   end
-  local diffPitch = math.Clamp(math.AngleDifference(self.currentAngle.p, self.targetAngle.p), -2, 2)
-  local diffYaw = math.Clamp(math.AngleDifference(self.currentAngle.y, self.targetAngle.y), -2, 2)
-  self.currentAngle = Angle(self.currentAngle.p - diffPitch, self.currentAngle.y - diffYaw, 0)
-  local p, y, r
-  do
-    local _obj_0 = self.currentAngle
-    p, y, r = _obj_0.p, _obj_0.y, _obj_0.r
-  end
+  local diffPitch = math.Clamp(math.AngleDifference(self.currentAngle.p, self.targetAngle.p), -1, 1)
+  local diffYaw = math.Clamp(math.AngleDifference(self.currentAngle.y, self.targetAngle.y), -1, 1)
+  local newPitch = self.currentAngle.p - diffPitch * delta * self.SENTRY_ANGLE_CHANGE_MULT
+  local newYaw = self.currentAngle.y - diffYaw * delta * self.SENTRY_ANGLE_CHANGE_MULT
+  self.currentAngle = Angle(newPitch, newYaw, 0)
   local cp, cy, cr
   do
     local _obj_0 = self:GetAngles()
     cp, cy, cr = _obj_0.p, _obj_0.y, _obj_0.r
   end
-  local posePitch = math.floor(math.NormalizeAngle(cp - p))
-  local poseYaw = math.floor(math.NormalizeAngle(cy - y))
+  local posePitch = math.floor(math.NormalizeAngle(cp - newPitch))
+  local poseYaw = math.floor(math.NormalizeAngle(cy - newYaw))
   self:SetAimPitch(posePitch)
   self:SetAimYaw(poseYaw)
+  if IsValid(self.currentTarget) then
+    local lookingAtTarget = math.floor(newPitch) == math.floor(self.targetAngle.p) and math.floor(newYaw) == math.floor(self.targetAngle.y)
+    print(lookingAtTarget)
+    print(math.floor(newPitch), math.floor(self.targetAngle.p), math.floor(newYaw), math.floor(self.targetAngle.y))
+  end
   self:NextThink(cTime)
   return true
 end
