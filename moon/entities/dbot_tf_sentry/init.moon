@@ -159,8 +159,8 @@ ENT.Think = =>
         {:p, :y, :r} = @idleAngle
         @targetAngle = Angle(p, y + @idleYaw, r)
     
-    diffPitch = math.Clamp(math.AngleDifference(@currentAngle.p, @targetAngle.p), -1, 1)
-    diffYaw = math.Clamp(math.AngleDifference(@currentAngle.y, @targetAngle.y), -1, 1)
+    diffPitch = math.Clamp(math.AngleDifference(@currentAngle.p, @targetAngle.p), -2, 2)
+    diffYaw = math.Clamp(math.AngleDifference(@currentAngle.y, @targetAngle.y), -2, 2)
     newPitch = @currentAngle.p - diffPitch * delta * @SENTRY_ANGLE_CHANGE_MULT
     newYaw = @currentAngle.y - diffYaw * delta * @SENTRY_ANGLE_CHANGE_MULT
     @currentAngle = Angle(newPitch, newYaw, 0)
@@ -172,8 +172,8 @@ ENT.Think = =>
     @SetAimYaw(poseYaw)
 
     if IsValid(@currentTarget)
-        lookingAtTarget = math.floor(newPitch) == math.floor(@targetAngle.p) and math.floor(newYaw) == math.floor(@targetAngle.y)
-        print lookingAtTarget
+        lookingAtTarget = math.floor(diffPitch) == 0 and math.floor(diffYaw) == 0
+        print lookingAtTarget, diffPitch, diffYaw
         print math.floor(newPitch), math.floor(@targetAngle.p), math.floor(newYaw), math.floor(@targetAngle.y)
     @NextThink(cTime)
     return true

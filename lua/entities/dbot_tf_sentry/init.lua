@@ -226,8 +226,8 @@ ENT.Think = function(self)
     end
     self.targetAngle = Angle(p, y + self.idleYaw, r)
   end
-  local diffPitch = math.Clamp(math.AngleDifference(self.currentAngle.p, self.targetAngle.p), -1, 1)
-  local diffYaw = math.Clamp(math.AngleDifference(self.currentAngle.y, self.targetAngle.y), -1, 1)
+  local diffPitch = math.Clamp(math.AngleDifference(self.currentAngle.p, self.targetAngle.p), -2, 2)
+  local diffYaw = math.Clamp(math.AngleDifference(self.currentAngle.y, self.targetAngle.y), -2, 2)
   local newPitch = self.currentAngle.p - diffPitch * delta * self.SENTRY_ANGLE_CHANGE_MULT
   local newYaw = self.currentAngle.y - diffYaw * delta * self.SENTRY_ANGLE_CHANGE_MULT
   self.currentAngle = Angle(newPitch, newYaw, 0)
@@ -241,8 +241,8 @@ ENT.Think = function(self)
   self:SetAimPitch(posePitch)
   self:SetAimYaw(poseYaw)
   if IsValid(self.currentTarget) then
-    local lookingAtTarget = math.floor(newPitch) == math.floor(self.targetAngle.p) and math.floor(newYaw) == math.floor(self.targetAngle.y)
-    print(lookingAtTarget)
+    local lookingAtTarget = math.floor(diffPitch) == 0 and math.floor(diffYaw) == 0
+    print(lookingAtTarget, diffPitch, diffYaw)
     print(math.floor(newPitch), math.floor(self.targetAngle.p), math.floor(newYaw), math.floor(self.targetAngle.y))
   end
   self:NextThink(cTime)
