@@ -27,18 +27,22 @@ ENT.Initialize = =>
     @lastPitch = 0
     @lastYaw = 0
     @fireAnim = 0
+    @isEmpty = false
 
 ENT.Draw = =>
     deltaFireAnim = @fireAnim - CurTime()
     pitchAdd = 0
     if deltaFireAnim > 0
         deltaFireAnimNormal = math.abs(0.3 - deltaFireAnim / MUZZLE_ANIM_TIME)
-        pitchAdd += deltaFireAnimNormal * 5
+        pitchAdd += deltaFireAnimNormal * 5 if not @isEmpty
         @ManipulateBonePosition(MUZZLE_BONE_ID_1, Vector(0, 0, -deltaFireAnimNormal * 4))
     else
         @ManipulateBonePosition(MUZZLE_BONE_ID_1, Vector())
-    @lastPitch = Lerp(FrameTime() * 10, @lastPitch, @GetAimPitch())
-    @lastYaw = Lerp(FrameTime() * 10, @lastYaw, @GetAimYaw())
+    
+    diffPitch = math.AngleDifference(@lastPitch, @GetAimPitch())
+    diffYaw = math.AngleDifference(@lastYaw, @GetAimYaw())
+    @lastPitch = Lerp(FrameTime() * 10, @lastPitch, @lastPitch - diffPitch)
+    @lastYaw = Lerp(FrameTime() * 10, @lastYaw, @lastYaw - diffYaw)
     @SetPoseParameter('aim_pitch', @lastPitch + pitchAdd)
     @SetPoseParameter('aim_yaw', @lastYaw)
     @InvalidateBoneCache()
@@ -56,4 +60,6 @@ net.Receive 'DTF2.SentryWing', ->
 net.Receive 'DTF2.SentryFire', ->
     sentry = net.ReadEntity()
     return if not IsValid
+    isEmpty = not net.ReadBool()
+    sentry.isEmpty = isEmpty
     sentry.fireAnim = CurTime() + MUZZLE_ANIM_TIME

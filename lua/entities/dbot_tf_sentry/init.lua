@@ -24,6 +24,11 @@ ENT.Initialize = function(self)
   self.fireNext = 0
   self.behavePause = 0
   self.nextPoseUpdate = 0
+  self.muzzle = 0
+  self.muzzle_l = 0
+  self.muzzle_r = 0
+  self.nextMuzzle = false
+  return self:UpdateSequenceList()
 end
 ENT.HULL_SIZE = 2
 ENT.HULL_TRACE_MINS = Vector(-ENT.HULL_SIZE, -ENT.HULL_SIZE, -ENT.HULL_SIZE)
@@ -31,6 +36,9 @@ ENT.HULL_TRACE_MAXS = Vector(ENT.HULL_SIZE, ENT.HULL_SIZE, ENT.HULL_SIZE)
 ENT.UpdateSequenceList = function(self)
   self.BaseClass.UpdateSequenceList(self)
   self.fireSequence = self:LookupSequence('fire')
+  self.muzzle = self:LookupAttachment('muzzle')
+  self.muzzle_l = self:LookupAttachment('muzzle_l')
+  self.muzzle_r = self:LookupAttachment('muzzle_r')
 end
 ENT.PlayScanSound = function(self)
   local _exp_0 = self:GetLevel()
@@ -62,20 +70,32 @@ ENT.FireBullet = function(self, force)
   end
   if self:GetAmmoAmount() <= 0 and not force then
     self:EmitSound('weapons/sentry_empty.wav')
+    net.Start('DTF2.SentryFire', true)
+    net.WriteEntity(self)
+    net.WriteBool(false)
+    net.Broadcast()
     return false
   end
   self:SetAmmoAmount(self:GetAmmoAmount() - 1)
   self:EmitSound('weapons/sentry_shoot.wav')
+  self:SetPoseParameter('aim_pitch', self:GetAimPitch())
+  self:SetPoseParameter('aim_yaw', self:GetAimYaw())
+  local srcPos = self:GetPos()
+  local _exp_1 = self:GetLevel()
+  if 1 == _exp_1 then
+    srcPos = srcPos + Vector(0, 0, 16)
+  end
   local bulletData = {
     Attacker = self,
     Callback = self.BulletHit,
     Damage = self.BULLET_DAMAGE,
     Dir = self.currentAngle:Forward(),
-    Src = self:GetPos() + self.obbcenter
+    Src = srcPos
   }
   self:FireBullets(bulletData)
   net.Start('DTF2.SentryFire', true)
   net.WriteEntity(self)
+  net.WriteBool(true)
   net.Broadcast()
   return true
 end
@@ -173,11 +193,9 @@ ENT.Think = function(self)
     self:SetPoseParameter('aim_yaw', self:GetAimYaw())
   end
   if IsValid(self.currentTarget) then
-    local lookingAtTarget = math.floor(diffPitch) == 0 and math.floor(diffYaw) == 0
+    local lookingAtTarget = diffPitch ~= -2 and diffPitch ~= 2 and diffYaw ~= -2 and diffYaw ~= 2
     if lookingAtTarget then
-      self:FireBullet()
+      return self:FireBullet()
     end
   end
-  self:NextThink(cTime)
-  return true
 end

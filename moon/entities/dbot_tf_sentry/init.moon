@@ -43,6 +43,11 @@ ENT.Initialize = =>
     @fireNext = 0
     @behavePause = 0
     @nextPoseUpdate = 0
+    @muzzle = 0
+    @muzzle_l = 0
+    @muzzle_r = 0
+    @nextMuzzle = false
+    @UpdateSequenceList()
 
 ENT.HULL_SIZE = 2
 ENT.HULL_TRACE_MINS = Vector(-ENT.HULL_SIZE, -ENT.HULL_SIZE, -ENT.HULL_SIZE)
@@ -51,6 +56,9 @@ ENT.HULL_TRACE_MAXS = Vector(ENT.HULL_SIZE, ENT.HULL_SIZE, ENT.HULL_SIZE)
 ENT.UpdateSequenceList = =>
     @BaseClass.UpdateSequenceList(@)
     @fireSequence = @LookupSequence('fire')
+    @muzzle = @LookupAttachment('muzzle')
+    @muzzle_l = @LookupAttachment('muzzle_l')
+    @muzzle_r = @LookupAttachment('muzzle_r')
 
 ENT.PlayScanSound = =>
     switch @GetLevel()
@@ -77,22 +85,66 @@ ENT.FireBullet = (force = false) =>
     
     if @GetAmmoAmount() <= 0 and not force
         @EmitSound('weapons/sentry_empty.wav')
+        net.Start('DTF2.SentryFire', true)
+        net.WriteEntity(@)
+        net.WriteBool(false)
+        net.Broadcast()
         return false
     
     @SetAmmoAmount(@GetAmmoAmount() - 1)
     @EmitSound('weapons/sentry_shoot.wav')
-        
+
+    @SetPoseParameter('aim_pitch', @GetAimPitch())
+    @SetPoseParameter('aim_yaw', @GetAimYaw())
+
+--     srcPos = @GetPos() + @obbcenter
+--     srcAng = @currentAngle\Forward()
+-- 
+--     switch @GetLevel()
+--         when 1
+--             with @GetAttachment(@muzzle)
+--                 srcPos = .Pos - Vector(0, 0, 10)
+--                 srcAng = .Ang\Forward()
+--         when 2
+--             if @nextMuzzle
+--                 with @GetAttachment(@muzzle_l)
+--                     srcPos = .Pos
+--                     srcAng = .Ang\Forward()
+--             else
+--                 with @GetAttachment(@muzzle_r)
+--                     srcPos = .Pos
+--                     srcAng = .Ang\Forward()
+--             @nextMuzzle = not @nextMuzzle
+--         when 3
+--             if @nextMuzzle
+--                 with @GetAttachment(@muzzle_l)
+--                     srcPos = .Pos
+--                     srcAng = .Ang\Forward()
+--             else
+--                 with @GetAttachment(@muzzle_r)
+--                     srcPos = .Pos
+--                     srcAng = .Ang\Forward()
+--             @nextMuzzle = not @nextMuzzle
+
+    srcPos = @GetPos()
+    switch @GetLevel()
+        when 1
+            srcPos += Vector(0, 0, 16)
+    
     bulletData = {
         Attacker: @
         Callback: @BulletHit
         Damage: @BULLET_DAMAGE
+        --Dir: srcAng
+        --Src: srcPos
         Dir: @currentAngle\Forward()
-        Src: @GetPos() + @obbcenter
+        Src: srcPos
     }
 
     @FireBullets(bulletData)
     net.Start('DTF2.SentryFire', true)
     net.WriteEntity(@)
+    net.WriteBool(true)
     net.Broadcast()
     return true
 
@@ -171,8 +223,6 @@ ENT.Think = =>
         @SetPoseParameter('aim_yaw', @GetAimYaw())
 
     if IsValid(@currentTarget)
-        lookingAtTarget = math.floor(diffPitch) == 0 and math.floor(diffYaw) == 0
+        lookingAtTarget = diffPitch ~= -2 and diffPitch ~= 2 and diffYaw ~= -2 and diffYaw ~= 2
         if lookingAtTarget
             @FireBullet()
-    @NextThink(cTime)
-    return true
