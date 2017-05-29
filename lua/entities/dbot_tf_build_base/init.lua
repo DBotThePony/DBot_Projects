@@ -48,7 +48,7 @@ UpdateTargetList = function()
   VALID_ALLIES = { }
   for _index_0 = 1, #findEnts do
     local ent = findEnts[_index_0]
-    if ent:IsNPC() then
+    if ent:IsNPC() and ent:GetNPCState() ~= NPC_STATE_DEAD then
       local center = ent:OBBCenter()
       center:Rotate(ent:GetAngles())
       local npcData = {
@@ -163,6 +163,9 @@ hook.Add('OnEntityCreated', 'DTF2.UpdateTargetList', function()
   return timer.Create('DTF2.UpdateTargetList', 0, 1, UpdateTargetList)
 end)
 hook.Add('EntityRemoved', 'DTF2.UpdateTargetList', function()
+  return timer.Create('DTF2.UpdateTargetList', 0, 1, UpdateTargetList)
+end)
+hook.Add('OnNPCKilled', 'DTF2.UpdateTargetList', function()
   return timer.Create('DTF2.UpdateTargetList', 0, 1, UpdateTargetList)
 end)
 include('shared.lua')

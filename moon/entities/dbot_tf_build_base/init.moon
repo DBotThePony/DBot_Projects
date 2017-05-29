@@ -55,7 +55,7 @@ UpdateTargetList = ->
     VALID_ALLIES = {}
 
     for ent in *findEnts
-        if ent\IsNPC()
+        if ent\IsNPC() and ent\GetNPCState() ~= NPC_STATE_DEAD
             center = ent\OBBCenter()
             center\Rotate(ent\GetAngles())
             npcData = {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center}
@@ -113,6 +113,7 @@ hook.Add 'PlayerSpawn', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTar
 hook.Add 'PlayerDisconnected', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTargetList', 0, 1, UpdateTargetList
 hook.Add 'OnEntityCreated', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTargetList', 0, 1, UpdateTargetList
 hook.Add 'EntityRemoved', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTargetList', 0, 1, UpdateTargetList
+hook.Add 'OnNPCKilled', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTargetList', 0, 1, UpdateTargetList
 
 include 'shared.lua'
 AddCSLuaFile 'shared.lua'
