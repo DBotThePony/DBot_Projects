@@ -49,7 +49,7 @@ isEnemy = (ent = NULL) ->
     return false if not ent\IsValid()
     return IsEnemyEntityName(ent\GetClass())
 
-hook.Add 'Think', 'DTF2.FetchTagrets', ->
+UpdateTargetList = ->
     findEnts = ents.GetAll()
     VALID_TARGETS = {}
     VALID_ALLIES = {}
@@ -95,6 +95,24 @@ hook.Add 'Think', 'DTF2.FetchTagrets', ->
             center = ent\OBBCenter()
             center\Rotate(ent\GetAngles())
             table.insert(VALID_ALLIES, {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center})
+
+UpdateTargetListLight = ->
+    VALID_TARGETS = for {ent, pos, mins, maxs, center1, center} in *VALID_TARGETS
+        return UpdateTargetList() if not ent\IsValid()
+        center = ent\OBBCenter()
+        center\Rotate(ent\GetAngles())
+        {ent, ent\GetPos(), mins, maxs, center1, center}
+    VALID_ALLIES = for {ent, pos, mins, maxs, center1, center} in *VALID_ALLIES
+        return UpdateTargetList() if not ent\IsValid()
+        center = ent\OBBCenter()
+        center\Rotate(ent\GetAngles())
+        {ent, ent\GetPos(), mins, maxs, center1, center}
+
+hook.Add 'Think', 'DTF2.FetchTagrets', UpdateTargetListLight
+hook.Add 'PlayerSpawn', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTargetList', 0, 1, UpdateTargetList
+hook.Add 'PlayerDisconnected', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTargetList', 0, 1, UpdateTargetList
+hook.Add 'OnEntityCreated', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTargetList', 0, 1, UpdateTargetList
+hook.Add 'EntityRemoved', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTargetList', 0, 1, UpdateTargetList
 
 include 'shared.lua'
 AddCSLuaFile 'shared.lua'

@@ -41,7 +41,8 @@ isEnemy = function(ent)
   end
   return IsEnemyEntityName(ent:GetClass())
 end
-hook.Add('Think', 'DTF2.FetchTagrets', function()
+local UpdateTargetList
+UpdateTargetList = function()
   local findEnts = ents.GetAll()
   VALID_TARGETS = { }
   VALID_ALLIES = { }
@@ -97,6 +98,72 @@ hook.Add('Think', 'DTF2.FetchTagrets', function()
       })
     end
   end
+end
+local UpdateTargetListLight
+UpdateTargetListLight = function()
+  do
+    local _accum_0 = { }
+    local _len_0 = 1
+    for _index_0 = 1, #VALID_TARGETS do
+      local _des_0 = VALID_TARGETS[_index_0]
+      local ent, pos, mins, maxs, center1, center
+      ent, pos, mins, maxs, center1, center = _des_0[1], _des_0[2], _des_0[3], _des_0[4], _des_0[5], _des_0[6]
+      if not ent:IsValid() then
+        return UpdateTargetList()
+      end
+      center = ent:OBBCenter()
+      center:Rotate(ent:GetAngles())
+      local _value_0 = {
+        ent,
+        ent:GetPos(),
+        mins,
+        maxs,
+        center1,
+        center
+      }
+      _accum_0[_len_0] = _value_0
+      _len_0 = _len_0 + 1
+    end
+    VALID_TARGETS = _accum_0
+  end
+  do
+    local _accum_0 = { }
+    local _len_0 = 1
+    for _index_0 = 1, #VALID_ALLIES do
+      local _des_0 = VALID_ALLIES[_index_0]
+      local ent, pos, mins, maxs, center1, center
+      ent, pos, mins, maxs, center1, center = _des_0[1], _des_0[2], _des_0[3], _des_0[4], _des_0[5], _des_0[6]
+      if not ent:IsValid() then
+        return UpdateTargetList()
+      end
+      center = ent:OBBCenter()
+      center:Rotate(ent:GetAngles())
+      local _value_0 = {
+        ent,
+        ent:GetPos(),
+        mins,
+        maxs,
+        center1,
+        center
+      }
+      _accum_0[_len_0] = _value_0
+      _len_0 = _len_0 + 1
+    end
+    VALID_ALLIES = _accum_0
+  end
+end
+hook.Add('Think', 'DTF2.FetchTagrets', UpdateTargetListLight)
+hook.Add('PlayerSpawn', 'DTF2.UpdateTargetList', function()
+  return timer.Create('DTF2.UpdateTargetList', 0, 1, UpdateTargetList)
+end)
+hook.Add('PlayerDisconnected', 'DTF2.UpdateTargetList', function()
+  return timer.Create('DTF2.UpdateTargetList', 0, 1, UpdateTargetList)
+end)
+hook.Add('OnEntityCreated', 'DTF2.UpdateTargetList', function()
+  return timer.Create('DTF2.UpdateTargetList', 0, 1, UpdateTargetList)
+end)
+hook.Add('EntityRemoved', 'DTF2.UpdateTargetList', function()
+  return timer.Create('DTF2.UpdateTargetList', 0, 1, UpdateTargetList)
 end)
 include('shared.lua')
 AddCSLuaFile('shared.lua')
