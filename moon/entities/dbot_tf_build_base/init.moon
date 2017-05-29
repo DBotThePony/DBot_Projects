@@ -173,7 +173,6 @@ ENT.CreateBullseye = =>
 			\Spawn()
 			\Activate()
 			\SetCollisionGroup(COLLISION_GROUP_WORLD)
-			\PhysicsInitBox(@OBBMins(), @OBBMaxs())
 			\SetHealth(2 ^ 31 - 1)
 			\SetParent(@)
             \SetNotSolid(true)
