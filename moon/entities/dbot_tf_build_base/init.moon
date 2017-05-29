@@ -29,7 +29,7 @@ ENT.MoveToPos = (pos, options) =>
 
 ENT.BehaveStart = =>
 ENT.BehaveUpdate = (delta) =>
-ENT.BodyUpdate = => @FrameAdvance()
+ENT.BodyUpdate = =>
 ENT.RunBehaviour = =>
 ENT.GetEnemy = => @currentTarget
 ENT.Explode = =>

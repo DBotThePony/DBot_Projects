@@ -17,14 +17,30 @@
 
 include 'shared.lua'
 
+MUZZLE_BONE_ID_1 = 4
+MUZZLE_ANIM_TIME = 0.3
+
 ENT.Initialize = =>
     @BaseClass.Initialize(@)
     @SetAimPitch(0)
     @SetAimYaw(0)
+    @lastPitch = 0
+    @lastYaw = 0
+    @fireAnim = 0
 
 ENT.Draw = =>
-    @SetPoseParameter('aim_pitch', @GetAimPitch())
-    @SetPoseParameter('aim_yaw', @GetAimYaw())
+    deltaFireAnim = @fireAnim - CurTime()
+    pitchAdd = 0
+    if deltaFireAnim > 0
+        deltaFireAnimNormal = math.abs(0.3 - deltaFireAnim / MUZZLE_ANIM_TIME)
+        pitchAdd += deltaFireAnimNormal * 5
+        @ManipulateBonePosition(MUZZLE_BONE_ID_1, Vector(0, 0, -deltaFireAnimNormal * 4))
+    else
+        @ManipulateBonePosition(MUZZLE_BONE_ID_1, Vector())
+    @lastPitch = Lerp(FrameTime() * 10, @lastPitch, @GetAimPitch())
+    @lastYaw = Lerp(FrameTime() * 10, @lastYaw, @GetAimYaw())
+    @SetPoseParameter('aim_pitch', @lastPitch + pitchAdd)
+    @SetPoseParameter('aim_yaw', @lastYaw)
     @InvalidateBoneCache()
     @BaseClass.Draw(@)
 
@@ -36,3 +52,8 @@ net.Receive 'DTF2.SentryWing', ->
         sentry\EmitSound('weapons/sentry_spot.wav', SNDLVL_85dB)
     else
         sentry\EmitSound('weapons/sentry_spot_client.wav', SNDLVL_105dB)
+
+net.Receive 'DTF2.SentryFire', ->
+    sentry = net.ReadEntity()
+    return if not IsValid
+    sentry.fireAnim = CurTime() + MUZZLE_ANIM_TIME

@@ -1,6 +1,7 @@
 include('shared.lua')
 AddCSLuaFile('shared.lua')
 util.AddNetworkString('DTF2.SentryWing')
+util.AddNetworkString('DTF2.SentryFire')
 ENT.MAX_DISTANCE = 512 ^ 2
 ENT.Initialize = function(self)
   self.BaseClass.Initialize(self)
@@ -22,6 +23,7 @@ ENT.Initialize = function(self)
   self:SetMaxHealth(self.HealthLevel1)
   self.fireNext = 0
   self.behavePause = 0
+  self.nextPoseUpdate = 0
 end
 ENT.HULL_SIZE = 2
 ENT.HULL_TRACE_MINS = Vector(-ENT.HULL_SIZE, -ENT.HULL_SIZE, -ENT.HULL_SIZE)
@@ -72,12 +74,9 @@ ENT.FireBullet = function(self, force)
     Src = self:GetPos() + self.obbcenter
   }
   self:FireBullets(bulletData)
-  self:RestartGesture(ACT_RANGE_ATTACK1)
-  timer.Create("DTF2.ResetGesture." .. tostring(self:EntIndex()), 0.2, 1, function()
-    if IsValid(self) then
-      return self:RestartGesture(ACT_IDLE)
-    end
-  end)
+  net.Start('DTF2.SentryFire', true)
+  net.WriteEntity(self)
+  net.Broadcast()
   return true
 end
 ENT.BehaveUpdate = function(self, delta)
@@ -130,9 +129,6 @@ ENT.BehaveUpdate = function(self, delta)
     self.targetAngle = Angle(p, y + self.idleYaw, r)
   end
 end
-ENT.BodyUpdate = function(self)
-  return self:FrameAdvance()
-end
 ENT.RunBehaviour = function(self) end
 ENT.GetEnemy = function(self)
   return self.currentTarget
@@ -171,8 +167,11 @@ ENT.Think = function(self)
   local poseYaw = math.floor(math.NormalizeAngle(cy - newYaw))
   self:SetAimPitch(posePitch)
   self:SetAimYaw(poseYaw)
-  self:SetPoseParameter('aim_pitch', self:GetAimPitch())
-  self:SetPoseParameter('aim_yaw', self:GetAimYaw())
+  if self.nextPoseUpdate < cTime then
+    self.nextPoseUpdate = cTime + 0.5
+    self:SetPoseParameter('aim_pitch', self:GetAimPitch())
+    self:SetPoseParameter('aim_yaw', self:GetAimYaw())
+  end
   if IsValid(self.currentTarget) then
     local lookingAtTarget = math.floor(diffPitch) == 0 and math.floor(diffYaw) == 0
     if lookingAtTarget then

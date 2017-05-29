@@ -10,9 +10,7 @@ ENT.HandleStuck = function(self) end
 ENT.MoveToPos = function(self, pos, options) end
 ENT.BehaveStart = function(self) end
 ENT.BehaveUpdate = function(self, delta) end
-ENT.BodyUpdate = function(self)
-  return self:FrameAdvance()
-end
+ENT.BodyUpdate = function(self) end
 ENT.RunBehaviour = function(self) end
 ENT.GetEnemy = function(self)
   return self.currentTarget

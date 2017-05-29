@@ -19,6 +19,7 @@ include 'shared.lua'
 AddCSLuaFile 'shared.lua'
 
 util.AddNetworkString('DTF2.SentryWing')
+util.AddNetworkString('DTF2.SentryFire')
 
 ENT.MAX_DISTANCE = 512 ^ 2
 ENT.Initialize = =>
@@ -41,6 +42,7 @@ ENT.Initialize = =>
     @SetMaxHealth(@HealthLevel1)
     @fireNext = 0
     @behavePause = 0
+    @nextPoseUpdate = 0
 
 ENT.HULL_SIZE = 2
 ENT.HULL_TRACE_MINS = Vector(-ENT.HULL_SIZE, -ENT.HULL_SIZE, -ENT.HULL_SIZE)
@@ -89,8 +91,9 @@ ENT.FireBullet = (force = false) =>
     }
 
     @FireBullets(bulletData)
-    @RestartGesture(ACT_RANGE_ATTACK1)
-    timer.Create "DTF2.ResetGesture.#{@EntIndex()}", 0.2, 1, -> @RestartGesture(ACT_IDLE) if IsValid(@)
+    net.Start('DTF2.SentryFire', true)
+    net.WriteEntity(@)
+    net.Broadcast()
     return true
 
 ENT.BehaveUpdate = (delta) =>
@@ -129,10 +132,6 @@ ENT.BehaveUpdate = (delta) =>
             @PlayScanSound()
         {:p, :y, :r} = @idleAngle
         @targetAngle = Angle(p, y + @idleYaw, r)
-
-ENT.BodyUpdate = =>
-    @FrameAdvance()
-
 ENT.RunBehaviour = =>
 
 ENT.GetEnemy = => @currentTarget
@@ -165,8 +164,11 @@ ENT.Think = =>
     
     @SetAimPitch(posePitch)
     @SetAimYaw(poseYaw)
-    @SetPoseParameter('aim_pitch', @GetAimPitch())
-    @SetPoseParameter('aim_yaw', @GetAimYaw())
+
+    if @nextPoseUpdate < cTime
+        @nextPoseUpdate = cTime + 0.5
+        @SetPoseParameter('aim_pitch', @GetAimPitch())
+        @SetPoseParameter('aim_yaw', @GetAimYaw())
 
     if IsValid(@currentTarget)
         lookingAtTarget = math.floor(diffPitch) == 0 and math.floor(diffYaw) == 0
