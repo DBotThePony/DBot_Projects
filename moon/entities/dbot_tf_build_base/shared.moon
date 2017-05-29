@@ -49,8 +49,6 @@ ENT.MAX_DISTANCE = 512 ^ 2
 ENT.GetLevel = => @GetnwLevel()
 
 ENT.SetupDataTables = =>
-    @NetworkVar('Float', 0, 'HP')
-    @NetworkVar('Float', 1, 'MHP')
     @NetworkVar('Bool', 0, 'IsBuilding')
     @NetworkVar('Bool', 2, 'IsUpgrading')
     @NetworkVar('Bool', 1, 'BuildSpeedup')

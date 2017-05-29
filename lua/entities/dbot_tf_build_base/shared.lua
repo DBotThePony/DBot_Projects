@@ -24,8 +24,6 @@ ENT.GetLevel = function(self)
   return self:GetnwLevel()
 end
 ENT.SetupDataTables = function(self)
-  self:NetworkVar('Float', 0, 'HP')
-  self:NetworkVar('Float', 1, 'MHP')
   self:NetworkVar('Bool', 0, 'IsBuilding')
   self:NetworkVar('Bool', 2, 'IsUpgrading')
   self:NetworkVar('Bool', 1, 'BuildSpeedup')

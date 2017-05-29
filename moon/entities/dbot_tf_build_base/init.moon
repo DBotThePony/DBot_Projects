@@ -148,19 +148,19 @@ ENT.SetLevel = (val = 1, playAnimation = true) =>
     switch val
         when 1
             @SetModel(@IdleModel1)
-            @SetHP(@HealthLevel1) if @GetHP() == @GetMHP()
-            @SetMHP(@HealthLevel1)
+            @SetHealth(@HealthLevel1) if @Health() == @GetMaxHealth()
+            @SetMaxHealth(@HealthLevel1)
             @UpdateSequenceList()
         when 2
             @SetModel(@IdleModel2)
-            @SetHP(@HealthLevel2) if @GetHP() == @GetMHP()
-            @SetMHP(@HealthLevel2)
+            @SetHealth(@HealthLevel2) if @Health() == @GetMaxHealth()
+            @SetMaxHealth(@HealthLevel2)
             @UpdateSequenceList()
             @PlayUpgradeAnimation() if playAnimation
         when 3
             @SetModel(@IdleModel3)
-            @SetHP(@HealthLevel3)
-            @SetMHP(@HealthLevel3)
+            @SetHealth(@HealthLevel3)
+            @SetMaxHealth(@HealthLevel3)
             @UpdateSequenceList()
             @PlayUpgradeAnimation() if playAnimation
     return true

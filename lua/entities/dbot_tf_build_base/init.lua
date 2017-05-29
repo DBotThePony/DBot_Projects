@@ -209,25 +209,25 @@ ENT.SetLevel = function(self, val, playAnimation)
   local _exp_0 = val
   if 1 == _exp_0 then
     self:SetModel(self.IdleModel1)
-    if self:GetHP() == self:GetMHP() then
-      self:SetHP(self.HealthLevel1)
+    if self:Health() == self:GetMaxHealth() then
+      self:SetHealth(self.HealthLevel1)
     end
-    self:SetMHP(self.HealthLevel1)
+    self:SetMaxHealth(self.HealthLevel1)
     self:UpdateSequenceList()
   elseif 2 == _exp_0 then
     self:SetModel(self.IdleModel2)
-    if self:GetHP() == self:GetMHP() then
-      self:SetHP(self.HealthLevel2)
+    if self:Health() == self:GetMaxHealth() then
+      self:SetHealth(self.HealthLevel2)
     end
-    self:SetMHP(self.HealthLevel2)
+    self:SetMaxHealth(self.HealthLevel2)
     self:UpdateSequenceList()
     if playAnimation then
       self:PlayUpgradeAnimation()
     end
   elseif 3 == _exp_0 then
     self:SetModel(self.IdleModel3)
-    self:SetHP(self.HealthLevel3)
-    self:SetMHP(self.HealthLevel3)
+    self:SetHealth(self.HealthLevel3)
+    self:SetMaxHealth(self.HealthLevel3)
     self:UpdateSequenceList()
     if playAnimation then
       self:PlayUpgradeAnimation()
