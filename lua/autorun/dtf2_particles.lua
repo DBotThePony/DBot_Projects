@@ -115,3 +115,11 @@ for _index_0 = 1, #manifest do
   local part = manifest[_index_0]
   game.AddParticles("particles/" .. tostring(part) .. ".pcf")
 end
+local toPrecache = {
+  'muzzle_sentry',
+  'muzzle_sentry2'
+}
+for _index_0 = 1, #toPrecache do
+  local part = toPrecache[_index_0]
+  PrecacheParticleSystem(part)
+end

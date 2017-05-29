@@ -70,8 +70,9 @@ ENT.Draw = =>
     diffYaw = math.AngleDifference(@lastYaw, @GetAimYaw())
     @lastPitch = Lerp(FrameTime() * 10, @lastPitch, @lastPitch - diffPitch)
     @lastYaw = Lerp(FrameTime() * 10, @lastYaw, @lastYaw - diffYaw)
-    @SetPoseParameter('aim_pitch', @lastPitch + pitchAdd)
-    @SetPoseParameter('aim_yaw', @lastYaw)
+    -- Random is a GetAttachment fix
+    @SetPoseParameter('aim_pitch', @lastPitch + pitchAdd + math.random(1, 2) / 100)
+    @SetPoseParameter('aim_yaw', @lastYaw + math.random(1, 2) / 100)
     @InvalidateBoneCache()
     @BaseClass.Draw(@)
 
@@ -91,15 +92,16 @@ net.Receive 'DTF2.SentryFire', ->
     sentry.isEmpty = isEmpty
     sentry.fireAnim = CurTime() + MUZZLE_ANIM_TIME
     
-    switch sentry\GetLevel()
-        when 1
-            with sentry\GetAttachment(sentry\LookupAttachment('muzzle'))
-                ParticleEffect('muzzle_sentry', .Pos, .Ang, @)
-        when 2
-            sentry.nextMuzzle = not sentry.nextMuzzle
-            with sentry\GetAttachment(sentry\LookupAttachment(sentry.nextMuzzle and 'muzzle_l' or 'muzzle_r'))
-                ParticleEffect('muzzle_sentry', .Pos, .Ang, @)
-        when 3
-            sentry.nextMuzzle = not sentry.nextMuzzle
-            with sentry\GetAttachment(sentry\LookupAttachment(sentry.nextMuzzle and 'muzzle_l' or 'muzzle_r'))
-                ParticleEffect('muzzle_sentry', .Pos, .Ang, @)
+    if not isEmpty
+        switch sentry\GetLevel()
+            when 1
+                with sentry\GetAttachment(sentry\LookupAttachment('muzzle'))
+                    ParticleEffect('muzzle_sentry', .Pos, .Ang, @)
+            when 2
+                sentry.nextMuzzle = not sentry.nextMuzzle
+                with sentry\GetAttachment(sentry\LookupAttachment(sentry.nextMuzzle and 'muzzle_l' or 'muzzle_r'))
+                    ParticleEffect('muzzle_sentry2', .Pos, .Ang, @)
+            when 3
+                sentry.nextMuzzle = not sentry.nextMuzzle
+                with sentry\GetAttachment(sentry\LookupAttachment(sentry.nextMuzzle and 'muzzle_l' or 'muzzle_r'))
+                    ParticleEffect('muzzle_sentry2', .Pos, .Ang, @)

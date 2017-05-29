@@ -55,8 +55,8 @@ ENT.Draw = function(self)
   local diffYaw = math.AngleDifference(self.lastYaw, self:GetAimYaw())
   self.lastPitch = Lerp(FrameTime() * 10, self.lastPitch, self.lastPitch - diffPitch)
   self.lastYaw = Lerp(FrameTime() * 10, self.lastYaw, self.lastYaw - diffYaw)
-  self:SetPoseParameter('aim_pitch', self.lastPitch + pitchAdd)
-  self:SetPoseParameter('aim_yaw', self.lastYaw)
+  self:SetPoseParameter('aim_pitch', self.lastPitch + pitchAdd + math.random(1, 2) / 100)
+  self:SetPoseParameter('aim_yaw', self.lastYaw + math.random(1, 2) / 100)
   self:InvalidateBoneCache()
   return self.BaseClass.Draw(self)
 end
@@ -80,26 +80,28 @@ return net.Receive('DTF2.SentryFire', function()
   local isEmpty = not net.ReadBool()
   sentry.isEmpty = isEmpty
   sentry.fireAnim = CurTime() + MUZZLE_ANIM_TIME
-  local _exp_0 = sentry:GetLevel()
-  if 1 == _exp_0 then
-    do
-      local _with_0 = sentry:GetAttachment(sentry:LookupAttachment('muzzle'))
-      ParticleEffect('muzzle_sentry', _with_0.Pos, _with_0.Ang, self)
-      return _with_0
-    end
-  elseif 2 == _exp_0 then
-    sentry.nextMuzzle = not sentry.nextMuzzle
-    do
-      local _with_0 = sentry:GetAttachment(sentry:LookupAttachment(sentry.nextMuzzle and 'muzzle_l' or 'muzzle_r'))
-      ParticleEffect('muzzle_sentry', _with_0.Pos, _with_0.Ang, self)
-      return _with_0
-    end
-  elseif 3 == _exp_0 then
-    sentry.nextMuzzle = not sentry.nextMuzzle
-    do
-      local _with_0 = sentry:GetAttachment(sentry:LookupAttachment(sentry.nextMuzzle and 'muzzle_l' or 'muzzle_r'))
-      ParticleEffect('muzzle_sentry', _with_0.Pos, _with_0.Ang, self)
-      return _with_0
+  if not isEmpty then
+    local _exp_0 = sentry:GetLevel()
+    if 1 == _exp_0 then
+      do
+        local _with_0 = sentry:GetAttachment(sentry:LookupAttachment('muzzle'))
+        ParticleEffect('muzzle_sentry', _with_0.Pos, _with_0.Ang, self)
+        return _with_0
+      end
+    elseif 2 == _exp_0 then
+      sentry.nextMuzzle = not sentry.nextMuzzle
+      do
+        local _with_0 = sentry:GetAttachment(sentry:LookupAttachment(sentry.nextMuzzle and 'muzzle_l' or 'muzzle_r'))
+        ParticleEffect('muzzle_sentry2', _with_0.Pos, _with_0.Ang, self)
+        return _with_0
+      end
+    elseif 3 == _exp_0 then
+      sentry.nextMuzzle = not sentry.nextMuzzle
+      do
+        local _with_0 = sentry:GetAttachment(sentry:LookupAttachment(sentry.nextMuzzle and 'muzzle_l' or 'muzzle_r'))
+        ParticleEffect('muzzle_sentry2', _with_0.Pos, _with_0.Ang, self)
+        return _with_0
+      end
     end
   end
 end)
