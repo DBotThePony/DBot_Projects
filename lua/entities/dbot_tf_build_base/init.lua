@@ -48,7 +48,7 @@ UpdateTargetList = function()
   VALID_ALLIES = { }
   for _index_0 = 1, #findEnts do
     local ent = findEnts[_index_0]
-    if ent:IsNPC() and ent:GetNPCState() ~= NPC_STATE_DEAD then
+    if ent:IsNPC() and ent:GetClass() ~= 'npc_bullseye' and ent:GetNPCState() ~= NPC_STATE_DEAD then
       local center = ent:OBBCenter()
       center:Rotate(ent:GetAngles())
       local npcData = {

@@ -55,7 +55,7 @@ UpdateTargetList = ->
     VALID_ALLIES = {}
 
     for ent in *findEnts
-        if ent\IsNPC() and ent\GetNPCState() ~= NPC_STATE_DEAD
+        if ent\IsNPC() and ent\GetClass() ~= 'npc_bullseye' and ent\GetNPCState() ~= NPC_STATE_DEAD
             center = ent\OBBCenter()
             center\Rotate(ent\GetAngles())
             npcData = {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center}
