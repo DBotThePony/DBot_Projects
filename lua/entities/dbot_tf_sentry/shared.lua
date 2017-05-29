@@ -13,7 +13,7 @@ ENT.BuildModel2 = 'models/buildables/sentry2_heavy.mdl'
 ENT.IdleModel2 = 'models/buildables/sentry2.mdl'
 ENT.BuildModel3 = 'models/buildables/sentry3_heavy.mdl'
 ENT.IdleModel3 = 'models/buildables/sentry3.mdl'
-ENT.BuildTime = 5
+ENT.BuildTime = 10
 ENT.SENTRY_ANGLE_CHANGE_MULT = 50
 ENT.SENTRY_SCAN_YAW_MULT = 30
 ENT.SENTRY_SCAN_YAW_CONST = 30
@@ -34,4 +34,11 @@ ENT.SetupDataTables = function(self)
   self:NetworkVar('Int', 3, 'AimYaw')
   self:NetworkVar('Int', 4, 'AmmoAmount')
   return self:NetworkVar('Int', 5, 'Rockets')
+end
+ENT.UpdateSequenceList = function(self)
+  self.BaseClass.UpdateSequenceList(self)
+  self.fireSequence = self:LookupSequence('fire')
+  self.muzzle = self:LookupAttachment('muzzle')
+  self.muzzle_l = self:LookupAttachment('muzzle_l')
+  self.muzzle_r = self:LookupAttachment('muzzle_r')
 end

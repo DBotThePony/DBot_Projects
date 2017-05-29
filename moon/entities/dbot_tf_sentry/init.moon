@@ -55,13 +55,6 @@ ENT.HULL_SIZE = 2
 ENT.HULL_TRACE_MINS = Vector(-ENT.HULL_SIZE, -ENT.HULL_SIZE, -ENT.HULL_SIZE)
 ENT.HULL_TRACE_MAXS = Vector(ENT.HULL_SIZE, ENT.HULL_SIZE, ENT.HULL_SIZE)
 
-ENT.UpdateSequenceList = =>
-    @BaseClass.UpdateSequenceList(@)
-    @fireSequence = @LookupSequence('fire')
-    @muzzle = @LookupAttachment('muzzle')
-    @muzzle_l = @LookupAttachment('muzzle_l')
-    @muzzle_r = @LookupAttachment('muzzle_r')
-
 ENT.PlayScanSound = =>
     switch @GetLevel()
         when 1
@@ -208,6 +201,7 @@ ENT.Think = =>
     @BaseClass.Think(@)
     if not @IsAvaliable()
         @currentTarget = NULL
+        @SetBodygroup(2, 0)
         return
     
     diffPitch = math.Clamp(math.AngleDifference(@currentAngle.p, @targetAngle.p), -2, 2)

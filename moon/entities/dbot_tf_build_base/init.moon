@@ -31,6 +31,7 @@ ENT.MoveToPos = (pos, options) =>
 ENT.BehaveStart = =>
 ENT.BehaveUpdate = (delta) =>
 ENT.BodyUpdate = =>
+    @FrameAdvance()
 ENT.RunBehaviour = =>
 ENT.GetEnemy = => @currentTarget
 ENT.Explode = =>
@@ -135,11 +136,6 @@ ENT.GetFirstVisible = =>
 
     return NULL
 
-ENT.UpdateSequenceList = =>
-    @buildSequence = @LookupSequence('build')
-    @upgradeSequence = @LookupSequence('upgrade')
-    @idleSequence = @LookupSequence(@IDLE_ANIM)
-
 ENT.GetLevel = => @GetnwLevel()
 ENT.SetLevel = (val = 1, playAnimation = true) =>
     val = math.Clamp(math.floor(val), 1, 3)
@@ -148,7 +144,7 @@ ENT.SetLevel = (val = 1, playAnimation = true) =>
     switch val
         when 1
             @SetModel(@IdleModel1)
-            @SetHP(@HealthLevel1)
+            @SetHP(@HealthLevel1) if @GetHP() == @GetMHP()
             @SetMHP(@HealthLevel1)
             @UpdateSequenceList()
         when 2
@@ -176,8 +172,16 @@ ENT.PlayUpgradeAnimation = =>
             @SetModel(@BuildModel3)
     @UpdateSequenceList()
     @StartActivity(ACT_OBJ_UPGRADING)
-    --@ResetSequence(@upgradeSequence)
+    @ResetSequence(@upgradeSequence)
     return true
+
+ENT.DoSpeedup = (time = 1) =>
+    @SetBuildSpeedup(true)
+    @SetPlaybackRate(0.5)
+    timer.Create "DTF2.BuildSpeedup.#{@EntIndex()}", time, 1, ->
+        return if not IsValid(@)
+        @SetBuildSpeedup(false)
+        @SetPlaybackRate(1)
 
 ENT.SetBuildStatus = (status = false) =>
     return false if @GetLevel() > 1
@@ -187,17 +191,18 @@ ENT.SetBuildStatus = (status = false) =>
         @SetModel(@BuildModel1)
         @UpdateSequenceList()
         @SetBuildSpeedup(false)
-        @buildSpeedupUntil = 0
         @StartActivity(ACT_OBJ_PLACING)
-        --@ResetSequence(@buildSequence)
+        @ResetSequence(@buildSequence)
         @buildFinishAt = CurTime() + @BuildTime
         @OnBuildStart()
+        @SetPlaybackRate(0.5)
     else
         @SetModel(@IdleModel1)
         @UpdateSequenceList()
-        --@ResetSequence(@idleSequence)
+        @ResetSequence(@idleSequence)
         @StartActivity(ACT_OBJ_RUNNING)
         @OnBuildFinish()
+        @SetPlaybackRate(1)
     return true
 
 ENT.OnBuildStart = => -- Override
@@ -211,7 +216,7 @@ ENT.Think = =>
     delta = cTime - @lastThink
     @lastThink = cTime
     if @GetIsBuilding()
-        if @buildSpeedupUntil > cTime
+        if @GetBuildSpeedup()
             @buildFinishAt -= delta
         if @buildFinishAt < cTime
             @SetBuildSpeedup(false)
@@ -219,8 +224,9 @@ ENT.Think = =>
             @SetModel(@IdleModel1)
             @UpdateSequenceList()
             @StartActivity(ACT_OBJ_RUNNING)
-            --@ResetSequence(@idleSequence)
+            @ResetSequence(@idleSequence)
             @OnBuildFinish()
+            @SetPlaybackRate(1)
     elseif @GetIsUpgrading()
         if @upgradeFinishAt < cTime
             @SetBuildSpeedup(false)
@@ -232,6 +238,6 @@ ENT.Think = =>
                     @SetModel(@IdleModel3)
             @UpdateSequenceList()
             @StartActivity(ACT_OBJ_RUNNING)
-            --@ResetSequence(@idleSequence)
+            @ResetSequence(@idleSequence)
             @OnUpgradeFinish()
             

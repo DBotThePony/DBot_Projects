@@ -14,7 +14,9 @@ ENT.HandleStuck = function(self) end
 ENT.MoveToPos = function(self, pos, options) end
 ENT.BehaveStart = function(self) end
 ENT.BehaveUpdate = function(self, delta) end
-ENT.BodyUpdate = function(self) end
+ENT.BodyUpdate = function(self)
+  return self:FrameAdvance()
+end
 ENT.RunBehaviour = function(self) end
 ENT.GetEnemy = function(self)
   return self.currentTarget
@@ -185,11 +187,6 @@ ENT.GetFirstVisible = function(self)
   end
   return NULL
 end
-ENT.UpdateSequenceList = function(self)
-  self.buildSequence = self:LookupSequence('build')
-  self.upgradeSequence = self:LookupSequence('upgrade')
-  self.idleSequence = self:LookupSequence(self.IDLE_ANIM)
-end
 ENT.GetLevel = function(self)
   return self:GetnwLevel()
 end
@@ -206,7 +203,9 @@ ENT.SetLevel = function(self, val, playAnimation)
   local _exp_0 = val
   if 1 == _exp_0 then
     self:SetModel(self.IdleModel1)
-    self:SetHP(self.HealthLevel1)
+    if self:GetHP() == self:GetMHP() then
+      self:SetHP(self.HealthLevel1)
+    end
     self:SetMHP(self.HealthLevel1)
     return self:UpdateSequenceList()
   elseif 2 == _exp_0 then
@@ -244,7 +243,22 @@ ENT.PlayUpgradeAnimation = function(self)
   end
   self:UpdateSequenceList()
   self:StartActivity(ACT_OBJ_UPGRADING)
+  self:ResetSequence(self.upgradeSequence)
   return true
+end
+ENT.DoSpeedup = function(self, time)
+  if time == nil then
+    time = 1
+  end
+  self:SetBuildSpeedup(true)
+  self:SetPlaybackRate(0.5)
+  return timer.Create("DTF2.BuildSpeedup." .. tostring(self:EntIndex()), time, 1, function()
+    if not IsValid(self) then
+      return 
+    end
+    self:SetBuildSpeedup(false)
+    return self:SetPlaybackRate(1)
+  end)
 end
 ENT.SetBuildStatus = function(self, status)
   if status == nil then
@@ -261,15 +275,18 @@ ENT.SetBuildStatus = function(self, status)
     self:SetModel(self.BuildModel1)
     self:UpdateSequenceList()
     self:SetBuildSpeedup(false)
-    self.buildSpeedupUntil = 0
     self:StartActivity(ACT_OBJ_PLACING)
+    self:ResetSequence(self.buildSequence)
     self.buildFinishAt = CurTime() + self.BuildTime
     self:OnBuildStart()
+    self:SetPlaybackRate(0.5)
   else
     self:SetModel(self.IdleModel1)
     self:UpdateSequenceList()
+    self:ResetSequence(self.idleSequence)
     self:StartActivity(ACT_OBJ_RUNNING)
     self:OnBuildFinish()
+    self:SetPlaybackRate(1)
   end
   return true
 end
@@ -285,7 +302,7 @@ ENT.Think = function(self)
   local delta = cTime - self.lastThink
   self.lastThink = cTime
   if self:GetIsBuilding() then
-    if self.buildSpeedupUntil > cTime then
+    if self:GetBuildSpeedup() then
       self.buildFinishAt = self.buildFinishAt - delta
     end
     if self.buildFinishAt < cTime then
@@ -294,7 +311,9 @@ ENT.Think = function(self)
       self:SetModel(self.IdleModel1)
       self:UpdateSequenceList()
       self:StartActivity(ACT_OBJ_RUNNING)
-      return self:OnBuildFinish()
+      self:ResetSequence(self.idleSequence)
+      self:OnBuildFinish()
+      return self:SetPlaybackRate(1)
     end
   elseif self:GetIsUpgrading() then
     if self.upgradeFinishAt < cTime then
@@ -308,6 +327,7 @@ ENT.Think = function(self)
       end
       self:UpdateSequenceList()
       self:StartActivity(ACT_OBJ_RUNNING)
+      self:ResetSequence(self.idleSequence)
       return self:OnUpgradeFinish()
     end
   end

@@ -33,7 +33,7 @@ ENT.IdleModel2 = 'models/buildables/sentry2.mdl'
 ENT.BuildModel3 = 'models/buildables/sentry3_heavy.mdl'
 ENT.IdleModel3 = 'models/buildables/sentry3.mdl'
 
-ENT.BuildTime = 5
+ENT.BuildTime = 10
 
 ENT.SENTRY_ANGLE_CHANGE_MULT = 50
 ENT.SENTRY_SCAN_YAW_MULT = 30
@@ -59,3 +59,10 @@ ENT.SetupDataTables = =>
     @NetworkVar('Int', 3, 'AimYaw')
     @NetworkVar('Int', 4, 'AmmoAmount')
     @NetworkVar('Int', 5, 'Rockets')
+
+ENT.UpdateSequenceList = =>
+    @BaseClass.UpdateSequenceList(@)
+    @fireSequence = @LookupSequence('fire')
+    @muzzle = @LookupAttachment('muzzle')
+    @muzzle_l = @LookupAttachment('muzzle_l')
+    @muzzle_r = @LookupAttachment('muzzle_r')

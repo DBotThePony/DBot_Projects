@@ -35,13 +35,6 @@ end
 ENT.HULL_SIZE = 2
 ENT.HULL_TRACE_MINS = Vector(-ENT.HULL_SIZE, -ENT.HULL_SIZE, -ENT.HULL_SIZE)
 ENT.HULL_TRACE_MAXS = Vector(ENT.HULL_SIZE, ENT.HULL_SIZE, ENT.HULL_SIZE)
-ENT.UpdateSequenceList = function(self)
-  self.BaseClass.UpdateSequenceList(self)
-  self.fireSequence = self:LookupSequence('fire')
-  self.muzzle = self:LookupAttachment('muzzle')
-  self.muzzle_l = self:LookupAttachment('muzzle_l')
-  self.muzzle_r = self:LookupAttachment('muzzle_r')
-end
 ENT.PlayScanSound = function(self)
   local _exp_0 = self:GetLevel()
   if 1 == _exp_0 then
@@ -182,6 +175,7 @@ ENT.Think = function(self)
   self.BaseClass.Think(self)
   if not self:IsAvaliable() then
     self.currentTarget = NULL
+    self:SetBodygroup(2, 0)
     return 
   end
   local diffPitch = math.Clamp(math.AngleDifference(self.currentAngle.p, self.targetAngle.p), -2, 2)

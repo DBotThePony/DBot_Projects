@@ -28,3 +28,8 @@ ENT.SetupDataTables = function(self)
   self:NetworkVar('Int', 1, 'nwLevel')
   return self:NetworkVar('Entity', 0, 'Player')
 end
+ENT.UpdateSequenceList = function(self)
+  self.buildSequence = self:LookupSequence('build')
+  self.upgradeSequence = self:LookupSequence('upgrade')
+  self.idleSequence = self:LookupSequence(self.IDLE_ANIM)
+end

@@ -23,24 +23,12 @@ ENT.Initialize = =>
     @SetHP(@HealthLevel1)
     @SetMHP(@HealthLevel1)
     
-    @buildSequence = @LookupSequence('build')
-    @upgradeSequence = @LookupSequence('upgrade')
+    @UpdateSequenceList()
     @lastSeqModel = @IdleModel1
     @lastAnimTick = CurTime()
 
 ENT.Think = =>
-    if @GetIsBuilding()
-        if @GetBuildSpeedup()
-            @SetPlaybackRate(1)
-        else
-            @SetPlaybackRate(0.5)
-    else
-        @SetPlaybackRate(1)
 
 ENT.Draw = =>
-    ctime = CurTime()
-    @FrameAdvance(ctime - @lastAnimTick)
-    @lastAnimTick = ctime
-
     @DrawShadow(false)
     @DrawModel()
