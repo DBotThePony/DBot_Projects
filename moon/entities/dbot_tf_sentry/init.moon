@@ -101,7 +101,7 @@ ENT.FireBullet = (force = false) =>
             @lastBulletFire = CurTime() + @BULLET_RELOAD_3
     
     if @GetAmmoAmount() <= 0 and not force
-        @EmitSound('weapons/sentry_empty.wav')
+        @EmitSound('weapons/sentry_empty.wav', 75, 100, 0.8, CHAN_WEAPON)
         net.Start('DTF2.SentryFire', true)
         net.WriteEntity(@)
         net.WriteBool(false)
@@ -109,7 +109,7 @@ ENT.FireBullet = (force = false) =>
         return false
     
     @SetAmmoAmount(@GetAmmoAmount() - 1)
-    @EmitSound('weapons/sentry_shoot.wav')
+    @EmitSound('weapons/sentry_shoot.wav', 75, 100, 0.6, CHAN_WEAPON)
 
     @SetPoseParameter('aim_pitch', @GetAimPitch())
     @SetPoseParameter('aim_yaw', @GetAimYaw())

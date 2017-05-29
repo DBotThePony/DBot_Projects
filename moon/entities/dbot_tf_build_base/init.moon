@@ -15,7 +15,7 @@
 -- limitations under the License.
 --
 
-ATTACK_PLAYERS = CreateConVar('dtf2_attack_players', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Sentries attacks players')
+ATTACK_PLAYERS = CreateConVar('dtf2_attack_players', '0', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Sentries attacks players')
 
 ENT.OnLeaveGround = =>
 ENT.OnLandOnGround = =>

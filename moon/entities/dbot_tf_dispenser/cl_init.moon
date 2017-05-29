@@ -19,7 +19,17 @@ include 'shared.lua'
 
 ENT.Initialize = =>
     @BaseClass.Initialize(@)
+    @idleSound = CreateSound(@, 'weapons/dispenser_idle.wav')
+    @idleSound\ChangeVolume(0.75)
+    @idleSound\SetSoundLevel(75)
+    @idleSound\Play()
+
+ENT.OnRemove = =>
+    @idleSound\Stop() if @idleSound
 ENT.Think = =>
     @BaseClass.Think(@)
+
 ENT.Draw = =>
+    screenMat = '' if @GetTeamType()
+    screenMat = '' if not @GetTeamType()
     @BaseClass.Draw(@)

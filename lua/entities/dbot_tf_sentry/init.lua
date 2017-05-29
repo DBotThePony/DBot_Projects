@@ -101,7 +101,7 @@ ENT.FireBullet = function(self, force)
     self.lastBulletFire = CurTime() + self.BULLET_RELOAD_3
   end
   if self:GetAmmoAmount() <= 0 and not force then
-    self:EmitSound('weapons/sentry_empty.wav')
+    self:EmitSound('weapons/sentry_empty.wav', 75, 100, 0.8, CHAN_WEAPON)
     net.Start('DTF2.SentryFire', true)
     net.WriteEntity(self)
     net.WriteBool(false)
@@ -109,7 +109,7 @@ ENT.FireBullet = function(self, force)
     return false
   end
   self:SetAmmoAmount(self:GetAmmoAmount() - 1)
-  self:EmitSound('weapons/sentry_shoot.wav')
+  self:EmitSound('weapons/sentry_shoot.wav', 75, 100, 0.6, CHAN_WEAPON)
   self:SetPoseParameter('aim_pitch', self:GetAimPitch())
   self:SetPoseParameter('aim_yaw', self:GetAimYaw())
   local srcPos = self:GetPos() + self:GetAdditionalVector()

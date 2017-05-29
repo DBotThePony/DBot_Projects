@@ -21,7 +21,7 @@ ENT.Initialize = function(self)
     self:DrawShadow(false)
     self.beamSound = CreateSound(self, 'weapons/dispenser_heal.wav')
     self.beamSound:ChangeVolume(0.75)
-    self.beamSound:SetSoundLevel(45)
+    self.beamSound:SetSoundLevel(60)
     return self.beamSound:Play()
   end
 end
@@ -60,6 +60,13 @@ if CLIENT then
   })
   ENT.Draw = function(self)
     if IsValid(self.particleEffect) then
+      do
+        local _with_0 = self:GetDummyTarget()
+        _with_0:SetNoDraw(true)
+        _with_0:DrawShadow(false)
+        _with_0:SetModelScale(0.01)
+        _with_0:SetMaterial('!DTF2_Translucent_Beam')
+      end
       return 
     end
     if not IsValid(self:GetDummyTarget()) then

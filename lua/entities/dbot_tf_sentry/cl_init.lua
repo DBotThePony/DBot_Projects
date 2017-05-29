@@ -67,7 +67,7 @@ net.Receive('DTF2.SentryWing', function()
   end
   local target = net.ReadEntity()
   if target ~= LocalPlayer() then
-    return sentry:EmitSound('weapons/sentry_spot.wav', SNDLVL_85dB)
+    return sentry:EmitSound('weapons/sentry_spot.wav', 75, 100, 0.3)
   else
     return sentry:EmitSound('weapons/sentry_spot_client.wav', SNDLVL_105dB)
   end

@@ -4,13 +4,18 @@ ENT.Initialize = function(self)
   self.BaseClass.Initialize(self)
   self.healing = { }
   self.beams = { }
+  self.nextAmmo = CurTime()
+  self.nextChangeUp = CurTime()
 end
-ENT.HealTarget = function(self, ent, delta)
+ENT.HealTarget = function(self, ent, delta, cTime)
   if ent == nil then
     ent = NULL
   end
   if delta == nil then
     delta = 1
+  end
+  if cTime == nil then
+    cTime = CurTime()
   end
   if not IsValid(ent) then
     return 
@@ -24,6 +29,14 @@ ENT.HealTarget = function(self, ent, delta)
   if not ent:IsPlayer() then
     return 
   end
+  if self.nextAmmo > cTime then
+    return 
+  end
+  local deltaGive = DTF2_GiveAmmo(ent, self:GetAvaliableForAmmo())
+  if deltaGive == 0 then
+    return 
+  end
+  return self:SetRessuplyAmount(self:GetRessuplyAmount() - deltaGive)
 end
 ENT.BehaveUpdate = function(self, delta)
   self:UpdateRelationships()
@@ -59,13 +72,35 @@ ENT.BehaveUpdate = function(self, delta)
       self.beams[ply] = nil
     end
   end
+  local cTime = CurTime()
   local _list_1 = self.healing
   for _index_0 = 1, #_list_1 do
     local ply = _list_1[_index_0]
-    self:HealTarget(ply, delta)
+    self:HealTarget(ply, delta, cTime)
+  end
+  if self.nextAmmo < cTime then
+    self.nextAmmo = cTime + 1
   end
 end
+ENT.ChargeUp = function(self, force)
+  if force == nil then
+    force = false
+  end
+  if self:GetRessuplyAmount() >= self:GetMaxRessuply() and not force then
+    self.nextChangeUp = CurTime() + self:GetChargeTime()
+    return 
+  end
+  if self.nextChangeUp > CurTime() and not force then
+    return 
+  end
+  self.nextChangeUp = CurTime() + self:GetChargeTime()
+  local toAdd = math.Clamp(self:GetMaxRessuply() - self:GetRessuplyAmount(), 0, self:GetChargeAmount())
+  self:SetRessuplyAmount(self:GetRessuplyAmount() + toAdd)
+  return self:EmitSound('weapons/dispenser_generate_metal.wav')
+end
 ENT.Think = function(self)
+  self.BaseClass.Think(self)
+  self:ChargeUp()
   self:NextThink(CurTime() + 0.1)
   return true
 end

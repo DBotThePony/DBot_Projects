@@ -46,9 +46,25 @@ ENT.RESSUPLY_MULTIPLIER_1 = 1
 ENT.RESSUPLY_MULTIPLIER_2 = 1.2
 ENT.RESSUPLY_MULTIPLIER_3 = 1.4
 
-ENT.MAS_RESSUPLY_1 = 100
-ENT.MAS_RESSUPLY_2 = 150
-ENT.MAS_RESSUPLY_3 = 200
+ENT.MAS_RESSUPLY_1 = 300
+ENT.MAS_RESSUPLY_2 = 400
+ENT.MAS_RESSUPLY_3 = 500
+
+ENT.AMMO_RESSUPLY_MAX_1 = 40
+ENT.AMMO_RESSUPLY_MAX_2 = 50
+ENT.AMMO_RESSUPLY_MAX_3 = 60
+
+ENT.CHARGE_TIME_1 = 5
+ENT.CHARGE_TIME_2 = 5
+ENT.CHARGE_TIME_3 = 5
+
+ENT.CHARGE_AMOUNT_1 = 40
+ENT.CHARGE_AMOUNT_2 = 50
+ENT.CHARGE_AMOUNT_3 = 60
+
+ENT.AMMO_AMOUNT_1 = 40
+ENT.AMMO_AMOUNT_2 = 50
+ENT.AMMO_AMOUNT_3 = 60
 
 ENT.GetRessuplyMultiplier = (level = @GetLevel()) =>
     switch level
@@ -67,6 +83,44 @@ ENT.GetMaxRessuply = (level = @GetLevel()) =>
             @MAS_RESSUPLY_2
         when 3
             @MAS_RESSUPLY_3
+
+ENT.GetAmmoRessuply = (level = @GetLevel()) =>
+    switch level
+        when 1
+            @AMMO_RESSUPLY_MAX_1
+        when 2
+            @AMMO_RESSUPLY_MAX_2
+        when 3
+            @AMMO_RESSUPLY_MAX_3
+
+ENT.GetChargeTime = (level = @GetLevel()) =>
+    switch level
+        when 1
+            @CHARGE_TIME_1
+        when 2
+            @CHARGE_TIME_2
+        when 3
+            @CHARGE_TIME_3
+
+ENT.GetChargeAmount = (level = @GetLevel()) =>
+    switch level
+        when 1
+            @CHARGE_AMOUNT_1
+        when 2
+            @CHARGE_AMOUNT_2
+        when 3
+            @CHARGE_AMOUNT_3
+
+ENT.GetAmmoToAmount = (level = @GetLevel()) =>
+    switch level
+        when 1
+            @AMMO_AMOUNT_1
+        when 2
+            @AMMO_AMOUNT_2
+        when 3
+            @AMMO_AMOUNT_3
+
+ENT.GetAvaliableForAmmo = (level = @GetLevel()) => math.Clamp(@GetAmmoRessuply(), 0, math.min(@GetRessuplyAmount(), @GetAmmoToAmount(level)))
 
 ENT.SetupDataTables = =>
     @BaseClass.SetupDataTables(@)

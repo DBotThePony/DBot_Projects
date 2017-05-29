@@ -39,7 +39,7 @@ ENT.Initialize = =>
         @DrawShadow(false)
         @beamSound = CreateSound(@, 'weapons/dispenser_heal.wav')
         @beamSound\ChangeVolume(0.75)
-        @beamSound\SetSoundLevel(45)
+        @beamSound\SetSoundLevel(60)
         @beamSound\Play()
 
 ENT.UpdateDummy = =>
@@ -67,7 +67,13 @@ if CLIENT
     })
 
     ENT.Draw = =>
-        return if IsValid(@particleEffect)
+        if IsValid(@particleEffect)
+            with @GetDummyTarget()
+                \SetNoDraw(true)
+                \DrawShadow(false)
+                \SetModelScale(0.01)
+                \SetMaterial('!DTF2_Translucent_Beam')
+            return
         return if not IsValid(@GetDummyTarget())
 
         @GetDummyTarget()\SetNoDraw(true)
