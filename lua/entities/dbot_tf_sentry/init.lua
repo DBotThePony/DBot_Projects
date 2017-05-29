@@ -63,11 +63,18 @@ ENT.Initialize = function(self)
   self.lastSentryThink = CurTime()
   self.nextTargetUpdate = 0
   self.lastBulletFire = 0
-  return self:SetAmmoAmount(self.MAX_AMMO_1)
+  self.waitSequenceReset = 0
+  self:SetAmmoAmount(self.MAX_AMMO_1)
+  self:SetHealth(self.HealthLevel1)
+  return self:SetMaxHealth(self.HealthLevel1)
 end
 ENT.HULL_SIZE = 2
 ENT.HULL_TRACE_MINS = Vector(-ENT.HULL_SIZE, -ENT.HULL_SIZE, -ENT.HULL_SIZE)
 ENT.HULL_TRACE_MAXS = Vector(ENT.HULL_SIZE, ENT.HULL_SIZE, ENT.HULL_SIZE)
+ENT.UpdateSequenceList = function(self)
+  self.BaseClass.UpdateSequenceList(self)
+  self.fireSequence = self:LookupSequence('fire')
+end
 ENT.GetTargetsVisible = function(self)
   local output = { }
   local pos = self:GetPos()
@@ -215,7 +222,39 @@ ENT.FireBullet = function(self, force)
     Src = self:GetPos() + self.obbcenter
   }
   self:FireBullets(bulletData)
+  if self.lastSeq ~= self.fireSequence then
+    self:ResetSequence(self.fireSequence)
+    self.lastSeq = self.fireSequence
+    self.waitSequenceReset = CurTime() + 1
+  end
   return true
+end
+ENT.OnLeaveGround = function(self) end
+ENT.OnLandOnGround = function(self) end
+ENT.OnStuck = function(self) end
+ENT.OnUnStuck = function(self) end
+ENT.OnContact = function(self, victim) end
+ENT.OnOtherKilled = function(self, victim, dmg) end
+ENT.OnIgnite = function(self) end
+ENT.OnNavAreaChanged = function(self, old, new) end
+ENT.HandleStuck = function(self) end
+ENT.MoveToPos = function(self, pos, options) end
+ENT.BehaveStart = function(self) end
+ENT.BehaveUpdate = function(self, delta) end
+ENT.BodyUpdate = function(self)
+  return self:FrameAdvance()
+end
+ENT.RunBehaviour = function(self) end
+ENT.GetEnemy = function(self)
+  return self.currentTarget
+end
+ENT.Explode = function(self)
+  return self:Remove()
+end
+ENT.OnInjured = function(self, dmg) end
+ENT.OnKilled = function(self, dmg)
+  hook.Run('OnNPCKilled', self, dmg:GetAttacker(), dmg:GetInflictor())
+  return self:Explode()
 end
 ENT.Think = function(self)
   local cTime = CurTime()
@@ -268,6 +307,10 @@ ENT.Think = function(self)
       p, y, r = _obj_0.p, _obj_0.y, _obj_0.r
     end
     self.targetAngle = Angle(p, y + self.idleYaw, r)
+  end
+  if self.lastSeq ~= self.idleSequence and self.waitSequenceReset < cTime then
+    self:ResetSequence(self.idleSequence)
+    self.lastSeq = self.idleSequence
   end
   local diffPitch = math.Clamp(math.AngleDifference(self.currentAngle.p, self.targetAngle.p), -2, 2)
   local diffYaw = math.Clamp(math.AngleDifference(self.currentAngle.y, self.targetAngle.y), -2, 2)

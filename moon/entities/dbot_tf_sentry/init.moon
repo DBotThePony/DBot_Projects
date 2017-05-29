@@ -48,11 +48,18 @@ ENT.Initialize = =>
     @lastSentryThink = CurTime()
     @nextTargetUpdate = 0
     @lastBulletFire = 0
+    @waitSequenceReset = 0
     @SetAmmoAmount(@MAX_AMMO_1)
+    @SetHealth(@HealthLevel1)
+    @SetMaxHealth(@HealthLevel1)
 
 ENT.HULL_SIZE = 2
 ENT.HULL_TRACE_MINS = Vector(-ENT.HULL_SIZE, -ENT.HULL_SIZE, -ENT.HULL_SIZE)
 ENT.HULL_TRACE_MAXS = Vector(ENT.HULL_SIZE, ENT.HULL_SIZE, ENT.HULL_SIZE)
+
+ENT.UpdateSequenceList = =>
+    @BaseClass.UpdateSequenceList(@)
+    @fireSequence = @LookupSequence('fire')
 
 ENT.GetTargetsVisible = =>
     output = {}
@@ -158,7 +165,40 @@ ENT.FireBullet = (force = false) =>
     }
 
     @FireBullets(bulletData)
+    if @lastSeq ~= @fireSequence
+        @ResetSequence(@fireSequence)
+        @lastSeq = @fireSequence
+        @waitSequenceReset = CurTime() + 1
     return true
+
+ENT.OnLeaveGround = =>
+ENT.OnLandOnGround = =>
+ENT.OnStuck = =>
+ENT.OnUnStuck = =>
+ENT.OnContact = (victim) =>
+ENT.OnOtherKilled = (victim, dmg) =>
+ENT.OnIgnite = =>
+ENT.OnNavAreaChanged = (old, new) =>
+ENT.HandleStuck = =>
+ENT.MoveToPos = (pos, options) =>
+
+ENT.BehaveStart = =>
+ENT.BehaveUpdate = (delta) =>
+
+ENT.BodyUpdate = =>
+    @FrameAdvance()
+
+ENT.RunBehaviour = =>
+
+ENT.GetEnemy = => @currentTarget
+ENT.Explode = =>
+    @Remove()
+
+ENT.OnInjured = (dmg) =>
+ENT.OnKilled = (dmg) =>
+    hook.Run('OnNPCKilled', @, dmg\GetAttacker(), dmg\GetInflictor())
+    @Explode()
+
 ENT.Think = =>
     cTime = CurTime()
     delta = cTime - @lastSentryThink
@@ -199,6 +239,10 @@ ENT.Think = =>
             @PlayScanSound()
         {:p, :y, :r} = @idleAngle
         @targetAngle = Angle(p, y + @idleYaw, r)
+    
+    if @lastSeq ~= @idleSequence and @waitSequenceReset < cTime
+        @ResetSequence(@idleSequence)
+        @lastSeq = @idleSequence
     
     diffPitch = math.Clamp(math.AngleDifference(@currentAngle.p, @targetAngle.p), -2, 2)
     diffYaw = math.Clamp(math.AngleDifference(@currentAngle.y, @targetAngle.y), -2, 2)

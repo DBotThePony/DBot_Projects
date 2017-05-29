@@ -1,4 +1,5 @@
 ENT.Base = 'dbot_tf_build_base'
+ENT.Type = 'nextbot'
 ENT.PrintName = 'Sentry gun'
 ENT.Spawnable = true
 ENT.AdminSpawnable = true
@@ -15,6 +16,7 @@ ENT.BuildTime = 5
 ENT.SENTRY_ANGLE_CHANGE_MULT = 50
 ENT.SENTRY_SCAN_YAW_MULT = 30
 ENT.SENTRY_SCAN_YAW_CONST = 30
+ENT.IDLE_ANIM = 'idle_off'
 ENT.MAX_AMMO_1 = 100
 ENT.MAX_AMMO_2 = 150
 ENT.MAX_AMMO_3 = 150
