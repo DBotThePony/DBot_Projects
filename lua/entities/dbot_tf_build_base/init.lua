@@ -30,6 +30,7 @@ ENT.OnKilled = function(self, dmg)
   return self:Explode()
 end
 local VALID_TARGETS = { }
+local VALID_ALLIES = { }
 local isEnemy
 isEnemy = function(ent)
   if ent == nil then
@@ -41,41 +42,29 @@ isEnemy = function(ent)
   return IsEnemyEntityName(ent:GetClass())
 end
 hook.Add('Think', 'DTF2.FetchTagrets', function()
-  do
-    local _accum_0 = { }
-    local _len_0 = 1
-    local _list_0 = ents.GetAll()
-    for _index_0 = 1, #_list_0 do
-      local _continue_0 = false
-      repeat
-        local ent = _list_0[_index_0]
-        if not ent:IsNPC() then
-          _continue_0 = true
-          break
-        end
-        if not isEnemy(ent) then
-          _continue_0 = true
-          break
-        end
-        local center = ent:OBBCenter()
-        center:Rotate(ent:GetAngles())
-        local _value_0 = {
-          ent,
-          ent:GetPos(),
-          ent:OBBMins(),
-          ent:OBBMaxs(),
-          ent:OBBCenter(),
-          center
-        }
-        _accum_0[_len_0] = _value_0
-        _len_0 = _len_0 + 1
-        _continue_0 = true
-      until true
-      if not _continue_0 then
-        break
+  local findEnts = ents.GetAll()
+  VALID_TARGETS = { }
+  VALID_ALLIES = { }
+  for _index_0 = 1, #findEnts do
+    local ent = findEnts[_index_0]
+    if ent:IsNPC() then
+      local center = ent:OBBCenter()
+      center:Rotate(ent:GetAngles())
+      local npcData = {
+        ent,
+        ent:GetPos(),
+        ent:OBBMins(),
+        ent:OBBMaxs(),
+        ent:OBBCenter(),
+        center
+      }
+      local classify = ent:Classify()
+      if (classify == CLASS_PLAYER_ALLY or classify == CLASS_PLAYER_ALLY_VITAL or classify == CLASS_PLAYER_ALLY_VITAL or classify == CLASS_CITIZEN_PASSIVE or classify == CLASS_HACKED_ROLLERMINE or classify == CLASS_EARTH_FAUNA or classify == CLASS_VORTIGAUNT or classify == CLASS_CITIZEN_REBEL) then
+        table.insert(VALID_ALLIES, npcData)
+      elseif (classify == CLASS_COMBINE_HUNTER or classify == CLASS_SCANNER or classify == CLASS_ZOMBIE or classify == CLASS_PROTOSNIPER or classify == CLASS_STALKER or classify == CLASS_MILITARY or classify == CLASS_METROPOLICE or classify == CLASS_MANHACK or classify == CLASS_HEADCRAB or classify == CLASS_COMBINE_GUNSHIP or classify == CLASS_BARNACLE or classify == CLASS_ANTLION or classify == CLASS_COMBINE) then
+        table.insert(VALID_TARGETS, npcData)
       end
     end
-    VALID_TARGETS = _accum_0
   end
   if ATTACK_PLAYERS:GetBool() then
     local _list_0 = player.GetAll()

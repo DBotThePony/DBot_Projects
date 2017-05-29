@@ -43,18 +43,46 @@ ENT.OnKilled = (dmg) =>
     @Explode()
 
 VALID_TARGETS = {}
+VALID_ALLIES = {}
 
 isEnemy = (ent = NULL) ->
     return false if not ent\IsValid()
     return IsEnemyEntityName(ent\GetClass())
 
 hook.Add 'Think', 'DTF2.FetchTagrets', ->
-    VALID_TARGETS = for ent in *ents.GetAll()
-        continue if not ent\IsNPC()
-        continue if not isEnemy(ent)
-        center = ent\OBBCenter()
-        center\Rotate(ent\GetAngles())
-        {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center}
+    findEnts = ents.GetAll()
+    VALID_TARGETS = {}
+    VALID_ALLIES = {}
+
+    for ent in *findEnts
+        if ent\IsNPC()
+            center = ent\OBBCenter()
+            center\Rotate(ent\GetAngles())
+            npcData = {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center}
+            classify = ent\Classify()
+            if (classify == CLASS_PLAYER_ALLY or
+                classify == CLASS_PLAYER_ALLY_VITAL or
+                classify == CLASS_PLAYER_ALLY_VITAL or
+                classify == CLASS_CITIZEN_PASSIVE or
+                classify == CLASS_HACKED_ROLLERMINE or
+                classify == CLASS_EARTH_FAUNA or
+                classify == CLASS_VORTIGAUNT or
+                classify == CLASS_CITIZEN_REBEL) then
+                table.insert(VALID_ALLIES, npcData)
+            elseif (classify == CLASS_COMBINE_HUNTER or
+                classify == CLASS_SCANNER or
+                classify == CLASS_ZOMBIE or
+                classify == CLASS_PROTOSNIPER or
+                classify == CLASS_STALKER or
+                classify == CLASS_MILITARY or
+                classify == CLASS_METROPOLICE or
+                classify == CLASS_MANHACK or
+                classify == CLASS_HEADCRAB or
+                classify == CLASS_COMBINE_GUNSHIP or
+                classify == CLASS_BARNACLE or
+                classify == CLASS_ANTLION or
+                classify == CLASS_COMBINE) then
+                table.insert(VALID_TARGETS, npcData)
     
     if ATTACK_PLAYERS\GetBool()
         for ent in *player.GetAll()
