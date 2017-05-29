@@ -11,6 +11,8 @@ ENT.Initialize = function(self)
   self.idleAnim = true
   self.idleAngle = Angle(0, 0, 0)
   self.idleDirection = false
+  self.idlePitchDirection = false
+  self.idlePitch = 0
   self.idleYaw = 0
   self.currentTarget = NULL
   self.idleWaitOnAngle = 0
@@ -139,6 +141,15 @@ ENT.BehaveUpdate = function(self, delta)
     end
     if self.idleYaw > self.SENTRY_SCAN_YAW_CONST or self.idleYaw < -self.SENTRY_SCAN_YAW_CONST then
       self.idleDirection = not self.idleDirection
+      if self.idlePitchDirection then
+        self.idlePitch = self.idlePitch + 2
+      end
+      if not self.idlePitchDirection then
+        self.idlePitch = self.idlePitch - 2
+      end
+      if self.idlePitch <= -6 or self.idlePitch >= 6 then
+        self.idlePitchDirection = not self.idlePitchDirection
+      end
       self:PlayScanSound()
     end
     local p, y, r
@@ -146,7 +157,7 @@ ENT.BehaveUpdate = function(self, delta)
       local _obj_0 = self.idleAngle
       p, y, r = _obj_0.p, _obj_0.y, _obj_0.r
     end
-    self.targetAngle = Angle(p, y + self.idleYaw, r)
+    self.targetAngle = Angle(p + self.idlePitch, y + self.idleYaw, r)
   end
 end
 ENT.RunBehaviour = function(self) end

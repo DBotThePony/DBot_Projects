@@ -1,5 +1,6 @@
 include('shared.lua')
 ENT.Initialize = function(self)
+  self:DrawShadow(false)
   self:SetModel(self.IdleModel1)
   self:SetHP(self.HealthLevel1)
   self:SetMHP(self.HealthLevel1)
@@ -23,5 +24,6 @@ ENT.Draw = function(self)
   local ctime = CurTime()
   self:FrameAdvance(ctime - self.lastAnimTick)
   self.lastAnimTick = ctime
+  self:DrawShadow(false)
   return self:DrawModel()
 end

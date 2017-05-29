@@ -30,6 +30,8 @@ ENT.Initialize = =>
     @idleAnim = true
     @idleAngle = Angle(0, 0, 0)
     @idleDirection = false
+    @idlePitchDirection = false
+    @idlePitch = 0
     @idleYaw = 0
     @currentTarget = NULL
     @idleWaitOnAngle = 0
@@ -181,9 +183,12 @@ ENT.BehaveUpdate = (delta) =>
         @idleYaw -= delta * @SENTRY_SCAN_YAW_MULT if not @idleDirection
         if @idleYaw > @SENTRY_SCAN_YAW_CONST or @idleYaw < -@SENTRY_SCAN_YAW_CONST
             @idleDirection = not @idleDirection
+            @idlePitch += 2 if @idlePitchDirection
+            @idlePitch -= 2 if not @idlePitchDirection
+            @idlePitchDirection = not @idlePitchDirection if @idlePitch <= -6 or @idlePitch >= 6
             @PlayScanSound()
         {:p, :y, :r} = @idleAngle
-        @targetAngle = Angle(p, y + @idleYaw, r)
+        @targetAngle = Angle(p + @idlePitch, y + @idleYaw, r)
 ENT.RunBehaviour = =>
 
 ENT.GetEnemy = => @currentTarget

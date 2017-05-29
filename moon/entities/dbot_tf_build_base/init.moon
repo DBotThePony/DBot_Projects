@@ -61,6 +61,7 @@ include 'shared.lua'
 AddCSLuaFile 'shared.lua'
 
 ENT.Initialize = =>
+    @DrawShadow(false)
     @SetModel(@IdleModel1)
     @SetHP(@HealthLevel1)
     @SetMHP(@HealthLevel1)
