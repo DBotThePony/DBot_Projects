@@ -81,6 +81,7 @@ hook.Add 'Think', 'DTF2.FetchTagrets', ->
                 classify == CLASS_COMBINE_GUNSHIP or
                 classify == CLASS_BARNACLE or
                 classify == CLASS_ANTLION or
+                classify == CLASS_NONE or
                 classify == CLASS_COMBINE) then
                 table.insert(VALID_TARGETS, npcData)
     
@@ -89,11 +90,17 @@ hook.Add 'Think', 'DTF2.FetchTagrets', ->
             center = ent\OBBCenter()
             center\Rotate(ent\GetAngles())
             table.insert(VALID_TARGETS, {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center})
+    else
+        for ent in *player.GetAll()
+            center = ent\OBBCenter()
+            center\Rotate(ent\GetAngles())
+            table.insert(VALID_ALLIES, {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center})
 
 include 'shared.lua'
 AddCSLuaFile 'shared.lua'
 
 ENT.Initialize = =>
+    @npc_bullseye = {}
     @DrawShadow(false)
     @SetModel(@IdleModel1)
     @SetHealth(@HealthLevel1)
@@ -114,6 +121,45 @@ ENT.Initialize = =>
     @upgradeFinishAt = 0
     @UpdateSequenceList()
     @StartActivity(ACT_OBJ_RUNNING)
+    @CreateBullseye()
+
+ENT.CreateBullseye = =>
+    if @npc_bullseye
+        eye\Remove() for eye in *@npc_bullseye
+    
+    mins, maxs, center = @OBBMins(), @OBBMaxs(), @OBBCenter()
+
+	box = {
+		Vector(0, 0, mins.z)
+		Vector(0, 0, maxs.z)
+
+		Vector(mins.x, center.y, center.z)
+		Vector(-mins.x, center.y, center.z)
+
+		Vector(center.x, mins.y, center.z)
+		Vector(center.x, -mins.y, center.z)
+	}
+
+	@npc_bullseye = for vec in *box
+		with ents.Create('npc_bullseye')
+			\SetKeyValue('targetname', 'dtf2_bullseye')
+			\SetKeyValue('spawnflags', '131072')
+			\SetPos(@LocalToWorld(vec))
+			\Spawn()
+			\Activate()
+			\SetCollisionGroup(COLLISION_GROUP_WORLD)
+			\PhysicsInitBox(Vector(-2, -2, -2), Vector(2, 2, 2))
+			\SetHealth(2 ^ 31 - 1)
+			\SetParent(@)
+            .DTF2_Parent = @
+
+ENT.UpdateRelationships = =>
+    for {target} in *VALID_TARGETS
+        if target\IsValid() and target\IsNPC()
+            target\AddEntityRelationship(eye, D_HT, 0) for eye in *@npc_bullseye
+    for {target} in *VALID_ALLIES
+        if target\IsValid() and target\IsNPC()
+            target\AddEntityRelationship(eye, D_LI, 0) for eye in *@npc_bullseye
 
 ENT.GetTargetsVisible = =>
     output = {}
@@ -126,10 +172,12 @@ ENT.GetTargetsVisible = =>
     
     table.sort output, (a, b) -> a[3] < b[3]
     newOutput = {}
+    trFilter = [eye for eye in *@npc_bullseye]
+    table.insert(trFilter, @)
 
     for {target, tpos, dist, center} in *output
         trData = {
-            filter: @
+            filter: trFilter
             start: @obbcenter + pos
             endpos: tpos + center
             mins: @HULL_TRACE_MINS
@@ -152,10 +200,12 @@ ENT.GetFirstVisible = =>
             table.insert(output, {target, tpos, dist, rotatedCenter})
     
     table.sort output, (a, b) -> a[3] < b[3]
+    trFilter = [eye for eye in *@npc_bullseye]
+    table.insert(trFilter, @)
 
     for {target, tpos, dist, center} in *output
         trData = {
-            filter: @
+            filter: trFilter
             start: @obbcenter + pos
             endpos: tpos + center
             mins: @HULL_TRACE_MINS
@@ -191,6 +241,7 @@ ENT.SetLevel = (val = 1, playAnimation = true) =>
             @SetMaxHealth(@HealthLevel3)
             @UpdateSequenceList()
             @PlayUpgradeAnimation() if playAnimation
+    @CreateBullseye()
     return true
 
 ENT.PlayUpgradeAnimation = =>

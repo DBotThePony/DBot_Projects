@@ -61,7 +61,7 @@ hook.Add('Think', 'DTF2.FetchTagrets', function()
       local classify = ent:Classify()
       if (classify == CLASS_PLAYER_ALLY or classify == CLASS_PLAYER_ALLY_VITAL or classify == CLASS_PLAYER_ALLY_VITAL or classify == CLASS_CITIZEN_PASSIVE or classify == CLASS_HACKED_ROLLERMINE or classify == CLASS_EARTH_FAUNA or classify == CLASS_VORTIGAUNT or classify == CLASS_CITIZEN_REBEL) then
         table.insert(VALID_ALLIES, npcData)
-      elseif (classify == CLASS_COMBINE_HUNTER or classify == CLASS_SCANNER or classify == CLASS_ZOMBIE or classify == CLASS_PROTOSNIPER or classify == CLASS_STALKER or classify == CLASS_MILITARY or classify == CLASS_METROPOLICE or classify == CLASS_MANHACK or classify == CLASS_HEADCRAB or classify == CLASS_COMBINE_GUNSHIP or classify == CLASS_BARNACLE or classify == CLASS_ANTLION or classify == CLASS_COMBINE) then
+      elseif (classify == CLASS_COMBINE_HUNTER or classify == CLASS_SCANNER or classify == CLASS_ZOMBIE or classify == CLASS_PROTOSNIPER or classify == CLASS_STALKER or classify == CLASS_MILITARY or classify == CLASS_METROPOLICE or classify == CLASS_MANHACK or classify == CLASS_HEADCRAB or classify == CLASS_COMBINE_GUNSHIP or classify == CLASS_BARNACLE or classify == CLASS_ANTLION or classify == CLASS_NONE or classify == CLASS_COMBINE) then
         table.insert(VALID_TARGETS, npcData)
       end
     end
@@ -81,11 +81,27 @@ hook.Add('Think', 'DTF2.FetchTagrets', function()
         center
       })
     end
+  else
+    local _list_0 = player.GetAll()
+    for _index_0 = 1, #_list_0 do
+      local ent = _list_0[_index_0]
+      local center = ent:OBBCenter()
+      center:Rotate(ent:GetAngles())
+      table.insert(VALID_ALLIES, {
+        ent,
+        ent:GetPos(),
+        ent:OBBMins(),
+        ent:OBBMaxs(),
+        ent:OBBCenter(),
+        center
+      })
+    end
   end
 end)
 include('shared.lua')
 AddCSLuaFile('shared.lua')
 ENT.Initialize = function(self)
+  self.npc_bullseye = { }
   self:DrawShadow(false)
   self:SetModel(self.IdleModel1)
   self:SetHealth(self.HealthLevel1)
@@ -103,7 +119,75 @@ ENT.Initialize = function(self)
   self.buildFinishAt = 0
   self.upgradeFinishAt = 0
   self:UpdateSequenceList()
-  return self:StartActivity(ACT_OBJ_RUNNING)
+  self:StartActivity(ACT_OBJ_RUNNING)
+  return self:CreateBullseye()
+end
+ENT.CreateBullseye = function(self)
+  if self.npc_bullseye then
+    local _list_0 = self.npc_bullseye
+    for _index_0 = 1, #_list_0 do
+      local eye = _list_0[_index_0]
+      eye:Remove()
+    end
+  end
+  local mins, maxs, center = self:OBBMins(), self:OBBMaxs(), self:OBBCenter()
+  local box = {
+    Vector(0, 0, mins.z),
+    Vector(0, 0, maxs.z),
+    Vector(mins.x, center.y, center.z),
+    Vector(-mins.x, center.y, center.z),
+    Vector(center.x, mins.y, center.z),
+    Vector(center.x, -mins.y, center.z)
+  }
+  do
+    local _accum_0 = { }
+    local _len_0 = 1
+    for _index_0 = 1, #box do
+      local vec = box[_index_0]
+      do
+        local _with_0 = ents.Create('npc_bullseye')
+        _with_0:SetKeyValue('targetname', 'dtf2_bullseye')
+        _with_0:SetKeyValue('spawnflags', '131072')
+        _with_0:SetPos(self:LocalToWorld(vec))
+        _with_0:Spawn()
+        _with_0:Activate()
+        _with_0:SetCollisionGroup(COLLISION_GROUP_WORLD)
+        _with_0:PhysicsInitBox(Vector(-2, -2, -2), Vector(2, 2, 2))
+        _with_0:SetHealth(2 ^ 31 - 1)
+        _with_0:SetParent(self)
+        _with_0.DTF2_Parent = self
+        _accum_0[_len_0] = _with_0
+      end
+      _len_0 = _len_0 + 1
+    end
+    self.npc_bullseye = _accum_0
+  end
+end
+ENT.UpdateRelationships = function(self)
+  for _index_0 = 1, #VALID_TARGETS do
+    local _des_0 = VALID_TARGETS[_index_0]
+    local target
+    target = _des_0[1]
+    if target:IsValid() and target:IsNPC() then
+      local _list_0 = self.npc_bullseye
+      for _index_1 = 1, #_list_0 do
+        local eye = _list_0[_index_1]
+        target:AddEntityRelationship(eye, D_HT, 0)
+      end
+    end
+  end
+  for _index_0 = 1, #VALID_ALLIES do
+    local _des_0 = VALID_ALLIES[_index_0]
+    local target
+    target = _des_0[1]
+    if target:IsValid() and target:IsNPC() then
+      local _list_0 = self.npc_bullseye
+      for _index_1 = 1, #_list_0 do
+        local eye = _list_0[_index_1]
+        target:AddEntityRelationship(eye, D_LI, 0)
+      end
+    end
+  end
 end
 ENT.GetTargetsVisible = function(self)
   local output = { }
@@ -126,12 +210,25 @@ ENT.GetTargetsVisible = function(self)
     return a[3] < b[3]
   end)
   local newOutput = { }
+  local trFilter
+  do
+    local _accum_0 = { }
+    local _len_0 = 1
+    local _list_0 = self.npc_bullseye
+    for _index_0 = 1, #_list_0 do
+      local eye = _list_0[_index_0]
+      _accum_0[_len_0] = eye
+      _len_0 = _len_0 + 1
+    end
+    trFilter = _accum_0
+  end
+  table.insert(trFilter, self)
   for _index_0 = 1, #output do
     local _des_0 = output[_index_0]
     local target, tpos, dist, center
     target, tpos, dist, center = _des_0[1], _des_0[2], _des_0[3], _des_0[4]
     local trData = {
-      filter = self,
+      filter = trFilter,
       start = self.obbcenter + pos,
       endpos = tpos + center,
       mins = self.HULL_TRACE_MINS,
@@ -164,12 +261,25 @@ ENT.GetFirstVisible = function(self)
   table.sort(output, function(a, b)
     return a[3] < b[3]
   end)
+  local trFilter
+  do
+    local _accum_0 = { }
+    local _len_0 = 1
+    local _list_0 = self.npc_bullseye
+    for _index_0 = 1, #_list_0 do
+      local eye = _list_0[_index_0]
+      _accum_0[_len_0] = eye
+      _len_0 = _len_0 + 1
+    end
+    trFilter = _accum_0
+  end
+  table.insert(trFilter, self)
   for _index_0 = 1, #output do
     local _des_0 = output[_index_0]
     local target, tpos, dist, center
     target, tpos, dist, center = _des_0[1], _des_0[2], _des_0[3], _des_0[4]
     local trData = {
-      filter = self,
+      filter = trFilter,
       start = self.obbcenter + pos,
       endpos = tpos + center,
       mins = self.HULL_TRACE_MINS,
@@ -222,6 +332,7 @@ ENT.SetLevel = function(self, val, playAnimation)
       self:PlayUpgradeAnimation()
     end
   end
+  self:CreateBullseye()
   return true
 end
 ENT.PlayUpgradeAnimation = function(self)

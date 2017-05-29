@@ -165,6 +165,8 @@ ENT.FireBullet = (force = false) =>
 ENT.BehaveUpdate = (delta) =>
     cTime = CurTime()
     return if @behavePause > cTime
+
+    @UpdateRelationships()
     if not @IsAvaliable()
         @currentTarget = NULL
         return

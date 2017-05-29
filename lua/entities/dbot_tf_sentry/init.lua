@@ -132,6 +132,7 @@ ENT.BehaveUpdate = function(self, delta)
   if self.behavePause > cTime then
     return 
   end
+  self:UpdateRelationships()
   if not self:IsAvaliable() then
     self.currentTarget = NULL
     return 
