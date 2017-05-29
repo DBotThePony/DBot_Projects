@@ -51,6 +51,9 @@ hook.Add 'Think', 'DTF2.FetchTagrets', ->
         continue if not ent\IsNPC()
         continue if not isEnemy(ent)
         {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter()}
+    
+    for ent in *player.GetAll()
+        table.insert(VALID_TARGETS, {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter()})
 
 include 'shared.lua'
 AddCSLuaFile 'shared.lua'
@@ -79,12 +82,6 @@ ENT.Initialize = =>
 ENT.GetTargetsVisible = =>
     output = {}
     pos = @GetPos()
-
-    for ply in *player.GetAll()
-        ppos = ply\GetPos()
-        dist = pos\DistToSqr(ppos)
-        if ply ~= @GetPlayer() and dist < @MAX_DISTANCE
-            table.insert(output, {ply, ppos, dist, ply\OBBCenter()})
     
     for {target, tpos, mins, maxs, center} in *VALID_TARGETS
         dist = pos\DistToSqr(tpos)
@@ -112,12 +109,6 @@ ENT.GetTargetsVisible = =>
 ENT.GetFirstVisible = =>
     output = {}
     pos = @GetPos()
-
-    for ply in *player.GetAll()
-        ppos = ply\GetPos()
-        dist = pos\DistToSqr(ppos)
-        if ply ~= @GetPlayer() and dist < @MAX_DISTANCE
-            table.insert(output, {ply, ppos, dist, ply\WorldSpaceCenter()})
     
     for {target, tpos, mins, maxs, center} in *VALID_TARGETS
         dist = pos\DistToSqr(tpos)

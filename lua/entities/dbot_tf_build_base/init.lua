@@ -68,6 +68,17 @@ hook.Add('Think', 'DTF2.FetchTagrets', function()
     end
     VALID_TARGETS = _accum_0
   end
+  local _list_0 = player.GetAll()
+  for _index_0 = 1, #_list_0 do
+    local ent = _list_0[_index_0]
+    table.insert(VALID_TARGETS, {
+      ent,
+      ent:GetPos(),
+      ent:OBBMins(),
+      ent:OBBMaxs(),
+      ent:OBBCenter()
+    })
+  end
 end)
 include('shared.lua')
 AddCSLuaFile('shared.lua')
@@ -93,20 +104,6 @@ end
 ENT.GetTargetsVisible = function(self)
   local output = { }
   local pos = self:GetPos()
-  local _list_0 = player.GetAll()
-  for _index_0 = 1, #_list_0 do
-    local ply = _list_0[_index_0]
-    local ppos = ply:GetPos()
-    local dist = pos:DistToSqr(ppos)
-    if ply ~= self:GetPlayer() and dist < self.MAX_DISTANCE then
-      table.insert(output, {
-        ply,
-        ppos,
-        dist,
-        ply:OBBCenter()
-      })
-    end
-  end
   for _index_0 = 1, #VALID_TARGETS do
     local _des_0 = VALID_TARGETS[_index_0]
     local target, tpos, mins, maxs, center
@@ -146,20 +143,6 @@ end
 ENT.GetFirstVisible = function(self)
   local output = { }
   local pos = self:GetPos()
-  local _list_0 = player.GetAll()
-  for _index_0 = 1, #_list_0 do
-    local ply = _list_0[_index_0]
-    local ppos = ply:GetPos()
-    local dist = pos:DistToSqr(ppos)
-    if ply ~= self:GetPlayer() and dist < self.MAX_DISTANCE then
-      table.insert(output, {
-        ply,
-        ppos,
-        dist,
-        ply:WorldSpaceCenter()
-      })
-    end
-  end
   for _index_0 = 1, #VALID_TARGETS do
     local _des_0 = VALID_TARGETS[_index_0]
     local target, tpos, mins, maxs, center
