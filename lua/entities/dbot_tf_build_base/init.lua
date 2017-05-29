@@ -1,3 +1,7 @@
+local ATTACK_PLAYERS = CreateConVar('dtf2_attack_players', '1', {
+  FCVAR_ARCHIVE,
+  FCVAR_NOTIFY
+}, 'Sentries attacks players')
 ENT.OnLeaveGround = function(self) end
 ENT.OnLandOnGround = function(self) end
 ENT.OnStuck = function(self) end
@@ -68,16 +72,18 @@ hook.Add('Think', 'DTF2.FetchTagrets', function()
     end
     VALID_TARGETS = _accum_0
   end
-  local _list_0 = player.GetAll()
-  for _index_0 = 1, #_list_0 do
-    local ent = _list_0[_index_0]
-    table.insert(VALID_TARGETS, {
-      ent,
-      ent:GetPos(),
-      ent:OBBMins(),
-      ent:OBBMaxs(),
-      ent:OBBCenter()
-    })
+  if ATTACK_PLAYERS:GetBool() then
+    local _list_0 = player.GetAll()
+    for _index_0 = 1, #_list_0 do
+      local ent = _list_0[_index_0]
+      table.insert(VALID_TARGETS, {
+        ent,
+        ent:GetPos(),
+        ent:OBBMins(),
+        ent:OBBMaxs(),
+        ent:OBBCenter()
+      })
+    end
   end
 end)
 include('shared.lua')

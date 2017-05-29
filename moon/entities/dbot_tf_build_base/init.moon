@@ -15,6 +15,7 @@
 -- limitations under the License.
 --
 
+ATTACK_PLAYERS = CreateConVar('dtf2_attack_players', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Sentries attacks players')
 
 ENT.OnLeaveGround = =>
 ENT.OnLandOnGround = =>
@@ -52,8 +53,9 @@ hook.Add 'Think', 'DTF2.FetchTagrets', ->
         continue if not isEnemy(ent)
         {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter()}
     
-    for ent in *player.GetAll()
-        table.insert(VALID_TARGETS, {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter()})
+    if ATTACK_PLAYERS\GetBool()
+        for ent in *player.GetAll()
+            table.insert(VALID_TARGETS, {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter()})
 
 include 'shared.lua'
 AddCSLuaFile 'shared.lua'
