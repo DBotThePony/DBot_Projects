@@ -18,6 +18,10 @@
 include 'shared.lua'
 
 MUZZLE_BONE_ID_1 = 4
+MUZZLE_BONE_ID_2_L = 7
+MUZZLE_BONE_ID_2_R = 8
+MUZZLE_BONE_ID_3_L = 5
+MUZZLE_BONE_ID_3_R = 12
 MUZZLE_ANIM_TIME = 0.3
 
 ENT.Initialize = =>
@@ -32,12 +36,35 @@ ENT.Initialize = =>
 ENT.Draw = =>
     deltaFireAnim = @fireAnim - CurTime()
     pitchAdd = 0
-    if deltaFireAnim > 0
-        deltaFireAnimNormal = math.abs(0.3 - deltaFireAnim / MUZZLE_ANIM_TIME)
-        pitchAdd += deltaFireAnimNormal * 5 if not @isEmpty
-        @ManipulateBonePosition(MUZZLE_BONE_ID_1, Vector(0, 0, -deltaFireAnimNormal * 4))
-    else
-        @ManipulateBonePosition(MUZZLE_BONE_ID_1, Vector())
+
+    switch @GetLevel()
+        when 1
+            if deltaFireAnim > 0
+                deltaFireAnimNormal = math.abs(0.3 - deltaFireAnim / MUZZLE_ANIM_TIME)
+                pitchAdd += deltaFireAnimNormal * 5 if not @isEmpty
+                @ManipulateBonePosition(MUZZLE_BONE_ID_1, Vector(0, 0, -deltaFireAnimNormal * 4))
+            else
+                @ManipulateBonePosition(MUZZLE_BONE_ID_1, Vector())
+        when 2
+            if deltaFireAnim > 0
+                deltaFireAnimNormal = math.abs(deltaFireAnim / MUZZLE_ANIM_TIME)
+                ang = Angle(0, -180 + deltaFireAnimNormal * 360, 0)
+                @ManipulateBoneAngles(MUZZLE_BONE_ID_2_L, ang)
+                @ManipulateBoneAngles(MUZZLE_BONE_ID_2_R, ang)
+            else
+                ang = Angle(0, 0, 0)
+                @ManipulateBoneAngles(MUZZLE_BONE_ID_2_L, ang)
+                @ManipulateBoneAngles(MUZZLE_BONE_ID_2_R, ang)
+        when 3
+            if deltaFireAnim > 0
+                deltaFireAnimNormal = math.abs(deltaFireAnim / MUZZLE_ANIM_TIME)
+                ang = Angle(0, -180 + deltaFireAnimNormal * 360, 0)
+                @ManipulateBoneAngles(MUZZLE_BONE_ID_3_L, ang)
+                @ManipulateBoneAngles(MUZZLE_BONE_ID_3_R, ang)
+            else
+                ang = Angle(0, 0, 0)
+                @ManipulateBoneAngles(MUZZLE_BONE_ID_3_L, ang)
+                @ManipulateBoneAngles(MUZZLE_BONE_ID_3_R, ang)
     
     diffPitch = math.AngleDifference(@lastPitch, @GetAimPitch())
     diffYaw = math.AngleDifference(@lastYaw, @GetAimYaw())

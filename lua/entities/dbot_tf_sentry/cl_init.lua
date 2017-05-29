@@ -1,5 +1,9 @@
 include('shared.lua')
 local MUZZLE_BONE_ID_1 = 4
+local MUZZLE_BONE_ID_2_L = 7
+local MUZZLE_BONE_ID_2_R = 8
+local MUZZLE_BONE_ID_3_L = 5
+local MUZZLE_BONE_ID_3_R = 12
 local MUZZLE_ANIM_TIME = 0.3
 ENT.Initialize = function(self)
   self.BaseClass.Initialize(self)
@@ -13,14 +17,39 @@ end
 ENT.Draw = function(self)
   local deltaFireAnim = self.fireAnim - CurTime()
   local pitchAdd = 0
-  if deltaFireAnim > 0 then
-    local deltaFireAnimNormal = math.abs(0.3 - deltaFireAnim / MUZZLE_ANIM_TIME)
-    if not self.isEmpty then
-      pitchAdd = pitchAdd + (deltaFireAnimNormal * 5)
+  local _exp_0 = self:GetLevel()
+  if 1 == _exp_0 then
+    if deltaFireAnim > 0 then
+      local deltaFireAnimNormal = math.abs(0.3 - deltaFireAnim / MUZZLE_ANIM_TIME)
+      if not self.isEmpty then
+        pitchAdd = pitchAdd + (deltaFireAnimNormal * 5)
+      end
+      self:ManipulateBonePosition(MUZZLE_BONE_ID_1, Vector(0, 0, -deltaFireAnimNormal * 4))
+    else
+      self:ManipulateBonePosition(MUZZLE_BONE_ID_1, Vector())
     end
-    self:ManipulateBonePosition(MUZZLE_BONE_ID_1, Vector(0, 0, -deltaFireAnimNormal * 4))
-  else
-    self:ManipulateBonePosition(MUZZLE_BONE_ID_1, Vector())
+  elseif 2 == _exp_0 then
+    if deltaFireAnim > 0 then
+      local deltaFireAnimNormal = math.abs(deltaFireAnim / MUZZLE_ANIM_TIME)
+      local ang = Angle(0, -180 + deltaFireAnimNormal * 360, 0)
+      self:ManipulateBoneAngles(MUZZLE_BONE_ID_2_L, ang)
+      self:ManipulateBoneAngles(MUZZLE_BONE_ID_2_R, ang)
+    else
+      local ang = Angle(0, 0, 0)
+      self:ManipulateBoneAngles(MUZZLE_BONE_ID_2_L, ang)
+      self:ManipulateBoneAngles(MUZZLE_BONE_ID_2_R, ang)
+    end
+  elseif 3 == _exp_0 then
+    if deltaFireAnim > 0 then
+      local deltaFireAnimNormal = math.abs(deltaFireAnim / MUZZLE_ANIM_TIME)
+      local ang = Angle(0, -180 + deltaFireAnimNormal * 360, 0)
+      self:ManipulateBoneAngles(MUZZLE_BONE_ID_3_L, ang)
+      self:ManipulateBoneAngles(MUZZLE_BONE_ID_3_R, ang)
+    else
+      local ang = Angle(0, 0, 0)
+      self:ManipulateBoneAngles(MUZZLE_BONE_ID_3_L, ang)
+      self:ManipulateBoneAngles(MUZZLE_BONE_ID_3_R, ang)
+    end
   end
   local diffPitch = math.AngleDifference(self.lastPitch, self:GetAimPitch())
   local diffYaw = math.AngleDifference(self.lastYaw, self:GetAimYaw())

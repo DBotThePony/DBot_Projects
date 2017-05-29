@@ -19,6 +19,10 @@ ENT.AdminSpawnable = false
 ENT.IDLE_ANIM = 'ref'
 ENT.UPGRADE_TIME_2 = 1.16
 ENT.UPGRADE_TIME_3 = 1.16
+ENT.MAX_DISTANCE = 512 ^ 2
+ENT.GetLevel = function(self)
+  return self:GetnwLevel()
+end
 ENT.SetupDataTables = function(self)
   self:NetworkVar('Float', 0, 'HP')
   self:NetworkVar('Float', 1, 'MHP')

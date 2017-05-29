@@ -18,16 +18,30 @@ ENT.SENTRY_ANGLE_CHANGE_MULT = 50
 ENT.SENTRY_SCAN_YAW_MULT = 30
 ENT.SENTRY_SCAN_YAW_CONST = 30
 ENT.IDLE_ANIM = 'idle_off'
-ENT.MAX_AMMO_1 = 100
-ENT.MAX_AMMO_2 = 150
-ENT.MAX_AMMO_3 = 150
+ENT.MAX_DISTANCE = 1024 ^ 2
+ENT.MAX_AMMO_1 = 150
+ENT.MAX_AMMO_2 = 250
+ENT.MAX_AMMO_3 = 250
 ENT.MAX_ROCKETS_1 = 0
 ENT.MAX_ROCKETS_2 = 0
 ENT.MAX_ROCKETS_3 = 30
 ENT.BULLET_DAMAGE = 12
 ENT.BULLET_RELOAD_1 = 0.3
-ENT.BULLET_RELOAD_2 = 0.2
-ENT.BULLET_RELOAD_3 = 0.2
+ENT.BULLET_RELOAD_2 = 0.1
+ENT.BULLET_RELOAD_3 = 0.1
+ENT.GetMaxAmmo = function(self, level)
+  if level == nil then
+    level = self:GetLevel()
+  end
+  local _exp_0 = level
+  if 1 == _exp_0 then
+    return self.MAX_AMMO_1
+  elseif 2 == _exp_0 then
+    return self.MAX_AMMO_2
+  elseif 3 == _exp_0 then
+    return self.MAX_AMMO_3
+  end
+end
 ENT.SetupDataTables = function(self)
   self.BaseClass.SetupDataTables(self)
   self:NetworkVar('Int', 2, 'AimPitch')

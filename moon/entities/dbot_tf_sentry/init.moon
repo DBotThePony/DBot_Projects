@@ -21,7 +21,6 @@ AddCSLuaFile 'shared.lua'
 util.AddNetworkString('DTF2.SentryWing')
 util.AddNetworkString('DTF2.SentryFire')
 
-ENT.MAX_DISTANCE = 512 ^ 2
 ENT.Initialize = =>
     @BaseClass.Initialize(@)
     @targetAngle = Angle(0, 0, 0)
@@ -66,6 +65,29 @@ ENT.PlayScanSound = =>
 
 ENT.BulletHit = (tr, dmg) =>
     dmg\SetDamage(@BULLET_DAMAGE)
+
+ENT.SetLevel = (val = 1, playAnimation = true) =>
+    oldLevel = @GetLevel()
+    status = @BaseClass.SetLevel(@, val, playAnimation)
+    return status if not status
+    switch val
+        when 1
+            @SetAmmoAmount(@MAX_AMMO_1) if @GetAmmoAmount() == @GetMaxAmmo(oldLevel)
+        when 2
+            @SetAmmoAmount(@MAX_AMMO_2) if @GetAmmoAmount() == @GetMaxAmmo(oldLevel)
+        when 3
+            @SetAmmoAmount(@MAX_AMMO_3) if @GetAmmoAmount() == @GetMaxAmmo(oldLevel)
+            
+    return true
+
+ENT.GetAdditionalVector = =>
+    switch @GetLevel()
+        when 1
+            Vector(0, 0, 16)
+        when 2
+            Vector(0, 0, 20)
+        when 3
+            Vector(0, 0, 20)
 
 ENT.FireBullet = (force = false) =>
     return false if @lastBulletFire > CurTime() and not force
@@ -121,10 +143,7 @@ ENT.FireBullet = (force = false) =>
 --                     srcAng = .Ang\Forward()
 --             @nextMuzzle = not @nextMuzzle
 
-    srcPos = @GetPos()
-    switch @GetLevel()
-        when 1
-            srcPos += Vector(0, 0, 16)
+    srcPos = @GetPos() + @GetAdditionalVector()
     
     bulletData = {
         Attacker: @
@@ -160,9 +179,9 @@ ENT.BehaveUpdate = (delta) =>
             net.Broadcast()
 
     if IsValid(@currentTarget)
-        @currentTargetPosition = @currentTarget\GetPos() + @currentTarget\OBBCenter()
+        @currentTargetPosition = @currentTarget\WorldSpaceCenter()
         @idleWaitOnAngle = cTime + 6
-        @targetAngle = (@currentTargetPosition - @GetPos() - @obbcenter)\Angle()
+        @targetAngle = (@currentTargetPosition - @GetPos() - @GetAdditionalVector())\Angle()
         @idleAngle = @targetAngle
         @idleAnim = false
         @idleDirection = false

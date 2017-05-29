@@ -2,7 +2,6 @@ include('shared.lua')
 AddCSLuaFile('shared.lua')
 util.AddNetworkString('DTF2.SentryWing')
 util.AddNetworkString('DTF2.SentryFire')
-ENT.MAX_DISTANCE = 512 ^ 2
 ENT.Initialize = function(self)
   self.BaseClass.Initialize(self)
   self.targetAngle = Angle(0, 0, 0)
@@ -48,6 +47,44 @@ end
 ENT.BulletHit = function(self, tr, dmg)
   return dmg:SetDamage(self.BULLET_DAMAGE)
 end
+ENT.SetLevel = function(self, val, playAnimation)
+  if val == nil then
+    val = 1
+  end
+  if playAnimation == nil then
+    playAnimation = true
+  end
+  local oldLevel = self:GetLevel()
+  local status = self.BaseClass.SetLevel(self, val, playAnimation)
+  if not status then
+    return status
+  end
+  local _exp_0 = val
+  if 1 == _exp_0 then
+    if self:GetAmmoAmount() == self:GetMaxAmmo(oldLevel) then
+      self:SetAmmoAmount(self.MAX_AMMO_1)
+    end
+  elseif 2 == _exp_0 then
+    if self:GetAmmoAmount() == self:GetMaxAmmo(oldLevel) then
+      self:SetAmmoAmount(self.MAX_AMMO_2)
+    end
+  elseif 3 == _exp_0 then
+    if self:GetAmmoAmount() == self:GetMaxAmmo(oldLevel) then
+      self:SetAmmoAmount(self.MAX_AMMO_3)
+    end
+  end
+  return true
+end
+ENT.GetAdditionalVector = function(self)
+  local _exp_0 = self:GetLevel()
+  if 1 == _exp_0 then
+    return Vector(0, 0, 16)
+  elseif 2 == _exp_0 then
+    return Vector(0, 0, 20)
+  elseif 3 == _exp_0 then
+    return Vector(0, 0, 20)
+  end
+end
 ENT.FireBullet = function(self, force)
   if force == nil then
     force = false
@@ -75,11 +112,7 @@ ENT.FireBullet = function(self, force)
   self:EmitSound('weapons/sentry_shoot.wav')
   self:SetPoseParameter('aim_pitch', self:GetAimPitch())
   self:SetPoseParameter('aim_yaw', self:GetAimYaw())
-  local srcPos = self:GetPos()
-  local _exp_1 = self:GetLevel()
-  if 1 == _exp_1 then
-    srcPos = srcPos + Vector(0, 0, 16)
-  end
+  local srcPos = self:GetPos() + self:GetAdditionalVector()
   local bulletData = {
     Attacker = self,
     Callback = self.BulletHit,
@@ -114,9 +147,9 @@ ENT.BehaveUpdate = function(self, delta)
     end
   end
   if IsValid(self.currentTarget) then
-    self.currentTargetPosition = self.currentTarget:GetPos() + self.currentTarget:OBBCenter()
+    self.currentTargetPosition = self.currentTarget:WorldSpaceCenter()
     self.idleWaitOnAngle = cTime + 6
-    self.targetAngle = (self.currentTargetPosition - self:GetPos() - self.obbcenter):Angle()
+    self.targetAngle = (self.currentTargetPosition - self:GetPos() - self:GetAdditionalVector()):Angle()
     self.idleAngle = self.targetAngle
     self.idleAnim = false
     self.idleDirection = false

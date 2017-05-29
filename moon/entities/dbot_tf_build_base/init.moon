@@ -52,11 +52,15 @@ hook.Add 'Think', 'DTF2.FetchTagrets', ->
     VALID_TARGETS = for ent in *ents.GetAll()
         continue if not ent\IsNPC()
         continue if not isEnemy(ent)
-        {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter()}
+        center = ent\OBBCenter()
+        center\Rotate(ent\GetAngles())
+        {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center}
     
     if ATTACK_PLAYERS\GetBool()
         for ent in *player.GetAll()
-            table.insert(VALID_TARGETS, {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter()})
+            center = ent\OBBCenter()
+            center\Rotate(ent\GetAngles())
+            table.insert(VALID_TARGETS, {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center})
 
 include 'shared.lua'
 AddCSLuaFile 'shared.lua'
@@ -87,10 +91,10 @@ ENT.GetTargetsVisible = =>
     output = {}
     pos = @GetPos()
     
-    for {target, tpos, mins, maxs, center} in *VALID_TARGETS
+    for {target, tpos, mins, maxs, center, rotatedCenter} in *VALID_TARGETS
         dist = pos\DistToSqr(tpos)
         if target\IsValid() and dist < @MAX_DISTANCE
-            table.insert(output, {target, tpos, dist, center})
+            table.insert(output, {target, tpos, dist, rotatedCenter})
     
     table.sort output, (a, b) -> a[3] < b[3]
     newOutput = {}
@@ -114,10 +118,10 @@ ENT.GetFirstVisible = =>
     output = {}
     pos = @GetPos()
     
-    for {target, tpos, mins, maxs, center} in *VALID_TARGETS
+    for {target, tpos, mins, maxs, center, rotatedCenter} in *VALID_TARGETS
         dist = pos\DistToSqr(tpos)
         if target\IsValid() and dist < @MAX_DISTANCE
-            table.insert(output, {target, tpos, dist, center})
+            table.insert(output, {target, tpos, dist, rotatedCenter})
     
     table.sort output, (a, b) -> a[3] < b[3]
 
@@ -136,8 +140,8 @@ ENT.GetFirstVisible = =>
 
     return NULL
 
-ENT.GetLevel = => @GetnwLevel()
 ENT.SetLevel = (val = 1, playAnimation = true) =>
+    return false if val == @GetLevel()
     val = math.Clamp(math.floor(val), 1, 3)
     @SetnwLevel(val)
     @mLevel = val
@@ -159,6 +163,7 @@ ENT.SetLevel = (val = 1, playAnimation = true) =>
             @SetMHP(@HealthLevel3)
             @UpdateSequenceList()
             @PlayUpgradeAnimation() if playAnimation
+    return true
 
 ENT.PlayUpgradeAnimation = =>
     return false if @GetLevel() == 1

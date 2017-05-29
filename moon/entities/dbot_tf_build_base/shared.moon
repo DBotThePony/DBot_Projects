@@ -44,6 +44,10 @@ ENT.IDLE_ANIM = 'ref'
 ENT.UPGRADE_TIME_2 = 1.16
 ENT.UPGRADE_TIME_3 = 1.16
 
+ENT.MAX_DISTANCE = 512 ^ 2
+
+ENT.GetLevel = => @GetnwLevel()
+
 ENT.SetupDataTables = =>
     @NetworkVar('Float', 0, 'HP')
     @NetworkVar('Float', 1, 'MHP')

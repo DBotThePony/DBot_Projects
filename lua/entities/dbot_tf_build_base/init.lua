@@ -57,12 +57,15 @@ hook.Add('Think', 'DTF2.FetchTagrets', function()
           _continue_0 = true
           break
         end
+        local center = ent:OBBCenter()
+        center:Rotate(ent:GetAngles())
         local _value_0 = {
           ent,
           ent:GetPos(),
           ent:OBBMins(),
           ent:OBBMaxs(),
-          ent:OBBCenter()
+          ent:OBBCenter(),
+          center
         }
         _accum_0[_len_0] = _value_0
         _len_0 = _len_0 + 1
@@ -78,12 +81,15 @@ hook.Add('Think', 'DTF2.FetchTagrets', function()
     local _list_0 = player.GetAll()
     for _index_0 = 1, #_list_0 do
       local ent = _list_0[_index_0]
+      local center = ent:OBBCenter()
+      center:Rotate(ent:GetAngles())
       table.insert(VALID_TARGETS, {
         ent,
         ent:GetPos(),
         ent:OBBMins(),
         ent:OBBMaxs(),
-        ent:OBBCenter()
+        ent:OBBCenter(),
+        center
       })
     end
   end
@@ -115,15 +121,15 @@ ENT.GetTargetsVisible = function(self)
   local pos = self:GetPos()
   for _index_0 = 1, #VALID_TARGETS do
     local _des_0 = VALID_TARGETS[_index_0]
-    local target, tpos, mins, maxs, center
-    target, tpos, mins, maxs, center = _des_0[1], _des_0[2], _des_0[3], _des_0[4], _des_0[5]
+    local target, tpos, mins, maxs, center, rotatedCenter
+    target, tpos, mins, maxs, center, rotatedCenter = _des_0[1], _des_0[2], _des_0[3], _des_0[4], _des_0[5], _des_0[6]
     local dist = pos:DistToSqr(tpos)
     if target:IsValid() and dist < self.MAX_DISTANCE then
       table.insert(output, {
         target,
         tpos,
         dist,
-        center
+        rotatedCenter
       })
     end
   end
@@ -154,15 +160,15 @@ ENT.GetFirstVisible = function(self)
   local pos = self:GetPos()
   for _index_0 = 1, #VALID_TARGETS do
     local _des_0 = VALID_TARGETS[_index_0]
-    local target, tpos, mins, maxs, center
-    target, tpos, mins, maxs, center = _des_0[1], _des_0[2], _des_0[3], _des_0[4], _des_0[5]
+    local target, tpos, mins, maxs, center, rotatedCenter
+    target, tpos, mins, maxs, center, rotatedCenter = _des_0[1], _des_0[2], _des_0[3], _des_0[4], _des_0[5], _des_0[6]
     local dist = pos:DistToSqr(tpos)
     if target:IsValid() and dist < self.MAX_DISTANCE then
       table.insert(output, {
         target,
         tpos,
         dist,
-        center
+        rotatedCenter
       })
     end
   end
@@ -187,15 +193,15 @@ ENT.GetFirstVisible = function(self)
   end
   return NULL
 end
-ENT.GetLevel = function(self)
-  return self:GetnwLevel()
-end
 ENT.SetLevel = function(self, val, playAnimation)
   if val == nil then
     val = 1
   end
   if playAnimation == nil then
     playAnimation = true
+  end
+  if val == self:GetLevel() then
+    return false
   end
   val = math.Clamp(math.floor(val), 1, 3)
   self:SetnwLevel(val)
@@ -207,7 +213,7 @@ ENT.SetLevel = function(self, val, playAnimation)
       self:SetHP(self.HealthLevel1)
     end
     self:SetMHP(self.HealthLevel1)
-    return self:UpdateSequenceList()
+    self:UpdateSequenceList()
   elseif 2 == _exp_0 then
     self:SetModel(self.IdleModel2)
     if self:GetHP() == self:GetMHP() then
@@ -216,7 +222,7 @@ ENT.SetLevel = function(self, val, playAnimation)
     self:SetMHP(self.HealthLevel2)
     self:UpdateSequenceList()
     if playAnimation then
-      return self:PlayUpgradeAnimation()
+      self:PlayUpgradeAnimation()
     end
   elseif 3 == _exp_0 then
     self:SetModel(self.IdleModel3)
@@ -224,9 +230,10 @@ ENT.SetLevel = function(self, val, playAnimation)
     self:SetMHP(self.HealthLevel3)
     self:UpdateSequenceList()
     if playAnimation then
-      return self:PlayUpgradeAnimation()
+      self:PlayUpgradeAnimation()
     end
   end
+  return true
 end
 ENT.PlayUpgradeAnimation = function(self)
   if self:GetLevel() == 1 then
