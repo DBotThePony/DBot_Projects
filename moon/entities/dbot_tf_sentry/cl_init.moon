@@ -90,3 +90,16 @@ net.Receive 'DTF2.SentryFire', ->
     isEmpty = not net.ReadBool()
     sentry.isEmpty = isEmpty
     sentry.fireAnim = CurTime() + MUZZLE_ANIM_TIME
+    
+    switch sentry\GetLevel()
+        when 1
+            with sentry\GetAttachment(sentry\LookupAttachment('muzzle'))
+                ParticleEffect('muzzle_sentry', .Pos, .Ang, @)
+        when 2
+            sentry.nextMuzzle = not sentry.nextMuzzle
+            with sentry\GetAttachment(sentry\LookupAttachment(sentry.nextMuzzle and 'muzzle_l' or 'muzzle_r'))
+                ParticleEffect('muzzle_sentry', .Pos, .Ang, @)
+        when 3
+            sentry.nextMuzzle = not sentry.nextMuzzle
+            with sentry\GetAttachment(sentry\LookupAttachment(sentry.nextMuzzle and 'muzzle_l' or 'muzzle_r'))
+                ParticleEffect('muzzle_sentry', .Pos, .Ang, @)

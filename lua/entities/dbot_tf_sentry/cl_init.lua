@@ -80,4 +80,26 @@ return net.Receive('DTF2.SentryFire', function()
   local isEmpty = not net.ReadBool()
   sentry.isEmpty = isEmpty
   sentry.fireAnim = CurTime() + MUZZLE_ANIM_TIME
+  local _exp_0 = sentry:GetLevel()
+  if 1 == _exp_0 then
+    do
+      local _with_0 = sentry:GetAttachment(sentry:LookupAttachment('muzzle'))
+      ParticleEffect('muzzle_sentry', _with_0.Pos, _with_0.Ang, self)
+      return _with_0
+    end
+  elseif 2 == _exp_0 then
+    sentry.nextMuzzle = not sentry.nextMuzzle
+    do
+      local _with_0 = sentry:GetAttachment(sentry:LookupAttachment(sentry.nextMuzzle and 'muzzle_l' or 'muzzle_r'))
+      ParticleEffect('muzzle_sentry', _with_0.Pos, _with_0.Ang, self)
+      return _with_0
+    end
+  elseif 3 == _exp_0 then
+    sentry.nextMuzzle = not sentry.nextMuzzle
+    do
+      local _with_0 = sentry:GetAttachment(sentry:LookupAttachment(sentry.nextMuzzle and 'muzzle_l' or 'muzzle_r'))
+      ParticleEffect('muzzle_sentry', _with_0.Pos, _with_0.Ang, self)
+      return _with_0
+    end
+  end
 end)
