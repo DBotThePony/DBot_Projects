@@ -168,6 +168,16 @@ end)
 hook.Add('OnNPCKilled', 'DTF2.UpdateTargetList', function()
   return timer.Create('DTF2.UpdateTargetList', 0, 1, UpdateTargetList)
 end)
+hook.Add('EntityTakeDamage', 'DTF2.Bullseye', function(self, dmg)
+  if not self.DTF2_Parent then
+    return 
+  end
+  if not dmg:IsExplosionDamage() then
+    self.DTF2_Parent:TakeDamageInfo(dmg)
+  end
+  dmg:SetDamage(0)
+  return true
+end)
 include('shared.lua')
 AddCSLuaFile('shared.lua')
 ENT.Initialize = function(self)
@@ -222,9 +232,10 @@ ENT.CreateBullseye = function(self)
         _with_0:Spawn()
         _with_0:Activate()
         _with_0:SetCollisionGroup(COLLISION_GROUP_WORLD)
-        _with_0:PhysicsInitBox(Vector(-2, -2, -2), Vector(2, 2, 2))
+        _with_0:PhysicsInitBox(self:OBBMins(), self:OBBMaxs())
         _with_0:SetHealth(2 ^ 31 - 1)
         _with_0:SetParent(self)
+        _with_0:SetNotSolid(true)
         _with_0.DTF2_Parent = self
         _accum_0[_len_0] = _with_0
       end

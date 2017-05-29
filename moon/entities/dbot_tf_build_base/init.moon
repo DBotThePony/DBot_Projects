@@ -115,6 +115,12 @@ hook.Add 'OnEntityCreated', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.Updat
 hook.Add 'EntityRemoved', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTargetList', 0, 1, UpdateTargetList
 hook.Add 'OnNPCKilled', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTargetList', 0, 1, UpdateTargetList
 
+hook.Add 'EntityTakeDamage', 'DTF2.Bullseye', (dmg) =>
+    return if not @DTF2_Parent
+    @DTF2_Parent\TakeDamageInfo(dmg) if not dmg\IsExplosionDamage()
+    dmg\SetDamage(0)
+    return true
+
 include 'shared.lua'
 AddCSLuaFile 'shared.lua'
 
@@ -167,9 +173,10 @@ ENT.CreateBullseye = =>
 			\Spawn()
 			\Activate()
 			\SetCollisionGroup(COLLISION_GROUP_WORLD)
-			\PhysicsInitBox(Vector(-2, -2, -2), Vector(2, 2, 2))
+			\PhysicsInitBox(@OBBMins(), @OBBMaxs())
 			\SetHealth(2 ^ 31 - 1)
 			\SetParent(@)
+            \SetNotSolid(true)
             .DTF2_Parent = @
 
 ENT.UpdateRelationships = =>
