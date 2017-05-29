@@ -202,6 +202,32 @@ ENT.Initialize = function(self)
   self:StartActivity(ACT_OBJ_RUNNING)
   return self:CreateBullseye()
 end
+ENT.GetAllies = function(self)
+  local _accum_0 = { }
+  local _len_0 = 1
+  for _index_0 = 1, #VALID_ALLIES do
+    local ent = VALID_ALLIES[_index_0]
+    _accum_0[_len_0] = ent
+    _len_0 = _len_0 + 1
+  end
+  return _accum_0
+end
+ENT.GetEnemies = function(self)
+  local _accum_0 = { }
+  local _len_0 = 1
+  for _index_0 = 1, #VALID_TARGETS do
+    local ent = VALID_TARGETS[_index_0]
+    _accum_0[_len_0] = ent
+    _len_0 = _len_0 + 1
+  end
+  return _accum_0
+end
+ENT.GetAlliesTable = function(self)
+  return VALID_ALLIES
+end
+ENT.GetEnemiesTable = function(self)
+  return VALID_TARGETS
+end
 ENT.CreateBullseye = function(self)
   if self.npc_bullseye then
     local _list_0 = self.npc_bullseye
@@ -268,6 +294,58 @@ ENT.UpdateRelationships = function(self)
       end
     end
   end
+end
+ENT.GetAlliesVisible = function(self)
+  local output = { }
+  local pos = self:GetPos()
+  for _index_0 = 1, #VALID_ALLIES do
+    local _des_0 = VALID_ALLIES[_index_0]
+    local target, tpos, mins, maxs, center, rotatedCenter
+    target, tpos, mins, maxs, center, rotatedCenter = _des_0[1], _des_0[2], _des_0[3], _des_0[4], _des_0[5], _des_0[6]
+    local dist = pos:DistToSqr(tpos)
+    if target:IsValid() and dist < self.MAX_DISTANCE then
+      table.insert(output, {
+        target,
+        tpos,
+        dist,
+        rotatedCenter
+      })
+    end
+  end
+  table.sort(output, function(a, b)
+    return a[3] < b[3]
+  end)
+  local newOutput = { }
+  local trFilter
+  do
+    local _accum_0 = { }
+    local _len_0 = 1
+    local _list_0 = self.npc_bullseye
+    for _index_0 = 1, #_list_0 do
+      local eye = _list_0[_index_0]
+      _accum_0[_len_0] = eye
+      _len_0 = _len_0 + 1
+    end
+    trFilter = _accum_0
+  end
+  table.insert(trFilter, self)
+  for _index_0 = 1, #output do
+    local _des_0 = output[_index_0]
+    local target, tpos, dist, center
+    target, tpos, dist, center = _des_0[1], _des_0[2], _des_0[3], _des_0[4]
+    local trData = {
+      filter = trFilter,
+      start = self.obbcenter + pos,
+      endpos = tpos + center,
+      mins = self.HULL_TRACE_MINS,
+      maxs = self.HULL_TRACE_MAXS
+    }
+    local tr = util.TraceHull(trData)
+    if tr.Hit and tr.Entity == target then
+      table.insert(newOutput, target)
+    end
+  end
+  return newOutput
 end
 ENT.GetTargetsVisible = function(self)
   local output = { }

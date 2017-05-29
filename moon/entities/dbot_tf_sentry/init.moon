@@ -203,7 +203,6 @@ ENT.BehaveUpdate = (delta) =>
             @PlayScanSound()
         {:p, :y, :r} = @idleAngle
         @targetAngle = Angle(p + @idlePitch, y + @idleYaw, r)
-ENT.RunBehaviour = =>
 
 ENT.GetEnemy = => @currentTarget
 ENT.Explode = =>

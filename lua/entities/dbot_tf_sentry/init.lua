@@ -187,7 +187,6 @@ ENT.BehaveUpdate = function(self, delta)
     self.targetAngle = Angle(p + self.idlePitch, y + self.idleYaw, r)
   end
 end
-ENT.RunBehaviour = function(self) end
 ENT.GetEnemy = function(self)
   return self.currentTarget
 end

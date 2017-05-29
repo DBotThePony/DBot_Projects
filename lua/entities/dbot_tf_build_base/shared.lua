@@ -27,6 +27,7 @@ ENT.SetupDataTables = function(self)
   self:NetworkVar('Bool', 0, 'IsBuilding')
   self:NetworkVar('Bool', 2, 'IsUpgrading')
   self:NetworkVar('Bool', 1, 'BuildSpeedup')
+  self:NetworkVar('Bool', 16, 'TeamType')
   self:NetworkVar('Int', 1, 'nwLevel')
   return self:NetworkVar('Entity', 0, 'Player')
 end

@@ -15,8 +15,16 @@
 -- limitations under the License.
 --
 
+ENT.Base = 'dbot_tf_build_base'
 ENT.Type = 'nextbot'
-ENT.Base = 'base_nextbot'
+ENT.PrintName = 'Dispenser'
+ENT.Spawnable = true
+ENT.AdminSpawnable = true
+ENT.AdminOnly = false
+ENT.Author = 'DBot'
+ENT.Category = 'TF2'
+
+ENT.HEAL_SPEED_MULT = 10
 
 ENT.BuildModel1 = 'models/buildables/dispenser.mdl'
 ENT.BuildModel2 = 'models/buildables/dispenser_lvl2.mdl'
@@ -26,37 +34,41 @@ ENT.IdleModel1 = 'models/buildables/dispenser_light.mdl'
 ENT.IdleModel2 = 'models/buildables/dispenser_lvl2_light.mdl'
 ENT.IdleModel3 = 'models/buildables/dispenser_lvl3_light.mdl'
 
-ENT.HealthLevel1 = 150
-ENT.HealthLevel2 = 180
-ENT.HealthLevel3 = 216
+ENT.BuildingMins = Vector(-18, -16, 0)
+ENT.BuildingMaxs = Vector(18, 16, 64)
 
-ENT.BuildTime = 2
-
-ENT.BuildingMins = Vector(-16, -16, 0)
-ENT.BuildingMaxs = Vector(16, 16, 48)
-
-ENT.Author = 'DBot'
-ENT.PrintName = 'TF2 Buildable base'
-ENT.Spawnable = false
-ENT.AdminSpawnable = false
-
+ENT.BuildTime = 20
 ENT.IDLE_ANIM = 'ref'
-ENT.UPGRADE_TIME_2 = 1.16
-ENT.UPGRADE_TIME_3 = 1.16
 
-ENT.MAX_DISTANCE = 512 ^ 2
+ENT.MAX_DISTANCE = 128 ^ 2
 
-ENT.GetLevel = => @GetnwLevel()
+ENT.RESSUPLY_MULTIPLIER_1 = 1
+ENT.RESSUPLY_MULTIPLIER_2 = 1.2
+ENT.RESSUPLY_MULTIPLIER_3 = 1.4
+
+ENT.MAS_RESSUPLY_1 = 100
+ENT.MAS_RESSUPLY_2 = 150
+ENT.MAS_RESSUPLY_3 = 200
+
+ENT.GetRessuplyMultiplier = (level = @GetLevel()) =>
+    switch level
+        when 1
+            @RESSUPLY_MULTIPLIER_1
+        when 2
+            @RESSUPLY_MULTIPLIER_2
+        when 3
+            @RESSUPLY_MULTIPLIER_3
+
+ENT.GetMaxRessuply = (level = @GetLevel()) =>
+    switch level
+        when 1
+            @MAS_RESSUPLY_1
+        when 2
+            @MAS_RESSUPLY_2
+        when 3
+            @MAS_RESSUPLY_3
 
 ENT.SetupDataTables = =>
-    @NetworkVar('Bool', 0, 'IsBuilding')
-    @NetworkVar('Bool', 2, 'IsUpgrading')
-    @NetworkVar('Bool', 1, 'BuildSpeedup')
-    @NetworkVar('Bool', 16, 'TeamType')
-    @NetworkVar('Int', 1, 'nwLevel')
-    @NetworkVar('Entity', 0, 'Player')
+    @BaseClass.SetupDataTables(@)
+    @NetworkVar('Int', 2, 'RessuplyAmount')
 
-ENT.UpdateSequenceList = =>
-    @buildSequence = @LookupSequence('build')
-    @upgradeSequence = @LookupSequence('upgrade')
-    @idleSequence = @LookupSequence(@IDLE_ANIM)

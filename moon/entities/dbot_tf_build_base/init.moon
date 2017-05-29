@@ -148,6 +148,11 @@ ENT.Initialize = =>
     @StartActivity(ACT_OBJ_RUNNING)
     @CreateBullseye()
 
+ENT.GetAllies = => [ent for ent in *VALID_ALLIES]
+ENT.GetEnemies = => [ent for ent in *VALID_TARGETS]
+ENT.GetAlliesTable = => VALID_ALLIES
+ENT.GetEnemiesTable = => VALID_TARGETS
+
 ENT.CreateBullseye = =>
     if @npc_bullseye
         eye\Remove() for eye in *@npc_bullseye
@@ -185,6 +190,35 @@ ENT.UpdateRelationships = =>
     for {target} in *VALID_ALLIES
         if target\IsValid() and target\IsNPC()
             target\AddEntityRelationship(eye, D_LI, 0) for eye in *@npc_bullseye
+
+ENT.GetAlliesVisible = =>
+    output = {}
+    pos = @GetPos()
+    
+    for {target, tpos, mins, maxs, center, rotatedCenter} in *VALID_ALLIES
+        dist = pos\DistToSqr(tpos)
+        if target\IsValid() and dist < @MAX_DISTANCE
+            table.insert(output, {target, tpos, dist, rotatedCenter})
+    
+    table.sort output, (a, b) -> a[3] < b[3]
+    newOutput = {}
+    trFilter = [eye for eye in *@npc_bullseye]
+    table.insert(trFilter, @)
+
+    for {target, tpos, dist, center} in *output
+        trData = {
+            filter: trFilter
+            start: @obbcenter + pos
+            endpos: tpos + center
+            mins: @HULL_TRACE_MINS
+            maxs: @HULL_TRACE_MAXS
+        }
+
+        tr = util.TraceHull(trData)
+        if tr.Hit and tr.Entity == target
+            table.insert(newOutput, target)
+
+    return newOutput
 
 ENT.GetTargetsVisible = =>
     output = {}
