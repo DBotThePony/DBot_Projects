@@ -15,6 +15,8 @@
 -- limitations under the License.
 --
 
+ENT.m_iClass = CLASS_CITIZEN_REBEL
+
 ENT.Base = 'dbot_tf_build_base'
 ENT.Type = 'nextbot'
 ENT.PrintName = 'Sentry gun'

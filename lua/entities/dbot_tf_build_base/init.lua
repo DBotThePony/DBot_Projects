@@ -1,3 +1,30 @@
+ENT.OnLeaveGround = function(self) end
+ENT.OnLandOnGround = function(self) end
+ENT.OnStuck = function(self) end
+ENT.OnUnStuck = function(self) end
+ENT.OnContact = function(self, victim) end
+ENT.OnOtherKilled = function(self, victim, dmg) end
+ENT.OnIgnite = function(self) end
+ENT.OnNavAreaChanged = function(self, old, new) end
+ENT.HandleStuck = function(self) end
+ENT.MoveToPos = function(self, pos, options) end
+ENT.BehaveStart = function(self) end
+ENT.BehaveUpdate = function(self, delta) end
+ENT.BodyUpdate = function(self)
+  return self:FrameAdvance()
+end
+ENT.RunBehaviour = function(self) end
+ENT.GetEnemy = function(self)
+  return self.currentTarget
+end
+ENT.Explode = function(self)
+  return self:Remove()
+end
+ENT.OnInjured = function(self, dmg) end
+ENT.OnKilled = function(self, dmg)
+  hook.Run('OnNPCKilled', self, dmg:GetAttacker(), dmg:GetInflictor())
+  return self:Explode()
+end
 local VALID_TARGETS = { }
 local isEnemy
 isEnemy = function(ent)
@@ -9,7 +36,7 @@ isEnemy = function(ent)
   end
   return IsEnemyEntityName(ent:GetClass())
 end
-timer.Create('DTF2.FetchTargets', 0.1, 0, function()
+hook.Add('Think', 'DTF2.FetchTagrets', function()
   do
     local _accum_0 = { }
     local _len_0 = 1
@@ -62,7 +89,8 @@ ENT.Initialize = function(self)
   self.buildSpeedupUntil = 0
   self.buildFinishAt = 0
   self.upgradeFinishAt = 0
-  return self:UpdateSequenceList()
+  self:UpdateSequenceList()
+  return self:StartActivity(ACT_OBJ_RUNNING)
 end
 ENT.GetTargetsVisible = function(self)
   local output = { }
@@ -227,7 +255,7 @@ ENT.PlayUpgradeAnimation = function(self)
     self:SetModel(self.BuildModel3)
   end
   self:UpdateSequenceList()
-  self:ResetSequence(self.upgradeSequence)
+  self:StartActivity(ACT_OBJ_UPGRADING)
   return true
 end
 ENT.SetBuildStatus = function(self, status)
@@ -246,13 +274,13 @@ ENT.SetBuildStatus = function(self, status)
     self:UpdateSequenceList()
     self:SetBuildSpeedup(false)
     self.buildSpeedupUntil = 0
-    self:ResetSequence(self.buildSequence)
+    self:StartActivity(ACT_OBJ_PLACING)
     self.buildFinishAt = CurTime() + self.BuildTime
     self:OnBuildStart()
   else
     self:SetModel(self.IdleModel1)
     self:UpdateSequenceList()
-    self:ResetSequence(self.idleSequence)
+    self:StartActivity(ACT_OBJ_RUNNING)
     self:OnBuildFinish()
   end
   return true
@@ -277,7 +305,7 @@ ENT.Think = function(self)
       self:SetIsBuilding(false)
       self:SetModel(self.IdleModel1)
       self:UpdateSequenceList()
-      self:ResetSequence(self.idleSequence)
+      self:StartActivity(ACT_OBJ_RUNNING)
       return self:OnBuildFinish()
     end
   elseif self:GetIsUpgrading() then
@@ -291,7 +319,7 @@ ENT.Think = function(self)
         self:SetModel(self.IdleModel3)
       end
       self:UpdateSequenceList()
-      self:ResetSequence(self.idleSequence)
+      self:StartActivity(ACT_OBJ_RUNNING)
       return self:OnUpgradeFinish()
     end
   end

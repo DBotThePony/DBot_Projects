@@ -15,13 +15,38 @@
 -- limitations under the License.
 --
 
+
+ENT.OnLeaveGround = =>
+ENT.OnLandOnGround = =>
+ENT.OnStuck = =>
+ENT.OnUnStuck = =>
+ENT.OnContact = (victim) =>
+ENT.OnOtherKilled = (victim, dmg) =>
+ENT.OnIgnite = =>
+ENT.OnNavAreaChanged = (old, new) =>
+ENT.HandleStuck = =>
+ENT.MoveToPos = (pos, options) =>
+
+ENT.BehaveStart = =>
+ENT.BehaveUpdate = (delta) =>
+ENT.BodyUpdate = => @FrameAdvance()
+ENT.RunBehaviour = =>
+ENT.GetEnemy = => @currentTarget
+ENT.Explode = =>
+    @Remove()
+
+ENT.OnInjured = (dmg) =>
+ENT.OnKilled = (dmg) =>
+    hook.Run('OnNPCKilled', @, dmg\GetAttacker(), dmg\GetInflictor())
+    @Explode()
+
 VALID_TARGETS = {}
 
 isEnemy = (ent = NULL) ->
     return false if not ent\IsValid()
     return IsEnemyEntityName(ent\GetClass())
 
-timer.Create 'DTF2.FetchTargets', 0.1, 0, ->
+hook.Add 'Think', 'DTF2.FetchTagrets', ->
     VALID_TARGETS = for ent in *ents.GetAll()
         continue if not ent\IsNPC()
         continue if not isEnemy(ent)
@@ -49,6 +74,7 @@ ENT.Initialize = =>
     @buildFinishAt = 0
     @upgradeFinishAt = 0
     @UpdateSequenceList()
+    @StartActivity(ACT_OBJ_RUNNING)
 
 ENT.GetTargetsVisible = =>
     output = {}
@@ -155,7 +181,8 @@ ENT.PlayUpgradeAnimation = =>
             @upgradeFinishAt = CurTime() + @UPGRADE_TIME_3
             @SetModel(@BuildModel3)
     @UpdateSequenceList()
-    @ResetSequence(@upgradeSequence)
+    @StartActivity(ACT_OBJ_UPGRADING)
+    --@ResetSequence(@upgradeSequence)
     return true
 
 ENT.SetBuildStatus = (status = false) =>
@@ -167,13 +194,15 @@ ENT.SetBuildStatus = (status = false) =>
         @UpdateSequenceList()
         @SetBuildSpeedup(false)
         @buildSpeedupUntil = 0
-        @ResetSequence(@buildSequence)
+        @StartActivity(ACT_OBJ_PLACING)
+        --@ResetSequence(@buildSequence)
         @buildFinishAt = CurTime() + @BuildTime
         @OnBuildStart()
     else
         @SetModel(@IdleModel1)
         @UpdateSequenceList()
-        @ResetSequence(@idleSequence)
+        --@ResetSequence(@idleSequence)
+        @StartActivity(ACT_OBJ_RUNNING)
         @OnBuildFinish()
     return true
 
@@ -195,7 +224,8 @@ ENT.Think = =>
             @SetIsBuilding(false)
             @SetModel(@IdleModel1)
             @UpdateSequenceList()
-            @ResetSequence(@idleSequence)
+            @StartActivity(ACT_OBJ_RUNNING)
+            --@ResetSequence(@idleSequence)
             @OnBuildFinish()
     elseif @GetIsUpgrading()
         if @upgradeFinishAt < cTime
@@ -207,6 +237,7 @@ ENT.Think = =>
                 when 3
                     @SetModel(@IdleModel3)
             @UpdateSequenceList()
-            @ResetSequence(@idleSequence)
+            @StartActivity(ACT_OBJ_RUNNING)
+            --@ResetSequence(@idleSequence)
             @OnUpgradeFinish()
             

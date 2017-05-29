@@ -39,6 +39,8 @@ ENT.Initialize = =>
     @SetAmmoAmount(@MAX_AMMO_1)
     @SetHealth(@HealthLevel1)
     @SetMaxHealth(@HealthLevel1)
+    @fireNext = 0
+    @behavePause = 0
 
 ENT.HULL_SIZE = 2
 ENT.HULL_TRACE_MINS = Vector(-ENT.HULL_SIZE, -ENT.HULL_SIZE, -ENT.HULL_SIZE)
@@ -87,26 +89,13 @@ ENT.FireBullet = (force = false) =>
     }
 
     @FireBullets(bulletData)
-    if @lastSeq ~= @fireSequence
-        @ResetSequence(@fireSequence)
-        @lastSeq = @fireSequence
-        @waitSequenceReset = CurTime() + 1
+    @RestartGesture(ACT_RANGE_ATTACK1)
+    timer.Create "DTF2.ResetGesture.#{@EntIndex()}", 0.2, 1, -> @RestartGesture(ACT_IDLE) if IsValid(@)
     return true
 
-ENT.OnLeaveGround = =>
-ENT.OnLandOnGround = =>
-ENT.OnStuck = =>
-ENT.OnUnStuck = =>
-ENT.OnContact = (victim) =>
-ENT.OnOtherKilled = (victim, dmg) =>
-ENT.OnIgnite = =>
-ENT.OnNavAreaChanged = (old, new) =>
-ENT.HandleStuck = =>
-ENT.MoveToPos = (pos, options) =>
-
-ENT.BehaveStart = =>
 ENT.BehaveUpdate = (delta) =>
     cTime = CurTime()
+    return if @behavePause > cTime
     if not @IsAvaliable()
         @currentTarget = NULL
         return
@@ -119,14 +108,10 @@ ENT.BehaveUpdate = (delta) =>
             net.WriteEntity(@)
             net.WriteEntity(newTarget)
             net.Broadcast()
-    
-    if @lastSeq ~= @idleSequence and @waitSequenceReset < cTime
-        @ResetSequence(@idleSequence)
-        @lastSeq = @idleSequence
-    
+
     if IsValid(@currentTarget)
         @currentTargetPosition = @currentTarget\GetPos() + @currentTarget\OBBCenter()
-        @idleWaitOnAngle = cTime + 2
+        @idleWaitOnAngle = cTime + 6
         @targetAngle = (@currentTargetPosition - @GetPos() - @obbcenter)\Angle()
         @idleAngle = @targetAngle
         @idleAnim = false
@@ -161,6 +146,7 @@ ENT.OnKilled = (dmg) =>
 
 ENT.Think = =>
     cTime = CurTime()
+    return if @behavePause > cTime
     delta = cTime - @lastSentryThink
     @lastSentryThink = cTime
     @BaseClass.Think(@)
@@ -179,6 +165,8 @@ ENT.Think = =>
     
     @SetAimPitch(posePitch)
     @SetAimYaw(poseYaw)
+    @SetPoseParameter('aim_pitch', @GetAimPitch())
+    @SetPoseParameter('aim_yaw', @GetAimYaw())
 
     if IsValid(@currentTarget)
         lookingAtTarget = math.floor(diffPitch) == 0 and math.floor(diffYaw) == 0

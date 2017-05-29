@@ -1,4 +1,5 @@
-ENT.Type = 'anim'
+ENT.Type = 'nextbot'
+ENT.Base = 'base_nextbot'
 ENT.BuildModel1 = 'models/buildables/dispenser.mdl'
 ENT.BuildModel2 = 'models/buildables/dispenser_lvl2.mdl'
 ENT.BuildModel3 = 'models/buildables/dispenser_lvl3.mdl'

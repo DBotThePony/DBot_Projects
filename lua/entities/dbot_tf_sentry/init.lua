@@ -19,7 +19,9 @@ ENT.Initialize = function(self)
   self.waitSequenceReset = 0
   self:SetAmmoAmount(self.MAX_AMMO_1)
   self:SetHealth(self.HealthLevel1)
-  return self:SetMaxHealth(self.HealthLevel1)
+  self:SetMaxHealth(self.HealthLevel1)
+  self.fireNext = 0
+  self.behavePause = 0
 end
 ENT.HULL_SIZE = 2
 ENT.HULL_TRACE_MINS = Vector(-ENT.HULL_SIZE, -ENT.HULL_SIZE, -ENT.HULL_SIZE)
@@ -70,26 +72,19 @@ ENT.FireBullet = function(self, force)
     Src = self:GetPos() + self.obbcenter
   }
   self:FireBullets(bulletData)
-  if self.lastSeq ~= self.fireSequence then
-    self:ResetSequence(self.fireSequence)
-    self.lastSeq = self.fireSequence
-    self.waitSequenceReset = CurTime() + 1
-  end
+  self:RestartGesture(ACT_RANGE_ATTACK1)
+  timer.Create("DTF2.ResetGesture." .. tostring(self:EntIndex()), 0.2, 1, function()
+    if IsValid(self) then
+      return self:RestartGesture(ACT_IDLE)
+    end
+  end)
   return true
 end
-ENT.OnLeaveGround = function(self) end
-ENT.OnLandOnGround = function(self) end
-ENT.OnStuck = function(self) end
-ENT.OnUnStuck = function(self) end
-ENT.OnContact = function(self, victim) end
-ENT.OnOtherKilled = function(self, victim, dmg) end
-ENT.OnIgnite = function(self) end
-ENT.OnNavAreaChanged = function(self, old, new) end
-ENT.HandleStuck = function(self) end
-ENT.MoveToPos = function(self, pos, options) end
-ENT.BehaveStart = function(self) end
 ENT.BehaveUpdate = function(self, delta)
   local cTime = CurTime()
+  if self.behavePause > cTime then
+    return 
+  end
   if not self:IsAvaliable() then
     self.currentTarget = NULL
     return 
@@ -104,13 +99,9 @@ ENT.BehaveUpdate = function(self, delta)
       net.Broadcast()
     end
   end
-  if self.lastSeq ~= self.idleSequence and self.waitSequenceReset < cTime then
-    self:ResetSequence(self.idleSequence)
-    self.lastSeq = self.idleSequence
-  end
   if IsValid(self.currentTarget) then
     self.currentTargetPosition = self.currentTarget:GetPos() + self.currentTarget:OBBCenter()
-    self.idleWaitOnAngle = cTime + 2
+    self.idleWaitOnAngle = cTime + 6
     self.targetAngle = (self.currentTargetPosition - self:GetPos() - self.obbcenter):Angle()
     self.idleAngle = self.targetAngle
     self.idleAnim = false
@@ -156,6 +147,9 @@ ENT.OnKilled = function(self, dmg)
 end
 ENT.Think = function(self)
   local cTime = CurTime()
+  if self.behavePause > cTime then
+    return 
+  end
   local delta = cTime - self.lastSentryThink
   self.lastSentryThink = cTime
   self.BaseClass.Think(self)
@@ -177,6 +171,8 @@ ENT.Think = function(self)
   local poseYaw = math.floor(math.NormalizeAngle(cy - newYaw))
   self:SetAimPitch(posePitch)
   self:SetAimYaw(poseYaw)
+  self:SetPoseParameter('aim_pitch', self:GetAimPitch())
+  self:SetPoseParameter('aim_yaw', self:GetAimYaw())
   if IsValid(self.currentTarget) then
     local lookingAtTarget = math.floor(diffPitch) == 0 and math.floor(diffYaw) == 0
     if lookingAtTarget then
