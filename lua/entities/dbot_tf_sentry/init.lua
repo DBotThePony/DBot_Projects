@@ -12,7 +12,7 @@ isEnemy = function(ent)
   end
   return IsEnemyEntityName(ent:GetClass())
 end
-timer.Create('DTF2.FetchTargets', 0.5, 0, function()
+timer.Create('DTF2.FetchTargets', 0.1, 0, function()
   do
     local _accum_0 = { }
     local _len_0 = 1
@@ -62,7 +62,12 @@ ENT.Initialize = function(self)
   self.idleWaitOnAngle = 0
   self.lastSentryThink = CurTime()
   self.nextTargetUpdate = 0
+  self.lastBulletFire = 0
+  return self:SetAmmoAmount(self.MAX_AMMO_1)
 end
+ENT.HULL_SIZE = 2
+ENT.HULL_TRACE_MINS = Vector(-ENT.HULL_SIZE, -ENT.HULL_SIZE, -ENT.HULL_SIZE)
+ENT.HULL_TRACE_MAXS = Vector(ENT.HULL_SIZE, ENT.HULL_SIZE, ENT.HULL_SIZE)
 ENT.GetTargetsVisible = function(self)
   local output = { }
   local pos = self:GetPos()
@@ -105,9 +110,11 @@ ENT.GetTargetsVisible = function(self)
     local trData = {
       filter = self,
       start = self.center + pos,
-      endpos = center + tpos
+      endpos = tpos + center,
+      mins = self.HULL_TRACE_MINS,
+      maxs = self.HULL_TRACE_MAXS
     }
-    local tr = util.TraceLine(trData)
+    local tr = util.TraceHull(trData)
     if tr.Hit and tr.Entity == target then
       table.insert(newOutput, target)
     end
@@ -127,7 +134,7 @@ ENT.GetFirstVisible = function(self)
         ply,
         ppos,
         dist,
-        ply:OBBCenter()
+        ply:WorldSpaceCenter()
       })
     end
   end
@@ -155,9 +162,11 @@ ENT.GetFirstVisible = function(self)
     local trData = {
       filter = self,
       start = self.center + pos,
-      endpos = center + tpos
+      endpos = tpos + center,
+      mins = self.HULL_TRACE_MINS,
+      maxs = self.HULL_TRACE_MAXS
     }
-    local tr = util.TraceLine(trData)
+    local tr = util.TraceHull(trData)
     if tr.Hit and tr.Entity == target then
       return target
     end
@@ -173,6 +182,40 @@ ENT.PlayScanSound = function(self)
   elseif 3 == _exp_0 then
     return self:EmitSound('weapons/sentry_scan3.wav')
   end
+end
+ENT.BulletHit = function(self, tr, dmg)
+  return dmg:SetDamage(self.BULLET_DAMAGE)
+end
+ENT.FireBullet = function(self, force)
+  if force == nil then
+    force = false
+  end
+  if self.lastBulletFire > CurTime() and not force then
+    return false
+  end
+  local _exp_0 = self:GetLevel()
+  if 1 == _exp_0 then
+    self.lastBulletFire = CurTime() + self.BULLET_RELOAD_1
+  elseif 2 == _exp_0 then
+    self.lastBulletFire = CurTime() + self.BULLET_RELOAD_2
+  elseif 3 == _exp_0 then
+    self.lastBulletFire = CurTime() + self.BULLET_RELOAD_3
+  end
+  if self:GetAmmoAmount() <= 0 and not force then
+    self:EmitSound('weapons/sentry_empty.wav')
+    return false
+  end
+  self:SetAmmoAmount(self:GetAmmoAmount() - 1)
+  self:EmitSound('weapons/sentry_shoot.wav')
+  local bulletData = {
+    Attacker = self,
+    Callback = self.BulletHit,
+    Damage = self.BULLET_DAMAGE,
+    Dir = self.currentAngle:Forward(),
+    Src = self:GetPos() + self.obbcenter
+  }
+  self:FireBullets(bulletData)
+  return true
 end
 ENT.Think = function(self)
   local cTime = CurTime()
@@ -242,8 +285,9 @@ ENT.Think = function(self)
   self:SetAimYaw(poseYaw)
   if IsValid(self.currentTarget) then
     local lookingAtTarget = math.floor(diffPitch) == 0 and math.floor(diffYaw) == 0
-    print(lookingAtTarget, diffPitch, diffYaw)
-    print(math.floor(newPitch), math.floor(self.targetAngle.p), math.floor(newYaw), math.floor(self.targetAngle.y))
+    if lookingAtTarget then
+      self:FireBullet()
+    end
   end
   self:NextThink(cTime)
   return true

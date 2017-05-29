@@ -26,7 +26,7 @@ isEnemy = (ent = NULL) ->
     return false if not ent\IsValid()
     return IsEnemyEntityName(ent\GetClass())
 
-timer.Create 'DTF2.FetchTargets', 0.5, 0, ->
+timer.Create 'DTF2.FetchTargets', 0.1, 0, ->
     VALID_TARGETS = for ent in *ents.GetAll()
         continue if not ent\IsNPC()
         continue if not isEnemy(ent)
@@ -47,6 +47,12 @@ ENT.Initialize = =>
     @idleWaitOnAngle = 0
     @lastSentryThink = CurTime()
     @nextTargetUpdate = 0
+    @lastBulletFire = 0
+    @SetAmmoAmount(@MAX_AMMO_1)
+
+ENT.HULL_SIZE = 2
+ENT.HULL_TRACE_MINS = Vector(-ENT.HULL_SIZE, -ENT.HULL_SIZE, -ENT.HULL_SIZE)
+ENT.HULL_TRACE_MAXS = Vector(ENT.HULL_SIZE, ENT.HULL_SIZE, ENT.HULL_SIZE)
 
 ENT.GetTargetsVisible = =>
     output = {}
@@ -70,10 +76,12 @@ ENT.GetTargetsVisible = =>
         trData = {
             filter: @
             start: @center + pos
-            endpos: center + tpos
+            endpos: tpos + center
+            mins: @HULL_TRACE_MINS
+            maxs: @HULL_TRACE_MAXS
         }
 
-        tr = util.TraceLine(trData)
+        tr = util.TraceHull(trData)
         if tr.Hit and tr.Entity == target
             table.insert(newOutput, target)
 
@@ -87,7 +95,7 @@ ENT.GetFirstVisible = =>
         ppos = ply\GetPos()
         dist = pos\DistToSqr(ppos)
         if ply ~= @GetPlayer() and dist < @MAX_DISTANCE
-            table.insert(output, {ply, ppos, dist, ply\OBBCenter()})
+            table.insert(output, {ply, ppos, dist, ply\WorldSpaceCenter()})
     
     for {target, tpos, mins, maxs, center} in *VALID_TARGETS
         dist = pos\DistToSqr(tpos)
@@ -100,10 +108,12 @@ ENT.GetFirstVisible = =>
         trData = {
             filter: @
             start: @center + pos
-            endpos: center + tpos
+            endpos: tpos + center
+            mins: @HULL_TRACE_MINS
+            maxs: @HULL_TRACE_MAXS
         }
 
-        tr = util.TraceLine(trData)
+        tr = util.TraceHull(trData)
         if tr.Hit and tr.Entity == target
             return target
 
@@ -118,6 +128,37 @@ ENT.PlayScanSound = =>
         when 3
             @EmitSound('weapons/sentry_scan3.wav')
 
+ENT.BulletHit = (tr, dmg) =>
+    dmg\SetDamage(@BULLET_DAMAGE)
+
+ENT.FireBullet = (force = false) =>
+    return false if @lastBulletFire > CurTime() and not force
+
+    switch @GetLevel()
+        when 1
+            @lastBulletFire = CurTime() + @BULLET_RELOAD_1
+        when 2
+            @lastBulletFire = CurTime() + @BULLET_RELOAD_2
+        when 3
+            @lastBulletFire = CurTime() + @BULLET_RELOAD_3
+    
+    if @GetAmmoAmount() <= 0 and not force
+        @EmitSound('weapons/sentry_empty.wav')
+        return false
+    
+    @SetAmmoAmount(@GetAmmoAmount() - 1)
+    @EmitSound('weapons/sentry_shoot.wav')
+        
+    bulletData = {
+        Attacker: @
+        Callback: @BulletHit
+        Damage: @BULLET_DAMAGE
+        Dir: @currentAngle\Forward()
+        Src: @GetPos() + @obbcenter
+    }
+
+    @FireBullets(bulletData)
+    return true
 ENT.Think = =>
     cTime = CurTime()
     delta = cTime - @lastSentryThink
@@ -173,7 +214,7 @@ ENT.Think = =>
 
     if IsValid(@currentTarget)
         lookingAtTarget = math.floor(diffPitch) == 0 and math.floor(diffYaw) == 0
-        print lookingAtTarget, diffPitch, diffYaw
-        print math.floor(newPitch), math.floor(@targetAngle.p), math.floor(newYaw), math.floor(@targetAngle.y)
+        if lookingAtTarget
+            @FireBullet()
     @NextThink(cTime)
     return true

@@ -36,7 +36,21 @@ ENT.SENTRY_ANGLE_CHANGE_MULT = 50
 ENT.SENTRY_SCAN_YAW_MULT = 30
 ENT.SENTRY_SCAN_YAW_CONST = 30
 
+ENT.MAX_AMMO_1 = 100
+ENT.MAX_AMMO_2 = 150
+ENT.MAX_AMMO_3 = 150
+ENT.MAX_ROCKETS_1 = 0
+ENT.MAX_ROCKETS_2 = 0
+ENT.MAX_ROCKETS_3 = 30
+
+ENT.BULLET_DAMAGE = 12
+ENT.BULLET_RELOAD_1 = 0.3
+ENT.BULLET_RELOAD_2 = 0.2
+ENT.BULLET_RELOAD_3 = 0.2
+
 ENT.SetupDataTables = =>
     @BaseClass.SetupDataTables(@)
     @NetworkVar('Int', 2, 'AimPitch')
     @NetworkVar('Int', 3, 'AimYaw')
+    @NetworkVar('Int', 4, 'AmmoAmount')
+    @NetworkVar('Int', 5, 'Rockets')
