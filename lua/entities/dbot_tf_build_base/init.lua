@@ -1,3 +1,49 @@
+local VALID_TARGETS = { }
+local isEnemy
+isEnemy = function(ent)
+  if ent == nil then
+    ent = NULL
+  end
+  if not ent:IsValid() then
+    return false
+  end
+  return IsEnemyEntityName(ent:GetClass())
+end
+timer.Create('DTF2.FetchTargets', 0.1, 0, function()
+  do
+    local _accum_0 = { }
+    local _len_0 = 1
+    local _list_0 = ents.GetAll()
+    for _index_0 = 1, #_list_0 do
+      local _continue_0 = false
+      repeat
+        local ent = _list_0[_index_0]
+        if not ent:IsNPC() then
+          _continue_0 = true
+          break
+        end
+        if not isEnemy(ent) then
+          _continue_0 = true
+          break
+        end
+        local _value_0 = {
+          ent,
+          ent:GetPos(),
+          ent:OBBMins(),
+          ent:OBBMaxs(),
+          ent:OBBCenter()
+        }
+        _accum_0[_len_0] = _value_0
+        _len_0 = _len_0 + 1
+        _continue_0 = true
+      until true
+      if not _continue_0 then
+        break
+      end
+    end
+    VALID_TARGETS = _accum_0
+  end
+end)
 include('shared.lua')
 AddCSLuaFile('shared.lua')
 ENT.Initialize = function(self)
@@ -17,6 +63,111 @@ ENT.Initialize = function(self)
   self.buildFinishAt = 0
   self.upgradeFinishAt = 0
   return self:UpdateSequenceList()
+end
+ENT.GetTargetsVisible = function(self)
+  local output = { }
+  local pos = self:GetPos()
+  local _list_0 = player.GetAll()
+  for _index_0 = 1, #_list_0 do
+    local ply = _list_0[_index_0]
+    local ppos = ply:GetPos()
+    local dist = pos:DistToSqr(ppos)
+    if ply ~= self:GetPlayer() and dist < self.MAX_DISTANCE then
+      table.insert(output, {
+        ply,
+        ppos,
+        dist,
+        ply:OBBCenter()
+      })
+    end
+  end
+  for _index_0 = 1, #VALID_TARGETS do
+    local _des_0 = VALID_TARGETS[_index_0]
+    local target, tpos, mins, maxs, center
+    target, tpos, mins, maxs, center = _des_0[1], _des_0[2], _des_0[3], _des_0[4], _des_0[5]
+    local dist = pos:DistToSqr(tpos)
+    if target:IsValid() and dist < self.MAX_DISTANCE then
+      table.insert(output, {
+        target,
+        tpos,
+        dist,
+        center
+      })
+    end
+  end
+  table.sort(output, function(a, b)
+    return a[3] < b[3]
+  end)
+  local newOutput = { }
+  for _index_0 = 1, #output do
+    local _des_0 = output[_index_0]
+    local target, tpos, dist, center
+    target, tpos, dist, center = _des_0[1], _des_0[2], _des_0[3], _des_0[4]
+    local trData = {
+      filter = self,
+      start = self.obbcenter + pos,
+      endpos = tpos + center,
+      mins = self.HULL_TRACE_MINS,
+      maxs = self.HULL_TRACE_MAXS
+    }
+    local tr = util.TraceHull(trData)
+    if tr.Hit and tr.Entity == target then
+      table.insert(newOutput, target)
+    end
+  end
+  return newOutput
+end
+ENT.GetFirstVisible = function(self)
+  local output = { }
+  local pos = self:GetPos()
+  local _list_0 = player.GetAll()
+  for _index_0 = 1, #_list_0 do
+    local ply = _list_0[_index_0]
+    local ppos = ply:GetPos()
+    local dist = pos:DistToSqr(ppos)
+    if ply ~= self:GetPlayer() and dist < self.MAX_DISTANCE then
+      table.insert(output, {
+        ply,
+        ppos,
+        dist,
+        ply:WorldSpaceCenter()
+      })
+    end
+  end
+  for _index_0 = 1, #VALID_TARGETS do
+    local _des_0 = VALID_TARGETS[_index_0]
+    local target, tpos, mins, maxs, center
+    target, tpos, mins, maxs, center = _des_0[1], _des_0[2], _des_0[3], _des_0[4], _des_0[5]
+    local dist = pos:DistToSqr(tpos)
+    if target:IsValid() and dist < self.MAX_DISTANCE then
+      table.insert(output, {
+        target,
+        tpos,
+        dist,
+        center
+      })
+    end
+  end
+  table.sort(output, function(a, b)
+    return a[3] < b[3]
+  end)
+  for _index_0 = 1, #output do
+    local _des_0 = output[_index_0]
+    local target, tpos, dist, center
+    target, tpos, dist, center = _des_0[1], _des_0[2], _des_0[3], _des_0[4]
+    local trData = {
+      filter = self,
+      start = self.obbcenter + pos,
+      endpos = tpos + center,
+      mins = self.HULL_TRACE_MINS,
+      maxs = self.HULL_TRACE_MAXS
+    }
+    local tr = util.TraceHull(trData)
+    if tr.Hit and tr.Entity == target then
+      return target
+    end
+  end
+  return NULL
 end
 ENT.UpdateSequenceList = function(self)
   self.buildSequence = self:LookupSequence('build')

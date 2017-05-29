@@ -1,52 +1,6 @@
 include('shared.lua')
 AddCSLuaFile('shared.lua')
 util.AddNetworkString('DTF2.SentryWing')
-local VALID_TARGETS = { }
-local isEnemy
-isEnemy = function(ent)
-  if ent == nil then
-    ent = NULL
-  end
-  if not ent:IsValid() then
-    return false
-  end
-  return IsEnemyEntityName(ent:GetClass())
-end
-timer.Create('DTF2.FetchTargets', 0.1, 0, function()
-  do
-    local _accum_0 = { }
-    local _len_0 = 1
-    local _list_0 = ents.GetAll()
-    for _index_0 = 1, #_list_0 do
-      local _continue_0 = false
-      repeat
-        local ent = _list_0[_index_0]
-        if not ent:IsNPC() then
-          _continue_0 = true
-          break
-        end
-        if not isEnemy(ent) then
-          _continue_0 = true
-          break
-        end
-        local _value_0 = {
-          ent,
-          ent:GetPos(),
-          ent:OBBMins(),
-          ent:OBBMaxs(),
-          ent:OBBCenter()
-        }
-        _accum_0[_len_0] = _value_0
-        _len_0 = _len_0 + 1
-        _continue_0 = true
-      until true
-      if not _continue_0 then
-        break
-      end
-    end
-    VALID_TARGETS = _accum_0
-  end
-end)
 ENT.MAX_DISTANCE = 512 ^ 2
 ENT.Initialize = function(self)
   self.BaseClass.Initialize(self)
@@ -57,7 +11,6 @@ ENT.Initialize = function(self)
   self.idleAngle = Angle(0, 0, 0)
   self.idleDirection = false
   self.idleYaw = 0
-  self.center = self:OBBCenter()
   self.currentTarget = NULL
   self.idleWaitOnAngle = 0
   self.lastSentryThink = CurTime()
@@ -74,111 +27,6 @@ ENT.HULL_TRACE_MAXS = Vector(ENT.HULL_SIZE, ENT.HULL_SIZE, ENT.HULL_SIZE)
 ENT.UpdateSequenceList = function(self)
   self.BaseClass.UpdateSequenceList(self)
   self.fireSequence = self:LookupSequence('fire')
-end
-ENT.GetTargetsVisible = function(self)
-  local output = { }
-  local pos = self:GetPos()
-  local _list_0 = player.GetAll()
-  for _index_0 = 1, #_list_0 do
-    local ply = _list_0[_index_0]
-    local ppos = ply:GetPos()
-    local dist = pos:DistToSqr(ppos)
-    if ply ~= self:GetPlayer() and dist < self.MAX_DISTANCE then
-      table.insert(output, {
-        ply,
-        ppos,
-        dist,
-        ply:OBBCenter()
-      })
-    end
-  end
-  for _index_0 = 1, #VALID_TARGETS do
-    local _des_0 = VALID_TARGETS[_index_0]
-    local target, tpos, mins, maxs, center
-    target, tpos, mins, maxs, center = _des_0[1], _des_0[2], _des_0[3], _des_0[4], _des_0[5]
-    local dist = pos:DistToSqr(tpos)
-    if target:IsValid() and dist < self.MAX_DISTANCE then
-      table.insert(output, {
-        target,
-        tpos,
-        dist,
-        center
-      })
-    end
-  end
-  table.sort(output, function(a, b)
-    return a[3] < b[3]
-  end)
-  local newOutput = { }
-  for _index_0 = 1, #output do
-    local _des_0 = output[_index_0]
-    local target, tpos, dist, center
-    target, tpos, dist, center = _des_0[1], _des_0[2], _des_0[3], _des_0[4]
-    local trData = {
-      filter = self,
-      start = self.center + pos,
-      endpos = tpos + center,
-      mins = self.HULL_TRACE_MINS,
-      maxs = self.HULL_TRACE_MAXS
-    }
-    local tr = util.TraceHull(trData)
-    if tr.Hit and tr.Entity == target then
-      table.insert(newOutput, target)
-    end
-  end
-  return newOutput
-end
-ENT.GetFirstVisible = function(self)
-  local output = { }
-  local pos = self:GetPos()
-  local _list_0 = player.GetAll()
-  for _index_0 = 1, #_list_0 do
-    local ply = _list_0[_index_0]
-    local ppos = ply:GetPos()
-    local dist = pos:DistToSqr(ppos)
-    if ply ~= self:GetPlayer() and dist < self.MAX_DISTANCE then
-      table.insert(output, {
-        ply,
-        ppos,
-        dist,
-        ply:WorldSpaceCenter()
-      })
-    end
-  end
-  for _index_0 = 1, #VALID_TARGETS do
-    local _des_0 = VALID_TARGETS[_index_0]
-    local target, tpos, mins, maxs, center
-    target, tpos, mins, maxs, center = _des_0[1], _des_0[2], _des_0[3], _des_0[4], _des_0[5]
-    local dist = pos:DistToSqr(tpos)
-    if target:IsValid() and dist < self.MAX_DISTANCE then
-      table.insert(output, {
-        target,
-        tpos,
-        dist,
-        center
-      })
-    end
-  end
-  table.sort(output, function(a, b)
-    return a[3] < b[3]
-  end)
-  for _index_0 = 1, #output do
-    local _des_0 = output[_index_0]
-    local target, tpos, dist, center
-    target, tpos, dist, center = _des_0[1], _des_0[2], _des_0[3], _des_0[4]
-    local trData = {
-      filter = self,
-      start = self.center + pos,
-      endpos = tpos + center,
-      mins = self.HULL_TRACE_MINS,
-      maxs = self.HULL_TRACE_MAXS
-    }
-    local tr = util.TraceHull(trData)
-    if tr.Hit and tr.Entity == target then
-      return target
-    end
-  end
-  return NULL
 end
 ENT.PlayScanSound = function(self)
   local _exp_0 = self:GetLevel()
@@ -240,43 +88,25 @@ ENT.OnNavAreaChanged = function(self, old, new) end
 ENT.HandleStuck = function(self) end
 ENT.MoveToPos = function(self, pos, options) end
 ENT.BehaveStart = function(self) end
-ENT.BehaveUpdate = function(self, delta) end
-ENT.BodyUpdate = function(self)
-  return self:FrameAdvance()
-end
-ENT.RunBehaviour = function(self) end
-ENT.GetEnemy = function(self)
-  return self.currentTarget
-end
-ENT.Explode = function(self)
-  return self:Remove()
-end
-ENT.OnInjured = function(self, dmg) end
-ENT.OnKilled = function(self, dmg)
-  hook.Run('OnNPCKilled', self, dmg:GetAttacker(), dmg:GetInflictor())
-  return self:Explode()
-end
-ENT.Think = function(self)
+ENT.BehaveUpdate = function(self, delta)
   local cTime = CurTime()
-  local delta = cTime - self.lastSentryThink
-  self.lastSentryThink = cTime
-  self.BaseClass.Think(self)
   if not self:IsAvaliable() then
     self.currentTarget = NULL
     return 
   end
-  if self.nextTargetUpdate < cTime then
-    self.nextTargetUpdate = cTime + 0.1
-    local newTarget = self:GetFirstVisible()
-    if newTarget ~= self.currentTarget then
-      self.currentTarget = newTarget
-      if IsValid(newTarget) then
-        net.Start('DTF2.SentryWing', true)
-        net.WriteEntity(self)
-        net.WriteEntity(newTarget)
-        net.Broadcast()
-      end
+  local newTarget = self:GetFirstVisible()
+  if newTarget ~= self.currentTarget then
+    self.currentTarget = newTarget
+    if IsValid(newTarget) then
+      net.Start('DTF2.SentryWing', true)
+      net.WriteEntity(self)
+      net.WriteEntity(newTarget)
+      net.Broadcast()
     end
+  end
+  if self.lastSeq ~= self.idleSequence and self.waitSequenceReset < cTime then
+    self:ResetSequence(self.idleSequence)
+    self.lastSeq = self.idleSequence
   end
   if IsValid(self.currentTarget) then
     self.currentTargetPosition = self.currentTarget:GetPos() + self.currentTarget:OBBCenter()
@@ -308,9 +138,30 @@ ENT.Think = function(self)
     end
     self.targetAngle = Angle(p, y + self.idleYaw, r)
   end
-  if self.lastSeq ~= self.idleSequence and self.waitSequenceReset < cTime then
-    self:ResetSequence(self.idleSequence)
-    self.lastSeq = self.idleSequence
+end
+ENT.BodyUpdate = function(self)
+  return self:FrameAdvance()
+end
+ENT.RunBehaviour = function(self) end
+ENT.GetEnemy = function(self)
+  return self.currentTarget
+end
+ENT.Explode = function(self)
+  return self:Remove()
+end
+ENT.OnInjured = function(self, dmg) end
+ENT.OnKilled = function(self, dmg)
+  hook.Run('OnNPCKilled', self, dmg:GetAttacker(), dmg:GetInflictor())
+  return self:Explode()
+end
+ENT.Think = function(self)
+  local cTime = CurTime()
+  local delta = cTime - self.lastSentryThink
+  self.lastSentryThink = cTime
+  self.BaseClass.Think(self)
+  if not self:IsAvaliable() then
+    self.currentTarget = NULL
+    return 
   end
   local diffPitch = math.Clamp(math.AngleDifference(self.currentAngle.p, self.targetAngle.p), -2, 2)
   local diffYaw = math.Clamp(math.AngleDifference(self.currentAngle.y, self.targetAngle.y), -2, 2)

@@ -20,18 +20,6 @@ AddCSLuaFile 'shared.lua'
 
 util.AddNetworkString('DTF2.SentryWing')
 
-VALID_TARGETS = {}
-
-isEnemy = (ent = NULL) ->
-    return false if not ent\IsValid()
-    return IsEnemyEntityName(ent\GetClass())
-
-timer.Create 'DTF2.FetchTargets', 0.1, 0, ->
-    VALID_TARGETS = for ent in *ents.GetAll()
-        continue if not ent\IsNPC()
-        continue if not isEnemy(ent)
-        {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter()}
-
 ENT.MAX_DISTANCE = 512 ^ 2
 ENT.Initialize = =>
     @BaseClass.Initialize(@)
@@ -42,7 +30,6 @@ ENT.Initialize = =>
     @idleAngle = Angle(0, 0, 0)
     @idleDirection = false
     @idleYaw = 0
-    @center = @OBBCenter()
     @currentTarget = NULL
     @idleWaitOnAngle = 0
     @lastSentryThink = CurTime()
@@ -60,71 +47,6 @@ ENT.HULL_TRACE_MAXS = Vector(ENT.HULL_SIZE, ENT.HULL_SIZE, ENT.HULL_SIZE)
 ENT.UpdateSequenceList = =>
     @BaseClass.UpdateSequenceList(@)
     @fireSequence = @LookupSequence('fire')
-
-ENT.GetTargetsVisible = =>
-    output = {}
-    pos = @GetPos()
-
-    for ply in *player.GetAll()
-        ppos = ply\GetPos()
-        dist = pos\DistToSqr(ppos)
-        if ply ~= @GetPlayer() and dist < @MAX_DISTANCE
-            table.insert(output, {ply, ppos, dist, ply\OBBCenter()})
-    
-    for {target, tpos, mins, maxs, center} in *VALID_TARGETS
-        dist = pos\DistToSqr(tpos)
-        if target\IsValid() and dist < @MAX_DISTANCE
-            table.insert(output, {target, tpos, dist, center})
-    
-    table.sort output, (a, b) -> a[3] < b[3]
-    newOutput = {}
-
-    for {target, tpos, dist, center} in *output
-        trData = {
-            filter: @
-            start: @center + pos
-            endpos: tpos + center
-            mins: @HULL_TRACE_MINS
-            maxs: @HULL_TRACE_MAXS
-        }
-
-        tr = util.TraceHull(trData)
-        if tr.Hit and tr.Entity == target
-            table.insert(newOutput, target)
-
-    return newOutput
-
-ENT.GetFirstVisible = =>
-    output = {}
-    pos = @GetPos()
-
-    for ply in *player.GetAll()
-        ppos = ply\GetPos()
-        dist = pos\DistToSqr(ppos)
-        if ply ~= @GetPlayer() and dist < @MAX_DISTANCE
-            table.insert(output, {ply, ppos, dist, ply\WorldSpaceCenter()})
-    
-    for {target, tpos, mins, maxs, center} in *VALID_TARGETS
-        dist = pos\DistToSqr(tpos)
-        if target\IsValid() and dist < @MAX_DISTANCE
-            table.insert(output, {target, tpos, dist, center})
-    
-    table.sort output, (a, b) -> a[3] < b[3]
-
-    for {target, tpos, dist, center} in *output
-        trData = {
-            filter: @
-            start: @center + pos
-            endpos: tpos + center
-            mins: @HULL_TRACE_MINS
-            maxs: @HULL_TRACE_MAXS
-        }
-
-        tr = util.TraceHull(trData)
-        if tr.Hit and tr.Entity == target
-            return target
-
-    return NULL
 
 ENT.PlayScanSound = =>
     switch @GetLevel()
@@ -184,6 +106,44 @@ ENT.MoveToPos = (pos, options) =>
 
 ENT.BehaveStart = =>
 ENT.BehaveUpdate = (delta) =>
+    cTime = CurTime()
+    if not @IsAvaliable()
+        @currentTarget = NULL
+        return
+
+    newTarget = @GetFirstVisible()
+    if newTarget ~= @currentTarget
+        @currentTarget = newTarget
+        if IsValid(newTarget)
+            net.Start('DTF2.SentryWing', true)
+            net.WriteEntity(@)
+            net.WriteEntity(newTarget)
+            net.Broadcast()
+    
+    if @lastSeq ~= @idleSequence and @waitSequenceReset < cTime
+        @ResetSequence(@idleSequence)
+        @lastSeq = @idleSequence
+    
+    if IsValid(@currentTarget)
+        @currentTargetPosition = @currentTarget\GetPos() + @currentTarget\OBBCenter()
+        @idleWaitOnAngle = cTime + 2
+        @targetAngle = (@currentTargetPosition - @GetPos() - @obbcenter)\Angle()
+        @idleAngle = @targetAngle
+        @idleAnim = false
+        @idleDirection = false
+        @idleYaw = 0
+    else
+        @idleAnim = true
+        if @idleWaitOnAngle < cTime
+            @idleAngle = @GetAngles()
+        
+        @idleYaw += delta * @SENTRY_SCAN_YAW_MULT if @idleDirection
+        @idleYaw -= delta * @SENTRY_SCAN_YAW_MULT if not @idleDirection
+        if @idleYaw > @SENTRY_SCAN_YAW_CONST or @idleYaw < -@SENTRY_SCAN_YAW_CONST
+            @idleDirection = not @idleDirection
+            @PlayScanSound()
+        {:p, :y, :r} = @idleAngle
+        @targetAngle = Angle(p, y + @idleYaw, r)
 
 ENT.BodyUpdate = =>
     @FrameAdvance()
@@ -207,42 +167,6 @@ ENT.Think = =>
     if not @IsAvaliable()
         @currentTarget = NULL
         return
-    
-    if @nextTargetUpdate < cTime
-        @nextTargetUpdate = cTime + 0.1
-        newTarget = @GetFirstVisible()
-        if newTarget ~= @currentTarget
-            @currentTarget = newTarget
-            if IsValid(newTarget)
-                net.Start('DTF2.SentryWing', true)
-                net.WriteEntity(@)
-                net.WriteEntity(newTarget)
-                net.Broadcast()
-    
-    if IsValid(@currentTarget)
-        @currentTargetPosition = @currentTarget\GetPos() + @currentTarget\OBBCenter()
-        @idleWaitOnAngle = cTime + 2
-        @targetAngle = (@currentTargetPosition - @GetPos() - @obbcenter)\Angle()
-        @idleAngle = @targetAngle
-        @idleAnim = false
-        @idleDirection = false
-        @idleYaw = 0
-    else
-        @idleAnim = true
-        if @idleWaitOnAngle < cTime
-            @idleAngle = @GetAngles()
-        
-        @idleYaw += delta * @SENTRY_SCAN_YAW_MULT if @idleDirection
-        @idleYaw -= delta * @SENTRY_SCAN_YAW_MULT if not @idleDirection
-        if @idleYaw > @SENTRY_SCAN_YAW_CONST or @idleYaw < -@SENTRY_SCAN_YAW_CONST
-            @idleDirection = not @idleDirection
-            @PlayScanSound()
-        {:p, :y, :r} = @idleAngle
-        @targetAngle = Angle(p, y + @idleYaw, r)
-    
-    if @lastSeq ~= @idleSequence and @waitSequenceReset < cTime
-        @ResetSequence(@idleSequence)
-        @lastSeq = @idleSequence
     
     diffPitch = math.Clamp(math.AngleDifference(@currentAngle.p, @targetAngle.p), -2, 2)
     diffYaw = math.Clamp(math.AngleDifference(@currentAngle.y, @targetAngle.y), -2, 2)

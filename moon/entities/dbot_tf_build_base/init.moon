@@ -15,6 +15,18 @@
 -- limitations under the License.
 --
 
+VALID_TARGETS = {}
+
+isEnemy = (ent = NULL) ->
+    return false if not ent\IsValid()
+    return IsEnemyEntityName(ent\GetClass())
+
+timer.Create 'DTF2.FetchTargets', 0.1, 0, ->
+    VALID_TARGETS = for ent in *ents.GetAll()
+        continue if not ent\IsNPC()
+        continue if not isEnemy(ent)
+        {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter()}
+
 include 'shared.lua'
 AddCSLuaFile 'shared.lua'
 
@@ -37,6 +49,71 @@ ENT.Initialize = =>
     @buildFinishAt = 0
     @upgradeFinishAt = 0
     @UpdateSequenceList()
+
+ENT.GetTargetsVisible = =>
+    output = {}
+    pos = @GetPos()
+
+    for ply in *player.GetAll()
+        ppos = ply\GetPos()
+        dist = pos\DistToSqr(ppos)
+        if ply ~= @GetPlayer() and dist < @MAX_DISTANCE
+            table.insert(output, {ply, ppos, dist, ply\OBBCenter()})
+    
+    for {target, tpos, mins, maxs, center} in *VALID_TARGETS
+        dist = pos\DistToSqr(tpos)
+        if target\IsValid() and dist < @MAX_DISTANCE
+            table.insert(output, {target, tpos, dist, center})
+    
+    table.sort output, (a, b) -> a[3] < b[3]
+    newOutput = {}
+
+    for {target, tpos, dist, center} in *output
+        trData = {
+            filter: @
+            start: @obbcenter + pos
+            endpos: tpos + center
+            mins: @HULL_TRACE_MINS
+            maxs: @HULL_TRACE_MAXS
+        }
+
+        tr = util.TraceHull(trData)
+        if tr.Hit and tr.Entity == target
+            table.insert(newOutput, target)
+
+    return newOutput
+
+ENT.GetFirstVisible = =>
+    output = {}
+    pos = @GetPos()
+
+    for ply in *player.GetAll()
+        ppos = ply\GetPos()
+        dist = pos\DistToSqr(ppos)
+        if ply ~= @GetPlayer() and dist < @MAX_DISTANCE
+            table.insert(output, {ply, ppos, dist, ply\WorldSpaceCenter()})
+    
+    for {target, tpos, mins, maxs, center} in *VALID_TARGETS
+        dist = pos\DistToSqr(tpos)
+        if target\IsValid() and dist < @MAX_DISTANCE
+            table.insert(output, {target, tpos, dist, center})
+    
+    table.sort output, (a, b) -> a[3] < b[3]
+
+    for {target, tpos, dist, center} in *output
+        trData = {
+            filter: @
+            start: @obbcenter + pos
+            endpos: tpos + center
+            mins: @HULL_TRACE_MINS
+            maxs: @HULL_TRACE_MAXS
+        }
+
+        tr = util.TraceHull(trData)
+        if tr.Hit and tr.Entity == target
+            return target
+
+    return NULL
 
 ENT.UpdateSequenceList = =>
     @buildSequence = @LookupSequence('build')
