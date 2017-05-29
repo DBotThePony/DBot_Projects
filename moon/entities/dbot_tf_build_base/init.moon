@@ -68,8 +68,8 @@ AddCSLuaFile 'shared.lua'
 ENT.Initialize = =>
     @DrawShadow(false)
     @SetModel(@IdleModel1)
-    @SetHP(@HealthLevel1)
-    @SetMHP(@HealthLevel1)
+    @SetHealth(@HealthLevel1)
+    @SetMaxHealth(@HealthLevel1)
     @mLevel = 1
 
     @PhysicsInitBox(@BuildingMins, @BuildingMaxs)
