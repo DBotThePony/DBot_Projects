@@ -81,6 +81,12 @@ SWEP.Reload = =>
     @ClearTimeredAnimation()
     return true
 
+SWEP.Deploy = =>
+    BaseClass.Deploy(@)
+    @isReloading = false
+    @lastEmptySound = 0
+    return true
+
 SWEP.GetBulletSpread = => @DefaultSpread
 SWEP.GetBulletAmount = => @BulletsAmount
 SWEP.GetViewPunch = => @DefaultViewPunch

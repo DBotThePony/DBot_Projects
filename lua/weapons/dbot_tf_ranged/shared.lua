@@ -66,6 +66,12 @@ SWEP.Reload = function(self)
   self:ClearTimeredAnimation()
   return true
 end
+SWEP.Deploy = function(self)
+  BaseClass.Deploy(self)
+  self.isReloading = false
+  self.lastEmptySound = 0
+  return true
+end
 SWEP.GetBulletSpread = function(self)
   return self.DefaultSpread
 end
