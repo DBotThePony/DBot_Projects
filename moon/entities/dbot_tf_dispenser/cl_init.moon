@@ -34,10 +34,11 @@ SCREEN_BG_RED = Material('vgui/dispenser_meter_bg_red')
 SCREEN_BG_BLUE = Material('vgui/dispenser_meter_bg_blue')
 SCREEN_BG_ARROW = Material('vgui/dispenser_meter_arrow')
 
-SCREEN_POS_1 = Vector(8, 1, 42)
-ARROW_POS_1 = Vector(9, 1, 38)
-SCREEN_POS_2 = Vector(-8, 1, 42)
-ARROW_POS_2 = Vector(-9, 1, 38)
+SCREEN_DIST = 7
+SCREEN_POS_1 = Vector(SCREEN_DIST, 1, 42)
+ARROW_POS_1 = Vector(SCREEN_DIST + .1, 1, 38)
+SCREEN_POS_2 = Vector(-SCREEN_DIST, 1, 42)
+ARROW_POS_2 = Vector(-SCREEN_DIST - 0.1, 1, 38)
 SCREEN_COLOR = Color(255, 255, 255)
 
 WIDTH = 256 / 12

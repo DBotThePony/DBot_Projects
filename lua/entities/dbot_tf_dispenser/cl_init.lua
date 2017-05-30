@@ -18,10 +18,11 @@ end
 local SCREEN_BG_RED = Material('vgui/dispenser_meter_bg_red')
 local SCREEN_BG_BLUE = Material('vgui/dispenser_meter_bg_blue')
 local SCREEN_BG_ARROW = Material('vgui/dispenser_meter_arrow')
-local SCREEN_POS_1 = Vector(8, 1, 42)
-local ARROW_POS_1 = Vector(9, 1, 38)
-local SCREEN_POS_2 = Vector(-8, 1, 42)
-local ARROW_POS_2 = Vector(-9, 1, 38)
+local SCREEN_DIST = 7
+local SCREEN_POS_1 = Vector(SCREEN_DIST, 1, 42)
+local ARROW_POS_1 = Vector(SCREEN_DIST + .1, 1, 38)
+local SCREEN_POS_2 = Vector(-SCREEN_DIST, 1, 42)
+local ARROW_POS_2 = Vector(-SCREEN_DIST - 0.1, 1, 38)
 local SCREEN_COLOR = Color(255, 255, 255)
 local WIDTH = 256 / 12
 local HEIGHT = 128 / 12
