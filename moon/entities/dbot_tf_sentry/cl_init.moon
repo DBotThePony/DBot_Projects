@@ -91,6 +91,9 @@ net.Receive 'DTF2.SentryFire', ->
     isEmpty = not net.ReadBool()
     sentry.isEmpty = isEmpty
     sentry.fireAnim = CurTime() + MUZZLE_ANIM_TIME
+
+    sentry\EmitSound('weapons/sentry_shoot.wav', 75, 100, 0.6, CHAN_WEAPON) if not isEmpty
+    sentry\EmitSound('weapons/sentry_empty.wav', 75, 100, 0.8, CHAN_WEAPON) if isEmpty
     
     if not isEmpty
         switch sentry\GetLevel()

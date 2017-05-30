@@ -81,6 +81,12 @@ return net.Receive('DTF2.SentryFire', function()
   sentry.isEmpty = isEmpty
   sentry.fireAnim = CurTime() + MUZZLE_ANIM_TIME
   if not isEmpty then
+    sentry:EmitSound('weapons/sentry_shoot.wav', 75, 100, 0.6, CHAN_WEAPON)
+  end
+  if isEmpty then
+    sentry:EmitSound('weapons/sentry_empty.wav', 75, 100, 0.8, CHAN_WEAPON)
+  end
+  if not isEmpty then
     local _exp_0 = sentry:GetLevel()
     if 1 == _exp_0 then
       do
