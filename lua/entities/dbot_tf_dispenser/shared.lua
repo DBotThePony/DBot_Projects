@@ -120,6 +120,12 @@ ENT.GetAvaliableForAmmo = function(self, level)
   end
   return math.Clamp(self:GetAmmoRessuply(), 0, math.min(self:GetRessuplyAmount(), self:GetAmmoToAmount(level)))
 end
+ENT.GetAvaliablePercent = function(self, level)
+  if level == nil then
+    level = self:GetLevel()
+  end
+  return self:GetRessuplyAmount() / self:GetMaxRessuply()
+end
 ENT.SetupDataTables = function(self)
   self.BaseClass.SetupDataTables(self)
   return self:NetworkVar('Int', 2, 'RessuplyAmount')

@@ -23,13 +23,79 @@ ENT.Initialize = =>
     @idleSound\ChangeVolume(0.75)
     @idleSound\SetSoundLevel(75)
     @idleSound\Play()
+    @lastArrowAngle = 0
 
 ENT.OnRemove = =>
     @idleSound\Stop() if @idleSound
 ENT.Think = =>
     @BaseClass.Think(@)
 
+SCREEN_BG_RED = Material('vgui/dispenser_meter_bg_red')
+SCREEN_BG_BLUE = Material('vgui/dispenser_meter_bg_blue')
+SCREEN_BG_ARROW = Material('vgui/dispenser_meter_arrow')
+
+SCREEN_POS_1 = Vector(8, 1, 42)
+ARROW_POS_1 = Vector(9, 1, 38)
+SCREEN_POS_2 = Vector(-8, 1, 42)
+ARROW_POS_2 = Vector(-9, 1, 38)
+SCREEN_COLOR = Color(255, 255, 255)
+
+WIDTH = 256 / 12
+HEIGHT = 128 / 12
+
+WIDTH_ARROW = 32 / 12
+HEIGHT_ARROW = 128 / 12
+
 ENT.Draw = =>
-    screenMat = '' if @GetTeamType()
-    screenMat = '' if not @GetTeamType()
     @BaseClass.Draw(@)
+    screenMat = SCREEN_BG_BLUE if @GetTeamType()
+    screenMat = SCREEN_BG_RED if not @GetTeamType()
+    lpos = @GetPos()
+    ang = @GetAngles()
+    fwd = ang\Forward()
+
+    @lastArrowAngle = Lerp(0.1, @lastArrowAngle, @GetAvaliablePercent() * 180)
+    render.OverrideDepthEnable(true, true)
+    
+    do
+        pos = Vector(SCREEN_POS_1)
+        pos\Rotate(ang)
+        pos += lpos
+        render.SetMaterial(screenMat)
+        render.DrawQuadEasy(pos, fwd, WIDTH, HEIGHT, SCREEN_COLOR, 180)
+    
+    do
+        pos = Vector(ARROW_POS_1)
+        pos\Rotate(ang)
+        pos += lpos
+        rad = -math.rad(@lastArrowAngle)
+        sin, cos = math.sin(rad), math.cos(rad)
+        addVector = Vector(0, -cos * 4.5, -sin * 4.5)
+        addVector\Rotate(ang)
+        pos += addVector
+
+        render.SetMaterial(SCREEN_BG_ARROW)
+        render.DrawQuadEasy(pos, fwd, WIDTH_ARROW, HEIGHT_ARROW, SCREEN_COLOR, -90 - @lastArrowAngle)
+    
+    do
+        pos = Vector(SCREEN_POS_2)
+        pos\Rotate(ang)
+        pos += lpos
+        render.SetMaterial(screenMat)
+        render.DrawQuadEasy(pos, -fwd, WIDTH, HEIGHT, SCREEN_COLOR, 180)
+    
+    do
+        pos = Vector(ARROW_POS_2)
+        pos\Rotate(ang)
+        pos += lpos
+
+        rad = -math.rad(@lastArrowAngle + 180)
+        sin, cos = math.sin(rad), math.cos(rad)
+        addVector = Vector(0, -cos * 4.5, sin * 4.5)
+        addVector\Rotate(ang)
+        pos += addVector
+
+        render.SetMaterial(SCREEN_BG_ARROW)
+        render.DrawQuadEasy(pos, -fwd, WIDTH_ARROW, HEIGHT_ARROW, SCREEN_COLOR, -90 - @lastArrowAngle)
+
+    render.OverrideDepthEnable(false, true)

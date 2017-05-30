@@ -121,6 +121,7 @@ ENT.GetAmmoToAmount = (level = @GetLevel()) =>
             @AMMO_AMOUNT_3
 
 ENT.GetAvaliableForAmmo = (level = @GetLevel()) => math.Clamp(@GetAmmoRessuply(), 0, math.min(@GetRessuplyAmount(), @GetAmmoToAmount(level)))
+ENT.GetAvaliablePercent = (level = @GetLevel()) => @GetRessuplyAmount() / @GetMaxRessuply()
 
 ENT.SetupDataTables = =>
     @BaseClass.SetupDataTables(@)
