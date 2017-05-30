@@ -63,11 +63,12 @@ local PlayerClass = {
     if self:GetTF2Metal() <= 0 then
       return 0
     end
-    local toRemove = math.Clamp(amount, 0, self:GetTF2Metal())
+    local oldMetal = self:GetTF2Metal()
+    local newMetal = math.Clamp(oldMetal - amount, 0, self:GetMaxTF2Metal())
     if apply then
-      self:ReduceTF2Metal(toRemove)
+      self:SetTF2Metal(newMetal)
     end
-    return toRemove
+    return oldMetal - newMetal
   end,
   SimulateTF2MetalAdd = function(self, amount, apply, playSound)
     if amount == nil then
@@ -82,14 +83,15 @@ local PlayerClass = {
     if self:GetTF2Metal() >= self:GetMaxTF2Metal() then
       return 0
     end
-    local toAdd = math.Clamp(amount, 0, amount)
+    local oldMetal = self:GetTF2Metal()
+    local newMetal = math.Clamp(oldMetal + amount, 0, self:GetMaxTF2Metal())
     if apply then
-      self:AddTF2Metal(toAdd)
+      self:SetTF2Metal(newMetal)
     end
     if playSound then
       self:EmitSound('items/ammo_pickup.wav', 50, 100, 0.7)
     end
-    return toAdd
+    return newMetal - oldMetal
   end
 }
 for k, v in pairs(PlayerClass) do

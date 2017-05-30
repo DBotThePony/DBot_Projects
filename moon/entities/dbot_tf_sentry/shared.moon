@@ -44,9 +44,9 @@ ENT.MAX_DISTANCE = 1024 ^ 2
 ENT.MAX_AMMO_1 = 150
 ENT.MAX_AMMO_2 = 250
 ENT.MAX_AMMO_3 = 250
-ENT.MAX_ROCKETS_1 = 0
-ENT.MAX_ROCKETS_2 = 0
-ENT.MAX_ROCKETS_3 = 30
+ENT.MAX_ROCKETS = 30
+ENT.AMMO_RESTORE_ON_HIT = 40
+ENT.ROCKETS_RESTORE_ON_HIT = 5
 
 ENT.BULLET_DAMAGE = 12
 ENT.BULLET_RELOAD_1 = 0.3
@@ -75,3 +75,17 @@ ENT.UpdateSequenceList = =>
     @muzzle = @LookupAttachment('muzzle')
     @muzzle_l = @LookupAttachment('muzzle_l')
     @muzzle_r = @LookupAttachment('muzzle_r')
+
+ENT.CustomRepair = (thersold = 200, simulate = CLIENT) =>
+    return 0 if thersold == 0
+    weight = 0
+    rockets = 0
+    ammo = 0
+    ammo = math.Clamp(math.min(@GetMaxAmmo() - @GetAmmoAmount(), @AMMO_RESTORE_ON_HIT), 0, thersold - weight)
+    rockets = math.Clamp(math.min(@MAX_ROCKETS - @GetRockets(), @ROCKETS_RESTORE_ON_HIT) * 2, 0, thersold - weight) if @GetLevel() == 3
+    rockets -= 1 if math.floor(rockets / 2) ~= rockets / 2
+    weight += ammo
+    weight += rockets
+    @SetAmmoAmount(@GetAmmoAmount() + ammo) if not simulate
+    @SetRockets(@GetRockets() + rockets / 2) if not simulate
+    return weight

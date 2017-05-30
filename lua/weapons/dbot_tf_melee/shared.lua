@@ -112,6 +112,7 @@ SWEP.BulletCallback = function(self, tr, dmginfo)
 end
 SWEP.Think = function(self)
   if self.incomingHit and self.incomingHitTime < CurTime() then
+    self.suppressing = true
     if SERVER and self:GetOwner():IsPlayer() then
       SuppressHostEvents(self:GetOwner())
     end
@@ -131,8 +132,9 @@ SWEP.Think = function(self)
       self:OnMiss()
     end
     if SERVER then
-      return SuppressHostEvents(NULL)
+      SuppressHostEvents(NULL)
     end
+    self.suppressing = false
   end
 end
 SWEP.PrimaryAttack = function(self)

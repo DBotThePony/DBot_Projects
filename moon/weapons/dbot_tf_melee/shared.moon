@@ -101,6 +101,7 @@ SWEP.BulletCallback = (tr = {}, dmginfo) =>
 
 SWEP.Think = =>
     if @incomingHit and @incomingHitTime < CurTime()
+        @suppressing = true
         SuppressHostEvents(@GetOwner()) if SERVER and @GetOwner()\IsPlayer()
         @incomingHit = false
         @bulletCallbackCalled = false
@@ -117,6 +118,7 @@ SWEP.Think = =>
         @FireBullets(bulletData)
         @OnMiss() if not @bulletCallbackCalled
         SuppressHostEvents(NULL) if SERVER
+        @suppressing = false
 
 SWEP.PrimaryAttack = =>
     @SetNextPrimaryFire(CurTime() + @ReloadTime)

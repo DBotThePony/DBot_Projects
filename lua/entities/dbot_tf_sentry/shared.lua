@@ -21,9 +21,9 @@ ENT.MAX_DISTANCE = 1024 ^ 2
 ENT.MAX_AMMO_1 = 150
 ENT.MAX_AMMO_2 = 250
 ENT.MAX_AMMO_3 = 250
-ENT.MAX_ROCKETS_1 = 0
-ENT.MAX_ROCKETS_2 = 0
-ENT.MAX_ROCKETS_3 = 30
+ENT.MAX_ROCKETS = 30
+ENT.AMMO_RESTORE_ON_HIT = 40
+ENT.ROCKETS_RESTORE_ON_HIT = 5
 ENT.BULLET_DAMAGE = 12
 ENT.BULLET_RELOAD_1 = 0.3
 ENT.BULLET_RELOAD_2 = 0.1
@@ -54,4 +54,34 @@ ENT.UpdateSequenceList = function(self)
   self.muzzle = self:LookupAttachment('muzzle')
   self.muzzle_l = self:LookupAttachment('muzzle_l')
   self.muzzle_r = self:LookupAttachment('muzzle_r')
+end
+ENT.CustomRepair = function(self, thersold, simulate)
+  if thersold == nil then
+    thersold = 200
+  end
+  if simulate == nil then
+    simulate = CLIENT
+  end
+  if thersold == 0 then
+    return 0
+  end
+  local weight = 0
+  local rockets = 0
+  local ammo = 0
+  ammo = math.Clamp(math.min(self:GetMaxAmmo() - self:GetAmmoAmount(), self.AMMO_RESTORE_ON_HIT), 0, thersold - weight)
+  if self:GetLevel() == 3 then
+    rockets = math.Clamp(math.min(self.MAX_ROCKETS - self:GetRockets(), self.ROCKETS_RESTORE_ON_HIT) * 2, 0, thersold - weight)
+  end
+  if math.floor(rockets / 2) ~= rockets / 2 then
+    rockets = rockets - 1
+  end
+  weight = weight + ammo
+  weight = weight + rockets
+  if not simulate then
+    self:SetAmmoAmount(self:GetAmmoAmount() + ammo)
+  end
+  if not simulate then
+    self:SetRockets(self:GetRockets() + rockets / 2)
+  end
+  return weight
 end

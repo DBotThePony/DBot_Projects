@@ -17,4 +17,10 @@
 
 include 'shared.lua'
 AddCSLuaFile 'shared.lua'
+
+SWEP.EmitSoundServerside = (...) =>
+    SuppressHostEvents(NULL) if @suppressing
+    @EmitSound(...)
+    SuppressHostEvents(@GetOwner()) if @suppressing
+
 return nil

@@ -34,15 +34,17 @@ PlayerClass =
     HasTF2Metal: (amount = 0) => @GetTF2Metal() >= amount
     SimulateTF2MetalRemove: (amount = 0, apply = true) =>
         return 0 if @GetTF2Metal() <= 0
-        toRemove = math.Clamp(amount, 0, @GetTF2Metal())
-        @ReduceTF2Metal(toRemove) if apply
-        return toRemove
+        oldMetal = @GetTF2Metal()
+        newMetal = math.Clamp(oldMetal - amount, 0, @GetMaxTF2Metal())
+        @SetTF2Metal(newMetal) if apply
+        return oldMetal - newMetal
     SimulateTF2MetalAdd: (amount = 0, apply = true, playSound = apply) =>
         return 0 if @GetTF2Metal() >= @GetMaxTF2Metal()
-        toAdd = math.Clamp(amount, 0, amount)
-        @AddTF2Metal(toAdd) if apply
+        oldMetal = @GetTF2Metal()
+        newMetal = math.Clamp(oldMetal + amount, 0, @GetMaxTF2Metal())
+        @SetTF2Metal(newMetal) if apply
         @EmitSound('items/ammo_pickup.wav', 50, 100, 0.7) if playSound
-        return toAdd
+        return newMetal - oldMetal
 
 plyMeta[k] = v for k, v in pairs PlayerClass
 

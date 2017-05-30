@@ -153,6 +153,18 @@ ENT.GetEnemies = => [ent for ent in *VALID_TARGETS]
 ENT.GetAlliesTable = => VALID_ALLIES
 ENT.GetEnemiesTable = => VALID_TARGETS
 
+ENT.IsEnemy = (target = NULL) =>
+    return true if not IsValid(target)
+    for ent in *VALID_TARGETS
+        return true if ent[1] == target
+    return true
+
+ENT.IsAlly = (target = NULL) =>
+    return false if not IsValid(target)
+    for ent in *VALID_ALLIES
+        return true if ent[1] == target
+    return false
+
 ENT.CreateBullseye = =>
     if @npc_bullseye
         eye\Remove() for eye in *@npc_bullseye
@@ -301,6 +313,7 @@ ENT.SetLevel = (val = 1, playAnimation = true) =>
             @UpdateSequenceList()
             @PlayUpgradeAnimation() if playAnimation
     @CreateBullseye()
+    @SetUpgradeAmount(0)
     return true
 
 ENT.PlayUpgradeAnimation = =>
@@ -351,9 +364,6 @@ ENT.SetBuildStatus = (status = false) =>
 ENT.OnBuildStart = => -- Override
 ENT.OnBuildFinish = => -- Override
 ENT.OnUpgradeFinish = => -- Override
-ENT.BuildThink = => -- Override
-ENT.IsAvaliable = => not @GetIsBuilding() and not @GetIsUpgrading()
-
 ENT.Think = =>
     cTime = CurTime()
     delta = cTime - @lastThink

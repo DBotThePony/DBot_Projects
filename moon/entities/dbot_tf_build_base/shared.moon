@@ -17,6 +17,7 @@
 
 ENT.Type = 'nextbot'
 ENT.Base = 'base_nextbot'
+ENT.IsTF2Building = true
 
 ENT.BuildModel1 = 'models/buildables/dispenser.mdl'
 ENT.BuildModel2 = 'models/buildables/dispenser_lvl2.mdl'
@@ -44,6 +45,10 @@ ENT.IDLE_ANIM = 'ref'
 ENT.UPGRADE_TIME_2 = 1.16
 ENT.UPGRADE_TIME_3 = 1.16
 
+ENT.REPAIR_HEALTH = 40
+ENT.UPGRADE_HIT = 25
+ENT.MAX_UPGRADE = 200
+
 ENT.MAX_DISTANCE = 512 ^ 2
 
 ENT.GetLevel = => @GetnwLevel()
@@ -54,9 +59,37 @@ ENT.SetupDataTables = =>
     @NetworkVar('Bool', 1, 'BuildSpeedup')
     @NetworkVar('Bool', 16, 'TeamType')
     @NetworkVar('Int', 1, 'nwLevel')
+    @NetworkVar('Int', 16, 'UpgradeAmount')
     @NetworkVar('Entity', 0, 'Player')
 
 ENT.UpdateSequenceList = =>
     @buildSequence = @LookupSequence('build')
     @upgradeSequence = @LookupSequence('upgrade')
     @idleSequence = @LookupSequence(@IDLE_ANIM)
+
+-- I use different priorities than original TF2 code
+-- hehehe
+
+ENT.IsAvaliable = => not @GetIsBuilding() and not @GetIsUpgrading()
+ENT.CustomRepair = (thersold = 200, simulate = CLIENT) =>
+    return 0 if thersold == 0
+    weight = 0
+    return weight
+
+ENT.SimulateRepair = (thersold = 200, simulate = CLIENT) =>
+    return 0 if thersold == 0
+    weight = 0
+    repairHP = 0
+    repairHP = math.Clamp(math.min(@GetMaxHealth() - @Health(), @REPAIR_HEALTH), 0, thersold - weight) if @IsAvaliable()
+
+    weight += repairHP if repairHP ~= 0 
+    @SetHealth(@Health() + repairHP) if repairHP ~= 0 and not simulate
+    weight += @CustomRepair(thersold - weight, simulate)
+
+    if @GetLevel() < 3 and weight ~= thersold and @IsAvaliable()
+        upgradeAmount = math.Clamp(math.min(@MAX_UPGRADE - @GetUpgradeAmount(), @UPGRADE_HIT), 0, thersold - weight)
+        weight += upgradeAmount if upgradeAmount ~= 0
+        @SetUpgradeAmount(@GetUpgradeAmount() + upgradeAmount) if upgradeAmount ~= 0 and not simulate
+        @SetLevel(@GetLevel() + 1) if @GetUpgradeAmount() >= @MAX_UPGRADE
+    
+    return weight

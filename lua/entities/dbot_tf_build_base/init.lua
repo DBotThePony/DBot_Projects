@@ -228,6 +228,36 @@ end
 ENT.GetEnemiesTable = function(self)
   return VALID_TARGETS
 end
+ENT.IsEnemy = function(self, target)
+  if target == nil then
+    target = NULL
+  end
+  if not IsValid(target) then
+    return true
+  end
+  for _index_0 = 1, #VALID_TARGETS do
+    local ent = VALID_TARGETS[_index_0]
+    if ent[1] == target then
+      return true
+    end
+  end
+  return true
+end
+ENT.IsAlly = function(self, target)
+  if target == nil then
+    target = NULL
+  end
+  if not IsValid(target) then
+    return false
+  end
+  for _index_0 = 1, #VALID_ALLIES do
+    local ent = VALID_ALLIES[_index_0]
+    if ent[1] == target then
+      return true
+    end
+  end
+  return false
+end
 ENT.CreateBullseye = function(self)
   if self.npc_bullseye then
     local _list_0 = self.npc_bullseye
@@ -491,6 +521,7 @@ ENT.SetLevel = function(self, val, playAnimation)
     end
   end
   self:CreateBullseye()
+  self:SetUpgradeAmount(0)
   return true
 end
 ENT.PlayUpgradeAnimation = function(self)
@@ -558,10 +589,6 @@ end
 ENT.OnBuildStart = function(self) end
 ENT.OnBuildFinish = function(self) end
 ENT.OnUpgradeFinish = function(self) end
-ENT.BuildThink = function(self) end
-ENT.IsAvaliable = function(self)
-  return not self:GetIsBuilding() and not self:GetIsUpgrading()
-end
 ENT.Think = function(self)
   local cTime = CurTime()
   local delta = cTime - self.lastThink
