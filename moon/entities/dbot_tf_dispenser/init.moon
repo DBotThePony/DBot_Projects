@@ -53,7 +53,7 @@ ENT.BehaveUpdate = (delta) =>
             with @beams[ply]
                 \SetBeamType(@GetTeamType())
                 \SetEntityTarget(ply)
-                \SetPos(@GetPos() + @OBBCenter())
+                \SetPos(@WorldSpaceCenter())
                 \Spawn()
                 \Activate()
                 \SetParent(@)

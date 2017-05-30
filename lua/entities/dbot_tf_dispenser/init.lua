@@ -57,7 +57,7 @@ ENT.BehaveUpdate = function(self, delta)
         local _with_0 = self.beams[ply]
         _with_0:SetBeamType(self:GetTeamType())
         _with_0:SetEntityTarget(ply)
-        _with_0:SetPos(self:GetPos() + self:OBBCenter())
+        _with_0:SetPos(self:WorldSpaceCenter())
         _with_0:Spawn()
         _with_0:Activate()
         _with_0:SetParent(self)

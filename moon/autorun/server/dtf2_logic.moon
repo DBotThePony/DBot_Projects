@@ -94,11 +94,13 @@ DTF2_GiveAmmo = (weightThersold = 40) =>
     return 0 if not IsValid(@)
     return 0 if not @IsPlayer()
     oldWeight = weightThersold
+    weightThersold -= @SimulateTF2MetalAdd(weightThersold)
+    return oldWeight if weightThersold == 0
 
     for {:name, :weight, :maximal, :nominal} in *AMMO_TO_GIVE
         count = @GetAmmoCount(name)
         continue if count >= maximal
-        deltaNeeded = math.Clamp(maximal - count, 0, math.min(nominal, weightThersold / weight))
+        deltaNeeded = math.Clamp(maximal - count, 0, math.min(nominal, math.floor(weightThersold / weight)))
         continue if deltaNeeded == 0
         weightedDelta = deltaNeeded * weight
         continue if weightedDelta > weightThersold

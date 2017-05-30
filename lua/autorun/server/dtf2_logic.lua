@@ -74,6 +74,10 @@ DTF2_GiveAmmo = function(self, weightThersold)
     return 0
   end
   local oldWeight = weightThersold
+  weightThersold = weightThersold - self:SimulateTF2MetalAdd(weightThersold)
+  if weightThersold == 0 then
+    return oldWeight
+  end
   for _index_0 = 1, #AMMO_TO_GIVE do
     local _continue_0 = false
     repeat
@@ -85,7 +89,7 @@ DTF2_GiveAmmo = function(self, weightThersold)
         _continue_0 = true
         break
       end
-      local deltaNeeded = math.Clamp(maximal - count, 0, math.min(nominal, weightThersold / weight))
+      local deltaNeeded = math.Clamp(maximal - count, 0, math.min(nominal, math.floor(weightThersold / weight)))
       if deltaNeeded == 0 then
         _continue_0 = true
         break
