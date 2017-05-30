@@ -1,7 +1,3 @@
-if DTF2_LOAD_PARTICLES then
-  return 
-end
-DTF2_LOAD_PARTICLES = true
 local manifest = {
   'bigboom',
   'bigboom_dx80',
@@ -111,10 +107,13 @@ local manifest = {
   'weapon_unusual_isotope',
   'xms'
 }
-for _index_0 = 1, #manifest do
-  local part = manifest[_index_0]
-  game.AddParticles("particles/" .. tostring(part) .. ".pcf")
+if not DTF2_LOAD_PARTICLES then
+  for _index_0 = 1, #manifest do
+    local part = manifest[_index_0]
+    game.AddParticles("particles/" .. tostring(part) .. ".pcf")
+  end
 end
+DTF2_LOAD_PARTICLES = true
 local toPrecache = {
   'muzzle_sentry',
   'muzzle_sentry2',
@@ -145,7 +144,11 @@ local toPrecache = {
   'dispenser_beam_red_pluses',
   'dispenser_beam_red_trail',
   'dispenser_heal_blue',
-  'dispenser_heal_red'
+  'dispenser_heal_red',
+  'muzzle_shotgun',
+  'muzzle_shotgun_flash',
+  'muzzle_shotgun_smoke',
+  'muzzle_shotgun_sparks'
 }
 for _index_0 = 1, #toPrecache do
   local part = toPrecache[_index_0]

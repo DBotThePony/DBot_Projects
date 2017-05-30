@@ -1,3 +1,4 @@
+local BaseClass = baseclass.Get('weapon_base')
 SWEP.Base = 'weapon_base'
 SWEP.Author = 'DBot'
 SWEP.Category = 'TF2'
@@ -9,9 +10,11 @@ SWEP.DrawCrosshair = true
 SWEP.DrawTime = 0.66
 SWEP.DrawTimeAnimation = 1.16
 SWEP.PreFire = 0
-SWEP.ReloadTime = 0.96
+SWEP.CooldownTime = 0.96
 SWEP.BulletRange = 32000
 SWEP.BulletDamage = 65
+SWEP.BulletForce = 1
+SWEP.BulletHull = 1
 SWEP.AttackAnimation = ACT_VM_PRIMARYATTACK
 SWEP.Initialize = function(self)
   self:SetPlaybackRate(0.5)
@@ -19,12 +22,15 @@ SWEP.Initialize = function(self)
   self.incomingFire = false
   self.incomingFireTime = 0
 end
-SWEP.WaitForAnimation = function(self, anim, time)
+SWEP.WaitForAnimation = function(self, anim, time, callback)
   if anim == nil then
     anim = ACT_VM_IDLE
   end
   if time == nil then
     time = 0
+  end
+  if callback == nil then
+    callback = (function() end)
   end
   return timer.Create("DTF2.WeaponAnim." .. tostring(self:EntIndex()), time, 1, function()
     if not IsValid(self) then
@@ -36,8 +42,12 @@ SWEP.WaitForAnimation = function(self, anim, time)
     if self:GetOwner():GetActiveWeapon() ~= self then
       return 
     end
-    return self:SendWeaponAnim(anim)
+    self:SendWeaponAnim(anim)
+    return callback()
   end)
+end
+SWEP.ClearTimeredAnimation = function(self)
+  return timer.Remove("DTF2.WeaponAnim." .. tostring(self:EntIndex()))
 end
 SWEP.Deploy = function(self)
   self:SendWeaponAnim(ACT_VM_DRAW)
@@ -70,6 +80,11 @@ SWEP.BulletCallback = function(self, tr, dmginfo)
     return weapon:OnMiss(tr, dmginfo)
   end
 end
+SWEP.UpdateBulletData = function(self, bulletData)
+  if bulletData == nil then
+    bulletData = { }
+  end
+end
 SWEP.Think = function(self)
   if self.incomingFire and self.incomingFireTime < CurTime() then
     self.suppressing = true
@@ -79,14 +94,16 @@ SWEP.Think = function(self)
     self.incomingFire = false
     self.bulletCallbackCalled = false
     local bulletData = {
-      ['Damage'] = self.BulletRange,
+      ['Damage'] = self.BulletDamage,
       ['Attacker'] = self:GetOwner(),
       ['Callback'] = self.BulletCallback,
       ['Src'] = self:GetOwner():EyePos(),
       ['Dir'] = self:GetOwner():GetAimVector(),
-      ['Distance'] = self.BulletDamage,
-      ['HullSize'] = 8
+      ['Distance'] = self.BulletRange,
+      ['HullSize'] = self.BulletHull,
+      ['Force'] = self.BulletForce
     }
+    self:UpdateBulletData(bulletData)
     self:FireBullets(bulletData)
     if not self.bulletCallbackCalled then
       self:OnMiss()
@@ -98,9 +115,9 @@ SWEP.Think = function(self)
   end
 end
 SWEP.PrimaryAttack = function(self)
-  self:SetNextPrimaryFire(CurTime() + self.ReloadTime)
+  self:SetNextPrimaryFire(CurTime() + self.CooldownTime)
   self:SendWeaponAnim(self.AttackAnimation)
-  self:WaitForAnimation(ACT_VM_IDLE, self.ReloadTime)
+  self:WaitForAnimation(ACT_VM_IDLE, self.CooldownTime)
   self.incomingFire = true
   self.incomingFireTime = CurTime() + self.PreFire
   self:NextThink(self.incomingFireTime)

@@ -15,6 +15,8 @@
 -- limitations under the License.
 --
 
+BaseClass = baseclass.Get('weapon_base')
+
 SWEP.Base = 'weapon_base'
 SWEP.Author = 'DBot'
 SWEP.Category = 'TF2'
@@ -27,9 +29,11 @@ SWEP.DrawCrosshair = true
 SWEP.DrawTime = 0.66
 SWEP.DrawTimeAnimation = 1.16
 SWEP.PreFire = 0
-SWEP.ReloadTime = 0.96
+SWEP.CooldownTime = 0.96
 SWEP.BulletRange = 32000
 SWEP.BulletDamage = 65
+SWEP.BulletForce = 1
+SWEP.BulletHull = 1
 
 SWEP.AttackAnimation = ACT_VM_PRIMARYATTACK
 
@@ -39,12 +43,16 @@ SWEP.Initialize = =>
     @incomingFire = false
     @incomingFireTime = 0
 
-SWEP.WaitForAnimation = (anim = ACT_VM_IDLE, time = 0) =>
+SWEP.WaitForAnimation = (anim = ACT_VM_IDLE, time = 0, callback = (->)) =>
     timer.Create "DTF2.WeaponAnim.#{@EntIndex()}", time, 1, ->
         return if not IsValid(@)
         return if not IsValid(@GetOwner())
         return if @GetOwner()\GetActiveWeapon() ~= @
         @SendWeaponAnim(anim)
+        callback()
+
+SWEP.ClearTimeredAnimation = =>
+    timer.Remove "DTF2.WeaponAnim.#{@EntIndex()}"
 
 SWEP.Deploy = =>
     @SendWeaponAnim(ACT_VM_DRAW)
@@ -67,6 +75,8 @@ SWEP.BulletCallback = (tr = {}, dmginfo) =>
     else
         weapon\OnMiss(tr, dmginfo)
 
+SWEP.UpdateBulletData = (bulletData = {}) =>
+
 SWEP.Think = =>
     if @incomingFire and @incomingFireTime < CurTime()
         @suppressing = true
@@ -74,14 +84,17 @@ SWEP.Think = =>
         @incomingFire = false
         @bulletCallbackCalled = false
         bulletData = {
-            'Damage': @BulletRange
+            'Damage': @BulletDamage
             'Attacker': @GetOwner()
             'Callback': @BulletCallback
             'Src': @GetOwner()\EyePos()
             'Dir': @GetOwner()\GetAimVector()
-            'Distance': @BulletDamage
-            'HullSize': 8
+            'Distance': @BulletRange
+            'HullSize': @BulletHull
+            'Force': @BulletForce
         }
+
+        @UpdateBulletData(bulletData)
 
         @FireBullets(bulletData)
         @OnMiss() if not @bulletCallbackCalled
@@ -89,9 +102,9 @@ SWEP.Think = =>
         @suppressing = false
 
 SWEP.PrimaryAttack = =>
-    @SetNextPrimaryFire(CurTime() + @ReloadTime)
+    @SetNextPrimaryFire(CurTime() + @CooldownTime)
     @SendWeaponAnim(@AttackAnimation)
-    @WaitForAnimation(ACT_VM_IDLE, @ReloadTime)
+    @WaitForAnimation(ACT_VM_IDLE, @CooldownTime)
     @incomingFire = true
     @incomingFireTime = CurTime() + @PreFire
     @NextThink(@incomingFireTime)

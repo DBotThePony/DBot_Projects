@@ -15,6 +15,8 @@
 -- limitations under the License.
 --
 
+BaseClass = baseclass.Get('dbot_tf_weapon_base')
+
 SWEP.Base = 'dbot_tf_weapon_base'
 SWEP.Author = 'DBot'
 SWEP.Category = 'TF2'
@@ -43,10 +45,11 @@ SWEP.Secondary = {
 SWEP.DrawTime = 0.66
 SWEP.DrawTimeAnimation = 1.16
 SWEP.PreFire = 0.24
-SWEP.ReloadTime = 0.96
 SWEP.BulletRange = 78
 SWEP.BulletDamage = 65
+SWEP.BulletForce = 50
 SWEP.AttackAnimation = ACT_VM_SWINGHARD
+SWEP.BulletHull = 8
 
 SWEP.PlayMissSound = =>
     playSound = table.Random(@MissSounds)
@@ -77,4 +80,3 @@ SWEP.BulletCallback = (tr = {}, dmginfo) =>
     else
         weapon\OnMiss(tr, dmginfo)
 
-SWEP.SecondaryAttack = => false
