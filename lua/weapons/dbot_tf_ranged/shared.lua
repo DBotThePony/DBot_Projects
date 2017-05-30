@@ -36,7 +36,6 @@ SWEP.BulletDamage = 12
 SWEP.DefaultSpread = Vector(0, 0, 0)
 SWEP.BulletsAmount = 1
 SWEP.MuzzleAttachment = 'muzzle'
-SWEP.MuzzleEffect = 'muzzle_shotgun'
 SWEP.Reloadable = true
 SWEP.Initialize = function(self)
   self.isReloading = false
@@ -98,7 +97,34 @@ SWEP.PlayFireSound = function(self)
     return self:EmitSound(playSound, SNDLVL_GUNSHOT, 100, .7, CHAN_WEAPON)
   end
 end
+SWEP.EmitMuzzleFlash = function(self)
+  local viewModel = self:GetOwner():GetViewModel()
+  local Pos, Ang
+  do
+    local _obj_0 = viewModel:GetAttachment(self:LookupAttachment(self.MuzzleAttachment))
+    Pos, Ang = _obj_0.Pos, _obj_0.Ang
+  end
+  local emmiter = ParticleEmitter(Pos, true)
+  if not emmiter then
+    return 
+  end
+  for i = 1, math.random(3, 5) do
+    do
+      local _with_0 = emmiter:Add('models/effects/muzzleflash/brightmuzzle', Pos)
+      _with_0:SetDieTime(0.1)
+      local size = math.random(3, 6) / 6
+      _with_0:SetStartSize(size)
+      _with_0:SetEndSize(size)
+      _with_0:SetColor(255, 255, 255)
+      _with_0:SetRoll(math.random(-90, 90))
+    end
+  end
+  return emmiter:Finish()
+end
 SWEP.PrimaryAttack = function(self)
+  if self:GetNextPrimaryFire() > CurTime() then
+    return false
+  end
   if self:Clip1() <= 0 then
     self:Reload()
     return false
@@ -106,8 +132,9 @@ SWEP.PrimaryAttack = function(self)
   self.isReloading = false
   self:TakePrimaryAmmo(self.TakeBulletsOnFire)
   self:PlayFireSound()
-  if CLIENT and self:GetOwner() == LocalPlayer() then
-    self:GetOwner():GetViewModel():CreateParticleEffect(self.MuzzleEffect, self:LookupAttachment(self.MuzzleAttachment))
+  if CLIENT and self:GetOwner() == LocalPlayer() and self.lastMuzzle ~= FrameNumber() then
+    self.lastMuzzle = FrameNumber()
+    self:EmitMuzzleFlash()
   end
   return BaseClass.PrimaryAttack(self)
 end

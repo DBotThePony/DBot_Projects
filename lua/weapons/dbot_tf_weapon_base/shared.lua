@@ -115,6 +115,9 @@ SWEP.Think = function(self)
   end
 end
 SWEP.PrimaryAttack = function(self)
+  if self:GetNextPrimaryFire() > CurTime() then
+    return false
+  end
   self:SetNextPrimaryFire(CurTime() + self.CooldownTime)
   self:SendWeaponAnim(self.AttackAnimation)
   self:WaitForAnimation(ACT_VM_IDLE, self.CooldownTime)

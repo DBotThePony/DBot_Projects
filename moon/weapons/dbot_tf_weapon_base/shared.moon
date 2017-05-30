@@ -102,6 +102,7 @@ SWEP.Think = =>
         @suppressing = false
 
 SWEP.PrimaryAttack = =>
+    return false if @GetNextPrimaryFire() > CurTime()
     @SetNextPrimaryFire(CurTime() + @CooldownTime)
     @SendWeaponAnim(@AttackAnimation)
     @WaitForAnimation(ACT_VM_IDLE, @CooldownTime)

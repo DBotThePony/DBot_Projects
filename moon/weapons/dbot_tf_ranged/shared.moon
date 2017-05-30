@@ -58,7 +58,6 @@ SWEP.DefaultSpread = Vector(0, 0, 0)
 SWEP.BulletsAmount = 1
 
 SWEP.MuzzleAttachment = 'muzzle'
-SWEP.MuzzleEffect = 'muzzle_shotgun'
 
 SWEP.Reloadable = true
 
@@ -98,13 +97,30 @@ SWEP.PlayFireSound = =>
     playSound = table.Random(@FireSounds) if @FireSounds
     @EmitSound(playSound, SNDLVL_GUNSHOT, 100, .7, CHAN_WEAPON) if playSound
 
+SWEP.EmitMuzzleFlash = =>
+    viewModel = @GetOwner()\GetViewModel()
+    {:Pos, :Ang} = viewModel\GetAttachment(@LookupAttachment(@MuzzleAttachment))
+    emmiter = ParticleEmitter(Pos, true)
+    return if not emmiter
+    for i = 1, math.random(3, 5)
+        with emmiter\Add('models/effects/muzzleflash/brightmuzzle', Pos)
+            \SetDieTime(0.1)
+            size = math.random(3, 6) / 6
+            \SetStartSize(size)
+            \SetEndSize(size)
+            \SetColor(255, 255, 255)
+            \SetRoll(math.random(-90, 90))
+    emmiter\Finish()
+
 SWEP.PrimaryAttack = =>
+    return false if @GetNextPrimaryFire() > CurTime()
     if @Clip1() <= 0
         @Reload()
         return false
     @isReloading = false
     @TakePrimaryAmmo(@TakeBulletsOnFire)
     @PlayFireSound()
-    if CLIENT and @GetOwner() == LocalPlayer()
-        @GetOwner()\GetViewModel()\CreateParticleEffect(@MuzzleEffect, @LookupAttachment(@MuzzleAttachment))
+    if CLIENT and @GetOwner() == LocalPlayer() and @lastMuzzle ~= FrameNumber()
+        @lastMuzzle = FrameNumber()
+        @EmitMuzzleFlash()
     return BaseClass.PrimaryAttack(@)
