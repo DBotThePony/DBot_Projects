@@ -59,6 +59,9 @@ if CLIENT then
     ['$color'] = '[0 0 0]'
   })
   ENT.Draw = function(self)
+    if not IsValid(self:GetDummyTarget()) then
+      return 
+    end
     if IsValid(self.particleEffect) then
       do
         local _with_0 = self:GetDummyTarget()
@@ -69,13 +72,13 @@ if CLIENT then
       end
       return 
     end
-    if not IsValid(self:GetDummyTarget()) then
-      return 
+    do
+      local _with_0 = self:GetDummyTarget()
+      _with_0:SetNoDraw(true)
+      _with_0:DrawShadow(false)
+      _with_0:SetModelScale(0.01)
+      _with_0:SetMaterial('!DTF2_Translucent_Beam')
     end
-    self:GetDummyTarget():SetNoDraw(true)
-    self:GetDummyTarget():DrawShadow(false)
-    self:GetDummyTarget():SetModelScale(0.01)
-    self:GetDummyTarget():SetMaterial('!DTF2_Translucent_Beam')
     local pointOne = {
       ['entity'] = self,
       ['attachtype'] = PATTACH_ABSORIGIN_FOLLOW

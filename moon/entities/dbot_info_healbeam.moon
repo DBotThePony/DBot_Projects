@@ -67,6 +67,7 @@ if CLIENT
     })
 
     ENT.Draw = =>
+        return if not IsValid(@GetDummyTarget())
         if IsValid(@particleEffect)
             with @GetDummyTarget()
                 \SetNoDraw(true)
@@ -74,12 +75,12 @@ if CLIENT
                 \SetModelScale(0.01)
                 \SetMaterial('!DTF2_Translucent_Beam')
             return
-        return if not IsValid(@GetDummyTarget())
-
-        @GetDummyTarget()\SetNoDraw(true)
-        @GetDummyTarget()\DrawShadow(false)
-        @GetDummyTarget()\SetModelScale(0.01)
-        @GetDummyTarget()\SetMaterial('!DTF2_Translucent_Beam')
+        
+        with @GetDummyTarget()
+                \SetNoDraw(true)
+                \DrawShadow(false)
+                \SetModelScale(0.01)
+                \SetMaterial('!DTF2_Translucent_Beam')
 
         pointOne = {
             'entity': @
