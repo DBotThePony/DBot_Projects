@@ -168,6 +168,7 @@ end)
 hook.Add('OnNPCKilled', 'DTF2.UpdateTargetList', function()
   return timer.Create('DTF2.UpdateTargetList', 0, 1, UpdateTargetList)
 end)
+UpdateTargetList()
 hook.Add('EntityTakeDamage', 'DTF2.Bullseye', function(self, dmg)
   if not self.DTF2_Parent then
     return 
