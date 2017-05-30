@@ -15,7 +15,7 @@
 -- limitations under the License.
 --
 
-SWEP.Base = 'weapon_base'
+SWEP.Base = 'dbot_tf_weapon_base'
 SWEP.Author = 'DBot'
 SWEP.Category = 'TF2'
 SWEP.PrintName = 'TF2 Melee Base'
@@ -42,33 +42,11 @@ SWEP.Secondary = {
 
 SWEP.DrawTime = 0.66
 SWEP.DrawTimeAnimation = 1.16
-SWEP.PreSwing = 0.24
+SWEP.PreFire = 0.24
 SWEP.ReloadTime = 0.96
-SWEP.MeleeRange = 78
-
-SWEP.MeleeDamage = 65
-
-SWEP.Initialize = =>
-    @SetPlaybackRate(0.5)
-    @SendWeaponAnim(ACT_VM_IDLE)
-    @incomingHit = false
-    @incomingHitTime = 0
-
-SWEP.WaitForAnimation = (anim = ACT_VM_IDLE, time = 0) =>
-    timer.Create "DTF2.WeaponAnim.#{@EntIndex()}", time, 1, ->
-        return if not IsValid(@)
-        return if not IsValid(@GetOwner())
-        return if @GetOwner()\GetActiveWeapon() ~= @
-        @SendWeaponAnim(anim)
-
-SWEP.Deploy = =>
-    @SendWeaponAnim(ACT_VM_DRAW)
-    @WaitForAnimation(ACT_VM_IDLE, @DrawTimeAnimation)
-    @SetNextPrimaryFire(CurTime() + @DrawTime)
-    @incomingHit = false
-    return true
-
-SWEP.Holster = =>@GetNextPrimaryFire() < CurTime()
+SWEP.BulletRange = 78
+SWEP.BulletDamage = 65
+SWEP.AttackAnimation = ACT_VM_SWINGHARD
 
 SWEP.PlayMissSound = =>
     playSound = table.Random(@MissSounds)
@@ -99,33 +77,4 @@ SWEP.BulletCallback = (tr = {}, dmginfo) =>
     else
         weapon\OnMiss(tr, dmginfo)
 
-SWEP.Think = =>
-    if @incomingHit and @incomingHitTime < CurTime()
-        @suppressing = true
-        SuppressHostEvents(@GetOwner()) if SERVER and @GetOwner()\IsPlayer()
-        @incomingHit = false
-        @bulletCallbackCalled = false
-        bulletData = {
-            'Damage': @MeleeDamage
-            'Attacker': @GetOwner()
-            'Callback': @BulletCallback
-            'Src': @GetOwner()\EyePos()
-            'Dir': @GetOwner()\GetAimVector()
-            'Distance': @MeleeRange
-            'HullSize': 8
-        }
-
-        @FireBullets(bulletData)
-        @OnMiss() if not @bulletCallbackCalled
-        SuppressHostEvents(NULL) if SERVER
-        @suppressing = false
-
-SWEP.PrimaryAttack = =>
-    @SetNextPrimaryFire(CurTime() + @ReloadTime)
-    @SendWeaponAnim(ACT_VM_SWINGHARD)
-    @WaitForAnimation(ACT_VM_IDLE, @ReloadTime)
-    @incomingHit = true
-    @incomingHitTime = CurTime() + @PreSwing
-    @NextThink(@incomingHitTime)
-    return true
 SWEP.SecondaryAttack = => false
