@@ -15,8 +15,12 @@ SWEP.BulletDamage = 14
 SWEP.BulletsAmount = 6
 SWEP.ReloadBullets = 1
 SWEP.DefaultSpread = Vector(1, 1, 0) * 0.05
+SWEP.DefaultViewPunch = Angle(-3, 0, 0)
 SWEP.FireSounds = {
   'weapons/shotgun_shoot.wav'
+}
+SWEP.EmptySounds = {
+  'weapons/shotgun_empty.wav'
 }
 SWEP.Primary = {
   ['Ammo'] = 'Buckshot',

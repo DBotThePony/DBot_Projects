@@ -35,11 +35,14 @@ SWEP.CooldownTime = 0.7
 SWEP.BulletDamage = 12
 SWEP.DefaultSpread = Vector(0, 0, 0)
 SWEP.BulletsAmount = 1
+SWEP.DefaultViewPunch = Angle(0, 0, 0)
 SWEP.MuzzleAttachment = 'muzzle'
 SWEP.Reloadable = true
 SWEP.Initialize = function(self)
+  BaseClass.Initialize(self)
   self.isReloading = false
   self.reloadNext = 0
+  self.lastEmptySound = 0
 end
 SWEP.Reload = function(self)
   if not self.Reloadable then
@@ -69,6 +72,9 @@ end
 SWEP.GetBulletAmount = function(self)
   return self.BulletsAmount
 end
+SWEP.GetViewPunch = function(self)
+  return self.DefaultViewPunch
+end
 SWEP.UpdateBulletData = function(self, bulletData)
   if bulletData == nil then
     bulletData = { }
@@ -97,6 +103,19 @@ SWEP.PlayFireSound = function(self)
     return self:EmitSound(playSound, SNDLVL_GUNSHOT, 100, .7, CHAN_WEAPON)
   end
 end
+SWEP.PlayEmptySound = function(self)
+  if self.lastEmptySound > CurTime() then
+    return 
+  end
+  self.lastEmptySound = CurTime() + 1
+  local playSound
+  if self.EmptySounds then
+    playSound = table.Random(self.EmptySounds)
+  end
+  if playSound then
+    return self:EmitSound(playSound, 75, 100, .7, CHAN_WEAPON)
+  end
+end
 SWEP.EmitMuzzleFlash = function(self)
   local viewModel = self:GetOwner():GetViewModel()
   local Pos, Ang
@@ -104,19 +123,19 @@ SWEP.EmitMuzzleFlash = function(self)
     local _obj_0 = viewModel:GetAttachment(self:LookupAttachment(self.MuzzleAttachment))
     Pos, Ang = _obj_0.Pos, _obj_0.Ang
   end
-  local emmiter = ParticleEmitter(Pos, true)
+  local emmiter = ParticleEmitter(Pos, false)
   if not emmiter then
     return 
   end
   for i = 1, math.random(3, 5) do
     do
-      local _with_0 = emmiter:Add('models/effects/muzzleflash/brightmuzzle', Pos)
+      local _with_0 = emmiter:Add('effects/muzzleflash' .. math.random(1, 4), Pos)
       _with_0:SetDieTime(0.1)
-      local size = math.random(3, 6) / 6
+      local size = math.random(20, 60) / 6
       _with_0:SetStartSize(size)
       _with_0:SetEndSize(size)
       _with_0:SetColor(255, 255, 255)
-      _with_0:SetRoll(math.random(-90, 90))
+      _with_0:SetRoll(math.random(-180, 180))
     end
   end
   return emmiter:Finish()
@@ -127,11 +146,16 @@ SWEP.PrimaryAttack = function(self)
   end
   if self:Clip1() <= 0 then
     self:Reload()
+    self:PlayEmptySound()
     return false
   end
   self.isReloading = false
   self:TakePrimaryAmmo(self.TakeBulletsOnFire)
   self:PlayFireSound()
+  self:GetOwner():ViewPunch(self:GetViewPunch())
+  if game.SinglePlayer() and SERVER then
+    self:CallOnClient('EmitMuzzleFlash')
+  end
   if CLIENT and self:GetOwner() == LocalPlayer() and self.lastMuzzle ~= FrameNumber() then
     self.lastMuzzle = FrameNumber()
     self:EmitMuzzleFlash()

@@ -57,13 +57,17 @@ SWEP.BulletDamage = 12
 SWEP.DefaultSpread = Vector(0, 0, 0)
 SWEP.BulletsAmount = 1
 
+SWEP.DefaultViewPunch = Angle(0, 0, 0)
+
 SWEP.MuzzleAttachment = 'muzzle'
 
 SWEP.Reloadable = true
 
 SWEP.Initialize = =>
+    BaseClass.Initialize(@)
     @isReloading = false
     @reloadNext = 0
+    @lastEmptySound = 0
 
 SWEP.Reload = =>
     return false if not @Reloadable
@@ -79,6 +83,7 @@ SWEP.Reload = =>
 
 SWEP.GetBulletSpread = => @DefaultSpread
 SWEP.GetBulletAmount = => @BulletsAmount
+SWEP.GetViewPunch = => @DefaultViewPunch
 
 SWEP.UpdateBulletData = (bulletData = {}) =>
     bulletData.Spread = @GetBulletSpread()
@@ -97,30 +102,44 @@ SWEP.PlayFireSound = =>
     playSound = table.Random(@FireSounds) if @FireSounds
     @EmitSound(playSound, SNDLVL_GUNSHOT, 100, .7, CHAN_WEAPON) if playSound
 
+SWEP.PlayEmptySound = =>
+    return if @lastEmptySound > CurTime()
+    @lastEmptySound = CurTime() + 1
+    playSound = table.Random(@EmptySounds) if @EmptySounds
+    @EmitSound(playSound, 75, 100, .7, CHAN_WEAPON) if playSound
+
 SWEP.EmitMuzzleFlash = =>
     viewModel = @GetOwner()\GetViewModel()
     {:Pos, :Ang} = viewModel\GetAttachment(@LookupAttachment(@MuzzleAttachment))
-    emmiter = ParticleEmitter(Pos, true)
+    emmiter = ParticleEmitter(Pos, false)
     return if not emmiter
     for i = 1, math.random(3, 5)
-        with emmiter\Add('models/effects/muzzleflash/brightmuzzle', Pos)
+        with emmiter\Add('effects/muzzleflash' .. math.random(1, 4), Pos)
             \SetDieTime(0.1)
-            size = math.random(3, 6) / 6
+            size = math.random(20, 60) / 6
             \SetStartSize(size)
             \SetEndSize(size)
             \SetColor(255, 255, 255)
-            \SetRoll(math.random(-90, 90))
+            \SetRoll(math.random(-180, 180))
     emmiter\Finish()
 
 SWEP.PrimaryAttack = =>
     return false if @GetNextPrimaryFire() > CurTime()
     if @Clip1() <= 0
         @Reload()
+        @PlayEmptySound()
         return false
+    
     @isReloading = false
     @TakePrimaryAmmo(@TakeBulletsOnFire)
     @PlayFireSound()
+
+    @GetOwner()\ViewPunch(@GetViewPunch())
+
+    if game.SinglePlayer() and SERVER
+        @CallOnClient('EmitMuzzleFlash')
     if CLIENT and @GetOwner() == LocalPlayer() and @lastMuzzle ~= FrameNumber()
         @lastMuzzle = FrameNumber()
         @EmitMuzzleFlash()
+    
     return BaseClass.PrimaryAttack(@)
