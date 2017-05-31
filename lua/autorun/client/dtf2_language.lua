@@ -20,6 +20,10 @@ local langPhrases = {
     'Melee weapon'
   },
   {
+    'dbot_tf_wrench',
+    'Engineer Wrench'
+  },
+  {
     'dbot_tf_ranged',
     'Ranged weapon'
   },
