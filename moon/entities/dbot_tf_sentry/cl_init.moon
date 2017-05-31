@@ -17,6 +17,8 @@
 
 include 'shared.lua'
 
+OLD_SENTRY_MUZZLEFLASH = CreateConVar('dtf2_sentry_muzzleflash', '1', {FCVAR_ARCHIVE}, 'Use old sentry muzzleflash')
+
 MUZZLE_BONE_ID_1 = 4
 MUZZLE_BONE_ID_2_L = 7
 MUZZLE_BONE_ID_2_R = 8
@@ -32,6 +34,18 @@ ENT.Initialize = =>
     @lastYaw = 0
     @fireAnim = 0
     @isEmpty = false
+
+ENT.CreateMuzzleflashModel = (attach = '') =>
+    muzzleflash = ClientsideModel('models/effects/sentry1_muzzle/sentry1_muzzle.mdl')
+    timer.Simple 0.1, -> muzzleflash\Remove()
+
+    with @GetAttachment(@LookupAttachment(attach))
+        muzzleflash\SetPos(.Pos)
+        muzzleflash\SetAngles(.Ang)
+    
+    muzzleflash\SetModelScale(math.random(80, 100) / 100)
+
+    return muzzleflash
 
 ENT.Draw = =>
     deltaFireAnim = @fireAnim - CurTime()
@@ -96,15 +110,19 @@ net.Receive 'DTF2.SentryFire', ->
     sentry\EmitSound('weapons/sentry_empty.wav', 75, 100, 0.8, CHAN_WEAPON) if isEmpty
     
     if not isEmpty
-        switch sentry\GetLevel()
-            when 1
-                with sentry\GetAttachment(sentry\LookupAttachment('muzzle'))
-                    ParticleEffect('muzzle_sentry', .Pos, .Ang, @)
-            when 2
-                sentry.nextMuzzle = not sentry.nextMuzzle
-                with sentry\GetAttachment(sentry\LookupAttachment(sentry.nextMuzzle and 'muzzle_l' or 'muzzle_r'))
-                    ParticleEffect('muzzle_sentry2', .Pos, .Ang, @)
-            when 3
-                sentry.nextMuzzle = not sentry.nextMuzzle
-                with sentry\GetAttachment(sentry\LookupAttachment(sentry.nextMuzzle and 'muzzle_l' or 'muzzle_r'))
-                    ParticleEffect('muzzle_sentry2', .Pos, .Ang, @)
+        if OLD_SENTRY_MUZZLEFLASH\GetBool()
+            switch sentry\GetLevel()
+                when 1
+                    sentry\CreateMuzzleflashModel('muzzle')
+                when 2, 3
+                    sentry.nextMuzzle = not sentry.nextMuzzle
+                    sentry\CreateMuzzleflashModel(sentry.nextMuzzle and 'muzzle_l' or 'muzzle_r')
+        else
+            switch sentry\GetLevel()
+                when 1
+                    with sentry\GetAttachment(sentry\LookupAttachment('muzzle'))
+                        ParticleEffect('muzzle_sentry', .Pos, .Ang, @)
+                when 2, 3
+                    sentry.nextMuzzle = not sentry.nextMuzzle
+                    with sentry\GetAttachment(sentry\LookupAttachment(sentry.nextMuzzle and 'muzzle_l' or 'muzzle_r'))
+                        ParticleEffect('muzzle_sentry2', .Pos, .Ang, @)
