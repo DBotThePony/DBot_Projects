@@ -74,8 +74,10 @@ ENT.Draw = function(self)
   local diffYaw = math.AngleDifference(self.lastYaw, self:GetAimYaw())
   self.lastPitch = Lerp(FrameTime() * 10, self.lastPitch, self.lastPitch - diffPitch)
   self.lastYaw = Lerp(FrameTime() * 10, self.lastYaw, self.lastYaw - diffYaw)
-  self:SetPoseParameter('aim_pitch', self.lastPitch + pitchAdd + math.random(1, 2) / 100)
-  self:SetPoseParameter('aim_yaw', self.lastYaw + math.random(1, 2) / 100)
+  self.aim_pitch = self.lastPitch + pitchAdd + math.random(1, 2) / 100
+  self.aim_yaw = self.lastYaw + math.random(1, 2) / 100
+  self:SetPoseParameter('aim_pitch', self.aim_pitch)
+  self:SetPoseParameter('aim_yaw', self.aim_yaw)
   self:InvalidateBoneCache()
   return self.BaseClass.Draw(self)
 end
@@ -105,6 +107,9 @@ return net.Receive('DTF2.SentryFire', function()
   if isEmpty then
     sentry:EmitSound('weapons/sentry_empty.wav', 75, 100, 0.8, CHAN_WEAPON)
   end
+  sentry:SetPoseParameter('aim_pitch', sentry.aim_pitch + math.random(1, 2) / 2)
+  sentry:SetPoseParameter('aim_yaw', sentry.aim_yaw + math.random(1, 2) / 2)
+  sentry:InvalidateBoneCache()
   if not isEmpty then
     if OLD_SENTRY_MUZZLEFLASH:GetBool() then
       local _exp_0 = sentry:GetLevel()
