@@ -1238,24 +1238,6 @@ function VLL.RunBundle(bundle)
 		end
 	end
 	
-	local contents = VLL.DirectoryContent('weapons')
-	table.sort(contents)
-	
-	for k, v in pairs(contents) do
-		if VLL.FileBundle('weapons/' .. v) ~= bundle then continue end
-		
-		SWEP = {}
-		SWEP.Folder = 'weapons'
-		SWEP.Primary = {}
-		SWEP.Secondary = {}
-		
-		VLL.Include('weapons/' .. v)
-		
-		weapons.Register(SWEP, string.sub(v, 1, -5))
-		baseclass.Set(v, SWEP)
-		SWEP = nil
-	end
-	
 	local folders = VLL.DirectoryFolders('weapons')
 	table.sort(folders)
 	
@@ -1290,18 +1272,22 @@ function VLL.RunBundle(bundle)
 		SWEP = nil
 	end
 	
-	local contents = VLL.DirectoryContent('entities')
+	local contents = VLL.DirectoryContent('weapons')
 	table.sort(contents)
 	
 	for k, v in pairs(contents) do
-		if VLL.FileBundle('entities/' .. v) ~= bundle then continue end
+		if VLL.FileBundle('weapons/' .. v) ~= bundle then continue end
 		
-		ENT = {}
-		ENT.Folder = 'entities'
+		SWEP = {}
+		SWEP.Folder = 'weapons'
+		SWEP.Primary = {}
+		SWEP.Secondary = {}
 		
-		VLL.Include('entities/' .. v)
+		VLL.Include('weapons/' .. v)
 		
-		scripted_ents.Register(ENT, string.sub(v, 1, -5))
+		weapons.Register(SWEP, string.sub(v, 1, -5))
+		baseclass.Set(v, SWEP)
+		SWEP = nil
 	end
 	
 	local folders = VLL.DirectoryFolders('entities')
@@ -1333,6 +1319,21 @@ function VLL.RunBundle(bundle)
 		end
 		
 		ENT = nil
+	end
+	
+	
+	local contents = VLL.DirectoryContent('entities')
+	table.sort(contents)
+	
+	for k, v in pairs(contents) do
+		if VLL.FileBundle('entities/' .. v) ~= bundle then continue end
+		
+		ENT = {}
+		ENT.Folder = 'entities'
+		
+		VLL.Include('entities/' .. v)
+		
+		scripted_ents.Register(ENT, string.sub(v, 1, -5))
 	end
 	
 	--[[
