@@ -118,6 +118,10 @@ hook.Add 'OnNPCKilled', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTar
 UpdateTargetList()
 
 hook.Add 'EntityTakeDamage', 'DTF2.Bullseye', (dmg) =>
+    if @IsTF2Building and dmg\GetAttacker()\IsValid() and @IsAlly(dmg\GetAttacker())
+        dmg\SetDamage(0)
+        dmg\SetMaxDamage(0)
+        return true
     return if not @DTF2_Parent
     @DTF2_Parent\TakeDamageInfo(dmg) if not dmg\IsExplosionDamage()
     dmg\SetDamage(0)

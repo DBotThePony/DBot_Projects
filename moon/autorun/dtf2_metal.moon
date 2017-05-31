@@ -15,6 +15,9 @@
 -- limitations under the License.
 --
 
+export DTF2
+DTF2 = DTF2 or {}
+
 plyMeta = FindMetaTable('Player')
 
 export DTF2_MAX_METAL

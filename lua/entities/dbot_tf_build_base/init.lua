@@ -170,6 +170,11 @@ hook.Add('OnNPCKilled', 'DTF2.UpdateTargetList', function()
 end)
 UpdateTargetList()
 hook.Add('EntityTakeDamage', 'DTF2.Bullseye', function(self, dmg)
+  if self.IsTF2Building and dmg:GetAttacker():IsValid() and self:IsAlly(dmg:GetAttacker()) then
+    dmg:SetDamage(0)
+    dmg:SetMaxDamage(0)
+    return true
+  end
   if not self.DTF2_Parent then
     return 
   end

@@ -1,3 +1,4 @@
+DTF2 = DTF2 or { }
 local plyMeta = FindMetaTable('Player')
 DTF2_MAX_METAL = CreateConVar('dtf2_max_metal', '200', {
   FCVAR_ARCHIVE,
