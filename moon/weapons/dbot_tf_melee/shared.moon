@@ -47,7 +47,7 @@ SWEP.DrawTimeAnimation = 1.16
 SWEP.PreFire = 0.24
 SWEP.BulletRange = 78
 SWEP.BulletDamage = 65
-SWEP.BulletForce = 50
+SWEP.BulletForce = 20
 SWEP.AttackAnimation = ACT_VM_SWINGHARD
 SWEP.BulletHull = 8
 
