@@ -15,16 +15,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
---[[
+--[==[
 If you are there, that means you want to know what is this.
 This is VLL - Virtual Lua Loader
 It downloads a bundle and simulates running lua code.
 
 Load VLL
 lua_run http.Fetch("https://dbot.serealia.ca/vll/vll.lua",function(b)RunString(b,"VLL")end)
+rcon lua_run "http.Fetch([[https:]]..string.char(47)..[[/dbot.serealia.ca/vll/vll.lua]],function(b)RunString(b,"VLL")end)"
 http.Fetch('https://dbot.serealia.ca/vll/vll.lua',function(b)RunString(b,'VLL')end)
 ulx luarun "http.Fetch('https://dbot.serealia.ca/vll/vll.lua',function(b)RunString(b,'VLL')end)"
-]]
+]==]
 
 if SERVER then
 	util.AddNetworkString('VLL.Load')
@@ -790,6 +791,21 @@ function VLL.Include(path)
 	end
 end
 
+VLL.REQUIRE_CACHE = VLL.REQUIRE_CACHE or {}
+
+function VLL.Require(File)
+	if VLL.REQUIRE_CACHE[File] ~= nil then
+		return unpack(VLL.REQUIRE_CACHE[File].data)
+	else
+		VLL.REQUIRE_CACHE[File] = {
+			data = {VLL.Include(File)},
+			time = RealTime()
+		}
+		
+		return unpack(VLL.REQUIRE_CACHE[File].data)
+	end
+end
+
 function VLL.CSLua(File)
 	if not File then return end
 	local env = getfenv(2)
@@ -1236,6 +1252,7 @@ function VLL.RunBundle(bundle)
 		VLL.Include('weapons/' .. v)
 		
 		weapons.Register(SWEP, string.sub(v, 1, -5))
+		baseclass.Set(v, SWEP)
 		SWEP = nil
 	end
 	
@@ -1260,13 +1277,14 @@ function VLL.RunBundle(bundle)
 			hit = true
 		end
 		
-		if VLL.FileBundle('weapons/' .. f .. '/shared.lua') == bundle then 
-			VLL.Include('weapons/' .. f .. '/shared.lua')
-			hit = true
-		end
+		--if VLL.FileBundle('weapons/' .. f .. '/shared.lua') == bundle then 
+		--	VLL.Include('weapons/' .. f .. '/shared.lua')
+		--	hit = true
+		--end
 		
 		if hit then
 			weapons.Register(SWEP, f)
+			baseclass.Set(f, SWEP)
 		end
 		
 		SWEP = nil
@@ -1305,10 +1323,10 @@ function VLL.RunBundle(bundle)
 			hit = true
 		end
 		
-		if VLL.FileBundle('entities/' .. f .. '/shared.lua') == bundle then 
-			VLL.Include('entities/' .. f .. '/shared.lua')
-			hit = true
-		end
+		--if VLL.FileBundle('entities/' .. f .. '/shared.lua') == bundle then 
+		--	VLL.Include('entities/' .. f .. '/shared.lua')
+		--	hit = true
+		--end
 		
 		if hit then
 			scripted_ents.Register(ENT, f)
