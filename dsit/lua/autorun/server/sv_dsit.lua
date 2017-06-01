@@ -16,6 +16,8 @@ limitations under the License.
 ]]
 
 local ENABLE = CreateConVar('sv_dsit_enable', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Enable')
+local ENABLE_SPEED_CHECK = CreateConVar('sv_dsit_speed', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Enable speed check')
+local ENABLE_SPEED_CHECK_VALUE = CreateConVar('sv_dsit_speed_val', '350', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Speed check value')
 local ALLOW_WEAPONS = CreateConVar('sv_dsit_allow_weapons', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Allow weapons in seat')
 local MAX_DISTANCE = CreateConVar('sv_dsit_distance', '128', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Max distance (in Hammer Units)')
 local ALLOW_ON_PLAYERS = CreateConVar('sv_dsit_players', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Allow to sit on players (heads)')
@@ -657,7 +659,7 @@ local function Request(ply)
 		return
 	end
 	
-	if ply:GetVelocity():Length() > 350 then
+	if ENABLE_SPEED_CHECK:GetBool() and ply:GetVelocity():Length() > ENABLE_SPEED_CHECK_VALUE:GetInt() then
 		ply:PrintMessage(HUD_PRINTCENTER, '[DSit] You are moving too fast to sit right now')
 		DSit.AddPText(ply, 'You are moving too fast to sit right now')
 		return

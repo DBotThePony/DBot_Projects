@@ -28,6 +28,7 @@ local DSit = {}
 
 DSit.SVars = {
 	'enable',
+	'speed',
 	'allow_weapons',
 	'players',
 	'players_legs',
@@ -47,6 +48,7 @@ DSit.SVars = {
 
 DSit.SVarsObjects = {
 	CreateConVar('sv_dsit_enable', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Enable'),
+	CreateConVar('sv_dsit_speed', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Enable speed check'),
 	CreateConVar('sv_dsit_allow_weapons', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Allow weapons in seat'),
 	CreateConVar('sv_dsit_players', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Allow to sit on players (heads)'),
 	CreateConVar('sv_dsit_players_legs', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Allow to sit on players (legs/sit on sitting players)'),
@@ -68,6 +70,7 @@ local DISABLE_PHYSGUN = GetConVar('sv_dsit_disablephysgun')
 
 DSit.SVarsHelp = {
 	'Enable DSit',
+	'Enable speed check',
 	'Allow weapons in seat',
 	'Allow to sit on players (heads)',
 	'Allow to sit on players (legs/sit on sitting players)',
