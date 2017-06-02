@@ -194,7 +194,8 @@ ENT.BehaveUpdate = (delta) =>
         @idleYaw += delta * @SENTRY_SCAN_YAW_MULT if @idleDirection
         @idleYaw -= delta * @SENTRY_SCAN_YAW_MULT if not @idleDirection
         if @idleYaw > @SENTRY_SCAN_YAW_CONST or @idleYaw < -@SENTRY_SCAN_YAW_CONST
-            @idleDirection = not @idleDirection
+            @idleDirection = false if @idleYaw > @SENTRY_SCAN_YAW_CONST
+            @idleDirection = true if @idleYaw < -@SENTRY_SCAN_YAW_CONST
             @idlePitch += 2 if @idlePitchDirection
             @idlePitch -= 2 if not @idlePitchDirection
             @idlePitchDirection = not @idlePitchDirection if @idlePitch <= -6 or @idlePitch >= 6

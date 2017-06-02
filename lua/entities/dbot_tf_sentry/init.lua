@@ -165,7 +165,12 @@ ENT.BehaveUpdate = function(self, delta)
       self.idleYaw = self.idleYaw - (delta * self.SENTRY_SCAN_YAW_MULT)
     end
     if self.idleYaw > self.SENTRY_SCAN_YAW_CONST or self.idleYaw < -self.SENTRY_SCAN_YAW_CONST then
-      self.idleDirection = not self.idleDirection
+      if self.idleYaw > self.SENTRY_SCAN_YAW_CONST then
+        self.idleDirection = false
+      end
+      if self.idleYaw < -self.SENTRY_SCAN_YAW_CONST then
+        self.idleDirection = true
+      end
       if self.idlePitchDirection then
         self.idlePitch = self.idlePitch + 2
       end
