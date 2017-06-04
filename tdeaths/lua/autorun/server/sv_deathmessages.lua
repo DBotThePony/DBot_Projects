@@ -316,7 +316,7 @@ local function GetWeapon(ent, weapon)
 		return GetName(weapon)
 	end
 	
-	if IsValid(ent:GetActiveWeapon()) then
+	if ent.GetActiveWeapon and IsValid(ent:GetActiveWeapon()) then
 		return GetName(ent:GetActiveWeapon())
 	end
 	
