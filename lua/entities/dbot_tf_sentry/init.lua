@@ -157,6 +157,11 @@ ENT.FireRocket = function(self, force)
   rocket:Spawn()
   rocket:Activate()
   rocket:SetOwner(self)
+  self:AddGesture(ACT_RANGE_ATTACK2)
+  self:DelayGestureRemove(ACT_RANGE_ATTACK2, self.ROCKETS_RELOAD_ANIM)
+  self:DelaySound(1.5, "weapons/sentry_move_short1.wav")
+  self:DelaySound(1.75, "weapons/sentry_upgrading" .. tostring(math.random(1, 7)) .. ".wav")
+  self:DelaySound(2, "weapons/sentry_move_short2.wav")
   return true
 end
 ENT.BehaveUpdate = function(self, delta)

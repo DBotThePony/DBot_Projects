@@ -30,6 +30,7 @@ ENT.BULLET_RELOAD_1 = 0.3
 ENT.BULLET_RELOAD_2 = 0.1
 ENT.BULLET_RELOAD_3 = 0.1
 ENT.ROCKETS_RELOAD = 5
+ENT.ROCKETS_RELOAD_ANIM = 2.75
 ENT.GetAmmoPercent = function(self, level)
   if level == nil then
     level = self:GetLevel()

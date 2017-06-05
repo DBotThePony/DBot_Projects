@@ -34,6 +34,35 @@ ENT.OnKilled = function(self, dmg)
   hook.Run('OnNPCKilled', self, dmg:GetAttacker(), dmg:GetInflictor())
   return self:Explode()
 end
+ENT.DelayGestureRemove = function(self, gestID, time)
+  if gestID == nil then
+    gestID = ACT_INVALID
+  end
+  if time == nil then
+    time = 0
+  end
+  return timer.Create("DTF2.RemoveGesture." .. tostring(self:EntIndex()) .. "." .. tostring(gestID), time, 1, function()
+    if IsValid(self) then
+      return self:RemoveGesture(gestID)
+    end
+  end)
+end
+ENT.DelaySound = function(self, time, soundName, ...)
+  if time == nil then
+    time = 0
+  end
+  if soundName == nil then
+    soundName = ''
+  end
+  local vararg = {
+    ...
+  }
+  return timer.Create("DTF2.PlaySound." .. tostring(self:EntIndex()) .. "." .. tostring(soundName), time, 1, function()
+    if IsValid(self) then
+      return self:EmitSound(soundName, unpack(vararg))
+    end
+  end)
+end
 local VALID_TARGETS = { }
 local VALID_ALLIES = { }
 local isEnemy

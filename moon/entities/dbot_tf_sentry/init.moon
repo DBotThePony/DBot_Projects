@@ -156,6 +156,11 @@ ENT.FireRocket = (force = false) =>
     rocket\Spawn()
     rocket\Activate()
     rocket\SetOwner(@)
+    @AddGesture(ACT_RANGE_ATTACK2)
+    @DelayGestureRemove(ACT_RANGE_ATTACK2, @ROCKETS_RELOAD_ANIM)
+    @DelaySound(1.5, "weapons/sentry_move_short1.wav")
+    @DelaySound(1.75, "weapons/sentry_upgrading#{math.random(1, 7)}.wav")
+    @DelaySound(2, "weapons/sentry_move_short2.wav")
     return true
 
 ENT.BehaveUpdate = (delta) =>

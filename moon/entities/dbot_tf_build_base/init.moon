@@ -45,6 +45,11 @@ ENT.OnKilled = (dmg) =>
     hook.Run('OnNPCKilled', @, dmg\GetAttacker(), dmg\GetInflictor())
     @Explode()
 
+ENT.DelayGestureRemove = (gestID = ACT_INVALID, time = 0) => timer.Create "DTF2.RemoveGesture.#{@EntIndex()}.#{gestID}", time, 1, -> @RemoveGesture(gestID) if IsValid(@)
+ENT.DelaySound = (time = 0, soundName = '', ...) =>
+    vararg = {...}
+    timer.Create "DTF2.PlaySound.#{@EntIndex()}.#{soundName}", time, 1, -> @EmitSound(soundName, unpack(vararg)) if IsValid(@)
+
 VALID_TARGETS = {}
 VALID_ALLIES = {}
 
