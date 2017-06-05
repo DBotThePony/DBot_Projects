@@ -128,6 +128,8 @@ UpdateTargetList()
 hook.Add 'EntityTakeDamage', 'DTF2.Bullseye', (dmg) =>
     parent = false
     if @DTF2_Parent
+        return if @DTF2_LastDMG > CurTime()
+        @DTF2_LastDMG = CurTime() + 0.1
         @ = @DTF2_Parent
         parent = true
     if @IsTF2Building and (dmg\GetAttacker()\IsValid() and @IsAlly(dmg\GetAttacker()) or dmg\GetAttacker() == @)
@@ -211,6 +213,7 @@ ENT.CreateBullseye = =>
 			\SetParent(@)
             \SetNotSolid(true)
             .DTF2_Parent = @
+            .DTF2_LastDMG = 0
 
 ENT.UpdateRelationships = =>
     for {target} in *VALID_TARGETS

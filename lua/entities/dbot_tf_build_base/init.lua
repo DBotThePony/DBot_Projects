@@ -206,6 +206,10 @@ UpdateTargetList()
 hook.Add('EntityTakeDamage', 'DTF2.Bullseye', function(self, dmg)
   local parent = false
   if self.DTF2_Parent then
+    if self.DTF2_LastDMG > CurTime() then
+      return 
+    end
+    self.DTF2_LastDMG = CurTime() + 0.1
     self = self.DTF2_Parent
     parent = true
   end
@@ -333,6 +337,7 @@ ENT.CreateBullseye = function(self)
         _with_0:SetParent(self)
         _with_0:SetNotSolid(true)
         _with_0.DTF2_Parent = self
+        _with_0.DTF2_LastDMG = 0
         _accum_0[_len_0] = _with_0
       end
       _len_0 = _len_0 + 1
