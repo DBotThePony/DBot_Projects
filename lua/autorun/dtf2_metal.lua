@@ -88,7 +88,7 @@ local PlayerClass = {
     if SERVER and display then
       net.Start('DTF2.MetalEffect')
       net.WriteBool(false)
-      net.WriteUInt(amount, 16)
+      net.WriteUInt(oldMetal - newMetal, 16)
       net.Send(self)
     end
     return oldMetal - newMetal
@@ -120,7 +120,7 @@ local PlayerClass = {
     if SERVER and display then
       net.Start('DTF2.MetalEffect')
       net.WriteBool(true)
-      net.WriteUInt(amount, 16)
+      net.WriteUInt(newMetal - oldMetal, 16)
       net.Send(self)
     end
     return newMetal - oldMetal

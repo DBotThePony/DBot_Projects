@@ -49,7 +49,7 @@ PlayerClass =
         if SERVER and display
             net.Start 'DTF2.MetalEffect'
             net.WriteBool false
-            net.WriteUInt amount, 16
+            net.WriteUInt oldMetal - newMetal, 16
             net.Send @
         return oldMetal - newMetal
     SimulateTF2MetalAdd: (amount = 0, apply = true, playSound = apply, display = apply) =>
@@ -61,7 +61,7 @@ PlayerClass =
         if SERVER and display
             net.Start 'DTF2.MetalEffect'
             net.WriteBool true
-            net.WriteUInt amount, 16
+            net.WriteUInt newMetal - oldMetal, 16
             net.Send @
         return newMetal - oldMetal
 
