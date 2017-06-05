@@ -116,6 +116,7 @@ if not DTF2.LOAD_PARTICLES then
 end
 DTF2.LOAD_PARTICLES = true
 local toPrecache = {
+  'explosion_trailFire',
   'muzzle_sentry',
   'muzzle_sentry2',
   'medicgun_beam_blue',

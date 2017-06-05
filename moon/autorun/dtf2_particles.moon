@@ -26,6 +26,7 @@ if not DTF2.LOAD_PARTICLES
 DTF2.LOAD_PARTICLES = true
 
 toPrecache = {
+    'explosion_trailFire'
     'muzzle_sentry'
     'muzzle_sentry2'
     'medicgun_beam_blue'
