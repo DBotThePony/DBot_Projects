@@ -38,7 +38,7 @@ ENT.Explode = =>
     @Remove()
 
 ENT.OnInjured = (dmg) =>
-    if dmg\GetAttacker() == @
+    if dmg\GetAttacker() == @ or dmg\GetAttacker()\IsValid() and @IsAlly(dmg\GetAttacker())
         dmg\SetDamage(0)
         dmg\SetMaxDamage(0)
 ENT.OnKilled = (dmg) =>
@@ -126,14 +126,11 @@ hook.Add 'OnNPCKilled', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTar
 UpdateTargetList()
 
 hook.Add 'EntityTakeDamage', 'DTF2.Bullseye', (dmg) =>
-    if @IsTF2Building and dmg\GetAttacker()\IsValid() and @IsAlly(dmg\GetAttacker())
+    if @IsTF2Building and (dmg\GetAttacker()\IsValid() and @IsAlly(dmg\GetAttacker()) or dmg\GetAttacker() == @)
         dmg\SetDamage(0)
+        dmg\SetDamageBonus(0)
         dmg\SetMaxDamage(0)
         return true
-    return if not @DTF2_Parent
-    @DTF2_Parent\TakeDamageInfo(dmg) if not dmg\IsExplosionDamage()
-    dmg\SetDamage(0)
-    return true
 
 include 'shared.lua'
 AddCSLuaFile 'shared.lua'

@@ -25,7 +25,7 @@ ENT.Explode = function(self)
   return self:Remove()
 end
 ENT.OnInjured = function(self, dmg)
-  if dmg:GetAttacker() == self then
+  if dmg:GetAttacker() == self or dmg:GetAttacker():IsValid() and self:IsAlly(dmg:GetAttacker()) then
     dmg:SetDamage(0)
     return dmg:SetMaxDamage(0)
   end
@@ -204,19 +204,12 @@ hook.Add('OnNPCKilled', 'DTF2.UpdateTargetList', function()
 end)
 UpdateTargetList()
 hook.Add('EntityTakeDamage', 'DTF2.Bullseye', function(self, dmg)
-  if self.IsTF2Building and dmg:GetAttacker():IsValid() and self:IsAlly(dmg:GetAttacker()) then
+  if self.IsTF2Building and (dmg:GetAttacker():IsValid() and self:IsAlly(dmg:GetAttacker()) or dmg:GetAttacker() == self) then
     dmg:SetDamage(0)
+    dmg:SetDamageBonus(0)
     dmg:SetMaxDamage(0)
     return true
   end
-  if not self.DTF2_Parent then
-    return 
-  end
-  if not dmg:IsExplosionDamage() then
-    self.DTF2_Parent:TakeDamageInfo(dmg)
-  end
-  dmg:SetDamage(0)
-  return true
 end)
 include('shared.lua')
 AddCSLuaFile('shared.lua')
