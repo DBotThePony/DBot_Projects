@@ -19,6 +19,9 @@ SWEP.HitSoundsFlesh = {
   'weapons/cbar_hitbod2.wav',
   'weapons/cbar_hitbod3.wav'
 }
+SWEP.DrawHUD = function(self)
+  return DTF2.DrawMetalCounter()
+end
 SWEP.OnHit = function(self, hitEntity, tr, dmginfo)
   if hitEntity == nil then
     hitEntity = NULL
@@ -46,7 +49,7 @@ SWEP.OnHit = function(self, hitEntity, tr, dmginfo)
   dmginfo:SetDamageType(0)
   local amount = hitEntity:SimulateRepair(self:GetOwner():GetTF2Metal())
   if amount > 0 then
-    self:GetOwner():ReduceTF2Metal(amount)
+    self:GetOwner():SimulateTF2MetalRemove(amount)
     return self:EmitSoundServerside("weapons/wrench_hit_build_success" .. tostring(math.random(1, 2)) .. ".wav")
   else
     return self:EmitSoundServerside("weapons/wrench_hit_build_fail.wav")

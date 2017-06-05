@@ -30,6 +30,9 @@ SWEP.MissSounds = {'weapons/wrench_swing.wav'}
 SWEP.HitSounds = {'weapons/wrench_hit_world.wav'}
 SWEP.HitSoundsFlesh = {'weapons/cbar_hitbod1.wav', 'weapons/cbar_hitbod2.wav', 'weapons/cbar_hitbod3.wav'}
 
+SWEP.DrawHUD = =>
+    DTF2.DrawMetalCounter()
+
 SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
     return @BaseClass.OnHit(@, hitEntity, tr, dmginfo) if not hitEntity.IsTF2Building
     return if CLIENT
@@ -44,7 +47,7 @@ SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
     dmginfo\SetDamageType(0)
     amount = hitEntity\SimulateRepair(@GetOwner()\GetTF2Metal())
     if amount > 0
-        @GetOwner()\ReduceTF2Metal(amount)
+        @GetOwner()\SimulateTF2MetalRemove(amount)
         @EmitSoundServerside("weapons/wrench_hit_build_success#{math.random(1, 2)}.wav")
     else
         @EmitSoundServerside("weapons/wrench_hit_build_fail.wav")

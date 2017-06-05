@@ -18,6 +18,12 @@
 export DTF2
 DTF2 = DTF2 or {}
 
+if SERVER
+    util.AddNetworkString('DTF2.MetalEffect')
+else
+    net.Receive 'DTF2.MetalEffect', (len = 0, ply = NULL) ->
+        hook.Run 'DTF2.MetalEffect', net.ReadBool(), net.ReadUInt(16)
+
 plyMeta = FindMetaTable('Player')
 
 export DTF2_MAX_METAL
@@ -35,18 +41,28 @@ PlayerClass =
     ReduceTF2Metal: (amount = 0) => @SetNWInt('DTF2.Metal', @GetTF2Metal() - amount)
     RemoveTF2Metal: => @SetNWInt('DTF2.Metal', 0)
     HasTF2Metal: (amount = 0) => @GetTF2Metal() >= amount
-    SimulateTF2MetalRemove: (amount = 0, apply = true) =>
+    SimulateTF2MetalRemove: (amount = 0, apply = true, display = apply) =>
         return 0 if @GetTF2Metal() <= 0
         oldMetal = @GetTF2Metal()
         newMetal = math.Clamp(oldMetal - amount, 0, @GetMaxTF2Metal())
         @SetTF2Metal(newMetal) if apply
+        if SERVER and display
+            net.Start 'DTF2.MetalEffect'
+            net.WriteBool false
+            net.WriteUInt amount, 16
+            net.Send @
         return oldMetal - newMetal
-    SimulateTF2MetalAdd: (amount = 0, apply = true, playSound = apply) =>
+    SimulateTF2MetalAdd: (amount = 0, apply = true, playSound = apply, display = apply) =>
         return 0 if @GetTF2Metal() >= @GetMaxTF2Metal()
         oldMetal = @GetTF2Metal()
         newMetal = math.Clamp(oldMetal + amount, 0, @GetMaxTF2Metal())
         @SetTF2Metal(newMetal) if apply
         @EmitSound('items/ammo_pickup.wav', 50, 100, 0.7) if playSound
+        if SERVER and display
+            net.Start 'DTF2.MetalEffect'
+            net.WriteBool true
+            net.WriteUInt amount, 16
+            net.Send @
         return newMetal - oldMetal
 
 plyMeta[k] = v for k, v in pairs PlayerClass

@@ -1,4 +1,17 @@
 DTF2 = DTF2 or { }
+if SERVER then
+  util.AddNetworkString('DTF2.MetalEffect')
+else
+  net.Receive('DTF2.MetalEffect', function(len, ply)
+    if len == nil then
+      len = 0
+    end
+    if ply == nil then
+      ply = NULL
+    end
+    return hook.Run('DTF2.MetalEffect', net.ReadBool(), net.ReadUInt(16))
+  end)
+end
 local plyMeta = FindMetaTable('Player')
 DTF2_MAX_METAL = CreateConVar('dtf2_max_metal', '200', {
   FCVAR_ARCHIVE,
@@ -54,12 +67,15 @@ local PlayerClass = {
     end
     return self:GetTF2Metal() >= amount
   end,
-  SimulateTF2MetalRemove = function(self, amount, apply)
+  SimulateTF2MetalRemove = function(self, amount, apply, display)
     if amount == nil then
       amount = 0
     end
     if apply == nil then
       apply = true
+    end
+    if display == nil then
+      display = apply
     end
     if self:GetTF2Metal() <= 0 then
       return 0
@@ -69,9 +85,15 @@ local PlayerClass = {
     if apply then
       self:SetTF2Metal(newMetal)
     end
+    if SERVER and display then
+      net.Start('DTF2.MetalEffect')
+      net.WriteBool(false)
+      net.WriteUInt(amount, 16)
+      net.Send(self)
+    end
     return oldMetal - newMetal
   end,
-  SimulateTF2MetalAdd = function(self, amount, apply, playSound)
+  SimulateTF2MetalAdd = function(self, amount, apply, playSound, display)
     if amount == nil then
       amount = 0
     end
@@ -80,6 +102,9 @@ local PlayerClass = {
     end
     if playSound == nil then
       playSound = apply
+    end
+    if display == nil then
+      display = apply
     end
     if self:GetTF2Metal() >= self:GetMaxTF2Metal() then
       return 0
@@ -91,6 +116,12 @@ local PlayerClass = {
     end
     if playSound then
       self:EmitSound('items/ammo_pickup.wav', 50, 100, 0.7)
+    end
+    if SERVER and display then
+      net.Start('DTF2.MetalEffect')
+      net.WriteBool(true)
+      net.WriteUInt(amount, 16)
+      net.Send(self)
     end
     return newMetal - oldMetal
   end
