@@ -8,6 +8,10 @@ local langPhrases = {
     'Sentry gun'
   },
   {
+    'dbot_sentry_rocket',
+    'Sentry rockets'
+  },
+  {
     'dbot_tf_dispenser',
     'Dispenser'
   },
