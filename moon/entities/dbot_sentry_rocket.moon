@@ -26,7 +26,6 @@ ENT.AdminSpawnable = false
 ENT.Initialize = =>
     @SetModel('models/buildables/sentry3_rockets.mdl')
     return if CLIENT
-    @vectorDir = Vector()
     @PhysicsInitSphere(12)
     phys = @GetPhysicsObject()
     @phys = phys
@@ -34,10 +33,12 @@ ENT.Initialize = =>
         \EnableMotion(true)
         \SetMass(5)
         \EnableGravity(false)
+        \Wake()
 
 ENT.Think = =>
+    return if CLIENT
     return @Remove() if not @phys\IsValid()
-    @phys\ApplyForceCenter(@vectorDir * 500)
+    @phys\SetVelocity(@vectorDir * 1500)
 
 ENT.PhysicsCollide = (data = {}, colldier) =>
     {:HitPos, :HitEntity, :HitNormal} = data

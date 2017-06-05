@@ -15,6 +15,8 @@
 -- limitations under the License.
 --
 
+DEFINE_BASECLASS 'dbot_tf_build_base'
+
 include 'shared.lua'
 AddCSLuaFile 'shared.lua'
 
@@ -37,6 +39,7 @@ ENT.Initialize = =>
     @lastSentryThink = CurTime()
     @nextTargetUpdate = 0
     @lastBulletFire = 0
+    @lastRocketsFire = 0
     @waitSequenceReset = 0
     @SetAmmoAmount(@MAX_AMMO_1)
     @SetHealth(@HealthLevel1)
@@ -49,6 +52,7 @@ ENT.Initialize = =>
     @muzzle_r = 0
     @nextMuzzle = false
     @UpdateSequenceList()
+    @SetRockets(@MAX_ROCKETS)
 
 ENT.HULL_SIZE = 2
 ENT.HULL_TRACE_MINS = Vector(-ENT.HULL_SIZE, -ENT.HULL_SIZE, -ENT.HULL_SIZE)
@@ -112,35 +116,6 @@ ENT.FireBullet = (force = false) =>
     @SetPoseParameter('aim_pitch', @GetAimPitch())
     @SetPoseParameter('aim_yaw', @GetAimYaw())
 
---     srcPos = @GetPos() + @obbcenter
---     srcAng = @currentAngle\Forward()
--- 
---     switch @GetLevel()
---         when 1
---             with @GetAttachment(@muzzle)
---                 srcPos = .Pos - Vector(0, 0, 10)
---                 srcAng = .Ang\Forward()
---         when 2
---             if @nextMuzzle
---                 with @GetAttachment(@muzzle_l)
---                     srcPos = .Pos
---                     srcAng = .Ang\Forward()
---             else
---                 with @GetAttachment(@muzzle_r)
---                     srcPos = .Pos
---                     srcAng = .Ang\Forward()
---             @nextMuzzle = not @nextMuzzle
---         when 3
---             if @nextMuzzle
---                 with @GetAttachment(@muzzle_l)
---                     srcPos = .Pos
---                     srcAng = .Ang\Forward()
---             else
---                 with @GetAttachment(@muzzle_r)
---                     srcPos = .Pos
---                     srcAng = .Ang\Forward()
---             @nextMuzzle = not @nextMuzzle
-
     srcPos = @GetPos() + @GetAdditionalVector()
     
     bulletData = {
@@ -158,6 +133,29 @@ ENT.FireBullet = (force = false) =>
     net.WriteEntity(@)
     net.WriteBool(true)
     net.Broadcast()
+    return true
+
+ENT.FireRocket = (force = false) =>
+    return false if @lastRocketsFire > CurTime() and not force
+    @lastRocketsFire = CurTime() + @ROCKETS_RELOAD
+    
+    return false if @GetRockets() <= 0 and not force
+    
+    @SetRockets(@GetRockets() - 1)
+
+    {:Ang, :Pos} = @GetAttachment(@LookupAttachment('rocket'))
+    srcPos = Pos
+    dir = (@currentTargetPosition - Pos)
+    dir\Normalize()
+    @EmitSound(@ROCKET_SOUND, 100)
+    rocket = ents.Create('dbot_sentry_rocket')
+    rocket\SetPos(Pos)
+    rocket.attacker = IsValid(@GetPlayer()) and @GetPlayer() or @
+    rocket.vectorDir = dir
+    rocket\SetAngles(dir\Angle())
+    rocket\Spawn()
+    rocket\Activate()
+    rocket\SetOwner(@)
     return true
 
 ENT.BehaveUpdate = (delta) =>
@@ -244,3 +242,4 @@ ENT.Think = =>
         lookingAtTarget = diffPitch ~= -2 and diffPitch ~= 2 and diffYaw ~= -2 and diffYaw ~= 2
         if lookingAtTarget
             @FireBullet()
+            @FireRocket() if @GetLevel() == 3

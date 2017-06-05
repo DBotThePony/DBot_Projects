@@ -18,6 +18,7 @@
 langPhrases = {
     {'dbot_tf_build_base', 'Building base'}
     {'dbot_tf_sentry', 'Sentry gun'}
+    {'dbot_sentry_rocket', 'Sentry rockets'}
     {'dbot_tf_dispenser', 'Dispenser'}
     {'dbot_tf_weapon_base', 'Base weapon'}
     {'dbot_tf_melee', 'Melee weapon'}

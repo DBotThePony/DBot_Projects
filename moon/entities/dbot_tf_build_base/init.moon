@@ -38,6 +38,9 @@ ENT.Explode = =>
     @Remove()
 
 ENT.OnInjured = (dmg) =>
+    if dmg\GetAttacker() == @
+        dmg\SetDamage(0)
+        dmg\SetMaxDamage(0)
 ENT.OnKilled = (dmg) =>
     hook.Run('OnNPCKilled', @, dmg\GetAttacker(), dmg\GetInflictor())
     @Explode()

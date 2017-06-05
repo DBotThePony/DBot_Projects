@@ -36,10 +36,12 @@ ENT.Initialize = =>
     @isEmpty = false
 
 ENT.CreateMuzzleflashModel = (attach = '') =>
+    attach = @GetAttachment(@LookupAttachment(attach))
+    return if not attach
     muzzleflash = ClientsideModel('models/effects/sentry1_muzzle/sentry1_muzzle.mdl')
     timer.Simple 0.1, -> muzzleflash\Remove()
 
-    with @GetAttachment(@LookupAttachment(attach))
+    with attach
         muzzleflash\SetPos(.Pos)
         muzzleflash\SetAngles(.Ang)
     
@@ -95,7 +97,7 @@ ENT.Draw = =>
 
 net.Receive 'DTF2.SentryWing', ->
     sentry = net.ReadEntity()
-    return if not IsValid
+    return if not IsValid(sentry)
     target = net.ReadEntity()
     if target ~= LocalPlayer()
         sentry\EmitSound('weapons/sentry_spot.wav', 75, 100, 0.3)
@@ -104,7 +106,7 @@ net.Receive 'DTF2.SentryWing', ->
 
 net.Receive 'DTF2.SentryFire', ->
     sentry = net.ReadEntity()
-    return if not IsValid
+    return if not IsValid(sentry)
     isEmpty = not net.ReadBool()
     sentry.isEmpty = isEmpty
     sentry.fireAnim = CurTime() + MUZZLE_ANIM_TIME

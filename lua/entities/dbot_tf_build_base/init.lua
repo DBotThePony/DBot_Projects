@@ -24,7 +24,12 @@ end
 ENT.Explode = function(self)
   return self:Remove()
 end
-ENT.OnInjured = function(self, dmg) end
+ENT.OnInjured = function(self, dmg)
+  if dmg:GetAttacker() == self then
+    dmg:SetDamage(0)
+    return dmg:SetMaxDamage(0)
+  end
+end
 ENT.OnKilled = function(self, dmg)
   hook.Run('OnNPCKilled', self, dmg:GetAttacker(), dmg:GetInflictor())
   return self:Explode()

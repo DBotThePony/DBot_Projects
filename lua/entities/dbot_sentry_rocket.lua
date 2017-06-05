@@ -10,7 +10,6 @@ ENT.Initialize = function(self)
   if CLIENT then
     return 
   end
-  self.vectorDir = Vector()
   self:PhysicsInitSphere(12)
   local phys = self:GetPhysicsObject()
   self.phys = phys
@@ -19,14 +18,18 @@ ENT.Initialize = function(self)
     _with_0:EnableMotion(true)
     _with_0:SetMass(5)
     _with_0:EnableGravity(false)
+    _with_0:Wake()
     return _with_0
   end
 end
 ENT.Think = function(self)
+  if CLIENT then
+    return 
+  end
   if not self.phys:IsValid() then
     return self:Remove()
   end
-  return self.phys:ApplyForceCenter(self.vectorDir * 500)
+  return self.phys:SetVelocity(self.vectorDir * 1500)
 end
 ENT.PhysicsCollide = function(self, data, colldier)
   if data == nil then

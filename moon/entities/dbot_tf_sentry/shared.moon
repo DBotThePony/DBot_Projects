@@ -31,6 +31,8 @@ ENT.IdleModel2 = 'models/buildables/sentry2.mdl'
 ENT.BuildModel3 = 'models/buildables/sentry3_heavy.mdl'
 ENT.IdleModel3 = 'models/buildables/sentry3.mdl'
 
+ENT.ROCKET_SOUND = 'weapons/sentry_rocket.wav'
+
 ENT.BuildTime = 10
 
 ENT.SENTRY_ANGLE_CHANGE_MULT = 50
@@ -52,7 +54,10 @@ ENT.BULLET_DAMAGE = 12
 ENT.BULLET_RELOAD_1 = 0.3
 ENT.BULLET_RELOAD_2 = 0.1
 ENT.BULLET_RELOAD_3 = 0.1
+ENT.ROCKETS_RELOAD = 5
 
+ENT.GetAmmoPercent = (level = @GetLevel()) => @GetAmmoAmount() / @GetMaxAmmo()
+ENT.GetRocketsPercent = => @GetRockets() / @MAX_ROCKETS
 ENT.GetMaxAmmo = (level = @GetLevel()) =>
     switch level
         when 1

@@ -21,14 +21,17 @@ ENT.CreateMuzzleflashModel = function(self, attach)
   if attach == nil then
     attach = ''
   end
+  attach = self:GetAttachment(self:LookupAttachment(attach))
+  if not attach then
+    return 
+  end
   local muzzleflash = ClientsideModel('models/effects/sentry1_muzzle/sentry1_muzzle.mdl')
   timer.Simple(0.1, function()
     return muzzleflash:Remove()
   end)
   do
-    local _with_0 = self:GetAttachment(self:LookupAttachment(attach))
-    muzzleflash:SetPos(_with_0.Pos)
-    muzzleflash:SetAngles(_with_0.Ang)
+    muzzleflash:SetPos(attach.Pos)
+    muzzleflash:SetAngles(attach.Ang)
   end
   muzzleflash:SetModelScale(math.random(80, 100) / 100)
   return muzzleflash
@@ -83,7 +86,7 @@ ENT.Draw = function(self)
 end
 net.Receive('DTF2.SentryWing', function()
   local sentry = net.ReadEntity()
-  if not IsValid then
+  if not IsValid(sentry) then
     return 
   end
   local target = net.ReadEntity()
@@ -95,7 +98,7 @@ net.Receive('DTF2.SentryWing', function()
 end)
 return net.Receive('DTF2.SentryFire', function()
   local sentry = net.ReadEntity()
-  if not IsValid then
+  if not IsValid(sentry) then
     return 
   end
   local isEmpty = not net.ReadBool()

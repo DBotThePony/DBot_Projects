@@ -12,6 +12,7 @@ ENT.BuildModel2 = 'models/buildables/sentry2_heavy.mdl'
 ENT.IdleModel2 = 'models/buildables/sentry2.mdl'
 ENT.BuildModel3 = 'models/buildables/sentry3_heavy.mdl'
 ENT.IdleModel3 = 'models/buildables/sentry3.mdl'
+ENT.ROCKET_SOUND = 'weapons/sentry_rocket.wav'
 ENT.BuildTime = 10
 ENT.SENTRY_ANGLE_CHANGE_MULT = 50
 ENT.SENTRY_SCAN_YAW_MULT = 30
@@ -28,6 +29,16 @@ ENT.BULLET_DAMAGE = 12
 ENT.BULLET_RELOAD_1 = 0.3
 ENT.BULLET_RELOAD_2 = 0.1
 ENT.BULLET_RELOAD_3 = 0.1
+ENT.ROCKETS_RELOAD = 5
+ENT.GetAmmoPercent = function(self, level)
+  if level == nil then
+    level = self:GetLevel()
+  end
+  return self:GetAmmoAmount() / self:GetMaxAmmo()
+end
+ENT.GetRocketsPercent = function(self)
+  return self:GetRockets() / self.MAX_ROCKETS
+end
 ENT.GetMaxAmmo = function(self, level)
   if level == nil then
     level = self:GetLevel()

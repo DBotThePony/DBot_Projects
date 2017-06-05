@@ -1,3 +1,4 @@
+DEFINE_BASECLASS('dbot_tf_build_base')
 include('shared.lua')
 AddCSLuaFile('shared.lua')
 util.AddNetworkString('DTF2.SentryWing')
@@ -18,6 +19,7 @@ ENT.Initialize = function(self)
   self.lastSentryThink = CurTime()
   self.nextTargetUpdate = 0
   self.lastBulletFire = 0
+  self.lastRocketsFire = 0
   self.waitSequenceReset = 0
   self:SetAmmoAmount(self.MAX_AMMO_1)
   self:SetHealth(self.HealthLevel1)
@@ -29,7 +31,8 @@ ENT.Initialize = function(self)
   self.muzzle_l = 0
   self.muzzle_r = 0
   self.nextMuzzle = false
-  return self:UpdateSequenceList()
+  self:UpdateSequenceList()
+  return self:SetRockets(self.MAX_ROCKETS)
 end
 ENT.HULL_SIZE = 2
 ENT.HULL_TRACE_MINS = Vector(-ENT.HULL_SIZE, -ENT.HULL_SIZE, -ENT.HULL_SIZE)
@@ -123,6 +126,37 @@ ENT.FireBullet = function(self, force)
   net.WriteEntity(self)
   net.WriteBool(true)
   net.Broadcast()
+  return true
+end
+ENT.FireRocket = function(self, force)
+  if force == nil then
+    force = false
+  end
+  if self.lastRocketsFire > CurTime() and not force then
+    return false
+  end
+  self.lastRocketsFire = CurTime() + self.ROCKETS_RELOAD
+  if self:GetRockets() <= 0 and not force then
+    return false
+  end
+  self:SetRockets(self:GetRockets() - 1)
+  local Ang, Pos
+  do
+    local _obj_0 = self:GetAttachment(self:LookupAttachment('rocket'))
+    Ang, Pos = _obj_0.Ang, _obj_0.Pos
+  end
+  local srcPos = Pos
+  local dir = (self.currentTargetPosition - Pos)
+  dir:Normalize()
+  self:EmitSound(self.ROCKET_SOUND, 100)
+  local rocket = ents.Create('dbot_sentry_rocket')
+  rocket:SetPos(Pos)
+  rocket.attacker = IsValid(self:GetPlayer()) and self:GetPlayer() or self
+  rocket.vectorDir = dir
+  rocket:SetAngles(dir:Angle())
+  rocket:Spawn()
+  rocket:Activate()
+  rocket:SetOwner(self)
   return true
 end
 ENT.BehaveUpdate = function(self, delta)
@@ -236,7 +270,10 @@ ENT.Think = function(self)
   if IsValid(self.currentTarget) then
     local lookingAtTarget = diffPitch ~= -2 and diffPitch ~= 2 and diffYaw ~= -2 and diffYaw ~= 2
     if lookingAtTarget then
-      return self:FireBullet()
+      self:FireBullet()
+      if self:GetLevel() == 3 then
+        return self:FireRocket()
+      end
     end
   end
 end
