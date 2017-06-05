@@ -126,11 +126,17 @@ hook.Add 'OnNPCKilled', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTar
 UpdateTargetList()
 
 hook.Add 'EntityTakeDamage', 'DTF2.Bullseye', (dmg) =>
+    parent = false
+    if @DTF2_Parent
+        @ = @DTF2_Parent
+        parent = true
     if @IsTF2Building and (dmg\GetAttacker()\IsValid() and @IsAlly(dmg\GetAttacker()) or dmg\GetAttacker() == @)
         dmg\SetDamage(0)
         dmg\SetDamageBonus(0)
         dmg\SetMaxDamage(0)
         return true
+    if parent
+        @TakeDamageInfo(dmg)
 
 include 'shared.lua'
 AddCSLuaFile 'shared.lua'
