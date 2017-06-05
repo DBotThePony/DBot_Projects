@@ -68,4 +68,6 @@ PlayerClass =
 plyMeta[k] = v for k, v in pairs PlayerClass
 
 if SERVER
-    hook.Add 'PlayerSpawn', 'DTF2.Metal', => @ResetTF2Metal()
+    hook.Add 'PlayerSpawn', 'DTF2.Metal', =>
+        @ResetTF2Metal()
+        @ResetMaxTF2Metal()

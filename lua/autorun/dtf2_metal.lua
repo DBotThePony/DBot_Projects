@@ -131,6 +131,7 @@ for k, v in pairs(PlayerClass) do
 end
 if SERVER then
   return hook.Add('PlayerSpawn', 'DTF2.Metal', function(self)
-    return self:ResetTF2Metal()
+    self:ResetTF2Metal()
+    return self:ResetMaxTF2Metal()
   end)
 end
