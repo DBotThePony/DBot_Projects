@@ -28,14 +28,25 @@ SWEP.BulletRange = 78
 SWEP.BulletDamage = 65
 SWEP.BulletForce = 20
 SWEP.AttackAnimation = ACT_VM_HITCENTER
+SWEP.AttackAnimationCrit = ACT_VM_SWINGHARD
 SWEP.BulletHull = 8
 SWEP.PlayMissSound = function(self)
-  if self.MissSoundsScript then
-    return self:EmitSound(self.MissSoundsScript)
-  end
-  local playSound = table.Random(self.MissSounds)
-  if playSound then
-    return self:EmitSound(playSound, 50, 100, 1, CHAN_WEAPON)
+  if not self.icomingCrit then
+    if self.MissSoundsScript then
+      return self:EmitSound(self.MissSoundsScript)
+    end
+    local playSound = table.Random(self.MissSounds)
+    if playSound then
+      return self:EmitSound(playSound, 50, 100, 1, CHAN_WEAPON)
+    end
+  else
+    if self.MissCritSoundsScript then
+      return self:EmitSound(self.MissCritSoundsScript)
+    end
+    local playSound = table.Random(self.MissSoundsCrit)
+    if playSound then
+      return self:EmitSound(playSound, 50, 100, 1, CHAN_WEAPON)
+    end
   end
 end
 SWEP.PlayHitSound = function(self)
@@ -66,6 +77,7 @@ SWEP.OnHit = function(self, hitEntity, tr, dmginfo)
   if tr == nil then
     tr = { }
   end
+  BaseClass.OnHit(self, hitEntity, tr, dmginfo)
   if not IsValid(hitEntity) then
     self:PlayHitSound()
   end

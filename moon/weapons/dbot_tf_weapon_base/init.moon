@@ -23,4 +23,24 @@ SWEP.EmitSoundServerside = (...) =>
     @EmitSound(...)
     SuppressHostEvents(@GetOwner()) if @suppressing
 
+SWEP.CheckCritical = =>
+    return if @GetNextCrit()
+    return if @lastCritsTrigger > CurTime()
+    return if @lastCritsCheck > CurTime()
+    @lastCritsCheck = CurTime() + @CritsCheckCooldown if @CritsCheckCooldown ~= 0
+    chance = @CritChance + math.min(@CritExponent * @damageDealtForCrit, @CritExponentMax)
+    if math.random(1, 100) < chance
+        @TriggerCriticals()
+
+SWEP.TriggerCriticals = =>
+    return if @lastCritsTrigger > CurTime()
+    @damageDealtForCrit = 0
+    @lastCritsTrigger = CurTime() + @CritsCooldown
+    @SetNextCrit(true)
+    if not @SingleCrit
+        @lastCritsTrigger = CurTime() + @CritDuration + @CritsCooldown
+        @SetCriticalsDuration(CurTime() + @CritDuration)
+        timer.Create "DTF2.CriticalsTimer.#{@EntIndex()}", @CritDuration, 1, ->
+            @SetNextCrit(false) if not @IsValid()
+
 return nil

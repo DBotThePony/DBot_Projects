@@ -10,3 +10,4 @@ end
 EFFECT.Think = function(self)
   return false
 end
+EFFECT.Render = function(self) end

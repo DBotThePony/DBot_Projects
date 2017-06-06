@@ -25,3 +25,4 @@ EFFECT.Init = (effData) =>
     ParticleEffect('Explosion_Flashup', pos, ang)
 
 EFFECT.Think = => false
+EFFECT.Render = =>

@@ -36,12 +36,36 @@ SWEP.BulletForce = 1
 SWEP.BulletHull = 1
 
 SWEP.AttackAnimation = ACT_VM_PRIMARYATTACK
+SWEP.AttackAnimationCrit = ACT_VM_PRIMARYATTACK
+SWEP.CritChance = 4
+SWEP.CritExponent = 0.1
+SWEP.CritExponentMax = 12
+SWEP.SingleCrit = true
+SWEP.CritDuration = 4
+SWEP.CritsCooldown = 2
+SWEP.CritsCheckCooldown = 0
+
+SWEP.SetupDataTables = =>
+    @NetworkVar('Bool', 0, 'NextCrit')
+    @NetworkVar('Bool', 1, 'CritBoosted')
+    @NetworkVar('Float', 0, 'CriticalsDuration')
+
+SWEP.CheckNextCrit = =>
+    return true if @GetCritBoosted()
+    if @GetNextCrit()
+        @SetNextCrit(false) if @SingleCrit
+        return true
+    @CheckCritical() if SERVER
+    return false
 
 SWEP.Initialize = =>
     @SetPlaybackRate(0.5)
     @SendWeaponAnim(ACT_VM_IDLE)
     @incomingFire = false
     @incomingFireTime = 0
+    @damageDealtForCrit = 0
+    @lastCritsTrigger = 0
+    @lastCritsCheck = 0
 
 SWEP.WaitForAnimation = (anim = ACT_VM_IDLE, time = 0, callback = (->)) =>
     timer.Create "DTF2.WeaponAnim.#{@EntIndex()}", time, 1, ->
@@ -65,6 +89,19 @@ SWEP.Holster = => @GetNextPrimaryFire() < CurTime()
 
 SWEP.OnMiss = =>
 SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
+    if not @icomingCrit and IsValid(hitEntity)
+        @damageDealtForCrit += dmg\GetDamage()
+    
+    if @icomingCrit and IsValid(hitEntity)
+        mins, maxs = hitEntity\GetRotatedAABB(hitEntity\OBBMins(), hitEntity\OBBMaxs())
+        pos = hitEntity\GetPos()
+        newZ = math.max(pos.z, pos.z + mins.z, pos.z + maxs.z)
+        pos.z = newZ
+
+        effData = EffectData()
+        effData\SetOrigin(pos)
+        util.Effect('dtf2_critical_hit', effData)
+        hitEntity\EmitSound('TFPlayer.CritHit')
 
 SWEP.BulletCallback = (tr = {}, dmginfo) =>
     weapon = @GetActiveWeapon()
@@ -77,34 +114,40 @@ SWEP.BulletCallback = (tr = {}, dmginfo) =>
 
 SWEP.UpdateBulletData = (bulletData = {}) =>
 
+SWEP.FireTrigger = =>
+    @suppressing = true
+    SuppressHostEvents(@GetOwner()) if SERVER and @GetOwner()\IsPlayer()
+    @incomingFire = false
+    @bulletCallbackCalled = false
+    bulletData = {
+        'Damage': @BulletDamage * (@icomingCrit and 3 or 1)
+        'Attacker': @GetOwner()
+        'Callback': @BulletCallback
+        'Src': @GetOwner()\EyePos()
+        'Dir': @GetOwner()\GetAimVector()
+        'Distance': @BulletRange
+        'HullSize': @BulletHull
+        'Force': @BulletForce
+    }
+
+    @UpdateBulletData(bulletData)
+
+    @FireBullets(bulletData)
+    @OnMiss() if not @bulletCallbackCalled
+    SuppressHostEvents(NULL) if SERVER
+    @icomingCrit = false
+    @suppressing = false
+
 SWEP.Think = =>
     if @incomingFire and @incomingFireTime < CurTime()
-        @suppressing = true
-        SuppressHostEvents(@GetOwner()) if SERVER and @GetOwner()\IsPlayer()
-        @incomingFire = false
-        @bulletCallbackCalled = false
-        bulletData = {
-            'Damage': @BulletDamage
-            'Attacker': @GetOwner()
-            'Callback': @BulletCallback
-            'Src': @GetOwner()\EyePos()
-            'Dir': @GetOwner()\GetAimVector()
-            'Distance': @BulletRange
-            'HullSize': @BulletHull
-            'Force': @BulletForce
-        }
-
-        @UpdateBulletData(bulletData)
-
-        @FireBullets(bulletData)
-        @OnMiss() if not @bulletCallbackCalled
-        SuppressHostEvents(NULL) if SERVER
-        @suppressing = false
+        @FireTrigger()
 
 SWEP.PrimaryAttack = =>
     return false if @GetNextPrimaryFire() > CurTime()
+    @icomingCrit = @CheckNextCrit()
     @SetNextPrimaryFire(CurTime() + @CooldownTime)
-    @SendWeaponAnim(@AttackAnimation)
+    @SendWeaponAnim(@AttackAnimation) if not @icomingCrit
+    @SendWeaponAnim(@AttackAnimationCrit) if @icomingCrit
     @WaitForAnimation(ACT_VM_IDLE, @CooldownTime)
     @incomingFire = true
     @incomingFireTime = CurTime() + @PreFire

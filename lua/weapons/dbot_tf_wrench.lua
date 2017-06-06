@@ -8,17 +8,10 @@ SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.AdminOnly = false
 SWEP.UseHands = false
-SWEP.MissSounds = {
-  'weapons/wrench_swing.wav'
-}
-SWEP.HitSounds = {
-  'weapons/wrench_hit_world.wav'
-}
-SWEP.HitSoundsFlesh = {
-  'weapons/cbar_hitbod1.wav',
-  'weapons/cbar_hitbod2.wav',
-  'weapons/cbar_hitbod3.wav'
-}
+SWEP.MissSoundsScript = 'Weapon_Wrench.Miss'
+SWEP.MissCritSoundsScript = 'Weapon_Wrench.MissCrit'
+SWEP.HitSoundsScript = 'Weapon_Wrench.HitWorld'
+SWEP.HitSoundsFleshScript = 'Weapon_Wrench.HitFlesh'
 SWEP.DrawHUD = function(self)
   return DTF2.DrawMetalCounter()
 end
@@ -50,8 +43,8 @@ SWEP.OnHit = function(self, hitEntity, tr, dmginfo)
   local amount = hitEntity:SimulateRepair(self:GetOwner():GetTF2Metal())
   if amount > 0 then
     self:GetOwner():SimulateTF2MetalRemove(amount)
-    return self:EmitSoundServerside("weapons/wrench_hit_build_success" .. tostring(math.random(1, 2)) .. ".wav")
+    return self:EmitSoundServerside('Weapon_Wrench.HitBuilding_Success')
   else
-    return self:EmitSoundServerside("weapons/wrench_hit_build_fail.wav")
+    return self:EmitSoundServerside('Weapon_Wrench.HitBuilding_Failure')
   end
 end

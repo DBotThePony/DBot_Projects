@@ -49,12 +49,18 @@ SWEP.BulletRange = 78
 SWEP.BulletDamage = 65
 SWEP.BulletForce = 20
 SWEP.AttackAnimation = ACT_VM_HITCENTER
+SWEP.AttackAnimationCrit = ACT_VM_SWINGHARD
 SWEP.BulletHull = 8
 
 SWEP.PlayMissSound = =>
-    return @EmitSound(@MissSoundsScript) if @MissSoundsScript
-    playSound = table.Random(@MissSounds)
-    @EmitSound(playSound, 50, 100, 1, CHAN_WEAPON) if playSound
+    if not @icomingCrit
+        return @EmitSound(@MissSoundsScript) if @MissSoundsScript
+        playSound = table.Random(@MissSounds)
+        @EmitSound(playSound, 50, 100, 1, CHAN_WEAPON) if playSound
+    else
+        return @EmitSound(@MissCritSoundsScript) if @MissCritSoundsScript
+        playSound = table.Random(@MissSoundsCrit)
+        @EmitSound(playSound, 50, 100, 1, CHAN_WEAPON) if playSound
 
 SWEP.PlayHitSound = =>
     return @EmitSound(@HitSoundsScript) if @HitSoundsScript
@@ -70,6 +76,7 @@ SWEP.OnMiss = =>
     @PlayMissSound()
 
 SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
+    BaseClass.OnHit(@, hitEntity, tr, dmginfo)
     @PlayHitSound() if not IsValid(hitEntity)
     @PlayFleshHitSound() if IsValid(hitEntity) and (hitEntity\IsPlayer() or hitEntity\IsNPC())
     dmginfo\SetDamageType(DMG_CLUB)

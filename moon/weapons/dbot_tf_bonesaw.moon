@@ -27,5 +27,6 @@ SWEP.AdminOnly = false
 SWEP.UseHands = false
 
 SWEP.MissSoundsScript = 'Weapon_BoneSaw.Miss'
+SWEP.MissCritSoundsScript = 'Weapon_BoneSaw.MissCrit'
 SWEP.HitSoundsScript = 'Weapon_BoneSaw.HitWorld'
 SWEP.HitSoundsFleshScript = 'Weapon_BoneSaw.HitFlesh'
