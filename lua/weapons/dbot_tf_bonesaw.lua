@@ -1,0 +1,13 @@
+SWEP.Base = 'dbot_tf_melee'
+SWEP.Author = 'DBot'
+SWEP.Category = 'TF2'
+SWEP.PrintName = 'Bonesaw'
+SWEP.ViewModel = 'models/weapons/v_models/v_bonesaw_medic.mdl'
+SWEP.WorldModel = 'models/weapons/w_models/w_bonesaw.mdl'
+SWEP.Spawnable = true
+SWEP.AdminSpawnable = true
+SWEP.AdminOnly = false
+SWEP.UseHands = false
+SWEP.MissSoundsScript = 'Weapon_BoneSaw.Miss'
+SWEP.HitSoundsScript = 'Weapon_BoneSaw.HitWorld'
+SWEP.HitSoundsFleshScript = 'Weapon_BoneSaw.HitFlesh'

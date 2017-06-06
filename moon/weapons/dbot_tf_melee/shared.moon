@@ -52,14 +52,17 @@ SWEP.AttackAnimation = ACT_VM_SWINGHARD
 SWEP.BulletHull = 8
 
 SWEP.PlayMissSound = =>
+    return @EmitSound(@MissSoundsScript) if @MissSoundsScript
     playSound = table.Random(@MissSounds)
     @EmitSound(playSound, 50, 100, 1, CHAN_WEAPON) if playSound
 
 SWEP.PlayHitSound = =>
+    return @EmitSound(@HitSoundsScript) if @HitSoundsScript
     playSound = table.Random(@HitSounds)
     @EmitSound(playSound, 50, 100, 1, CHAN_WEAPON) if playSound
 
 SWEP.PlayFleshHitSound = =>
+    return @EmitSound(@HitSoundsFleshScript) if @HitSoundsFleshScript
     playSound = table.Random(@HitSoundsFlesh)
     @EmitSound(playSound, 75, 100, 1, CHAN_WEAPON) if playSound
 

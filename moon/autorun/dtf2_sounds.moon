@@ -14,7 +14,11 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 --
+export DTF2
+DTF2 = DTF2 or {}
 
+return if DTF2.LOAD_SOUNDS
+DTF2.LOAD_SOUNDS = true
 sound.AddSoundOverrides('scripts/dtf2_sounds.txt')
 sound.AddSoundOverrides('scripts/dtf2_sounds_manifest.txt')
 sound.AddSoundOverrides('scripts/dtf2_sounds_music.txt')

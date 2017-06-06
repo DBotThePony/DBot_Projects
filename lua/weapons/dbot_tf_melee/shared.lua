@@ -30,18 +30,27 @@ SWEP.BulletForce = 20
 SWEP.AttackAnimation = ACT_VM_SWINGHARD
 SWEP.BulletHull = 8
 SWEP.PlayMissSound = function(self)
+  if self.MissSoundsScript then
+    return self:EmitSound(self.MissSoundsScript)
+  end
   local playSound = table.Random(self.MissSounds)
   if playSound then
     return self:EmitSound(playSound, 50, 100, 1, CHAN_WEAPON)
   end
 end
 SWEP.PlayHitSound = function(self)
+  if self.HitSoundsScript then
+    return self:EmitSound(self.HitSoundsScript)
+  end
   local playSound = table.Random(self.HitSounds)
   if playSound then
     return self:EmitSound(playSound, 50, 100, 1, CHAN_WEAPON)
   end
 end
 SWEP.PlayFleshHitSound = function(self)
+  if self.HitSoundsFleshScript then
+    return self:EmitSound(self.HitSoundsFleshScript)
+  end
   local playSound = table.Random(self.HitSoundsFlesh)
   if playSound then
     return self:EmitSound(playSound, 75, 100, 1, CHAN_WEAPON)
