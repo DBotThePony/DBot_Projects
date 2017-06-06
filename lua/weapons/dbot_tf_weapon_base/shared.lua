@@ -90,6 +90,13 @@ SWEP.Deploy = function(self)
   self:WaitForAnimation(ACT_VM_IDLE, self.DrawTimeAnimation)
   self:SetNextPrimaryFire(CurTime() + self.DrawTime)
   self.incomingFire = false
+  if SERVER and self:GetOwner():IsPlayer() then
+    local hands = self:GetOwner():GetHands()
+    if IsValid(hands) then
+      hands.__dtf2_old_model = hands.__dtf2_old_model or hands:GetModel()
+      hands:SetModel(self.HandsModel)
+    end
+  end
   return true
 end
 SWEP.Holster = function(self)
@@ -105,6 +112,13 @@ SWEP.Holster = function(self)
     if self.critEffectGlow then
       self.critEffectGlow:StopEmissionAndDestroyImmediately()
       self.critEffectGlow = nil
+    end
+    if SERVER and self:GetOwner():IsPlayer() then
+      local hands = self:GetOwner():GetHands()
+      if IsValid(hands) then
+        hands:SetModel(hands.__dtf2_old_model or hands:GetModel())
+        hands.__dtf2_old_model = nil
+      end
     end
     return true
   end

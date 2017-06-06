@@ -89,6 +89,11 @@ SWEP.Deploy = =>
     @WaitForAnimation(ACT_VM_IDLE, @DrawTimeAnimation)
     @SetNextPrimaryFire(CurTime() + @DrawTime)
     @incomingFire = false
+    if SERVER and @GetOwner()\IsPlayer()
+        hands = @GetOwner()\GetHands()
+        if IsValid(hands)
+            hands.__dtf2_old_model = hands.__dtf2_old_model or hands\GetModel()
+            hands\SetModel(@HandsModel)
     return true
 
 SWEP.Holster = =>
@@ -102,6 +107,11 @@ SWEP.Holster = =>
         if @critEffectGlow
             @critEffectGlow\StopEmissionAndDestroyImmediately()
             @critEffectGlow = nil
+        if SERVER and @GetOwner()\IsPlayer()
+            hands = @GetOwner()\GetHands()
+            if IsValid(hands)
+                hands\SetModel(hands.__dtf2_old_model or hands\GetModel())
+                hands.__dtf2_old_model = nil
         return true
     return false
 
