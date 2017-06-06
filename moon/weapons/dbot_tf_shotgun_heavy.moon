@@ -27,3 +27,11 @@ SWEP.ViewModel = 'models/weapons/c_models/c_heavy_arms.mdl'
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.AdminOnly = false
+
+SWEP.DrawAnimation = 'draw'
+SWEP.IdleAnimation = 'idle'
+SWEP.AttackAnimation = 'fire'
+SWEP.AttackAnimationCrit = 'fire'
+SWEP.ReloadStart = 'reload_start'
+SWEP.ReloadLoop = 'reload_loop'
+SWEP.ReloadEnd = 'reload_end'
