@@ -25,6 +25,7 @@ SWEP.Spawnable = false
 SWEP.AdminSpawnable = false
 SWEP.UseHands = true
 SWEP.DrawCrosshair = true
+SWEP.IsTF2Weapon = true
 
 SWEP.DrawTime = 0.66
 SWEP.DrawTimeAnimation = 1.16
@@ -34,6 +35,10 @@ SWEP.BulletRange = 32000
 SWEP.BulletDamage = 65
 SWEP.BulletForce = 1
 SWEP.BulletHull = 1
+
+SWEP.ViewModel = 'models/weapons/c_models/c_wrench/c_wrench.mdl'
+SWEP.HandsModel = 'models/weapons/c_models/c_engineer_arms.mdl'
+SWEP.WorldModel = 'models/weapons/c_models/c_wrench/c_wrench.mdl'
 
 SWEP.AttackAnimation = ACT_VM_PRIMARYATTACK
 SWEP.AttackAnimationCrit = ACT_VM_PRIMARYATTACK
