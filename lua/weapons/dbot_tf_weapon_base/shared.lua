@@ -27,6 +27,7 @@ SWEP.CritsCheckCooldown = 0
 SWEP.SetupDataTables = function(self)
   self:NetworkVar('Bool', 0, 'NextCrit')
   self:NetworkVar('Bool', 1, 'CritBoosted')
+  self:NetworkVar('Bool', 2, 'TeamType')
   return self:NetworkVar('Float', 0, 'CriticalsDuration')
 end
 SWEP.CheckNextCrit = function(self)
@@ -92,6 +93,14 @@ SWEP.Holster = function(self)
     if self.critBoostSound then
       self.critBoostSound:Stop()
       self.critBoostSound = nil
+    end
+    if self.critEffect then
+      self.critEffect:StopEmissionAndDestroyImmediately()
+      self.critEffect = nil
+    end
+    if self.critEffectGlow then
+      self.critEffectGlow:StopEmissionAndDestroyImmediately()
+      self.critEffectGlow = nil
     end
     return true
   end
@@ -172,12 +181,28 @@ SWEP.Think = function(self)
     if self:GetCritBoosted() then
       if not self.critBoostSound then
         self.critBoostSound = CreateSound(self, 'Weapon_General.CritPower')
-        return self.critBoostSound:Play()
+        self.critBoostSound:Play()
+      end
+      if self:GetOwner() == LocalPlayer() then
+        if not self.critEffect then
+          self.critEffect = CreateParticleSystem(self:GetOwner():GetViewModel(), self:GetTeamType() and 'critgun_weaponmodel_blu' or 'critgun_weaponmodel_red', PATTACH_ABSORIGIN_FOLLOW, 0, Vector(0, 0, 0))
+        end
+        if not self.critEffectGlow then
+          self.critEffectGlow = CreateParticleSystem(self:GetOwner():GetViewModel(), self:GetTeamType() and 'critgun_weaponmodel_blu_glow' or 'critgun_weaponmodel_red_glow', PATTACH_ABSORIGIN_FOLLOW, 0, Vector(0, 0, 0))
+        end
       end
     else
       if self.critBoostSound then
         self.critBoostSound:Stop()
         self.critBoostSound = nil
+      end
+      if self.critEffect then
+        self.critEffect:StopEmissionAndDestroyImmediately()
+        self.critEffect = nil
+      end
+      if self.critEffectGlow then
+        self.critEffectGlow:StopEmissionAndDestroyImmediately()
+        self.critEffectGlow = nil
       end
     end
   end

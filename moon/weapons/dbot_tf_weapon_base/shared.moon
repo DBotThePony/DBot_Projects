@@ -48,6 +48,7 @@ SWEP.CritsCheckCooldown = 0
 SWEP.SetupDataTables = =>
     @NetworkVar('Bool', 0, 'NextCrit')
     @NetworkVar('Bool', 1, 'CritBoosted')
+    @NetworkVar('Bool', 2, 'TeamType')
     @NetworkVar('Float', 0, 'CriticalsDuration')
 
 SWEP.CheckNextCrit = =>
@@ -90,6 +91,12 @@ SWEP.Holster = =>
         if @critBoostSound
             @critBoostSound\Stop()
             @critBoostSound = nil
+        if @critEffect
+            @critEffect\StopEmissionAndDestroyImmediately()
+            @critEffect = nil
+        if @critEffectGlow
+            @critEffectGlow\StopEmissionAndDestroyImmediately()
+            @critEffectGlow = nil
         return true
     return false
 
@@ -152,10 +159,21 @@ SWEP.Think = =>
             if not @critBoostSound
                 @critBoostSound = CreateSound(@, 'Weapon_General.CritPower')
                 @critBoostSound\Play()
+            if @GetOwner() == LocalPlayer()
+                if not @critEffect
+                    @critEffect = CreateParticleSystem(@GetOwner()\GetViewModel(), @GetTeamType() and 'critgun_weaponmodel_blu' or 'critgun_weaponmodel_red', PATTACH_ABSORIGIN_FOLLOW, 0, Vector(0, 0, 0))
+                if not @critEffectGlow
+                    @critEffectGlow = CreateParticleSystem(@GetOwner()\GetViewModel(), @GetTeamType() and 'critgun_weaponmodel_blu_glow' or 'critgun_weaponmodel_red_glow', PATTACH_ABSORIGIN_FOLLOW, 0, Vector(0, 0, 0))
         else
             if @critBoostSound
                 @critBoostSound\Stop()
                 @critBoostSound = nil
+            if @critEffect
+                @critEffect\StopEmissionAndDestroyImmediately()
+                @critEffect = nil
+            if @critEffectGlow
+                @critEffectGlow\StopEmissionAndDestroyImmediately()
+                @critEffectGlow = nil
 
 SWEP.PrimaryAttack = =>
     return false if @GetNextPrimaryFire() > CurTime()
