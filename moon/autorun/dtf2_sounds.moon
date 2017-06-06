@@ -20,8 +20,6 @@ DTF2 = DTF2 or {}
 return if DTF2.LOAD_SOUNDS
 DTF2.LOAD_SOUNDS = true
 sound.AddSoundOverrides('scripts/dtf2_sounds.txt')
-sound.AddSoundOverrides('scripts/dtf2_sounds_manifest.txt')
-sound.AddSoundOverrides('scripts/dtf2_sounds_music.txt')
 sound.AddSoundOverrides('scripts/dtf2_sounds_mvm.txt')
 sound.AddSoundOverrides('scripts/dtf2_sounds_passtime.txt')
 sound.AddSoundOverrides('scripts/dtf2_sounds_physics.txt')
