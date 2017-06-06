@@ -32,3 +32,9 @@ SWEP.MissSoundsScript = 'Weapon_BoneSaw.Miss'
 SWEP.MissCritSoundsScript = 'Weapon_BoneSaw.MissCrit'
 SWEP.HitSoundsScript = 'Weapon_BoneSaw.HitWorld'
 SWEP.HitSoundsFleshScript = 'Weapon_BoneSaw.HitFlesh'
+
+SWEP.DrawAnimation = 'bs_draw'
+SWEP.IdleAnimation = 'bs_idle'
+SWEP.AttackAnimation = 'bs_swing_a'
+SWEP.AttackAnimationTable = {'bs_swing_a', 'bs_swing_b'}
+SWEP.AttackAnimationCrit = 'bs_swing_c'
