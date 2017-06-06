@@ -99,7 +99,7 @@ SWEP.OnHit = function(self, hitEntity, tr, dmginfo)
     tr = { }
   end
   if not self.icomingCrit and IsValid(hitEntity) then
-    self.damageDealtForCrit = self.damageDealtForCrit + dmg:GetDamage()
+    self.damageDealtForCrit = self.damageDealtForCrit + dmginfo:GetDamage()
   end
   if self.icomingCrit and IsValid(hitEntity) then
     local mins, maxs = hitEntity:GetRotatedAABB(hitEntity:OBBMins(), hitEntity:OBBMaxs())

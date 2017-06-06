@@ -90,7 +90,7 @@ SWEP.Holster = => @GetNextPrimaryFire() < CurTime()
 SWEP.OnMiss = =>
 SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
     if not @icomingCrit and IsValid(hitEntity)
-        @damageDealtForCrit += dmg\GetDamage()
+        @damageDealtForCrit += dmginfo\GetDamage()
     
     if @icomingCrit and IsValid(hitEntity)
         mins, maxs = hitEntity\GetRotatedAABB(hitEntity\OBBMins(), hitEntity\OBBMaxs())
