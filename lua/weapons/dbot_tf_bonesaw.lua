@@ -1,8 +1,8 @@
 AddCSLuaFile()
 SWEP.Base = 'dbot_tf_melee'
 SWEP.Author = 'DBot'
-SWEP.Category = 'TF2'
-SWEP.PrintName = 'Bonesaw Medic'
+SWEP.Category = 'TF2 Medic'
+SWEP.PrintName = 'Bonesaw'
 SWEP.ViewModel = 'models/weapons/c_models/c_medic_arms.mdl'
 SWEP.WorldModel = 'models/weapons/c_models/c_bonesaw/c_bonesaw.mdl'
 SWEP.Spawnable = true
