@@ -19,6 +19,9 @@ SWEP.SendWeaponSequence = function(self, seq)
   if seq == nil then
     seq = 0
   end
+  if not IsValid(self:GetOwner()) then
+    return 
+  end
   local hands = self:GetOwner():GetViewModel()
   if not IsValid(hands) then
     return 
@@ -32,7 +35,10 @@ SWEP.SendWeaponAnim2 = function(self, act)
   if act == nil then
     act = ACT_INVALID
   end
-  local hands = LocalPlayer():GetHands()
+  if not IsValid(self:GetOwner()) then
+    return 
+  end
+  local hands = self:GetOwner():GetHands()
   if not IsValid(hands) then
     return 
   end

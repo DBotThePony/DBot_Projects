@@ -30,13 +30,15 @@ net.Receive 'DTF2.SendWeaponSequence', ->
     wep\SendWeaponSequence(act)
 
 SWEP.SendWeaponSequence = (seq = 0) =>
+    return if not IsValid(@GetOwner())
     hands = @GetOwner()\GetViewModel()
     return if not IsValid(hands)
     seq = hands\LookupSequence(seq) if type(seq) ~= 'number'
     hands\SendViewModelMatchingSequence(seq)
 
 SWEP.SendWeaponAnim2 = (act = ACT_INVALID) =>
-    hands = LocalPlayer()\GetHands()
+    return if not IsValid(@GetOwner())
+    hands = @GetOwner()\GetHands()
     return if not IsValid(hands)
     seqId = hands\SelectWeightedSequence(act)
     hands\ResetSequence(seqId) if seqId
