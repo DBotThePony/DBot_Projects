@@ -50,6 +50,11 @@ SWEP.AdminSpawnable = true
 SWEP.AdminOnly = false
 SWEP.UseHands = false
 
+SWEP.BulletDamage = {BulletDamage}
+SWEP.BulletForce = {BulletForce}
+SWEP.PreFire = {PreFire}
+SWEP.CooldownTime = {CooldownTime}
+
 SWEP.MissSoundsScript = 'Weapon_{SoundName}.Miss'
 SWEP.MissCritSoundsScript = 'Weapon_{SoundName}.MissCrit'
 SWEP.HitSoundsScript = 'Weapon_{SoundName}.HitWorld'
@@ -72,6 +77,11 @@ SWEP.AttackAnimationTable = {'melee_allclass_swing'}
 SWEP.AttackAnimationCrit = 'melee_allclass_swing'
 '''
 
+BulletDamage = 65
+BulletForce = 20
+CooldownTime = 0.8
+PreFire = 0.24
+
 Classes = [
     {
         'name': 'SCOUT',
@@ -80,6 +90,10 @@ Classes = [
         'fname': 'sc',
         'allanims': False,
         'soundname': 'Bat',
+        'BulletDamage': 35,
+        'BulletForce': 5,
+        'CooldownTime': 0.5,
+        'PreFire': 0.14,
         'arms': 'models/weapons/c_models/c_scout_arms.mdl'
     },
     {
@@ -89,6 +103,10 @@ Classes = [
         'fname': 'md',
         'allanims': False,
         'soundname': 'BoneSaw',
+        'BulletDamage': BulletDamage,
+        'BulletForce': BulletForce,
+        'CooldownTime': CooldownTime,
+        'PreFire': PreFire,
         'arms': 'models/weapons/c_models/c_medic_arms.mdl'
     },
     {
@@ -98,6 +116,10 @@ Classes = [
         'fname': 'en',
         'allanims': False,
         'soundname': 'Wrench',
+        'BulletDamage': BulletDamage,
+        'BulletForce': BulletForce,
+        'CooldownTime': CooldownTime,
+        'PreFire': PreFire,
         'arms': 'models/weapons/c_models/c_engineer_arms.mdl'
     },
     {
@@ -107,6 +129,10 @@ Classes = [
         'fname': 'de',
         'allanims': True,
         'soundname': 'Bottle',
+        'BulletDamage': BulletDamage,
+        'BulletForce': BulletForce,
+        'CooldownTime': CooldownTime,
+        'PreFire': PreFire,
         'arms': 'models/weapons/c_models/c_demo_arms.mdl'
     },
     {
@@ -116,6 +142,10 @@ Classes = [
         'fname': 'he',
         'allanims': False,
         'soundname': 'Fist',
+        'BulletDamage': BulletDamage,
+        'BulletForce': BulletForce,
+        'CooldownTime': CooldownTime,
+        'PreFire': PreFire,
         'arms': 'models/weapons/c_models/c_heavy_arms.mdl'
     },
     {
@@ -125,6 +155,10 @@ Classes = [
         'fname': 'py',
         'allanims': False,
         'soundname': 'FireAxe',
+        'BulletDamage': BulletDamage,
+        'BulletForce': BulletForce,
+        'CooldownTime': CooldownTime,
+        'PreFire': PreFire,
         'arms': 'models/weapons/c_models/c_pyro_arms.mdl'
     },
     {
@@ -134,6 +168,10 @@ Classes = [
         'fname': 'sn',
         'allanims': True,
         'soundname': 'Machete',
+        'BulletDamage': BulletDamage,
+        'BulletForce': BulletForce,
+        'CooldownTime': CooldownTime,
+        'PreFire': PreFire,
         'arms': 'models/weapons/c_models/c_sniper_arms.mdl'
     },
     {
@@ -143,6 +181,10 @@ Classes = [
         'fname': 'so',
         'allanims': False,
         'soundname': 'Shovel',
+        'BulletDamage': BulletDamage,
+        'BulletForce': BulletForce,
+        'CooldownTime': CooldownTime,
+        'PreFire': PreFire,
         'arms': 'models/weapons/c_models/c_soldier_arms.mdl'
     },
     {
@@ -152,6 +194,10 @@ Classes = [
         'fname': 'sp',
         'allanims': False,
         'soundname': 'Knife',
+        'BulletDamage': 40,
+        'BulletForce': 5,
+        'CooldownTime': 0.8,
+        'PreFire': 0.1,
         'arms': 'models/weapons/c_models/c_spy_arms.mdl'
     }
 ]
@@ -175,6 +221,10 @@ for weapon in Weapons:
             Name = weapon['name'],
             Arms = myClass['arms'],
             World = weapon['model'],
+            BulletDamage = myClass['BulletDamage'],
+            BulletForce = myClass['BulletForce'],
+            PreFire = myClass['PreFire'],
+            CooldownTime = myClass['CooldownTime'],
             animsCode = myClass['allanims'] and AnimsAll or AnimsOne,
             SoundName = myClass['soundname']
         )

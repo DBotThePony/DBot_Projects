@@ -33,6 +33,11 @@ SWEP.AdminSpawnable = true
 SWEP.AdminOnly = false
 SWEP.UseHands = false
 
+SWEP.BulletDamage = 65
+SWEP.BulletForce = 20
+SWEP.PreFire = 0.24
+SWEP.CooldownTime = 0.8
+
 SWEP.MissSoundsScript = 'Weapon_Shovel.Miss'
 SWEP.MissCritSoundsScript = 'Weapon_Shovel.MissCrit'
 SWEP.HitSoundsScript = 'Weapon_Shovel.HitWorld'
