@@ -28,6 +28,12 @@ SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = true
 SWEP.SlotPos = 16
 
+SWEP.CritChance = 8
+SWEP.CritExponent = 0.25
+SWEP.CritExponentMax = 40
+SWEP.SingleCrit = true
+SWEP.CritsCooldown = 1
+
 SWEP.Primary = {
     'Ammo': 'none'
     'ClipSize': -1
