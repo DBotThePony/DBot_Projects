@@ -19,7 +19,7 @@ AddCSLuaFile()
 
 SWEP.Base = 'dbot_tf_melee'
 SWEP.Author = 'DBot'
-SWEP.Category = 'TF2'
+SWEP.Category = 'TF2 Engineer'
 SWEP.PrintName = 'Wrench'
 SWEP.ViewModel = 'models/weapons/c_models/c_engineer_arms.mdl'
 SWEP.WorldModel = 'models/weapons/c_models/c_wrench/c_wrench.mdl'

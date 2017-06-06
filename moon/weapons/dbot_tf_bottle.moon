@@ -21,7 +21,7 @@ BaseClass = baseclass.Get('dbot_tf_melee')
 
 SWEP.Base = 'dbot_tf_melee'
 SWEP.Author = 'DBot'
-SWEP.Category = 'TF2'
+SWEP.Category = 'TF2 Demoman'
 SWEP.PrintName = 'Bottle'
 SWEP.ViewModel = 'models/weapons/c_models/c_demo_arms.mdl'
 SWEP.WorldModel = 'models/weapons/c_models/c_bottle/c_bottle.mdl'
