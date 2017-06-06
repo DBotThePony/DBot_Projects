@@ -27,7 +27,7 @@ SWEP.PreFire = 0.24
 SWEP.BulletRange = 78
 SWEP.BulletDamage = 65
 SWEP.BulletForce = 20
-SWEP.AttackAnimation = ACT_VM_SWINGHARD
+SWEP.AttackAnimation = ACT_VM_HITCENTER
 SWEP.BulletHull = 8
 SWEP.PlayMissSound = function(self)
   if self.MissSoundsScript then
