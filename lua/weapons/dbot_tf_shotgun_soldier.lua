@@ -2,7 +2,7 @@ AddCSLuaFile()
 local BaseClass = baseclass.Get('dbot_tf_shotgun')
 SWEP.Base = 'dbot_tf_shotgun'
 SWEP.Author = 'DBot'
-SWEP.Category = 'TF2'
+SWEP.Category = 'TF2 Soldier'
 SWEP.PrintName = 'Soldier Shotgun'
 SWEP.ViewModel = 'models/weapons/c_models/c_soldier_arms.mdl'
 SWEP.Spawnable = true

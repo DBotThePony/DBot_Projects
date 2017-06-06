@@ -22,8 +22,6 @@ SWEP.DrawAnimation = 'fj_draw'
 SWEP.IdleAnimation = 'fj_idle'
 SWEP.AttackAnimation = 'fj_fire'
 SWEP.AttackAnimationCrit = 'fj_fire'
-SWEP.AttackAnimationTable = { }
-SWEP.AttackAnimationCritTable = { }
 SWEP.CritChance = 4
 SWEP.CritExponent = 0.1
 SWEP.CritExponentMax = 12
@@ -294,10 +292,10 @@ SWEP.PrimaryAttack = function(self)
   self.icomingCrit = self:CheckNextCrit()
   self:SetNextPrimaryFire(CurTime() + self.CooldownTime)
   if not self.icomingCrit then
-    self:SendWeaponSequence(DTF2.TableRandom(self.AttackAnimationTable) or self.AttackAnimation)
+    self:SendWeaponSequence(self.AttackAnimationTable and DTF2.TableRandom(self.AttackAnimationTable) or self.AttackAnimation)
   end
   if self.icomingCrit then
-    self:SendWeaponSequence(DTF2.TableRandom(self.AttackAnimationCritTable) or self.AttackAnimationCrit)
+    self:SendWeaponSequence(self.AttackAnimationCritTable and DTF2.TableRandom(self.AttackAnimationCritTable) or self.AttackAnimationCrit)
   end
   self:WaitForSequence(self.IdleAnimation, self.CooldownTime)
   self.incomingFire = true

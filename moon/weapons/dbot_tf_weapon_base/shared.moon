@@ -44,8 +44,8 @@ SWEP.IdleAnimation = 'fj_idle'
 SWEP.AttackAnimation = 'fj_fire'
 SWEP.AttackAnimationCrit = 'fj_fire'
 
-SWEP.AttackAnimationTable = {}
-SWEP.AttackAnimationCritTable = {}
+-- SWEP.AttackAnimationTable = {}
+-- SWEP.AttackAnimationCritTable = {}
 
 SWEP.CritChance = 4
 SWEP.CritExponent = 0.1
@@ -224,8 +224,8 @@ SWEP.PrimaryAttack = =>
     return false if @GetNextPrimaryFire() > CurTime()
     @icomingCrit = @CheckNextCrit()
     @SetNextPrimaryFire(CurTime() + @CooldownTime)
-    @SendWeaponSequence(DTF2.TableRandom(@AttackAnimationTable) or @AttackAnimation) if not @icomingCrit
-    @SendWeaponSequence(DTF2.TableRandom(@AttackAnimationCritTable) or @AttackAnimationCrit) if @icomingCrit
+    @SendWeaponSequence(@AttackAnimationTable and DTF2.TableRandom(@AttackAnimationTable) or @AttackAnimation) if not @icomingCrit
+    @SendWeaponSequence(@AttackAnimationCritTable and DTF2.TableRandom(@AttackAnimationCritTable) or @AttackAnimationCrit) if @icomingCrit
     @WaitForSequence(@IdleAnimation, @CooldownTime)
     @incomingFire = true
     @incomingFireTime = CurTime() + @PreFire
