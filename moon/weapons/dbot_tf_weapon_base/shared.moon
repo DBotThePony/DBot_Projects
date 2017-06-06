@@ -23,7 +23,7 @@ SWEP.Category = 'TF2'
 SWEP.PrintName = 'TF2 Weapon Base'
 SWEP.Spawnable = false
 SWEP.AdminSpawnable = false
-SWEP.UseHands = true
+SWEP.UseHands = false
 SWEP.DrawCrosshair = true
 SWEP.IsTF2Weapon = true
 
@@ -60,6 +60,7 @@ SWEP.SetupDataTables = =>
     @NetworkVar('Bool', 1, 'CritBoosted')
     @NetworkVar('Bool', 2, 'TeamType')
     @NetworkVar('Float', 0, 'CriticalsDuration')
+    @NetworkVar('Entity', 0, 'TF2WeaponModel')
 
 SWEP.CheckNextCrit = =>
     return true if @GetCritBoosted()
@@ -105,16 +106,29 @@ SWEP.WaitForSequence = (anim = 0, time = 0, callback = (->)) =>
 SWEP.ClearTimeredAnimation = =>
     timer.Remove "DTF2.WeaponAnim.#{@EntIndex()}"
 
+SWEP.CreateWeaponModel = =>
+    if IsValid(@weaponModel)
+        @SetTF2WeaponModel(@weaponModel)
+        return @weaponModel
+    return @GetTF2WeaponModel() if CLIENT or IsValid(@GetTF2WeaponModel())
+    @weaponViewModel = ents.Create('dbot_tf_viewmodel')
+    with @weaponViewModel
+        \SetModel(@WorldModel)
+        \SetPos(@GetPos())
+        \Spawn()
+        \Activate()
+        \DoSetup(@)
+        print @WorldModel
+    @SetTF2WeaponModel(@weaponViewModel)
+    return @weaponViewModel
+
 SWEP.Deploy = =>
     @SendWeaponSequence(@DrawAnimation)
     @WaitForSequence(@IdleAnimation, @DrawTimeAnimation)
     @SetNextPrimaryFire(CurTime() + @DrawTime)
     @incomingFire = false
     if SERVER and @GetOwner()\IsPlayer()
-        hands = @GetOwner()\GetHands()
-        if IsValid(hands)
-            hands.__dtf2_old_model = hands.__dtf2_old_model or hands\GetModel()
-            hands\SetModel(@WorldModel)
+        @CreateWeaponModel()
     return true
 
 SWEP.Holster = =>
@@ -128,11 +142,6 @@ SWEP.Holster = =>
         if @critEffectGlow
             @critEffectGlow\StopEmissionAndDestroyImmediately()
             @critEffectGlow = nil
-        if SERVER and @GetOwner()\IsPlayer()
-            hands = @GetOwner()\GetHands()
-            if IsValid(hands)
-                hands\SetModel(hands.__dtf2_old_model or hands\GetModel())
-                hands.__dtf2_old_model = nil
         return true
     return false
 

@@ -15,6 +15,8 @@
 -- limitations under the License.
 --
 
+AddCSLuaFile()
+
 BaseClass = baseclass.Get('dbot_tf_shotgun')
 
 SWEP.Base = 'dbot_tf_shotgun'

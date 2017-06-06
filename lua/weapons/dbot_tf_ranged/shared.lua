@@ -5,7 +5,6 @@ SWEP.Category = 'TF2'
 SWEP.PrintName = 'TF2 Melee Base'
 SWEP.Spawnable = false
 SWEP.AdminSpawnable = false
-SWEP.UseHands = true
 SWEP.DrawAmmo = true
 SWEP.DrawCrosshair = true
 SWEP.Slot = 2
@@ -130,10 +129,10 @@ SWEP.PlayEmptySound = function(self)
   end
 end
 SWEP.EmitMuzzleFlash = function(self)
-  local viewModel = self:GetOwner():GetViewModel()
+  local viewModel = self:GetTF2WeaponModel()
   local Pos, Ang
   do
-    local _obj_0 = viewModel:GetAttachment(self:LookupAttachment(self.MuzzleAttachment))
+    local _obj_0 = viewModel:GetAttachment(self:GetTF2WeaponModel():LookupAttachment(self.MuzzleAttachment))
     Pos, Ang = _obj_0.Pos, _obj_0.Ang
   end
   local emmiter = ParticleEmitter(Pos, false)

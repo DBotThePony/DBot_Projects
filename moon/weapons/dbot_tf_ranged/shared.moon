@@ -23,7 +23,6 @@ SWEP.Category = 'TF2'
 SWEP.PrintName = 'TF2 Melee Base'
 SWEP.Spawnable = false
 SWEP.AdminSpawnable = false
-SWEP.UseHands = true
 SWEP.DrawAmmo = true
 SWEP.DrawCrosshair = true
 SWEP.Slot = 2
@@ -123,8 +122,8 @@ SWEP.PlayEmptySound = =>
     @EmitSound(playSound, 75, 100, .7, CHAN_WEAPON) if playSound
 
 SWEP.EmitMuzzleFlash = =>
-    viewModel = @GetOwner()\GetViewModel()
-    {:Pos, :Ang} = viewModel\GetAttachment(@LookupAttachment(@MuzzleAttachment))
+    viewModel = @GetTF2WeaponModel()
+    {:Pos, :Ang} = viewModel\GetAttachment(@GetTF2WeaponModel()\LookupAttachment(@MuzzleAttachment))
     emmiter = ParticleEmitter(Pos, false)
     return if not emmiter
     for i = 1, math.random(3, 5)

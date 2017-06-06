@@ -1,3 +1,4 @@
+AddCSLuaFile()
 local BaseClass = baseclass.Get('dbot_tf_shotgun')
 SWEP.Base = 'dbot_tf_shotgun'
 SWEP.Author = 'DBot'

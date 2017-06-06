@@ -5,7 +5,6 @@ SWEP.Category = 'TF2'
 SWEP.PrintName = 'TF2 Melee Base'
 SWEP.Spawnable = false
 SWEP.AdminSpawnable = false
-SWEP.UseHands = true
 SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = true
 SWEP.SlotPos = 16

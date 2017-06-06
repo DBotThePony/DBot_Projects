@@ -5,7 +5,7 @@ SWEP.Category = 'TF2'
 SWEP.PrintName = 'TF2 Weapon Base'
 SWEP.Spawnable = false
 SWEP.AdminSpawnable = false
-SWEP.UseHands = true
+SWEP.UseHands = false
 SWEP.DrawCrosshair = true
 SWEP.IsTF2Weapon = true
 SWEP.DrawTime = 0.66
@@ -35,7 +35,8 @@ SWEP.SetupDataTables = function(self)
   self:NetworkVar('Bool', 0, 'NextCrit')
   self:NetworkVar('Bool', 1, 'CritBoosted')
   self:NetworkVar('Bool', 2, 'TeamType')
-  return self:NetworkVar('Float', 0, 'CriticalsDuration')
+  self:NetworkVar('Float', 0, 'CriticalsDuration')
+  return self:NetworkVar('Entity', 0, 'TF2WeaponModel')
 end
 SWEP.CheckNextCrit = function(self)
   if self:GetCritBoosted() then
@@ -136,17 +137,34 @@ end
 SWEP.ClearTimeredAnimation = function(self)
   return timer.Remove("DTF2.WeaponAnim." .. tostring(self:EntIndex()))
 end
+SWEP.CreateWeaponModel = function(self)
+  if IsValid(self.weaponModel) then
+    self:SetTF2WeaponModel(self.weaponModel)
+    return self.weaponModel
+  end
+  if CLIENT or IsValid(self:GetTF2WeaponModel()) then
+    return self:GetTF2WeaponModel()
+  end
+  self.weaponViewModel = ents.Create('dbot_tf_viewmodel')
+  do
+    local _with_0 = self.weaponViewModel
+    _with_0:SetModel(self.WorldModel)
+    _with_0:SetPos(self:GetPos())
+    _with_0:Spawn()
+    _with_0:Activate()
+    _with_0:DoSetup(self)
+    print(self.WorldModel)
+  end
+  self:SetTF2WeaponModel(self.weaponViewModel)
+  return self.weaponViewModel
+end
 SWEP.Deploy = function(self)
   self:SendWeaponSequence(self.DrawAnimation)
   self:WaitForSequence(self.IdleAnimation, self.DrawTimeAnimation)
   self:SetNextPrimaryFire(CurTime() + self.DrawTime)
   self.incomingFire = false
   if SERVER and self:GetOwner():IsPlayer() then
-    local hands = self:GetOwner():GetHands()
-    if IsValid(hands) then
-      hands.__dtf2_old_model = hands.__dtf2_old_model or hands:GetModel()
-      hands:SetModel(self.WorldModel)
-    end
+    self:CreateWeaponModel()
   end
   return true
 end
@@ -163,13 +181,6 @@ SWEP.Holster = function(self)
     if self.critEffectGlow then
       self.critEffectGlow:StopEmissionAndDestroyImmediately()
       self.critEffectGlow = nil
-    end
-    if SERVER and self:GetOwner():IsPlayer() then
-      local hands = self:GetOwner():GetHands()
-      if IsValid(hands) then
-        hands:SetModel(hands.__dtf2_old_model or hands:GetModel())
-        hands.__dtf2_old_model = nil
-      end
     end
     return true
   end

@@ -1,3 +1,4 @@
+AddCSLuaFile()
 SWEP.Base = 'dbot_tf_melee'
 SWEP.Author = 'DBot'
 SWEP.Category = 'TF2'

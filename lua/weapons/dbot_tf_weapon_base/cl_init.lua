@@ -41,4 +41,19 @@ SWEP.SendWeaponAnim2 = function(self, act)
     return hands:ResetSequence(seqId)
   end
 end
+SWEP.PostDrawViewModel = function(self, viewmodel, weapon, ply)
+  if viewmodel == nil then
+    viewmodel = NULL
+  end
+  if weapon == nil then
+    weapon = NULL
+  end
+  if ply == nil then
+    ply = NULL
+  end
+  if not IsValid(self:GetTF2WeaponModel()) then
+    return 
+  end
+  return self:GetTF2WeaponModel():DrawModel()
+end
 return nil
