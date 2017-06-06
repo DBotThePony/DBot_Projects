@@ -60,6 +60,12 @@ SWEP.DefaultViewPunch = Angle(0, 0, 0)
 
 SWEP.MuzzleAttachment = 'muzzle'
 
+SWEP.CritChance = 2
+SWEP.CritExponent = 0.05
+SWEP.CritExponentMax = 10
+SWEP.SingleCrit = false
+
+SWEP.SingleReloadAnimation = false
 SWEP.DrawAnimation = 'fj_draw'
 SWEP.IdleAnimation = 'fj_idle'
 SWEP.AttackAnimation = 'fj_fire'
@@ -111,13 +117,20 @@ SWEP.BulletCallback = (tr = {}, dmginfo) =>
     else
         weapon\OnMiss(tr, dmginfo)
 
-SWEP.PlayFireSound = =>
-    playSound = table.Random(@FireSounds) if @FireSounds
-    @EmitSound(playSound, SNDLVL_GUNSHOT, 100, .7, CHAN_WEAPON) if playSound
+SWEP.PlayFireSound = (isCrit = @icomingCrit) =>
+    if not isCrit
+        return @EmitSound(@FireSoundsScript) if @FireSoundsScript
+        playSound = table.Random(@FireSounds) if @FireSounds
+        @EmitSound(playSound, SNDLVL_GUNSHOT, 100, .7, CHAN_WEAPON) if playSound
+    else
+        return @EmitSound(@FireCritSoundsScript) if @FireCritSoundsScript
+        playSound = table.Random(@FireCritSounds) if @FireCritSounds
+        @EmitSound(playSound, SNDLVL_GUNSHOT, 100, .7, CHAN_WEAPON) if playSound
 
 SWEP.PlayEmptySound = =>
     return if @lastEmptySound > CurTime()
     @lastEmptySound = CurTime() + 1
+    return @EmitSound(@EmptySoundsScript) if @EmptySoundsScript
     playSound = table.Random(@EmptySounds) if @EmptySounds
     @EmitSound(playSound, 75, 100, .7, CHAN_WEAPON) if playSound
 
@@ -143,6 +156,9 @@ SWEP.PrimaryAttack = =>
         @PlayEmptySound()
         return false
     
+    status = BaseClass.PrimaryAttack(@)
+    return status if status == false
+    
     @isReloading = false
     @TakePrimaryAmmo(@TakeBulletsOnFire)
     @PlayFireSound()
@@ -155,4 +171,4 @@ SWEP.PrimaryAttack = =>
         @lastMuzzle = FrameNumber()
         @EmitMuzzleFlash()
     
-    return BaseClass.PrimaryAttack(@)
+    return true

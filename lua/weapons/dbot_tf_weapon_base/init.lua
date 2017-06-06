@@ -70,7 +70,7 @@ SWEP.TriggerCriticals = function(self)
     self.lastCritsTrigger = CurTime() + self.CritDuration + self.CritsCooldown
     self:SetCriticalsDuration(CurTime() + self.CritDuration)
     return timer.Create("DTF2.CriticalsTimer." .. tostring(self:EntIndex()), self.CritDuration, 1, function()
-      if not self:IsValid() then
+      if self:IsValid() then
         return self:SetNextCrit(false)
       end
     end)

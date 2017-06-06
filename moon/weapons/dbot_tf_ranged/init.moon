@@ -29,12 +29,14 @@ SWEP.Think = =>
             newClip = math.Clamp(oldClip + @ReloadBullets, 0, @GetMaxClip1())
             @SetClip1(newClip)
             @GetOwner()\RemoveAmmo(newClip - oldClip, @Primary.Ammo) if @GetOwner()\IsPlayer()
-            @SendWeaponSequence(@ReloadLoop)
+            @SendWeaponSequence(@ReloadLoop) if not @SingleReloadAnimation
             if newClip == @GetMaxClip1()
                 @isReloading = false
-                @WaitForSequence(@ReloadEnd, @ReloadFinishAnimTime, (-> @WaitForSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if IsValid(@)))
+                @WaitForSequence(@ReloadEnd, @ReloadFinishAnimTime, (-> @WaitForSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if IsValid(@))) if not @SingleReloadAnimation
+                @SendWeaponSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if @SingleReloadAnimation
         elseif @GetOwner()\IsPlayer() and @GetOwner()\GetAmmoCount(@Primary.Ammo) <= 0 or newClip == @GetMaxClip1()
             @isReloading = false
-            @WaitForSequence(@ReloadEnd, @ReloadFinishAnimTime, (-> @WaitForSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if IsValid(@)))
+            @WaitForSequence(@ReloadEnd, @ReloadFinishAnimTime, (-> @WaitForSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if IsValid(@))) if not @SingleReloadAnimation
+            @SendWeaponSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if @SingleReloadAnimation
     @NextThink(CurTime() + 0.1)
     return true

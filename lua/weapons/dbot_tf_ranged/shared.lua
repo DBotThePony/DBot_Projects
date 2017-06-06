@@ -36,6 +36,11 @@ SWEP.DefaultSpread = Vector(0, 0, 0)
 SWEP.BulletsAmount = 1
 SWEP.DefaultViewPunch = Angle(0, 0, 0)
 SWEP.MuzzleAttachment = 'muzzle'
+SWEP.CritChance = 2
+SWEP.CritExponent = 0.05
+SWEP.CritExponentMax = 10
+SWEP.SingleCrit = false
+SWEP.SingleReloadAnimation = false
 SWEP.DrawAnimation = 'fj_draw'
 SWEP.IdleAnimation = 'fj_idle'
 SWEP.AttackAnimation = 'fj_fire'
@@ -106,13 +111,32 @@ SWEP.BulletCallback = function(self, tr, dmginfo)
     return weapon:OnMiss(tr, dmginfo)
   end
 end
-SWEP.PlayFireSound = function(self)
-  local playSound
-  if self.FireSounds then
-    playSound = table.Random(self.FireSounds)
+SWEP.PlayFireSound = function(self, isCrit)
+  if isCrit == nil then
+    isCrit = self.icomingCrit
   end
-  if playSound then
-    return self:EmitSound(playSound, SNDLVL_GUNSHOT, 100, .7, CHAN_WEAPON)
+  if not isCrit then
+    if self.FireSoundsScript then
+      return self:EmitSound(self.FireSoundsScript)
+    end
+    local playSound
+    if self.FireSounds then
+      playSound = table.Random(self.FireSounds)
+    end
+    if playSound then
+      return self:EmitSound(playSound, SNDLVL_GUNSHOT, 100, .7, CHAN_WEAPON)
+    end
+  else
+    if self.FireCritSoundsScript then
+      return self:EmitSound(self.FireCritSoundsScript)
+    end
+    local playSound
+    if self.FireCritSounds then
+      playSound = table.Random(self.FireCritSounds)
+    end
+    if playSound then
+      return self:EmitSound(playSound, SNDLVL_GUNSHOT, 100, .7, CHAN_WEAPON)
+    end
   end
 end
 SWEP.PlayEmptySound = function(self)
@@ -120,6 +144,9 @@ SWEP.PlayEmptySound = function(self)
     return 
   end
   self.lastEmptySound = CurTime() + 1
+  if self.EmptySoundsScript then
+    return self:EmitSound(self.EmptySoundsScript)
+  end
   local playSound
   if self.EmptySounds then
     playSound = table.Random(self.EmptySounds)
@@ -161,6 +188,10 @@ SWEP.PrimaryAttack = function(self)
     self:PlayEmptySound()
     return false
   end
+  local status = BaseClass.PrimaryAttack(self)
+  if status == false then
+    return status
+  end
   self.isReloading = false
   self:TakePrimaryAmmo(self.TakeBulletsOnFire)
   self:PlayFireSound()
@@ -172,5 +203,5 @@ SWEP.PrimaryAttack = function(self)
     self.lastMuzzle = FrameNumber()
     self:EmitMuzzleFlash()
   end
-  return BaseClass.PrimaryAttack(self)
+  return true
 end

@@ -63,6 +63,6 @@ SWEP.TriggerCriticals = =>
         @lastCritsTrigger = CurTime() + @CritDuration + @CritsCooldown
         @SetCriticalsDuration(CurTime() + @CritDuration)
         timer.Create "DTF2.CriticalsTimer.#{@EntIndex()}", @CritDuration, 1, ->
-            @SetNextCrit(false) if not @IsValid()
+            @SetNextCrit(false) if @IsValid()
 
 return nil

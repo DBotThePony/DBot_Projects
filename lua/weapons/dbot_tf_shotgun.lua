@@ -10,6 +10,7 @@ SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.AdminOnly = false
 SWEP.UseHands = false
+SWEP.SingleCrit = true
 SWEP.MuzzleAttachment = 'muzzle'
 SWEP.MuzzleEffect = 'muzzle_shotgun'
 SWEP.BulletDamage = 14
@@ -17,12 +18,9 @@ SWEP.BulletsAmount = 6
 SWEP.ReloadBullets = 1
 SWEP.DefaultSpread = Vector(1, 1, 0) * 0.05
 SWEP.DefaultViewPunch = Angle(-3, 0, 0)
-SWEP.FireSounds = {
-  'weapons/shotgun_shoot.wav'
-}
-SWEP.EmptySounds = {
-  'weapons/shotgun_empty.wav'
-}
+SWEP.FireSoundsScript = 'Weapon_Shotgun.Single'
+SWEP.FireCritSoundsScript = 'Weapon_Shotgun.SingleCrit'
+SWEP.EmptySounds = 'Weapon_Shotgun.Empty'
 SWEP.Primary = {
   ['Ammo'] = 'Buckshot',
   ['ClipSize'] = 6,
