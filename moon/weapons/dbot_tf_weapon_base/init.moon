@@ -22,6 +22,7 @@ util.AddNetworkString('DTF2.SendWeaponAnim')
 util.AddNetworkString('DTF2.SendWeaponSequence')
 
 SWEP.SendWeaponAnim2 = (act = ACT_INVALID) =>
+    return if not IsValid(@GetOwner()) or not @GetOwner()\IsPlayer()
     --hands = @GetOwner()\GetHands()
     --seqId = hands\SelectWeightedSequence(act)
     --hands\ResetSequence(seqId) if seqId
@@ -30,6 +31,7 @@ SWEP.SendWeaponAnim2 = (act = ACT_INVALID) =>
     net.Send(@GetOwner())
 
 SWEP.SendWeaponSequence = (seq = 0) =>
+    return if not IsValid(@GetOwner()) or not @GetOwner()\IsPlayer()
     hands = @GetOwner()\GetViewModel()
     return if not IsValid(hands)
     seq = hands\LookupSequence(seq) if type(seq) ~= 'number'

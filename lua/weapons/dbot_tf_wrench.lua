@@ -3,7 +3,6 @@ SWEP.Author = 'DBot'
 SWEP.Category = 'TF2'
 SWEP.PrintName = 'Wrench'
 SWEP.ViewModel = 'models/weapons/c_models/c_engineer_arms.mdl'
-SWEP.HandsModel = 'models/weapons/c_models/c_wrench/c_wrench.mdl'
 SWEP.WorldModel = 'models/weapons/c_models/c_wrench/c_wrench.mdl'
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true

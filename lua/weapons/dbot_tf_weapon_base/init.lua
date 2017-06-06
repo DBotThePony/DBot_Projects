@@ -6,6 +6,9 @@ SWEP.SendWeaponAnim2 = function(self, act)
   if act == nil then
     act = ACT_INVALID
   end
+  if not IsValid(self:GetOwner()) or not self:GetOwner():IsPlayer() then
+    return 
+  end
   net.Start('DTF2.SendWeaponAnim')
   net.WriteUInt(act, 16)
   return net.Send(self:GetOwner())
@@ -13,6 +16,9 @@ end
 SWEP.SendWeaponSequence = function(self, seq)
   if seq == nil then
     seq = 0
+  end
+  if not IsValid(self:GetOwner()) or not self:GetOwner():IsPlayer() then
+    return 
   end
   local hands = self:GetOwner():GetViewModel()
   if not IsValid(hands) then
