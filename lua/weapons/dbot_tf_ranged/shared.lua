@@ -96,6 +96,20 @@ SWEP.UpdateBulletData = function(self, bulletData)
   if bulletData == nil then
     bulletData = { }
   end
+  if CLIENT then
+    local viewModel = self:GetTF2WeaponModel()
+    do
+      local muzzle = viewModel:GetAttachment(viewModel:LookupAttachment(self.MuzzleAttachment))
+      if muzzle then
+        local Pos, Ang
+        Pos, Ang = muzzle.Pos, muzzle.Ang
+        bulletData.Src = Pos
+        local dir = self:GetOwner():GetEyeTrace().HitPos - Pos
+        dir:Normalize()
+        bulletData.Dir = dir
+      end
+    end
+  end
   bulletData.Spread = self:GetBulletSpread()
   bulletData.Num = self:GetBulletAmount()
 end
@@ -159,7 +173,7 @@ SWEP.EmitMuzzleFlash = function(self)
   local viewModel = self:GetTF2WeaponModel()
   local Pos, Ang
   do
-    local _obj_0 = viewModel:GetAttachment(self:GetTF2WeaponModel():LookupAttachment(self.MuzzleAttachment))
+    local _obj_0 = viewModel:GetAttachment(viewModel:LookupAttachment(self.MuzzleAttachment))
     Pos, Ang = _obj_0.Pos, _obj_0.Ang
   end
   local emmiter = ParticleEmitter(Pos, false)

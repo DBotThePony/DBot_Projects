@@ -105,6 +105,15 @@ SWEP.GetBulletAmount = => @BulletsAmount
 SWEP.GetViewPunch = => @DefaultViewPunch
 
 SWEP.UpdateBulletData = (bulletData = {}) =>
+    if CLIENT
+        viewModel = @GetTF2WeaponModel()
+        if muzzle = viewModel\GetAttachment(viewModel\LookupAttachment(@MuzzleAttachment))
+            {:Pos, :Ang} = muzzle
+            bulletData.Src = Pos
+            dir = @GetOwner()\GetEyeTrace().HitPos - Pos
+            dir\Normalize()
+            bulletData.Dir = dir
+
     bulletData.Spread = @GetBulletSpread()
     bulletData.Num = @GetBulletAmount()
 
@@ -136,7 +145,7 @@ SWEP.PlayEmptySound = =>
 
 SWEP.EmitMuzzleFlash = =>
     viewModel = @GetTF2WeaponModel()
-    {:Pos, :Ang} = viewModel\GetAttachment(@GetTF2WeaponModel()\LookupAttachment(@MuzzleAttachment))
+    {:Pos, :Ang} = viewModel\GetAttachment(viewModel\LookupAttachment(@MuzzleAttachment))
     emmiter = ParticleEmitter(Pos, false)
     return if not emmiter
     for i = 1, math.random(3, 5)
