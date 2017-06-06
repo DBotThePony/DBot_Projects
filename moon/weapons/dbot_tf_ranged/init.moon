@@ -29,12 +29,12 @@ SWEP.Think = =>
             newClip = math.Clamp(oldClip + @ReloadBullets, 0, @GetMaxClip1())
             @SetClip1(newClip)
             @GetOwner()\RemoveAmmo(newClip - oldClip, @Primary.Ammo) if @GetOwner()\IsPlayer()
-            @SendWeaponAnim(ACT_VM_RELOAD)
+            @SendWeaponSequence(@ReloadLoop)
             if newClip == @GetMaxClip1()
                 @isReloading = false
-                @WaitForAnimation(ACT_RELOAD_FINISH, @ReloadFinishAnimTime, (-> @WaitForAnimation(ACT_VM_IDLE, @ReloadFinishAnimTimeIdle) if IsValid(@)))
+                @WaitForSequence(@ReloadEnd, @ReloadFinishAnimTime, (-> @WaitForSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if IsValid(@)))
         elseif @GetOwner()\IsPlayer() and @GetOwner()\GetAmmoCount(@Primary.Ammo) <= 0 or newClip == @GetMaxClip1()
             @isReloading = false
-            @WaitForAnimation(ACT_RELOAD_FINISH, @ReloadFinishAnimTime, (-> @WaitForAnimation(ACT_VM_IDLE, @ReloadFinishAnimTimeIdle) if IsValid(@)))
+            @WaitForSequence(@ReloadEnd, @ReloadFinishAnimTime, (-> @WaitForSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if IsValid(@)))
     @NextThink(CurTime() + 0.1)
     return true

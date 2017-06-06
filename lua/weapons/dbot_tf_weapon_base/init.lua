@@ -1,5 +1,31 @@
 include('shared.lua')
 AddCSLuaFile('shared.lua')
+util.AddNetworkString('DTF2.SendWeaponAnim')
+util.AddNetworkString('DTF2.SendWeaponSequence')
+SWEP.SendWeaponAnim2 = function(self, act)
+  if act == nil then
+    act = ACT_INVALID
+  end
+  net.Start('DTF2.SendWeaponAnim')
+  net.WriteUInt(act, 16)
+  return net.Send(self:GetOwner())
+end
+SWEP.SendWeaponSequence = function(self, seq)
+  if seq == nil then
+    seq = 0
+  end
+  local hands = self:GetOwner():GetViewModel()
+  if not IsValid(hands) then
+    return 
+  end
+  if type(seq) ~= 'number' then
+    seq = hands:LookupSequence(seq)
+  end
+  hands:SendViewModelMatchingSequence(seq)
+  net.Start('DTF2.SendWeaponSequence')
+  net.WriteUInt(seq, 16)
+  return net.Send(self:GetOwner())
+end
 SWEP.EmitSoundServerside = function(self, ...)
   if self.suppressing then
     SuppressHostEvents(NULL)

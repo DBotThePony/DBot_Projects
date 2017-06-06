@@ -37,6 +37,13 @@ SWEP.DefaultSpread = Vector(0, 0, 0)
 SWEP.BulletsAmount = 1
 SWEP.DefaultViewPunch = Angle(0, 0, 0)
 SWEP.MuzzleAttachment = 'muzzle'
+SWEP.DrawAnimation = 'fj_draw'
+SWEP.IdleAnimation = 'fj_idle'
+SWEP.AttackAnimation = 'fj_fire'
+SWEP.AttackAnimationCrit = 'fj_fire'
+SWEP.ReloadStart = 'fj_reload_start'
+SWEP.ReloadLoop = 'fj_reload_loop'
+SWEP.ReloadEnd = 'fj_reload_end'
 SWEP.Reloadable = true
 SWEP.Initialize = function(self)
   BaseClass.Initialize(self)
@@ -62,7 +69,7 @@ SWEP.Reload = function(self)
   end
   self.isReloading = true
   self.reloadNext = CurTime() + self.ReloadDeployTime
-  self:SendWeaponAnim(ACT_RELOAD_START)
+  self:SendWeaponSequence(self.ReloadStart)
   self:ClearTimeredAnimation()
   return true
 end

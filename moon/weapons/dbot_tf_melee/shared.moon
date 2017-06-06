@@ -54,8 +54,11 @@ SWEP.PreFire = 0.24
 SWEP.BulletRange = 78
 SWEP.BulletDamage = 65
 SWEP.BulletForce = 20
-SWEP.AttackAnimation = ACT_VM_HITCENTER
-SWEP.AttackAnimationCrit = ACT_VM_SWINGHARD
+SWEP.DrawAnimation = 'pdq_draw'
+SWEP.IdleAnimation = 'pdq_idle_tap'
+SWEP.AttackAnimation = 'pdq_swing_a'
+SWEP.AttackAnimationTable = {'pdq_swing_a', 'pdq_swing_b'}
+SWEP.AttackAnimationCrit = 'pdq_swing_c'
 SWEP.BulletHull = 8
 
 SWEP.PlayMissSound = =>

@@ -16,4 +16,29 @@
 --
 
 include 'shared.lua'
+
+net.Receive 'DTF2.SendWeaponAnim', ->
+    act = net.ReadUInt(16)
+    wep = LocalPlayer()\GetActiveWeapon()
+    return if not IsValid(wep)
+    wep\SendWeaponAnim2(act)
+
+net.Receive 'DTF2.SendWeaponSequence', ->
+    act = net.ReadUInt(16)
+    wep = LocalPlayer()\GetActiveWeapon()
+    return if not IsValid(wep)
+    wep\SendWeaponSequence(act)
+
+SWEP.SendWeaponSequence = (seq = 0) =>
+    hands = @GetOwner()\GetViewModel()
+    return if not IsValid(hands)
+    seq = hands\LookupSequence(seq) if type(seq) ~= 'number'
+    hands\SendViewModelMatchingSequence(seq)
+
+SWEP.SendWeaponAnim2 = (act = ACT_INVALID) =>
+    hands = LocalPlayer()\GetHands()
+    return if not IsValid(hands)
+    seqId = hands\SelectWeightedSequence(act)
+    hands\ResetSequence(seqId) if seqId
+
 return nil

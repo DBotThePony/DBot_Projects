@@ -36,12 +36,17 @@ SWEP.BulletDamage = 65
 SWEP.BulletForce = 1
 SWEP.BulletHull = 1
 
-SWEP.ViewModel = 'models/weapons/c_models/c_wrench/c_wrench.mdl'
-SWEP.HandsModel = 'models/weapons/c_models/c_engineer_arms.mdl'
+SWEP.ViewModel = 'models/weapons/c_models/c_engineer_arms.mdl'
 SWEP.WorldModel = 'models/weapons/c_models/c_wrench/c_wrench.mdl'
 
-SWEP.AttackAnimation = ACT_VM_PRIMARYATTACK
-SWEP.AttackAnimationCrit = ACT_VM_PRIMARYATTACK
+SWEP.DrawAnimation = 'fj_draw'
+SWEP.IdleAnimation = 'fj_idle'
+SWEP.AttackAnimation = 'fj_fire'
+SWEP.AttackAnimationCrit = 'fj_fire'
+
+SWEP.AttackAnimationTable = {}
+SWEP.AttackAnimationCritTable = {}
+
 SWEP.CritChance = 4
 SWEP.CritExponent = 0.1
 SWEP.CritExponentMax = 12
@@ -66,7 +71,7 @@ SWEP.CheckNextCrit = =>
 
 SWEP.Initialize = =>
     @SetPlaybackRate(0.5)
-    @SendWeaponAnim(ACT_VM_IDLE)
+    @SendWeaponSequence(@IdleAnimation)
     @incomingFire = false
     @incomingFireTime = 0
     @damageDealtForCrit = 0
@@ -81,19 +86,35 @@ SWEP.WaitForAnimation = (anim = ACT_VM_IDLE, time = 0, callback = (->)) =>
         @SendWeaponAnim(anim)
         callback()
 
+SWEP.WaitForAnimation2 = (anim = ACT_VM_IDLE, time = 0, callback = (->)) =>
+    timer.Create "DTF2.WeaponAnim.#{@EntIndex()}", time, 1, ->
+        return if not IsValid(@)
+        return if not IsValid(@GetOwner())
+        return if @GetOwner()\GetActiveWeapon() ~= @
+        @SendWeaponAnim2(anim)
+        callback()
+
+SWEP.WaitForSequence = (anim = 0, time = 0, callback = (->)) =>
+    timer.Create "DTF2.WeaponAnim.#{@EntIndex()}", time, 1, ->
+        return if not IsValid(@)
+        return if not IsValid(@GetOwner())
+        return if @GetOwner()\GetActiveWeapon() ~= @
+        @SendWeaponSequence(anim)
+        callback()
+
 SWEP.ClearTimeredAnimation = =>
     timer.Remove "DTF2.WeaponAnim.#{@EntIndex()}"
 
 SWEP.Deploy = =>
-    @SendWeaponAnim(ACT_VM_DRAW)
-    @WaitForAnimation(ACT_VM_IDLE, @DrawTimeAnimation)
+    @SendWeaponSequence(@DrawAnimation)
+    @WaitForSequence(@IdleAnimation, @DrawTimeAnimation)
     @SetNextPrimaryFire(CurTime() + @DrawTime)
     @incomingFire = false
     if SERVER and @GetOwner()\IsPlayer()
         hands = @GetOwner()\GetHands()
         if IsValid(hands)
             hands.__dtf2_old_model = hands.__dtf2_old_model or hands\GetModel()
-            hands\SetModel(@HandsModel)
+            hands\SetModel(@WorldModel)
     return true
 
 SWEP.Holster = =>
@@ -194,9 +215,9 @@ SWEP.PrimaryAttack = =>
     return false if @GetNextPrimaryFire() > CurTime()
     @icomingCrit = @CheckNextCrit()
     @SetNextPrimaryFire(CurTime() + @CooldownTime)
-    @SendWeaponAnim(@AttackAnimation) if not @icomingCrit
-    @SendWeaponAnim(@AttackAnimationCrit) if @icomingCrit
-    @WaitForAnimation(ACT_VM_IDLE, @CooldownTime)
+    @SendWeaponSequence(DTF2.TableRandom(@AttackAnimationTable) or @AttackAnimation) if not @icomingCrit
+    @SendWeaponSequence(DTF2.TableRandom(@AttackAnimationCritTable) or @AttackAnimationCrit) if @icomingCrit
+    @WaitForSequence(@IdleAnimation, @CooldownTime)
     @incomingFire = true
     @incomingFireTime = CurTime() + @PreFire
     @NextThink(@incomingFireTime)

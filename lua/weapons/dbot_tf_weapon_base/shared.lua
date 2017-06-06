@@ -16,11 +16,14 @@ SWEP.BulletRange = 32000
 SWEP.BulletDamage = 65
 SWEP.BulletForce = 1
 SWEP.BulletHull = 1
-SWEP.ViewModel = 'models/weapons/c_models/c_wrench/c_wrench.mdl'
-SWEP.HandsModel = 'models/weapons/c_models/c_engineer_arms.mdl'
+SWEP.ViewModel = 'models/weapons/c_models/c_engineer_arms.mdl'
 SWEP.WorldModel = 'models/weapons/c_models/c_wrench/c_wrench.mdl'
-SWEP.AttackAnimation = ACT_VM_PRIMARYATTACK
-SWEP.AttackAnimationCrit = ACT_VM_PRIMARYATTACK
+SWEP.DrawAnimation = 'fj_draw'
+SWEP.IdleAnimation = 'fj_idle'
+SWEP.AttackAnimation = 'fj_fire'
+SWEP.AttackAnimationCrit = 'fj_fire'
+SWEP.AttackAnimationTable = { }
+SWEP.AttackAnimationCritTable = { }
 SWEP.CritChance = 4
 SWEP.CritExponent = 0.1
 SWEP.CritExponentMax = 12
@@ -51,7 +54,7 @@ SWEP.CheckNextCrit = function(self)
 end
 SWEP.Initialize = function(self)
   self:SetPlaybackRate(0.5)
-  self:SendWeaponAnim(ACT_VM_IDLE)
+  self:SendWeaponSequence(self.IdleAnimation)
   self.incomingFire = false
   self.incomingFireTime = 0
   self.damageDealtForCrit = 0
@@ -82,19 +85,67 @@ SWEP.WaitForAnimation = function(self, anim, time, callback)
     return callback()
   end)
 end
+SWEP.WaitForAnimation2 = function(self, anim, time, callback)
+  if anim == nil then
+    anim = ACT_VM_IDLE
+  end
+  if time == nil then
+    time = 0
+  end
+  if callback == nil then
+    callback = (function() end)
+  end
+  return timer.Create("DTF2.WeaponAnim." .. tostring(self:EntIndex()), time, 1, function()
+    if not IsValid(self) then
+      return 
+    end
+    if not IsValid(self:GetOwner()) then
+      return 
+    end
+    if self:GetOwner():GetActiveWeapon() ~= self then
+      return 
+    end
+    self:SendWeaponAnim2(anim)
+    return callback()
+  end)
+end
+SWEP.WaitForSequence = function(self, anim, time, callback)
+  if anim == nil then
+    anim = 0
+  end
+  if time == nil then
+    time = 0
+  end
+  if callback == nil then
+    callback = (function() end)
+  end
+  return timer.Create("DTF2.WeaponAnim." .. tostring(self:EntIndex()), time, 1, function()
+    if not IsValid(self) then
+      return 
+    end
+    if not IsValid(self:GetOwner()) then
+      return 
+    end
+    if self:GetOwner():GetActiveWeapon() ~= self then
+      return 
+    end
+    self:SendWeaponSequence(anim)
+    return callback()
+  end)
+end
 SWEP.ClearTimeredAnimation = function(self)
   return timer.Remove("DTF2.WeaponAnim." .. tostring(self:EntIndex()))
 end
 SWEP.Deploy = function(self)
-  self:SendWeaponAnim(ACT_VM_DRAW)
-  self:WaitForAnimation(ACT_VM_IDLE, self.DrawTimeAnimation)
+  self:SendWeaponSequence(self.DrawAnimation)
+  self:WaitForSequence(self.IdleAnimation, self.DrawTimeAnimation)
   self:SetNextPrimaryFire(CurTime() + self.DrawTime)
   self.incomingFire = false
   if SERVER and self:GetOwner():IsPlayer() then
     local hands = self:GetOwner():GetHands()
     if IsValid(hands) then
       hands.__dtf2_old_model = hands.__dtf2_old_model or hands:GetModel()
-      hands:SetModel(self.HandsModel)
+      hands:SetModel(self.WorldModel)
     end
   end
   return true
@@ -232,12 +283,12 @@ SWEP.PrimaryAttack = function(self)
   self.icomingCrit = self:CheckNextCrit()
   self:SetNextPrimaryFire(CurTime() + self.CooldownTime)
   if not self.icomingCrit then
-    self:SendWeaponAnim(self.AttackAnimation)
+    self:SendWeaponSequence(DTF2.TableRandom(self.AttackAnimationTable) or self.AttackAnimation)
   end
   if self.icomingCrit then
-    self:SendWeaponAnim(self.AttackAnimationCrit)
+    self:SendWeaponSequence(DTF2.TableRandom(self.AttackAnimationCritTable) or self.AttackAnimationCrit)
   end
-  self:WaitForAnimation(ACT_VM_IDLE, self.CooldownTime)
+  self:WaitForSequence(self.IdleAnimation, self.CooldownTime)
   self.incomingFire = true
   self.incomingFireTime = CurTime() + self.PreFire
   self:NextThink(self.incomingFireTime)

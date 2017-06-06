@@ -61,6 +61,14 @@ SWEP.DefaultViewPunch = Angle(0, 0, 0)
 
 SWEP.MuzzleAttachment = 'muzzle'
 
+SWEP.DrawAnimation = 'fj_draw'
+SWEP.IdleAnimation = 'fj_idle'
+SWEP.AttackAnimation = 'fj_fire'
+SWEP.AttackAnimationCrit = 'fj_fire'
+SWEP.ReloadStart = 'fj_reload_start'
+SWEP.ReloadLoop = 'fj_reload_loop'
+SWEP.ReloadEnd = 'fj_reload_end'
+
 SWEP.Reloadable = true
 
 SWEP.Initialize = =>
@@ -77,7 +85,7 @@ SWEP.Reload = =>
     return false if @GetOwner()\IsPlayer() and @GetOwner()\GetAmmoCount(@Primary.Ammo) <= 0
     @isReloading = true
     @reloadNext = CurTime() + @ReloadDeployTime
-    @SendWeaponAnim(ACT_RELOAD_START)
+    @SendWeaponSequence(@ReloadStart)
     @ClearTimeredAnimation()
     return true
 

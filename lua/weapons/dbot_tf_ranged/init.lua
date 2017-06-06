@@ -12,20 +12,20 @@ SWEP.Think = function(self)
       if self:GetOwner():IsPlayer() then
         self:GetOwner():RemoveAmmo(newClip - oldClip, self.Primary.Ammo)
       end
-      self:SendWeaponAnim(ACT_VM_RELOAD)
+      self:SendWeaponSequence(self.ReloadLoop)
       if newClip == self:GetMaxClip1() then
         self.isReloading = false
-        self:WaitForAnimation(ACT_RELOAD_FINISH, self.ReloadFinishAnimTime, (function()
+        self:WaitForSequence(self.ReloadEnd, self.ReloadFinishAnimTime, (function()
           if IsValid(self) then
-            return self:WaitForAnimation(ACT_VM_IDLE, self.ReloadFinishAnimTimeIdle)
+            return self:WaitForSequence(self.IdleAnimation, self.ReloadFinishAnimTimeIdle)
           end
         end))
       end
     elseif self:GetOwner():IsPlayer() and self:GetOwner():GetAmmoCount(self.Primary.Ammo) <= 0 or newClip == self:GetMaxClip1() then
       self.isReloading = false
-      self:WaitForAnimation(ACT_RELOAD_FINISH, self.ReloadFinishAnimTime, (function()
+      self:WaitForSequence(self.ReloadEnd, self.ReloadFinishAnimTime, (function()
         if IsValid(self) then
-          return self:WaitForAnimation(ACT_VM_IDLE, self.ReloadFinishAnimTimeIdle)
+          return self:WaitForSequence(self.IdleAnimation, self.ReloadFinishAnimTimeIdle)
         end
       end))
     end
