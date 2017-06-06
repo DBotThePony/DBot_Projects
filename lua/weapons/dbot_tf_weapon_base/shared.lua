@@ -88,7 +88,14 @@ SWEP.Deploy = function(self)
   return true
 end
 SWEP.Holster = function(self)
-  return self:GetNextPrimaryFire() < CurTime()
+  if self:GetNextPrimaryFire() < CurTime() then
+    if self.critBoostSound then
+      self.critBoostSound:Stop()
+      self.critBoostSound = nil
+    end
+    return true
+  end
+  return false
 end
 SWEP.OnMiss = function(self) end
 SWEP.OnHit = function(self, hitEntity, tr, dmginfo)
@@ -159,7 +166,20 @@ SWEP.FireTrigger = function(self)
 end
 SWEP.Think = function(self)
   if self.incomingFire and self.incomingFireTime < CurTime() then
-    return self:FireTrigger()
+    self:FireTrigger()
+  end
+  if CLIENT then
+    if self:GetCritBoosted() then
+      if not self.critBoostSound then
+        self.critBoostSound = CreateSound(self, 'Weapon_General.CritPower')
+        return self.critBoostSound:Play()
+      end
+    else
+      if self.critBoostSound then
+        self.critBoostSound:Stop()
+        self.critBoostSound = nil
+      end
+    end
   end
 end
 SWEP.PrimaryAttack = function(self)

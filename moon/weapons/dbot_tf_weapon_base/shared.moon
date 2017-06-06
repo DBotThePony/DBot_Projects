@@ -85,7 +85,13 @@ SWEP.Deploy = =>
     @incomingFire = false
     return true
 
-SWEP.Holster = => @GetNextPrimaryFire() < CurTime()
+SWEP.Holster = =>
+    if @GetNextPrimaryFire() < CurTime()
+        if @critBoostSound
+            @critBoostSound\Stop()
+            @critBoostSound = nil
+        return true
+    return false
 
 SWEP.OnMiss = =>
 SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
@@ -141,6 +147,15 @@ SWEP.FireTrigger = =>
 SWEP.Think = =>
     if @incomingFire and @incomingFireTime < CurTime()
         @FireTrigger()
+    if CLIENT
+        if @GetCritBoosted()
+            if not @critBoostSound
+                @critBoostSound = CreateSound(@, 'Weapon_General.CritPower')
+                @critBoostSound\Play()
+        else
+            if @critBoostSound
+                @critBoostSound\Stop()
+                @critBoostSound = nil
 
 SWEP.PrimaryAttack = =>
     return false if @GetNextPrimaryFire() > CurTime()
