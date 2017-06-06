@@ -17,6 +17,13 @@ ENT.Initialize = function(self)
   self.fireAnim = 0
   self.isEmpty = false
 end
+ENT.GetHUDText = function(self)
+  local text = "Bullets: " .. tostring(self:GetAmmoAmount()) .. "/" .. tostring(self:GetMaxAmmo()) .. "\n"
+  if self:GetLevel() == 3 then
+    text = text .. "Rockets: " .. tostring(self:GetRockets()) .. "/" .. tostring(self.MAX_ROCKETS) .. "\n"
+  end
+  return text
+end
 ENT.CreateMuzzleflashModel = function(self, attach)
   if attach == nil then
     attach = ''

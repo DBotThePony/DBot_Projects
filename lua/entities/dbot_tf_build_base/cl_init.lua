@@ -11,3 +11,9 @@ ENT.Draw = function(self)
   self:DrawShadow(false)
   return self:DrawModel()
 end
+ENT.DrawHUD = function(self)
+  return DTF2.DrawBuildingInfo(self)
+end
+ENT.GetHUDText = function(self)
+  return ''
+end

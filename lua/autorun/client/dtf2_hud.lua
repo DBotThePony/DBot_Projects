@@ -3,6 +3,8 @@ local BACKGROUND_COLOR = Color(0, 0, 0, 150)
 local FONT_COLOR = Color(255, 255, 255)
 local FONT_COLOR_GREEN = Color(88, 183, 56)
 local FONT_COLOR_RED = Color(217, 101, 83)
+local COLOR_HP_BAR_BACKGROUND = Color(176, 176, 176)
+local COLOR_HP_BAR = Color(167, 197, 92)
 local FONT = 'DTF2.HUDFont'
 surface.CreateFont(FONT, {
   ['font'] = 'Roboto',
@@ -89,3 +91,40 @@ DTF2.DrawMetalCounter = function()
     surface.DrawText(data.text)
   end
 end
+DTF2.DrawBuildingInfo = function(self)
+  local w, h = ScrW(), ScrH()
+  local x, y = w * .5, h * .6
+  local text = self.PrintName
+  if IsValid(self:GetPlayer()) and self:GetPlayer():IsPlayer() then
+    text = text .. " built by " .. tostring(self:GetPlayer():Nick())
+  end
+  local hp, mhp = self:Health(), self:GetMaxHealth()
+  text = text .. "\nHealth: " .. tostring(hp) .. "/" .. tostring(mhp)
+  if self:GetLevel() < 3 then
+    text = text .. "\nUpgrade level: " .. tostring(self:GetUpgradeAmount()) .. "/" .. tostring(self.MAX_UPGRADE)
+  end
+  text = text .. '\n'
+  text = text .. self:GetHUDText()
+  surface.SetFont(FONT)
+  surface.SetDrawColor(BACKGROUND_COLOR)
+  surface.SetTextColor(FONT_COLOR)
+  local W, H = surface.GetTextSize(text)
+  W = math.max(W, 200)
+  surface.DrawRect(x - 4 - W / 2, y - 4, W + 8, H + 8)
+  surface.SetTextPos(x - W / 2, y)
+  draw.DrawText(text, FONT, x - W / 2, y, FONT_COLOR)
+  surface.SetDrawColor(COLOR_HP_BAR_BACKGROUND)
+  surface.DrawRect(x - W / 2, y + H - 12, W, 12)
+  surface.SetDrawColor(COLOR_HP_BAR)
+  return surface.DrawRect(x - W / 2, y + H - 12, W * math.Clamp(hp / mhp, 0, 1), 12)
+end
+return hook.Add('HUDPaint', 'DTF2.BuildablesHUD', function()
+  local self = LocalPlayer():GetEyeTrace().Entity
+  if not IsValid(self) then
+    return 
+  end
+  if not self.IsTF2Building then
+    return 
+  end
+  return self:DrawHUD()
+end)

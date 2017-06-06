@@ -30,3 +30,6 @@ ENT.Think = =>
 ENT.Draw = =>
     @DrawShadow(false)
     @DrawModel()
+
+ENT.DrawHUD = => DTF2.DrawBuildingInfo(@)
+ENT.GetHUDText = => ''

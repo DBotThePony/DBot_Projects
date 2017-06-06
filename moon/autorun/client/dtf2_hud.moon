@@ -22,6 +22,8 @@ BACKGROUND_COLOR = Color(0, 0, 0, 150)
 FONT_COLOR = Color(255, 255, 255)
 FONT_COLOR_GREEN = Color(88, 183, 56)
 FONT_COLOR_RED = Color(217, 101, 83)
+COLOR_HP_BAR_BACKGROUND = Color(176, 176, 176)
+COLOR_HP_BAR = Color(167, 197, 92)
 FONT = 'DTF2.HUDFont'
 
 surface.CreateFont(FONT, {
@@ -84,3 +86,35 @@ DTF2.DrawMetalCounter = ->
         surface.SetTextPos(x, y - data.slide)
         surface.SetTextColor(data.r, data.g, data.b, data.a)
         surface.DrawText(data.text)
+
+DTF2.DrawBuildingInfo = =>
+    w, h = ScrW(), ScrH()
+    x, y = w * .5, h * .6
+    text = @PrintName
+    if IsValid(@GetPlayer()) and @GetPlayer()\IsPlayer()
+        text ..= " built by #{@GetPlayer()\Nick()}"
+    hp, mhp = @Health(), @GetMaxHealth()
+    text ..= "\nHealth: #{hp}/#{mhp}"
+    text ..= "\nUpgrade level: #{@GetUpgradeAmount()}/#{@MAX_UPGRADE}" if @GetLevel() < 3
+    text ..= '\n'
+    text ..= @GetHUDText()
+
+    surface.SetFont(FONT)
+    surface.SetDrawColor(BACKGROUND_COLOR)
+    surface.SetTextColor(FONT_COLOR)
+    W, H = surface.GetTextSize(text)
+    W = math.max(W, 200)
+    surface.DrawRect(x - 4 - W / 2, y - 4, W + 8, H + 8)
+    surface.SetTextPos(x - W / 2, y)
+    draw.DrawText(text, FONT, x - W / 2, y, FONT_COLOR)
+
+    surface.SetDrawColor(COLOR_HP_BAR_BACKGROUND)
+    surface.DrawRect(x - W / 2, y + H - 12, W, 12)
+    surface.SetDrawColor(COLOR_HP_BAR)
+    surface.DrawRect(x - W / 2, y + H - 12, W * math.Clamp(hp / mhp, 0, 1), 12)
+
+hook.Add 'HUDPaint', 'DTF2.BuildablesHUD', ->
+    self = LocalPlayer()\GetEyeTrace().Entity
+    return if not IsValid(@)
+    return if not @IsTF2Building
+    @DrawHUD()

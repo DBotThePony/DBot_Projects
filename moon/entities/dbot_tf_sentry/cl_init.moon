@@ -35,6 +35,11 @@ ENT.Initialize = =>
     @fireAnim = 0
     @isEmpty = false
 
+ENT.GetHUDText = =>
+    text = "Bullets: #{@GetAmmoAmount()}/#{@GetMaxAmmo()}\n"
+    text ..= "Rockets: #{@GetRockets()}/#{@MAX_ROCKETS}\n" if @GetLevel() == 3
+    return text
+
 ENT.CreateMuzzleflashModel = (attach = '') =>
     attach = @GetAttachment(@LookupAttachment(attach))
     return if not attach
