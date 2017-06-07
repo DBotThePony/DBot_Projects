@@ -47,7 +47,7 @@
 //	SNDLVL_140dB	= 140,	// 0.2
 //	SNDLVL_150dB	= 150,	// 0.2
 
-"vox/null"
+"DTF2_vox/null"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"VOL_NORM"
@@ -59,7 +59,7 @@
 // ------------------------------------------------------------------------------------ //
 // HEALTH KIT
 // ------------------------------------------------------------------------------------ //
-"HealthKit.Touch"
+"DTF2_HealthKit.Touch"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
@@ -71,7 +71,7 @@
 // ------------------------------------------------------------------------------------ //
 // AMMO PACK
 // ------------------------------------------------------------------------------------ //
-"AmmoPack.Touch"
+"DTF2_AmmoPack.Touch"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
@@ -83,7 +83,7 @@
 // ------------------------------------------------------------------------------------ //
 // GRENADE PACK
 // ------------------------------------------------------------------------------------ //
-"GrenadePack.Touch"
+"DTF2_GrenadePack.Touch"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
@@ -95,7 +95,7 @@
 // ------------------------------------------------------------------------------------ //
 // REGENERATE
 // ------------------------------------------------------------------------------------ //
-"Regenerate.Touch"
+"DTF2_Regenerate.Touch"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
@@ -107,7 +107,7 @@
 // ------------------------------------------------------------------------------------ //
 // CHANGE CLASS
 // ------------------------------------------------------------------------------------ //
-"ChangeClass.Touch"
+"DTF2_ChangeClass.Touch"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
@@ -116,7 +116,7 @@
 	"wave"		"items/r_item1.wav"
 }
 
-"BaseCombatCharacter.CorpseGib"
+"DTF2_BaseCombatCharacter.CorpseGib"
 {
 	"channel"	"CHAN_WEAPON"
 	"volume"	"1"
@@ -127,7 +127,7 @@
 	}
 }
 
-"BaseCombatCharacter.StopWeaponSounds"
+"DTF2_BaseCombatCharacter.StopWeaponSounds"
 {
 	"channel"	"CHAN_WEAPON"
 	"volume"	"1"
@@ -136,7 +136,7 @@
 	"wave"	"common/null.wav"
 }
 
-"BaseCombatCharacter.AmmoPickup"
+"DTF2_BaseCombatCharacter.AmmoPickup"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -145,7 +145,7 @@
 	"wave"	"items/ammo_pickup.wav"
 }
 
-"General.BurningFlesh"
+"DTF2_General.BurningFlesh"
 {
 	"channel"		"CHAN_WEAPON"
 	"volume"		"0.45"
@@ -156,7 +156,7 @@
 	"wave"		 "npc/headcrab/headcrab_burning_loop2.wav" 
 }
 
-"General.BurningObject"
+"DTF2_General.BurningObject"
 {
 	"channel"		"CHAN_WEAPON"
 	"volume"		"VOL_NORM"
@@ -167,7 +167,7 @@
 	"wave"		 "ambient/fire/fire_small_loop2.wav" 
 }
 
-"General.StopBurning"
+"DTF2_General.StopBurning"
 {
 	"channel"		"CHAN_WEAPON"
 	"volume"		"VOL_NORM"
@@ -178,7 +178,7 @@
 	"wave"		 "common/null.wav" 
 }
 
-"BaseCombatWeapon.WeaponDrop"
+"DTF2_BaseCombatWeapon.WeaponDrop"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.8"
@@ -192,7 +192,7 @@
 	}
 }
 
-"BaseCombatWeapon.WeaponMaterialize"
+"DTF2_BaseCombatWeapon.WeaponMaterialize"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	".25"
@@ -202,7 +202,7 @@
 	"wave"	"items/suitchargeok1.wav"
 }
 
-"HudChat.Message"
+"DTF2_HudChat.Message"
 {
 	"channel"	"CHAN_STREAM"
 	"volume"	"VOL_NORM"
@@ -212,7 +212,7 @@
 	"wave"	"vo/null.mp3"
 }
 
-"Hud.Hint"
+"DTF2_Hud.Hint"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
@@ -222,7 +222,7 @@
 	"wave"		"ui/hint.wav"
 }
 
-"Hud.ItemAcquired"
+"DTF2_Hud.ItemAcquired"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
@@ -232,7 +232,7 @@
 	"wave"		"ui/item_acquired.wav"
 }
 
-"Hud.ProjectorScreenUp"
+"DTF2_Hud.ProjectorScreenUp"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	".65"
@@ -242,7 +242,7 @@
 	"wave"		"ui/projector_screen_up.wav"
 }
 
-"Hud.ProjectorScreenUpLong"
+"DTF2_Hud.ProjectorScreenUpLong"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -252,7 +252,7 @@
 	"wave"		"ui/projector_screen_up_long.wav"
 }
 
-"Hud.ProjectorScreenDown"
+"DTF2_Hud.ProjectorScreenDown"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
@@ -262,7 +262,7 @@
 	"wave"		"ui/projector_screen_down.wav"
 }
 
-"Hud.ProjectorMovie"
+"DTF2_Hud.ProjectorMovie"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
@@ -272,7 +272,7 @@
 	"wave"		"ui/projector_movie.wav"
 }
 
-"Hud.EndRoundScored"
+"DTF2_Hud.EndRoundScored"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
@@ -282,7 +282,7 @@
 	"wave"		"ui/scored.wav"
 }
 
-"Hud.PointCaptured"
+"DTF2_Hud.PointCaptured"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
@@ -292,7 +292,7 @@
 	"wave"		"ui/scored.wav"
 }
 
-"Hud.Warning"
+"DTF2_Hud.Warning"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
@@ -302,7 +302,7 @@
 	"wave"		"misc/hud_warning.wav"
 }
 
-"Hud.TrainingPointSmall"
+"DTF2_Hud.TrainingPointSmall"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
@@ -312,7 +312,7 @@
 	"wave"		"ui/training_point_small.wav"
 }
 
-"Hud.TrainingPointBig"
+"DTF2_Hud.TrainingPointBig"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
@@ -322,7 +322,7 @@
 	"wave"		"ui/training_point_big.wav"
 }
 
-"Hud.TrainingMsgUpdate"
+"DTF2_Hud.TrainingMsgUpdate"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
@@ -333,7 +333,7 @@
 }
 
 
-"SprayCan.Paint"
+"DTF2_SprayCan.Paint"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1.0"
@@ -344,7 +344,7 @@
 
 
 
-"DoorSound.Null"
+"DTF2_DoorSound.Null"
 {
 	"channel"		"CHAN_BODY"
 	"volume"		"1.0"
@@ -353,7 +353,7 @@
 	"wave"		"common/null.wav" 
 }
 
-"DoorSound.DefaultMove"
+"DTF2_DoorSound.DefaultMove"
 {
 	"channel"	"CHAN_BODY"
 	"volume"	"1"
@@ -361,7 +361,7 @@
 	"wave"		"doors/door_metal_rusty_move1.wav" 
 }
 
-"DoorSound.DefaultArrive"
+"DTF2_DoorSound.DefaultArrive"
 {
 	"channel"		"CHAN_BODY"
 	"volume"		"1"
@@ -369,7 +369,7 @@
 	"wave"		"doors/metal_stop1.wav" 
 }
 
-"DoorSound.DefaultLocked"
+"DTF2_DoorSound.DefaultLocked"
 {
 	"channel"		"CHAN_BODY"
 	"volume"		"0.2"
@@ -377,7 +377,7 @@
 	"wave"		"doors/default_locked.wav" 
 }
 
-"RotDoorSound.DefaultMove"
+"DTF2_RotDoorSound.DefaultMove"
 {
 	"channel"	"CHAN_BODY"
 	"volume"	"1"
@@ -385,7 +385,7 @@
 	"wave"		"doors/door_metal_rusty_move1.wav" 
 }
 
-"RotDoorSound.DefaultArrive"
+"DTF2_RotDoorSound.DefaultArrive"
 {
 	"channel"		"CHAN_BODY"
 	"volume"		"1"
@@ -393,7 +393,7 @@
 	"wave"		"doors/metal_stop1.wav" 
 }
 
-"RotDoorSound.DefaultLocked"
+"DTF2_RotDoorSound.DefaultLocked"
 {
 	"channel"		"CHAN_BODY"
 	"volume"		"0.2"
@@ -401,7 +401,7 @@
 	"wave"		"doors/default_locked.wav" 
 }
 
-"Item.Materialize"
+"DTF2_Item.Materialize"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	".25"
@@ -409,7 +409,7 @@
 	"wave"	"items/spawn_item.wav"
 }
 
-"PropaneTank.Burst"
+"DTF2_PropaneTank.Burst"
 {
 	"channel"	"CHAN_WEAPON"
 	"volume"	"1.0"
@@ -418,7 +418,7 @@
 	"wave"		"ambient/fire/gascan_ignite1.wav"
 }
 
-"NPC_CombineS.ElectrocuteScream"
+"DTF2_NPC_CombineS.ElectrocuteScream"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1.0"
@@ -428,7 +428,7 @@
 }
 
 
-"npc_citizen.die"
+"DTF2_npc_citizen.die"
 {
 	"channel"	"CHAN_VOICE"
 	"volume"	"0.8"
@@ -442,7 +442,7 @@
 	}
 }
 
-"Panel.SlideDown"
+"DTF2_Panel.SlideDown"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1.0"
@@ -451,7 +451,7 @@
 	"wave"			"ui/slide_down.wav" 
 }
 
-"Panel.SlideUp"
+"DTF2_Panel.SlideUp"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1.0"
@@ -465,7 +465,7 @@
 // AMBIENT
 // ------------------------------------------------------------------------------------ //
 
-"Ambient.Drips1"
+"DTF2_Ambient.Drips1"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -474,7 +474,7 @@
 	"wave"		")ambient/drips1.wav"
 }
 
-"Ambient.Drips2"
+"DTF2_Ambient.Drips2"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -483,7 +483,7 @@
 	"wave"		")ambient/drips2.wav"
 }
 
-"Ambient.Drips3"
+"DTF2_Ambient.Drips3"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -492,7 +492,7 @@
 	"wave"		")ambient/drips3.wav"
 }
 
-"Sawmill.Waterfall"
+"DTF2_Sawmill.Waterfall"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -501,7 +501,7 @@
 	"wave"		"ambient/waterfall.wav"
 }
 
-"Ambient.MachineHum"
+"DTF2_Ambient.MachineHum"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -510,7 +510,7 @@
 	"wave"		")ambient/machine_hum.wav"
 }
 
-"Ambient.MachineHum2"
+"DTF2_Ambient.MachineHum2"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -519,7 +519,7 @@
 	"wave"		")ambient/machine_hum2.wav"
 }
 
-"Ambient.MachineWorking"
+"DTF2_Ambient.MachineWorking"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	".50"
@@ -530,7 +530,7 @@
 
 
 
-"Ambient.ComputerWorking"
+"DTF2_Ambient.ComputerWorking"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -539,7 +539,7 @@
 	"wave"		")ambient/computer_working.wav"
 }
 
-"Ambient.ComputerTape"
+"DTF2_Ambient.ComputerTape"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	".5"
@@ -548,7 +548,7 @@
 	"wave"		")ambient/computer_tape.wav"
 }
 
-"Ambient.ComputerTape3"
+"DTF2_Ambient.ComputerTape3"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -557,7 +557,7 @@
 	"wave"		"ambient/computer_tape3.wav"
 }
 
-"Ambient.ComputerTape4"
+"DTF2_Ambient.ComputerTape4"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"0"
@@ -566,7 +566,7 @@
 	"wave"		"ambient/computer_tape4.wav"
 }
 
-"Ambient.CommandCenter"
+"DTF2_Ambient.CommandCenter"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -575,7 +575,7 @@
 	"wave"		")ambient/command_center.wav"
 }
 
-"Ambient.CommandCenter2"
+"DTF2_Ambient.CommandCenter2"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -584,7 +584,7 @@
 	"wave"		")ambient/command_center2.wav"
 }
 
-"Ambient.Factory"
+"DTF2_Ambient.Factory"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -593,7 +593,7 @@
 	"wave"		")ambient/factory_outdoor.wav"
 }
 
-"Ambient.Generator"
+"DTF2_Ambient.Generator"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -602,7 +602,7 @@
 	"wave"		")ambient/generator.wav"
 }
 
-"Ambient.SteamDrum"
+"DTF2_Ambient.SteamDrum"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -611,7 +611,7 @@
 	"wave"		")ambient/steam_drum.wav"
 }
 
-"Ambient.TrainApproachAndPass"
+"DTF2_Ambient.TrainApproachAndPass"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -621,7 +621,7 @@
 }
 
 
-"Ambient.Train"
+"DTF2_Ambient.Train"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -631,7 +631,7 @@
 }
 
 
-"Ambient.RailroadBells"
+"DTF2_Ambient.RailroadBells"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -640,7 +640,7 @@
 	"wave"		")ambient/railroad_bells.wav"
 }
 
-"Ambient.SlowTrain"
+"DTF2_Ambient.SlowTrain"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -649,7 +649,7 @@
 	"wave"		")ambient/slow_train.wav"
 }
 
-"Ambient.SlowTrainLeadIn"
+"DTF2_Ambient.SlowTrainLeadIn"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -658,7 +658,7 @@
 	"wave"		")ambient_mp3/slow_train_lead_in.mp3"
 }
 
-"Ambient.LightHum"
+"DTF2_Ambient.LightHum"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"		"1"
@@ -667,7 +667,7 @@
 	"wave"		"ambient/lighthum.wav"
 }
 
-"Ambient.LightHum"
+"DTF2_Ambient.LightHum"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -676,7 +676,7 @@
 	"wave"		"ambient/lighthum.wav"
 }
 
-"Ambient.Siren"
+"DTF2_Ambient.Siren"
 {
 	"channel"		"CHAN_AUTO"
 	"volume"		"VOL_NORM"
@@ -685,7 +685,7 @@
 	"wave"			"ambient_mp3/siren.mp3"
 }
 
-"Ambient.Cliff"
+"DTF2_Ambient.Cliff"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"VOL_NORM"
@@ -694,7 +694,7 @@
 	"wave"			")ambient/forest_cliff.wav"
 }
 
-"Ambient.Fireball"
+"DTF2_Ambient.Fireball"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -703,7 +703,7 @@
 	"wave"			")ambient/fireball.wav"
 }
 
-"Game.SuddenDeath"
+"DTF2_Game.SuddenDeath"
 {
 	"channel"	"CHAN_AUTO"
 	"volume"	"1"
@@ -714,7 +714,7 @@
 	"wave"		"#misc/your_team_suddendeath.wav"	[$X360]
 }
 
-"Game.Stalemate"
+"DTF2_Game.Stalemate"
 {
 	"channel"	"CHAN_AUTO"
 	"volume"	"1"
@@ -725,7 +725,7 @@
 	"wave"		"#misc/your_team_stalemate.wav"	[$X360]
 }
 
-"Game.Overtime"
+"DTF2_Game.Overtime"
 {
 	"channel"	"CHAN_VOICE2"
 	"volume"	"1"
@@ -740,7 +740,7 @@
 	}
 }
 
-"Game.YourTeamLost"
+"DTF2_Game.YourTeamLost"
 {
 	"channel"	"CHAN_AUTO"
 	"volume"	"1"
@@ -751,7 +751,7 @@
 	"wave"		"#misc/your_team_lost.wav"	[$X360]
 }
 
-"Game.YourTeamWon"
+"DTF2_Game.YourTeamWon"
 {
 	"channel"	"CHAN_AUTO"
 	"volume"	"1"
@@ -762,7 +762,7 @@
 	"wave"		"#misc/your_team_won.wav"	[$X360]
 }
 
-"Game.Revenge"
+"DTF2_Game.Revenge"
 {
 	"channel"  "CHAN_STATIC"
 	"volume"  ".65"
@@ -771,7 +771,7 @@
 	"wave"  "#misc/tf_revenge.wav"
 }
  
-"Game.Domination"
+"DTF2_Game.Domination"
 {
 	"channel"  "CHAN_STATIC"
  	"volume"  ".65"
@@ -780,7 +780,7 @@
 	"wave"  "#misc/tf_domination.wav"
 }
  
-"Game.Nemesis"
+"DTF2_Game.Nemesis"
 {
  	"channel"  "CHAN_STATIC"
  	"volume"  ".65"
@@ -788,7 +788,7 @@
  	"soundlevel"   "SNDLVL_NORM"
 	"wave"  "#misc/tf_nemesis.wav"
 }
-"Game.KillStreak"
+"DTF2_Game.KillStreak"
 {
  	"channel"  "CHAN_STATIC"
  	"volume"  ".65"
@@ -797,7 +797,7 @@
 	"wave"  "#misc/killstreak.wav"
 }
 
-"Game.PenetrationKill"
+"DTF2_Game.PenetrationKill"
 {
 	"channel"	"CHAN_STATIC"
  	"volume"	"0.8"
@@ -806,7 +806,7 @@
 	"wave"	"misc\sniper_railgun_double_kill.wav"
 }
 
-"Game.HappyBirthday"
+"DTF2_Game.HappyBirthday"
 {
  	"channel"  "CHAN_STATIC"
  	"volume"  "1"
@@ -815,7 +815,7 @@
 	"wave"  "misc/happy_birthday.wav"
 }
 
-"Game.HappyBirthdayNoiseMaker"
+"DTF2_Game.HappyBirthdayNoiseMaker"
 {
  	"channel"  "CHAN_STATIC"
  	"volume"  "1"
@@ -855,7 +855,7 @@
 	}
 }
 
-"DoSpark"
+"DTF2_DoSpark"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
@@ -869,7 +869,7 @@
 // MISC
 // ------------------------------------------------------------------------------------ //
 
-"Door.Open"
+"DTF2_Door.Open"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		".65"
@@ -878,7 +878,7 @@
 	"wave"		"doors/generic_door_open.wav"
 }
 
-"Door.Close"
+"DTF2_Door.Close"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		".65"
@@ -887,7 +887,7 @@
 	"wave"		"doors/generic_door_close.wav"
 }
 
-"TV.Static"
+"DTF2_TV.Static"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		".15"
@@ -896,7 +896,7 @@
 	"wave"		"misc/null.wav"
 }
 
-"TV.Tune"
+"DTF2_TV.Tune"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -917,7 +917,7 @@
 	}
 }
 
-"Hologram.Start"
+"DTF2_Hologram.Start"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -926,7 +926,7 @@
 	"wave"		"misc/hologram_start.wav"
 }
 
-"Hologram.Move"
+"DTF2_Hologram.Move"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -935,7 +935,7 @@
 	"wave"		"misc/hologram_move.wav"
 }
 
-"Hologram.Stop"
+"DTF2_Hologram.Stop"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -944,7 +944,7 @@
 	"wave"		"misc/hologram_stop.wav"
 }
 
-"Hologram.Interrupted"
+"DTF2_Hologram.Interrupted"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -954,7 +954,7 @@
 }
 
 
-"Fire.Engulf"
+"DTF2_Fire.Engulf"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -963,7 +963,7 @@
 	"wave"		"misc/flame_engulf.wav"
 }
 
-"Camera.SnapShot"
+"DTF2_Camera.SnapShot"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -972,7 +972,7 @@
 	"wave"		"misc/freeze_cam_snapshot.wav"
 }
 
-"Camera.SnapShotMultiple"
+"DTF2_Camera.SnapShotMultiple"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		".95, 1.0"
@@ -994,7 +994,7 @@
 	}
 }
 
-"Achievement.Earned"
+"DTF2_Achievement.Earned"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1004,7 +1004,7 @@
 }
 
 
-"Cart.Roll"
+"DTF2_Cart.Roll"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1013,7 +1013,7 @@
 	"wave"			")items/cart_rolling.wav"
 }
 
-"Cart.Grind"
+"DTF2_Cart.Grind"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1028,7 +1028,7 @@
 	}
 }
 
-"Cart.RollStart"
+"DTF2_Cart.RollStart"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1037,7 +1037,7 @@
 	"wave"			")items/cart_rolling_start.wav"
 }
 
-"Cart.RollStop"
+"DTF2_Cart.RollStop"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1046,7 +1046,7 @@
 	"wave"			")items/cart_rolling_stop.wav"
 }
 
-"Cart.Explode"
+"DTF2_Cart.Explode"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1055,7 +1055,7 @@
 	"wave"			")items/cart_explode.wav"
 }
 
-"Cart.Trigger"
+"DTF2_Cart.Trigger"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1064,7 +1064,7 @@
 	"wave"			")items/cart_explode_trigger.wav"
 }
 
-"Cart.Falling"
+"DTF2_Cart.Falling"
 {
 	"channel"		"CHAN_WEAPON"
 	"volume"		"1"
@@ -1073,7 +1073,7 @@
 	"wave"			"items/cart_explode_falling.wav"
 }
 
-"Cart.Warning"
+"DTF2_Cart.Warning"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1082,7 +1082,7 @@
 	"wave"			")items/cart_warning.wav"
 }
 
-"Cart.WarningSingle"
+"DTF2_Cart.WarningSingle"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1091,7 +1091,7 @@
 	"wave"			")items/cart_warning_single.wav"
 }
 
-"Hud.AchievementIncremented"
+"DTF2_Hud.AchievementIncremented"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"0.5"
@@ -1102,7 +1102,7 @@
 }
 
  
-"SawMill.BladeImpact"
+"DTF2_SawMill.BladeImpact"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1115,7 +1115,7 @@
 	}
 }
 
-"SawMill.Blade"
+"DTF2_SawMill.Blade"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		".75"
@@ -1125,7 +1125,7 @@
 	"wave"		")ambient/sawblade.wav"
 }
 
-"Ambient.NucleusElectricity"
+"DTF2_Ambient.NucleusElectricity"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1135,7 +1135,7 @@
 	"wave"		")ambient/nucleus_electricity.wav"
 }
 
-"Nucleus.WalkWayMove"
+"DTF2_Nucleus.WalkWayMove"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		".25"
@@ -1145,7 +1145,7 @@
 	"wave"		")ambient_mp3/walkway_move.mp3"
 }
 
-"Nucleus.ChamberOpen"
+"DTF2_Nucleus.ChamberOpen"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1155,7 +1155,7 @@
 	"wave"		")ambient/chamber_open.wav"
 }
 
-"Medieval.DoorOpen"
+"DTF2_Medieval.DoorOpen"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1165,7 +1165,7 @@
 	"wave"		"ambient_mp3/medieval_dooropen.mp3"
 }
 
-"Medieval.DoorClose"
+"DTF2_Medieval.DoorClose"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1175,7 +1175,7 @@
 	"wave"		"ambient_mp3/medieval_doorclose.mp3"
 }
 
-"Medieval.DoorOpenRaise"
+"DTF2_Medieval.DoorOpenRaise"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1185,7 +1185,7 @@
 	"wave"		"ambient_mp3/medieval_dooropenraise.mp3"
 }
 
-"Medieval.DoorOpenLower"
+"DTF2_Medieval.DoorOpenLower"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1195,7 +1195,7 @@
 	"wave"		"ambient_mp3/medieval_dooropenlower.mp3"
 }
 
-"Medieval.Flag"
+"DTF2_Medieval.Flag"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1205,7 +1205,7 @@
 	"wave"		"ambient/medieval_flag.wav"
 }
 
-"Medieval.Brazier"
+"DTF2_Medieval.Brazier"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1215,7 +1215,7 @@
 	"wave"		")ambient/medieval_brazier.wav"
 }
 
-"ArrowLight"
+"DTF2_ArrowLight"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1229,7 +1229,7 @@
 // REPLAY
 // ------------------------------------------------------------------------------------ //
 
-"Replay.Saved"
+"DTF2_Replay.Saved"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1240,7 +1240,7 @@
 }
 
 
-"Halloween.PumpkinExplode"
+"DTF2_Halloween.PumpkinExplode"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1254,7 +1254,7 @@
 	}
 }
 
-"Halloween.PumpkinDrop"
+"DTF2_Halloween.PumpkinDrop"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1264,7 +1264,7 @@
 	"wave"		"items/pumpkin_drop.wav"
 }
 
-"Halloween.PumpkinPickup"
+"DTF2_Halloween.PumpkinPickup"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1275,7 +1275,7 @@
 	"wave"		"items/pumpkin_pickup.wav"
 }
 
-"Halloween.LightsOn"
+"DTF2_Halloween.LightsOn"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1285,7 +1285,7 @@
 	"wave"		")ambient_mp3/lightson.mp3"
 }
 
-"Halloween.LightsOff"
+"DTF2_Halloween.LightsOff"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1295,7 +1295,7 @@
 	"wave"		")ambient_mp3/lightsoff.mp3"
 }
 
-"Halloween.MerasmusLoop"
+"DTF2_Halloween.MerasmusLoop"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1304,7 +1304,7 @@
 	"wave"		"ambient/hallowloop.wav"
 }
 
-"Vote.Created"
+"DTF2_Vote.Created"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel" 	"SNDLVL_NORM"
@@ -1313,7 +1313,7 @@
 	"wave"		"UI/vote_started.wav"
 }
 
-"Vote.Passed"
+"DTF2_Vote.Passed"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel" 	"SNDLVL_NORM"
@@ -1322,7 +1322,7 @@
 	"wave"		"UI/vote_success.wav"
 }
 
-"Vote.Failed"
+"DTF2_Vote.Failed"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel" 	"SNDLVL_NORM"
@@ -1331,7 +1331,7 @@
 	"wave"		"UI/vote_failure.wav"
 }
 
-"Vote.Cast.Yes"
+"DTF2_Vote.Cast.Yes"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel" 	"SNDLVL_NORM"
@@ -1340,7 +1340,7 @@
 	"wave"		"UI/vote_yes.wav"
 }
 
-"Vote.Cast.No"
+"DTF2_Vote.Cast.No"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel" 	"SNDLVL_NORM"
@@ -1353,7 +1353,7 @@
 //
 // Eyeball boss vortex
 //
-"Halloween.TeleportVortex.EyeballMovedVortex"
+"DTF2_Halloween.TeleportVortex.EyeballMovedVortex"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1.000"
@@ -1363,7 +1363,7 @@
 	"wave"		"misc/halloween_eyeball/vortex_eyeball_moved.wav"
 }
 
-"Halloween.TeleportVortex.EyeballDiedVortex"
+"DTF2_Halloween.TeleportVortex.EyeballDiedVortex"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1.000"
@@ -1373,7 +1373,7 @@
 	"wave"		"misc/halloween_eyeball/vortex_eyeball_died.wav"
 }
 
-"Halloween.TeleportVortex.BookSpawn"
+"DTF2_Halloween.TeleportVortex.BookSpawn"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1.000"
@@ -1383,7 +1383,7 @@
 	"wave"		"misc/halloween_eyeball/book_spawn.wav"
 }
 
-"Halloween.TeleportVortex.BookExit"
+"DTF2_Halloween.TeleportVortex.BookExit"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1.000"
@@ -1393,7 +1393,7 @@
 	"wave"		"misc/halloween_eyeball/book_exit.wav"
 }
 
-"Christmas.GiftDrop"
+"DTF2_Christmas.GiftDrop"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1403,7 +1403,7 @@
 	"wave"		"items/gift_drop.wav"
 }
 
-"Christmas.GiftPickup"
+"DTF2_Christmas.GiftPickup"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1413,7 +1413,7 @@
 	"wave"		"items/gift_pickup.wav"
 }
 
-"harbor_furnace_1shots"
+"DTF2_harbor_furnace_1shots"
 {	
 		"channel"		"CHAN_STATIC"
 		"volume"		".6"
@@ -1429,7 +1429,7 @@
 		}
 }
 
-"harbor_furnace_lp"
+"DTF2_harbor_furnace_lp"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1438,7 +1438,7 @@
 	"wave"		"ambient\cp_harbor\cauldron_lp_main.wav"
 }
 
-"harbor.blue_whistle"
+"DTF2_harbor.blue_whistle"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1448,7 +1448,7 @@
 	"wave"		")misc\cp_harbor_blue_whistle.wav"
 }
 
-"harbor.red_whistle"
+"DTF2_harbor.red_whistle"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1458,7 +1458,7 @@
 	"wave"		")misc\cp_harbor_red_whistle.wav"
 }
 
-"Tournament.PlayerReady"
+"DTF2_Tournament.PlayerReady"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel" 	"SNDLVL_NORM"
@@ -1471,7 +1471,7 @@
 // DOOMSDAY
 // ------------------------------------------------------------------------------------ //
 
-"doomsday.alarm"
+"DTF2_doomsday.alarm"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1481,7 +1481,7 @@
 	"wave"		")ambient_mp3\alarms\doomsday_lift_alarm.mp3"
 }
 
-"doomsday.lift_start"
+"DTF2_doomsday.lift_start"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1491,7 +1491,7 @@
 	"wave"		"misc\doomsday_lift_start.wav"
 }
 
-"doomsday.lift_loop"
+"DTF2_doomsday.lift_loop"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1501,7 +1501,7 @@
 	"wave"		"misc\doomsday_lift_loop.wav"
 }
 
-"doomsday.lift_stop"
+"DTF2_doomsday.lift_stop"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1512,7 +1512,7 @@
 }
 
 
-"doomsday.cap_spinstart"
+"DTF2_doomsday.cap_spinstart"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.5"
@@ -1522,7 +1522,7 @@
 	"wave"		")misc\doomsday_cap_spin_start.wav"
 }
 
-"doomsday.cap_spinloop"
+"DTF2_doomsday.cap_spinloop"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.9"
@@ -1532,7 +1532,7 @@
 	"wave"		")misc\doomsday_cap_spin_loop.wav"
 }
 
-"doomsday.cap_spin_end"
+"DTF2_doomsday.cap_spin_end"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.5"
@@ -1542,7 +1542,7 @@
 	"wave"		")misc\doomsday_cap_spin_end.wav"
 }
 
-"doomsday.cap_open_start"
+"DTF2_doomsday.cap_open_start"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1552,7 +1552,7 @@
 	"wave"		")misc\doomsday_cap_open_start.wav"
 }
 
-"doomsday.cap_open_end"
+"DTF2_doomsday.cap_open_end"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1562,7 +1562,7 @@
 	"wave"		")misc\doomsday_cap_open_end.wav"
 }
 
-"doomsday.cap_close_start"
+"DTF2_doomsday.cap_close_start"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.7"
@@ -1572,7 +1572,7 @@
 	"wave"		")misc\doomsday_cap_close_start.wav"
 }
 
-"doomsday.cap_close_end"
+"DTF2_doomsday.cap_close_end"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.7"
@@ -1582,7 +1582,7 @@
 	"wave"		")misc\doomsday_cap_close_end.wav"
 }
 
-"doomsday.cap_close_quick"
+"DTF2_doomsday.cap_close_quick"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1592,7 +1592,7 @@
 	"wave"		"misc\doomsday_cap_close_quick.wav"
 }
 
-"doomsday.warhead"
+"DTF2_doomsday.warhead"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1602,7 +1602,7 @@
 	"wave"		"misc\doomsday_warhead.wav"
 }
 
-"doomsday.pickupwarhead"
+"DTF2_doomsday.pickupwarhead"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1612,7 +1612,7 @@
 	"wave"		"misc\doomsday_pickup.wav"
 }
 
-"doomsday.radiation"
+"DTF2_doomsday.radiation"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.3"
@@ -1622,7 +1622,7 @@
 	"wave"		")misc\doomsday_radiation.wav"
 }
 
-"doomsday.blank"
+"DTF2_doomsday.blank"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1632,7 +1632,7 @@
 	"wave"		"misc\blank.wav"
 }
 
-"doomsday.launch"
+"DTF2_doomsday.launch"
 {
 	"channel"		"CHAN_WEAPON"
 	"volume"		"1"
@@ -1642,7 +1642,7 @@
 	"wave"		")misc\doomsday_missile_launch.wav"
 }
 
-"doomsday.launch_exp"
+"DTF2_doomsday.launch_exp"
 {
 	"channel"		"CHAN_WEAPON"
 	"volume"		"1"
@@ -1656,7 +1656,7 @@
 // Halloween 2012
 // ------------------------------------------------------------------------------------ //
 
-"Halloween.WheelofFate"
+"DTF2_Halloween.WheelofFate"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1664,7 +1664,7 @@
 	"pitch"			"PITCH_NORM"
 	"wave"			"misc/halloween/hwn_wheel_of_fate.wav"
 }
-"Halloween.WheelofFateQuiet"
+"DTF2_Halloween.WheelofFateQuiet"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1673,7 +1673,7 @@
 	"wave"			"misc/halloween/hwn_wheel_of_fate.wav"
 }
 
-"Halloween.Merasmus_Spell"
+"DTF2_Halloween.Merasmus_Spell"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1681,7 +1681,7 @@
 	"pitch"			"PITCH_NORM"
 	"wave"			")misc/halloween/merasmus_spell.wav"
 }
-"Halloween.Merasmus_TP_In"
+"DTF2_Halloween.Merasmus_TP_In"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1690,7 +1690,7 @@
 	"wave"			")misc/halloween/merasmus_appear.wav"
 }
 
-"Halloween.Merasmus_TP_Out"
+"DTF2_Halloween.Merasmus_TP_Out"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1699,7 +1699,7 @@
 	"wave"			")misc/halloween/merasmus_disappear.wav"
 }
 
-"Halloween.Merasmus_Float"
+"DTF2_Halloween.Merasmus_Float"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1708,7 +1708,7 @@
 	"wave"			"misc/halloween/merasmus_float.wav"
 }
 
-"Halloween.Merasmus_Hiding_Explode"
+"DTF2_Halloween.Merasmus_Hiding_Explode"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1717,7 +1717,7 @@
 	"wave"			")misc/halloween/merasmus_hiding_explode.wav"
 }
 
-"Halloween.Merasmus_Stun"
+"DTF2_Halloween.Merasmus_Stun"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1727,7 +1727,7 @@
 }
 
 
-"Halloween.Merasmus_Death"
+"DTF2_Halloween.Merasmus_Death"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1736,7 +1736,7 @@
 	"wave"			"misc/halloween/merasmus_death.wav"
 }
 
-"Halloween.dance_loop"
+"DTF2_Halloween.dance_loop"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.5"
@@ -1745,7 +1745,7 @@
 	"wave"			"misc/halloween/hwn_dance_loop.wav"
 }
 
-"Halloween.dance_howl"
+"DTF2_Halloween.dance_howl"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.5"
@@ -1754,7 +1754,7 @@
 	"wave"			"misc/halloween/hwn_dance_howl.wav"
 }
 
-"Halloween.plumes_long"
+"DTF2_Halloween.plumes_long"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.7"
@@ -1763,7 +1763,7 @@
 	"wave"			"misc/halloween/hwn_plumes_capture.wav"
 }
 
-"Halloween.plumes_short"
+"DTF2_Halloween.plumes_short"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.7"
@@ -1777,7 +1777,7 @@
 // ------------------------------------------------------------------------------------ //
 
 
-"Halloween.ClockTick"
+"DTF2_Halloween.ClockTick"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1787,7 +1787,7 @@
 	"wave"		")misc/halloween/clock_tick.wav"
 }
 
-"Halloween.hellride"
+"DTF2_Halloween.hellride"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1796,7 +1796,7 @@
 	"wave"			"misc/halloween/gotohell.wav"
 }
 
-"Halloween.spell_pickup"
+"DTF2_Halloween.spell_pickup"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1805,7 +1805,7 @@
 	"wave"			")misc/halloween/spell_pickup.wav"
 }
 
-"Halloween.spell_pickup_rare"
+"DTF2_Halloween.spell_pickup_rare"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1814,7 +1814,7 @@
 	"wave"			")misc/halloween/spell_pickup_rare.wav"
 }
 
-"Halloween.spelltick_a"
+"DTF2_Halloween.spelltick_a"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.5"
@@ -1823,7 +1823,7 @@
 	"wave"			"misc/halloween/spelltick_01.wav"
 }
 
-"Halloween.spelltick_b"
+"DTF2_Halloween.spelltick_b"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.5"
@@ -1832,7 +1832,7 @@
 	"wave"			"misc/halloween/spelltick_02.wav"
 }
 
-"Halloween.spelltick_set"
+"DTF2_Halloween.spelltick_set"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		".25"
@@ -1841,7 +1841,7 @@
 	"wave"			"misc/halloween/spelltick_set.wav"
 }
 
-"Halloween.skeleton_break"
+"DTF2_Halloween.skeleton_break"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1850,7 +1850,7 @@
 	"wave"			")misc/halloween/skeleton_break.wav"
 }
 
-"Halloween.skeleton_laugh_small"
+"DTF2_Halloween.skeleton_laugh_small"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1883,7 +1883,7 @@
 	}
 }
 
-"Halloween.skeleton_laugh_medium"
+"DTF2_Halloween.skeleton_laugh_medium"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.8"
@@ -1898,7 +1898,7 @@
 	}
 }
 
-"Halloween.skeleton_laugh_giant"
+"DTF2_Halloween.skeleton_laugh_giant"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1914,7 +1914,7 @@
 }
 
 
-"Halloween.spell_athletic"
+"DTF2_Halloween.spell_athletic"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1923,7 +1923,7 @@
 	"wave"			")misc/halloween/spell_athletic.wav"
 }
 
-"Halloween.spell_bat_cast"
+"DTF2_Halloween.spell_bat_cast"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1932,7 +1932,7 @@
 	"wave"			")misc/halloween/spell_bat_cast.wav"
 }
 
-"Halloween.spell_bat_impact"
+"DTF2_Halloween.spell_bat_impact"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1941,7 +1941,7 @@
 	"wave"			")misc/halloween/spell_bat_impact.wav"
 }
 
-"Halloween.spell_blastjump"
+"DTF2_Halloween.spell_blastjump"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1950,7 +1950,7 @@
 	"wave"			")misc/halloween/spell_blast_jump.wav"
 }
 
-"Halloween.spell_fireball_cast"
+"DTF2_Halloween.spell_fireball_cast"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1959,7 +1959,7 @@
 	"wave"			")misc/halloween/spell_fireball_cast.wav"
 }
 
-"Halloween.spell_fireball_impact"
+"DTF2_Halloween.spell_fireball_impact"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1968,7 +1968,7 @@
 	"wave"			")misc/halloween/spell_fireball_impact.wav"
 }
 
-"Halloween.spell_lightning_cast"
+"DTF2_Halloween.spell_lightning_cast"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1977,7 +1977,7 @@
 	"wave"			")misc/halloween/spell_lightning_ball_cast.wav"
 }
 
-"Halloween.spell_lightning_impact"
+"DTF2_Halloween.spell_lightning_impact"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1986,7 +1986,7 @@
 	"wave"			")misc/halloween/spell_lightning_ball_impact.wav"
 }
 
-"Halloween.spell_meteor_cast"
+"DTF2_Halloween.spell_meteor_cast"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1995,7 +1995,7 @@
 	"wave"			")misc/halloween/spell_meteor_cast.wav"
 }
 
-"Halloween.spell_meteor_impact"
+"DTF2_Halloween.spell_meteor_impact"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		".5"
@@ -2004,7 +2004,7 @@
 	"wave"			")misc/halloween/spell_meteor_impact.wav"
 }
 
-"Halloween.spell_mirv_cast"
+"DTF2_Halloween.spell_mirv_cast"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2013,7 +2013,7 @@
 	"wave"			")misc/halloween/spell_mirv_cast.wav"
 }
 
-"Halloween.spell_mirv_explode_primary"
+"DTF2_Halloween.spell_mirv_explode_primary"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2022,7 +2022,7 @@
 	"wave"			")misc/halloween/spell_mirv_explode_primary.wav"
 }
 
-"Halloween.spell_mirv_explode_secondary"
+"DTF2_Halloween.spell_mirv_explode_secondary"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		".25"
@@ -2031,7 +2031,7 @@
 	"wave"			")misc/halloween/spell_mirv_explode_secondary.wav"
 }
 
-"Halloween.spell_overheal"
+"DTF2_Halloween.spell_overheal"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2040,7 +2040,7 @@
 	"wave"			")misc/halloween/spell_overheal.wav"
 }
 
-"Halloween.spell_skeleton_horde_cast"
+"DTF2_Halloween.spell_skeleton_horde_cast"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2049,7 +2049,7 @@
 	"wave"			")misc/halloween/spell_skeleton_horde_cast.wav"
 }
 
-"Halloween.spell_skeleton_horde_rise"
+"DTF2_Halloween.spell_skeleton_horde_rise"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2058,7 +2058,7 @@
 	"wave"			")misc/halloween/spell_skeleton_horde_rise.wav"
 }
 
-"Halloween.spell_spawn_boss"
+"DTF2_Halloween.spell_spawn_boss"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2067,7 +2067,7 @@
 	"wave"			")misc/halloween/spell_spawn_boss.wav"
 }
 
-"Halloween.spell_spawn_boss_disappear"
+"DTF2_Halloween.spell_spawn_boss_disappear"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2076,7 +2076,7 @@
 	"wave"			")misc/halloween/spell_spawn_boss_disappear.wav"
 }
 
-"Halloween.spell_stealth"
+"DTF2_Halloween.spell_stealth"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2085,7 +2085,7 @@
 	"wave"			")misc/halloween/spell_stealth.wav"
 }
 
-"Halloween.spell_teleport"
+"DTF2_Halloween.spell_teleport"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2097,7 +2097,7 @@
 
 // Misc
 
-"Ambient.metrotrain_passby"
+"DTF2_Ambient.metrotrain_passby"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -2110,7 +2110,7 @@
 	}
 }
 
-"General.banana_slip" 
+"DTF2_General.banana_slip" 
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -2123,7 +2123,7 @@
 
 // Rottenburg map - Large metal door sounds
 
-"Hugedoor.openstart"
+"DTF2_Hugedoor.openstart"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2132,7 +2132,7 @@
 	"wave"			")ambient_mp3/rottenburg/tunneldoor_open.mp3"
 }
 
-"Hugedoor.opencomplete"
+"DTF2_Hugedoor.opencomplete"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.8"
@@ -2141,7 +2141,7 @@
 	"wave"			")ambient_mp3/rottenburg/tunneldoor_open_complete.mp3"
 }
 
-"Hugedoor.closedloud"
+"DTF2_Hugedoor.closedloud"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2150,7 +2150,7 @@
 	"wave"			")ambient_mp3/rottenburg/tunneldoor_closed_loud.mp3"
 }
 
-"Hugedoor.closedsoft"
+"DTF2_Hugedoor.closedsoft"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.8"
@@ -2161,7 +2161,7 @@
 
 // Rottenburg map - Portcullis over upgrades shop
 
-"Portcullis.down_start"
+"DTF2_Portcullis.down_start"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.7"
@@ -2170,7 +2170,7 @@
 	"wave"			")ambient_mp3/rottenburg/portcullis_down.mp3"
 }
 
-"Portcullis.down_slam"
+"DTF2_Portcullis.down_slam"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.8"
@@ -2179,7 +2179,7 @@
 	"wave"			")ambient_mp3/rottenburg/portcullis_slam.mp3"
 }
 
-"Portcullis.up_start"
+"DTF2_Portcullis.up_start"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.8"
@@ -2190,7 +2190,7 @@
 
 // Rottenburg map - Bomb carrier pushed into pit under bell tower
 
-"Belltower.Ring"
+"DTF2_Belltower.Ring"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2201,7 +2201,7 @@
 
 // Rottenburg map - Palisade barrier smash
 
-"MVM.BarrierSmash"
+"DTF2_MVM.BarrierSmash"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2212,7 +2212,7 @@
 
 // New item drop crates
 
-"ui.crate_open_short"
+"DTF2_ui.crate_open_short"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2222,7 +2222,7 @@
 }
 
 
-"ui.cratesmash_common"
+"DTF2_ui.cratesmash_common"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.7"
@@ -2231,7 +2231,7 @@
 	"wave"			"ui/itemcrate_smash_common.wav"
 }
 
-"ui.cratesmash_rare_long"
+"DTF2_ui.cratesmash_rare_long"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.8"
@@ -2240,7 +2240,7 @@
 	"wave"			"ui/itemcrate_smash_mid.wav"
 }
 
-"ui.cratesmash_ultrarare_short"
+"DTF2_ui.cratesmash_ultrarare_short"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2249,7 +2249,7 @@
 	"wave"			"ui/itemcrate_smash_ultrarare_short.wav"
 }
 
-"ui.cratesmash_ultrarare_long"
+"DTF2_ui.cratesmash_ultrarare_long"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2258,7 +2258,7 @@
 	"wave"			"ui/itemcrate_smash_ultrarare.wav"
 }
 
-"ui.cratesmash_ultrarare_long_fireworks"
+"DTF2_ui.cratesmash_ultrarare_long_fireworks"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2267,21 +2267,21 @@
 	"wave"			"ui/itemcrate_smash_ultrarare_fireworks.wav"
 }
 
-"Equipment.RocketPack_Activate"
+"DTF2_Equipment.RocketPack_Activate"
 {
 	"channel"	"CHAN_WEAPON"
 	"volume"	"1.0"
 	"soundlevel"	"SNDLVL_94dB"
 	"wave"		")weapons/rocket_ll_shoot.wav"
 }
-"Parachute_open"
+"DTF2_Parachute_open"
 {
 	"channel"		"CHAN_WEAPON"
 	"volume"		"1.0"
 	"soundlevel"	"SNDLVL_75dB"
 	"wave"			")items/para_open.wav"
 }
-"Parachute_close"
+"DTF2_Parachute_close"
 {
 	"channel"		"CHAN_WEAPON"
 	"volume"		"0.3"
@@ -2293,7 +2293,7 @@
 // Halloween 2014
 // ------------------------------------------------------------------------------------ //
 
-"Halloween.CarCheer"
+"DTF2_Halloween.CarCheer"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -2307,7 +2307,7 @@
 	}
 }
 
-"Halloween.CarBoo"
+"DTF2_Halloween.CarBoo"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -2321,7 +2321,7 @@
 	}
 }
 
-"Halloween.Quack"
+"DTF2_Halloween.Quack"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_94dB"
@@ -2339,14 +2339,14 @@
 	}
 }
 
-"Halloween.FloorBreak"
+"DTF2_Halloween.FloorBreak"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_110dB"
 	"volume"	"1"
 	"wave"	")ambient_mp3/bumper_car_floor_break.mp3"
 }
-"Halloween.FloorBreakReverse"
+"DTF2_Halloween.FloorBreakReverse"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_110dB"
@@ -2354,7 +2354,7 @@
 	"wave"	")ambient_mp3/bumper_car_floor_break_reverse.mp3"
 }
 
-"Halloween.HammerGearCrankSlow"
+"DTF2_Halloween.HammerGearCrankSlow"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_148dB"
@@ -2362,7 +2362,7 @@
 	"wave"	"ambient_mp3/puthammerhere.mp3"
 }
 
-"Halloween.HammerGearCrankFast"
+"DTF2_Halloween.HammerGearCrankFast"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_148dB"
@@ -2370,7 +2370,7 @@
 	"wave"	"ambient_mp3/puthammerhere.mp3"
 }
 
-"Halloween.HammerImpactLarge"
+"DTF2_Halloween.HammerImpactLarge"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_148dB"
@@ -2378,7 +2378,7 @@
 	"wave"	"ambient_mp3/puthammerhere.mp3"
 }
 
-"Halloween.HammerImpactSmall"
+"DTF2_Halloween.HammerImpactSmall"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_148dB"
@@ -2386,7 +2386,7 @@
 	"wave"	"ambient_mp3/puthammerhere.mp3"
 }
 
-"Halloween.HammerImpactSmall2"
+"DTF2_Halloween.HammerImpactSmall2"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_148dB"
@@ -2394,7 +2394,7 @@
 	"wave"	"ambient_mp3/puthammerhere.mp3"
 }
 
-"Halloween.HammerImpactBloodyBoneCrunch"
+"DTF2_Halloween.HammerImpactBloodyBoneCrunch"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_148dB"
@@ -2402,7 +2402,7 @@
 	"wave"	"ambient_mp3/puthammerhere.mp3"
 }
 
-"Halloween.PlatformAlarm"
+"DTF2_Halloween.PlatformAlarm"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_148dB"
@@ -2410,7 +2410,7 @@
 	"wave"	"ambient/alarms/klaxon1.wav"
 }
 
-"Halloween.BellRing.Scout"
+"DTF2_Halloween.BellRing.Scout"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_148dB"
@@ -2418,7 +2418,7 @@
 	"wave"	"mvm/melee_impacts/metal_gloves_hit_robo02.wav"
 }
 
-"Halloween.BellRing.Heman"
+"DTF2_Halloween.BellRing.Heman"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_148dB"
@@ -2426,7 +2426,7 @@
 	"wave"	"mvm/melee_impacts/metal_gloves_hit_robo02.wav"
 }
 
-"Halloween.BellRing.PushOver"
+"DTF2_Halloween.BellRing.PushOver"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_148dB"
@@ -2434,7 +2434,7 @@
 	"wave"	"mvm/melee_impacts/metal_gloves_hit_robo02.wav"
 }
 
-"Halloween.BellRing.Wizard"
+"DTF2_Halloween.BellRing.Wizard"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_148dB"
@@ -2442,7 +2442,7 @@
 	"wave"	"mvm/melee_impacts/metal_gloves_hit_robo02.wav"
 }
 
-"Halloween.BellRing.WoodImpact"
+"DTF2_Halloween.BellRing.WoodImpact"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_148dB"
@@ -2450,7 +2450,7 @@
 	"wave"	"mvm/melee_impacts/metal_gloves_hit_robo02.wav"
 }
 
-"Halloween.DuckPickup.Pos"
+"DTF2_Halloween.DuckPickup.Pos"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_148dB"
@@ -2458,14 +2458,14 @@
 	"wave"	"misc/halloween/duck_pickup_pos_01.wav"
 }
 
-"Halloween.DuckPickup.Neg"
+"DTF2_Halloween.DuckPickup.Neg"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_148dB"
 	"volume"	"1"
 	"wave"	"misc/halloween/duck_pickup_neg_01.wav"
 }
-"Halloween.HammerImpact"
+"DTF2_Halloween.HammerImpact"
 {
 	"channel"	"CHAN_WEAPON"
 	"soundlevel"	"SNDLVL_150dB"
@@ -2473,7 +2473,7 @@
 	"wave"	"misc/halloween/strongman_fast_impact_01.wav"
 }
 
-"Duck.Quack"
+"DTF2_Duck.Quack"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_75dB"
@@ -2495,7 +2495,7 @@
 // Powerups
 // ------------------------------------------------------------------------------------ //
 
-"Mannpower.InvulnerableOn"
+"DTF2_Mannpower.InvulnerableOn"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1"
@@ -2503,7 +2503,7 @@
 	"wave"		"player/mannpower_invulnerable.wav"
 }
 
-"Powerup.PickUpTemp.Crit"
+"DTF2_Powerup.PickUpTemp.Crit"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2513,7 +2513,7 @@
 	"wave"			")items/powerup_pickup_crits.wav"
 }
 
-"Powerup.PickUpTemp.Uber"
+"DTF2_Powerup.PickUpTemp.Uber"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2523,7 +2523,7 @@
 	"wave"			")items/powerup_pickup_uber.wav"
 }
 
-"Powerup.PickUpKnockout"
+"DTF2_Powerup.PickUpKnockout"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2533,7 +2533,7 @@
 	"wave"			")items/powerup_pickup_knockout.wav"
 }
 
-"Powerup.Knockout_Melee_Hit"
+"DTF2_Powerup.Knockout_Melee_Hit"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2542,7 +2542,7 @@
 	"wave"			")items/powerup_pickup_knockout_melee_hit.wav"
 }
 
-"Powerup.Volume.Use"
+"DTF2_Powerup.Volume.Use"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2552,7 +2552,7 @@
 	"wave"			")items/powerup_pickup_team_revenge.wav"
 }
 
-"Powerup.PickUpBase"
+"DTF2_Powerup.PickUpBase"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2562,7 +2562,7 @@
 	"wave"			")items/powerup_pickup_base.wav"
 }
 
-"Powerup.PickUpAgility"
+"DTF2_Powerup.PickUpAgility"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2572,7 +2572,7 @@
 	"wave"			")items/powerup_pickup_agility.wav"
 }
 
-"Powerup.PickUpHaste"
+"DTF2_Powerup.PickUpHaste"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2582,7 +2582,7 @@
 	"wave"			")items/powerup_pickup_haste.wav"
 }
 
-"Powerup.PickUpPrecision"
+"DTF2_Powerup.PickUpPrecision"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2592,7 +2592,7 @@
 	"wave"			")items/powerup_pickup_precision.wav"
 }
 
-"Powerup.PickUpRegeneration"
+"DTF2_Powerup.PickUpRegeneration"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2602,7 +2602,7 @@
 	"wave"			")items/powerup_pickup_regeneration.wav"
 }
 
-"Powerup.PickUpResistance"
+"DTF2_Powerup.PickUpResistance"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2612,7 +2612,7 @@
 	"wave"			")items/powerup_pickup_resistance.wav"
 }
 
-"Powerup.PickUpStrength"
+"DTF2_Powerup.PickUpStrength"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2622,7 +2622,7 @@
 	"wave"			")items/powerup_pickup_strength.wav"
 }
 
-"Powerup.PickUpVampire"
+"DTF2_Powerup.PickUpVampire"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2632,7 +2632,7 @@
 	"wave"			")items/powerup_pickup_vampire.wav"
 }
 
-"Powerup.PickUpSupernova"
+"DTF2_Powerup.PickUpSupernova"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2642,7 +2642,7 @@
 	"wave"			")items/powerup_pickup_supernova.wav"
 }
 
-"Powerup.PickUpSupernovaActivate"
+"DTF2_Powerup.PickUpSupernovaActivate"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2652,7 +2652,7 @@
 	"wave"			")items/powerup_pickup_supernova_activate.wav"
 }
 
-"Powerup.PickUpPlague"
+"DTF2_Powerup.PickUpPlague"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2662,7 +2662,7 @@
 	"wave"			")items/powerup_pickup_plague.wav"
 }
 
-"Powerup.PickUpPlagueInfected"
+"DTF2_Powerup.PickUpPlagueInfected"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2672,7 +2672,7 @@
 	"wave"			")items/powerup_pickup_plague_infected.wav"
 }
 
-"Powerup.PickUpPlagueInfectedLoop"
+"DTF2_Powerup.PickUpPlagueInfectedLoop"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2682,7 +2682,7 @@
 	"wave"			")items/powerup_pickup_plague_infected_loop.wav"
 }
 
-"Powerup.PickUpThorns"
+"DTF2_Powerup.PickUpThorns"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2692,7 +2692,7 @@
 	"wave"			")items/powerup_pickup_warlock.wav"
 }
 
-"Powerup.PickUpReflect"
+"DTF2_Powerup.PickUpReflect"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2701,7 +2701,7 @@
 	"wave"			")items/powerup_pickup_reflect.wav"
 }
 
-"Powerup.Reflect.Reflect"
+"DTF2_Powerup.Reflect.Reflect"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2710,7 +2710,7 @@
 	"wave"			")items/powerup_pickup_reflect_reflect_damage.wav"
 }
 
-"Powerup.PickUpKing"
+"DTF2_Powerup.PickUpKing"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2719,7 +2719,7 @@
 	"wave"			")items/powerup_pickup_king.wav"
 }
 
-"Powerup.ReducedDamage"
+"DTF2_Powerup.ReducedDamage"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2732,7 +2732,7 @@
 // Quests
 // ------------------------------------------------------------------------------------ //
 
-"Quest.Alert"
+"DTF2_Quest.Alert"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2741,7 +2741,7 @@
 	"wave"			"ui/quest_alert.wav"
 }
 
-"Quest.StatusTick"
+"DTF2_Quest.StatusTick"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2750,7 +2750,7 @@
 	"wave"			"ui/quest_status_tick.wav"
 }
 
-"Quest.StatusTickBonus"
+"DTF2_Quest.StatusTickBonus"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2759,7 +2759,7 @@
 	"wave"			"ui/quest_status_tick_bonus.wav"
 }
 
-"Quest.StatusTickComplete"
+"DTF2_Quest.StatusTickComplete"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2768,7 +2768,7 @@
 	"wave"			"ui/quest_status_tick_complete.wav"
 }
 
-"Quest.StatusTickBonusComplete"
+"DTF2_Quest.StatusTickBonusComplete"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2777,7 +2777,7 @@
 	"wave"			"ui/quest_status_tick_bonus_complete.wav"
 } 
 
-"Quest.StatusComplete"
+"DTF2_Quest.StatusComplete"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2786,7 +2786,7 @@
 	"wave"			"ui/quest_status_complete.wav"
 }
 
-"Quest.Decode"
+"DTF2_Quest.Decode"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2795,7 +2795,7 @@
 	"wave"			"ui/quest_decode.wav"
 }
 
-"Quest.FolderOpen"
+"DTF2_Quest.FolderOpen"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2804,7 +2804,7 @@
 	"wave"			"ui/quest_folder_open.wav"
 }
 
-"Quest.FolderClose"
+"DTF2_Quest.FolderClose"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2813,7 +2813,7 @@
 	"wave"			"ui/quest_folder_close.wav"
 }
 
-"Quest.TurnInDecode"
+"DTF2_Quest.TurnInDecode"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2823,7 +2823,7 @@
 }
 
 
-"Quest.TurnInAccepted"
+"DTF2_Quest.TurnInAccepted"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2832,7 +2832,7 @@
 	"wave"			"ui/quest_turn_in_accepted.wav"
 }
 
-"Quest.OperationPassUse"
+"DTF2_Quest.OperationPassUse"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2841,7 +2841,7 @@
 	"wave"			"ui/quest_operation_pass_use.wav"
 }
 
-"Quest.OperationPassBuy"
+"DTF2_Quest.OperationPassBuy"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2854,7 +2854,7 @@
 // Halloween 2015
 // ------------------------------------------------------------------------------------ //
 
-"Quest.StatusTickCompleteHalloween"
+"DTF2_Quest.StatusTickCompleteHalloween"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2863,7 +2863,7 @@
 	"wave"			"ui/quest_status_tick_complete_halloween.wav"
 }
 
-"Quest.StatusTickBonusCompleteHalloween"
+"DTF2_Quest.StatusTickBonusCompleteHalloween"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2872,7 +2872,7 @@
 	"wave"			"ui/quest_status_tick_bonus_complete_halloween.wav"
 } 
 
-"Quest.DecodeHalloween"
+"DTF2_Quest.DecodeHalloween"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2881,7 +2881,7 @@
 	"wave"			"ui/quest_decode_halloween.wav"
 }
 
-"Quest.FolderOpenHalloween"
+"DTF2_Quest.FolderOpenHalloween"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2890,7 +2890,7 @@
 	"wave"			"ui/quest_folder_open_halloween.wav"
 }
 
-"Quest.FolderCloseHalloween"
+"DTF2_Quest.FolderCloseHalloween"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2899,7 +2899,7 @@
 	"wave"			"ui/quest_folder_close_halloween.wav"
 }
 
-"Quest.TurnInDecodeHalloween"
+"DTF2_Quest.TurnInDecodeHalloween"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2909,7 +2909,7 @@
 }
 
 
-"Quest.TurnInAcceptedHalloween"
+"DTF2_Quest.TurnInAcceptedHalloween"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2922,7 +2922,7 @@
 // MATCHMAKING
 // ------------------------------------------------------------------------------------ //
 
-"MatchMaking.RoundStart"
+"DTF2_MatchMaking.RoundStart"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		".4"
@@ -2931,7 +2931,7 @@
 	"wave"			"ui/mm_round_start.wav"
 } 
 
-"MatchMaking.RoundStartCasual"
+"DTF2_MatchMaking.RoundStartCasual"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		".4"
@@ -2940,7 +2940,7 @@
 	"wave"			"ui/mm_round_start_casual.wav"
 }
 
-"MatchMaking.MatchEndBlueWinMusic"
+"DTF2_MatchMaking.MatchEndBlueWinMusic"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2949,7 +2949,7 @@
 	"wave"			"ui/mm_match_end_blue_win_music.wav"
 } 
 
-"MatchMaking.MatchEndRedWinMusic"
+"DTF2_MatchMaking.MatchEndRedWinMusic"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2958,7 +2958,7 @@
 	"wave"			"ui/mm_match_end_red_win_music.wav"
 }
 
-"MatchMaking.MatchEndWinMusicCasual"
+"DTF2_MatchMaking.MatchEndWinMusicCasual"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2967,7 +2967,7 @@
 	"wave"			"ui/mm_match_end_win_music_casual.wav"
 }
 
-"MatchMaking.MatchEndLoseMusicCasual"
+"DTF2_MatchMaking.MatchEndLoseMusicCasual"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2976,7 +2976,7 @@
 	"wave"			"ui/mm_match_end_lose_music_casual.wav"
 }
 
-"MatchMaking.RoundEndBlueWinMusic"
+"DTF2_MatchMaking.RoundEndBlueWinMusic"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2985,7 +2985,7 @@
 	"wave"			"ui/mm_round_end_blue_win_music.wav"
 } 
 
-"MatchMaking.RoundEndRedWinMusic"
+"DTF2_MatchMaking.RoundEndRedWinMusic"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -2994,7 +2994,7 @@
 	"wave"			"ui/mm_round_end_red_win_music.wav"
 } 
 
-"MatchMaking.RoundEndStalemateMusic"
+"DTF2_MatchMaking.RoundEndStalemateMusic"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -3003,7 +3003,7 @@
 	"wave"			"ui/mm_round_end_stalemate_music.wav"
 } 
  
-"MatchMaking.DoorOpen"
+"DTF2_MatchMaking.DoorOpen"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -3012,7 +3012,7 @@
 	"wave"			"ui/mm_door_open.wav"
 } 
 
-"MatchMaking.DoorOpenUnlock"
+"DTF2_MatchMaking.DoorOpenUnlock"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		".15"
@@ -3021,7 +3021,7 @@
 	"wave"			"ui/mm_door_open_unlock.wav"
 }
 
-"MatchMaking.DoorClose"
+"DTF2_MatchMaking.DoorClose"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -3030,7 +3030,7 @@
 	"wave"			"ui/mm_door_close.wav"
 } 
 
-"MatchMaking.DoorCloseLock"
+"DTF2_MatchMaking.DoorCloseLock"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		".15"
@@ -3039,7 +3039,7 @@
 	"wave"			"ui/mm_door_close_lock.wav"
 }
 
-"MatchMaking.ScoreboardPanelSlide"
+"DTF2_MatchMaking.ScoreboardPanelSlide"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -3048,7 +3048,7 @@
 	"wave"			"ui/mm_scoreboardpanel_slide.wav"
 } 
 
-"MatchMaking.None"
+"DTF2_MatchMaking.None"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		".25"
@@ -3057,7 +3057,7 @@
 	"wave"			"ui/mm_medal_none.wav"
 }  
 
-"MatchMaking.Bronze"
+"DTF2_MatchMaking.Bronze"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		".25"
@@ -3066,7 +3066,7 @@
 	"wave"			"ui/mm_medal_bronze.wav"
 } 
 
-"MatchMaking.Silver"
+"DTF2_MatchMaking.Silver"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		".25"
@@ -3075,7 +3075,7 @@
 	"wave"			"ui/mm_medal_silver.wav"
 } 
 
-"MatchMaking.Gold"
+"DTF2_MatchMaking.Gold"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		".25"
@@ -3084,7 +3084,7 @@
 	"wave"			"ui/mm_medal_gold.wav"
 } 
 
-"MatchMaking.XPChime"
+"DTF2_MatchMaking.XPChime"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -3093,7 +3093,7 @@
 	"wave"			"ui/mm_xp_chime.wav"
 } 
 
-"MatchMaking.RankUp"
+"DTF2_MatchMaking.RankUp"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -3102,7 +3102,7 @@
 	"wave"			"ui/mm_rank_up.wav"
 } 
 
-"MatchMaking.RankDownMedalShoot"
+"DTF2_MatchMaking.RankDownMedalShoot"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_75dB"
@@ -3110,7 +3110,7 @@
 	"wave"			")ui/mm_rank_down_medal_shoot.wav"
 }
 
-"MatchMaking.RankDownMedalShootImpact"
+"DTF2_MatchMaking.RankDownMedalShootImpact"
 {
 	"channel"			"CHAN_STATIC"
 	"soundlevel"		"SNDLVL_75dB"
@@ -3119,7 +3119,7 @@
 	"wave"				")ui/mm_rank_down_medal_shoot_impact.wav"
 }
 
-"MatchMaking.MedalSpinHit"
+"DTF2_MatchMaking.MedalSpinHit"
 {
 	"channel"			"CHAN_STATIC"
 	"soundlevel"		"SNDLVL_75dB"
@@ -3128,7 +3128,7 @@
 	"wave"				")ui/mm_medal_spin_hit.wav"
 }
 
-"MatchMaking.RankOneAchieved"
+"DTF2_MatchMaking.RankOneAchieved"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -3137,7 +3137,7 @@
 	"wave"			"ui/mm_rank_one_achieved.wav"
 } 
 
-"MatchMaking.RankTwoAchieved"
+"DTF2_MatchMaking.RankTwoAchieved"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -3146,7 +3146,7 @@
 	"wave"			"ui/mm_rank_two_achieved.wav"
 } 
 
-"MatchMaking.RankThreeAchieved"
+"DTF2_MatchMaking.RankThreeAchieved"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -3155,7 +3155,7 @@
 	"wave"			"ui/mm_rank_three_achieved.wav"
 } 
 
-"MatchMaking.RankFourAchieved"
+"DTF2_MatchMaking.RankFourAchieved"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -3164,7 +3164,7 @@
 	"wave"			"ui/mm_rank_four_achieved.wav"
 } 
 
-"MatchMaking.LevelOneAchieved"
+"DTF2_MatchMaking.LevelOneAchieved"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -3173,7 +3173,7 @@
 	"wave"			"ui/mm_level_one_achieved.wav"
 }
 
-"MatchMaking.LevelTwoAchieved"
+"DTF2_MatchMaking.LevelTwoAchieved"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -3182,7 +3182,7 @@
 	"wave"			"ui/mm_level_two_achieved.wav"
 } 
 
-"MatchMaking.LevelThreeAchieved"
+"DTF2_MatchMaking.LevelThreeAchieved"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -3191,7 +3191,7 @@
 	"wave"			"ui/mm_level_three_achieved.wav"
 } 
 
-"MatchMaking.LevelFourAchieved"
+"DTF2_MatchMaking.LevelFourAchieved"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -3200,7 +3200,7 @@
 	"wave"			"ui/mm_level_four_achieved.wav"
 } 
 
-"MatchMaking.LevelFiveAchieved"
+"DTF2_MatchMaking.LevelFiveAchieved"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -3209,7 +3209,7 @@
 	"wave"			"ui/mm_level_five_achieved.wav"
 } 
 
-"MatchMaking.LevelSixAchieved"
+"DTF2_MatchMaking.LevelSixAchieved"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -3218,7 +3218,7 @@
 	"wave"			"ui/mm_level_six_achieved.wav"
 }  
 
-"MatchMaking.RankProgressTickUp"
+"DTF2_MatchMaking.RankProgressTickUp"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		".5"
@@ -3227,7 +3227,7 @@
 	"wave"			"ui/mm_rank_progress_tick_up.wav"
 } 
 
-"MatchMaking.RankProgressTickDown"
+"DTF2_MatchMaking.RankProgressTickDown"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		".5"
@@ -3236,7 +3236,7 @@
 	"wave"			"ui/mm_rank_progress_tick_down.wav"
 } 
 
-"MatchMaking.MedalClick"
+"DTF2_MatchMaking.MedalClick"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -3245,7 +3245,7 @@
 	"wave"			"ui/mm_medal_click.wav"
 } 
 
-"MatchMaking.MedalClickRare"
+"DTF2_MatchMaking.MedalClickRare"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -3254,7 +3254,7 @@
 	"wave"			"ui/mm_medal_click_rare.wav"
 } 
 
-"MatchMaking.CompBanner"
+"DTF2_MatchMaking.CompBanner"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -3263,7 +3263,7 @@
 	"wave"			"ui/mm_comp_banner.wav"
 } 
 
-"MatchMaking.CompBannerUp"
+"DTF2_MatchMaking.CompBannerUp"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		".55"
@@ -3272,7 +3272,7 @@
 	"wave"			"ui/mm_comp_banner_up.wav"
 } 
 
-"MatchMaking.CompBannerDown"
+"DTF2_MatchMaking.CompBannerDown"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		".7"
@@ -3281,7 +3281,7 @@
 	"wave"			"ui/mm_comp_banner_down.wav"
 }
 
-"DemoSupport.StartRecording"
+"DTF2_DemoSupport.StartRecording"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"VOL_NORM"
@@ -3290,7 +3290,7 @@
 	"wave"			"ui/demosupport_start.wav"
 }
 
-"DemoSupport.EndRecording"
+"DTF2_DemoSupport.EndRecording"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"VOL_NORM"

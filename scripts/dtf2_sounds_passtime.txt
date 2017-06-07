@@ -1,4 +1,4 @@
-"Passtime.BallIntercepted"
+"DTF2_Passtime.BallIntercepted"
 {
 	"channel" 		"CHAN_VOICE2"
 	"volume" 		"VOL_NORM"
@@ -7,7 +7,7 @@
 	"wave"			"passtime/ball_intercepted.wav"
 }
 
-"Passtime.BallStolen"
+"DTF2_Passtime.BallStolen"
 {
 	"channel" 		"CHAN_VOICE2"
 	"volume" 		"VOL_NORM"
@@ -16,7 +16,7 @@
 	"wave"			"passtime/ball_stolen.wav"
 }
 
-"Passtime.BallDropped"
+"DTF2_Passtime.BallDropped"
 {
 	"channel" 		"CHAN_VOICE2"
 	"volume" 		"VOL_NORM"
@@ -25,7 +25,7 @@
 	"wave"			"passtime/ball_dropped.wav"
 }
 
-"Passtime.BigHornLong"
+"DTF2_Passtime.BigHornLong"
 {
 	"volume" 		"1"
 	"pitch" 		"PITCH_NORM"
@@ -40,7 +40,7 @@
 	}
 }
 
-"Passtime.Crowd.Boo"
+"DTF2_Passtime.Crowd.Boo"
 {
 	"channel" 		"CHAN_STATIC"
 	"volume" 		"1"
@@ -52,7 +52,7 @@
 	}	
 }
 
-"Passtime.Crowd.Cheer"
+"DTF2_Passtime.Crowd.Cheer"
 {
 	"channel" 		"CHAN_STATIC"
 	"volume" 		"1"
@@ -64,7 +64,7 @@
 	}	
 }
 
-"Passtime.Crowd.React.Neg"
+"DTF2_Passtime.Crowd.React.Neg"
 {
 	"channel" 		"CHAN_STATIC"
 	"volume" 		"1"
@@ -76,7 +76,7 @@
 	}
 }
 
-"Passtime.Crowd.React.Pos"
+"DTF2_Passtime.Crowd.React.Pos"
 {
 	"channel" 		"CHAN_STATIC"
 	"volume" 		"1"
@@ -88,7 +88,7 @@
 	}
 }
 
-"Passtime.BallSpawn"
+"DTF2_Passtime.BallSpawn"
 {
 	"channel" 		"CHAN_STATIC"
 	"volume" 		"1"
@@ -100,7 +100,7 @@
 	}
 }
 
-"Passtime.BallCatch"
+"DTF2_Passtime.BallCatch"
 {
 	"channel" 		"CHAN_WEAPON"
 	"volume" 		"1"
@@ -109,7 +109,7 @@
 	"wave" 			"passtime/ball_catch.wav"
 }
 
-"Passtime.Throw"
+"DTF2_Passtime.Throw"
 {
 	"channel"		"CHAN_WEAPON"
 	"volume"		"VOL_NORM"
@@ -126,7 +126,7 @@
 	}
 }
 
-"Passtime.BallSmack"
+"DTF2_Passtime.BallSmack"
 {
 	"channel"		"CHAN_AUTO"
 	"volume"		"VOL_NORM"
@@ -135,7 +135,7 @@
 	"wave" 			"passtime/ball_smack.wav"
 }
 
-"Passtime.BallGet"
+"DTF2_Passtime.BallGet"
 {
 	"channel"		"CHAN_AUTO"
 	"volume"		"VOL_NORM"
@@ -144,7 +144,7 @@
 	"wave" 			"passtime/ball_get.wav"
 }
 
-"Passtime.BallIdle"
+"DTF2_Passtime.BallIdle"
 {
 	"channel"		"CHAN_AUTO"
 	"volume"		"VOL_NORM"
@@ -153,7 +153,7 @@
 	"wave" 			"passtime/ball_idle.wav"
 }
 
-"Passtime.BallHoming"
+"DTF2_Passtime.BallHoming"
 {
 	"channel"		"CHAN_AUTO"
 	"volume"		"1"
@@ -163,7 +163,7 @@
 	"wave"			"passtime/ball_homing.wav"
 }
 
-"Passtime.GunCharge"
+"DTF2_Passtime.GunCharge"
 {
 	"channel"		"CHAN_WEAPON"
 	"soundlevel"	"SNDLVL_NORM"
@@ -171,7 +171,7 @@
 	"wave"			"weapons/loose_cannon_charge.wav"
 }
 
-"Passtime.TargetLock"
+"DTF2_Passtime.TargetLock"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"VOL_NORM"
@@ -180,7 +180,7 @@
 	"wave" 			"#passtime/target_lock.wav"
 }
 
-"Passtime.Scroll.Open"
+"DTF2_Passtime.Scroll.Open"
 {
 	"soundlevel"	"SNDLVL_75dB"
 	"volume"		"1"
@@ -188,7 +188,7 @@
 	"wave"			"*passtime/scroll_open.wav"
 }
 
-"Passtime.Scroll.Close"
+"DTF2_Passtime.Scroll.Close"
 {
 	"soundlevel"	"SNDLVL_75dB"
 	"volume"		"1"
@@ -196,7 +196,7 @@
 	"wave"			"*passtime/scroll_close.wav"
 }
 
-"Passtime.Merasmus.Laugh"
+"DTF2_Passtime.Merasmus.Laugh"
 {
 	"channel"		"CHAN_VOICE2"
 	"volume"		"0.5"
@@ -213,7 +213,7 @@
 	}
 }
 
-"Passtime.AskForBall"
+"DTF2_Passtime.AskForBall"
 {
 	"channel"		"CHAN_AUTO"
 	"volume"		"VOL_NORM"
@@ -223,7 +223,7 @@
 	"wave"			"passtime/pass_to_me.wav"
 }
 
-"Passtime.Tv1"
+"DTF2_Passtime.Tv1"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"1"
@@ -231,7 +231,7 @@
 	"wave"			"passtime/tv1.wav"
 }
 
-"Passtime.Tv2"
+"DTF2_Passtime.Tv2"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"1"
@@ -239,7 +239,7 @@
 	"wave"			"passtime/tv2.wav"
 }
 
-"Passtime.Tv3"
+"DTF2_Passtime.Tv3"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"1"

@@ -1,7 +1,7 @@
 // ------------------------------------------------------------------------------------ //
 // Mann vs Machine
 // ------------------------------------------------------------------------------------ //
-"MVM.Siren"
+"DTF2_MVM.Siren"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1.000"
@@ -11,7 +11,7 @@
 	"wave"			"mvm/ambient_mp3/mvm_siren.mp3"
 }
 
-"MVM.MoneyPickup"
+"DTF2_MVM.MoneyPickup"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1.000"
@@ -21,7 +21,7 @@
 	"wave"			"mvm/mvm_money_pickup.wav"
 }
 
-"MVM.MoneyVanish"
+"DTF2_MVM.MoneyVanish"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1.000"
@@ -31,7 +31,7 @@
 	"wave"			")mvm/mvm_money_vanish.wav"
 }
 
-"MVM.PlayerUpgraded"
+"DTF2_MVM.PlayerUpgraded"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.25"
@@ -41,7 +41,7 @@
 	"wave"			")mvm/mvm_bought_upgrade.wav"
 }
 
-"MVM.PlayerBoughtIn"
+"DTF2_MVM.PlayerBoughtIn"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.5"
@@ -51,7 +51,7 @@
 	"wave"			"mvm/mvm_bought_in.wav"
 }
 
-"MVM.PlayerUsedPowerup"
+"DTF2_MVM.PlayerUsedPowerup"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.13"
@@ -61,7 +61,7 @@
 	"wave"			")mvm/mvm_used_powerup.wav"
 }
 
-"MVM.PlayerDied"
+"DTF2_MVM.PlayerDied"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.600"
@@ -71,7 +71,7 @@
 	"wave"			"*#mvm/mvm_player_died.wav"
 }
 
-"MVM.PlayerDiedScout"
+"DTF2_MVM.PlayerDiedScout"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"1.000"
@@ -86,7 +86,7 @@
 	}
 }
 
-"MVM.PlayerDiedSniper"
+"DTF2_MVM.PlayerDiedSniper"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"1.000"
@@ -102,7 +102,7 @@
 	}
 }
 
-"MVM.PlayerDiedSoldier"
+"DTF2_MVM.PlayerDiedSoldier"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"1.000"
@@ -118,7 +118,7 @@
 	}
 }
 
-"MVM.PlayerDiedDemoman"
+"DTF2_MVM.PlayerDiedDemoman"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"1.000"
@@ -135,7 +135,7 @@
 	}
 }
 
-"MVM.PlayerDiedMedic"
+"DTF2_MVM.PlayerDiedMedic"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"1.000"
@@ -151,7 +151,7 @@
 	}
 }
 
-"MVM.PlayerDiedHeavy"
+"DTF2_MVM.PlayerDiedHeavy"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"1.000"
@@ -166,7 +166,7 @@
 	}
 }
 
-"MVM.PlayerDiedPyro"
+"DTF2_MVM.PlayerDiedPyro"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"1.000"
@@ -181,7 +181,7 @@
 	}
 }
 
-"MVM.PlayerDiedSpy"
+"DTF2_MVM.PlayerDiedSpy"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"1.000"
@@ -196,7 +196,7 @@
 	}
 }
 
-"MVM.PlayerDiedEngineer"
+"DTF2_MVM.PlayerDiedEngineer"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"1.000"
@@ -214,7 +214,7 @@
 	}
 }
 
-"MVM.Mothership"
+"DTF2_MVM.Mothership"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.0"
@@ -225,7 +225,7 @@
 }
 
 // Baseball bat replacement
-"Weapon_BaseballBat.HitFlesh"
+"DTF2_Weapon_BaseballBat.HitFlesh"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -238,7 +238,7 @@
 	}
 }
 
-"Weapon_Bat.HitFlesh"
+"DTF2_Weapon_Bat.HitFlesh"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -256,7 +256,7 @@
 // Tank
 // ------------------------------------------------------------------------------------ //
 
-"MVM.TankStart"
+"DTF2_MVM.TankStart"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.6"
@@ -264,7 +264,7 @@
 	"soundlevel"  	"SNDLVL_NONE"
 	"wave"			"*#mvm/mvm_tank_start.wav"
 }
-"MVM.TankEnd"
+"DTF2_MVM.TankEnd"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.8"
@@ -272,7 +272,7 @@
 	"soundlevel"  	"SNDLVL_NONE"
 	"wave"			"*#mvm/mvm_tank_end.wav"
 }
-"MVM.TankPing"
+"DTF2_MVM.TankPing"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -281,7 +281,7 @@
 	"wave"			")mvm/mvm_tank_horn.wav"
 }
 
-"MVM.TankEngineLoop"
+"DTF2_MVM.TankEngineLoop"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"0.89"
@@ -290,7 +290,7 @@
 	"wave"		"^mvm/mvm_tank_loop.wav"
 }
 
-"MVM.TankSmash"
+"DTF2_MVM.TankSmash"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -299,7 +299,7 @@
 	"wave"			")mvm/mvm_tank_smash.wav"
 }
 
-"MVM.TankDeploy"
+"DTF2_MVM.TankDeploy"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -308,7 +308,7 @@
 	"wave"			"mvm/mvm_tank_deploy.wav"
 }
 
-"MVM.TankExplodes"
+"DTF2_MVM.TankExplodes"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.85"
@@ -321,7 +321,7 @@
 // Bomb
 // ------------------------------------------------------------------------------------ //
 
-"MVM.BombWarning"
+"DTF2_MVM.BombWarning"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -330,7 +330,7 @@
 	"wave"			")mvm\mvm_bomb_warning.wav"
 }
 
-"MVM.BombExplodes"
+"DTF2_MVM.BombExplodes"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -339,7 +339,7 @@
 	"wave"			"mvm/mvm_bomb_explode.wav"
 }
 
-"MVM.Warning"
+"DTF2_MVM.Warning"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.500"
@@ -349,7 +349,7 @@
 	"wave"			"#*mvm/mvm_warning.wav"
 }
 
-"MVM.BombResetExplode"
+"DTF2_MVM.BombResetExplode"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -363,7 +363,7 @@
 // For bomb deploy animations based on robot size
 // ------------------------------------------------------------------------------------ //
 
-"MVM.DeployBombGiant"
+"DTF2_MVM.DeployBombGiant"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -372,7 +372,7 @@
 	"wave"			"mvm/mvm_deploy_giant.wav"
 }
 
-"MVM.DeployBombSmall"
+"DTF2_MVM.DeployBombSmall"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -385,7 +385,7 @@
 // Sentry Buster
 // ------------------------------------------------------------------------------------ //
 
-"MVM.SentryBusterExplode"
+"DTF2_MVM.SentryBusterExplode"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -394,7 +394,7 @@
 	"wave"			")mvm/sentrybuster/mvm_sentrybuster_explode.wav"
 }
 
-"MVM.SentryBusterSpin"
+"DTF2_MVM.SentryBusterSpin"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -403,7 +403,7 @@
 	"wave"			")mvm/sentrybuster/mvm_sentrybuster_spin.wav"
 }
 
-"MVM.SentryBusterLoop"
+"DTF2_MVM.SentryBusterLoop"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1.0"
@@ -412,7 +412,7 @@
 	"wave"			"mvm/sentrybuster/mvm_sentrybuster_loop.wav"
 }
 
-"MVM.SentryBusterIntro"
+"DTF2_MVM.SentryBusterIntro"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1.0"
@@ -421,7 +421,7 @@
 	"wave"			")mvm/sentrybuster/mvm_sentrybuster_intro.wav"
 }
 
-"MVM.SentryBusterStep"
+"DTF2_MVM.SentryBusterStep"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1.0"
@@ -440,7 +440,7 @@
 // ------------------------------------------------------------------------------------ //
 // Giant Heavy
 // ------------------------------------------------------------------------------------ //
-"MVM.GiantHeavyEntrance"
+"DTF2_MVM.GiantHeavyEntrance"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -449,7 +449,7 @@
 	"wave"			")mvm/giant_heavy/giant_heavy_entrance.wav"
 }
 
-"MVM.GiantHeavyExplodes"
+"DTF2_MVM.GiantHeavyExplodes"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -463,7 +463,7 @@
 	}	
 }
 
-"MVM.GiantHeavyGunWindDown"
+"DTF2_MVM.GiantHeavyGunWindDown"
 {
 	"channel"		"CHAN_WEAPON"
 	"volume"		"0.9"
@@ -472,7 +472,7 @@
 	"wave"			")mvm/giant_heavy/giant_heavy_gunwinddown.wav"
 }
 
-"MVM.GiantHeavyGunWindUp"
+"DTF2_MVM.GiantHeavyGunWindUp"
 {
 	"channel"		"CHAN_WEAPON"
 	"volume"		"0.9"
@@ -481,7 +481,7 @@
 	"wave"			")mvm/giant_heavy/giant_heavy_gunwindup.wav"
 }
 
-"MVM.GiantHeavyGunFire"
+"DTF2_MVM.GiantHeavyGunFire"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1.0"
@@ -490,7 +490,7 @@
 	"wave"			")mvm/giant_heavy/giant_heavy_gunfire.wav"
 }
 
-"MVM.GiantHeavyGunSpin"
+"DTF2_MVM.GiantHeavyGunSpin"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.8"
@@ -499,7 +499,7 @@
 	"wave"			")mvm/giant_heavy/giant_heavy_gunspin.wav"
 }
 
-"MVM.GiantHeavyLoop"
+"DTF2_MVM.GiantHeavyLoop"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.8"
@@ -508,7 +508,7 @@
 	"wave"			")mvm/giant_heavy/giant_heavy_loop.wav"
 }
 
-"MVM.GiantHeavyStep"
+"DTF2_MVM.GiantHeavyStep"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -531,7 +531,7 @@
 // Giant Common - explosion common to all non-Heavy giants
 // ------------------------------------------------------------------------------------ //
 
-"MVM.GiantCommonExplodes"
+"DTF2_MVM.GiantCommonExplodes"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -549,7 +549,7 @@
 // ------------------------------------------------------------------------------------ //
 // Giant Soldier
 // ------------------------------------------------------------------------------------ //
-"MVM.GiantSoldierLoop"
+"DTF2_MVM.GiantSoldierLoop"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1.0"
@@ -558,7 +558,7 @@
 	"wave"			"mvm/giant_soldier/giant_soldier_loop.wav"
 }
 
-"MVM.GiantSoldierStep"
+"DTF2_MVM.GiantSoldierStep"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		".65"
@@ -577,7 +577,7 @@
 	}
 }
 
-"MVM.GiantSoldierRocketShoot"
+"DTF2_MVM.GiantSoldierRocketShoot"
 {
 	"channel"		"CHAN_WEAPON"
 	"volume"		"0.65, 0.75"
@@ -586,7 +586,7 @@
 	"wave"			"mvm/giant_soldier/giant_soldier_rocket_shoot.wav"
 }
 
-"MVM.GiantSoldierRocketShootCrit"
+"DTF2_MVM.GiantSoldierRocketShootCrit"
 {
 	"channel"		"CHAN_WEAPON"
 	"volume"		"0.75"
@@ -595,7 +595,7 @@
 	"wave"			"mvm/giant_soldier/giant_soldier_rocket_shoot_crit.wav"
 }
 
-"MVM.GiantSoldierRocketExplode"
+"DTF2_MVM.GiantSoldierRocketExplode"
 {
 	"channel"		"CHAN_WEAPON"
 	"volume"		"1"
@@ -607,7 +607,7 @@
 // ------------------------------------------------------------------------------------ //
 // Giant Demoman
 // ------------------------------------------------------------------------------------ //
-"MVM.GiantDemomanLoop"
+"DTF2_MVM.GiantDemomanLoop"
 {
 	"channel"		"CHAN_STATIC" 
 	"volume"		"0.6"
@@ -616,7 +616,7 @@
 	"wave"			"mvm/giant_demoman/giant_demoman_loop.wav"
 }
 
-"MVM.GiantDemomanStep"
+"DTF2_MVM.GiantDemomanStep"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -635,7 +635,7 @@
 	}
 }
 
-"MVM.GiantDemoman_Grenadeshoot"
+"DTF2_MVM.GiantDemoman_Grenadeshoot"
 {
 	"channel"	"CHAN_WEAPON"
 	"soundlevel"	"SNDLVL_100dB"
@@ -646,7 +646,7 @@
 // ------------------------------------------------------------------------------------ //
 // Giant Scout
 // ------------------------------------------------------------------------------------ //
-"MVM.GiantScoutLoop"
+"DTF2_MVM.GiantScoutLoop"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.3"
@@ -655,7 +655,7 @@
 	"wave"			"mvm/giant_scout/giant_scout_loop.wav"
 }
 
-"MVM.GiantScoutStep"
+"DTF2_MVM.GiantScoutStep"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.6"
@@ -677,7 +677,7 @@
 // ------------------------------------------------------------------------------------ //
 // Giant Pyro
 // ------------------------------------------------------------------------------------ //
-"MVM.GiantPyroLoop"
+"DTF2_MVM.GiantPyroLoop"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.8"
@@ -686,7 +686,7 @@
 	"wave"			"mvm/giant_pyro/giant_pyro_loop.wav"
 }
 
-"MVM.GiantPyroStep"
+"DTF2_MVM.GiantPyroStep"
 {
 	"volume"		"1"
 	"pitch"			"100"
@@ -704,7 +704,7 @@
 	}
 }
 
-"MVM.GiantPyro_FlameStart"
+"DTF2_MVM.GiantPyro_FlameStart"
 {
 	"channel"	"CHAN_WEAPON"
 	"soundlevel"	"SNDLVL_100dB"
@@ -712,7 +712,7 @@
 	"wave"		"^mvm/giant_pyro/giant_pyro_flamethrower_start.wav"
 }
 
-"MVM.GiantPyro_FlameLoop"	
+"DTF2_MVM.GiantPyro_FlameLoop"	
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_100dB"
@@ -724,7 +724,7 @@
 // ------------------------------------------------------------------------------------ //
 // regular bots
 // ------------------------------------------------------------------------------------ //
-"MVM.BotStep"
+"DTF2_MVM.BotStep"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.35"
@@ -755,7 +755,7 @@
 // ------------------------------------------------------------------------------------ //
 // Fall damage for robots
 // ------------------------------------------------------------------------------------ //
-"MVM.FallDamageBots"
+"DTF2_MVM.FallDamageBots"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -771,7 +771,7 @@
 // ------------------------------------------------------------------------------------ //
 // Melee impact replacements Use instead of flesh impact sounds
 // ------------------------------------------------------------------------------------ //
-"MVM_Weapon_Default.HitFlesh"
+"DTF2_MVM_Weapon_Default.HitFlesh"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -786,7 +786,7 @@
 
 }
 
-"MVM_Weapon_FireAxe.HitFlesh"
+"DTF2_MVM_Weapon_FireAxe.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -799,7 +799,7 @@
 	}
 }
 
-"MVM_Weapon_Shovel.HitFlesh"
+"DTF2_MVM_Weapon_Shovel.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -812,7 +812,7 @@
 	}
 }
 
-"MVM_Weapon_3rd_degree.HitFlesh"
+"DTF2_MVM_Weapon_3rd_degree.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -825,7 +825,7 @@
 	}
 }
 
-"MVM_Weapon_BaseballBat.HitFlesh"
+"DTF2_MVM_Weapon_BaseballBat.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -833,7 +833,7 @@
 	"wave"			"mvm/melee_impacts/bat_baseball_hit_robo01.wav"
 }
 
-"MVM_Weapon_Knife.HitFlesh"
+"DTF2_MVM_Weapon_Knife.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -848,7 +848,7 @@
 	}
 }
 
-"MVM_Weapon_PickAxe.HitFlesh"
+"DTF2_MVM_Weapon_PickAxe.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -862,7 +862,7 @@
 	}
 }
 
-"MVM_Weapon_Sword.HitFlesh"
+"DTF2_MVM_Weapon_Sword.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -876,7 +876,7 @@
 	}
 }
 
-"MVM_Weapon_Katana.HitFlesh"
+"DTF2_MVM_Weapon_Katana.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -890,7 +890,7 @@
 	}
 }
 
-"MVM_Weapon_Bottle.HitFlesh"
+"DTF2_MVM_Weapon_Bottle.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -903,7 +903,7 @@
 	}
 }
 
-"MVM_Weapon_Bottle.IntactHitFlesh"
+"DTF2_MVM_Weapon_Bottle.IntactHitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -916,7 +916,7 @@
 	}
 }
 
-"MVM_Weapon_Bottle.BrokenHitFlesh"
+"DTF2_MVM_Weapon_Bottle.BrokenHitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -929,7 +929,7 @@
 	}
 }
 
-"MVM_Weapon_Crowbar.HitFlesh"
+"DTF2_MVM_Weapon_Crowbar.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -942,7 +942,7 @@
 	}
 }
 
-"MVM_Weapon_Machete.HitFlesh"
+"DTF2_MVM_Weapon_Machete.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -955,7 +955,7 @@
 	}
 }
 
-"MVM_Weapon_Fist.HitFlesh"
+"DTF2_MVM_Weapon_Fist.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -968,7 +968,7 @@
 	}
 }
 
-"MVM_Weapon_BoneSaw.HitFlesh"
+"DTF2_MVM_Weapon_BoneSaw.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -981,7 +981,7 @@
 	}
 }
 
-"MVM_Weapon_Club.HitFlesh"
+"DTF2_MVM_Weapon_Club.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -994,7 +994,7 @@
 	}
 }
 
-"MVM_Weapon_Flag.HitFlesh"
+"DTF2_MVM_Weapon_Flag.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -1007,7 +1007,7 @@
 	}
 }
 
-"MVM_Weapon_Medikit.HitFlesh"
+"DTF2_MVM_Weapon_Medikit.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -1020,7 +1020,7 @@
 	}
 }
 
-"MVM_Weapon_Pipe.HitFlesh"
+"DTF2_MVM_Weapon_Pipe.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -1033,7 +1033,7 @@
 	}
 }
 
-"MVM_Weapon_Wrench.HitFlesh"
+"DTF2_MVM_Weapon_Wrench.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -1046,7 +1046,7 @@
 	}
 }
 
-"MVM_Weapon_Bat.HitFlesh"
+"DTF2_MVM_Weapon_Bat.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -1059,7 +1059,7 @@
 	}
 }
 
-"MVM_EvictionNotice.Impact"
+"DTF2_MVM_EvictionNotice.Impact"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -1073,7 +1073,7 @@
 	}
 }
 
-"MVM_EvictionNotice.ImpactCrit"
+"DTF2_MVM_EvictionNotice.ImpactCrit"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -1087,7 +1087,7 @@
 	}
 }
 
-"MVM_BostonBasher.Impact"
+"DTF2_MVM_BostonBasher.Impact"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -1101,7 +1101,7 @@
 	}
 }
 
-"MVM_BostonBasher.ImpactCrit"
+"DTF2_MVM_BostonBasher.ImpactCrit"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -1115,7 +1115,7 @@
 	}
 }
 
-"MVM_Weapon_MetalGloves.HitFlesh"
+"DTF2_MVM_Weapon_MetalGloves.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -1129,7 +1129,7 @@
 	}
 }
 
-"MVM_Weapon_MetalGloves.CritHit"
+"DTF2_MVM_Weapon_MetalGloves.CritHit"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -1143,7 +1143,7 @@
 	}
 }
 
-"MVM_Weapon_Assassin_Knife.HitFlesh"
+"DTF2_MVM_Weapon_Assassin_Knife.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -1155,7 +1155,7 @@
 	}
 }
 
-"MVM_Weapon_Assassin_Knife.Backstab"
+"DTF2_MVM_Weapon_Assassin_Knife.Backstab"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -1167,7 +1167,7 @@
 	}
 }
 
-"MVM_Weapon_Arrow.ImpactFlesh"
+"DTF2_MVM_Weapon_Arrow.ImpactFlesh"
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"1.0"
@@ -1181,7 +1181,7 @@
 	}
 }
 
-"MVM_FryingPan.HitFlesh"
+"DTF2_MVM_FryingPan.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -1194,7 +1194,7 @@
 	}
 }
 
-"MVM_Weapon_mittens.HitFlesh"
+"DTF2_MVM_Weapon_mittens.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -1202,7 +1202,7 @@
 	"wave"		")weapons\mittens_punch.wav"
 }
 
-"MVM_Weapon_BoxingGloves.HitFlesh"
+"DTF2_MVM_Weapon_BoxingGloves.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -1216,7 +1216,7 @@
 	}
 }
 
-"MVM_Weapon_HolyMackerel.HitFlesh"
+"DTF2_MVM_Weapon_HolyMackerel.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -1229,7 +1229,7 @@
 	}
 }
 
-"MVM_BallBuster.HitFlesh"
+"DTF2_MVM_BallBuster.HitFlesh"
 {
 	"channel"		"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -1237,7 +1237,7 @@
 	"wave"		"weapons\ball_buster_hit_01.wav"
 }
 
-"MVM_Weapon_UberSaw.HitFlesh"
+"DTF2_MVM_Weapon_UberSaw.HitFlesh"
 {
 	"channel"	"CHAN_STATIC"
 	"soundlevel"	"SNDLVL_NORM"
@@ -1256,7 +1256,7 @@
 // ------------------------------------------------------------------------------------ //
 // Physics Robot Body Sounds
 // ------------------------------------------------------------------------------------ //
-"MVM.RobotImpactSoft"
+"DTF2_MVM.RobotImpactSoft"
 {
 	"soundlevel"	"SNDLVL_75dB"
 	"volume"		"0.4"
@@ -1272,7 +1272,7 @@
 	}
 }
 
-"MVM.RobotImpactHard"
+"DTF2_MVM.RobotImpactHard"
 {
 	"soundlevel"	"SNDLVL_85dB"
 	"volume"		"0.5, 1.0"
@@ -1287,7 +1287,7 @@
 	}
 }
 
-"MVM.RobotImpactBullet"
+"DTF2_MVM.RobotImpactBullet"
 {
 	"soundlevel"		"SNDLVL_80dB"
 	"volume"			"0.90"
@@ -1300,7 +1300,7 @@
 	}
 }
 
-"MVM.RobotScrape"
+"DTF2_MVM.RobotScrape"
 {
 	"soundlevel"	"SNDLVL_70dB"
 	"volume"		"0.6"
@@ -1308,7 +1308,7 @@
 }
 
 // Not currently used...added to suppress console warnings
-"Spy.M_MVM_Death"
+"DTF2_Spy.M_MVM_Death"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"VOL_NORM"
@@ -1326,7 +1326,7 @@
 	}
 }
 
-"Spy.M_MVM_CritDeath"
+"DTF2_Spy.M_MVM_CritDeath"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"VOL_NORM"
@@ -1342,7 +1342,7 @@
 	}
 }
 
-"Spy.M_MVM_MeleeDeath"
+"DTF2_Spy.M_MVM_MeleeDeath"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"VOL_NORM"
@@ -1358,7 +1358,7 @@
 	}
 }
 
-"Spy.M_MVM_ExplosionDeath"
+"DTF2_Spy.M_MVM_ExplosionDeath"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"VOL_NORM"
@@ -1376,7 +1376,7 @@
 	}
 }
 
-"Engineer.MVM_Death"
+"DTF2_Engineer.MVM_Death"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"VOL_NORM"
@@ -1396,7 +1396,7 @@
 	}
 }
 
-"Engineer.MVM_CritDeath"
+"DTF2_Engineer.MVM_CritDeath"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"VOL_NORM"
@@ -1415,7 +1415,7 @@
 	}
 }
 
-"Engineer.MVM_MeleeDeath"
+"DTF2_Engineer.MVM_MeleeDeath"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"VOL_NORM"
@@ -1434,7 +1434,7 @@
 	}
 }
 
-"Engineer.MVM_ExplosionDeath"
+"DTF2_Engineer.MVM_ExplosionDeath"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"VOL_NORM"
@@ -1453,7 +1453,7 @@
 	}
 }
 
-"Engineer.M_MVM_Death"
+"DTF2_Engineer.M_MVM_Death"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"VOL_NORM"
@@ -1473,7 +1473,7 @@
 	}
 }
 
-"Engineer.M_MVM_CritDeath"
+"DTF2_Engineer.M_MVM_CritDeath"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"VOL_NORM"
@@ -1492,7 +1492,7 @@
 	}
 }
 
-"Engineer.M_MVM_MeleeDeath"
+"DTF2_Engineer.M_MVM_MeleeDeath"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"VOL_NORM"
@@ -1511,7 +1511,7 @@
 	}
 }
 
-"Engineer.M_MVM_ExplosionDeath"
+"DTF2_Engineer.M_MVM_ExplosionDeath"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"VOL_NORM"
@@ -1530,7 +1530,7 @@
 	}
 }
 
-"Civilian.MVM_Death"
+"DTF2_Civilian.MVM_Death"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"VOL_NORM"
@@ -1549,7 +1549,7 @@
 	}
 }
 
-"Civilian.MVM_CritDeath"
+"DTF2_Civilian.MVM_CritDeath"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"VOL_NORM"
@@ -1565,7 +1565,7 @@
 	}
 }
 
-"Civilian.MVM_MeleeDeath"
+"DTF2_Civilian.MVM_MeleeDeath"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"VOL_NORM"
@@ -1581,7 +1581,7 @@
 	}
 }
 
-"Civilian.MVM_ExplosionDeath"
+"DTF2_Civilian.MVM_ExplosionDeath"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"VOL_NORM"
@@ -1597,7 +1597,7 @@
 	}
 }
 
-"Civilian.M_MVM_Death"
+"DTF2_Civilian.M_MVM_Death"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"VOL_NORM"
@@ -1616,7 +1616,7 @@
 	}
 }
 
-"Civilian.M_MVM_CritDeath"
+"DTF2_Civilian.M_MVM_CritDeath"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"VOL_NORM"
@@ -1632,7 +1632,7 @@
 	}
 }
 
-"Civilian.M_MVM_MeleeDeath"
+"DTF2_Civilian.M_MVM_MeleeDeath"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"VOL_NORM"
@@ -1648,7 +1648,7 @@
 	}
 }
 
-"Civilian.M_MVM_ExplosionDeath"
+"DTF2_Civilian.M_MVM_ExplosionDeath"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"VOL_NORM"
@@ -1667,7 +1667,7 @@
 // ------------------------------------------------------------------------------------ //
 // Melee impact replacements Use instead of flesh impact sounds
 // ------------------------------------------------------------------------------------ //
-"MVM_Robot.BulletImpact"
+"DTF2_MVM_Robot.BulletImpact"
 {
 	"channel"		"CHAN_BODY"
 	"soundlevel"	"SNDLVL_80dB"
@@ -1682,7 +1682,7 @@
 	}
 
 }
-"MVM_Giant.BulletImpact"
+"DTF2_MVM_Giant.BulletImpact"
 {
 	"channel"		"CHAN_BODY"
 	"soundlevel"	"SNDLVL_80dB"
@@ -1697,7 +1697,7 @@
 	}
 
 }
-"MVM_Tank.BulletImpact"
+"DTF2_MVM_Tank.BulletImpact"
 {
 	"channel"		"CHAN_BODY"
 	"soundlevel"	"SNDLVL_80dB"
@@ -1716,7 +1716,7 @@
 // ------------------------------------------------------------------------------------ //
 // Weapon Upgrades
 // ------------------------------------------------------------------------------------ //
-"Weapon_Upgrade.ExplosiveHeadshot"
+"DTF2_Weapon_Upgrade.ExplosiveHeadshot"
 {
 	"channel"		"CHAN_AUTO"
 	"soundlevel"	"SNDLVL_NORM"
@@ -1724,7 +1724,7 @@
 	"wave"			")weapons\upgrade_explosive_headshot.wav"
 }
 
-"Weapon_Upgrade.DamageBonus1"
+"DTF2_Weapon_Upgrade.DamageBonus1"
 {
 	"channel"		"CHAN_AUTO"
 	"volume"		"0.55"
@@ -1732,7 +1732,7 @@
 	"wave"			"misc/null.wav"
 }
 
-"Weapon_Upgrade.DamageBonus2"
+"DTF2_Weapon_Upgrade.DamageBonus2"
 {
 	"channel"		"CHAN_AUTO"
 	"volume"		"0.7"
@@ -1740,7 +1740,7 @@
 	"wave"			"misc/null.wav"
 }
 
-"Weapon_Upgrade.DamageBonus3"
+"DTF2_Weapon_Upgrade.DamageBonus3"
 {
 	"channel"		"CHAN_AUTO"
 	"volume"		"0.85"
@@ -1748,7 +1748,7 @@
 	"wave"			"misc/null.wav"
 }
 
-"Weapon_Upgrade.DamageBonus4"
+"DTF2_Weapon_Upgrade.DamageBonus4"
 {
 	"channel"		"CHAN_AUTO"
 	"volume"		"1.000"
@@ -1756,7 +1756,7 @@
 	"wave"			"misc/null.wav"
 }
 
-"MVM.PlayerRevived"
+"DTF2_MVM.PlayerRevived"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1.0"
@@ -1770,7 +1770,7 @@
 // MVM Engineer and Teleporter
 // ------------------------------------------------------------------------------------ //
 
-"MVM.Robot_Engineer_Spawn"
+"DTF2_MVM.Robot_Engineer_Spawn"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1779,7 +1779,7 @@
 	"wave"			")weapons/guitar_strum.wav"
 }
 
-"MVM.Robot_Teleporter_Deliver"
+"DTF2_MVM.Robot_Teleporter_Deliver"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1790,7 +1790,7 @@
 
 // Level Specific
 
-"grinder_loop"
+"DTF2_grinder_loop"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.8"
@@ -1799,7 +1799,7 @@
 	"wave"		")ambient/grinder/grinderloop_01.wav"
 }
 
-"grinder_human"
+"DTF2_grinder_human"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -1812,7 +1812,7 @@
 	}
 }
 
-"grinder_bot"
+"DTF2_grinder_bot"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.5"
@@ -1831,7 +1831,7 @@
 // ------------------------------------------------------------------------------------ //
 
 
-"mvm.cpoint_alarm"
+"DTF2_mvm.cpoint_alarm"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"	"1.0"
@@ -1847,7 +1847,7 @@
 // ------------------------------------------------------------------------------------ //
 
 
-"mvm.robo_stun_lp"
+"DTF2_mvm.robo_stun_lp"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"	"1.0"
@@ -1862,7 +1862,7 @@
 // ------------------------------------------------------------------------------------ //
 // MVM upgrade refund
 // ------------------------------------------------------------------------------------ //
-"MVM.RespecAwarded"
+"DTF2_MVM.RespecAwarded"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1.0"
