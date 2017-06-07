@@ -26,7 +26,7 @@ SWEP.Primary = {
   ['DefaultClip'] = 6,
   ['Automatic'] = true
 }
-SWEP.CooldownTime = 0.55
+SWEP.CooldownTime = 0.6
 SWEP.ReloadTime = 0.5
 SWEP.DrawAnimation = 'sg_draw'
 SWEP.IdleAnimation = 'sg_idle'
