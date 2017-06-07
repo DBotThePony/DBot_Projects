@@ -23,7 +23,7 @@ SWEP.Primary = {
   ['Automatic'] = true
 }
 SWEP.SetupDataTables = function(self)
-  BaseClass.SetupDataTables(self)
+  self.BaseClass.SetupDataTables(self)
   self:NetworkVar('Int', 16, 'SodaDamageDealt')
   return self:NetworkVar('Bool', 16, 'SodaActive')
 end
@@ -39,12 +39,12 @@ if SERVER then
     if not attacker:IsPlayer() then
       return 
     end
-    local _list_0 = attacker:GetWeapon()
-    for _index_0 = 1, #_list_0 do
-      local wep = _list_0[_index_0]
-      if wep.IsSodaPopper and not wep:GetSodaActive() then
-        wep:SetSodaDamageDealt(math.min(wep:GetSodaDamageDealt() + math.max(dmg:GetDamage(), 0), wep.SodaDamageRequired))
-      end
+    local wep = attacker:GetWeapon('dbot_tf_sodapopper')
+    if not IsValid(wep) then
+      return 
+    end
+    if wep.IsSodaPopper and not wep:GetSodaActive() then
+      return wep:SetSodaDamageDealt(math.min(wep:GetSodaDamageDealt() + math.max(dmg:GetDamage(), 0), wep.SodaDamageRequired))
     end
   end)
   SWEP.OnRemove = function(self)
@@ -53,9 +53,9 @@ if SERVER then
     end
   end
   SWEP.Think = function(self)
-    BaseClass.Think(self)
+    self.BaseClass.Think(self)
     if self:GetSodaActive() then
-      return self:SetSodaDamageDealt(math.max(0, self.SodaDamageRequired * (self.sodaPopperEnd - CurTime())))
+      return self:SetSodaDamageDealt(math.max(0, self.SodaDamageRequired * (self.sodaPopperEnd - CurTime()) / 10))
     end
   end
   SWEP.SecondaryAttack = function(self)
@@ -80,7 +80,10 @@ if SERVER then
     self.sodaPopperEnd = CurTime() + self.SodaPopperDuration
     timer.Create("DTF2.SodaPopper." .. tostring(self:EntIndex()), self.SodaPopperDuration, 1, function()
       if IsValid(self) and IsValid(self.miniCritBuffer) then
-        return self.miniCritBuffer:Remove()
+        self.miniCritBuffer:Remove()
+      end
+      if IsValid(self) then
+        return self:SetSodaActive(false)
       end
     end)
     return true

@@ -45,7 +45,7 @@ SWEP.Primary = {
 }
 
 SWEP.SetupDataTables = =>
-    BaseClass.SetupDataTables(@)
+    @BaseClass.SetupDataTables(@)
     @NetworkVar('Int', 16, 'SodaDamageDealt')
     @NetworkVar('Bool', 16, 'SodaActive')
 
@@ -56,16 +56,17 @@ if SERVER
         attacker = dmg\GetAttacker()
         return if not IsValid(attacker)
         return if not attacker\IsPlayer()
-        for wep in *attacker\GetWeapon()
-            if wep.IsSodaPopper and not wep\GetSodaActive()
-                wep\SetSodaDamageDealt(math.min(wep\GetSodaDamageDealt() + math.max(dmg\GetDamage(), 0), wep.SodaDamageRequired))
+        wep = attacker\GetWeapon('dbot_tf_sodapopper')
+        return if not IsValid(wep)
+        if wep.IsSodaPopper and not wep\GetSodaActive()
+            wep\SetSodaDamageDealt(math.min(wep\GetSodaDamageDealt() + math.max(dmg\GetDamage(), 0), wep.SodaDamageRequired))
     
     SWEP.OnRemove = => @miniCritBuffer\Remove() if IsValid(@miniCritBuffer)
 
     SWEP.Think = =>
-        BaseClass.Think(@)
+        @BaseClass.Think(@)
         if @GetSodaActive()
-            @SetSodaDamageDealt(math.max(0, @SodaDamageRequired * (@sodaPopperEnd - CurTime())))
+            @SetSodaDamageDealt(math.max(0, @SodaDamageRequired * (@sodaPopperEnd - CurTime()) / 10))
 
     SWEP.SecondaryAttack = =>
         return false if not @IsSodaReady()
@@ -84,6 +85,7 @@ if SERVER
         @sodaPopperEnd = CurTime() + @SodaPopperDuration
         timer.Create "DTF2.SodaPopper.#{@EntIndex()}", @SodaPopperDuration, 1, ->
             @miniCritBuffer\Remove() if IsValid(@) and IsValid(@miniCritBuffer)
+            @SetSodaActive(false) if IsValid(@)
 
         return true
 else

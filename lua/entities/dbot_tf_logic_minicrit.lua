@@ -29,7 +29,7 @@ do
     if self:GetEnableBuff() and IsValid(owner) then
       table.insert(self.BuffedTargets, owner)
     end
-    if self:GetEnableBuff()(self:GetRange() and self:GetRange() > 0) then
+    if self:GetEnableBuff() and self:GetRange() and self:GetRange() > 0 then
       local everything = self:GetAffectEverything()
       local npcs = self:GetAffectNPCs()
       local nextbots = self:GetAffectNextBots()

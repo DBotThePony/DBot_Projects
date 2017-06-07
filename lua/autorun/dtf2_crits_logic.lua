@@ -41,13 +41,13 @@ local EntityClass = {
     if val == nil then
       val = self:GetMiniCritBuffers()
     end
-    return self:GetNWInt('DTF2.MiniCritBuffers', val)
+    return self:SetNWInt('DTF2.MiniCritBuffers', val)
   end,
   AddMiniCritBuffer = function(self)
-    return self:GetNWInt('DTF2.MiniCritBuffers', self:GetMiniCritBuffers() + 1)
+    return self:SetNWInt('DTF2.MiniCritBuffers', self:GetMiniCritBuffers() + 1)
   end,
   RemoveMiniCritBuffer = function(self)
-    return self:GetNWInt('DTF2.MiniCritBuffers', self:GetMiniCritBuffers() - 1)
+    return self:SetNWInt('DTF2.MiniCritBuffers', self:GetMiniCritBuffers() - 1)
   end,
   UpdateMiniCritBuffers = function(self)
     return self:SetMiniCritBoosted(self:GetNWInt('DTF2.MiniCritBuffers') > 0)

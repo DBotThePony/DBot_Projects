@@ -34,9 +34,9 @@ EntityClass =
     GetCritModifier: => @CritBoosted() and 3 or @MiniCritBoosted() and 1.3 or 1
 
     GetMiniCritBuffers: => @GetNWInt('DTF2.MiniCritBuffers')
-    SetMiniCritBuffers: (val = @GetMiniCritBuffers()) => @GetNWInt('DTF2.MiniCritBuffers', val)
-    AddMiniCritBuffer: => @GetNWInt('DTF2.MiniCritBuffers', @GetMiniCritBuffers() + 1)
-    RemoveMiniCritBuffer: => @GetNWInt('DTF2.MiniCritBuffers', @GetMiniCritBuffers() - 1)
+    SetMiniCritBuffers: (val = @GetMiniCritBuffers()) => @SetNWInt('DTF2.MiniCritBuffers', val)
+    AddMiniCritBuffer: => @SetNWInt('DTF2.MiniCritBuffers', @GetMiniCritBuffers() + 1)
+    RemoveMiniCritBuffer: => @SetNWInt('DTF2.MiniCritBuffers', @GetMiniCritBuffers() - 1)
     UpdateMiniCritBuffers: => @SetMiniCritBoosted(@GetNWInt('DTF2.MiniCritBuffers') > 0)
 
 entMeta[k] = v for k, v in pairs EntityClass

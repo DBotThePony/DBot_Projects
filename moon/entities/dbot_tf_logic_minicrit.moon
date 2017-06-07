@@ -42,7 +42,7 @@ with ENT
         oldTargets = @BuffedTargets
         @BuffedTargets = {}
         table.insert(@BuffedTargets, owner) if @GetEnableBuff() and IsValid(owner)
-        if @GetEnableBuff() @GetRange() and @GetRange() > 0
+        if @GetEnableBuff() and @GetRange() and @GetRange() > 0
             everything = @GetAffectEverything()
             npcs = @GetAffectNPCs()
             nextbots = @GetAffectNextBots()

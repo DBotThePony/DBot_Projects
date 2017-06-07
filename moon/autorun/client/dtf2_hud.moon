@@ -92,7 +92,7 @@ BAR_COLOR = Color(235, 235, 235)
 
 DTF2.DrawCenteredBar = (mult = 0.5, text) ->
     w, h = ScrW(), ScrH()
-    x, y = w * .5, h * .55
+    x, y = w * .5, h * .65
 
     surface.SetDrawColor(BACKGROUND_COLOR)
     surface.DrawRect(x - 154, y - 4, 308, 38)
@@ -108,8 +108,8 @@ DTF2.DrawCenteredBar = (mult = 0.5, text) ->
         surface.SetDrawColor(BACKGROUND_COLOR)
         surface.SetTextColor(FONT_COLOR)
         W, H = surface.GetTextSize(text)
-        surface.DrawRect(x - 4 - 154, y - 4 - H, W + 8, H + 8)
-        surface.SetTextPos(x - 150, y - H)
+        surface.DrawRect(x - 154, y - 12 - H, W + 8, H + 8)
+        surface.SetTextPos(x - 150, y - H - 8)
         surface.DrawText(text)
 
 DTF2.DrawBuildingInfo = =>
