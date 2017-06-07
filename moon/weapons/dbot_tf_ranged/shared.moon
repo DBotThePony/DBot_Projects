@@ -131,18 +131,18 @@ SWEP.BulletCallback = (tr = {}, dmginfo) =>
 
 SWEP.PlayFireSound = (isCrit = @incomingCrit) =>
     if not isCrit
-        return @EmitSound(@FireSoundsScript) if @FireSoundsScript
+        return @EmitSound('DTF2_' .. @FireSoundsScript) if @FireSoundsScript
         playSound = table.Random(@FireSounds) if @FireSounds
         @EmitSound(playSound, SNDLVL_GUNSHOT, 100, .7, CHAN_WEAPON) if playSound
     else
-        return @EmitSound(@FireCritSoundsScript) if @FireCritSoundsScript
+        return @EmitSound('DTF2_' .. @FireCritSoundsScript) if @FireCritSoundsScript
         playSound = table.Random(@FireCritSounds) if @FireCritSounds
         @EmitSound(playSound, SNDLVL_GUNSHOT, 100, .7, CHAN_WEAPON) if playSound
 
 SWEP.PlayEmptySound = =>
     return if @lastEmptySound > CurTime()
     @lastEmptySound = CurTime() + 1
-    return @EmitSound(@EmptySoundsScript) if @EmptySoundsScript
+    return @EmitSound('DTF2_' .. @EmptySoundsScript) if @EmptySoundsScript
     playSound = table.Random(@EmptySounds) if @EmptySounds
     @EmitSound(playSound, 75, 100, .7, CHAN_WEAPON) if playSound
 

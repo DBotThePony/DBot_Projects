@@ -34,9 +34,9 @@ SWEP.BulletDamage = 65
 SWEP.BulletForce = 20
 SWEP.BulletHull = 8
 SWEP.PlayMissSound = function(self)
-  if not self.icomingCrit then
+  if not self.incomingCrit then
     if self.MissSoundsScript then
-      return self:EmitSound(self.MissSoundsScript)
+      return self:EmitSound('DTF2_' .. self.MissSoundsScript)
     end
     local playSound = table.Random(self.MissSounds)
     if playSound then
@@ -44,7 +44,7 @@ SWEP.PlayMissSound = function(self)
     end
   else
     if self.MissCritSoundsScript then
-      return self:EmitSound(self.MissCritSoundsScript)
+      return self:EmitSound('DTF2_' .. self.MissCritSoundsScript)
     end
     local playSound = table.Random(self.MissSoundsCrit)
     if playSound then
@@ -54,7 +54,7 @@ SWEP.PlayMissSound = function(self)
 end
 SWEP.PlayHitSound = function(self)
   if self.HitSoundsScript then
-    return self:EmitSound(self.HitSoundsScript)
+    return self:EmitSound('DTF2_' .. self.HitSoundsScript)
   end
   local playSound = table.Random(self.HitSounds)
   if playSound then
@@ -63,7 +63,7 @@ SWEP.PlayHitSound = function(self)
 end
 SWEP.PlayFleshHitSound = function(self)
   if self.HitSoundsFleshScript then
-    return self:EmitSound(self.HitSoundsFleshScript)
+    return self:EmitSound('DTF2_' .. self.HitSoundsFleshScript)
   end
   local playSound = table.Random(self.HitSoundsFlesh)
   if playSound then

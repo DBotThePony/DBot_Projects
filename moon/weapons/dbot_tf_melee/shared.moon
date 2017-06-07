@@ -58,21 +58,21 @@ SWEP.BulletHull = 8
 
 SWEP.PlayMissSound = =>
     if not @incomingCrit
-        return @EmitSound(@MissSoundsScript) if @MissSoundsScript
+        return @EmitSound('DTF2_' .. @MissSoundsScript) if @MissSoundsScript
         playSound = table.Random(@MissSounds)
         @EmitSound(playSound, 50, 100, 1, CHAN_WEAPON) if playSound
     else
-        return @EmitSound(@MissCritSoundsScript) if @MissCritSoundsScript
+        return @EmitSound('DTF2_' .. @MissCritSoundsScript) if @MissCritSoundsScript
         playSound = table.Random(@MissSoundsCrit)
         @EmitSound(playSound, 50, 100, 1, CHAN_WEAPON) if playSound
 
 SWEP.PlayHitSound = =>
-    return @EmitSound(@HitSoundsScript) if @HitSoundsScript
+    return @EmitSound('DTF2_' .. @HitSoundsScript) if @HitSoundsScript
     playSound = table.Random(@HitSounds)
     @EmitSound(playSound, 50, 100, 1, CHAN_WEAPON) if playSound
 
 SWEP.PlayFleshHitSound = =>
-    return @EmitSound(@HitSoundsFleshScript) if @HitSoundsFleshScript
+    return @EmitSound('DTF2_' .. @HitSoundsFleshScript) if @HitSoundsFleshScript
     playSound = table.Random(@HitSoundsFlesh)
     @EmitSound(playSound, 75, 100, 1, CHAN_WEAPON) if playSound
 

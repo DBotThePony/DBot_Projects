@@ -12,7 +12,7 @@ SWEP.AdminOnly = false
 SWEP.UseHands = false
 SWEP.SingleCrit = true
 SWEP.MuzzleAttachment = 'muzzle'
-SWEP.BulletDamage = 5, 4
+SWEP.BulletDamage = 5.4
 SWEP.BulletsAmount = 12
 SWEP.ReloadBullets = 2
 SWEP.DefaultSpread = Vector(1, 1, 0) * 0.07
@@ -26,6 +26,9 @@ SWEP.Primary = {
   ['DefaultClip'] = 2,
   ['Automatic'] = true
 }
+SWEP.Think = function(self)
+  return BaseClass.Think(self)
+end
 SWEP.CooldownTime = 0.3
 SWEP.ReloadDeployTime = 1.4
 SWEP.DrawAnimation = 'db_draw'
@@ -34,6 +37,9 @@ SWEP.AttackAnimation = 'db_fire'
 SWEP.AttackAnimationCrit = 'db_fire'
 SWEP.ReloadStart = 'db_reload'
 SWEP.SingleReloadAnimation = true
+SWEP.SetupDataTables = function(self)
+  return BaseClass.SetupDataTables(self)
+end
 SWEP.AfterFire = function(self, bulletData)
   BaseClass.AfterFire(bulletData)
   local Dir = bulletData.Dir
@@ -48,7 +54,7 @@ SWEP.OnHit = function(self, ent, ...)
     local lpos = self:GetOwner():GetPos()
     local dir = pos - lpos
     dir:Normalize()
-    local vel = dir * 200 + Vector(0, 0, 100)
+    local vel = dir * 200 + Vector(0, 0, 30)
     vel = vel * (10000 / pos:DistToSqr(lpos))
     return DTF2.ApplyVelocity(ent, vel)
   end

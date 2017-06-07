@@ -52,6 +52,9 @@ SWEP.CheckNextCrit = function(self)
   end
   return false
 end
+SWEP.CheckNextMiniCrit = function(self)
+  return self:GetOwner():GetMiniCritBoosted()
+end
 SWEP.Initialize = function(self)
   self:SetPlaybackRate(0.5)
   self:SendWeaponSequence(self.IdleAnimation)
@@ -60,6 +63,8 @@ SWEP.Initialize = function(self)
   self.damageDealtForCrit = 0
   self.lastCritsTrigger = 0
   self.lastCritsCheck = 0
+  self.incomingCrit = false
+  self.incomingMiniCrit = false
 end
 SWEP.WaitForAnimation = function(self, anim, time, callback)
   if anim == nil then
@@ -193,20 +198,20 @@ SWEP.OnHit = function(self, hitEntity, tr, dmginfo)
   if tr == nil then
     tr = { }
   end
-  if not self.icomingCrit and IsValid(hitEntity) then
+  if not self.incomingCrit and IsValid(hitEntity) then
     self.damageDealtForCrit = self.damageDealtForCrit + dmginfo:GetDamage()
   end
-  if self.icomingCrit and IsValid(hitEntity) then
+  if (self.incomingCrit or self.incomingMiniCrit) and IsValid(hitEntity) then
     local mins, maxs = hitEntity:GetRotatedAABB(hitEntity:OBBMins(), hitEntity:OBBMaxs())
     local pos = hitEntity:GetPos()
     local newZ = math.max(pos.z, pos.z + mins.z, pos.z + maxs.z)
     pos.z = newZ
     local effData = EffectData()
     effData:SetOrigin(pos)
-    util.Effect('dtf2_critical_hit', effData)
-    hitEntity:EmitSound('TFPlayer.CritHit')
+    util.Effect(self.incomingCrit and 'dtf2_critical_hit' or 'dtf2_minicrit', effData)
+    hitEntity:EmitSound(self.incomingCrit and 'TFPlayer.CritHit' or 'TFPlayer.CritHitMini')
   end
-  if self.DamageDegradation and not self.icomingCrit then
+  if self.DamageDegradation and not self.incomingCrit then
     local pos = tr.HitPos
     local lpos = self:GetOwner():GetPos()
     local dist = pos:DistToSqr(lpos) * 4
@@ -243,7 +248,7 @@ SWEP.FireTrigger = function(self)
   self.incomingFire = false
   self.bulletCallbackCalled = false
   local bulletData = {
-    ['Damage'] = self.BulletDamage * (self.icomingCrit and 3 or 1),
+    ['Damage'] = self.BulletDamage * (self.incomingCrit and 3 or self.incomingMiniCrit and 1.3 or 1),
     ['Attacker'] = self:GetOwner(),
     ['Callback'] = self.BulletCallback,
     ['Src'] = self:GetOwner():EyePos(),
@@ -261,7 +266,8 @@ SWEP.FireTrigger = function(self)
   if SERVER then
     SuppressHostEvents(NULL)
   end
-  self.icomingCrit = false
+  self.incomingCrit = false
+  self.incomingMiniCrit = false
   self.suppressing = false
 end
 SWEP.Think = function(self)
@@ -302,12 +308,15 @@ SWEP.PrimaryAttack = function(self)
   if self:GetNextPrimaryFire() > CurTime() then
     return false
   end
-  self.icomingCrit = self:CheckNextCrit()
+  self.incomingCrit = self:CheckNextCrit()
+  if not self.incomingCrit then
+    self.incomingMiniCrit = self:CheckNextMiniCrit()
+  end
   self:SetNextPrimaryFire(CurTime() + self.CooldownTime)
-  if not self.icomingCrit then
+  if not self.incomingCrit then
     self:SendWeaponSequence(self.AttackAnimationTable and DTF2.TableRandom(self.AttackAnimationTable) or self.AttackAnimation)
   end
-  if self.icomingCrit then
+  if self.incomingCrit then
     self:SendWeaponSequence(self.AttackAnimationCritTable and DTF2.TableRandom(self.AttackAnimationCritTable) or self.AttackAnimationCrit)
   end
   self:WaitForSequence(self.IdleAnimation, self.CooldownTime)

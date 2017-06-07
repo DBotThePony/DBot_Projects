@@ -32,7 +32,7 @@ ENT.HealTarget = function(self, ent, delta, cTime)
   if self.nextAmmo > cTime then
     return 
   end
-  local deltaGive = DTF2_GiveAmmo(ent, self:GetAvaliableForAmmo())
+  local deltaGive = DTF2.GiveAmmo(ent, self:GetAvaliableForAmmo())
   if deltaGive == 0 then
     return 
   end

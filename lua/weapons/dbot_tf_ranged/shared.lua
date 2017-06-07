@@ -50,6 +50,9 @@ SWEP.ReloadStart = 'fj_reload_start'
 SWEP.ReloadLoop = 'fj_reload_loop'
 SWEP.ReloadEnd = 'fj_reload_end'
 SWEP.Reloadable = true
+SWEP.SetupDataTables = function(self)
+  return BaseClass.SetupDataTables(self)
+end
 SWEP.Initialize = function(self)
   BaseClass.Initialize(self)
   self.isReloading = false
@@ -128,11 +131,11 @@ SWEP.BulletCallback = function(self, tr, dmginfo)
 end
 SWEP.PlayFireSound = function(self, isCrit)
   if isCrit == nil then
-    isCrit = self.icomingCrit
+    isCrit = self.incomingCrit
   end
   if not isCrit then
     if self.FireSoundsScript then
-      return self:EmitSound(self.FireSoundsScript)
+      return self:EmitSound('DTF2_' .. self.FireSoundsScript)
     end
     local playSound
     if self.FireSounds then
@@ -143,7 +146,7 @@ SWEP.PlayFireSound = function(self, isCrit)
     end
   else
     if self.FireCritSoundsScript then
-      return self:EmitSound(self.FireCritSoundsScript)
+      return self:EmitSound('DTF2_' .. self.FireCritSoundsScript)
     end
     local playSound
     if self.FireCritSounds then
@@ -160,7 +163,7 @@ SWEP.PlayEmptySound = function(self)
   end
   self.lastEmptySound = CurTime() + 1
   if self.EmptySoundsScript then
-    return self:EmitSound(self.EmptySoundsScript)
+    return self:EmitSound('DTF2_' .. self.EmptySoundsScript)
   end
   local playSound
   if self.EmptySounds then

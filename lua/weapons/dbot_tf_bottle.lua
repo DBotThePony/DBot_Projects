@@ -24,7 +24,7 @@ SWEP.AttackAnimationTable = {
 SWEP.AttackAnimationCrit = 'b_swing_c'
 SWEP.OnHit = function(self, ...)
   BaseClass.OnHit(self, ...)
-  if SERVER and not self._bottle_Broken and self.icomingCrit then
+  if SERVER and not self._bottle_Broken and self.incomingCrit then
     self._bottle_Broken = true
     return self:GetTF2WeaponModel():SetModel('models/weapons/c_models/c_bottle/c_bottle_broken.mdl')
   end
