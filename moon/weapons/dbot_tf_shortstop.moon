@@ -22,9 +22,9 @@ BaseClass = baseclass.Get('dbot_tf_ranged')
 SWEP.Base = 'dbot_tf_ranged'
 SWEP.Author = 'DBot'
 SWEP.Category = 'TF2 Scout'
-SWEP.PrintName = 'Scattergun'
+SWEP.PrintName = 'Shortstop'
 SWEP.ViewModel = 'models/weapons/c_models/c_scout_arms.mdl'
-SWEP.WorldModel = 'models/weapons/c_models/c_scattergun.mdl'
+SWEP.WorldModel = 'models/weapons/c_models/c_shortstop/c_shortstop.mdl'
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.AdminOnly = false
@@ -34,30 +34,29 @@ SWEP.SingleCrit = true
 
 SWEP.MuzzleAttachment = 'muzzle'
 
-SWEP.BulletDamage = 14
-SWEP.BulletsAmount = 6
-SWEP.ReloadBullets = 1
+SWEP.BulletDamage = 12
+SWEP.BulletsAmount = 4
+SWEP.ReloadBullets = 4
 SWEP.DefaultSpread = Vector(1, 1, 0) * 0.05
 
 SWEP.DefaultViewPunch = Angle(-3, 0, 0)
 
-SWEP.FireSoundsScript = 'Weapon_Scatter_Gun.Single'
-SWEP.FireCritSoundsScript = 'Weapon_Scatter_Gun.SingleCrit'
-SWEP.EmptySoundsScript = 'Weapon_Scatter_Gun.Empty'
+SWEP.FireSoundsScript = 'Weapon_Short_Stop.Single'
+SWEP.FireCritSoundsScript = 'Weapon_Short_Stop.SingleCrit'
+SWEP.EmptySoundsScript = 'Weapon_Short_Stop.Empty'
 
 SWEP.Primary = {
     'Ammo': 'Buckshot'
-    'ClipSize': 6
-    'DefaultClip': 6
+    'ClipSize': 4
+    'DefaultClip': 4
     'Automatic': true
 }
 
-SWEP.CooldownTime = 0.6
-SWEP.ReloadTime = 0.5
-SWEP.DrawAnimation = 'sg_draw'
-SWEP.IdleAnimation = 'sg_idle'
-SWEP.AttackAnimation = 'sg_fire'
-SWEP.AttackAnimationCrit = 'sg_fire'
-SWEP.ReloadStart = 'sg_reload_start'
-SWEP.ReloadLoop = 'sg_reload_loop'
-SWEP.ReloadEnd = 'sg_reload_end'
+SWEP.CooldownTime = 0.35
+SWEP.ReloadDeployTime = 1.3
+SWEP.DrawAnimation = 'ss_draw'
+SWEP.IdleAnimation = 'ss_idle'
+SWEP.AttackAnimation = 'ss_fire'
+SWEP.AttackAnimationCrit = 'ss_fire'
+SWEP.ReloadStart = 'ss_reload'
+SWEP.SingleReloadAnimation = true
