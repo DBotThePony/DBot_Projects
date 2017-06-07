@@ -34,3 +34,29 @@ SWEP.AttackAnimation = 'ss_fire'
 SWEP.AttackAnimationCrit = 'ss_fire'
 SWEP.ReloadStart = 'ss_reload'
 SWEP.SingleReloadAnimation = true
+SWEP.SecondaryAttack = function(self)
+  local trace = self:GetOwner():GetEyeTrace()
+  local lpos = self:GetOwner():GetPos()
+  if not IsValid(trace.Entity) or trace.Entity:GetPos():Distance(lpos) > 130 then
+    return 
+  end
+  if SERVER then
+    local ent = trace.Entity
+    local dir = ent:GetPos() - lpos
+    dir:Normalize()
+    local vel = dir * 300 + Vector(0, 0, 200)
+    if not ent:IsPlayer() and not ent:IsNPC() then
+      for i = 0, ent:GetPhysicsObjectCount() - 1 do
+        local phys = ent:GetPhysicsObjectNum(i)
+        if IsValid(phys) then
+          phys:AddVelocity(vel)
+        end
+      end
+    else
+      ent:SetVelocity(vel + Vector(0, 0, 100))
+    end
+  end
+  self:EmitSound('Player.ScoutShove')
+  self:SetNextSecondaryFire(CurTime() + 1)
+  return true
+end
