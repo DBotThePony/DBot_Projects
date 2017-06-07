@@ -8,6 +8,7 @@ SWEP.AdminSpawnable = false
 SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = true
 SWEP.SlotPos = 16
+SWEP.DamageDegradation = false
 SWEP.CritChance = 8
 SWEP.CritExponent = 0.25
 SWEP.CritExponentMax = 40

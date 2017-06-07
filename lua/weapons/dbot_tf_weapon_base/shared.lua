@@ -8,6 +8,7 @@ SWEP.AdminSpawnable = false
 SWEP.UseHands = false
 SWEP.DrawCrosshair = true
 SWEP.IsTF2Weapon = true
+SWEP.DamageDegradation = true
 SWEP.DrawTime = 0.66
 SWEP.DrawTimeAnimation = 1.16
 SWEP.PreFire = 0
@@ -203,7 +204,13 @@ SWEP.OnHit = function(self, hitEntity, tr, dmginfo)
     local effData = EffectData()
     effData:SetOrigin(pos)
     util.Effect('dtf2_critical_hit', effData)
-    return hitEntity:EmitSound('TFPlayer.CritHit')
+    hitEntity:EmitSound('TFPlayer.CritHit')
+  end
+  if self.DamageDegradation and not self.icomingCrit then
+    local pos = tr.HitPos
+    local lpos = self:GetOwner():GetPos()
+    local dist = pos:DistToSqr(lpos) * 4
+    return dmginfo:ScaleDamage(math.Clamp(dist / 180, 0.2, 1.2))
   end
 end
 SWEP.BulletCallback = function(self, tr, dmginfo)
