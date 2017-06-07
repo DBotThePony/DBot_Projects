@@ -24,6 +24,15 @@ if not DTF2.LOAD_PARTICLES
 DTF2.LOAD_PARTICLES = true
 
 toPrecache = {
+    'achieved'
+    'crit_text'
+    'doubledonk_test'
+    'heal_text'
+    'hit_text'
+    'mini_firework_flare'
+    'mini_fireworks'
+    'minicrit_text'
+    'miss_text'
     'critical_grenade_blue'
     'critical_grenade_blue_extra'
     'critical_grenade_blue_glow'
