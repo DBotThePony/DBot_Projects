@@ -127,7 +127,7 @@ SWEP.BulletCallback = (tr = {}, dmginfo) =>
     else
         weapon\OnMiss(tr, dmginfo)
 
-SWEP.PlayFireSound = (isCrit = @icomingCrit) =>
+SWEP.PlayFireSound = (isCrit = @incomingCrit) =>
     if not isCrit
         return @EmitSound(@FireSoundsScript) if @FireSoundsScript
         playSound = table.Random(@FireSounds) if @FireSounds

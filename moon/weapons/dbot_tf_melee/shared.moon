@@ -57,7 +57,7 @@ SWEP.BulletForce = 20
 SWEP.BulletHull = 8
 
 SWEP.PlayMissSound = =>
-    if not @icomingCrit
+    if not @incomingCrit
         return @EmitSound(@MissSoundsScript) if @MissSoundsScript
         playSound = table.Random(@MissSounds)
         @EmitSound(playSound, 50, 100, 1, CHAN_WEAPON) if playSound
