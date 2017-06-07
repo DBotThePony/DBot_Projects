@@ -34,7 +34,7 @@ ENT.HealTarget = (ent = NULL, delta = 1, cTime = CurTime()) =>
         ent\SetHealth(hp + healAdd)
     return if not ent\IsPlayer()
     return if @nextAmmo > cTime
-    deltaGive = DTF2_GiveAmmo(ent, @GetAvaliableForAmmo())
+    deltaGive = DTF2.GiveAmmo(ent, @GetAvaliableForAmmo())
     return if deltaGive == 0
     @SetRessuplyAmount(@GetRessuplyAmount() - deltaGive)
 

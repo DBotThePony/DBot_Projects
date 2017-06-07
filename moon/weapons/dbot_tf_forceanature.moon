@@ -72,7 +72,7 @@ SWEP.OnHit = (ent, ...) =>
         lpos = @GetOwner()\GetPos()
         dir = pos - lpos
         dir\Normalize()
-        vel = dir * 200 + Vector(0, 0, 100)
+        vel = dir * 200 + Vector(0, 0, 30)
         vel *= 10000 / pos\DistToSqr(lpos)
         DTF2.ApplyVelocity(ent, vel)
 
