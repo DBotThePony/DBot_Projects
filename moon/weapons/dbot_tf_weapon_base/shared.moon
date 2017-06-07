@@ -214,7 +214,7 @@ SWEP.Think = =>
     if @incomingFire and @incomingFireTime < CurTime()
         @FireTrigger()
     if CLIENT
-        if @GetCritBoosted()
+        if @GetCritBoosted() or @GetOwner()\GetCritBoosted()
             if not @critBoostSound
                 @critBoostSound = CreateSound(@, 'Weapon_General.CritPower')
                 @critBoostSound\Play()
