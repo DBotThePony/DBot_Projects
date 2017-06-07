@@ -164,7 +164,7 @@ SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
         effData = EffectData()
         effData\SetOrigin(pos)
         util.Effect(@incomingCrit and 'dtf2_critical_hit' or 'dtf2_minicrit', effData)
-        hitEntity\EmitSound(@incomingCrit and 'TFPlayer.CritHit' or 'TFPlayer.CritHitMini')
+        hitEntity\EmitSound(@incomingCrit and 'DTF2_TFPlayer.CritHit' or 'DTF2_TFPlayer.CritHitMini')
     
     if @DamageDegradation and not @incomingCrit
         pos = tr.HitPos
