@@ -41,6 +41,7 @@ SWEP.CritExponent = 0.05
 SWEP.CritExponentMax = 10
 SWEP.SingleCrit = false
 SWEP.SingleReloadAnimation = false
+SWEP.ReloadLoopRestart = true
 SWEP.DrawAnimation = 'fj_draw'
 SWEP.IdleAnimation = 'fj_idle'
 SWEP.AttackAnimation = 'fj_fire'
@@ -192,6 +193,61 @@ SWEP.EmitMuzzleFlash = function(self)
     end
   end
   return emmiter:Finish()
+end
+SWEP.Think = function(self)
+  BaseClass.Think(self)
+  if self.isReloading and self.reloadNext < CurTime() then
+    if self:GetOwner():IsPlayer() and self:GetOwner():GetAmmoCount(self.Primary.Ammo) > 0 then
+      self.reloadNext = CurTime() + self.ReloadTime
+      local oldClip = self:Clip1()
+      local newClip = math.Clamp(oldClip + self.ReloadBullets, 0, self:GetMaxClip1())
+      if SERVER then
+        self:SetClip1(newClip)
+        if self:GetOwner():IsPlayer() then
+          self:GetOwner():RemoveAmmo(newClip - oldClip, self.Primary.Ammo)
+        end
+      end
+      if not self.SingleReloadAnimation then
+        if self.ReloadLoopRestart then
+          self:SendWeaponSequence(self.ReloadLoop)
+        else
+          if not self.reloadLoopStart then
+            self:SendWeaponSequence(self.ReloadLoop)
+          end
+          self.reloadLoopStart = true
+        end
+      end
+      if newClip == self:GetMaxClip1() then
+        self.isReloading = false
+        self.reloadLoopStart = false
+        if not self.SingleReloadAnimation then
+          self:WaitForSequence(self.ReloadEnd, self.ReloadFinishAnimTime, (function()
+            if IsValid(self) then
+              return self:WaitForSequence(self.IdleAnimation, self.ReloadFinishAnimTimeIdle)
+            end
+          end))
+        end
+        if self.SingleReloadAnimation then
+          self:SendWeaponSequence(self.IdleAnimation, self.ReloadFinishAnimTimeIdle)
+        end
+      end
+    elseif self:GetOwner():IsPlayer() and self:GetOwner():GetAmmoCount(self.Primary.Ammo) <= 0 or newClip == self:GetMaxClip1() then
+      self.isReloading = false
+      self.reloadLoopStart = false
+      if not self.SingleReloadAnimation then
+        self:WaitForSequence(self.ReloadEnd, self.ReloadFinishAnimTime, (function()
+          if IsValid(self) then
+            return self:WaitForSequence(self.IdleAnimation, self.ReloadFinishAnimTimeIdle)
+          end
+        end))
+      end
+      if self.SingleReloadAnimation then
+        self:SendWeaponSequence(self.IdleAnimation, self.ReloadFinishAnimTimeIdle)
+      end
+    end
+  end
+  self:NextThink(CurTime() + 0.1)
+  return true
 end
 SWEP.PrimaryAttack = function(self)
   if self:GetNextPrimaryFire() > CurTime() then

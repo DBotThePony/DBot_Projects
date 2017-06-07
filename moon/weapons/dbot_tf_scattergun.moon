@@ -21,10 +21,10 @@ BaseClass = baseclass.Get('dbot_tf_ranged')
 
 SWEP.Base = 'dbot_tf_ranged'
 SWEP.Author = 'DBot'
-SWEP.Category = 'TF2 Engineer'
-SWEP.PrintName = 'Shotgun'
-SWEP.ViewModel = 'models/weapons/c_models/c_engineer_arms.mdl'
-SWEP.WorldModel = 'models/weapons/c_models/c_shotgun/c_shotgun.mdl'
+SWEP.Category = 'TF2 Scout'
+SWEP.PrintName = 'Scattergun'
+SWEP.ViewModel = 'models/weapons/c_models/c_scout_arms.mdl'
+SWEP.WorldModel = 'models/weapons/c_models/c_scattergun.mdl'
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.AdminOnly = false
@@ -33,18 +33,17 @@ SWEP.UseHands = false
 SWEP.SingleCrit = true
 
 SWEP.MuzzleAttachment = 'muzzle'
-SWEP.MuzzleEffect = 'muzzle_shotgun'
 
-SWEP.BulletDamage = 9
+SWEP.BulletDamage = 14
 SWEP.BulletsAmount = 6
 SWEP.ReloadBullets = 1
 SWEP.DefaultSpread = Vector(1, 1, 0) * 0.05
 
 SWEP.DefaultViewPunch = Angle(-3, 0, 0)
 
-SWEP.FireSoundsScript = 'Weapon_Shotgun.Single'
-SWEP.FireCritSoundsScript = 'Weapon_Shotgun.SingleCrit'
-SWEP.EmptySounds = 'Weapon_Shotgun.Empty'
+SWEP.FireSoundsScript = 'Weapon_Scatter_Gun.Single'
+SWEP.FireCritSoundsScript = 'Weapon_Scatter_Gun.SingleCrit'
+SWEP.EmptySounds = 'Weapon_Scatter_Gun.Empty'
 
 SWEP.Primary = {
     'Ammo': 'Buckshot'
@@ -52,3 +51,13 @@ SWEP.Primary = {
     'DefaultClip': 6
     'Automatic': true
 }
+
+SWEP.CooldownTime = 0.55
+SWEP.ReloadTime = 0.5
+SWEP.DrawAnimation = 'sg_draw'
+SWEP.IdleAnimation = 'sg_idle'
+SWEP.AttackAnimation = 'sg_fire'
+SWEP.AttackAnimationCrit = 'sg_fire'
+SWEP.ReloadStart = 'sg_reload_start'
+SWEP.ReloadLoop = 'sg_reload_loop'
+SWEP.ReloadEnd = 'sg_reload_end'

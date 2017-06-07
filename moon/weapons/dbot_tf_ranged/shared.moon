@@ -66,6 +66,7 @@ SWEP.CritExponentMax = 10
 SWEP.SingleCrit = false
 
 SWEP.SingleReloadAnimation = false
+SWEP.ReloadLoopRestart = true
 SWEP.DrawAnimation = 'fj_draw'
 SWEP.IdleAnimation = 'fj_idle'
 SWEP.AttackAnimation = 'fj_fire'
@@ -157,6 +158,36 @@ SWEP.EmitMuzzleFlash = =>
             \SetColor(255, 255, 255)
             \SetRoll(math.random(-180, 180))
     emmiter\Finish()
+
+
+SWEP.Think = =>
+    BaseClass.Think(@)
+    if @isReloading and @reloadNext < CurTime()
+        if @GetOwner()\IsPlayer() and @GetOwner()\GetAmmoCount(@Primary.Ammo) > 0
+            @reloadNext = CurTime() + @ReloadTime
+            oldClip = @Clip1()
+            newClip = math.Clamp(oldClip + @ReloadBullets, 0, @GetMaxClip1())
+            if SERVER
+                @SetClip1(newClip)
+                @GetOwner()\RemoveAmmo(newClip - oldClip, @Primary.Ammo) if @GetOwner()\IsPlayer()
+            if not @SingleReloadAnimation
+                if @ReloadLoopRestart
+                    @SendWeaponSequence(@ReloadLoop)
+                else
+                    @SendWeaponSequence(@ReloadLoop) if not @reloadLoopStart
+                    @reloadLoopStart = true
+            if newClip == @GetMaxClip1()
+                @isReloading = false
+                @reloadLoopStart = false
+                @WaitForSequence(@ReloadEnd, @ReloadFinishAnimTime, (-> @WaitForSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if IsValid(@))) if not @SingleReloadAnimation
+                @SendWeaponSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if @SingleReloadAnimation
+        elseif @GetOwner()\IsPlayer() and @GetOwner()\GetAmmoCount(@Primary.Ammo) <= 0 or newClip == @GetMaxClip1()
+            @isReloading = false
+            @reloadLoopStart = false
+            @WaitForSequence(@ReloadEnd, @ReloadFinishAnimTime, (-> @WaitForSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if IsValid(@))) if not @SingleReloadAnimation
+            @SendWeaponSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if @SingleReloadAnimation
+    @NextThink(CurTime() + 0.1)
+    return true
 
 SWEP.PrimaryAttack = =>
     return false if @GetNextPrimaryFire() > CurTime()
