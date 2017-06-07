@@ -77,6 +77,8 @@ SWEP.ReloadEnd = 'fj_reload_end'
 
 SWEP.Reloadable = true
 
+SWEP.SetupDataTables = => BaseClass.SetupDataTables(@)
+
 SWEP.Initialize = =>
     BaseClass.Initialize(@)
     @isReloading = false

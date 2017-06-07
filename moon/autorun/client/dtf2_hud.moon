@@ -87,6 +87,31 @@ DTF2.DrawMetalCounter = ->
         surface.SetTextColor(data.r, data.g, data.b, data.a)
         surface.DrawText(data.text)
 
+BAR_BACKGROUND = Color(168, 168, 168)
+BAR_COLOR = Color(235, 235, 235)
+
+DTF2.DrawCenteredBar = (mult = 0.5, text) ->
+    w, h = ScrW(), ScrH()
+    x, y = w * .5, h * .55
+
+    surface.SetDrawColor(BACKGROUND_COLOR)
+    surface.DrawRect(x - 154, y - 4, 308, 38)
+
+    surface.SetDrawColor(BAR_BACKGROUND)
+    surface.DrawRect(x - 150, y, 300, 30)
+
+    surface.SetDrawColor(BAR_COLOR)
+    surface.DrawRect(x - 150, y, 300 * mult, 30)
+
+    if text
+        surface.SetFont(FONT)
+        surface.SetDrawColor(BACKGROUND_COLOR)
+        surface.SetTextColor(FONT_COLOR)
+        W, H = surface.GetTextSize(text)
+        surface.DrawRect(x - 4 - 154, y - 4 - H, W + 8, H + 8)
+        surface.SetTextPos(x - 150, y - H)
+        surface.DrawText(text)
+
 DTF2.DrawBuildingInfo = =>
     w, h = ScrW(), ScrH()
     x, y = w * .5, h * .6

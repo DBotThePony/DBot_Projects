@@ -33,7 +33,7 @@ SWEP.SingleCrit = true
 
 SWEP.MuzzleAttachment = 'muzzle'
 
-SWEP.BulletDamage = 5,4
+SWEP.BulletDamage = 5.4
 SWEP.BulletsAmount = 12
 SWEP.ReloadBullets = 2
 SWEP.DefaultSpread = Vector(1, 1, 0) * 0.07
@@ -51,6 +51,8 @@ SWEP.Primary = {
     'Automatic': true
 }
 
+SWEP.Think = => BaseClass.Think(@)
+
 SWEP.CooldownTime = 0.3
 SWEP.ReloadDeployTime = 1.4
 SWEP.DrawAnimation = 'db_draw'
@@ -59,6 +61,8 @@ SWEP.AttackAnimation = 'db_fire'
 SWEP.AttackAnimationCrit = 'db_fire'
 SWEP.ReloadStart = 'db_reload'
 SWEP.SingleReloadAnimation = true
+
+SWEP.SetupDataTables = => BaseClass.SetupDataTables(@)
 
 SWEP.AfterFire = (bulletData) =>
     BaseClass.AfterFire(bulletData)

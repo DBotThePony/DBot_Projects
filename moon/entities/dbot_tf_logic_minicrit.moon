@@ -41,16 +41,19 @@ with ENT
         owner = @GetOwner()
         oldTargets = @BuffedTargets
         @BuffedTargets = {}
-        table.insert(@BuffedTargets, owner) if @GetEnableBuff() IsValid(owner)
+        table.insert(@BuffedTargets, owner) if @GetEnableBuff() and IsValid(owner)
         if @GetEnableBuff() @GetRange() and @GetRange() > 0
             everything = @GetAffectEverything()
             npcs = @GetAffectNPCs()
+            nextbots = @GetAffectNextBots()
             for ent in *ents.FindInSphere(@GetPos(), @GetRange())
-                if everything
-                    table.insert(@BuffedTargets, ent)
-                elseif ent\IsPlayer()
+                if ent\IsPlayer()
+                    table.insert(@BuffedTargets, ent) if ent\Alive()
+                elseif everything
                     table.insert(@BuffedTargets, ent)
                 elseif npcs and ent\IsNPC()
+                    table.insert(@BuffedTargets, ent)
+                elseif nextbots and ent.Type == 'nextbot'
                     table.insert(@BuffedTargets, ent)
         for oldTarget in *oldTargets
             hit = false
@@ -75,6 +78,9 @@ with ENT
         @NextThink(CurTime() + .25)
         return true
     
-    .OnRemove = => newTarget\AddMiniCritBuffer() for newTarget in *@BuffedTargets
+    .OnRemove = =>
+        for newTarget in *@BuffedTargets
+            newTarget\RemoveMiniCritBuffer()
+            newTarget\UpdateMiniCritBuffers()
     
     .Draw = => false
