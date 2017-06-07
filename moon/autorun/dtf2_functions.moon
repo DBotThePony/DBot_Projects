@@ -22,3 +22,11 @@ DTF2.TableRandom = (tab) ->
     valids = [val for val in *tab when type(val) ~= 'table']
     return nil if #valids == 0
     return valids[math.random(1, #valids)]
+
+DTF2.ApplyVelocity = (ent, vel) ->
+    if not ent\IsPlayer() and not ent\IsNPC()
+        for i = 0, ent\GetPhysicsObjectCount() - 1
+            phys = ent\GetPhysicsObjectNum(i)
+            phys\AddVelocity(vel) if IsValid(phys)
+    else
+        ent\SetVelocity(vel + Vector(0, 0, 100))

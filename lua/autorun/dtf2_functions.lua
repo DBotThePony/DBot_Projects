@@ -18,3 +18,15 @@ DTF2.TableRandom = function(tab)
   end
   return valids[math.random(1, #valids)]
 end
+DTF2.ApplyVelocity = function(ent, vel)
+  if not ent:IsPlayer() and not ent:IsNPC() then
+    for i = 0, ent:GetPhysicsObjectCount() - 1 do
+      local phys = ent:GetPhysicsObjectNum(i)
+      if IsValid(phys) then
+        phys:AddVelocity(vel)
+      end
+    end
+  else
+    return ent:SetVelocity(vel + Vector(0, 0, 100))
+  end
+end

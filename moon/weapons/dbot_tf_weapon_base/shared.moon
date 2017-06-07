@@ -178,6 +178,7 @@ SWEP.BulletCallback = (tr = {}, dmginfo) =>
         weapon\OnMiss(tr, dmginfo)
 
 SWEP.UpdateBulletData = (bulletData = {}) =>
+SWEP.AfterFire = (bulletData = {}) =>
 
 SWEP.FireTrigger = =>
     @suppressing = true
@@ -198,6 +199,7 @@ SWEP.FireTrigger = =>
     @UpdateBulletData(bulletData)
 
     @FireBullets(bulletData)
+    @AfterFire(bulletData)
     @OnMiss() if not @bulletCallbackCalled
     SuppressHostEvents(NULL) if SERVER
     @icomingCrit = false

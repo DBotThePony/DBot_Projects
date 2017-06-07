@@ -15,7 +15,5 @@
 -- limitations under the License.
 --
 
-include 'shared.lua'
-AddCSLuaFile 'shared.lua'
-
-BaseClass = baseclass.Get('dbot_tf_weapon_base')
+export DTF2
+DTF2 = DTF2 or {}

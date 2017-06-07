@@ -71,12 +71,7 @@ SWEP.SecondaryAttack = =>
         dir\Normalize()
         
         vel = dir * 300 + Vector(0, 0, 200)
-        if not ent\IsPlayer() and not ent\IsNPC()
-            for i = 0, ent\GetPhysicsObjectCount() - 1
-                phys = ent\GetPhysicsObjectNum(i)
-                phys\AddVelocity(vel) if IsValid(phys)
-        else
-            ent\SetVelocity(vel + Vector(0, 0, 100))
+        DTF2.ApplyVelocity(ent, vel)
     @EmitSound('Player.ScoutShove')
     @SetNextSecondaryFire(CurTime() + 1)
     return true

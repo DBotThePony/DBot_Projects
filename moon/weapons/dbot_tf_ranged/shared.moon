@@ -159,17 +159,24 @@ SWEP.EmitMuzzleFlash = =>
             \SetRoll(math.random(-180, 180))
     emmiter\Finish()
 
+SWEP.OnHit = (...) => BaseClass.OnHit(@, ...)
+SWEP.OnMiss = => BaseClass.OnMiss(@)
+SWEP.AfterFire = (bulletData = {}) =>
+
+SWEP.ReloadCall = =>
+    oldClip = @Clip1()
+    newClip = math.Clamp(oldClip + @ReloadBullets, 0, @GetMaxClip1())
+    if SERVER
+        @SetClip1(newClip)
+        @GetOwner()\RemoveAmmo(newClip - oldClip, @Primary.Ammo) if @GetOwner()\IsPlayer()
+    return oldClip, newClip
 
 SWEP.Think = =>
     BaseClass.Think(@)
     if @isReloading and @reloadNext < CurTime()
         if @GetOwner()\IsPlayer() and @GetOwner()\GetAmmoCount(@Primary.Ammo) > 0
             @reloadNext = CurTime() + @ReloadTime
-            oldClip = @Clip1()
-            newClip = math.Clamp(oldClip + @ReloadBullets, 0, @GetMaxClip1())
-            if SERVER
-                @SetClip1(newClip)
-                @GetOwner()\RemoveAmmo(newClip - oldClip, @Primary.Ammo) if @GetOwner()\IsPlayer()
+            oldClip, newClip = @ReloadCall()
             if not @SingleReloadAnimation
                 if @ReloadLoopRestart
                     @SendWeaponSequence(@ReloadLoop)

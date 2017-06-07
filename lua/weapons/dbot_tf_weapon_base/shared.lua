@@ -230,6 +230,11 @@ SWEP.UpdateBulletData = function(self, bulletData)
     bulletData = { }
   end
 end
+SWEP.AfterFire = function(self, bulletData)
+  if bulletData == nil then
+    bulletData = { }
+  end
+end
 SWEP.FireTrigger = function(self)
   self.suppressing = true
   if SERVER and self:GetOwner():IsPlayer() then
@@ -249,6 +254,7 @@ SWEP.FireTrigger = function(self)
   }
   self:UpdateBulletData(bulletData)
   self:FireBullets(bulletData)
+  self:AfterFire(bulletData)
   if not self.bulletCallbackCalled then
     self:OnMiss()
   end

@@ -194,19 +194,34 @@ SWEP.EmitMuzzleFlash = function(self)
   end
   return emmiter:Finish()
 end
+SWEP.OnHit = function(self, ...)
+  return BaseClass.OnHit(self, ...)
+end
+SWEP.OnMiss = function(self)
+  return BaseClass.OnMiss(self)
+end
+SWEP.AfterFire = function(self, bulletData)
+  if bulletData == nil then
+    bulletData = { }
+  end
+end
+SWEP.ReloadCall = function(self)
+  local oldClip = self:Clip1()
+  local newClip = math.Clamp(oldClip + self.ReloadBullets, 0, self:GetMaxClip1())
+  if SERVER then
+    self:SetClip1(newClip)
+    if self:GetOwner():IsPlayer() then
+      self:GetOwner():RemoveAmmo(newClip - oldClip, self.Primary.Ammo)
+    end
+  end
+  return oldClip, newClip
+end
 SWEP.Think = function(self)
   BaseClass.Think(self)
   if self.isReloading and self.reloadNext < CurTime() then
     if self:GetOwner():IsPlayer() and self:GetOwner():GetAmmoCount(self.Primary.Ammo) > 0 then
       self.reloadNext = CurTime() + self.ReloadTime
-      local oldClip = self:Clip1()
-      local newClip = math.Clamp(oldClip + self.ReloadBullets, 0, self:GetMaxClip1())
-      if SERVER then
-        self:SetClip1(newClip)
-        if self:GetOwner():IsPlayer() then
-          self:GetOwner():RemoveAmmo(newClip - oldClip, self.Primary.Ammo)
-        end
-      end
+      local oldClip, newClip = self:ReloadCall()
       if not self.SingleReloadAnimation then
         if self.ReloadLoopRestart then
           self:SendWeaponSequence(self.ReloadLoop)
