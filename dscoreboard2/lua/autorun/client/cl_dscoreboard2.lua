@@ -72,6 +72,14 @@ function board.RefreshDCache()
     end
 end
 
+cvars.AddChangeCallback('dscoreboard_sort_by', function()
+    hook.Run('DScoreBoard2_UpdateSorting')
+end, 'DScoreBoard2')
+
+cvars.AddChangeCallback('dscoreboard_sort_by_order', function()
+    hook.Run('DScoreBoard2_UpdateSorting')
+end, 'DScoreBoard2')
+
 include('autorun/client/dscoreboard2/fonts.lua')
 include('autorun/client/dscoreboard2/avatar.lua')
 include('autorun/client/dscoreboard2/flag.lua')

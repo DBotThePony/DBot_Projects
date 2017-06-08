@@ -87,6 +87,8 @@ function PANEL:Init()
     self.scroll = self:Add('DScrollPanel')
     self.scroll:Dock(FILL)
     self.ROWS = {}
+
+    hook.Add('DScoreBoard2_UpdateSorting', self, self.DoSort)
 end
 
 local function PanelsSorter(first, second)
