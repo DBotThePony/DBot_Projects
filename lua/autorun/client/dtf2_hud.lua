@@ -89,7 +89,7 @@ DTF2.DrawCenteredBar = function(mult, text)
   local x, y = CENTERED_BAR_POS()
   surface.SetTextColor(FONT_COLOR())
   surface.SetFont(FONT)
-  return HUDCommons.BarWithTextCentered(x, y, 300, 25, mult, BACKGROUND_COLOR(), HUD_BAR_BACKGROUND(), HUD_BAR_COLOR(), text)
+  return HUDCommons.SoftBarWithText(x - 150, y, 300, 25, mult, BACKGROUND_COLOR(), HUD_BAR_BACKGROUND(), HUD_BAR_COLOR(), text, 'dtf2_centered')
 end
 DTF2.DrawBuildingInfo = function(self)
   local w, h = ScrW(), ScrH()
