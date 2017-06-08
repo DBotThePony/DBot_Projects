@@ -39,8 +39,6 @@ SWEP.BulletsAmount = 4
 SWEP.ReloadBullets = 4
 SWEP.DefaultSpread = Vector(1, 1, 0) * 0.05
 
-SWEP.DefaultViewPunch = Angle(-3, 0, 0)
-
 SWEP.FireSoundsScript = 'Weapon_Short_Stop.Single'
 SWEP.FireCritSoundsScript = 'Weapon_Short_Stop.SingleCrit'
 SWEP.EmptySoundsScript = 'Weapon_Short_Stop.Empty'

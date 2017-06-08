@@ -42,6 +42,9 @@ SWEP.EmitSoundServerside = function(self, ...)
   end
 end
 SWEP.CheckCritical = function(self)
+  if not self.RandomCriticals then
+    return 
+  end
   if self:GetNextCrit() then
     return 
   end
@@ -60,6 +63,9 @@ SWEP.CheckCritical = function(self)
   end
 end
 SWEP.TriggerCriticals = function(self)
+  if not self.RandomCriticals then
+    return 
+  end
   if self.lastCritsTrigger > CurTime() then
     return 
   end

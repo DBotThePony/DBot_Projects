@@ -51,6 +51,7 @@ SWEP.AttackAnimationCrit = 'fj_fire'
 SWEP.CritChance = 4
 SWEP.CritExponent = 0.1
 SWEP.CritExponentMax = 12
+SWEP.RandomCriticals = true
 SWEP.SingleCrit = true
 SWEP.CritDuration = 4
 SWEP.CritsCooldown = 2
@@ -123,7 +124,6 @@ SWEP.CreateWeaponModel = =>
         \Spawn()
         \Activate()
         \DoSetup(@)
-        print @WorldModel
     @SetTF2WeaponModel(@weaponViewModel)
     return @weaponViewModel
 
@@ -157,27 +157,36 @@ SWEP.AttackAngle = (target = NULL) =>
     lpos = @GetOwner()\GetPos()
     dir = pos - lpos
     ang = dir\Angle()
+    ang\Normalize()
     return ang.y
+
+SWEP.AttackingAtSpine = (target = NULL) =>
+    ang = @AttackAngle(target)
+    return ang < -90 or ang > 90
 
 SWEP.PreOnMiss = =>
 SWEP.OnMiss = =>
 SWEP.PostOnMiss = =>
 SWEP.PreOnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
 SWEP.PostOnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
+
+SWEP.DisplayCritEffect = (hitEntity) =>
+    mins, maxs = hitEntity\GetRotatedAABB(hitEntity\OBBMins(), hitEntity\OBBMaxs())
+    pos = hitEntity\GetPos()
+    newZ = math.max(pos.z, pos.z + mins.z, pos.z + maxs.z)
+    pos.z = newZ
+
+    effData = EffectData()
+    effData\SetOrigin(pos)
+    util.Effect(@incomingCrit and 'dtf2_critical_hit' or 'dtf2_minicrit', effData)
+    hitEntity\EmitSound(@incomingCrit and 'DTF2_TFPlayer.CritHit' or 'DTF2_TFPlayer.CritHitMini')
+
 SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
     if not @incomingCrit and IsValid(hitEntity)
         @damageDealtForCrit += dmginfo\GetDamage()
     
     if (@incomingCrit or @incomingMiniCrit) and IsValid(hitEntity)
-        mins, maxs = hitEntity\GetRotatedAABB(hitEntity\OBBMins(), hitEntity\OBBMaxs())
-        pos = hitEntity\GetPos()
-        newZ = math.max(pos.z, pos.z + mins.z, pos.z + maxs.z)
-        pos.z = newZ
-
-        effData = EffectData()
-        effData\SetOrigin(pos)
-        util.Effect(@incomingCrit and 'dtf2_critical_hit' or 'dtf2_minicrit', effData)
-        hitEntity\EmitSound(@incomingCrit and 'DTF2_TFPlayer.CritHit' or 'DTF2_TFPlayer.CritHitMini')
+        @DisplayCritEffect(hitEntity)
     
     if @DamageDegradation and not @incomingCrit
         pos = tr.HitPos
@@ -187,22 +196,30 @@ SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
 
 SWEP.BulletCallback = (tr = {}, dmginfo) =>
     weapon = @GetActiveWeapon()
+    dmginfo\SetInflictor(weapon)
     weapon.bulletCallbackCalled = true
     weapon\PreOnHit(tr.Entity, tr, dmginfo)
     weapon\OnHit(tr.Entity, tr, dmginfo)
+    weapon.onHitCalled = true
     weapon\PostOnHit(tr.Entity, tr, dmginfo)
 
 SWEP.UpdateBulletData = (bulletData = {}) =>
 SWEP.AfterFire = (bulletData = {}) =>
+
+SWEP.ThatWasMinicrit = (hitEntity, dmginfo) =>
+    return if @incomingCrit or @incomingMiniCrit
+    @incomingMiniCrit = true
+    @DisplayCritEffect(hitEntity) if @onHitCalled
+    dmginfo\ScaleDamage(1.3)
 
 SWEP.FireTrigger = =>
     @suppressing = true
     SuppressHostEvents(@GetOwner()) if SERVER and @GetOwner()\IsPlayer()
     @incomingFire = false
     @bulletCallbackCalled = false
+    @onHitCalled = false
     bulletData = {
         'Damage': @BulletDamage * (@incomingCrit and 3 or @incomingMiniCrit and 1.3 or 1)
-        'Attacker': @GetOwner()
         'Callback': @BulletCallback
         'Src': @GetOwner()\EyePos()
         'Dir': @GetOwner()\GetAimVector()
@@ -213,7 +230,7 @@ SWEP.FireTrigger = =>
 
     @UpdateBulletData(bulletData)
 
-    @FireBullets(bulletData)
+    @GetOwner()\FireBullets(bulletData)
     @AfterFire(bulletData)
     if not @bulletCallbackCalled
         @PreOnMiss()

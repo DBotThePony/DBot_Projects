@@ -26,6 +26,7 @@ SWEP.AttackAnimationCrit = 'fj_fire'
 SWEP.CritChance = 4
 SWEP.CritExponent = 0.1
 SWEP.CritExponentMax = 12
+SWEP.RandomCriticals = true
 SWEP.SingleCrit = true
 SWEP.CritDuration = 4
 SWEP.CritsCooldown = 2
@@ -157,7 +158,6 @@ SWEP.CreateWeaponModel = function(self)
     _with_0:Spawn()
     _with_0:Activate()
     _with_0:DoSetup(self)
-    print(self.WorldModel)
   end
   self:SetTF2WeaponModel(self.weaponViewModel)
   return self.weaponViewModel
@@ -190,7 +190,59 @@ SWEP.Holster = function(self)
   end
   return false
 end
+SWEP.AttackAngle = function(self, target)
+  if target == nil then
+    target = NULL
+  end
+  if not IsValid(target) then
+    return 0
+  end
+  if not IsValid(self:GetOwner()) then
+    return 0
+  end
+  local pos = target:GetPos()
+  local lpos = self:GetOwner():GetPos()
+  local dir = pos - lpos
+  local ang = dir:Angle()
+  ang:Normalize()
+  return ang.y
+end
+SWEP.AttackingAtSpine = function(self, target)
+  if target == nil then
+    target = NULL
+  end
+  local ang = self:AttackAngle(target)
+  return ang < -90 or ang > 90
+end
+SWEP.PreOnMiss = function(self) end
 SWEP.OnMiss = function(self) end
+SWEP.PostOnMiss = function(self) end
+SWEP.PreOnHit = function(self, hitEntity, tr, dmginfo)
+  if hitEntity == nil then
+    hitEntity = NULL
+  end
+  if tr == nil then
+    tr = { }
+  end
+end
+SWEP.PostOnHit = function(self, hitEntity, tr, dmginfo)
+  if hitEntity == nil then
+    hitEntity = NULL
+  end
+  if tr == nil then
+    tr = { }
+  end
+end
+SWEP.DisplayCritEffect = function(self, hitEntity)
+  local mins, maxs = hitEntity:GetRotatedAABB(hitEntity:OBBMins(), hitEntity:OBBMaxs())
+  local pos = hitEntity:GetPos()
+  local newZ = math.max(pos.z, pos.z + mins.z, pos.z + maxs.z)
+  pos.z = newZ
+  local effData = EffectData()
+  effData:SetOrigin(pos)
+  util.Effect(self.incomingCrit and 'dtf2_critical_hit' or 'dtf2_minicrit', effData)
+  return hitEntity:EmitSound(self.incomingCrit and 'DTF2_TFPlayer.CritHit' or 'DTF2_TFPlayer.CritHitMini')
+end
 SWEP.OnHit = function(self, hitEntity, tr, dmginfo)
   if hitEntity == nil then
     hitEntity = NULL
@@ -202,14 +254,7 @@ SWEP.OnHit = function(self, hitEntity, tr, dmginfo)
     self.damageDealtForCrit = self.damageDealtForCrit + dmginfo:GetDamage()
   end
   if (self.incomingCrit or self.incomingMiniCrit) and IsValid(hitEntity) then
-    local mins, maxs = hitEntity:GetRotatedAABB(hitEntity:OBBMins(), hitEntity:OBBMaxs())
-    local pos = hitEntity:GetPos()
-    local newZ = math.max(pos.z, pos.z + mins.z, pos.z + maxs.z)
-    pos.z = newZ
-    local effData = EffectData()
-    effData:SetOrigin(pos)
-    util.Effect(self.incomingCrit and 'dtf2_critical_hit' or 'dtf2_minicrit', effData)
-    hitEntity:EmitSound(self.incomingCrit and 'DTF2_TFPlayer.CritHit' or 'DTF2_TFPlayer.CritHitMini')
+    self:DisplayCritEffect(hitEntity)
   end
   if self.DamageDegradation and not self.incomingCrit then
     local pos = tr.HitPos
@@ -223,12 +268,12 @@ SWEP.BulletCallback = function(self, tr, dmginfo)
     tr = { }
   end
   local weapon = self:GetActiveWeapon()
+  dmginfo:SetInflictor(weapon)
   weapon.bulletCallbackCalled = true
-  if tr.Hit then
-    return weapon:OnHit(tr.Entity, tr, dmginfo)
-  else
-    return weapon:OnMiss(tr, dmginfo)
-  end
+  weapon:PreOnHit(tr.Entity, tr, dmginfo)
+  weapon:OnHit(tr.Entity, tr, dmginfo)
+  weapon.onHitCalled = true
+  return weapon:PostOnHit(tr.Entity, tr, dmginfo)
 end
 SWEP.UpdateBulletData = function(self, bulletData)
   if bulletData == nil then
@@ -240,6 +285,16 @@ SWEP.AfterFire = function(self, bulletData)
     bulletData = { }
   end
 end
+SWEP.ThatWasMinicrit = function(self, hitEntity, dmginfo)
+  if self.incomingCrit or self.incomingMiniCrit then
+    return 
+  end
+  self.incomingMiniCrit = true
+  if self.onHitCalled then
+    self:DisplayCritEffect(hitEntity)
+  end
+  return dmginfo:ScaleDamage(1.3)
+end
 SWEP.FireTrigger = function(self)
   self.suppressing = true
   if SERVER and self:GetOwner():IsPlayer() then
@@ -247,9 +302,9 @@ SWEP.FireTrigger = function(self)
   end
   self.incomingFire = false
   self.bulletCallbackCalled = false
+  self.onHitCalled = false
   local bulletData = {
     ['Damage'] = self.BulletDamage * (self.incomingCrit and 3 or self.incomingMiniCrit and 1.3 or 1),
-    ['Attacker'] = self:GetOwner(),
     ['Callback'] = self.BulletCallback,
     ['Src'] = self:GetOwner():EyePos(),
     ['Dir'] = self:GetOwner():GetAimVector(),
@@ -258,10 +313,12 @@ SWEP.FireTrigger = function(self)
     ['Force'] = self.BulletForce
   }
   self:UpdateBulletData(bulletData)
-  self:FireBullets(bulletData)
+  self:GetOwner():FireBullets(bulletData)
   self:AfterFire(bulletData)
   if not self.bulletCallbackCalled then
+    self:PreOnMiss()
     self:OnMiss()
+    self:PostOnMiss()
   end
   if SERVER then
     SuppressHostEvents(NULL)

@@ -120,15 +120,6 @@ SWEP.UpdateBulletData = (bulletData = {}) =>
     bulletData.Spread = @GetBulletSpread()
     bulletData.Num = @GetBulletAmount()
 
-SWEP.BulletCallback = (tr = {}, dmginfo) =>
-    weapon = @GetActiveWeapon()
-    weapon.bulletCallbackCalled = true
-
-    if tr.Hit
-        weapon\OnHit(tr.Entity, tr, dmginfo)
-    else
-        weapon\OnMiss(tr, dmginfo)
-
 SWEP.PlayFireSound = (isCrit = @incomingCrit) =>
     if not isCrit
         return @EmitSound('DTF2_' .. @FireSoundsScript) if @FireSoundsScript

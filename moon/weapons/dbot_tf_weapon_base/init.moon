@@ -46,6 +46,7 @@ SWEP.EmitSoundServerside = (...) =>
     SuppressHostEvents(@GetOwner()) if @suppressing
 
 SWEP.CheckCritical = =>
+    return if not @RandomCriticals
     return if @GetNextCrit()
     return if @lastCritsTrigger > CurTime()
     return if @lastCritsCheck > CurTime()
@@ -55,6 +56,7 @@ SWEP.CheckCritical = =>
         @TriggerCriticals()
 
 SWEP.TriggerCriticals = =>
+    return if not @RandomCriticals
     return if @lastCritsTrigger > CurTime()
     @damageDealtForCrit = 0
     @lastCritsTrigger = CurTime() + @CritsCooldown

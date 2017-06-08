@@ -117,18 +117,6 @@ SWEP.UpdateBulletData = function(self, bulletData)
   bulletData.Spread = self:GetBulletSpread()
   bulletData.Num = self:GetBulletAmount()
 end
-SWEP.BulletCallback = function(self, tr, dmginfo)
-  if tr == nil then
-    tr = { }
-  end
-  local weapon = self:GetActiveWeapon()
-  weapon.bulletCallbackCalled = true
-  if tr.Hit then
-    return weapon:OnHit(tr.Entity, tr, dmginfo)
-  else
-    return weapon:OnMiss(tr, dmginfo)
-  end
-end
 SWEP.PlayFireSound = function(self, isCrit)
   if isCrit == nil then
     isCrit = self.incomingCrit
