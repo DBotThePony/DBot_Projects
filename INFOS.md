@@ -1033,6 +1033,30 @@ models/weapons/c_models/c_xms_festive_ornament.mdl
 models/weapons/c_models/c_xms_urinejar.mdl
 models/weapons/c_models/stattrack.mdl
 models/weapons/c_models/urinejar.mdl
+models/workshop/weapons/c_models/c_ai_flamethrower/c_ai_flamethrower.mdl
+models/workshop/weapons/c_models/c_atom_launcher/c_atom_launcher.mdl
+models/workshop/weapons/c_models/c_crossing_guard/c_crossing_guard.mdl
+models/workshop/weapons/c_models/c_invasion_bat/c_invasion_bat.mdl
+models/workshop/weapons/c_models/c_invasion_pistol/c_invasion_pistol.mdl
+models/workshop/weapons/c_models/c_invasion_sniperrifle/c_invasion_sniperrifle.mdl
+models/workshop/weapons/c_models/c_invasion_wrangler/c_invasion_wrangler.mdl
+models/workshop/weapons/c_models/c_jag/c_jag.mdl
+models/workshop/weapons/c_models/c_jag/c_jag_festivizer.mdl
+models/workshop/weapons/c_models/c_kingmaker_sticky/c_kingmaker_sticky.mdl
+models/workshop/weapons/c_models/c_kingmaker_sticky/w_kingmaker_stickybomb.mdl
+models/workshop/weapons/c_models/c_lochnload/c_lochnload.mdl
+models/workshop/weapons/c_models/c_mailbox/c_mailbox.mdl
+models/workshop/weapons/c_models/c_paratooper_pack/c_paratrooper_pack.mdl
+models/workshop/weapons/c_models/c_paratooper_pack/c_paratrooper_pack_open.mdl
+models/workshop/weapons/c_models/c_paratooper_pack/c_paratrooper_parachute.mdl
+models/workshop/weapons/c_models/c_pep_pistol/c_pep_pistol.mdl
+models/workshop/weapons/c_models/c_quadball/c_quadball.mdl
+models/workshop/weapons/c_models/c_quadball/w_quadball_grenade.mdl
+models/workshop/weapons/c_models/c_scatterdrum/c_scatterdrum.mdl
+models/workshop/weapons/c_models/c_trenchgun/c_trenchgun.mdl
+models/workshop/weapons/c_models/c_wheel_shield/c_wheel_shield.mdl
+models/workshop/weapons/c_models/c_xms_cold_shoulder/c_xms_cold_shoulder.mdl
+models/workshop/weapons/c_models/c_xms_cold_shoulder/c_xms_cold_shoulder_festivizer.mdl
 ```
 
 # Particles
