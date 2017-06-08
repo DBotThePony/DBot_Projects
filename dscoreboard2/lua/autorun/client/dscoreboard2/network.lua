@@ -18,57 +18,57 @@
 local board = DScoreBoard2
 
 net.Receive('DScoreBoard2.ServerMemory', function()
-	board.ServerMem = net.ReadUInt(12)
+    board.ServerMem = net.ReadUInt(12)
 end)
 
 net.Receive('DScoreBoard2.ServerTime', function()
-	board.ServerTime = net.ReadUInt(32)
+    board.ServerTime = net.ReadUInt(32)
 end)
 
 net.Receive('DScoreBoard2.ChatPrint', function()
-	chat.AddText(unpack(net.ReadTable()))
+    chat.AddText(unpack(net.ReadTable()))
 end)
 
 net.Receive('DScoreBoard2.Flags', function()
-	local count = net.ReadUInt(12)
-	
-	for i = 1, count do
-		local ply = net.ReadEntity()
-		if not IsValid(ply) then continue end
-		ply.DSCOREBOARD_FLAG = net.ReadString()
-	end
+    local count = net.ReadUInt(12)
+    
+    for i = 1, count do
+        local ply = net.ReadEntity()
+        if not IsValid(ply) then continue end
+        ply.DSCOREBOARD_FLAG = net.ReadString()
+    end
 end)
 
 net.Receive('DScoreBoard2.Connect', function()
-	local steamid = net.ReadString()
-	local nick = net.ReadString()
-	
-	hook.Run('DScoreBoard2_PlayerConnect', steamid, nick)
-	
-	board.Connecting[steamid] = {
-		nick = nick,
-		timestamp = CurTime()
-	}
-	
-	board.Disconnected[steamid] = nil
-	
-	board.RefreshDCache()
+    local steamid = net.ReadString()
+    local nick = net.ReadString()
+    
+    hook.Run('DScoreBoard2_PlayerConnect', steamid, nick)
+    
+    board.Connecting[steamid] = {
+        nick = nick,
+        timestamp = CurTime()
+    }
+    
+    board.Disconnected[steamid] = nil
+    
+    board.RefreshDCache()
 end)
 
 net.Receive('DScoreBoard2.Disconnect', function()
-	local steamid = net.ReadString()
-	local nick = net.ReadString()
-	local country = net.ReadString()
-	
-	hook.Run('DScoreBoard2_PlayerDisconnect', steamid, nick, country)
-	
-	board.Disconnected[steamid] = {
-		nick = nick,
-		country = country,
-		timestamp = CurTime()
-	}
-	
-	board.Connecting[steamid] = nil
-	
-	board.RefreshDCache()
+    local steamid = net.ReadString()
+    local nick = net.ReadString()
+    local country = net.ReadString()
+    
+    hook.Run('DScoreBoard2_PlayerDisconnect', steamid, nick, country)
+    
+    board.Disconnected[steamid] = {
+        nick = nick,
+        country = country,
+        timestamp = CurTime()
+    }
+    
+    board.Connecting[steamid] = nil
+    
+    board.RefreshDCache()
 end)

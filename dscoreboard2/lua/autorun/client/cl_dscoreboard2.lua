@@ -17,60 +17,59 @@
 
 DScoreBoard2 = DScoreBoard2 or {}
 local board = DScoreBoard2
+
 board.SHOW_AUTHOR = CreateConVar('dscoreboard_showauthor', '1', FCVAR_ARCHIVE, 'Show DScoreBoard/2 author')
+board.SORT_BY = CreateConVar('dscoreboard_sort_by', 'nickname', {FCVAR_ARCHIVE}, 'Sort by (none, nickname, team, frags, deaths, ratio, ping)')
+board.SORT_BY_ORDER = CreateConVar('dscoreboard_sort_by_order', 'asc', {FCVAR_ARCHIVE}, 'Sort by order (desc, asc)')
 
 local Colors = {
-	bg = Color(0, 0, 0, 150),
-	textcolor = Color(255, 255, 255, 255),
+    bg = Color(0, 0, 0, 150),
+    textcolor = Color(255, 255, 255, 255),
 }
 
 local plyMeta = FindMetaTable('Player')
 
 function plyMeta:DBoardNick()
-	return self:Nick() .. (self.SteamName and (' (Steam Name: ' .. self:SteamName() .. ')') or '')
+    return self:Nick() .. (self.SteamName and (' (Steam Name: ' .. self:SteamName() .. ')') or '')
 end
 
 board.Colors = Colors
 
 for k, v in pairs(DScoreBoard2.Colors) do
-	local r = CreateConVar('cl_dboard_color_' .. k .. '_r', v.r, FCVAR_ARCHIVE, 'Sets ' .. k .. ' color red channel')
-	local g = CreateConVar('cl_dboard_color_' .. k .. '_g', v.g, FCVAR_ARCHIVE, 'Sets ' .. k .. ' color green channel')
-	local b = CreateConVar('cl_dboard_color_' .. k .. '_b', v.b, FCVAR_ARCHIVE, 'Sets ' .. k .. ' color blue channel')
-	local a = CreateConVar('cl_dboard_color_' .. k .. '_a', v.a, FCVAR_ARCHIVE, 'Sets ' .. k .. ' color alpha channel')
-	
-	local function update()
-		DScoreBoard2.Colors[k] = Color(r:GetInt(), g:GetInt(), b:GetInt(), a:GetInt())
-	end
-	
-	cvars.AddChangeCallback('cl_dboard_color_' .. k .. '_r', update, 'DScoreBoard2')
-	cvars.AddChangeCallback('cl_dboard_color_' .. k .. '_g', update, 'DScoreBoard2')
-	cvars.AddChangeCallback('cl_dboard_color_' .. k .. '_b', update, 'DScoreBoard2')
-	cvars.AddChangeCallback('cl_dboard_color_' .. k .. '_a', update, 'DScoreBoard2')
+    local r = CreateConVar('cl_dboard_color_' .. k .. '_r', v.r, FCVAR_ARCHIVE, 'Sets ' .. k .. ' color red channel')
+    local g = CreateConVar('cl_dboard_color_' .. k .. '_g', v.g, FCVAR_ARCHIVE, 'Sets ' .. k .. ' color green channel')
+    local b = CreateConVar('cl_dboard_color_' .. k .. '_b', v.b, FCVAR_ARCHIVE, 'Sets ' .. k .. ' color blue channel')
+    local a = CreateConVar('cl_dboard_color_' .. k .. '_a', v.a, FCVAR_ARCHIVE, 'Sets ' .. k .. ' color alpha channel')
+    
+    local function update()
+        DScoreBoard2.Colors[k] = Color(r:GetInt(), g:GetInt(), b:GetInt(), a:GetInt())
+    end
+    
+    cvars.AddChangeCallback('cl_dboard_color_' .. k .. '_r', update, 'DScoreBoard2')
+    cvars.AddChangeCallback('cl_dboard_color_' .. k .. '_g', update, 'DScoreBoard2')
+    cvars.AddChangeCallback('cl_dboard_color_' .. k .. '_b', update, 'DScoreBoard2')
+    cvars.AddChangeCallback('cl_dboard_color_' .. k .. '_a', update, 'DScoreBoard2')
 end
 
 function board.GetPlayerCountry(ply)
-	if ply == LocalPlayer() then return system.GetCountry() end
-	return ply.DSCOREBOARD_FLAG or 'Unknown'
-end
-
-function board.GetSortedPlayerList()
-	return player.GetAll()
+    if ply == LocalPlayer() then return system.GetCountry() end
+    return ply.DSCOREBOARD_FLAG or 'Unknown'
 end
 
 function board.RefreshDCache()
-	for k, v in pairs(board.Connecting) do
-		if player.GetBySteamID(k) then
-			board.Connecting[k] = nil
-		end
-	end
-	
-	for k, v in pairs(board.Disconnected) do
-		if v.timestamp + 180 < CurTime() or
-			player.GetBySteamID(k)
-		then
-			board.Disconnected[k] = nil
-		end
-	end
+    for k, v in pairs(board.Connecting) do
+        if player.GetBySteamID(k) then
+            board.Connecting[k] = nil
+        end
+    end
+    
+    for k, v in pairs(board.Disconnected) do
+        if v.timestamp + 180 < CurTime() or
+            player.GetBySteamID(k)
+        then
+            board.Disconnected[k] = nil
+        end
+    end
 end
 
 include('autorun/client/dscoreboard2/fonts.lua')

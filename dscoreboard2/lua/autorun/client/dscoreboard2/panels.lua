@@ -20,30 +20,30 @@ local board = DScoreBoard2
 local PANEL = {}
 
 function PANEL:Init()
-	self.Neon = 0
-	self.BaseClass.Init(self)
-	self:SetTextColor(DScoreBoard2.Colors.textcolor)
-	self:SizeToContents()
-	local w, h = self:GetSize()
-	self:SetWidth(w + 8)
-	self:SetHeight(20)
-	self:SetFont(DScoreBoard2.FONT_BUTTONFONT)
+    self.Neon = 0
+    self.BaseClass.Init(self)
+    self:SetTextColor(DScoreBoard2.Colors.textcolor)
+    self:SizeToContents()
+    local w, h = self:GetSize()
+    self:SetWidth(w + 8)
+    self:SetHeight(20)
+    self:SetFont(DScoreBoard2.FONT_BUTTONFONT)
 end
 
 function PANEL:Paint(w, h)
-	if self:IsHovered() then
-		self.Neon = math.Clamp(self.Neon + 350 * FrameTime(), 0, 150)
-	else
-		self.Neon = math.Clamp(self.Neon - 350 * FrameTime(), 0, 150)
-	end
-	
-	if self:IsDown() then
-		self.Neon = 200
-	end
-	
-	surface.SetDrawColor(DScoreBoard2.Colors.bg.r + self.Neon, DScoreBoard2.Colors.bg.g + self.Neon, DScoreBoard2.Colors.bg.b + self.Neon, DScoreBoard2.Colors.bg.a)
-	draw.NoTexture()
-	surface.DrawRect(0, 0, w, h)
+    if self:IsHovered() then
+        self.Neon = math.Clamp(self.Neon + 350 * FrameTime(), 0, 150)
+    else
+        self.Neon = math.Clamp(self.Neon - 350 * FrameTime(), 0, 150)
+    end
+    
+    if self:IsDown() then
+        self.Neon = 200
+    end
+    
+    surface.SetDrawColor(DScoreBoard2.Colors.bg.r + self.Neon, DScoreBoard2.Colors.bg.g + self.Neon, DScoreBoard2.Colors.bg.b + self.Neon, DScoreBoard2.Colors.bg.a)
+    draw.NoTexture()
+    surface.DrawRect(0, 0, w, h)
 end
 
 vgui.Register('DScoreBoard2_Button', PANEL, 'DButton')
@@ -51,23 +51,23 @@ vgui.Register('DScoreBoard2_Button', PANEL, 'DButton')
 local PANEL = {}
 
 function PANEL:Init()
-	self:Dock(FILL)
-	self.BaseClass.Init(self)
-	self:SetFont(DScoreBoard2.FONT_SERVERTITLE)
-	self:SetTextColor(DScoreBoard2.Colors.textcolor)
-	self._Text = ''
+    self:Dock(FILL)
+    self.BaseClass.Init(self)
+    self:SetFont(DScoreBoard2.FONT_SERVERTITLE)
+    self:SetTextColor(DScoreBoard2.Colors.textcolor)
+    self._Text = ''
 end
 
 function PANEL:Think()
-	local name = GetHostName()
-	
-	if self._Text ~= name then
-		self:SetText(name)
-		self:SizeToContents()
-		self:DockMargin(15, 0, 0, 0)
-	end
-	
-	self.BaseClass.Think(self)
+    local name = GetHostName()
+    
+    if self._Text ~= name then
+        self:SetText(name)
+        self:SizeToContents()
+        self:DockMargin(15, 0, 0, 0)
+    end
+    
+    self.BaseClass.Think(self)
 end
 
 vgui.Register('DScoreBoard2_ServerTitle', PANEL, 'DLabel')
@@ -75,21 +75,21 @@ vgui.Register('DScoreBoard2_ServerTitle', PANEL, 'DLabel')
 local PANEL = {}
 
 function PANEL:Init()
-	self.BaseClass.Init(self)
-	self:SetTextColor(color_white)
+    self.BaseClass.Init(self)
+    self:SetTextColor(color_white)
 end
 
 function PANEL:Paint(w, h)
-	self.TSize = self.TSize or 0
-	surface.SetDrawColor(DScoreBoard2.Colors.bg)
-	draw.NoTexture()
-	surface.DrawRect(0, 0, self.TSize, h)
+    self.TSize = self.TSize or 0
+    surface.SetDrawColor(DScoreBoard2.Colors.bg)
+    draw.NoTexture()
+    surface.DrawRect(0, 0, self.TSize, h)
 end
 
 function PANEL:SetText(text)
-	surface.SetFont(self:GetFont())
-	self.TSize = surface.GetTextSize(' ' .. text .. ' ')
-	self.BaseClass.SetText(self, ' ' .. text)
+    surface.SetFont(self:GetFont())
+    self.TSize = surface.GetTextSize(' ' .. text .. ' ')
+    self.BaseClass.SetText(self, ' ' .. text)
 end
 
 vgui.Register('DScoreBoard2_SpecialLabel', PANEL, 'DLabel')

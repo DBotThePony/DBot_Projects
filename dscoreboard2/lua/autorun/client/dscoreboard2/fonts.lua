@@ -24,50 +24,50 @@ DScoreBoard2.FONT_BUTTONFONT = 'DScoreBoard2.Button'
 DScoreBoard2.FONT_RATING = 'DScoreBoard2.Ratings'
 
 surface.CreateFont(DScoreBoard2.FONT_SERVERTITLE, {
-	font = 'Roboto',
-	size = 50,
-	extended = true,
-	weight = 800,
+    font = 'Roboto',
+    size = 50,
+    extended = true,
+    weight = 800,
 })
 
 surface.CreateFont(DScoreBoard2.FONT_MOUSENOTIFY, {
-	font = 'Roboto',
-	size = 30,
-	extended = true,
-	weight = 500,
+    font = 'Roboto',
+    size = 30,
+    extended = true,
+    weight = 500,
 })
 
 surface.CreateFont(DScoreBoard2.FONT_TOPINFO, {
-	font = 'Roboto',
-	size = 16,
-	extended = true,
-	weight = 600,
+    font = 'Roboto',
+    size = 16,
+    extended = true,
+    weight = 600,
 })
 
 surface.CreateFont(DScoreBoard2.FONT_BOTTOMINFO, {
-	font = 'Roboto',
-	size = 13,
-	extended = true,
-	weight = 500,
+    font = 'Roboto',
+    size = 13,
+    extended = true,
+    weight = 500,
 })
 
 surface.CreateFont(DScoreBoard2.FONT_PLAYERINFO, {
-	font = 'Roboto',
-	size = 16,
-	extended = true,
-	weight = 500,
+    font = 'Roboto',
+    size = 16,
+    extended = true,
+    weight = 500,
 })
 
 surface.CreateFont(DScoreBoard2.FONT_BUTTONFONT, {
-	font = 'Roboto',
-	size = 16,
-	extended = true,
-	weight = 500,
+    font = 'Roboto',
+    size = 16,
+    extended = true,
+    weight = 500,
 })
 
 surface.CreateFont(DScoreBoard2.FONT_RATING, {
-	font = 'Roboto',
-	size = 12,
-	extended = true,
-	weight = 500,
+    font = 'Roboto',
+    size = 12,
+    extended = true,
+    weight = 500,
 })

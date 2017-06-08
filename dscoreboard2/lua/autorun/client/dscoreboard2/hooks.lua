@@ -18,53 +18,53 @@
 local board = DScoreBoard2
 
 local function Create(force)
-	if force and IsValid(board.Board) then board.Board:Remove() end 
-	if IsValid(board.Board) then return end
-	
-	local status, board2 = pcall(vgui.Create, 'DScoreBoard2')
-	if status then
-		board.Board = board2
-	end
+    if force and IsValid(board.Board) then board.Board:Remove() end 
+    if IsValid(board.Board) then return end
+    
+    local status, board2 = pcall(vgui.Create, 'DScoreBoard2')
+    if status then
+        board.Board = board2
+    end
 end
 
 local function Open()
-	Create()
-	board.Board:DoShow()
-	return true
+    Create()
+    board.Board:DoShow()
+    return true
 end
 
 local function Close()
-	Create()
-	board.Board:DoHide()
-	return true
+    Create()
+    board.Board:DoHide()
+    return true
 end
 
 local function KeyPress(ply, key)
-	if key ~= IN_ATTACK2 then return end
-	if not IsValid(board.Board) then return end
-	if not board.Board:IsVisible() then return end
-	if board.Board.FOCUSED then return end
-	board.Board:Focus()
+    if key ~= IN_ATTACK2 then return end
+    if not IsValid(board.Board) then return end
+    if not board.Board:IsVisible() then return end
+    if board.Board.FOCUSED then return end
+    board.Board:Focus()
 end
 
 board.ServerMem = 0
 board.ServerTime = 0
 
 timer.Simple(0, function()
-	net.Start('DScoreBoard2.Flags')
-	net.WriteString(system.GetCountry())
-	net.SendToServer()
+    net.Start('DScoreBoard2.Flags')
+    net.WriteString(system.GetCountry())
+    net.SendToServer()
 end)
 
 concommand.Add('dscoreboard_rebuild', function() 
-	Create(true)
-	board.Board:DoShow()
-	board.Board:Focus()
+    Create(true)
+    board.Board:DoShow()
+    board.Board:Focus()
 end)
 
 concommand.Add('dscoreboard_rebuildplys', function() 
-	Create()
-	board.Board.list:BuildPlayerList()
+    Create()
+    board.Board.list:BuildPlayerList()
 end)
 
 hook.Add('ScoreboardShow', 'DScoreBoard2', Open)
