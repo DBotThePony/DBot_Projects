@@ -32,6 +32,9 @@ SWEP.IsSodaReady = function(self)
 end
 if SERVER then
   hook.Add('EntityTakeDamage', 'DTF2.SodaPopper', function(ent, dmg)
+    if not (ent:IsNPC() or ent:IsPlayer() or ent.Type == 'nextbot') then
+      return 
+    end
     local attacker = dmg:GetAttacker()
     if not IsValid(attacker) then
       return 
@@ -43,9 +46,7 @@ if SERVER then
     if not IsValid(wep) then
       return 
     end
-    if wep.IsSodaPopper and not wep:GetSodaActive() then
-      return wep:SetSodaDamageDealt(math.min(wep:GetSodaDamageDealt() + math.max(dmg:GetDamage(), 0), wep.SodaDamageRequired))
-    end
+    return wep:SetSodaDamageDealt(math.min(wep:GetSodaDamageDealt() + math.max(dmg:GetDamage(), 0), wep.SodaDamageRequired))
   end)
   SWEP.OnRemove = function(self)
     if IsValid(self.miniCritBuffer) then

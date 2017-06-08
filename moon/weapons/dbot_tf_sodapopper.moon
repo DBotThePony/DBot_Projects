@@ -53,13 +53,13 @@ SWEP.IsSodaReady = => @GetSodaDamageDealt() >= @SodaDamageRequired
 
 if SERVER
     hook.Add 'EntityTakeDamage', 'DTF2.SodaPopper', (ent, dmg) ->
+        return unless ent\IsNPC() or ent\IsPlayer() or ent.Type == 'nextbot'
         attacker = dmg\GetAttacker()
         return if not IsValid(attacker)
         return if not attacker\IsPlayer()
         wep = attacker\GetWeapon('dbot_tf_sodapopper')
         return if not IsValid(wep)
-        if wep.IsSodaPopper and not wep\GetSodaActive()
-            wep\SetSodaDamageDealt(math.min(wep\GetSodaDamageDealt() + math.max(dmg\GetDamage(), 0), wep.SodaDamageRequired))
+        wep\SetSodaDamageDealt(math.min(wep\GetSodaDamageDealt() + math.max(dmg\GetDamage(), 0), wep.SodaDamageRequired))
     
     SWEP.OnRemove = => @miniCritBuffer\Remove() if IsValid(@miniCritBuffer)
 
