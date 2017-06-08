@@ -51,6 +51,13 @@ function PANEL:Init()
     top:Dock(TOP)
     top:SetHeight(30)
     
+    local lab = top:Add('DLabel')
+    lab:SetFont(DScoreBoard2.FONT_PLAYERINFO)
+    lab:SetText('Nickname')
+    lab:Dock(LEFT)
+    lab:DockMargin(4, 0, 4, 0)
+    lab:SetWidth(100)
+
     for k, v in pairs(DScoreBoard2.PLAYEROW_PANEL.RIGHT) do
         local lab = top:Add('DLabel')
         lab:SetFont(DScoreBoard2.FONT_PLAYERINFO)
