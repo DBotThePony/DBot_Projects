@@ -153,11 +153,14 @@ SWEP.Holster = =>
 SWEP.AttackAngle = (target = NULL) =>
     return 0 if not IsValid(target)
     return 0 if not IsValid(@GetOwner())
+    return 0 if not target.EyeAngles
+    angFirst = target\EyeAngles()
     pos = target\GetPos()
     lpos = @GetOwner()\GetPos()
-    dir = pos - lpos
+    dir = lpos - pos
     ang = dir\Angle()
     ang\Normalize()
+    ang.y -= angFirst.y
     return ang.y
 
 SWEP.AttackingAtSpine = (target = NULL) =>

@@ -18,6 +18,7 @@ SWEP.PreOnHit = function(self, hitEntity, tr, dmginfo)
   if tr == nil then
     tr = { }
   end
+  self.BaseClass.PreOnHit(self, hitEntity, tr, dmginfo)
   if hitEntity:IsValid() and hitEntity:GetPos():Distance(self:GetOwner():GetPos()) < 500 and self:AttackingAtSpine(hitEntity) then
     return self:ThatWasMinicrit(hitEntity, dmginfo)
   end

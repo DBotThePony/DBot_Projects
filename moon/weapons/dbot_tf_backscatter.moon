@@ -33,6 +33,7 @@ SWEP.RandomCriticals = false
 SWEP.DefaultSpread = Vector(1, 1, 0) * 0.055
 
 SWEP.PreOnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
+    @BaseClass.PreOnHit(@, hitEntity, tr, dmginfo)
     if hitEntity\IsValid() and hitEntity\GetPos()\Distance(@GetOwner()\GetPos()) < 500 and @AttackingAtSpine(hitEntity)
         @ThatWasMinicrit(hitEntity, dmginfo)
 

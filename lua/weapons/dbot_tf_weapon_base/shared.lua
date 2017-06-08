@@ -200,11 +200,16 @@ SWEP.AttackAngle = function(self, target)
   if not IsValid(self:GetOwner()) then
     return 0
   end
+  if not target.EyeAngles then
+    return 0
+  end
+  local angFirst = target:EyeAngles()
   local pos = target:GetPos()
   local lpos = self:GetOwner():GetPos()
-  local dir = pos - lpos
+  local dir = lpos - pos
   local ang = dir:Angle()
   ang:Normalize()
+  ang.y = ang.y - angFirst.y
   return ang.y
 end
 SWEP.AttackingAtSpine = function(self, target)
