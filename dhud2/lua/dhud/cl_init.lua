@@ -23,7 +23,6 @@ DHUD2.Vars = DHUD2.Vars or {}
 DHUD2.EVars = DHUD2.EVars or {}
 DHUD2.VarHooks = DHUD2.VarHooks or {}
 DHUD2.DrawHooks = DHUD2.DrawHooks or {}
-DHUD2.BarData = DHUD2.BarData or {}
 DHUD2.Positions_original = DHUD2.Positions_original or {}
 DHUD2.Positions = DHUD2.Positions or {}
 DHUD2.WarningTracks = DHUD2.WarningTracks or {}
@@ -53,8 +52,6 @@ function DHUD2.GetDamageShift(level)
 	
 	return DHUD2.DamageShiftData[name]
 end
-
-DHUD2.Multipler = 1
 
 function DHUD2.GetVar(name)
 	if DHUD2.Vars[name] then return DHUD2.Vars[name].value end
@@ -98,75 +95,22 @@ function DHUD2.AddConVar(name, help, obj)
 	}
 end
 
-function DHUD2.SelectPlayer()
-	local ply = LocalPlayer()
-	if not IsValid(ply) then return ply end
-	local obs = ply:GetObserverTarget()
-	
-	if IsValid(obs) and obs:IsPlayer() then
-		return obs
-	else
-		return ply
-	end
-end
-
-DHUD2.Colors = DHUD2.Colors or {}
-DHUD2.ColorsVars = DHUD2.ColorsVars or {}
+DHUD2.SelectPlayer = HUDCommons.SelectPlayer
 
 function DHUD2.CreateColor(class, name, r, g, b, a)
-	local help_r = 'Changes Red Channel of ' .. name .. ' DHUD2 element'
-	local help_g = 'Changes Green Channel of ' .. name .. ' DHUD2 element'
-	local help_b = 'Changes Blue Channel of ' .. name .. ' DHUD2 element'
-	local help_a = 'Changes Alpha Channel of ' .. name .. ' DHUD2 element'
-	
-	local rn = 'dhud_color_' .. class .. '_r'
-	local gn = 'dhud_color_' .. class .. '_g'
-	local bn = 'dhud_color_' .. class .. '_b'
-	local an = 'dhud_color_' .. class .. '_a'
-	
-	DHUD2.ColorsVars[class] = {
-		name = name,
-		rdef = r,
-		bdef = b,
-		gdef = g,
-		adef = a,
-		r = CreateConVar(rn, r, {FCVAR_ARCHIVE}, help_r),
-		g = CreateConVar(gn, g, {FCVAR_ARCHIVE}, help_g),
-		b = CreateConVar(bn, b, {FCVAR_ARCHIVE}, help_b),
-		a = CreateConVar(an, a, {FCVAR_ARCHIVE}, help_a),
-	}
-	
-	local t = DHUD2.ColorsVars[class]
-	
-	local function colorUpdated()
-		DHUD2.Colors[class] = Color(t.r:GetInt() or r, t.g:GetInt() or g, t.b:GetInt() or b, t.a:GetInt() or a)
-	end
-	
-	colorUpdated()
-	
-	cvars.AddChangeCallback(rn, colorUpdated, 'DHUD2.Colors')
-	cvars.AddChangeCallback(gn, colorUpdated, 'DHUD2.Colors')
-	cvars.AddChangeCallback(bn, colorUpdated, 'DHUD2.Colors')
-	cvars.AddChangeCallback(an, colorUpdated, 'DHUD2.Colors')
+	return HUDCommons.CreateColor('dhud2_' .. class, 'DHUD2 ' .. name, r, g, b, a)
 end
 
 function DHUD2.GetColor(class)
-	return DHUD2.Colors[class]
+	return HUDCommons.GetColor('dhud2_' .. class)
 end
 
 function DHUD2.DefinePosition(name, x, y)
-	DHUD2.Positions_original[name .. '_x'] = x
-	DHUD2.Positions_original[name .. '_y'] = y
-	
-	DHUD2.Positions[name .. '_x'] = x
-	DHUD2.Positions[name .. '_y'] = y
-	
-	DHUD2.Positions_X[name] = name .. '_x'
-	DHUD2.Positions_Y[name] = name .. '_y'
+	return HUDCommons.DefinePosition('dhud2_' .. name, x, y)
 end
 
 function DHUD2.GetPosition(name)
-	return DHUD2.Positions[name .. '_x'], DHUD2.Positions[name .. '_y']
+	return HUDCommons.GetPosition('dhud2_' .. name)
 end
 
 function DHUD2.RegisterVar(name, value, updateFunc)
@@ -369,29 +313,6 @@ function DHUD2.IsShiftEnabled()
 	end
 end
 
-local function Think()
-	if not DHUD2.IsEnabled() then return end
-	
-	if DHUD2.IsShiftEnabled() then
-		for k, v in pairs(DHUD2.Positions_X) do
-			DHUD2.Positions[v] = DHUD2.Positions_original[v] + DHUD2.ShiftX
-		end
-		
-		for k, v in pairs(DHUD2.Positions_Y) do
-			DHUD2.Positions[v] = DHUD2.Positions_original[v] + DHUD2.ShiftY
-		end
-	else
-		for k, v in pairs(DHUD2.Positions_X) do
-			DHUD2.Positions[v] = DHUD2.Positions_original[v]
-		end
-		
-		for k, v in pairs(DHUD2.Positions_Y) do
-			DHUD2.Positions[v] = DHUD2.Positions_original[v]
-		end
-	end
-end
-
-hook.Add('Think', 'DHUD2.Shake', Think)
 hook.Add('Tick', 'DHUD2.UpdateVars', Tick)
 hook.Add('HUDPaint', 'DHUD2.Draw', HUDPaint)
 
@@ -407,83 +328,12 @@ function DHUD2.SimpleUpdate(name, value, funcName, ...)
 	end)
 end
 
-function DHUD2.DrawBox(x, y, w, h, color)
-	if color then
-		surface.SetDrawColor(color)
-	end
-	
-	surface.DrawRect(x, y, w, h)
-end
-
-function DHUD2.SimpleText(text, font, x, y, col)
-	if col then 
-		surface.SetTextColor(col)
-	end
-	
-	if font then
-		surface.SetFont(font)
-	end
-	
-	surface.SetTextPos(x, y)
-	surface.DrawText(text)
-end
-
-local function InInterval(val, min, max)
-	return val > min and val < max
-end
-
-function DHUD2.SoftBar(x, y, w, h, color, name)
-	DHUD2.BarData[name] = DHUD2.BarData[name] or w
-	
-	local delta = w - DHUD2.BarData[name]
-	
-	if not InInterval(delta, -0.3, 0.3) then
-		DHUD2.BarData[name] = DHUD2.BarData[name] + delta * .1 * DHUD2.Multipler
-	else
-		DHUD2.BarData[name] = DHUD2.BarData[name] + delta
-	end
-	
-	DHUD2.DrawBox(x, y, DHUD2.BarData[name], h, color)
-end
-
-function DHUD2.SkyrimBar(x, y, w, h, color)
-	DHUD2.DrawBox(x - w / 2, y, w, h, color)
-end
-
-function DHUD2.SoftSkyrimBar(x, y, w, h, color, name, speed)
-	speed = speed or .1
-	DHUD2.BarData[name] = DHUD2.BarData[name] or w
-	
-	local delta = w - DHUD2.BarData[name]
-	
-	if not InInterval(delta, -0.3, 0.3) then
-		DHUD2.BarData[name] = DHUD2.BarData[name] + delta * speed * DHUD2.Multipler
-	else
-		DHUD2.BarData[name] = DHUD2.BarData[name] + delta
-	end
-	
-	DHUD2.DrawBox(x - DHUD2.BarData[name] / 2, y, DHUD2.BarData[name], h, color)
-end
-
-function DHUD2.WordBox(text, font, x, y, col, colBox, center)
-	if font then
-		surface.SetFont(font)
-	end
-	
-	if col then
-		surface.SetTextColor(col)
-	end
-	
-	local w, h = surface.GetTextSize(text)
-	
-	if center then
-		x = x - w / 2
-	end
-	
-	DHUD2.DrawBox(x - 4, y - 2, w + 8, h + 4, colBox)
-	surface.SetTextPos(x, y)
-	surface.DrawText(text)
-end
+DHUD2.DrawBox = HUDCommons.DrawBox
+DHUD2.SimpleText = HUDCommons.SimpleText
+DHUD2.SoftBar = HUDCommons.SoftBar
+DHUD2.SkyrimBar = HUDCommons.SkyrimBar
+DHUD2.SoftSkyrimBar = HUDCommons.SoftSkyrimBar
+DHUD2.WordBox = HUDCommons.WordBox
 
 DHUD2.CreateColor('bg', 'Background', 0, 0, 0, 150)
 DHUD2.CreateColor('empty_bar', 'Empty Bar', 200, 200, 200, 255)
@@ -502,30 +352,7 @@ surface.CreateFont('DHUD2.PrintMessage', {
 	weight = 500,
 })
 
-DHUD2.LastAngle = Angle()
-
-local function UpdateShift()
-	if not DHUD2.IsEnabled() then return end
-	if not DHUD2.IsShiftEnabled() then return end
-	
-	local ply = DHUD2.SelectPlayer()
-	local ang = ply:EyeAngles()
-	
-	local changePitch = math.AngleDifference(ang.p, DHUD2.LastAngle.p)
-	local changeYaw = math.AngleDifference(ang.y, DHUD2.LastAngle.y)
-	
-	DHUD2.LastAngle = ang
-	
-	DHUD2.ShiftX = math.Clamp(DHUD2.ShiftX + changeYaw * 1.8, -150, 150)
-	DHUD2.ShiftY = math.Clamp(DHUD2.ShiftY - changePitch * 1.8, -80, 80)
-	
-	DHUD2.ShiftX = DHUD2.ShiftX - DHUD2.ShiftX * 0.05 * DHUD2.Multipler
-	DHUD2.ShiftY = DHUD2.ShiftY - DHUD2.ShiftY * 0.05 * DHUD2.Multipler
-end
-
 DHUD2.CreateColor('generic', 'Generic', 255, 255, 255, 255)
-
-hook.Add('Think', 'DHUD2.Shift', UpdateShift)
 
 local function Populate(Panel)
 	if not IsValid(Panel) then return end --spawnmenu_reload
@@ -544,23 +371,6 @@ local function Populate(Panel)
 	for k, v in pairs(DHUD2.CVars) do
 		local checkbox = Panel:CheckBox(v.help, k)
 		checkbox:SetTooltip(v.help)
-	end
-	
-	for k, v in SortedPairsByMemberValue(DHUD2.ColorsVars, 'name') do
-		local collapse = vgui.Create('DCollapsibleCategory', Panel)
-		Panel:AddItem(collapse)
-		collapse:SetExpanded(false)
-		collapse:SetLabel(v.name .. ' (' .. k .. ')')
-		
-		local picker = vgui.Create('DColorMixer', collapse)
-		collapse:SetContents(picker)
-		picker:SetConVarR('dhud_color_' .. k .. '_r')
-		picker:SetConVarG('dhud_color_' .. k .. '_g')
-		picker:SetConVarB('dhud_color_' .. k .. '_b')
-		picker:SetConVarA('dhud_color_' .. k .. '_a')
-		
-		picker:Dock(TOP)
-		picker:SetHeight(200)
 	end
 end
 
