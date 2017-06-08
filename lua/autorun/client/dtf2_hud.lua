@@ -71,9 +71,9 @@ hook.Add('DTF2.MetalEffect', 'DTF2.MetalHistory', function(event, amount)
   data.b = b
   data.a = 255
 end)
+local METAL_COUNTER_POS = HUDCommons.DefinePosition('dtf2_metal_counter', .8, .95)
 DTF2.DrawMetalCounter = function()
-  local w, h = ScrW(), ScrH()
-  local x, y = w * .8, h * .95
+  local x, y = METAL_COUNTER_POS()
   HUDCommons.WordBox("Avaliable Metal: " .. tostring(LocalPlayer():GetTF2Metal()), FONT, x, y, FONT_COLOR, BACKGROUND_COLOR())
   x = x + 110
   for _index_0 = 1, #METAL_HISTORY do
@@ -81,12 +81,12 @@ DTF2.DrawMetalCounter = function()
     HUDCommons.WordBox(data.text, nil, x, y - data.slide, Color(data.r, data.g, data.b, data.a), Color(0, 0, 0, 150 * data.fade))
   end
 end
+local CENTERED_BAR_POS = HUDCommons.DefinePosition('dtf2_centered', .5, .65)
 DTF2.DrawCenteredBar = function(mult, text)
   if mult == nil then
     mult = 0.5
   end
-  local w, h = ScrW(), ScrH()
-  local x, y = w * .5, h * .65
+  local x, y = CENTERED_BAR_POS()
   surface.SetTextColor(FONT_COLOR())
   surface.SetFont(FONT)
   return HUDCommons.BarWithTextCentered(x, y, 300, 25, mult, BACKGROUND_COLOR(), HUD_BAR_BACKGROUND(), HUD_BAR_COLOR(), text)
