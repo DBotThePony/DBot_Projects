@@ -15,8 +15,5 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
-if SERVER or not HUDCommons then
-    include('dhud/hudcommons.lua')
-end
-
+include('dhud/hudcommons.lua')
 include('dhud/sh_init.lua')
