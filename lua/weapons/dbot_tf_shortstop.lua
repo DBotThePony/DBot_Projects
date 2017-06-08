@@ -47,7 +47,7 @@ SWEP.SecondaryAttack = function(self)
     local vel = dir * 300 + Vector(0, 0, 200)
     DTF2.ApplyVelocity(ent, vel)
   end
-  self:EmitSound('Player.ScoutShove')
+  self:EmitSound('DTF2_Player.ScoutShove')
   self:SetNextSecondaryFire(CurTime() + 1)
   return true
 end

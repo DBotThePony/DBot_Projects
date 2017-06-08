@@ -1,10 +1,12 @@
 DTF2 = DTF2 or { }
-local BACKGROUND_COLOR = Color(0, 0, 0, 150)
-local FONT_COLOR = Color(255, 255, 255)
-local FONT_COLOR_GREEN = Color(88, 183, 56)
-local FONT_COLOR_RED = Color(217, 101, 83)
-local COLOR_HP_BAR_BACKGROUND = Color(176, 176, 176)
-local COLOR_HP_BAR = Color(167, 197, 92)
+local BACKGROUND_COLOR = HUDCommons.CreateColor('dtf2_background', 'DTF2 HUD Background', 0, 0, 0, 150)
+local FONT_COLOR = HUDCommons.CreateColor('dtf2_font', 'DTF2 Font', 255, 255, 255)
+local FONT_COLOR_GREEN = HUDCommons.CreateColor('dtf2_font_positive', 'DTF2 HUD positive text', 88, 183, 56)
+local FONT_COLOR_RED = HUDCommons.CreateColor('dtf2_font_negative', 'DTF2 HUD negative text', 217, 101, 83)
+local COLOR_HP_BAR_BACKGROUND = HUDCommons.CreateColor('dtf2_hpbar_background', 'DTF2 HUD HP Bar Background', 176, 176, 176)
+local COLOR_HP_BAR = HUDCommons.CreateColor('dtf2_hpbar', 'DTF2 HUD HP Bar', 167, 197, 92)
+local HUD_BAR_BACKGROUND = HUDCommons.CreateColor('dtf2_bar_bg', 'DTF2 HUD generic bar background', 168, 168, 168)
+local HUD_BAR_COLOR = HUDCommons.CreateColor('dtf2_bar', 'DTF2 HUD generic bar', 235, 235, 235)
 local FONT = 'DTF2.HUDFont'
 surface.CreateFont(FONT, {
   ['font'] = 'Roboto',
@@ -56,7 +58,7 @@ hook.Add('DTF2.MetalEffect', 'DTF2.MetalHistory', function(event, amount)
     slide = 0,
     fade = 1,
     text = event and "+" .. tostring(amount) or "-" .. tostring(amount),
-    color = event and FONT_COLOR_GREEN or FONT_COLOR_RED
+    color = event and FONT_COLOR_GREEN() or FONT_COLOR_RED()
   }
   table.insert(METAL_HISTORY, data)
   local r, g, b
@@ -72,48 +74,22 @@ end)
 DTF2.DrawMetalCounter = function()
   local w, h = ScrW(), ScrH()
   local x, y = w * .8, h * .95
-  local text = "Avaliable Metal: " .. tostring(LocalPlayer():GetTF2Metal())
-  surface.SetFont(FONT)
-  surface.SetDrawColor(BACKGROUND_COLOR)
-  surface.SetTextColor(FONT_COLOR)
-  local W, H = surface.GetTextSize(text)
-  surface.DrawRect(x - 4, y - 4, W + 8, H + 8)
-  surface.SetTextPos(x, y)
-  surface.DrawText(text)
+  HUDCommons.WordBox("Avaliable Metal: " .. tostring(LocalPlayer():GetTF2Metal()), FONT, x, y, FONT_COLOR, BACKGROUND_COLOR())
   x = x + 110
   for _index_0 = 1, #METAL_HISTORY do
     local data = METAL_HISTORY[_index_0]
-    W, H = surface.GetTextSize(data.text)
-    surface.SetDrawColor(Color(0, 0, 0, 150 * data.fade))
-    surface.DrawRect(x - 4, y - 4 - data.slide, W + 8, H + 8)
-    surface.SetTextPos(x, y - data.slide)
-    surface.SetTextColor(data.r, data.g, data.b, data.a)
-    surface.DrawText(data.text)
+    HUDCommons.WordBox(data.text, nil, x, y - data.slide, Color(data.r, data.g, data.b, data.a), Color(0, 0, 0, 150 * data.fade))
   end
 end
-local BAR_BACKGROUND = Color(168, 168, 168)
-local BAR_COLOR = Color(235, 235, 235)
 DTF2.DrawCenteredBar = function(mult, text)
   if mult == nil then
     mult = 0.5
   end
   local w, h = ScrW(), ScrH()
   local x, y = w * .5, h * .65
-  surface.SetDrawColor(BACKGROUND_COLOR)
-  surface.DrawRect(x - 154, y - 4, 308, 38)
-  surface.SetDrawColor(BAR_BACKGROUND)
-  surface.DrawRect(x - 150, y, 300, 30)
-  surface.SetDrawColor(BAR_COLOR)
-  surface.DrawRect(x - 150, y, 300 * mult, 30)
-  if text then
-    surface.SetFont(FONT)
-    surface.SetDrawColor(BACKGROUND_COLOR)
-    surface.SetTextColor(FONT_COLOR)
-    local W, H = surface.GetTextSize(text)
-    surface.DrawRect(x - 154, y - 12 - H, W + 8, H + 8)
-    surface.SetTextPos(x - 150, y - H - 8)
-    return surface.DrawText(text)
-  end
+  surface.SetTextColor(FONT_COLOR())
+  surface.SetFont(FONT)
+  return HUDCommons.BarWithTextCentered(x, y, 300, 25, mult, BACKGROUND_COLOR(), HUD_BAR_BACKGROUND(), HUD_BAR_COLOR(), text)
 end
 DTF2.DrawBuildingInfo = function(self)
   local w, h = ScrW(), ScrH()
@@ -129,17 +105,10 @@ DTF2.DrawBuildingInfo = function(self)
   end
   text = text .. '\n'
   text = text .. self:GetHUDText()
-  surface.SetFont(FONT)
-  surface.SetDrawColor(BACKGROUND_COLOR)
-  surface.SetTextColor(FONT_COLOR)
-  local W, H = surface.GetTextSize(text)
-  W = math.max(W, 200)
-  surface.DrawRect(x - 4 - W / 2, y - 4, W + 8, H + 8)
-  surface.SetTextPos(x - W / 2, y)
-  draw.DrawText(text, FONT, x - W / 2, y, FONT_COLOR)
-  surface.SetDrawColor(COLOR_HP_BAR_BACKGROUND)
+  local W, H = HUDCommons.AdvancedWordBox(text, FONT, x, y, FONT_COLOR(), BACKGROUND_COLOR(), true)
+  surface.SetDrawColor(COLOR_HP_BAR_BACKGROUND())
   surface.DrawRect(x - W / 2, y + H - 12, W, 12)
-  surface.SetDrawColor(COLOR_HP_BAR)
+  surface.SetDrawColor(COLOR_HP_BAR())
   return surface.DrawRect(x - W / 2, y + H - 12, W * math.Clamp(hp / mhp, 0, 1), 12)
 end
 return hook.Add('HUDPaint', 'DTF2.BuildablesHUD', function()

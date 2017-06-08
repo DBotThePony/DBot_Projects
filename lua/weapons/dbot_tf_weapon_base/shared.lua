@@ -209,7 +209,7 @@ SWEP.OnHit = function(self, hitEntity, tr, dmginfo)
     local effData = EffectData()
     effData:SetOrigin(pos)
     util.Effect(self.incomingCrit and 'dtf2_critical_hit' or 'dtf2_minicrit', effData)
-    hitEntity:EmitSound(self.incomingCrit and 'TFPlayer.CritHit' or 'TFPlayer.CritHitMini')
+    hitEntity:EmitSound(self.incomingCrit and 'DTF2_TFPlayer.CritHit' or 'DTF2_TFPlayer.CritHitMini')
   end
   if self.DamageDegradation and not self.incomingCrit then
     local pos = tr.HitPos
@@ -275,7 +275,7 @@ SWEP.Think = function(self)
     self:FireTrigger()
   end
   if CLIENT then
-    if self:GetCritBoosted() then
+    if self:GetCritBoosted() or self:GetOwner():GetCritBoosted() then
       if not self.critBoostSound then
         self.critBoostSound = CreateSound(self, 'Weapon_General.CritPower')
         self.critBoostSound:Play()
