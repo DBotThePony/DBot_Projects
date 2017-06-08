@@ -150,7 +150,20 @@ SWEP.Holster = =>
         return true
     return false
 
+SWEP.AttackAngle = (target = NULL) =>
+    return 0 if not IsValid(target)
+    return 0 if not IsValid(@GetOwner())
+    pos = target\GetPos()
+    lpos = @GetOwner()\GetPos()
+    dir = pos - lpos
+    ang = dir\Angle()
+    return ang.y
+
+SWEP.PreOnMiss = =>
 SWEP.OnMiss = =>
+SWEP.PostOnMiss = =>
+SWEP.PreOnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
+SWEP.PostOnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
 SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
     if not @incomingCrit and IsValid(hitEntity)
         @damageDealtForCrit += dmginfo\GetDamage()
@@ -175,11 +188,9 @@ SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
 SWEP.BulletCallback = (tr = {}, dmginfo) =>
     weapon = @GetActiveWeapon()
     weapon.bulletCallbackCalled = true
-
-    if tr.Hit
-        weapon\OnHit(tr.Entity, tr, dmginfo)
-    else
-        weapon\OnMiss(tr, dmginfo)
+    weapon\PreOnHit(tr.Entity, tr, dmginfo)
+    weapon\OnHit(tr.Entity, tr, dmginfo)
+    weapon\PostOnHit(tr.Entity, tr, dmginfo)
 
 SWEP.UpdateBulletData = (bulletData = {}) =>
 SWEP.AfterFire = (bulletData = {}) =>
@@ -204,7 +215,11 @@ SWEP.FireTrigger = =>
 
     @FireBullets(bulletData)
     @AfterFire(bulletData)
-    @OnMiss() if not @bulletCallbackCalled
+    if not @bulletCallbackCalled
+        @PreOnMiss()
+        @OnMiss()
+        @PostOnMiss()
+    
     SuppressHostEvents(NULL) if SERVER
     @incomingCrit = false
     @incomingMiniCrit = false
