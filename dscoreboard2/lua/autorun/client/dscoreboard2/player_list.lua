@@ -49,34 +49,38 @@ end
 function PANEL:Init()
     local top = self:Add('EditablePanel')
     top:Dock(TOP)
-    top:SetHeight(30)
+    top:SetHeight(18)
     
-    local lab = top:Add('DLabel')
+    local lab = top:Add('DScoreBoard2_SorterButton')
     lab:SetFont(DScoreBoard2.FONT_PLAYERINFO)
-    lab:SetText('Nickname')
+    lab:SetRealText('Nickname')
+    lab:SetAffectedMode('nickname')
     lab:Dock(LEFT)
     lab:DockMargin(4, 0, 4, 0)
     lab:SetWidth(100)
 
     for k, v in pairs(DScoreBoard2.PLAYEROW_PANEL.RIGHT) do
-        local lab = top:Add('DLabel')
+        local lab = top:Add('DScoreBoard2_SorterButton')
         lab:SetFont(DScoreBoard2.FONT_PLAYERINFO)
-        lab:SetText(string.upper(v[1]) .. string.sub(v, 2))
+        lab:SetRealText(string.upper(v[1]) .. string.sub(v, 2))
+        lab:SetAffectedMode(v)
         lab:Dock(RIGHT)
-        lab:DockMargin(4, 0, 4, 0)
-        lab:SetWidth(50)
+        lab:DockMargin(2, 0, 2, 0)
+        lab:SetWidth(54)
     end
     
-    local lab = top:Add('DLabel')
+    local lab = top:Add('DScoreBoard2_SorterButton')
     lab:SetFont(DScoreBoard2.FONT_PLAYERINFO)
-    lab:SetText('Health')
+    lab:SetRealText('Health')
+    lab:SetAffectedMode('health')
     lab:Dock(RIGHT)
     lab:DockMargin(4, 0, 4, 0)
     lab:SetWidth(80)
     
-    local lab = top:Add('DLabel')
+    local lab = top:Add('DScoreBoard2_SorterButton')
     lab:SetFont(DScoreBoard2.FONT_PLAYERINFO)
-    lab:SetText('Team')
+    lab:SetRealText('Team')
+    lab:SetAffectedMode('team')
     lab:Dock(RIGHT)
     lab:DockMargin(4, 0, 4, 0)
     lab:SetWidth(100)
@@ -87,15 +91,13 @@ function PANEL:Init()
     status:SetHeight(60)
     
     self.DROWS = {}
-    
-    hook.Add('DScoreBoard2_PlayerDisconnect', self, self.AddDisconnected)
-    hook.Add('DScoreBoard2_PlayerConnect', self, self.AddConnecting)
-    
     self.scroll = self:Add('DScrollPanel')
     self.scroll:Dock(FILL)
     self.ROWS = {}
 
     hook.Add('DScoreBoard2_UpdateSorting', self, self.DoSort)
+    hook.Add('DScoreBoard2_PlayerDisconnect', self, self.AddDisconnected)
+    hook.Add('DScoreBoard2_PlayerConnect', self, self.AddConnecting)
 end
 
 local function PanelsSorter(first, second)
@@ -109,7 +111,7 @@ local function PanelsSorter(first, second)
     elseif sortby == 'team' then
         toReturn = first.vars.team < second.vars.team
         hit = true
-    elseif sortby == 'frags' then
+    elseif sortby == 'kills' then
         toReturn = first.vars.kills < second.vars.kills
         hit = true
     elseif sortby == 'deaths' then
@@ -120,6 +122,9 @@ local function PanelsSorter(first, second)
         hit = true
     elseif sortby == 'ping' then
         toReturn = first.vars.ping < second.vars.ping
+        hit = true
+    elseif sortby == 'health' then
+        toReturn = first.vars.health < second.vars.health
         hit = true
     end
 
@@ -149,13 +154,17 @@ function PANEL:DoSort()
 end
 
 function PANEL:PerformLayout(w, h)
-    for i, row in pairs(self.ROWS) do
-        row:SetSize(w, 16)
+    if self.ROWS then
+        for i, row in pairs(self.ROWS) do
+            row:SetSize(w, 16)
+        end
     end
 
-    for i, row in pairs(self.DROWS) do
-        if IsValid(row) then
-            row:SetSize(w, 16)
+    if self.DROWS then
+        for i, row in pairs(self.DROWS) do
+            if IsValid(row) then
+                row:SetSize(w, 16)
+            end
         end
     end
 end

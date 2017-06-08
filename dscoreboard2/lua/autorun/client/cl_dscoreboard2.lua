@@ -19,7 +19,7 @@ DScoreBoard2 = DScoreBoard2 or {}
 local board = DScoreBoard2
 
 board.SHOW_AUTHOR = CreateConVar('dscoreboard_showauthor', '1', FCVAR_ARCHIVE, 'Show DScoreBoard/2 author')
-board.SORT_BY = CreateConVar('dscoreboard_sort_by', 'nickname', {FCVAR_ARCHIVE}, 'Sort by (none, nickname, team, frags, deaths, ratio, ping)')
+board.SORT_BY = CreateConVar('dscoreboard_sort_by', 'nickname', {FCVAR_ARCHIVE}, 'Sort by (none, nickname, team, kills, deaths, ratio, ping, health)')
 board.SORT_BY_ORDER = CreateConVar('dscoreboard_sort_by_order', 'asc', {FCVAR_ARCHIVE}, 'Sort by order (desc, asc)')
 
 local Colors = {

@@ -17,11 +17,12 @@
 
 local board = DScoreBoard2
 
+local BUTTON_BASECLASS = baseclass.Get('DButton')
 local PANEL = {}
 
 function PANEL:Init()
     self.Neon = 0
-    self.BaseClass.Init(self)
+    BUTTON_BASECLASS.Init(self)
     self:SetTextColor(DScoreBoard2.Colors.textcolor)
     self:SizeToContents()
     local w, h = self:GetSize()
@@ -47,6 +48,58 @@ function PANEL:Paint(w, h)
 end
 
 vgui.Register('DScoreBoard2_Button', PANEL, 'DButton')
+
+local PANEL = {}
+
+function PANEL:Init()
+    self.BaseClass.Init(self)
+    self.affectedMode = 'none'
+    self.realText = 'None'
+    self:SetSize(80, 20)
+end
+
+function PANEL:SetAffectedMode(text)
+    self.affectedMode = text:lower()
+end
+
+function PANEL:GetAffectedMode()
+    return self.affectedMode
+end
+
+function PANEL:SetRealText(text)
+    self.realText = text
+end
+
+function PANEL:GetRealText()
+    return self.realText
+end
+
+function PANEL:Think()
+    if DScoreBoard2.SORT_BY:GetString():lower() == self.affectedMode then
+        if DScoreBoard2.SORT_BY_ORDER:GetString():lower() == 'asc' then
+            self:SetText(self.realText .. ' ▼')
+        else
+            self:SetText(self.realText .. ' ▲')
+        end
+    else
+        self:SetText(self.realText .. ' ─')
+    end
+end
+
+function PANEL:DoClick()
+    if DScoreBoard2.SORT_BY:GetString():lower() == self.affectedMode then
+        if DScoreBoard2.SORT_BY_ORDER:GetString():lower() == 'asc' then
+            RunConsoleCommand('dscoreboard_sort_by_order', 'desc')
+        else
+            RunConsoleCommand('dscoreboard_sort_by_order', 'asc')
+        end
+    else
+        RunConsoleCommand('dscoreboard_sort_by', self.affectedMode)
+        RunConsoleCommand('dscoreboard_sort_by_order', 'asc')
+    end
+end
+
+vgui.Register('DScoreBoard2_SorterButton', PANEL, 'DScoreBoard2_Button')
 
 local PANEL = {}
 
