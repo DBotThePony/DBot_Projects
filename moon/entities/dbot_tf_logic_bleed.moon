@@ -49,6 +49,7 @@ with ENT
         @SetNotSolid(true)
         @SetHitDelay(.75)
         @SetDamage(3)
+        @nextBloodParticle = CurTime()
         return if CLIENT
         @burnStart = CurTime()
         @duration = 4
@@ -61,7 +62,7 @@ with ENT
         @burnEnd = CurTime() + newtime
 
     .Think = =>
-        return if CLIENT
+        return false if CLIENT
         return @Remove() if @burnEnd < CurTime()
         owner = @GetOwner()
         return @Remove() if not IsValid(@GetOwner())
@@ -76,6 +77,14 @@ with ENT
     
     .OnRemove = => @particles\StopEmission() if @particles and @particles\IsValid()
     .Draw = =>
-        return if @particles
         return if not IsValid(@GetParent())
-        --@particles = CreateParticleSystem(@GetParent(), 'burningplayer_red', PATTACH_ABSORIGIN_FOLLOW)
+        return if @nextBloodParticle > CurTime()
+        @nextBloodParticle = CurTime() + @GetHitDelay()
+        ent = @GetParent()
+        mins, maxs = ent\GetRotatedAABB(ent\OBBMins(), ent\OBBMaxs())
+
+        for i = 1, 4
+            randX = math.random(mins.x, maxs.x)
+            randY = math.random(mins.y, maxs.y)
+            randZ = math.random(mins.z, maxs.z)
+            CreateParticleSystem(ent, 'blood_impact_red_01', PATTACH_ABSORIGIN, 0, Vector(randX, randY, randZ))

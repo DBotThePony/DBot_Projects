@@ -36,6 +36,7 @@ do
     self:SetNotSolid(true)
     self:SetHitDelay(.75)
     self:SetDamage(3)
+    self.nextBloodParticle = CurTime()
     if CLIENT then
       return 
     end
@@ -56,7 +57,7 @@ do
   end
   _with_0.Think = function(self)
     if CLIENT then
-      return 
+      return false
     end
     if self.burnEnd < CurTime() then
       return self:Remove()
@@ -80,11 +81,20 @@ do
     end
   end
   _with_0.Draw = function(self)
-    if self.particles then
-      return 
-    end
     if not IsValid(self:GetParent()) then
       return 
+    end
+    if self.nextBloodParticle > CurTime() then
+      return 
+    end
+    self.nextBloodParticle = CurTime() + self:GetHitDelay()
+    local ent = self:GetParent()
+    local mins, maxs = ent:GetRotatedAABB(ent:OBBMins(), ent:OBBMaxs())
+    for i = 1, 4 do
+      local randX = math.random(mins.x, maxs.x)
+      local randY = math.random(mins.y, maxs.y)
+      local randZ = math.random(mins.z, maxs.z)
+      CreateParticleSystem(ent, 'blood_impact_red_01', PATTACH_ABSORIGIN, 0, Vector(randX, randY, randZ))
     end
   end
   return _with_0
