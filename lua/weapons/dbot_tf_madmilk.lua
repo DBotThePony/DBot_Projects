@@ -17,9 +17,9 @@ SWEP.DrawHUD = function(self)
 end
 SWEP.Deploy = function(self)
   self.BaseClass.Deploy(self)
-  if CLIENT then
-    return true
+  if IsValid(self:GetTF2WeaponModel()) then
+    ParticleEffectAttach('energydrink_milk_splash', PATTACH_ABSORIGIN_FOLLOW, self:GetTF2WeaponModel(), self:GetTF2WeaponModel():LookupAttachment('drink_spray'))
   end
-  ParticleEffectAttach('energydrink_splash', PATTACH_ABSORIGIN_FOLLOW, self:GetTF2WeaponModel(), self:GetTF2WeaponModel():LookupAttachment('drink_spray'))
+  self:EmitSound('DTF2_Weapon_MadMilk.Draw')
   return true
 end

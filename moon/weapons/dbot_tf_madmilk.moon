@@ -39,6 +39,6 @@ SWEP.DrawHUD = => DTF2.DrawCenteredBar(@GetProjectileReady() / @ProjectileRestor
 
 SWEP.Deploy = =>
     @BaseClass.Deploy(@)
-    return true if CLIENT
-    ParticleEffectAttach('energydrink_splash', PATTACH_ABSORIGIN_FOLLOW, @GetTF2WeaponModel(), @GetTF2WeaponModel()\LookupAttachment('drink_spray'))
+    ParticleEffectAttach('energydrink_milk_splash', PATTACH_ABSORIGIN_FOLLOW, @GetTF2WeaponModel(), @GetTF2WeaponModel()\LookupAttachment('drink_spray')) if IsValid(@GetTF2WeaponModel())
+    @EmitSound('DTF2_Weapon_MadMilk.Draw')
     return true
