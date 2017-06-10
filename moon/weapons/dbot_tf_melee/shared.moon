@@ -84,13 +84,3 @@ SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
     @PlayHitSound() if not IsValid(hitEntity)
     @PlayFleshHitSound() if IsValid(hitEntity) and (hitEntity\IsPlayer() or hitEntity\IsNPC())
     dmginfo\SetDamageType(DMG_CLUB)
-
-SWEP.BulletCallback = (tr = {}, dmginfo) =>
-    weapon = @GetActiveWeapon()
-    weapon.bulletCallbackCalled = true
-
-    if tr.Hit
-        weapon\OnHit(tr.Entity, tr, dmginfo)
-    else
-        weapon\OnMiss(tr, dmginfo)
-

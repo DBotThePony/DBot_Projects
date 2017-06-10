@@ -275,6 +275,11 @@ SWEP.BulletCallback = function(self, tr, dmginfo)
   local weapon = self:GetActiveWeapon()
   dmginfo:SetInflictor(weapon)
   weapon.bulletCallbackCalled = true
+  weapon.currentHitEntity = tr.Entity
+  weapon.currentDMGInfo = dmginfo
+  if IsValid(tr.Entity) and tr.Entity:IsMarkedForDeath() then
+    weapon:ThatWasMinicrit()
+  end
   weapon:PreOnHit(tr.Entity, tr, dmginfo)
   weapon:OnHit(tr.Entity, tr, dmginfo)
   weapon.onHitCalled = true
@@ -291,6 +296,12 @@ SWEP.AfterFire = function(self, bulletData)
   end
 end
 SWEP.ThatWasMinicrit = function(self, hitEntity, dmginfo)
+  if hitEntity == nil then
+    hitEntity = self.currentHitEntity
+  end
+  if dmginfo == nil then
+    dmginfo = self.currentDMGInfo
+  end
   if self.incomingCrit or self.incomingMiniCrit then
     return 
   end
@@ -299,6 +310,26 @@ SWEP.ThatWasMinicrit = function(self, hitEntity, dmginfo)
     self:DisplayCritEffect(hitEntity)
   end
   return dmginfo:ScaleDamage(1.3)
+end
+SWEP.ThatWasCrit = function(self, hitEntity, dmginfo)
+  if hitEntity == nil then
+    hitEntity = self.currentHitEntity
+  end
+  if dmginfo == nil then
+    dmginfo = self.currentDMGInfo
+  end
+  if self.incomingCrit then
+    return 
+  end
+  self.incomingCrit = true
+  if self.onHitCalled then
+    self:DisplayCritEffect(hitEntity)
+  end
+  if self.incomingMiniCrit then
+    dmginfo:ScaleDamage(1 / 1.3)
+    self.incomingMiniCrit = false
+  end
+  return dmginfo:ScaleDamage(3)
 end
 SWEP.FireTrigger = function(self)
   self.suppressing = true

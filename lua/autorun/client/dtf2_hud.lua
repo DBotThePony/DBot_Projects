@@ -74,7 +74,7 @@ end)
 local METAL_COUNTER_POS = HUDCommons.DefinePosition('dtf2_metal_counter', .8, .95)
 DTF2.DrawMetalCounter = function()
   local x, y = METAL_COUNTER_POS()
-  HUDCommons.WordBox("Avaliable Metal: " .. tostring(LocalPlayer():GetTF2Metal()), FONT, x, y, FONT_COLOR, BACKGROUND_COLOR())
+  HUDCommons.WordBox("Avaliable Metal: " .. tostring(LocalPlayer():GetTF2Metal()), FONT, x, y, FONT_COLOR(), BACKGROUND_COLOR())
   x = x + 110
   for _index_0 = 1, #METAL_HISTORY do
     local data = METAL_HISTORY[_index_0]

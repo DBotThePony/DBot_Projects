@@ -4,8 +4,8 @@ ENT.Spawnable = false
 ENT.AdminSpawnable = false
 ENT.Author = 'DBot'
 ENT.RenderGroup = RENDERGROUP_OTHER
+local entMeta = FindMetaTable('Entity')
 if SERVER then
-  local entMeta = FindMetaTable('Entity')
   entMeta.TF2Burn = function(self, duration)
     if duration == nil then
       duration = 0
@@ -21,6 +21,7 @@ if SERVER then
     self.__dtf2_burn_logic:SetParent(self)
     self.__dtf2_burn_logic:SetOwner(self)
     self.__dtf2_burn_logic:UpdateDuration(duration)
+    self:SetNWEntity('DTF2.BurnLogic', self.__dtf2_burn_logic)
     return self.__dtf2_burn_logic
   end
   hook.Add('PlayerDeath', 'DTF2.BurnLogic', function(self)
@@ -33,6 +34,9 @@ if SERVER then
       return self.__dtf2_burn_logic:Remove()
     end
   end)
+end
+entMeta.IsTF2Burning = function(self)
+  return IsValid(self:GetNWEntity('DTF2.BurnLogic'))
 end
 do
   local _with_0 = ENT

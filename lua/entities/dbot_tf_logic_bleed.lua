@@ -4,8 +4,8 @@ ENT.Spawnable = false
 ENT.AdminSpawnable = false
 ENT.Author = 'DBot'
 ENT.RenderGroup = RENDERGROUP_OTHER
+local entMeta = FindMetaTable('Entity')
 if SERVER then
-  local entMeta = FindMetaTable('Entity')
   entMeta.TF2Bleed = function(self, duration)
     if duration == nil then
       duration = 0
@@ -21,6 +21,7 @@ if SERVER then
     self.__dtf2_bleed_logic:SetParent(self)
     self.__dtf2_bleed_logic:SetOwner(self)
     self.__dtf2_bleed_logic:UpdateDuration(duration)
+    self:SetNWEntity('DTF2.BleedLogic', self.__dtf2_bleed_logic)
     return self.__dtf2_bleed_logic
   end
   hook.Add('PlayerDeath', 'DTF2.BleedLogic', function(self)
@@ -33,6 +34,9 @@ if SERVER then
       return self.__dtf2_bleed_logic:Remove()
     end
   end)
+end
+entMeta.IsTF2Bleeding = function(self)
+  return IsValid(self:GetNWEntity('DTF2.BleedLogic'))
 end
 do
   local _with_0 = ENT

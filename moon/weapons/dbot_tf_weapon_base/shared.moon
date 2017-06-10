@@ -201,6 +201,10 @@ SWEP.BulletCallback = (tr = {}, dmginfo) =>
     weapon = @GetActiveWeapon()
     dmginfo\SetInflictor(weapon)
     weapon.bulletCallbackCalled = true
+    weapon.currentHitEntity = tr.Entity
+    weapon.currentDMGInfo = dmginfo
+    if IsValid(tr.Entity) and tr.Entity\IsMarkedForDeath()
+        weapon\ThatWasMinicrit()
     weapon\PreOnHit(tr.Entity, tr, dmginfo)
     weapon\OnHit(tr.Entity, tr, dmginfo)
     weapon.onHitCalled = true
@@ -209,13 +213,13 @@ SWEP.BulletCallback = (tr = {}, dmginfo) =>
 SWEP.UpdateBulletData = (bulletData = {}) =>
 SWEP.AfterFire = (bulletData = {}) =>
 
-SWEP.ThatWasMinicrit = (hitEntity, dmginfo) =>
+SWEP.ThatWasMinicrit = (hitEntity = @currentHitEntity, dmginfo = @currentDMGInfo) =>
     return if @incomingCrit or @incomingMiniCrit
     @incomingMiniCrit = true
     @DisplayCritEffect(hitEntity) if @onHitCalled
     dmginfo\ScaleDamage(1.3)
 
-SWEP.ThatWasCrit = (hitEntity, dmginfo) =>
+SWEP.ThatWasCrit = (hitEntity = @currentHitEntity, dmginfo = @currentDMGInfo) =>
     return if @incomingCrit
     @incomingCrit = true
     @DisplayCritEffect(hitEntity) if @onHitCalled

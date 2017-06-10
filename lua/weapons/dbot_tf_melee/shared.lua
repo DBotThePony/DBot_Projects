@@ -89,15 +89,3 @@ SWEP.OnHit = function(self, hitEntity, tr, dmginfo)
   end
   return dmginfo:SetDamageType(DMG_CLUB)
 end
-SWEP.BulletCallback = function(self, tr, dmginfo)
-  if tr == nil then
-    tr = { }
-  end
-  local weapon = self:GetActiveWeapon()
-  weapon.bulletCallbackCalled = true
-  if tr.Hit then
-    return weapon:OnHit(tr.Entity, tr, dmginfo)
-  else
-    return weapon:OnMiss(tr, dmginfo)
-  end
-end

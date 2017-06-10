@@ -23,9 +23,9 @@ ENT.AdminSpawnable = false
 ENT.Author = 'DBot'
 ENT.RenderGroup = RENDERGROUP_OTHER
 
-if SERVER
-    entMeta = FindMetaTable('Entity')
+entMeta = FindMetaTable('Entity')
 
+if SERVER
     entMeta.TF2Bleed = (duration = 0) =>
         if IsValid(@__dtf2_bleed_logic)
             @__dtf2_bleed_logic\UpdateDuration(duration)
