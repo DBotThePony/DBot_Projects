@@ -45,6 +45,16 @@ SWEP.EmitSoundServerside = (...) =>
     @EmitSound(...)
     SuppressHostEvents(@GetOwner()) if @suppressing
 
+SWEP.WaitForSoundSuppress = (soundPlay, time = 0, callback = (->)) =>
+    timer.Create "DTF2.WeaponSound.#{@EntIndex()}", time, 1, ->
+        return if not IsValid(@)
+        return if not IsValid(@GetOwner())
+        return if @GetOwner()\GetActiveWeapon() ~= @
+        SuppressHostEvents(@GetOwner())
+        @EmitSound(soundPlay)
+        SuppressHostEvents(NULL)
+        callback()
+
 SWEP.CheckCritical = =>
     return if not @RandomCriticals
     return if @GetNextCrit()

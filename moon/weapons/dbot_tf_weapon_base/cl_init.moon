@@ -47,4 +47,10 @@ SWEP.PostDrawViewModel = (viewmodel = NULL, weapon = NULL, ply = NULL) =>
     return if not IsValid(@GetTF2WeaponModel())
     @GetTF2WeaponModel()\DrawModel()
 
-return nil
+SWEP.WaitForSoundSuppress = (soundPlay, time = 0, callback = (->)) =>
+    timer.Create "DTF2.WeaponSound.#{@EntIndex()}", time, 1, ->
+        return if not IsValid(@)
+        return if not IsValid(@GetOwner())
+        return if @GetOwner()\GetActiveWeapon() ~= @
+        @EmitSound(soundPlay)
+        callback()

@@ -41,6 +41,29 @@ SWEP.EmitSoundServerside = function(self, ...)
     return SuppressHostEvents(self:GetOwner())
   end
 end
+SWEP.WaitForSoundSuppress = function(self, soundPlay, time, callback)
+  if time == nil then
+    time = 0
+  end
+  if callback == nil then
+    callback = (function() end)
+  end
+  return timer.Create("DTF2.WeaponSound." .. tostring(self:EntIndex()), time, 1, function()
+    if not IsValid(self) then
+      return 
+    end
+    if not IsValid(self:GetOwner()) then
+      return 
+    end
+    if self:GetOwner():GetActiveWeapon() ~= self then
+      return 
+    end
+    SuppressHostEvents(self:GetOwner())
+    self:EmitSound(soundPlay)
+    SuppressHostEvents(NULL)
+    return callback()
+  end)
+end
 SWEP.CheckCritical = function(self)
   if not self.RandomCriticals then
     return 

@@ -91,6 +91,27 @@ SWEP.WaitForAnimation = function(self, anim, time, callback)
     return callback()
   end)
 end
+SWEP.WaitForSound = function(self, soundPlay, time, callback)
+  if time == nil then
+    time = 0
+  end
+  if callback == nil then
+    callback = (function() end)
+  end
+  return timer.Create("DTF2.WeaponSound." .. tostring(self:EntIndex()), time, 1, function()
+    if not IsValid(self) then
+      return 
+    end
+    if not IsValid(self:GetOwner()) then
+      return 
+    end
+    if self:GetOwner():GetActiveWeapon() ~= self then
+      return 
+    end
+    self:EmitSound(soundPlay)
+    return callback()
+  end)
+end
 SWEP.WaitForAnimation2 = function(self, anim, time, callback)
   if anim == nil then
     anim = ACT_VM_IDLE
@@ -142,6 +163,14 @@ end
 SWEP.ClearTimeredAnimation = function(self)
   return timer.Remove("DTF2.WeaponAnim." .. tostring(self:EntIndex()))
 end
+SWEP.PostModelCreated = function(self, viewmodel, ent)
+  if viewmodel == nil then
+    viewmodel = self:GetOwner():GetViewModel()
+  end
+  if ent == nil then
+    ent = self.weaponModel
+  end
+end
 SWEP.CreateWeaponModel = function(self)
   if IsValid(self.weaponModel) then
     self:SetTF2WeaponModel(self.weaponModel)
@@ -160,6 +189,7 @@ SWEP.CreateWeaponModel = function(self)
     _with_0:DoSetup(self)
   end
   self:SetTF2WeaponModel(self.weaponViewModel)
+  self:PostModelCreated(self:GetOwner():GetViewModel(), self.weaponViewModel)
   return self.weaponViewModel
 end
 SWEP.Deploy = function(self)

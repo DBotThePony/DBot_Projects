@@ -93,6 +93,14 @@ SWEP.WaitForAnimation = (anim = ACT_VM_IDLE, time = 0, callback = (->)) =>
         @SendWeaponAnim(anim)
         callback()
 
+SWEP.WaitForSound = (soundPlay, time = 0, callback = (->)) =>
+    timer.Create "DTF2.WeaponSound.#{@EntIndex()}", time, 1, ->
+        return if not IsValid(@)
+        return if not IsValid(@GetOwner())
+        return if @GetOwner()\GetActiveWeapon() ~= @
+        @EmitSound(soundPlay)
+        callback()
+
 SWEP.WaitForAnimation2 = (anim = ACT_VM_IDLE, time = 0, callback = (->)) =>
     timer.Create "DTF2.WeaponAnim.#{@EntIndex()}", time, 1, ->
         return if not IsValid(@)
@@ -112,6 +120,8 @@ SWEP.WaitForSequence = (anim = 0, time = 0, callback = (->)) =>
 SWEP.ClearTimeredAnimation = =>
     timer.Remove "DTF2.WeaponAnim.#{@EntIndex()}"
 
+SWEP.PostModelCreated = (viewmodel = @GetOwner()\GetViewModel(), ent = @weaponModel) =>
+
 SWEP.CreateWeaponModel = =>
     if IsValid(@weaponModel)
         @SetTF2WeaponModel(@weaponModel)
@@ -125,6 +135,7 @@ SWEP.CreateWeaponModel = =>
         \Activate()
         \DoSetup(@)
     @SetTF2WeaponModel(@weaponViewModel)
+    @PostModelCreated(@GetOwner()\GetViewModel(), @weaponViewModel)
     return @weaponViewModel
 
 SWEP.Deploy = =>
