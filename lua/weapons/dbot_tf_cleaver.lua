@@ -64,6 +64,9 @@ SWEP.Think = function(self)
     self.lastProjectileStatus = newStatus
     if newStatus then
       self:SendWeaponSequence(self.DrawAnimation)
+      if self.OnProjectileRestored then
+        self:OnProjectileRestored()
+      end
       return self:WaitForSequence(self.IdleAnimation, self.AttackAnimationDuration)
     end
   end

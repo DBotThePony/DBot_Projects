@@ -37,8 +37,14 @@ SWEP.ProjectileClass = 'dbot_milk_projectile'
 
 SWEP.DrawHUD = => DTF2.DrawCenteredBar(@GetProjectileReady() / @ProjectileRestoreTime, 'Mad milk')
 
+SWEP.OnProjectileRestored = =>
+    if IsValid(@GetTF2WeaponModel())
+        ParticleEffectAttach('energydrink_milk_splash', PATTACH_ABSORIGIN_FOLLOW, @GetTF2WeaponModel(), @GetTF2WeaponModel()\LookupAttachment('drink_spray'))
+    @EmitSound('DTF2_Weapon_MadMilk.Draw')
+
 SWEP.Deploy = =>
     @BaseClass.Deploy(@)
-    ParticleEffectAttach('energydrink_milk_splash', PATTACH_ABSORIGIN_FOLLOW, @GetTF2WeaponModel(), @GetTF2WeaponModel()\LookupAttachment('drink_spray')) if IsValid(@GetTF2WeaponModel())
-    @EmitSound('DTF2_Weapon_MadMilk.Draw')
+    if @ProjectileIsReady()
+        ParticleEffectAttach('energydrink_milk_splash', PATTACH_ABSORIGIN_FOLLOW, @GetTF2WeaponModel(), @GetTF2WeaponModel()\LookupAttachment('drink_spray')) if IsValid(@GetTF2WeaponModel())
+        @EmitSound('DTF2_Weapon_MadMilk.Draw')
     return true

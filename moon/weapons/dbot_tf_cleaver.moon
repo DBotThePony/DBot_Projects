@@ -86,6 +86,7 @@ SWEP.Think = =>
         @lastProjectileStatus = newStatus
         if newStatus
             @SendWeaponSequence(@DrawAnimation)
+            @OnProjectileRestored() if @OnProjectileRestored
             @WaitForSequence(@IdleAnimation, @AttackAnimationDuration)
 
 SWEP.DrawHUD = => DTF2.DrawCenteredBar(@GetProjectileReady() / @ProjectileRestoreTime, 'Cleaver')

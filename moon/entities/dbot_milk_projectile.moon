@@ -62,7 +62,7 @@ ENT.Initialize = =>
 ENT.SetDirection = (dir = Vector(0, 0, 0)) =>
     newVel = Vector(dir)
     newVel.z += 0.08
-    @phys\SetVelocity(newVel * 2000)
+    @phys\SetVelocity(newVel * 1000)
     @SetAngles(dir\Angle())
 
 ENT.Think = =>

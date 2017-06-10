@@ -49,7 +49,7 @@ ENT.SetDirection = function(self, dir)
   end
   local newVel = Vector(dir)
   newVel.z = newVel.z + 0.08
-  self.phys:SetVelocity(newVel * 2000)
+  self.phys:SetVelocity(newVel * 1000)
   return self:SetAngles(dir:Angle())
 end
 ENT.Think = function(self)
