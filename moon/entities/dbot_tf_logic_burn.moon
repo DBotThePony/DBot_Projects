@@ -36,6 +36,9 @@ if SERVER
         @__dtf2_burn_logic\SetOwner(@)
         @__dtf2_burn_logic\UpdateDuration(duration)
         return @__dtf2_burn_logic
+    
+    hook.Add 'PlayerDeath', 'DTF2.BurnLogic', => @__dtf2_burn_logic\Remove() if IsValid(@__dtf2_burn_logic)
+    hook.Add 'OnNPCKilled', 'DTF2.BurnLogic', => @__dtf2_burn_logic\Remove() if IsValid(@__dtf2_burn_logic)
 
 with ENT
     .SetupDataTables = =>
