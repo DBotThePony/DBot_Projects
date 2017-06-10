@@ -27,6 +27,12 @@ SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.AdminOnly = false
 
+SWEP.DrawAnimation = 'pdq_draw'
+SWEP.IdleAnimation = 'pdq_idle_tap'
+SWEP.AttackAnimation = 'pdq_swing_a'
+SWEP.AttackAnimationTable = {'pdq_swing_a', 'pdq_swing_b'}
+SWEP.AttackAnimationCrit = 'pdq_swing_c'
+
 SWEP.MissSoundsScript = 'Weapon_Wrench.Miss'
 SWEP.MissCritSoundsScript = 'Weapon_Wrench.MissCrit'
 SWEP.HitSoundsScript = 'Weapon_Wrench.HitWorld'
