@@ -37,10 +37,13 @@ if SERVER
         @__dtf2_bleed_logic\SetParent(@)
         @__dtf2_bleed_logic\SetOwner(@)
         @__dtf2_bleed_logic\UpdateDuration(duration)
+        @SetNWEntity('DTF2.BleedLogic', @__dtf2_bleed_logic)
         return @__dtf2_bleed_logic
     
     hook.Add 'PlayerDeath', 'DTF2.BleedLogic', => @__dtf2_bleed_logic\Remove() if IsValid(@__dtf2_bleed_logic)
     hook.Add 'OnNPCKilled', 'DTF2.BleedLogic', => @__dtf2_bleed_logic\Remove() if IsValid(@__dtf2_bleed_logic)
+
+entMeta.IsTF2Bleeding = => IsValid(@GetNWEntity('DTF2.BleedLogic'))
 
 with ENT
     .SetupDataTables = =>

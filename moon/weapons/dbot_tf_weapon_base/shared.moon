@@ -215,6 +215,15 @@ SWEP.ThatWasMinicrit = (hitEntity, dmginfo) =>
     @DisplayCritEffect(hitEntity) if @onHitCalled
     dmginfo\ScaleDamage(1.3)
 
+SWEP.ThatWasCrit = (hitEntity, dmginfo) =>
+    return if @incomingCrit
+    @incomingCrit = true
+    @DisplayCritEffect(hitEntity) if @onHitCalled
+    if @incomingMiniCrit
+        dmginfo\ScaleDamage(1 / 1.3)
+        @incomingMiniCrit = false
+    dmginfo\ScaleDamage(3)
+
 SWEP.FireTrigger = =>
     @suppressing = true
     SuppressHostEvents(@GetOwner()) if SERVER and @GetOwner()\IsPlayer()

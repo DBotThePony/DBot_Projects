@@ -23,9 +23,9 @@ ENT.AdminSpawnable = false
 ENT.Author = 'DBot'
 ENT.RenderGroup = RENDERGROUP_OTHER
 
-if SERVER
-    entMeta = FindMetaTable('Entity')
+entMeta = FindMetaTable('Entity')
 
+if SERVER
     entMeta.TF2Burn = (duration = 0) =>
         if IsValid(@__dtf2_burn_logic)
             @__dtf2_burn_logic\UpdateDuration(duration)
@@ -37,10 +37,12 @@ if SERVER
         @__dtf2_burn_logic\SetParent(@)
         @__dtf2_burn_logic\SetOwner(@)
         @__dtf2_burn_logic\UpdateDuration(duration)
+        @SetNWEntity('DTF2.BurnLogic', @__dtf2_burn_logic)
         return @__dtf2_burn_logic
-    
     hook.Add 'PlayerDeath', 'DTF2.BurnLogic', => @__dtf2_burn_logic\Remove() if IsValid(@__dtf2_burn_logic)
     hook.Add 'OnNPCKilled', 'DTF2.BurnLogic', => @__dtf2_burn_logic\Remove() if IsValid(@__dtf2_burn_logic)
+
+entMeta.IsTF2Burning = => IsValid(@GetNWEntity('DTF2.BurnLogic'))
 
 with ENT
     .SetupDataTables = =>
