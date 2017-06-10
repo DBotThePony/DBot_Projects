@@ -61,6 +61,7 @@ with ENT
         @burnEnd = CurTime() + newtime
 
     .Think = =>
+        return if CLIENT
         return @Remove() if @burnEnd < CurTime()
         owner = @GetOwner()
         return @Remove() if not IsValid(@GetOwner())
@@ -68,6 +69,7 @@ with ENT
         dmginfo\SetAttacker(IsValid(@GetAttacker()) and @GetAttacker() or @)
         dmginfo\SetInflictor(IsValid(@GetInflictor()) and @GetInflictor() or @)
         dmginfo\SetDamageType(DMG_BURN)
+        dmginfo\SetDamage(@GetDamage())
         owner\TakeDamageInfo(dmginfo)
         @NextThink(CurTime() + @GetHitDelay())
         return true

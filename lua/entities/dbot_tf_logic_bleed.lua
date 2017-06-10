@@ -1,26 +1,26 @@
 ENT.Type = 'anim'
-ENT.PrintName = 'Burning Logic'
+ENT.PrintName = 'Bleeding Logic'
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 ENT.Author = 'DBot'
 ENT.RenderGroup = RENDERGROUP_OTHER
 if SERVER then
   local entMeta = FindMetaTable('Entity')
-  entMeta.TF2Burn = function(self, duration)
+  entMeta.TF2Bleed = function(self, duration)
     if duration == nil then
       duration = 0
     end
-    if IsValid(self.__dtf2_burn_logic) then
-      return self.__dtf2_burn_logic
+    if IsValid(self.__dtf2_bleed_logic) then
+      return self.__dtf2_bleed_logic
     end
-    self.__dtf2_burn_logic = ents.Create('dbot_tf_logic_burn')
-    self.__dtf2_burn_logic:SetPos(self:GetPos())
-    self.__dtf2_burn_logic:Spawn()
-    self.__dtf2_burn_logic:Activate()
-    self.__dtf2_burn_logic:SetParent(self)
-    self.__dtf2_burn_logic:SetOwner(self)
-    self.__dtf2_burn_logic:UpdateDuration(duration)
-    return self.__dtf2_burn_logic
+    self.__dtf2_bleed_logic = ents.Create('dbot_tf_logic_bleed')
+    self.__dtf2_bleed_logic:SetPos(self:GetPos())
+    self.__dtf2_bleed_logic:Spawn()
+    self.__dtf2_bleed_logic:Activate()
+    self.__dtf2_bleed_logic:SetParent(self)
+    self.__dtf2_bleed_logic:SetOwner(self)
+    self.__dtf2_bleed_logic:UpdateDuration(duration)
+    return self.__dtf2_bleed_logic
   end
 end
 do
@@ -68,7 +68,7 @@ do
     local dmginfo = DamageInfo()
     dmginfo:SetAttacker(IsValid(self:GetAttacker()) and self:GetAttacker() or self)
     dmginfo:SetInflictor(IsValid(self:GetInflictor()) and self:GetInflictor() or self)
-    dmginfo:SetDamageType(DMG_BURN)
+    dmginfo:SetDamageType(DMG_SLASH)
     dmginfo:SetDamage(self:GetDamage())
     owner:TakeDamageInfo(dmginfo)
     self:NextThink(CurTime() + self:GetHitDelay())
@@ -86,7 +86,6 @@ do
     if not IsValid(self:GetParent()) then
       return 
     end
-    self.particles = CreateParticleSystem(self:GetParent(), 'burningplayer_red', PATTACH_ABSORIGIN_FOLLOW)
   end
   return _with_0
 end
