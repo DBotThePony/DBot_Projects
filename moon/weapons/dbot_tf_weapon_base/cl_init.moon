@@ -21,12 +21,14 @@ net.Receive 'DTF2.SendWeaponAnim', ->
     act = net.ReadUInt(16)
     wep = LocalPlayer()\GetActiveWeapon()
     return if not IsValid(wep)
+    return if not wep.SendWeaponAnim2
     wep\SendWeaponAnim2(act)
 
 net.Receive 'DTF2.SendWeaponSequence', ->
     act = net.ReadUInt(16)
     wep = LocalPlayer()\GetActiveWeapon()
     return if not IsValid(wep)
+    return if not wep.SendWeaponSequence
     wep\SendWeaponSequence(act)
 
 SWEP.SendWeaponSequence = (seq = 0) =>

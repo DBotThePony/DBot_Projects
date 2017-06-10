@@ -5,12 +5,18 @@ net.Receive('DTF2.SendWeaponAnim', function()
   if not IsValid(wep) then
     return 
   end
+  if not wep.SendWeaponAnim2 then
+    return 
+  end
   return wep:SendWeaponAnim2(act)
 end)
 net.Receive('DTF2.SendWeaponSequence', function()
   local act = net.ReadUInt(16)
   local wep = LocalPlayer():GetActiveWeapon()
   if not IsValid(wep) then
+    return 
+  end
+  if not wep.SendWeaponSequence then
     return 
   end
   return wep:SendWeaponSequence(act)
