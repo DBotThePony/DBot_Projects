@@ -34,8 +34,8 @@ do
   _with_0.Initialize = function(self)
     self:SetNoDraw(true)
     self:SetNotSolid(true)
-    self:SetHitDelay(.75)
-    self:SetDamage(3)
+    self:SetHitDelay(.5)
+    self:SetDamage(4)
     self.nextBloodParticle = CurTime()
     if CLIENT then
       return 

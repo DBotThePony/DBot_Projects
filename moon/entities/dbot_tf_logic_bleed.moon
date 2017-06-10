@@ -47,8 +47,8 @@ with ENT
     .Initialize = =>
         @SetNoDraw(true)
         @SetNotSolid(true)
-        @SetHitDelay(.75)
-        @SetDamage(3)
+        @SetHitDelay(.5)
+        @SetDamage(4)
         @nextBloodParticle = CurTime()
         return if CLIENT
         @burnStart = CurTime()
