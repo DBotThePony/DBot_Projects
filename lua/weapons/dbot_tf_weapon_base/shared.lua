@@ -172,9 +172,9 @@ SWEP.PostModelCreated = function(self, viewmodel, ent)
   end
 end
 SWEP.CreateWeaponModel = function(self)
-  if IsValid(self.weaponModel) then
-    self:SetTF2WeaponModel(self.weaponModel)
-    return self.weaponModel
+  if IsValid(self.weaponViewModel) then
+    self:SetTF2WeaponModel(self.weaponViewModel)
+    return self.weaponViewModel
   end
   if CLIENT or IsValid(self:GetTF2WeaponModel()) then
     return self:GetTF2WeaponModel()

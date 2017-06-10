@@ -36,3 +36,9 @@ SWEP.AttackAnimationDuration = 1
 SWEP.ProjectileClass = 'dbot_milk_projectile'
 
 SWEP.DrawHUD = => DTF2.DrawCenteredBar(@GetProjectileReady() / @ProjectileRestoreTime, 'Mad milk')
+
+SWEP.Deploy = =>
+    @BaseClass.Deploy(@)
+    return true if CLIENT
+    ParticleEffectAttach('energydrink_splash', PATTACH_ABSORIGIN_FOLLOW, @GetTF2WeaponModel(), @GetTF2WeaponModel()\LookupAttachment('drink_spray'))
+    return true

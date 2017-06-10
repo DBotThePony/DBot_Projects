@@ -15,3 +15,11 @@ SWEP.ProjectileClass = 'dbot_milk_projectile'
 SWEP.DrawHUD = function(self)
   return DTF2.DrawCenteredBar(self:GetProjectileReady() / self.ProjectileRestoreTime, 'Mad milk')
 end
+SWEP.Deploy = function(self)
+  self.BaseClass.Deploy(self)
+  if CLIENT then
+    return true
+  end
+  ParticleEffectAttach('energydrink_splash', PATTACH_ABSORIGIN_FOLLOW, self:GetTF2WeaponModel(), self:GetTF2WeaponModel():LookupAttachment('drink_spray'))
+  return true
+end
