@@ -1,11 +1,11 @@
-ENT.PrintName = 'Ball Projective'
+ENT.PrintName = 'Cleaver Projectile'
 ENT.Author = 'DBot'
 ENT.Category = 'TF2'
 ENT.Base = 'base_anim'
 ENT.Type = 'anim'
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
-ENT.BallModel = 'models/weapons/c_models/c_xms_festive_ornament.mdl'
+ENT.BallModel = 'models/weapons/c_models/c_sd_cleaver/c_sd_cleaver.mdl'
 ENT.SetupDataTables = function(self)
   self:NetworkVar('Bool', 0, 'IsFlying')
   return self:NetworkVar('Bool', 1, 'IsCritical')
@@ -14,9 +14,8 @@ AccessorFunc(ENT, 'm_Attacker', 'Attacker')
 AccessorFunc(ENT, 'm_Inflictor', 'Inflictor')
 AccessorFunc(ENT, 'm_dmgtype', 'DamageType')
 AccessorFunc(ENT, 'm_dmg', 'Damage')
-ENT.DefaultDamage = 15
-ENT.RemoveTimer = 15
-ENT.AffectedWeapon = 'dbot_tf_wrapassasin'
+ENT.DefaultDamage = 50
+ENT.RemoveTimer = 10
 ENT.Initialize = function(self)
   self:SetModel(self.BallModel)
   if CLIENT then
@@ -47,7 +46,8 @@ ENT.SetDirection = function(self, dir)
   end
   local newVel = Vector(dir)
   newVel.z = newVel.z + 0.05
-  return self.phys:SetVelocity(newVel * 4000)
+  self.phys:SetVelocity(newVel * 4000)
+  return self:SetAngles(dir:Angle())
 end
 ENT.Think = function(self)
   if CLIENT then
@@ -61,9 +61,11 @@ ENT.OnHit = function(self, ent, data)
   if data == nil then
     data = { }
   end
+  local dist = self:GetPos():Distance(self.initialPosition)
+  local miniCrit = dist > 1024 or ent:IsMarkedForDeath()
   local dmginfo = DamageInfo()
   dmginfo:SetDamageType(self:GetDamageType())
-  dmginfo:SetDamage(self:GetDamage() * (self:GetIsCritical() and 3 or ent:IsMarkedForDeath() and 1.3 or 1))
+  dmginfo:SetDamage(self:GetDamage() * (self:GetIsCritical() and 3 or miniCrit and 1.3 or 1))
   dmginfo:SetAttacker(self:GetAttacker())
   dmginfo:SetInflictor(self:GetInflictor())
   ent:TakeDamageInfo(dmginfo)
@@ -73,27 +75,21 @@ ENT.OnHit = function(self, ent, data)
     util.Effect('dtf2_critical_hit', effData)
     self:GetAttacker():EmitSound('DTF2_TFPlayer.CritHit')
     ent:EmitSound('DTF2_TFPlayer.CritHit')
-  elseif ent:IsMarkedForDeath() then
+  elseif miniCrit then
     local effData = EffectData()
     effData:SetOrigin(data.HitPos)
     util.Effect('dtf2_minicrit', effData)
     self:GetAttacker():EmitSound('DTF2_TFPlayer.CritHitMini')
     ent:EmitSound('DTF2_TFPlayer.CritHitMini')
   end
-  local dist = self:GetPos():Distance(self.initialPosition)
   if ent:IsNPC() or ent:IsPlayer() then
-    local bleed = ent:TF2Bleed(math.Clamp(dist / 128, 1, 15))
+    local bleed = ent:TF2Bleed(math.Clamp(dist / 256, 5, 10))
     bleed:SetAttacker(self:GetAttacker())
     bleed:SetInflictor(self:GetInflictor())
-    if dist < 1024 then
-      ent:EmitSound('DTF2_BallBuster.OrnamentImpact')
-      self:GetAttacker():EmitSound('DTF2_BallBuster.OrnamentImpact')
-    else
-      ent:EmitSound('DTF2_BallBuster.OrnamentImpactRange')
-      self:GetAttacker():EmitSound('DTF2_BallBuster.OrnamentImpactRange')
-    end
+    ent:EmitSound('DTF2_Cleaver.ImpactFlesh')
+    self:GetAttacker():EmitSound('DTF2_Cleaver.ImpactFlesh')
   else
-    ent:EmitSound('DTF2_BallBuster.OrnamentImpact')
+    ent:EmitSound('DTF2_Cleaver.ImpactWorld')
   end
   return self:Remove()
 end
@@ -104,38 +100,26 @@ ENT.PhysicsCollide = function(self, data, colldier)
   local HitEntity
   HitEntity = data.HitEntity
   if not self:GetIsFlying() then
-    if not IsValid(HitEntity) then
-      return 
-    end
-    if not HitEntity:IsPlayer() then
-      return 
-    end
-    local wep = HitEntity:GetWeapon(self.AffectedWeapon)
-    if not IsValid(wep) then
-      return 
-    end
-    wep:SetBallReady(wep.BallRestoreTime)
-    return HitEntity:EmitSound('DTF2_Player.PickupWeapon')
+    return 
+  end
+  if HitEntity == self.attacker then
+    return false
+  end
+  if IsValid(HitEntity) then
+    return self:OnHit(HitEntity, data)
   else
-    if HitEntity == self.attacker then
-      return false
-    end
-    if IsValid(HitEntity) then
-      return self:OnHit(HitEntity, data)
-    else
-      self:EmitSound('DTF2_BallBuster.OrnamentImpact')
-      return self:Remove()
-    end
+    self:SetIsFlying(false)
+    return self:EmitSound('DTF2_Cleaver.ImpactWorld')
   end
 end
-ENT.IsTF2Ball = true
+ENT.IsTF2Cleaver = true
 if SERVER then
-  return hook.Add('EntityTakeDamage', 'DTF2.BallProjective', function(ent, dmg)
+  return hook.Add('EntityTakeDamage', 'DTF2.CleaverProjective', function(ent, dmg)
     local attacker = dmg:GetAttacker()
     if not IsValid(attacker) then
       return 
     end
-    if not attacker.IsTF2Ball then
+    if not attacker.IsTF2Cleaver then
       return 
     end
     if dmg:GetDamageType() ~= DMG_CRUSH then

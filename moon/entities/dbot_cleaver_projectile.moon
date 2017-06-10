@@ -15,7 +15,7 @@
 -- limitations under the License.
 --
 
-ENT.PrintName = 'Ball Projective'
+ENT.PrintName = 'Cleaver Projectile'
 ENT.Author = 'DBot'
 ENT.Category = 'TF2'
 ENT.Base = 'base_anim'
@@ -23,7 +23,7 @@ ENT.Type = 'anim'
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 
-ENT.BallModel = 'models/weapons/c_models/c_xms_festive_ornament.mdl'
+ENT.BallModel = 'models/weapons/c_models/c_sd_cleaver/c_sd_cleaver.mdl'
 
 ENT.SetupDataTables = =>
     @NetworkVar('Bool', 0, 'IsFlying')
@@ -34,10 +34,8 @@ AccessorFunc(ENT, 'm_Inflictor', 'Inflictor')
 AccessorFunc(ENT, 'm_dmgtype', 'DamageType')
 AccessorFunc(ENT, 'm_dmg', 'Damage')
 
-ENT.DefaultDamage = 15
-ENT.RemoveTimer = 15
-
-ENT.AffectedWeapon = 'dbot_tf_wrapassasin'
+ENT.DefaultDamage = 50
+ENT.RemoveTimer = 10
 
 ENT.Initialize = =>
     @SetModel(@BallModel)
@@ -62,15 +60,19 @@ ENT.SetDirection = (dir = Vector(0, 0, 0)) =>
     newVel = Vector(dir)
     newVel.z += 0.05
     @phys\SetVelocity(newVel * 4000)
+    @SetAngles(dir\Angle())
 
 ENT.Think = =>
     return false if CLIENT
     @Remove() if @removeAt < CurTime()
 
 ENT.OnHit = (ent, data = {}) =>
+    dist = @GetPos()\Distance(@initialPosition)
+    miniCrit = dist > 1024 or ent\IsMarkedForDeath()
+
     dmginfo = DamageInfo()
     dmginfo\SetDamageType(@GetDamageType())
-    dmginfo\SetDamage(@GetDamage() * (@GetIsCritical() and 3 or ent\IsMarkedForDeath() and 1.3 or 1))
+    dmginfo\SetDamage(@GetDamage() * (@GetIsCritical() and 3 or miniCrit and 1.3 or 1))
     dmginfo\SetAttacker(@GetAttacker())
     dmginfo\SetInflictor(@GetInflictor())
     ent\TakeDamageInfo(dmginfo)
@@ -81,55 +83,41 @@ ENT.OnHit = (ent, data = {}) =>
         util.Effect('dtf2_critical_hit', effData)
         @GetAttacker()\EmitSound('DTF2_TFPlayer.CritHit')
         ent\EmitSound('DTF2_TFPlayer.CritHit')
-    elseif ent\IsMarkedForDeath()
+    elseif miniCrit
         effData = EffectData()
         effData\SetOrigin(data.HitPos)
         util.Effect('dtf2_minicrit', effData)
         @GetAttacker()\EmitSound('DTF2_TFPlayer.CritHitMini')
         ent\EmitSound('DTF2_TFPlayer.CritHitMini')
-
-    dist = @GetPos()\Distance(@initialPosition)
+    
     if ent\IsNPC() or ent\IsPlayer()
-        bleed = ent\TF2Bleed(math.Clamp(dist / 128, 1, 15))
+        bleed = ent\TF2Bleed(math.Clamp(dist / 256, 5, 10))
         bleed\SetAttacker(@GetAttacker())
         bleed\SetInflictor(@GetInflictor())
-        if dist < 1024
-            ent\EmitSound('DTF2_BallBuster.OrnamentImpact')
-            @GetAttacker()\EmitSound('DTF2_BallBuster.OrnamentImpact')
-        else
-            ent\EmitSound('DTF2_BallBuster.OrnamentImpactRange')
-            @GetAttacker()\EmitSound('DTF2_BallBuster.OrnamentImpactRange')
+        ent\EmitSound('DTF2_Cleaver.ImpactFlesh')
+        @GetAttacker()\EmitSound('DTF2_Cleaver.ImpactFlesh')
     else
-        ent\EmitSound('DTF2_BallBuster.OrnamentImpact')
+        ent\EmitSound('DTF2_Cleaver.ImpactWorld')
     
-    -- @SetIsFlying(false)
     @Remove()
 
 ENT.PhysicsCollide = (data = {}, colldier) =>
     {:HitEntity} = data
-    if not @GetIsFlying()
-        return if not IsValid(HitEntity)
-        return if not HitEntity\IsPlayer()
-        wep = HitEntity\GetWeapon(@AffectedWeapon)
-        return if not IsValid(wep)
-        wep\SetBallReady(wep.BallRestoreTime)
-        HitEntity\EmitSound('DTF2_Player.PickupWeapon')
+    return if not @GetIsFlying()
+    return false if HitEntity == @attacker
+    if IsValid(HitEntity)
+        @OnHit(HitEntity, data)
     else
-        return false if HitEntity == @attacker
-        if IsValid(HitEntity)
-            @OnHit(HitEntity, data)
-        else
-            -- @SetIsFlying(false)
-            @EmitSound('DTF2_BallBuster.OrnamentImpact')
-            @Remove()
+        @SetIsFlying(false)
+        @EmitSound('DTF2_Cleaver.ImpactWorld')
 
-ENT.IsTF2Ball = true
+ENT.IsTF2Cleaver = true
 
 if SERVER
-    hook.Add 'EntityTakeDamage', 'DTF2.BallProjective', (ent, dmg) ->
+    hook.Add 'EntityTakeDamage', 'DTF2.CleaverProjective', (ent, dmg) ->
         attacker = dmg\GetAttacker()
         return if not IsValid(attacker)
-        return if not attacker.IsTF2Ball
+        return if not attacker.IsTF2Cleaver
         return if dmg\GetDamageType() ~= DMG_CRUSH
         dmg\SetDamage(0)
         dmg\SetMaxDamage(0)
