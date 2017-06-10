@@ -139,6 +139,7 @@ SWEP.SecondaryAttack = =>
         ballEntity\Spawn()
         ballEntity\Activate()
         ballEntity\SetIsCritical(incomingCrit)
+        ballEntity\SetOwner(@GetOwner())
         ballEntity\SetAttacker(@GetOwner())
         ballEntity\SetInflictor(@)
         ballEntity\SetDirection(@GetOwner()\GetAimVector())
