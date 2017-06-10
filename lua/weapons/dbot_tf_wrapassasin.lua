@@ -125,7 +125,7 @@ SWEP.SecondaryAttack = function(self)
     if not IsValid(self) or not IsValid(self:GetOwner()) then
       return 
     end
-    local ballEntity = ents.Create('dbot_ball_projective')
+    local ballEntity = ents.Create('dbot_ball_projectile')
     ballEntity:SetPos(self:GetOwner():EyePos())
     ballEntity:Spawn()
     ballEntity:Activate()

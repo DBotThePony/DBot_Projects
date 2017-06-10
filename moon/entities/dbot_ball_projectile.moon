@@ -43,7 +43,7 @@ ENT.Initialize = =>
     @SetModel(@BallModel)
     return if CLIENT
     @removeAt = CurTime() + @RemoveTimer
-    @PhysicsInitSphere(12)
+    @PhysicsInitSphere(6)
     @SetDamageType(DMG_SLASH)
     @SetDamage(@DefaultDamage)
     @SetAttacker(@)

@@ -22,7 +22,7 @@ ENT.Initialize = function(self)
     return 
   end
   self.removeAt = CurTime() + self.RemoveTimer
-  self:PhysicsInitSphere(12)
+  self:PhysicsInitSphere(8)
   self:SetDamageType(DMG_SLASH)
   self:SetDamage(self.DefaultDamage)
   self:SetAttacker(self)

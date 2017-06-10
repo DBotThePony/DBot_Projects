@@ -134,7 +134,7 @@ SWEP.SecondaryAttack = =>
     return if CLIENT
     timer.Simple 0, ->
         return if not IsValid(@) or not IsValid(@GetOwner())
-        ballEntity = ents.Create('dbot_ball_projective')
+        ballEntity = ents.Create('dbot_ball_projectile')
         ballEntity\SetPos(@GetOwner()\EyePos())
         ballEntity\Spawn()
         ballEntity\Activate()
