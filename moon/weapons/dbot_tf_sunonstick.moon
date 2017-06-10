@@ -36,6 +36,7 @@ SWEP.PreOnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
     @BaseClass.PreOnHit(@, hitEntity, tr, dmginfo)
     if IsValid(hitEntity) and hitEntity\IsTF2Burning()
         @ThatWasCrit(hitEntity, dmginfo)
+
 if SERVER
     hook.Add 'EntityTakeDamage', 'DTF2.SunOnAStick', (ent, dmg) ->
         return unless ent\IsPlayer()
