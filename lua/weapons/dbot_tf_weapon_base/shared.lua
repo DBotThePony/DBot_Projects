@@ -172,25 +172,31 @@ SWEP.PostModelCreated = function(self, viewmodel, ent)
   end
 end
 SWEP.CreateWeaponModel = function(self)
-  if IsValid(self.weaponViewModel) then
-    self:SetTF2WeaponModel(self.weaponViewModel)
-    return self.weaponViewModel
+  if IsValid(self.TF2weaponViewModel) then
+    self:SetTF2WeaponModel(self.TF2weaponViewModel)
+    do
+      local _with_0 = self.TF2weaponViewModel
+      _with_0:SetModel(self.WorldModel)
+      _with_0:SetPos(self:GetPos())
+      _with_0:DoSetup(self)
+    end
+    return self.TF2weaponViewModel
   end
   if CLIENT or IsValid(self:GetTF2WeaponModel()) then
     return self:GetTF2WeaponModel()
   end
-  self.weaponViewModel = ents.Create('dbot_tf_viewmodel')
+  self.TF2weaponViewModel = ents.Create('dbot_tf_viewmodel')
   do
-    local _with_0 = self.weaponViewModel
+    local _with_0 = self.TF2weaponViewModel
     _with_0:SetModel(self.WorldModel)
     _with_0:SetPos(self:GetPos())
     _with_0:Spawn()
     _with_0:Activate()
     _with_0:DoSetup(self)
   end
-  self:SetTF2WeaponModel(self.weaponViewModel)
-  self:PostModelCreated(self:GetOwner():GetViewModel(), self.weaponViewModel)
-  return self.weaponViewModel
+  self:SetTF2WeaponModel(self.TF2weaponViewModel)
+  self:PostModelCreated(self:GetOwner():GetViewModel(), self.TF2weaponViewModel)
+  return self.TF2weaponViewModel
 end
 SWEP.Deploy = function(self)
   self:SendWeaponSequence(self.DrawAnimation)

@@ -33,6 +33,11 @@ ENT.Initialize = =>
     @SetMoveType(MOVETYPE_NONE)
     @AddEffects(EF_BONEMERGE)
 
+ENT.Think = =>
+    if CLIENT
+        @SetNotSolid(true)
+        @SetNoDraw(true)
+
 ENT.DoSetup = (wep) =>
     ply = wep\GetOwner()
     viewmodel = ply\GetViewModel()

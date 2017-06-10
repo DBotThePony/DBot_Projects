@@ -14,6 +14,12 @@ ENT.Initialize = function(self)
   self:SetMoveType(MOVETYPE_NONE)
   return self:AddEffects(EF_BONEMERGE)
 end
+ENT.Think = function(self)
+  if CLIENT then
+    self:SetNotSolid(true)
+    return self:SetNoDraw(true)
+  end
+end
 ENT.DoSetup = function(self, wep)
   local ply = wep:GetOwner()
   local viewmodel = ply:GetViewModel()
