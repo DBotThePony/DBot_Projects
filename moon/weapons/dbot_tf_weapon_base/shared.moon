@@ -123,9 +123,9 @@ SWEP.ClearTimeredAnimation = =>
 SWEP.PostModelCreated = (viewmodel = @GetOwner()\GetViewModel(), ent = @weaponModel) =>
 
 SWEP.CreateWeaponModel = =>
-    if IsValid(@weaponModel)
-        @SetTF2WeaponModel(@weaponModel)
-        return @weaponModel
+    if IsValid(@weaponViewModel)
+        @SetTF2WeaponModel(@weaponViewModel)
+        return @weaponViewModel
     return @GetTF2WeaponModel() if CLIENT or IsValid(@GetTF2WeaponModel())
     @weaponViewModel = ents.Create('dbot_tf_viewmodel')
     with @weaponViewModel
