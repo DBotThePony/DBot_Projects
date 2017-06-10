@@ -87,6 +87,7 @@ ENT.PhysicsCollide = function(self, data, colldier)
     end
   end
   self:EmitSound('DTF2_Jar.Explode')
+  ParticleEffect('peejar_impact_milk', HitPos - HitNormal, Angle(0, 0, 0))
   return self:Remove()
 end
 ENT.IsTF2Milk = true

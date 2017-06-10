@@ -85,6 +85,7 @@ ENT.PhysicsCollide = (data = {}, colldier) =>
                     \SetAttacker(@GetAttacker())
     
     @EmitSound('DTF2_Jar.Explode')
+    ParticleEffect('peejar_impact_milk', HitPos - HitNormal, Angle(0, 0, 0))
     @Remove()
 
 
