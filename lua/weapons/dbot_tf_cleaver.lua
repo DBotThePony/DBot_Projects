@@ -9,47 +9,59 @@ SWEP.WorldModel = 'models/weapons/c_models/c_sd_cleaver/v_sd_cleaver.mdl'
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.AdminOnly = false
-SWEP.CleaverRestoreTime = 10
+SWEP.ProjectileRestoreTime = 10
 SWEP.IdleAnimation = 'ed_idle'
 SWEP.DrawAnimation = 'ed_draw'
 SWEP.AttackAnimation = 'ed_throw'
 SWEP.AttackAnimationCrit = 'ed_throw'
 SWEP.AttackAnimationDuration = 1
-SWEP.CleaverIsReady = function(self)
-  return self:GetCleaverReady() >= self.CleaverRestoreTime
+SWEP.ProjectileClass = 'dbot_cleaver_projectile'
+SWEP.ProjectileIsReady = function(self)
+  return self:GetProjectileReady() >= self.ProjectileRestoreTime
 end
 SWEP.PreDrawViewModel = function(self, vm)
   self.vmModel = vm
 end
+SWEP.Primary = {
+  ['Ammo'] = 'none',
+  ['ClipSize'] = -1,
+  ['DefaultClip'] = 0,
+  ['Automatic'] = true
+}
+SWEP.Secondary = {
+  ['Ammo'] = 'none',
+  ['ClipSize'] = -1,
+  ['DefaultClip'] = 0,
+  ['Automatic'] = false
+}
 SWEP.SetupDataTables = function(self)
-  self.BaseClass.SetupDataTables(self)
-  self:NetworkVar('Float', 16, 'CleaverReady')
-  self:NetworkVar('Float', 17, 'HideCleaver')
-  return self:NetworkVar('Entity', 16, 'TF2BallModel')
+  BaseClass.SetupDataTables(self)
+  self:NetworkVar('Float', 16, 'ProjectileReady')
+  return self:NetworkVar('Float', 17, 'HideProjectile')
 end
 SWEP.Initialize = function(self)
-  self.BaseClass.Initialize(self)
-  self:SetCleaverReady(self.CleaverRestoreTime)
-  self.lastCleaverThink = CurTime()
-  self.lastCleaverStatus = true
-  return self:SetHideCleaver(0)
+  BaseClass.Initialize(self)
+  self:SetProjectileReady(self.ProjectileRestoreTime)
+  self.lastProjectileThink = CurTime()
+  self.lastProjectileStatus = true
+  return self:SetHideProjectile(0)
 end
 SWEP.Think = function(self)
-  self.BaseClass.Think(self)
+  BaseClass.Think(self)
   if SERVER then
-    local delta = CurTime() - self.lastCleaverThink
-    self.lastCleaverThink = CurTime()
-    if self:GetCleaverReady() < self.CleaverRestoreTime then
-      self:SetCleaverReady(math.Clamp(self:GetCleaverReady() + delta, 0, self.CleaverRestoreTime))
+    local delta = CurTime() - self.lastProjectileThink
+    self.lastProjectileThink = CurTime()
+    if self:GetProjectileReady() < self.ProjectileRestoreTime then
+      self:SetProjectileReady(math.Clamp(self:GetProjectileReady() + delta, 0, self.ProjectileRestoreTime))
     end
   end
-  local old = self.lastCleaverStatus
-  local newStatus = self:CleaverIsReady()
+  local old = self.lastProjectileStatus
+  local newStatus = self:ProjectileIsReady()
   if IsValid(self.vmModel) then
-    self.vmModel:SetNoDraw(not newStatus and self:GetHideCleaver() < CurTime())
+    self.vmModel:SetNoDraw(not newStatus and self:GetHideProjectile() < CurTime())
   end
   if old ~= newStatus then
-    self.lastCleaverStatus = newStatus
+    self.lastProjectileStatus = newStatus
     if newStatus then
       self:SendWeaponSequence(self.DrawAnimation)
       return self:WaitForSequence(self.IdleAnimation, self.AttackAnimationDuration)
@@ -57,18 +69,18 @@ SWEP.Think = function(self)
   end
 end
 SWEP.DrawHUD = function(self)
-  return DTF2.DrawCenteredBar(self:GetCleaverReady() / self.CleaverRestoreTime, 'Cleaver')
+  return DTF2.DrawCenteredBar(self:GetProjectileReady() / self.ProjectileRestoreTime, 'Cleaver')
 end
 SWEP.PrimaryAttack = function(self)
-  if not self:CleaverIsReady() then
+  if not self:ProjectileIsReady() then
     return false
   end
   local incomingCrit = self:CheckNextCrit()
-  self:SetCleaverReady(0)
-  self.lastCleaverStatus = false
+  self:SetProjectileReady(0)
+  self.lastProjectileStatus = false
   self:SendWeaponSequence(self.AttackAnimation)
   self:WaitForSequence(self.IdleAnimation, self.AttackAnimationDuration)
-  self:SetHideCleaver(CurTime() + self.AttackAnimationDuration)
+  self:SetHideProjectile(CurTime() + self.AttackAnimationDuration)
   if CLIENT then
     return 
   end
@@ -77,7 +89,7 @@ SWEP.PrimaryAttack = function(self)
       return 
     end
     do
-      local _with_0 = ents.Create('dbot_cleaver_projectile')
+      local _with_0 = ents.Create(self.ProjectileClass)
       _with_0:SetPos(self:GetOwner():EyePos())
       _with_0:Spawn()
       _with_0:Activate()

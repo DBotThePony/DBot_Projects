@@ -104,7 +104,7 @@ ENT.OnHit = (ent, data = {}) =>
 ENT.PhysicsCollide = (data = {}, colldier) =>
     {:HitEntity} = data
     return if not @GetIsFlying()
-    return false if HitEntity == @attacker
+    return false if HitEntity == @GetAttacker()
     if IsValid(HitEntity)
         @OnHit(HitEntity, data)
     else

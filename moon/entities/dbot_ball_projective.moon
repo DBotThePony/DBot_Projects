@@ -115,7 +115,7 @@ ENT.PhysicsCollide = (data = {}, colldier) =>
         wep\SetBallReady(wep.BallRestoreTime)
         HitEntity\EmitSound('DTF2_Player.PickupWeapon')
     else
-        return false if HitEntity == @attacker
+        return false if HitEntity == @GetAttacker()
         if IsValid(HitEntity)
             @OnHit(HitEntity, data)
         else

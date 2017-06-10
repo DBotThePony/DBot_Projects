@@ -102,7 +102,7 @@ ENT.PhysicsCollide = function(self, data, colldier)
   if not self:GetIsFlying() then
     return 
   end
-  if HitEntity == self.attacker then
+  if HitEntity == self:GetAttacker() then
     return false
   end
   if IsValid(HitEntity) then

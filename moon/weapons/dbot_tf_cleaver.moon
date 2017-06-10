@@ -30,7 +30,7 @@ SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.AdminOnly = false
 
-SWEP.CleaverRestoreTime = 10
+SWEP.ProjectileRestoreTime = 10
 
 SWEP.IdleAnimation = 'ed_idle'
 SWEP.DrawAnimation = 'ed_draw'
@@ -38,55 +38,69 @@ SWEP.AttackAnimation = 'ed_throw'
 SWEP.AttackAnimationCrit = 'ed_throw'
 
 SWEP.AttackAnimationDuration = 1
+SWEP.ProjectileClass = 'dbot_cleaver_projectile'
 
-SWEP.CleaverIsReady = => @GetCleaverReady() >= @CleaverRestoreTime
+SWEP.ProjectileIsReady = => @GetProjectileReady() >= @ProjectileRestoreTime
 SWEP.PreDrawViewModel = (vm) => @vmModel = vm
 
+SWEP.Primary = {
+    'Ammo': 'none'
+    'ClipSize': -1
+    'DefaultClip': 0
+    'Automatic': true
+}
+
+SWEP.Secondary = {
+    'Ammo': 'none'
+    'ClipSize': -1
+    'DefaultClip': 0
+    'Automatic': false
+}
+
 SWEP.SetupDataTables = =>
-    @BaseClass.SetupDataTables(@)
-    @NetworkVar('Float', 16, 'CleaverReady')
-    @NetworkVar('Float', 17, 'HideCleaver') -- fuck singleplayer
-    @NetworkVar('Entity', 16, 'TF2BallModel')
+    BaseClass.SetupDataTables(@)
+    @NetworkVar('Float', 16, 'ProjectileReady')
+    @NetworkVar('Float', 17, 'HideProjectile') -- fuck singleplayer
 
 SWEP.Initialize = =>
-    @BaseClass.Initialize(@)
-    @SetCleaverReady(@CleaverRestoreTime)
-    @lastCleaverThink = CurTime()
-    @lastCleaverStatus = true
-    @SetHideCleaver(0)
+    BaseClass.Initialize(@)
+    @SetProjectileReady(@ProjectileRestoreTime)
+    @lastProjectileThink = CurTime()
+    @lastProjectileStatus = true
+    @SetHideProjectile(0)
 
 SWEP.Think = =>
-    @BaseClass.Think(@)
+    BaseClass.Think(@)
     if SERVER
-        delta = CurTime() - @lastCleaverThink
-        @lastCleaverThink = CurTime()
-        if @GetCleaverReady() < @CleaverRestoreTime
-            @SetCleaverReady(math.Clamp(@GetCleaverReady() + delta, 0, @CleaverRestoreTime))
+        delta = CurTime() - @lastProjectileThink
+        @lastProjectileThink = CurTime()
+        if @GetProjectileReady() < @ProjectileRestoreTime
+            @SetProjectileReady(math.Clamp(@GetProjectileReady() + delta, 0, @ProjectileRestoreTime))
     
-    old = @lastCleaverStatus
-    newStatus = @CleaverIsReady()
+    old = @lastProjectileStatus
+    newStatus = @ProjectileIsReady()
 
-    @vmModel\SetNoDraw(not newStatus and @GetHideCleaver() < CurTime()) if IsValid(@vmModel)
+    @vmModel\SetNoDraw(not newStatus and @GetHideProjectile() < CurTime()) if IsValid(@vmModel)
 
     if old ~= newStatus
-        @lastCleaverStatus = newStatus
+        @lastProjectileStatus = newStatus
         if newStatus
             @SendWeaponSequence(@DrawAnimation)
             @WaitForSequence(@IdleAnimation, @AttackAnimationDuration)
 
-SWEP.DrawHUD = => DTF2.DrawCenteredBar(@GetCleaverReady() / @CleaverRestoreTime, 'Cleaver')
+SWEP.DrawHUD = => DTF2.DrawCenteredBar(@GetProjectileReady() / @ProjectileRestoreTime, 'Cleaver')
 SWEP.PrimaryAttack = =>
-    return false if not @CleaverIsReady()
+    return false if not @ProjectileIsReady()
     incomingCrit = @CheckNextCrit()
-    @SetCleaverReady(0)
-    @lastCleaverStatus = false
+    @SetProjectileReady(0)
+    @lastProjectileStatus = false
     @SendWeaponSequence(@AttackAnimation)
     @WaitForSequence(@IdleAnimation, @AttackAnimationDuration)
-    @SetHideCleaver(CurTime() + @AttackAnimationDuration)
+    @SetHideProjectile(CurTime() + @AttackAnimationDuration)
     return if CLIENT
     timer.Simple 0, ->
         return if not IsValid(@) or not IsValid(@GetOwner())
-        with ents.Create('dbot_cleaver_projectile')
+        with ents.Create(@ProjectileClass)
             \SetPos(@GetOwner()\EyePos())
             \Spawn()
             \Activate()

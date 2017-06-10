@@ -55,26 +55,26 @@ do
     if CLIENT then
       return 
     end
-    self.burnStart = CurTime()
+    self.bleedStart = CurTime()
     self.duration = 4
-    self.burnEnd = self.burnStart + 4
+    self.bleedEnd = self.bleedStart + 4
     return self:SetMoveType(MOVETYPE_NONE)
   end
   _with_0.UpdateDuration = function(self, newtime)
     if newtime == nil then
       newtime = 0
     end
-    if self.burnEnd - CurTime() > newtime then
+    if self.bleedEnd - CurTime() > newtime then
       return 
     end
     self.duration = newtime
-    self.burnEnd = CurTime() + newtime
+    self.bleedEnd = CurTime() + newtime
   end
   _with_0.Think = function(self)
     if CLIENT then
       return false
     end
-    if self.burnEnd < CurTime() then
+    if self.bleedEnd < CurTime() then
       return self:Remove()
     end
     local owner = self:GetOwner()
@@ -89,11 +89,6 @@ do
     owner:TakeDamageInfo(dmginfo)
     self:NextThink(CurTime() + self:GetHitDelay())
     return true
-  end
-  _with_0.OnRemove = function(self)
-    if self.particles and self.particles:IsValid() then
-      return self.particles:StopEmission()
-    end
   end
   _with_0.Draw = function(self)
     if not IsValid(self:GetParent()) then

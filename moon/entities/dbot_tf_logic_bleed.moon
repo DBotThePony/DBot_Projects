@@ -59,19 +59,19 @@ with ENT
         @SetDamage(4)
         @nextBloodParticle = CurTime()
         return if CLIENT
-        @burnStart = CurTime()
+        @bleedStart = CurTime()
         @duration = 4
-        @burnEnd = @burnStart + 4
+        @bleedEnd = @bleedStart + 4
         @SetMoveType(MOVETYPE_NONE)
     
     .UpdateDuration = (newtime = 0) =>
-        return if @burnEnd - CurTime() > newtime
+        return if @bleedEnd - CurTime() > newtime
         @duration = newtime
-        @burnEnd = CurTime() + newtime
+        @bleedEnd = CurTime() + newtime
 
     .Think = =>
         return false if CLIENT
-        return @Remove() if @burnEnd < CurTime()
+        return @Remove() if @bleedEnd < CurTime()
         owner = @GetOwner()
         return @Remove() if not IsValid(@GetOwner())
         dmginfo = DamageInfo()
@@ -83,7 +83,6 @@ with ENT
         @NextThink(CurTime() + @GetHitDelay())
         return true
     
-    .OnRemove = => @particles\StopEmission() if @particles and @particles\IsValid()
     .Draw = =>
         return if not IsValid(@GetParent())
         return if @nextBloodParticle > CurTime()
