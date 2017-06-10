@@ -27,7 +27,9 @@ if SERVER
     entMeta = FindMetaTable('Entity')
 
     entMeta.TF2Burn = (duration = 0) =>
-        return @__dtf2_burn_logic if IsValid(@__dtf2_burn_logic)
+        if IsValid(@__dtf2_burn_logic)
+            @__dtf2_burn_logic\UpdateDuration(duration)
+            return @__dtf2_burn_logic
         @__dtf2_burn_logic = ents.Create('dbot_tf_logic_burn')
         @__dtf2_burn_logic\SetPos(@GetPos())
         @__dtf2_burn_logic\Spawn()

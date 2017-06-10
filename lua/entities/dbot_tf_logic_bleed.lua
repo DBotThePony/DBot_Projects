@@ -11,6 +11,7 @@ if SERVER then
       duration = 0
     end
     if IsValid(self.__dtf2_bleed_logic) then
+      self.__dtf2_bleed_logic:UpdateDuration(duration)
       return self.__dtf2_bleed_logic
     end
     self.__dtf2_bleed_logic = ents.Create('dbot_tf_logic_bleed')
@@ -22,6 +23,16 @@ if SERVER then
     self.__dtf2_bleed_logic:UpdateDuration(duration)
     return self.__dtf2_bleed_logic
   end
+  hook.Add('PlayerDeath', 'DTF2.BleedLogic', function(self)
+    if IsValid(self.__dtf2_bleed_logic) then
+      return self.__dtf2_bleed_logic:Remove()
+    end
+  end)
+  hook.Add('OnNPCKilled', 'DTF2.BleedLogic', function(self)
+    if IsValid(self.__dtf2_bleed_logic) then
+      return self.__dtf2_bleed_logic:Remove()
+    end
+  end)
 end
 do
   local _with_0 = ENT

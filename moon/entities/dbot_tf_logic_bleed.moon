@@ -27,7 +27,9 @@ if SERVER
     entMeta = FindMetaTable('Entity')
 
     entMeta.TF2Bleed = (duration = 0) =>
-        return @__dtf2_bleed_logic if IsValid(@__dtf2_bleed_logic)
+        if IsValid(@__dtf2_bleed_logic)
+            @__dtf2_bleed_logic\UpdateDuration(duration)
+            return @__dtf2_bleed_logic
         @__dtf2_bleed_logic = ents.Create('dbot_tf_logic_bleed')
         @__dtf2_bleed_logic\SetPos(@GetPos())
         @__dtf2_bleed_logic\Spawn()

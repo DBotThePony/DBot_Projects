@@ -11,6 +11,7 @@ if SERVER then
       duration = 0
     end
     if IsValid(self.__dtf2_burn_logic) then
+      self.__dtf2_burn_logic:UpdateDuration(duration)
       return self.__dtf2_burn_logic
     end
     self.__dtf2_burn_logic = ents.Create('dbot_tf_logic_burn')
@@ -22,6 +23,16 @@ if SERVER then
     self.__dtf2_burn_logic:UpdateDuration(duration)
     return self.__dtf2_burn_logic
   end
+  hook.Add('PlayerDeath', 'DTF2.BurnLogic', function(self)
+    if IsValid(self.__dtf2_burn_logic) then
+      return self.__dtf2_burn_logic:Remove()
+    end
+  end)
+  hook.Add('OnNPCKilled', 'DTF2.BurnLogic', function(self)
+    if IsValid(self.__dtf2_burn_logic) then
+      return self.__dtf2_burn_logic:Remove()
+    end
+  end)
 end
 do
   local _with_0 = ENT
