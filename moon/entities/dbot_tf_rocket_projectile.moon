@@ -64,7 +64,7 @@ ENT.Initialize = =>
 
     with @phys = @GetPhysicsObject()
         \EnableMotion(true)
-        \SetMass(5)
+        \SetMass(1)
         \EnableGravity(false)
         \Wake()
 
