@@ -117,8 +117,8 @@ return net.Receive('DTF2.SentryFire', function()
   if isEmpty then
     sentry:EmitSound('weapons/sentry_empty.wav', 75, 100, 0.8, CHAN_WEAPON)
   end
-  sentry:SetPoseParameter('aim_pitch', sentry.aim_pitch + math.random(1, 2) / 2)
-  sentry:SetPoseParameter('aim_yaw', sentry.aim_yaw + math.random(1, 2) / 2)
+  sentry:SetPoseParameter('aim_pitch', (sentry.aim_pitch or 0) + math.random(1, 2) / 2)
+  sentry:SetPoseParameter('aim_yaw', (sentry.aim_yaw or 0) + math.random(1, 2) / 2)
   sentry:InvalidateBoneCache()
   if not isEmpty then
     if OLD_SENTRY_MUZZLEFLASH:GetBool() then

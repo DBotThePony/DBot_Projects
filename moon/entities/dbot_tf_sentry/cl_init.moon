@@ -119,8 +119,8 @@ net.Receive 'DTF2.SentryFire', ->
     sentry\EmitSound('weapons/sentry_shoot.wav', 75, 100, 0.6, CHAN_WEAPON) if not isEmpty
     sentry\EmitSound('weapons/sentry_empty.wav', 75, 100, 0.8, CHAN_WEAPON) if isEmpty
 
-    sentry\SetPoseParameter('aim_pitch', sentry.aim_pitch + math.random(1, 2) / 2)
-    sentry\SetPoseParameter('aim_yaw', sentry.aim_yaw + math.random(1, 2) / 2)
+    sentry\SetPoseParameter('aim_pitch', (sentry.aim_pitch or 0) + math.random(1, 2) / 2)
+    sentry\SetPoseParameter('aim_yaw', (sentry.aim_yaw or 0) + math.random(1, 2) / 2)
     sentry\InvalidateBoneCache()
     
     if not isEmpty
