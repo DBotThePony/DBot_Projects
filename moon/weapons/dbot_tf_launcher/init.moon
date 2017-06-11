@@ -36,6 +36,7 @@ SWEP.FireTrigger = =>
         \SetAttacker(@GetOwner())
         \SetInflictor(@)
         \SetDirection(dir)
+        \Think()
 
     @incomingCrit = false
     @incomingMiniCrit = false
