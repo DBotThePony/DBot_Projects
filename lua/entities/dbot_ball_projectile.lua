@@ -41,6 +41,12 @@ ENT.Initialize = function(self)
     return _with_0
   end
 end
+ENT.Draw = function(self)
+  self:DrawModel()
+  if not self.particles then
+    self.particles = CreateParticleSystem(self, not self:GetIsCritical() and 'stunballtrail_red' or 'stunballtrail_red_crit', PATTACH_ABSORIGIN_FOLLOW, 0)
+  end
+end
 ENT.SetDirection = function(self, dir)
   if dir == nil then
     dir = Vector(0, 0, 0)

@@ -58,6 +58,11 @@ ENT.Initialize = =>
         \SetMass(5)
         \Wake()
 
+ENT.Draw = =>
+    @DrawModel()
+    if not @particles
+        @particles = CreateParticleSystem(@, not @GetIsCritical() and 'stunballtrail_red' or 'stunballtrail_red_crit', PATTACH_ABSORIGIN_FOLLOW, 0)
+
 ENT.SetDirection = (dir = Vector(0, 0, 0)) =>
     newVel = Vector(dir)
     newVel.z += 0.05

@@ -59,6 +59,11 @@ ENT.Initialize = =>
         \SetMass(5)
         \Wake()
 
+ENT.Draw = =>
+    @DrawModel()
+    if not @particles
+        @particles = CreateParticleSystem(@, 'peejar_trail_red', PATTACH_ABSORIGIN_FOLLOW, 0)
+
 ENT.SetDirection = (dir = Vector(0, 0, 0)) =>
     newVel = Vector(dir)
     newVel.z += 0.08

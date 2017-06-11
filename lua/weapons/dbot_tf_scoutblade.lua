@@ -1,6 +1,6 @@
 AddCSLuaFile()
 local BaseClass = baseclass.Get('dbot_tf_bostonbasher')
-SWEP.Base = 'dbot_tf_bat'
+SWEP.Base = 'dbot_tf_bostonbasher'
 SWEP.Author = 'DBot'
 SWEP.Category = 'TF2 Scout'
 SWEP.PrintName = 'Three-Rune Blade'
