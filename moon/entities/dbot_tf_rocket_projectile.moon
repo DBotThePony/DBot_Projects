@@ -25,11 +25,13 @@ ENT.AdminSpawnable = false
 
 ENT.RocketModel = 'models/weapons/w_models/w_rocket.mdl'
 ENT.RocketSize = 8
-ENT.BlowRadius = 128
-ENT.RocketDamage = 64
+ENT.BlowRadius = 350
+ENT.RocketDamage = 90
 ENT.BlowEffect = 'dtf2_rocket_explosion'
 ENT.PhysicsSpeed = 1500
 ENT.ExplosionEffect = 'DTF2_BaseExplosionEffect.Sound'
+
+ENT.IsTF2Rocket = true
 
 if SERVER
     AccessorFunc(ENT, 'm_Attacker', 'Attacker')
@@ -49,6 +51,7 @@ ENT.Initialize = =>
     @SetModel(@RocketModel)
     return if CLIENT
     @PhysicsInitSphere(@RocketSize)
+    @initialPosition = @GetPos()
 
     @SetBlowRadius(@BlowRadius)
     @SetDirection(Vector(0, 0, 0))
@@ -78,16 +81,45 @@ if SERVER
         return false if HitEntity == @GetAttacker()
 
         @SetSolid(SOLID_NONE)
+        @EmitSound(@GetExplosionEffect())
         mult = @GetIsCritical() and 3 or @GetIsMiniCritical() and 1.3 or 1
-        util.BlastDamage(@GetInflictor(), @GetAttacker(), HitPos + HitNormal, @GetDamage() * mult, @GetBlowRadius())
+        degradation = 1
+        degradation = 1 - math.Clamp(@initialPosition\Distance(HitPos) / 1024 - .2, -0.1, @GetIsMiniCritical() and 0.3 or 0.6) if not @GetIsCritical()
+
+        attacker = @GetAttacker()
+        inflictor = @GetInflictor()
+        blow = @GetBlowRadius()
+        GetIsCritical = @GetIsCritical()
+        GetIsMiniCritical = @GetIsMiniCritical()
+        incomingDamage = @GetDamage() * mult * degradation
+        timer.Simple 0, ->
+            self = attacker
+            @dtf2_incomingDamage = incomingDamage
+            @dtf2_hitPos = HitPos
+            @dtf2_blowRadius = blow
+            @dtf2_rocket = true
+            @dtf2_GetIsCritical = GetIsCritical
+            @dtf2_GetIsMiniCritical = GetIsMiniCritical
+            util.BlastDamage(inflictor, attacker, HitPos - HitNormal * 50, incomingDamage, blow * 3)
+            @dtf2_rocket = false
 
         effData = EffectData()
         effData\SetNormal(-HitNormal)
-        effData\SetOrigin(HitPos - HitNormal)
+        effData\SetOrigin(HitPos - HitNormal * 12)
         util.Effect(@GetBlowEffect(), effData)
-
-        @EmitSound(@GetExplosionEffect())
         @Remove()
+    
+    hook.Add 'EntityTakeDamage', 'DTF2.RocketProjectile', (ent, dmg) ->
+        if attacker = dmg\GetAttacker()
+            if attacker\IsValid() and attacker.dtf2_rocket
+                dmg\SetDamage(attacker.dtf2_incomingDamage * (1 - math.Clamp(attacker.dtf2_hitPos\Distance(ent\GetPos()) / attacker.dtf2_blowRadius / 2, 0, 1))) if not attacker.dtf2_GetIsCritical
+                if attacker.dtf2_GetIsCritical
+                    DTF2.PlayCritEffect(ent)
+                elseif attacker.dtf2_GetIsMiniCritical
+                    DTF2.PlayMiniCritEffect(ent)
+                elseif ent\IsMarkedForDeath()
+                    DTF2.PlayMiniCritEffect(ent)
+                    dmg\ScaleDamage(1.3)
 else
     ENT.Draw = =>
         @DrawModel()

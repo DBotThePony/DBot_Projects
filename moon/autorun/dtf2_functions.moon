@@ -30,3 +30,25 @@ DTF2.ApplyVelocity = (ent, vel) ->
             phys\AddVelocity(vel) if IsValid(phys)
     else
         ent\SetVelocity(vel + Vector(0, 0, 100))
+
+DTF2.PlayCritEffect = (hitEntity) ->
+    mins, maxs = hitEntity\GetRotatedAABB(hitEntity\OBBMins(), hitEntity\OBBMaxs())
+    pos = hitEntity\GetPos()
+    newZ = math.max(pos.z, pos.z + mins.z, pos.z + maxs.z)
+    pos.z = newZ
+
+    effData = EffectData()
+    effData\SetOrigin(pos)
+    util.Effect('dtf2_critical_hit', effData)
+    hitEntity\EmitSound('DTF2_TFPlayer.CritHit')
+
+DTF2.PlayMiniCritEffect = (hitEntity) ->
+    mins, maxs = hitEntity\GetRotatedAABB(hitEntity\OBBMins(), hitEntity\OBBMaxs())
+    pos = hitEntity\GetPos()
+    newZ = math.max(pos.z, pos.z + mins.z, pos.z + maxs.z)
+    pos.z = newZ
+
+    effData = EffectData()
+    effData\SetOrigin(pos)
+    util.Effect('dtf2_minicrit', effData)
+    hitEntity\EmitSound('DTF2_TFPlayer.CritHitMini')
