@@ -41,7 +41,7 @@ SWEP.PreOnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
     if IsValid(hitEntity) and (hitEntity\IsNPC() or hitEntity\IsPlayer())
         if IsValid(@deathMark)
             if @deathMark\GetOwner() ~= hitEntity
-                hitEntity\EmitSound('weapons/samurai/tf_marked_for_death_indicator.wav', 60, 100, 0.75)
+                hitEntity\EmitSound('weapons/samurai/tf_marked_for_death_indicator.wav', 75, 100)
                 @deathMark\SetupOwner(hitEntity)
             @deathMark\UpdateDuration(15)
             return
@@ -52,4 +52,4 @@ SWEP.PreOnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
             \Activate()
             \SetupOwner(hitEntity)
             \UpdateDuration(15)
-            \EmitSound('weapons/samurai/tf_marked_for_death_indicator.wav', 60, 100, 0.75)
+            \EmitSound('weapons/samurai/tf_marked_for_death_indicator.wav', 75, 100)

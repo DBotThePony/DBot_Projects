@@ -76,8 +76,21 @@ with ENT
         dmginfo\SetAttacker(IsValid(@GetAttacker()) and @GetAttacker() or @)
         dmginfo\SetInflictor(IsValid(@GetInflictor()) and @GetInflictor() or @)
         dmginfo\SetDamageType(DMG_BURN)
-        dmginfo\SetDamage(@GetDamage())
+        dmginfo\SetDamage(@GetDamage() * (owner\IsMarkedForDeath() and 1.3 or 1))
         owner\TakeDamageInfo(dmginfo)
+
+        if owner\IsMarkedForDeath()
+            mins, maxs = owner\GetRotatedAABB(owner\OBBMins(), owner\OBBMaxs())
+            pos = owner\GetPos()
+            newZ = math.max(pos.z, pos.z + mins.z, pos.z + maxs.z)
+            pos.z = newZ
+
+            effData = EffectData()
+            effData\SetOrigin(pos)
+            util.Effect('dtf2_minicrit', effData)
+            @GetAttacker()\EmitSound('DTF2_TFPlayer.CritHitMini')
+            owner\EmitSound('DTF2_TFPlayer.CritHitMini')
+        
         @NextThink(CurTime() + @GetHitDelay())
         return true
     

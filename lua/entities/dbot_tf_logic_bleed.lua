@@ -85,8 +85,19 @@ do
     dmginfo:SetAttacker(IsValid(self:GetAttacker()) and self:GetAttacker() or self)
     dmginfo:SetInflictor(IsValid(self:GetInflictor()) and self:GetInflictor() or self)
     dmginfo:SetDamageType(DMG_SLASH)
-    dmginfo:SetDamage(self:GetDamage())
+    dmginfo:SetDamage(self:GetDamage() * (owner:IsMarkedForDeath() and 1.3 or 1))
     owner:TakeDamageInfo(dmginfo)
+    if owner:IsMarkedForDeath() then
+      local mins, maxs = owner:GetRotatedAABB(owner:OBBMins(), owner:OBBMaxs())
+      local pos = owner:GetPos()
+      local newZ = math.max(pos.z, pos.z + mins.z, pos.z + maxs.z)
+      pos.z = newZ
+      local effData = EffectData()
+      effData:SetOrigin(pos)
+      util.Effect('dtf2_minicrit', effData)
+      self:GetAttacker():EmitSound('DTF2_TFPlayer.CritHitMini')
+      owner:EmitSound('DTF2_TFPlayer.CritHitMini')
+    end
     self:NextThink(CurTime() + self:GetHitDelay())
     return true
   end
