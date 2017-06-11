@@ -29,6 +29,8 @@ SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.AdminOnly = false
 
+SWEP.FireOffset = Vector(0, 0, -12)
+
 SWEP.ProjectileClass = 'dbot_tf_quake_rocket'
 
 SWEP.FireSoundsScript = 'Weapon_QuakeRPG.Single'

@@ -22,9 +22,14 @@ SWEP.FireTrigger = =>
     @incomingFire = false
     @bulletCallbackCalled = false
     @onHitCalled = false
-
-    origin = @GetOwner()\EyePos()
-    dir = @GetOwner()\GetAimVector()
+    
+    owner = @GetOwner()
+    offset = Vector(@FireOffset)
+    offset\Rotate(owner\EyeAngles())
+    origin = owner\EyePos() + offset
+    aimPos = owner\GetEyeTrace().HitPos
+    dir = aimPos - origin
+    dir\Normalize()
 
     with ents.Create(@ProjectileClass)
         \SetPos(origin)

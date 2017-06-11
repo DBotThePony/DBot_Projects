@@ -29,6 +29,7 @@ SWEP.SlotPos = 16
 SWEP.DamageDegradation = false
 SWEP.Slot = 3
 SWEP.DefaultViewPunch = Angle(0, 0, 0)
+SWEP.FireOffset = Vector(0, -10, 0)
 
 SWEP.DrawAnimation = 'dh_draw'
 SWEP.IdleAnimation = 'dh_idle'
