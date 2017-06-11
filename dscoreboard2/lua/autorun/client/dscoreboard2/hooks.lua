@@ -29,13 +29,21 @@ end
 
 local function Open()
     Create()
-    board.Board:DoShow()
+
+    if IsValid(board.Board) then
+        board.Board:DoShow()
+    end
+
     return true
 end
 
 local function Close()
     Create()
-    board.Board:DoHide()
+
+    if IsValid(board.Board) then
+        board.Board:DoHide()
+    end
+
     return true
 end
 
