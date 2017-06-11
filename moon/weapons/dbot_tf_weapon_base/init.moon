@@ -34,7 +34,9 @@ SWEP.SendWeaponSequence = (seq = 0) =>
     return if not IsValid(@GetOwner()) or not @GetOwner()\IsPlayer()
     hands = @GetOwner()\GetViewModel()
     return if not IsValid(hands)
+    oseq = seq
     seq = hands\LookupSequence(seq) if type(seq) ~= 'number'
+    print("[DTF2] Starting unknown sequence #{oseq} for #{@GetClass()} on #{@ViewModel}!") if seq == -1
     hands\SendViewModelMatchingSequence(seq)
     net.Start('DTF2.SendWeaponSequence')
     net.WriteUInt(seq, 16)

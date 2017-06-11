@@ -35,7 +35,9 @@ SWEP.SendWeaponSequence = (seq = 0) =>
     return if not IsValid(@GetOwner())
     hands = @GetOwner()\GetViewModel()
     return if not IsValid(hands)
+    oseq = seq
     seq = hands\LookupSequence(seq) if type(seq) ~= 'number'
+    print("[DTF2] Starting unknown sequence #{oseq} for #{@GetClass()} on #{@ViewModel}!") if seq == -1
     hands\SendViewModelMatchingSequence(seq)
 
 SWEP.SendWeaponAnim2 = (act = ACT_INVALID) =>

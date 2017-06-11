@@ -166,7 +166,7 @@ SWEP.ReloadCall = =>
 
 SWEP.Think = =>
     BaseClass.Think(@)
-    if @isReloading and @reloadNext < CurTime()
+    if (SERVER or @GetOwner() == LocalPlayer()) and @isReloading and @reloadNext < CurTime()
         if @GetOwner()\IsPlayer() and @GetOwner()\GetAmmoCount(@Primary.Ammo) > 0
             @reloadNext = CurTime() + @ReloadTime
             oldClip, newClip = @ReloadCall()

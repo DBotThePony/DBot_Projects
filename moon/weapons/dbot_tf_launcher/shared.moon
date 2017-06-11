@@ -36,19 +36,49 @@ SWEP.AttackAnimation = 'dh_fire'
 SWEP.AttackAnimationCrit = 'dh_fire'
 SWEP.ReloadStart = 'dh_reload_start'
 SWEP.ReloadLoop = 'dh_reload_loop'
-SWEP.ReloadEnd = 'dh_reload_end'
+SWEP.ReloadEnd = 'dh_reload_finish'
 
 SWEP.TakeBulletsOnFire = 1
-SWEP.ProjectileClass = ''
+SWEP.ProjectileClass = 'dbot_tf_rocket_projectile'
+SWEP.ReloadProjectiles = 1
+SWEP.ReloadTime = 1
+SWEP.ReloadDeployTime = 1
+SWEP.ReloadFinishAnimTimeIdle = 1
+SWEP.ReloadLoopRestart = true
+
+SWEP.Primary = {
+    'Ammo': 'RPG_Round'
+    'ClipSize': 4
+    'DefaultClip': 4
+    'Automatic': true
+}
+
+SWEP.Secondary = {
+    'Ammo': 'none'
+    'ClipSize': -1
+    'DefaultClip': 0
+    'Automatic': false
+}
 
 SWEP.Initialize = =>
     BaseClass.Initialize(@)
     @isReloading = false
     @reloadNext = 0
 
+SWEP.Reload = =>
+    return false if @Clip1() == @GetMaxClip1()
+    return false if @isReloading
+    return false if @GetNextPrimaryFire() > CurTime()
+    return false if @GetOwner()\IsPlayer() and @GetOwner()\GetAmmoCount(@Primary.Ammo) <= 0
+    @isReloading = true
+    @reloadNext = CurTime() + @ReloadDeployTime
+    @SendWeaponSequence(@ReloadStart)
+    @ClearTimeredAnimation()
+    return true
+
 SWEP.ReloadCall = =>
     oldClip = @Clip1()
-    newClip = math.Clamp(oldClip + @ReloadBullets, 0, @GetMaxClip1())
+    newClip = math.Clamp(oldClip + @ReloadProjectiles, 0, @GetMaxClip1())
     if SERVER
         @SetClip1(newClip)
         @GetOwner()\RemoveAmmo(newClip - oldClip, @Primary.Ammo) if @GetOwner()\IsPlayer()
@@ -56,7 +86,7 @@ SWEP.ReloadCall = =>
 
 SWEP.Think = =>
     BaseClass.Think(@)
-    if @isReloading and @reloadNext < CurTime()
+    if (SERVER or @GetOwner() == LocalPlayer()) and @isReloading and @reloadNext < CurTime()
         if @GetOwner()\IsPlayer() and @GetOwner()\GetAmmoCount(@Primary.Ammo) > 0
             @reloadNext = CurTime() + @ReloadTime
             oldClip, newClip = @ReloadCall()
@@ -69,13 +99,27 @@ SWEP.Think = =>
             if newClip == @GetMaxClip1()
                 @isReloading = false
                 @reloadLoopStart = false
-                @WaitForSequence(@ReloadEnd, @ReloadFinishAnimTime, (-> @WaitForSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if IsValid(@))) if not @SingleReloadAnimation
-                @SendWeaponSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if @SingleReloadAnimation
+                if not @SingleReloadAnimation
+                    if @ReloadLoopRestart
+                        @WaitForSequence(@ReloadLoop, @ReloadTime,
+                            (-> if IsValid(@) then @WaitForSequence(@ReloadEnd, @ReloadFinishAnimTime,
+                                (-> if IsValid(@) then @WaitForSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle)))))
+                    else
+                        @WaitForSequence(@ReloadEnd, @ReloadFinishAnimTime, (-> @WaitForSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if IsValid(@)))
+                else
+                    @SendWeaponSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle)
         elseif @GetOwner()\IsPlayer() and @GetOwner()\GetAmmoCount(@Primary.Ammo) <= 0 or newClip == @GetMaxClip1()
             @isReloading = false
             @reloadLoopStart = false
-            @WaitForSequence(@ReloadEnd, @ReloadFinishAnimTime, (-> @WaitForSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if IsValid(@))) if not @SingleReloadAnimation
-            @SendWeaponSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if @SingleReloadAnimation
+            if not @SingleReloadAnimation
+                if @ReloadLoopRestart
+                    @WaitForSequence(@ReloadLoop, @ReloadTime,
+                        (-> if IsValid(@) then @WaitForSequence(@ReloadEnd, @ReloadFinishAnimTime,
+                            (-> if IsValid(@) then @WaitForSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle)))))
+                else
+                    @WaitForSequence(@ReloadEnd, @ReloadFinishAnimTime, (-> @WaitForSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if IsValid(@)))
+            else
+                @SendWeaponSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle)
     @NextThink(CurTime() + 0.1)
     return true
 
