@@ -30,6 +30,7 @@ ENT.RocketDamage = 90
 ENT.BlowEffect = 'dtf2_rocket_explosion'
 ENT.PhysicsSpeed = 1500
 ENT.ExplosionEffect = 'DTF2_BaseExplosionEffect.Sound'
+ENT.DegradationDivider = 1024
 
 ENT.IsTF2Rocket = true
 
@@ -42,6 +43,7 @@ if SERVER
     AccessorFunc(ENT, 'm_blowEffect', 'BlowEffect')
     AccessorFunc(ENT, 'm_physSpeed', 'PhysicsSpeed')
     AccessorFunc(ENT, 'm_expEffect', 'ExplosionEffect')
+    AccessorFunc(ENT, 'm_Derg', 'DegradationDivider')
 
 ENT.SetupDataTables = =>
     @NetworkVar('Bool', 0, 'IsCritical')
@@ -61,6 +63,7 @@ ENT.Initialize = =>
     @SetBlowEffect(@BlowEffect)
     @SetPhysicsSpeed(@PhysicsSpeed)
     @SetExplosionEffect(@ExplosionEffect)
+    @SetDegradationDivider(@DegradationDivider)
 
     with @phys = @GetPhysicsObject()
         \EnableMotion(true)
@@ -76,15 +79,17 @@ if SERVER
             @angleSetup = true
             @SetAngles(@GetDirection()\Angle())
 
+    ENT.OnHit = (ent) =>
     ENT.PhysicsCollide = (data = {}, colldier) =>
         {:HitPos, :HitEntity, :HitNormal} = data
         return false if HitEntity == @GetAttacker()
 
+        @OnHit(HitEntity)
         @SetSolid(SOLID_NONE)
         @EmitSound(@GetExplosionEffect())
         mult = @GetIsCritical() and 3 or @GetIsMiniCritical() and 1.3 or 1
         degradation = 1
-        degradation = 1 - math.Clamp(@initialPosition\Distance(HitPos) / 1024 - .2, -0.1, @GetIsMiniCritical() and 0.3 or 0.6) if not @GetIsCritical()
+        degradation = 1 - math.Clamp(@initialPosition\Distance(HitPos) / @GetDegradationDivider() - .2, -0.1, @GetIsMiniCritical() and 0.3 or 0.6) if not @GetIsCritical()
 
         attacker = @GetAttacker()
         inflictor = @GetInflictor()
@@ -92,7 +97,7 @@ if SERVER
         GetIsCritical = @GetIsCritical()
         GetIsMiniCritical = @GetIsMiniCritical()
         incomingDamage = @GetDamage() * mult * degradation
-        timer.Simple 0, ->
+        timer.Simple 0.1, ->
             self = attacker
             @dtf2_incomingDamage = incomingDamage
             @dtf2_hitPos = HitPos
