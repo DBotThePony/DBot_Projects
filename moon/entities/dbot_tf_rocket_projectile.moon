@@ -90,7 +90,7 @@ if SERVER
         @EmitSound(@GetExplosionEffect())
         mult = @GetIsCritical() and 3 or @GetIsMiniCritical() and 1.3 or 1
         degradation = 1
-        degradation = 1 - math.Clamp(@initialPosition\Distance(HitPos) / @GetDegradationDivider() - .2, -0.1, @GetIsMiniCritical() and 0.3 or 0.6) if not @GetIsCritical()
+        degradation = 1 - math.Clamp(@initialPosition\Distance(HitPos) / @GetDegradationDivider() - .2, -0.1, @GetIsMiniCritical() and 0.1 or 0.3) if not @GetIsCritical()
 
         attacker = @GetAttacker()
         inflictor = @GetInflictor()
