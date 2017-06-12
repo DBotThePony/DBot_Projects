@@ -46,6 +46,7 @@ SWEP.ReloadTime = 1
 SWEP.ReloadDeployTime = 1
 SWEP.ReloadFinishAnimTimeIdle = 1
 SWEP.ReloadLoopRestart = true
+SWEP.ReloadPlayExtra = false
 
 SWEP.Primary = {
     'Ammo': 'RPG_Round'
@@ -102,9 +103,13 @@ SWEP.Think = =>
                 @reloadLoopStart = false
                 if not @SingleReloadAnimation
                     if @ReloadLoopRestart
-                        @WaitForSequence(@ReloadLoop, @ReloadTime,
-                            (-> if IsValid(@) then @WaitForSequence(@ReloadEnd, @ReloadFinishAnimTime,
-                                (-> if IsValid(@) then @WaitForSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle)))))
+                        if @ReloadPlayExtra
+                            @WaitForSequence(@ReloadLoop, @ReloadTime,
+                                (-> if IsValid(@) then @WaitForSequence(@ReloadEnd, @ReloadFinishAnimTime,
+                                    (-> if IsValid(@) then @WaitForSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle)))))
+                        else
+                            @WaitForSequence(@ReloadEnd, @ReloadFinishAnimTime,
+                                (-> if IsValid(@) then @WaitForSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle)))
                     else
                         @WaitForSequence(@ReloadEnd, @ReloadFinishAnimTime, (-> @WaitForSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if IsValid(@)))
                 else
@@ -114,9 +119,8 @@ SWEP.Think = =>
             @reloadLoopStart = false
             if not @SingleReloadAnimation
                 if @ReloadLoopRestart
-                    @WaitForSequence(@ReloadLoop, @ReloadTime,
-                        (-> if IsValid(@) then @WaitForSequence(@ReloadEnd, @ReloadFinishAnimTime,
-                            (-> if IsValid(@) then @WaitForSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle)))))
+                    @WaitForSequence(@ReloadEnd, @ReloadFinishAnimTime,
+                        (-> if IsValid(@) then @WaitForSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle)))
                 else
                     @WaitForSequence(@ReloadEnd, @ReloadFinishAnimTime, (-> @WaitForSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if IsValid(@)))
             else
