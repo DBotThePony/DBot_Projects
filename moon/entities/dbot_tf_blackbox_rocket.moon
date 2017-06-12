@@ -32,6 +32,7 @@ ENT.OnHit = (ent) =>
 
 ENT.OnHitAfter = (ent) =>
     return if @dtf2_blackbox_hit
+    return if @ == ent
     return unless ent\IsValid() and (ent\IsNPC() or ent\IsPlayer())
     @dtf2_blackbox_hit = true
     hp = @Health()
