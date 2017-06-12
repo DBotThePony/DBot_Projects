@@ -17,37 +17,26 @@
 
 AddCSLuaFile()
 
-BaseClass = baseclass.Get('dbot_tf_launcher')
+BaseClass = baseclass.Get('dbot_tf_rocket_launcher')
 
-SWEP.Base = 'dbot_tf_launcher'
+SWEP.Base = 'dbot_tf_rocket_launcher'
 SWEP.Author = 'DBot'
 SWEP.Category = 'TF2 Soldier'
-SWEP.PrintName = 'Rocket Launcher'
+SWEP.PrintName = 'The Black Box'
 SWEP.ViewModel = 'models/weapons/c_models/c_soldier_arms.mdl'
-SWEP.WorldModel = 'models/weapons/c_models/c_rocketlauncher/c_rocketlauncher.mdl'
+SWEP.WorldModel = 'models/weapons/c_models/c_blackbox/c_blackbox.mdl'
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.AdminOnly = false
 
-SWEP.CooldownTime = 0.9
+SWEP.ProjectileClass = 'dbot_tf_blackbox_rocket'
 
-SWEP.FireSoundsScript = 'Weapon_RPG.Single'
-SWEP.FireCritSoundsScript = 'Weapon_RPG.SingleCrit'
-SWEP.EmptySoundsScript = 'Weapon_RPG.ClipEmpty'
-
-SWEP.DrawAnimation = 'dh_draw'
-SWEP.IdleAnimation = 'dh_idle'
-SWEP.AttackAnimation = 'dh_fire'
-SWEP.AttackAnimationCrit = 'dh_fire'
-SWEP.ReloadStart = 'dh_reload_start'
-SWEP.ReloadLoop = 'dh_reload_loop'
-SWEP.ReloadEnd = 'dh_reload_finish'
-SWEP.ReloadDeployTime = 0.7
-SWEP.ReloadTime = 1
+SWEP.FireSoundsScript = 'Weapon_RPG_BlackBox.Single'
+SWEP.FireCritSoundsScript = 'Weapon_RPG_BlackBox.SingleCrit'
 
 SWEP.Primary = {
     'Ammo': 'RPG_Round'
-    'ClipSize': 4
+    'ClipSize': 3
     'DefaultClip': 20
     'Automatic': true
 }

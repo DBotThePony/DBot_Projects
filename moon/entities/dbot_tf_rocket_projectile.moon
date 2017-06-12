@@ -79,7 +79,8 @@ if SERVER
             @angleSetup = true
             @SetAngles(@GetDirection()\Angle())
 
-    ENT.OnHit = (ent) =>
+    ENT.OnHit = (ent) => -- Rocket, HitEntity
+    ENT.OnHitAfter = (ent, dmg) => -- Player, HitEntity, DMGInfo
     ENT.PhysicsCollide = (data = {}, colldier) =>
         {:HitPos, :HitEntity, :HitNormal} = data
         return false if HitEntity == @GetAttacker()
@@ -97,12 +98,14 @@ if SERVER
         GetIsCritical = @GetIsCritical()
         GetIsMiniCritical = @GetIsMiniCritical()
         incomingDamage = @GetDamage() * mult * degradation
+        toCallAfter = @OnHitAfter
         timer.Simple 0.1, ->
             self = attacker
             @dtf2_incomingDamage = incomingDamage
             @dtf2_hitPos = HitPos
             @dtf2_blowRadius = blow
             @dtf2_rocket = true
+            @dtf2_rocket_toCallAfter = toCallAfter
             @dtf2_GetIsCritical = GetIsCritical
             @dtf2_GetIsMiniCritical = GetIsMiniCritical
             util.BlastDamage(inflictor, attacker, HitPos - HitNormal * 50, incomingDamage, blow * 3)
@@ -117,6 +120,7 @@ if SERVER
     hook.Add 'EntityTakeDamage', 'DTF2.RocketProjectile', (ent, dmg) ->
         if attacker = dmg\GetAttacker()
             if attacker\IsValid() and attacker.dtf2_rocket
+                attacker\dtf2_rocket_toCallAfter(ent, dmg)
                 dmg\SetDamage(attacker.dtf2_incomingDamage * (1 - math.Clamp(attacker.dtf2_hitPos\Distance(ent\GetPos()) / attacker.dtf2_blowRadius / 2, 0, 1))) if not attacker.dtf2_GetIsCritical
                 if attacker.dtf2_GetIsCritical
                     DTF2.PlayCritEffect(ent)
