@@ -23,6 +23,8 @@ ENT.Type = 'anim'
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 
+ENT.BlowEffect1 = 'dtf2_mangler_explosion'
+ENT.BlowEffect2 = 'dtf2_mangler_explosion_charged'
 ENT.ExplosionEffect1 = 'DTF2_Weapon_CowMangler.Explode'
 ENT.ExplosionEffect2 = 'DTF2_Weapon_CowMangler.ExplodeCharged'
 
@@ -36,6 +38,7 @@ ENT.Draw = =>
 return if CLIENT
 ENT.OnHit = (ent) =>
     @SetExplosionEffect(@GetIsMiniCritical() and @ExplosionEffect2 or @ExplosionEffect1)
+    @SetBlowEffect(@GetIsMiniCritical() and @BlowEffect2 or @BlowEffect1)
 
 ENT.OnHitAfter = (ent, dmg) =>
     return if not @dtf2_GetIsMiniCritical
