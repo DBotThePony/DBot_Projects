@@ -22,12 +22,13 @@ BaseClass = baseclass.Get('dbot_tf_rocket_launcher')
 SWEP.Base = 'dbot_tf_rocket_launcher'
 SWEP.Author = 'DBot'
 SWEP.Category = 'TF2 Soldier'
-SWEP.PrintName = 'Cow Mangler'
+SWEP.PrintName = 'Cow Mangler 5000'
 SWEP.ViewModel = 'models/weapons/c_models/c_soldier_arms.mdl'
 SWEP.WorldModel = 'models/weapons/c_models/c_drg_cowmangler/c_drg_cowmangler.mdl'
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.AdminOnly = false
+SWEP.RandomCriticals = false
 
 SWEP.ProjectileClass = 'dbot_tf_cow_rocket'
 
