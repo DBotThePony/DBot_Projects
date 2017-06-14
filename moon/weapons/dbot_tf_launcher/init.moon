@@ -18,11 +18,8 @@
 include 'shared.lua'
 AddCSLuaFile 'shared.lua'
 
+SWEP.OnFireTriggered = (projectile = NULL) =>
 SWEP.FireTrigger = =>
-    @incomingFire = false
-    @bulletCallbackCalled = false
-    @onHitCalled = false
-    
     owner = @GetOwner()
     offset = Vector(@FireOffset)
     offset\Rotate(owner\EyeAngles())
@@ -31,7 +28,7 @@ SWEP.FireTrigger = =>
     dir = aimPos - origin
     dir\Normalize()
 
-    with ents.Create(@ProjectileClass)
+    with cEnt = ents.Create(@ProjectileClass)
         \SetPos(origin)
         \Spawn()
         \Activate()
@@ -42,6 +39,7 @@ SWEP.FireTrigger = =>
         \SetInflictor(@)
         \SetDirection(dir)
         \Think()
+        @OnFireTriggered(cEnt)
 
     @incomingCrit = false
     @incomingMiniCrit = false

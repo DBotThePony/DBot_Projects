@@ -23,5 +23,22 @@ ENT.Type = 'anim'
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 
-ENT.ExplosionEffect = 'DTF2_Weapon_CowMangler.Explode'
-ENT.ExplosionEffectCharged = 'DTF2_Weapon_CowMangler.ExplodeCharged'
+ENT.ExplosionEffect1 = 'DTF2_Weapon_CowMangler.Explode'
+ENT.ExplosionEffect2 = 'DTF2_Weapon_CowMangler.ExplodeCharged'
+
+ENT.BurnTime = 6
+
+ENT.Draw = =>
+    return if @particle
+    @particle = CreateParticleSystem(@, 'drg_cow_rockettrail_normal', PATTACH_ABSORIGIN_FOLLOW) if not @GetIsMiniCritical()
+    @particle = CreateParticleSystem(@, 'drg_cow_rockettrail_charged', PATTACH_ABSORIGIN_FOLLOW) if @GetIsMiniCritical()
+
+return if CLIENT
+ENT.OnHit = (ent) =>
+    @SetExplosionEffect(@GetIsMiniCritical() and @ExplosionEffect2 or @ExplosionEffect1)
+
+ENT.OnHitAfter = (ent, dmg) =>
+    return if not @dtf2_GetIsMiniCritical
+    with ent\TF2Burn(@BurnTime)
+        \SetAttacker(dmg\GetAttacker())
+        \SetInflictor(dmg\GetInflictor())

@@ -74,6 +74,9 @@ SWEP.CheckNextCrit = =>
 
 SWEP.CheckNextMiniCrit = => @GetOwner()\GetMiniCritBoosted()
 
+-- SWEP.ViewModels = {}
+-- SWEP.ViewModelEffects = {}
+
 SWEP.Initialize = =>
     @SetPlaybackRate(0.5)
     @SendWeaponSequence(@IdleAnimation)
@@ -84,6 +87,8 @@ SWEP.Initialize = =>
     @lastCritsCheck = 0
     @incomingCrit = false
     @incomingMiniCrit = false
+    @playingEffects = {}
+    @playingEffectsTable = {}
 
 SWEP.WaitForAnimation = (anim = ACT_VM_IDLE, time = 0, callback = (->)) =>
     timer.Create "DTF2.WeaponAnim.#{@EntIndex()}", time, 1, ->
@@ -142,6 +147,23 @@ SWEP.CreateWeaponModel = =>
     @PostModelCreated(@GetOwner()\GetViewModel(), @TF2weaponViewModel)
     return @TF2weaponViewModel
 
+SWEP.AddParticle = (name, attachID = 0, attach = PATTACH_ABSORIGIN_FOLLOW, offset = Vector(0, 0, 0)) =>
+    return @playingEffectsTable[name] if IsValid(@playingEffectsTable[name])
+    attachID = @LookupAttachment(tostring(attachID)) if type(attachID) ~= 'number'
+    @playingEffectsTable[name] = CreateParticleSystem(@GetOwner()\GetViewModel(), name, attach, attachID, offset)
+    table.insert(@playingEffects, @playingEffectsTable[name])
+    return @playingEffectsTable[name]
+
+SWEP.RemoveParticle = (name) =>
+    return false if not IsValid(@playingEffectsTable[name])
+    @playingEffectsTable[name]\StopEmissionAndDestroyImmediately()
+    return true
+
+SWEP.StopParticle = (name) =>
+    return false if not IsValid(@playingEffectsTable[name])
+    @playingEffectsTable[name]\StopEmission()
+    return true
+
 SWEP.Deploy = =>
     @SendWeaponSequence(@DrawAnimation)
     @WaitForSequence(@IdleAnimation, @DrawTimeAnimation)
@@ -149,19 +171,28 @@ SWEP.Deploy = =>
     @incomingFire = false
     if SERVER and @GetOwner()\IsPlayer()
         @CreateWeaponModel()
+    if CLIENT
+        eff\StopEmissionAndDestroyImmediately() for eff in *@playingEffects when IsValid(eff)
+        vm = @GetOwner()\GetViewModel()
+        @playingEffects = [CreateParticleSystem(vm, effName, PATTACH_ABSORIGIN_FOLLOW, 0, Vector(0, 0, 0)) for effName in *@ViewModelEffects when type(effName) == 'string'] if @ViewModelEffects
+        @playingEffectsTable = {}
     return true
 
 SWEP.Holster = =>
     if @GetNextPrimaryFire() < CurTime()
-        if @critBoostSound
-            @critBoostSound\Stop()
-            @critBoostSound = nil
-        if @critEffect
-            @critEffect\StopEmissionAndDestroyImmediately()
-            @critEffect = nil
-        if @critEffectGlow
-            @critEffectGlow\StopEmissionAndDestroyImmediately()
-            @critEffectGlow = nil
+        if CLIENT
+            if @critBoostSound
+                @critBoostSound\Stop()
+                @critBoostSound = nil
+            if @critEffect
+                @critEffect\StopEmissionAndDestroyImmediately()
+                @critEffect = nil
+            if @critEffectGlow
+                @critEffectGlow\StopEmissionAndDestroyImmediately()
+                @critEffectGlow = nil
+            eff\StopEmissionAndDestroyImmediately() for eff in *@playingEffects when IsValid(eff)
+            @playingEffects = {}
+            @playingEffectsTable = {}
         return true
     return false
 
@@ -243,10 +274,15 @@ SWEP.ThatWasCrit = (hitEntity = @currentHitEntity, dmginfo = @currentDMGInfo) =>
         @incomingMiniCrit = false
     dmginfo\ScaleDamage(3)
 
-SWEP.FireTrigger = =>
+SWEP.PreFireTrigger = =>
     @suppressing = true
     SuppressHostEvents(@GetOwner()) if SERVER and @GetOwner()\IsPlayer()
-    @incomingFire = false
+
+SWEP.PostFireTrigger = =>
+    SuppressHostEvents(NULL) if SERVER
+    @suppressing = false
+
+SWEP.FireTrigger = =>
     @bulletCallbackCalled = false
     @onHitCalled = false
     bulletData = {
@@ -267,15 +303,19 @@ SWEP.FireTrigger = =>
         @PreOnMiss()
         @OnMiss()
         @PostOnMiss()
-    
-    SuppressHostEvents(NULL) if SERVER
-    @incomingCrit = false
-    @incomingMiniCrit = false
-    @suppressing = false
+
+
+AccessorFunc(SWEP, 'incomingFire', 'IncomingFire')
+AccessorFunc(SWEP, 'incomingFireTime', 'IncomingFireTime')
 
 SWEP.Think = =>
     if @incomingFire and @incomingFireTime < CurTime()
+        @incomingFire = false
+        @PreFireTrigger()
         @FireTrigger()
+        @PostFireTrigger()
+        @incomingCrit = false
+        @incomingMiniCrit = false
     if CLIENT
         if @GetCritBoosted() or @GetOwner()\GetCritBoosted()
             if not @critBoostSound

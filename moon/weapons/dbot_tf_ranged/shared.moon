@@ -79,6 +79,10 @@ SWEP.Reloadable = true
 
 SWEP.SetupDataTables = => BaseClass.SetupDataTables(@)
 
+AccessorFunc(SWEP, 'isReloading', 'IsReloading')
+AccessorFunc(SWEP, 'reloadNext', 'ReloadNext')
+AccessorFunc(SWEP, 'lastEmptySound', 'LastEmptySound')
+
 SWEP.Initialize = =>
     BaseClass.Initialize(@)
     @isReloading = false

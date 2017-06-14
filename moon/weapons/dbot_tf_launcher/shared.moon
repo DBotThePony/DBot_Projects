@@ -62,6 +62,9 @@ SWEP.Secondary = {
     'Automatic': false
 }
 
+AccessorFunc(SWEP, 'isReloading', 'IsReloading')
+AccessorFunc(SWEP, 'reloadNext', 'NextReload')
+
 SWEP.Initialize = =>
     BaseClass.Initialize(@)
     @isReloading = false
@@ -71,7 +74,7 @@ SWEP.Reload = =>
     return false if @Clip1() == @GetMaxClip1()
     return false if @isReloading
     return false if @GetNextPrimaryFire() > CurTime()
-    return false if @GetOwner()\IsPlayer() and @GetOwner()\GetAmmoCount(@Primary.Ammo) <= 0
+    return false if @GetOwner()\IsPlayer() and (@Primary.Ammo ~= 'none' and @GetOwner()\GetAmmoCount(@Primary.Ammo) <= 0)
     @isReloading = true
     @reloadNext = CurTime() + @ReloadDeployTime
     @SendWeaponSequence(@ReloadStart)
@@ -83,13 +86,16 @@ SWEP.ReloadCall = =>
     newClip = math.Clamp(oldClip + @ReloadProjectiles, 0, @GetMaxClip1())
     if SERVER
         @SetClip1(newClip)
-        @GetOwner()\RemoveAmmo(newClip - oldClip, @Primary.Ammo) if @GetOwner()\IsPlayer()
+        @GetOwner()\RemoveAmmo(newClip - oldClip, @Primary.Ammo) if @GetOwner()\IsPlayer() and @Primary.Ammo ~= 'none'
     return oldClip, newClip
+
+SWEP.PreFireTrigger = =>
+SWEP.PostFireTrigger = =>
 
 SWEP.Think = =>
     BaseClass.Think(@)
     if (SERVER or @GetOwner() == LocalPlayer()) and @isReloading and @reloadNext < CurTime()
-        if @GetOwner()\IsPlayer() and @GetOwner()\GetAmmoCount(@Primary.Ammo) > 0
+        if @GetOwner()\IsPlayer() and (@Primary.Ammo == 'none' or @GetOwner()\GetAmmoCount(@Primary.Ammo) > 0)
             @reloadNext = CurTime() + @ReloadTime
             oldClip, newClip = @ReloadCall()
             if not @SingleReloadAnimation
@@ -114,7 +120,7 @@ SWEP.Think = =>
                         @WaitForSequence(@ReloadEnd, @ReloadFinishAnimTime, (-> @WaitForSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if IsValid(@)))
                 else
                     @SendWeaponSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle)
-        elseif @GetOwner()\IsPlayer() and @GetOwner()\GetAmmoCount(@Primary.Ammo) <= 0 or newClip == @GetMaxClip1()
+        elseif @GetOwner()\IsPlayer() and (@Primary.Ammo ~= 'none' and @GetOwner()\GetAmmoCount(@Primary.Ammo) <= 0) or newClip == @GetMaxClip1()
             @isReloading = false
             @reloadLoopStart = false
             if not @SingleReloadAnimation
