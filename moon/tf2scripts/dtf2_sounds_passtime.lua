@@ -1,4 +1,4 @@
-"DTF2_Passtime.BallIntercepted"
+return [==["DTF2_Passtime.BallIntercepted"
 {
 	"channel" 		"CHAN_VOICE2"
 	"volume" 		"VOL_NORM"
@@ -246,3 +246,4 @@
 	"soundlevel"	"SNDLVL_TALKING"
 	"wave"			"passtime/tv3.wav"
 }
+]==]

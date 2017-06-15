@@ -1,4 +1,4 @@
-// SCOUT BOSTON BREAKDANCE TAUNT
+return [==[// SCOUT BOSTON BREAKDANCE TAUNT
 "DTF2_scout.boston_breakdance_music"
 {
 	"channel"	"CHAN_STATIC"
@@ -1030,3 +1030,4 @@
 	  "wave"			"vo/demoman_gibberish13.mp3"     
   }
 }
+]==]

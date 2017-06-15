@@ -1,4 +1,4 @@
-// Channels
+return [==[// Channels
 //	CHAN_AUTO		= 0,
 //	CHAN_WEAPON		= 1,
 //	CHAN_VOICE		= 2,
@@ -3896,3 +3896,4 @@
 		"wave"		"misc/octosteps/octosteps_06.wav"
 	}
 }
+]==]

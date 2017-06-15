@@ -17,12 +17,22 @@
 export DTF2
 DTF2 = DTF2 or {}
 
+RequiredFiles = {
+    'dtf2_sounds'
+    'dtf2_sounds_mvm'
+    'dtf2_sounds_passtime'
+    'dtf2_sounds_physics'
+    'dtf2_sounds_player'
+    'dtf2_sounds_taunt_workshop'
+    'dtf2_sounds_weapons'
+}
+
+if SERVER
+    AddCSLuaFile("tf2scripts/#{fil}.lua") for fil in *RequiredFiles
+file.CreateDir('dtf2sounds')
+
 return if DTF2.LOAD_SOUNDS
 DTF2.LOAD_SOUNDS = true
-sound.AddSoundOverrides('scripts/dtf2_sounds.txt')
-sound.AddSoundOverrides('scripts/dtf2_sounds_mvm.txt')
-sound.AddSoundOverrides('scripts/dtf2_sounds_passtime.txt')
-sound.AddSoundOverrides('scripts/dtf2_sounds_physics.txt')
-sound.AddSoundOverrides('scripts/dtf2_sounds_player.txt')
-sound.AddSoundOverrides('scripts/dtf2_sounds_taunt_workshop.txt')
-sound.AddSoundOverrides('scripts/dtf2_sounds_weapons.txt')
+
+file.Write("dtf2sounds/#{fil}.txt", CompileFile("tf2scripts/#{fil}.lua")()) for fil in *RequiredFiles
+sound.AddSoundOverrides("data/dtf2sounds/#{fil}.txt") for fil in *RequiredFiles

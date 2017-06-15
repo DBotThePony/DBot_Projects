@@ -1,4 +1,4 @@
-// Channels
+return [==[// Channels
 //	CHAN_AUTO		= 0,
 //	CHAN_WEAPON		= 1,
 //	CHAN_VOICE		= 2,
@@ -7665,3 +7665,4 @@
 	"pitch"			"PITCH_NORM"
 	"wave"			"weapons/push_impact.wav"
 }
+]==]

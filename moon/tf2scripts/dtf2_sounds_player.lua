@@ -1,4 +1,4 @@
-// Channels
+return [==[// Channels
 //	CHAN_AUTO		= 0,
 //	CHAN_WEAPON		= 1,
 //	CHAN_VOICE		= 2,
@@ -2953,4 +2953,4 @@
 
 	"wave"			")player/taunt_demo_stagger_slosh4.wav"
 }
-
+]==]
