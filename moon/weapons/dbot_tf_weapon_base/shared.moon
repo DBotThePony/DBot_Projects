@@ -115,12 +115,23 @@ SWEP.WaitForAnimation2 = (anim = ACT_VM_IDLE, time = 0, callback = (->)) =>
         @SendWeaponAnim2(anim)
         callback()
 
+SWEP.Callback = (id = 'id', time = 0, callback = (->)) =>
+    timer.Create "DTF2.Callback.#{id}.#{@EntIndex()}", time, 1, ->
+        return if not IsValid(@)
+        return if not IsValid(@GetOwner())
+        return if @GetOwner()\GetActiveWeapon() ~= @
+        callback()
+
+SWEP.ModifyWaitSequence = (newSeq = 0) =>
+    @incomingSequence = newSeq
+
 SWEP.WaitForSequence = (anim = 0, time = 0, callback = (->)) =>
+    @incomingSequence = anim
     timer.Create "DTF2.WeaponAnim.#{@EntIndex()}", time, 1, ->
         return if not IsValid(@)
         return if not IsValid(@GetOwner())
         return if @GetOwner()\GetActiveWeapon() ~= @
-        @SendWeaponSequence(anim)
+        @SendWeaponSequence(@incomingSequence)
         callback()
 
 SWEP.ClearTimeredAnimation = =>
@@ -209,11 +220,12 @@ SWEP.AttackAngle = (target = NULL) =>
     ang = dir\Angle()
     ang\Normalize()
     ang.y -= angFirst.y
+    ang.y = math.NormalizeAngle(ang.y)
     return ang.y
 
 SWEP.AttackingAtSpine = (target = NULL) =>
     ang = @AttackAngle(target)
-    return ang < -90 or ang > 90
+    return ang < -110 or ang > 110
 
 SWEP.PreOnMiss = =>
 SWEP.OnMiss = =>
@@ -284,17 +296,25 @@ SWEP.PostFireTrigger = =>
     SuppressHostEvents(NULL) if SERVER
     @suppressing = false
 
+AccessorFunc(SWEP, 'BulletHull', 'BulletHull')
+AccessorFunc(SWEP, 'BulletRange', 'BulletRange')
+AccessorFunc(SWEP, 'BulletForce', 'BulletForce')
+
+SWEP.GetBulletOrigin = => @GetOwner()\EyePos()
+SWEP.GetBulletDirection = => @GetOwner()\GetAimVector()
+SWEP.GetBulletHullVector = => -Vector(@BulletHull / 2, @BulletHull / 2, @BulletHull / 2), Vector(@BulletHull / 2, @BulletHull / 2, @BulletHull / 2)
+
 SWEP.FireTrigger = =>
     @bulletCallbackCalled = false
     @onHitCalled = false
     bulletData = {
         'Damage': @BulletDamage * (@incomingCrit and 3 or @incomingMiniCrit and 1.3 or 1)
         'Callback': @BulletCallback
-        'Src': @GetOwner()\EyePos()
-        'Dir': @GetOwner()\GetAimVector()
-        'Distance': @BulletRange
-        'HullSize': @BulletHull
-        'Force': @BulletForce
+        'Src': @GetBulletOrigin()
+        'Dir': @GetBulletDirection()
+        'Distance': @GetBulletRange()
+        'HullSize': @GetBulletHull()
+        'Force': @GetBulletForce()
     }
 
     @UpdateBulletData(bulletData)
