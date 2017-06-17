@@ -27,6 +27,7 @@ SWEP.UseHands = false
 SWEP.DrawCrosshair = true
 SWEP.IsTF2Weapon = true
 SWEP.DamageDegradation = true
+SWEP.NoTF2ViewModel = false
 
 SWEP.DrawTime = 0.66
 SWEP.DrawTimeAnimation = 1.16
@@ -128,6 +129,7 @@ SWEP.ClearTimeredAnimation = =>
 SWEP.PostModelCreated = (viewmodel = @GetOwner()\GetViewModel(), ent = @weaponModel) =>
 
 SWEP.CreateWeaponModel = =>
+    return if @NoTF2ViewModel
     if IsValid(@TF2weaponViewModel)
         @SetTF2WeaponModel(@TF2weaponViewModel)
         with @TF2weaponViewModel
