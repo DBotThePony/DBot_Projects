@@ -69,7 +69,6 @@ SWEP.PreFireTrigger = =>
     if @isOnBack
         @BulletDamage = @knifeEntityLookup\Health() * 2
         @incomingCrit = true
-        @isOnBack = false
         @backstabAnimActive = false
         @ModifyWaitSequence(@IdleAnimation)
         @ignoreKnifeAnim = CurTime() + @BackstabAnimationTime
@@ -89,21 +88,14 @@ SWEP.Think = =>
 
     if validTarget
         @knifeEntityLookup = tr.Entity
-        if not @isOnBack
-            @isOnBack = true
-            if @ignoreKnifeAnim < CurTime()
-                @backstabAnimActive = true
-                @SendWeaponSequence(@BackstabAnimationUp)
-                @WaitForSequence(@BackstabAnimationIdle, @BackstabAnimationUpTime)
+        @isOnBack = true
+        if @ignoreKnifeAnim < CurTime() and not @backstabAnimActive
+            @backstabAnimActive = true
+            @SendWeaponSequence(@BackstabAnimationUp)
+            @WaitForSequence(@BackstabAnimationIdle, @BackstabAnimationUpTime)
     else
         @knifeEntityLookup = NULL
-        if @isOnBack
-            @isOnBack = false
-            if @ignoreKnifeAnim < CurTime()
-                @backstabAnimActive = false
-                @SendWeaponSequence(@BackstabAnimationDown)
-                @WaitForSequence(@IdleAnimation, @BackstabAnimationDownTime)
-        
+        @isOnBack = false
         if @ignoreKnifeAnim < CurTime() and @backstabAnimActive
             @backstabAnimActive = false
             @SendWeaponSequence(@BackstabAnimationDown)
