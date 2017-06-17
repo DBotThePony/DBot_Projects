@@ -35,13 +35,11 @@ SWEP.MuzzleAttachment = 'muzzle'
 
 SWEP.CooldownTime = 0.13
 SWEP.BulletDamage = 15
-SWEP.BulletsAmount = 1
-SWEP.ReloadBullets = 12
 SWEP.DefaultSpread = Vector(1, 1, 0) * 0.015
 
-SWEP.FireSoundsScript = 'Weapon_Pistol.Single'
-SWEP.FireCritSoundsScript = 'Weapon_Pistol.SingleCrit'
-SWEP.EmptySoundsScript = 'Weapon_Pistol.ClipEmpty'
+SWEP.FireSoundsScript = 'Weapon_Minigun.Single'
+SWEP.FireCritSoundsScript = 'Weapon_Minigun.Fire'
+SWEP.EmptySoundsScript = 'Weapon_Minigun.FireCrit'
 
 SWEP.DrawAnimation = 'pstl_draw'
 SWEP.IdleAnimation = 'pstl_idle'
@@ -52,8 +50,8 @@ SWEP.ReloadStart = 'pstl_reload'
 SWEP.ReloadDeployTime = 1.12
 
 SWEP.Primary = {
-    'Ammo': 'Pistol'
-    'ClipSize': 12
-    'DefaultClip': 12
+    'Ammo': 'SMG1'
+    'ClipSize': -1
+    'DefaultClip': 200
     'Automatic': true
 }
