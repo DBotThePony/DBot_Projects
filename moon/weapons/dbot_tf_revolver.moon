@@ -21,34 +21,37 @@ BaseClass = baseclass.Get('dbot_tf_ranged')
 
 SWEP.Base = 'dbot_tf_ranged'
 SWEP.Author = 'DBot'
-SWEP.Category = 'TF2 Engineer'
-SWEP.PrintName = 'Shotgun'
-SWEP.ViewModel = 'models/weapons/c_models/c_engineer_arms.mdl'
-SWEP.WorldModel = 'models/weapons/c_models/c_shotgun/c_shotgun.mdl'
+SWEP.Category = 'TF2 Spy'
+SWEP.PrintName = 'Revolver'
+SWEP.ViewModel = 'models/weapons/c_models/c_spy_arms.mdl'
+SWEP.WorldModel = 'models/weapons/c_models/c_revolver/c_revolver.mdl'
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.AdminOnly = false
-SWEP.UseHands = false
-
 SWEP.SingleCrit = true
 
 SWEP.MuzzleAttachment = 'muzzle'
-SWEP.MuzzleEffect = 'muzzle_shotgun'
 
-SWEP.BulletDamage = 9
-SWEP.BulletsAmount = 6
-SWEP.ReloadBullets = 1
-SWEP.DefaultSpread = Vector(1, 1, 0) * 0.05
+SWEP.CooldownTime = 0.5
+SWEP.BulletDamage = 40
+SWEP.ReloadBullets = 6
+SWEP.DefaultSpread = Vector(1, 1, 0) * 0.01
 
-SWEP.DefaultViewPunch = Angle(-3, 0, 0)
+SWEP.FireSoundsScript = 'Weapon_Revolver.Single'
+SWEP.FireCritSoundsScript = 'Weapon_Revolver.SingleCrit'
+SWEP.EmptySoundsScript = 'Weapon_Revolver.Empty'
 
-SWEP.FireSoundsScript = 'Weapon_Shotgun.Single'
-SWEP.FireCritSoundsScript = 'Weapon_Shotgun.SingleCrit'
-SWEP.EmptySoundsScript = 'Weapon_Shotgun.Empty'
+SWEP.DrawAnimation = 'draw'
+SWEP.IdleAnimation = 'idle'
+SWEP.AttackAnimation = 'fire'
+SWEP.AttackAnimationCrit = 'fire'
+SWEP.SingleReloadAnimation = true
+SWEP.ReloadStart = 'reload'
+SWEP.ReloadDeployTime = 1.12
 
 SWEP.Primary = {
-    'Ammo': 'Buckshot'
+    'Ammo': '357'
     'ClipSize': 6
-    'DefaultClip': 6
+    'DefaultClip': 24
     'Automatic': true
 }
