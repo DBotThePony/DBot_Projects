@@ -111,16 +111,31 @@ SWEP.GetBulletSpread = => @DefaultSpread
 SWEP.GetBulletAmount = => @BulletsAmount
 SWEP.GetViewPunch = => @DefaultViewPunch
 
-SWEP.UpdateBulletData = (bulletData = {}) =>
-    if CLIENT
+SWEP.ClientBulletOriginShift = Vector(0, 0, 10)
+
+SWEP.GetBulletOrigin = =>
+    if SERVER
+        return @GetOwner()\EyePos()
+    else
         viewModel = @GetTF2WeaponModel()
         if muzzle = viewModel\GetAttachment(viewModel\LookupAttachment(@MuzzleAttachment))
             {:Pos, :Ang} = muzzle
-            bulletData.Src = Pos
+            Pos += @ClientBulletOriginShift
+            return Pos
+
+SWEP.GetBulletDirection = =>
+    if SERVER
+        @GetOwner()\GetAimVector()
+    else
+        viewModel = @GetTF2WeaponModel()
+        if muzzle = viewModel\GetAttachment(viewModel\LookupAttachment(@MuzzleAttachment))
+            {:Pos, :Ang} = muzzle
+            Pos += @ClientBulletOriginShift
             dir = @GetOwner()\GetEyeTrace().HitPos - Pos
             dir\Normalize()
-            bulletData.Dir = dir
+            return dir
 
+SWEP.UpdateBulletData = (bulletData = {}) =>
     bulletData.Spread = @GetBulletSpread()
     bulletData.Num = @GetBulletAmount()
 
