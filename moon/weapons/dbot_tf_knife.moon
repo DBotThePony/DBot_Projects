@@ -64,6 +64,44 @@ SWEP.Initialize = =>
     @knifeEntityLookup = NULL
     @ignoreKnifeAnim = 0
 
+DAMAGE_TYPES = {
+	DMG_GENERIC
+	DMG_CRUSH
+	DMG_BULLET
+	DMG_SLASH
+	DMG_VEHICLE
+	DMG_BLAST
+	DMG_ENERGYBEAM
+	DMG_ALWAYSGIB
+	DMG_PARALYZE
+	DMG_NERVEGAS
+	DMG_POISON
+	DMG_ACID
+	DMG_AIRBOAT
+	DMG_BLAST_SURFACE
+	DMG_BUCKSHOT
+	DMG_DIRECT
+	DMG_DISSOLVE
+	DMG_DROWNRECOVER
+	DMG_PHYSGUN
+	DMG_PLASMA
+	DMG_RADIATION
+	DMG_SLOWBURN
+}
+
+SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
+    @BaseClass.OnHit(@, hitEntity, tr, dmginfo)
+
+    if IsValid(hitEntity) and SERVER and @isOnBack
+        for dmgtype in *DAMAGE_TYPES
+            newDMG = DamageInfo()
+            newDMG\SetAttacker(dmginfo\GetAttacker())
+            newDMG\SetInflictor(dmginfo\GetInflictor())
+            newDMG\SetDamage(dmginfo\GetDamage())
+            newDMG\SetMaxDamage(dmginfo\GetMaxDamage())
+            newDMG\SetDamageType(dmgtype)
+            hitEntity\TakeDamageInfo(newDMG)
+
 SWEP.PreFireTrigger = =>
     @BaseClass.PreFireTrigger(@)
     if @isOnBack
