@@ -72,21 +72,14 @@ DAMAGE_TYPES = {
 	DMG_VEHICLE
 	DMG_BLAST
 	DMG_ENERGYBEAM
-	DMG_ALWAYSGIB
 	DMG_PARALYZE
 	DMG_NERVEGAS
 	DMG_POISON
-	DMG_ACID
 	DMG_AIRBOAT
-	DMG_BLAST_SURFACE
 	DMG_BUCKSHOT
 	DMG_DIRECT
-	DMG_DISSOLVE
-	DMG_DROWNRECOVER
 	DMG_PHYSGUN
-	DMG_PLASMA
 	DMG_RADIATION
-	DMG_SLOWBURN
 }
 
 SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
@@ -99,6 +92,7 @@ SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
             newDMG\SetInflictor(dmginfo\GetInflictor())
             newDMG\SetDamage(dmginfo\GetDamage())
             newDMG\SetMaxDamage(dmginfo\GetMaxDamage())
+            newDMG\SetReportedPosition(dmginfo\GetReportedPosition())
             newDMG\SetDamageType(dmgtype)
             hitEntity\TakeDamageInfo(newDMG)
 
