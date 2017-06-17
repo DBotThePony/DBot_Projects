@@ -339,13 +339,16 @@ SWEP.Think = =>
                 @critEffectGlow\StopEmissionAndDestroyImmediately()
                 @critEffectGlow = nil
 
+SWEP.SelectAttackAnimation = => @AttackAnimationTable and DTF2.TableRandom(@AttackAnimationTable) or @AttackAnimation
+SWEP.SelectCritAttackAnimation = => @AttackAnimationCritTable and DTF2.TableRandom(@AttackAnimationCritTable) or @AttackAnimationCrit
+
 SWEP.PrimaryAttack = =>
     return false if @GetNextPrimaryFire() > CurTime()
     @incomingCrit = @CheckNextCrit()
     @incomingMiniCrit = @CheckNextMiniCrit() if not @incomingCrit
     @SetNextPrimaryFire(CurTime() + @CooldownTime)
-    @SendWeaponSequence(@AttackAnimationTable and DTF2.TableRandom(@AttackAnimationTable) or @AttackAnimation) if not @incomingCrit
-    @SendWeaponSequence(@AttackAnimationCritTable and DTF2.TableRandom(@AttackAnimationCritTable) or @AttackAnimationCrit) if @incomingCrit
+    @SendWeaponSequence(@SelectAttackAnimation()) if not @incomingCrit
+    @SendWeaponSequence(@SelectCritAttackAnimation()) if @incomingCrit
     @WaitForSequence(@IdleAnimation, @CooldownTime)
     @incomingFire = true
     @incomingFireTime = CurTime() + @PreFire

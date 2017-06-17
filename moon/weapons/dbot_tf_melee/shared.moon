@@ -45,7 +45,7 @@ SWEP.Secondary = {
     'Ammo': 'none'
     'ClipSize': -1
     'DefaultClip': 0
-    'Automatic': false
+    'Automatic': true
 }
 
 SWEP.DrawTime = 0.66
