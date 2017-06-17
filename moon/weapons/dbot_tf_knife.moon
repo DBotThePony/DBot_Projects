@@ -93,6 +93,7 @@ SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
             newDMG\SetDamage(dmginfo\GetDamage())
             newDMG\SetMaxDamage(dmginfo\GetMaxDamage())
             newDMG\SetReportedPosition(dmginfo\GetReportedPosition())
+            newDMG\SetDamagePosition(dmginfo\GetDamagePosition())
             newDMG\SetDamageType(dmgtype)
             hitEntity\TakeDamageInfo(newDMG)
 

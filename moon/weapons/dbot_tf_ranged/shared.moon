@@ -210,11 +210,14 @@ SWEP.Think = =>
 
 SWEP.PrimaryAttack = =>
     return false if @GetNextPrimaryFire() > CurTime()
-    if @Clip1() <= 0
-        @Reload()
-        @PlayEmptySound()
-        return false
-    
+    if @Primary.ClipSize > 0
+        if @Clip1() <= 0
+            @Reload()
+            @PlayEmptySound()
+            return false
+    else
+        return false if @GetOwner()\GetAmmoCount(@Primary.Ammo) <= 0
+
     status = BaseClass.PrimaryAttack(@)
     return status if status == false
     

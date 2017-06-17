@@ -82,6 +82,7 @@ DTF2.DrawMetalCounter = ->
         HUDCommons.WordBox(data.text, nil, x, y - data.slide, Color(data.r, data.g, data.b, data.a), Color(0, 0, 0, 150 * data.fade))
 
 CENTERED_BAR_POS = HUDCommons.DefinePosition('dtf2_centered', .5, .65)
+CENTERED_BAR_SMALLER_POS = HUDCommons.DefinePosition('dtf2_smallcentered', .5, .73)
 
 DTF2.DrawCenteredBar = (mult = 0.5, text) ->
     x, y = CENTERED_BAR_POS()
@@ -89,6 +90,12 @@ DTF2.DrawCenteredBar = (mult = 0.5, text) ->
     surface.SetTextColor(FONT_COLOR())
     surface.SetFont(FONT)
     HUDCommons.SoftBarWithText(x - 150, y, 300, 25, mult, BACKGROUND_COLOR(), HUD_BAR_BACKGROUND(), HUD_BAR_COLOR(), text, 'dtf2_centered')
+
+DTF2.DrawSmallCenteredBar = (mult = 0.5, text) ->
+    x, y = CENTERED_BAR_SMALLER_POS()
+    surface.SetTextColor(FONT_COLOR())
+    surface.SetFont(FONT)
+    HUDCommons.SoftBarWithText(x - 100, y, 200, 18, mult, BACKGROUND_COLOR(), HUD_BAR_BACKGROUND(), HUD_BAR_COLOR(), text, 'dtf2_smallcentered')
 
 DTF2.DrawBuildingInfo = =>
     w, h = ScrW(), ScrH()
