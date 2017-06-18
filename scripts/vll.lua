@@ -1259,10 +1259,10 @@ function VLL.RunBundle(bundle)
 			hit = true
 		end
 		
-		--if VLL.FileBundle('weapons/' .. f .. '/shared.lua') == bundle then 
-		--	VLL.Include('weapons/' .. f .. '/shared.lua')
-		--	hit = true
-		--end
+		if VLL.FileBundle('weapons/' .. f .. '/shared.lua') == bundle then 
+			VLL.Include('weapons/' .. f .. '/shared.lua')
+			hit = true
+		end
 		
 		if hit then
 			weapons.Register(SWEP, f)
@@ -1309,10 +1309,10 @@ function VLL.RunBundle(bundle)
 			hit = true
 		end
 		
-		--if VLL.FileBundle('entities/' .. f .. '/shared.lua') == bundle then 
-		--	VLL.Include('entities/' .. f .. '/shared.lua')
-		--	hit = true
-		--end
+		if VLL.FileBundle('entities/' .. f .. '/shared.lua') == bundle then 
+			VLL.Include('entities/' .. f .. '/shared.lua')
+			hit = true
+		end
 		
 		if hit then
 			scripted_ents.Register(ENT, f)
@@ -1320,7 +1320,6 @@ function VLL.RunBundle(bundle)
 		
 		ENT = nil
 	end
-	
 	
 	local contents = VLL.DirectoryContent('entities')
 	table.sort(contents)
@@ -1334,6 +1333,21 @@ function VLL.RunBundle(bundle)
 		VLL.Include('entities/' .. v)
 		
 		scripted_ents.Register(ENT, string.sub(v, 1, -5))
+	end
+	
+	if CLIENT then
+		local contents = VLL.DirectoryContent('effects')
+		table.sort(contents)
+		
+		for k, v in pairs(contents) do
+			if VLL.FileBundle('effects/' .. v) ~= bundle then continue end
+			
+			EFFECT = {}
+			
+			VLL.Include('effects/' .. v)
+			
+			effects.Register(EFFECT, string.sub(v, 1, -5))
+		end
 	end
 	
 	--[[
