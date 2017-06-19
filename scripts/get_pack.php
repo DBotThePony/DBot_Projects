@@ -17,8 +17,6 @@
 //
 
 function dummy() {
-    $Seperator = '----______VLL_PACK_FILE_SEPERATOR______----';
-
     header('Content-Type: text/plain; charset=utf8');
 
     $Bundle = $_GET['bundle'];
@@ -62,10 +60,11 @@ function dummy() {
     }
 
     if (is_file('./luapad/' . $Bundle . '.lua')) {
+        $Separator = '----______VLL_PACK_FILE_SEPERATOR______----';
         $output = '';
-        $output = $output . 'autorun/' . $Bundle . '.lua' . $Seperator;
+        $output = $output . 'autorun/' . $Bundle . '.lua' . $Separator;
         $output = $output . file_get_contents('./luapad/' . $Bundle . '.lua');
-        $output = $output . $Seperator;
+        $output = $output . $Separator;
         echo $output;
         exit;
     }
@@ -80,7 +79,7 @@ function dummy() {
     $CTime = time();
     $Locked = false;
     $RebuildMetaCache = !is_file($metap);
-    $RebuildFileCache = !is_file($cachep) or filemtime($cachep) + 3600 < $CTime;
+    $RebuildFileCache = !is_file($cachep);
     $jsonMeta = [];
 
     $Files = [];
@@ -116,6 +115,7 @@ function dummy() {
         return $OutputJSON;
     }
 
+    // var_dump ($RebuildMetaCache);
     if ($RebuildMetaCache) {
         $readMeta = rebuildMeta($LockFileName, $Files, $RebuildFileCache, $RebuildMetaCache, $metap, $cachep, $BundleLen);
         $RebuildMetaCache = false;
@@ -124,9 +124,11 @@ function dummy() {
         $jsonMeta = json_decode($metaFiles, true);
 
         foreach ($jsonMeta as $val) {
-            if (!is_file($val['file'])) {
+            // var_dump(filemtime($val['file']) != $val['stamp']);
+            if (!is_file($val['file']) or filemtime($val['file']) != $val['stamp']) {
                 $jsonMeta = rebuildMeta($LockFileName, $Files, $RebuildFileCache, $RebuildMetaCache, $metap, $cachep, $BundleLen);
                 $RebuildMetaCache = false;
+                $RebuildFileCache = true;
                 break;
             }
         }
@@ -135,13 +137,15 @@ function dummy() {
     }
 
     function rebuildFileCache($LockFileName, $readMeta, $cachep) {
+        $Separator = '----______VLL_PACK_FILE_SEPERATOR______----';
+
         file_put_contents($LockFileName, '');
         $output = '';
         
         foreach ($readMeta as $val) {
-            $output = $output . $val['pfile'] . $Seperator;
+            $output = $output . $val['pfile'] . $Separator;
             $output = $output . file_get_contents($val['file']);
-            $output = $output . $Seperator;
+            $output = $output . $Separator;
         }
 
         file_put_contents($cachep, $output);
