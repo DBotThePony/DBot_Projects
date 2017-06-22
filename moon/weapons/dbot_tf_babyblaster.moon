@@ -73,7 +73,7 @@ if SERVER
         if ent\IsPlayer()
             wep = ent\GetWeapon('dbot_tf_babyblaster')
             if IsValid(wep)
-                wep\SetBabyCharge(math.min(wep\GetBabyCharge() - math.max(dmg\GetDamage(), 0) * 4, wep.MaxCharge))
+                wep\SetBabyCharge(math.Clamp(wep\GetBabyCharge() - math.max(dmg\GetDamage(), 0) * 4, 0, wep.MaxCharge))
         attacker = dmg\GetAttacker()
         if IsValid(attacker) and attacker\IsPlayer()
             wep = attacker\GetWeapon('dbot_tf_babyblaster')
