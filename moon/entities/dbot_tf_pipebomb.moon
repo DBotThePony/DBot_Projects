@@ -164,6 +164,8 @@ if SERVER
             @directHit = true
             @Explode(HitEntity)
         else
-            @SetDamage(@DefaultDamageBounce)
-            @EmitSound(@GetBounceEffect()) if @GetIsFlying()
-            @SetIsFlying(false)
+            if @GetIsFlying()
+                @SetDamage(@DefaultDamageBounce)
+                @EmitSound(@GetBounceEffect())
+                @SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
+                @SetIsFlying(false)
