@@ -32,12 +32,12 @@ SWEP.FireTrigger = =>
         \SetPos(origin)
         \Spawn()
         \Activate()
-        \SetIsMiniCritical(@incomingMiniCrit)
-        \SetIsCritical(@incomingCrit)
-        \SetOwner(@GetOwner())
-        \SetAttacker(@GetOwner())
-        \SetInflictor(@)
-        \SetDirection(dir)
+        \SetIsMiniCritical(@incomingMiniCrit)   if .SetIsMiniCritical
+        \SetIsCritical(@incomingCrit)           if .SetIsCritical
+        \SetOwner(@GetOwner())                  if .SetOwner
+        \SetAttacker(@GetOwner())               if .SetAttacker
+        \SetInflictor(@)                        if .SetInflictor
+        \SetDirection(dir)                      if .SetDirection
         \Think()
         @OnFireTriggered(cEnt)
 
