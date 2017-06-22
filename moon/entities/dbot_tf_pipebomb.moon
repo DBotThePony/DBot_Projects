@@ -58,7 +58,7 @@ ENT.Initialize = =>
     return if CLIENT
     @removeAt = CurTime() + @RemoveTimer
 
-    @PhysicsInitSphere(8)
+    @PhysicsInit(SOLID_VPHYSICS)
     @SetBlowRadius(@BlowRadius)
     @SetInflictor(@)
     @SetAttacker(@)
