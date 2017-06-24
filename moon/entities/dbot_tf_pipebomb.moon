@@ -15,7 +15,7 @@
 -- limitations under the License.
 --
 
-ENT.PrintName = 'Piepomb Projectile'
+ENT.PrintName = 'Pipebomb Projectile'
 ENT.Author = 'DBot'
 ENT.Category = 'TF2'
 ENT.Base = 'base_anim'
