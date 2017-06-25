@@ -15,7 +15,7 @@
 -- limitations under the License.
 --
 
-local VERSION = 201706081554
+local VERSION = 201706251512
 
 if CLIENT then
     _G.HUDCommons = _G.HUDCommons or {}
@@ -27,6 +27,7 @@ if CLIENT then
     include('hudcommons/menu.lua')
     include('hudcommons/functions.lua')
     include('hudcommons/colors.lua')
+    include('hudcommons/matrix.lua')
 else
     AddCSLuaFile('hudcommons/simple_draw.lua')
     AddCSLuaFile('hudcommons/advanced_draw.lua')
@@ -34,4 +35,5 @@ else
     AddCSLuaFile('hudcommons/menu.lua')
     AddCSLuaFile('hudcommons/functions.lua')
     AddCSLuaFile('hudcommons/colors.lua')
+    AddCSLuaFile('hudcommons/matrix.lua')
 end
