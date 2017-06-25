@@ -24,6 +24,10 @@ ENT.Spawnable = false
 ENT.AdminSpawnable = false
 ENT.IsTF2Syringe = true
 
+SWEP.CritChance = 1
+SWEP.CritExponent = 0.01
+SWEP.CritExponentMax = 3
+
 ENT.ProjectileModel = 'models/weapons/w_models/w_syringe_proj.mdl'
 ENT.ImpactFleshEffect = 'DTF2_Weapon_Grenade_Pipebomb.BounceSound'
 ENT.ImpactWorldEffect = 'DTF2_Weapon_Grenade_Pipebomb.BounceSound'
