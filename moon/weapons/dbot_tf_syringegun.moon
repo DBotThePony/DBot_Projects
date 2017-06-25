@@ -47,7 +47,7 @@ SWEP.AttackAnimation = 'sg_fire'
 SWEP.AttackAnimationCrit = 'sg_fire'
 SWEP.ReloadStart = 'sg_reload'
 SWEP.ReloadDeployTime = 1.3
-SWEP.ReloadProjectiles = 40
+SWEP.ReloadBullets = 40
 SWEP.SingleReloadAnimation = true
 
 SWEP.FireOffset = Vector(10, -10, -10)
