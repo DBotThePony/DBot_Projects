@@ -47,6 +47,7 @@ SWEP.ReloadDeployTime = 1
 SWEP.ReloadFinishAnimTimeIdle = 1
 SWEP.ReloadLoopRestart = true
 SWEP.ReloadPlayExtra = false
+SWEP.SingleReloadAnimation = false
 
 SWEP.Primary = {
     'Ammo': 'RPG_Round'

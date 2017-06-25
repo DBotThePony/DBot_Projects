@@ -40,14 +40,15 @@ ENT.EndlessFlight = true
 ENT.ZAddition = 0
 ENT.Gravity = false
 ENT.ProjectileMass = 5
+ENT.ProjectileForce = 1
 
 ENT.Explosive = true
 ENT.ExplodeOnWorldImpact = true
 ENT.ExplodeOnEntityImpact = true
 ENT.ImpactCollisionGroup = COLLISION_GROUP_PASSABLE_DOOR
 
-ENT.DrawEffects = {'rockettrail'}
-ENT.DrawEffectsCriticals = {'critical_rocket_red'}
+-- ENT.DrawEffects = {'rockettrail'}
+-- ENT.DrawEffectsCriticals = {'critical_rocket_red'}
 ENT.DisplayCriticalEffects = true
 
 ENT.SetupFireAngle = true

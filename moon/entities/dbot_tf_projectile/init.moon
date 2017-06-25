@@ -31,6 +31,7 @@ AccessorFunc(ENT, 'm_Direct', 'DirectHit')
 AccessorFunc(ENT, 'm_DirectTarget', 'DirectHitTarget')
 AccessorFunc(ENT, 'm_BlowRadius', 'BlowRadius')
 AccessorFunc(ENT, 'm_BlowEffect', 'BlowEffect')
+AccessorFunc(ENT, 'm_ProjectileForce', 'ProjectileForce')
 
 ENT.Initialize = =>
     @SetModel(@ProjectileModel)
@@ -41,6 +42,7 @@ ENT.Initialize = =>
     @SetAttacker(@)
     @SetDamage(@ProjectileDamage)
     @SetBlowEffect(@BlowEffect)
+    @SetProjectileForce(@ProjectileForce)
     @SetBlowSound(@BlowSound)
     @SetProjectileSpeed(@ProjectileSpeed)
     @SetDegradationDivider(@DegradationDivider)
@@ -124,7 +126,33 @@ ENT.HitCallback = (ent, attacker, dmg) ->
         DTF2.PlayMiniCritEffect(ent)
         dmg\ScaleDamage(1.3)
 
+ENT.BulletCallback = (tr, dmg) =>
+    dmg\SetAttacker(@GetAttacker())
+    dmg\SetInflictor(@GetInflictor())
+    ent = tr.Entity
+    if IsValid(ent)
+        if @GetIsCritical()
+            DTF2.PlayCritEffect(ent)
+        elseif @GetIsMiniCritical()
+            DTF2.PlayCritEffect(ent)
+
 ENT.HitEntity = (HitEntity, HitNormal = Vector(0, 0, 0), HitPos = @GetPos()) =>
+    mult = @GetIsCritical() and 3 or @GetIsMiniCritical() and 1.3 or 1
+    degradation = 1
+    if not @GetIsCritical() and @GetDamageDegradation()
+        degradation = 1 - math.Clamp(@initialPosition\Distance(HitPos) / @GetDegradationDivider() - .2, -0.1, @GetIsMiniCritical() and 0.1 or 0.3)
+
+    bulletData = {
+        Callback: @BulletCallback
+        Damage: @GetDamage() * mult * degradation
+        Force: @GetProjectileForce()
+        Distance: 40
+        Src: HitPos - HitNormal
+        Dir: HitNormal
+    }
+
+    @FireBullets(bulletData)
+    @Remove()
 
 ENT.Explode = (HitEntity, HitNormal = Vector(0, 0, 0), HitPos = @GetPos()) =>
     @SetSolid(SOLID_NONE)

@@ -15,14 +15,25 @@
 -- limitations under the License.
 --
 
-ENT.PrintName = 'Rocket Projectile'
+ENT.PrintName = 'Syringe Projectile'
 ENT.Author = 'DBot'
 ENT.Category = 'TF2'
 ENT.Base = 'dbot_tf_projectile'
 ENT.Type = 'anim'
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
-ENT.IsTF2Rocket = true
+ENT.IsTF2Syringe = true
 
-ENT.DrawEffects = {'rockettrail'}
+ENT.ProjectileModel = 'models/weapons/w_models/w_syringe_proj.mdl'
+ENT.ImpactFleshEffect = 'DTF2_Weapon_Grenade_Pipebomb.BounceSound'
+ENT.ImpactWorldEffect = 'DTF2_Weapon_Grenade_Pipebomb.BounceSound'
+
+ENT.ProjectileDamage = 12
+ENT.Gravity = true
+ENT.EndlessFlight = false
+ENT.DegradationDivider = 2048
+ENT.ZAddition = 0.06
+ENT.Explosive = false
+
+ENT.DrawEffects = {}
 ENT.DrawEffectsCriticals = {'critical_rocket_red'}
