@@ -28,6 +28,9 @@ langPhrases = {
     {'dbot_tf_shotgun_heavy', 'Heavyweapons Shotgun'}
     {'dbot_tf_shotgun_pyro', 'Pyro Shotgun'}
     {'dbot_tf_shotgun_soldier', 'Soldier Shotgun'}
+
+    {'ammo_tf_syringe_Ammo', 'Syringes'}
+    {'ammo_tf_flame_Ammo', 'Flamethrower Ammo'}
 }
 
 language.Add(placeholder, fullText) for {placeholder, fullText} in *langPhrases
