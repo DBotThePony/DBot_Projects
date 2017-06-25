@@ -267,7 +267,7 @@ SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
         dmginfo\ScaleDamage(math.Clamp(dist / 180, 0.2, 1.2))
 
 SWEP.BulletCallback = (tr = {}, dmginfo) =>
-    SuppressHostEvents(@) if SERVER
+    --SuppressHostEvents(@) if SERVER
     weapon = @GetActiveWeapon()
     dmginfo\SetInflictor(weapon)
     weapon.bulletCallbackCalled = true
@@ -279,7 +279,7 @@ SWEP.BulletCallback = (tr = {}, dmginfo) =>
     weapon\OnHit(tr.Entity, tr, dmginfo)
     weapon.onHitCalled = true
     weapon\PostOnHit(tr.Entity, tr, dmginfo)
-    SuppressHostEvents(NULL) if SERVER
+    --SuppressHostEvents(NULL) if SERVER
 
 SWEP.UpdateBulletData = (bulletData = {}) =>
 SWEP.AfterFire = (bulletData = {}) =>
@@ -331,13 +331,13 @@ SWEP.FireTrigger = =>
     @UpdateBulletData(bulletData)
 
     @GetOwner()\FireBullets(bulletData)
-    SuppressHostEvents(@GetOwner()) if SERVER
+    --SuppressHostEvents(@GetOwner()) if SERVER
     @AfterFire(bulletData)
     if not @bulletCallbackCalled
         @PreOnMiss()
         @OnMiss()
         @PostOnMiss()
-    SuppressHostEvents(NULL) if SERVER
+    --SuppressHostEvents(NULL) if SERVER
 
 
 AccessorFunc(SWEP, 'incomingFire', 'IncomingFire')
