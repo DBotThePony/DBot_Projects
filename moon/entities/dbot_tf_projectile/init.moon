@@ -34,6 +34,7 @@ AccessorFunc(ENT, 'm_BlowRadius', 'BlowRadius')
 AccessorFunc(ENT, 'm_BlowEffect', 'BlowEffect')
 AccessorFunc(ENT, 'm_ProjectileForce', 'ProjectileForce')
 AccessorFunc(ENT, 'm_AmmoType', 'AmmoType')
+AccessorFunc(ENT, 'm_BulletDamageType', 'BulletDamageType')
 
 ENT.Initialize = =>
     @SetModel(@ProjectileModel)
@@ -53,6 +54,7 @@ ENT.Initialize = =>
     @SetImpactFleshSound(@ImpactFleshSound)
     @SetImpactWorldSound(@ImpactWorldSound)
     @SetDamageDegradation(@DamageDegradation)
+    @SetBulletDamageType(@BulletDamageType)
 
     @explodeAt = CurTime() + @ExplodeAt if @ShouldExplode
     @removeAt = CurTime() + @RemoveTimer if @ShouldRemove
@@ -135,6 +137,7 @@ ENT.HitCallback = (ent, attacker, dmg) ->
 ENT.BulletCallback = (tr, dmg) =>
     dmg\SetAttacker(@GetAttacker())
     dmg\SetInflictor(@GetInflictor())
+    dmg\SetDamageType(@GetBulletDamageType())
     ent = tr.Entity
     return if not IsValid(ent)
     if @GetIsCritical()
