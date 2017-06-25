@@ -58,6 +58,21 @@ SWEP.CritDuration = 4
 SWEP.CritsCooldown = 2
 SWEP.CritsCheckCooldown = 0
 
+SWEP.Primary = {
+    'Ammo': 'none'
+    'ClipSize': -1
+    'DefaultClip': 0
+    'Automatic': true
+}
+
+SWEP.Secondary = {
+    'Ammo': 'none'
+    'ClipSize': -1
+    'DefaultClip': 0
+    'Automatic': false
+}
+
+
 SWEP.SetupDataTables = =>
     @NetworkVar('Bool', 0, 'NextCrit')
     @NetworkVar('Bool', 1, 'CritBoosted')
@@ -326,6 +341,7 @@ SWEP.FireTrigger = =>
         'Distance': @GetBulletRange()
         'HullSize': @GetBulletHull()
         'Force': @GetBulletForce()
+        'AmmoType': @Primary.Ammo
     }
 
     @UpdateBulletData(bulletData)

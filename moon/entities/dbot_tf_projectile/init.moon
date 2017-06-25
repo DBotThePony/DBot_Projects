@@ -33,6 +33,7 @@ AccessorFunc(ENT, 'm_DirectTarget', 'DirectHitTarget')
 AccessorFunc(ENT, 'm_BlowRadius', 'BlowRadius')
 AccessorFunc(ENT, 'm_BlowEffect', 'BlowEffect')
 AccessorFunc(ENT, 'm_ProjectileForce', 'ProjectileForce')
+AccessorFunc(ENT, 'm_AmmoType', 'AmmoType')
 
 ENT.Initialize = =>
     @SetModel(@ProjectileModel)
@@ -44,6 +45,7 @@ ENT.Initialize = =>
     @SetDamage(@ProjectileDamage)
     @SetBlowEffect(@BlowEffect)
     @SetProjectileForce(@ProjectileForce)
+    @SetAmmoType(@AmmoType)
     @SetBlowSound(@BlowSound)
     @SetProjectileSpeed(@ProjectileSpeed)
     @SetDegradationDivider(@DegradationDivider)
@@ -156,6 +158,7 @@ ENT.HitEntity = (HitEntity, HitNormal = Vector(0, 0, 0), HitPos = @GetPos()) =>
         Distance: 40
         Src: HitPos - HitNormal
         Dir: HitNormal
+        AmmoType: @GetAmmoType()
     }
 
     @FireBullets(bulletData)

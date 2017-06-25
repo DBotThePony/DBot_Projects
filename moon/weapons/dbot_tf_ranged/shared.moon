@@ -120,13 +120,6 @@ SWEP.PlayFireSound = (isCrit = @incomingCrit) =>
         playSound = table.Random(@FireCritSounds) if @FireCritSounds
         @EmitSound(playSound, SNDLVL_GUNSHOT, 100, .7, CHAN_WEAPON) if playSound
 
-SWEP.PlayEmptySound = =>
-    return if @lastEmptySound > CurTime()
-    @lastEmptySound = CurTime() + 1
-    return @EmitSound('DTF2_' .. @EmptySoundsScript) if @EmptySoundsScript
-    playSound = table.Random(@EmptySounds) if @EmptySounds
-    @EmitSound(playSound, 75, 100, .7, CHAN_WEAPON) if playSound
-
 SWEP.EmitMuzzleFlash = =>
     viewModel = @GetTF2WeaponModel()
     {:Pos, :Ang} = viewModel\GetAttachment(viewModel\LookupAttachment(@MuzzleAttachment))

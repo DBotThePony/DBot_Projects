@@ -145,6 +145,13 @@ SWEP.Deploy = =>
 SWEP.OnHit = (...) => BaseClass.OnHit(@, ...)
 SWEP.OnMiss = => BaseClass.OnMiss(@)
 
+SWEP.PlayEmptySound = =>
+    return if @lastEmptySound > CurTime()
+    @lastEmptySound = CurTime() + 1
+    return @EmitSound('DTF2_' .. @EmptySoundsScript) if @EmptySoundsScript
+    playSound = table.Random(@EmptySounds) if @EmptySounds
+    @EmitSound(playSound, 75, 100, .7, CHAN_WEAPON) if playSound
+
 SWEP.PrimaryAttack = =>
     return false if @GetNextPrimaryFire() > CurTime()
     if @Primary.ClipSize > 0

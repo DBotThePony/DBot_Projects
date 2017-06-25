@@ -46,6 +46,7 @@ ENT.Explosive = true
 ENT.ExplodeOnWorldImpact = true
 ENT.ExplodeOnEntityImpact = true
 ENT.ImpactCollisionGroup = COLLISION_GROUP_PASSABLE_DOOR
+ENT.AmmoType = ''
 
 -- ENT.DrawEffects = {'rockettrail'}
 -- ENT.DrawEffectsCriticals = {'critical_rocket_red'}
