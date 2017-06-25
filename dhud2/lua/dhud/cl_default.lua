@@ -217,9 +217,13 @@ function Default.EntityDisplay()
 	local x, y = DHUD2.GetPosition('entitydisplay')
 	local t = Var 'entityname'
 	local w, h = surface.GetTextSize(t)
+
+	HUDCommons.DrawCustomCenteredMatrix(x - 3 - w / 2 + DHUD2.GetDamageShift(), y - 2 + DHUD2.GetDamageShift(), w, h)
 	
-	DHUD2.DrawBox(x - 3 - w / 2 + DHUD2.GetDamageShift(), y - 2 + DHUD2.GetDamageShift(), w + 6, h + 4, Col 'bg')
-	DHUD2.SimpleText(t, nil, x - w / 2 + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), Col 'entitytext')
+	DHUD2.DrawBox(0, 0, w + 6, h + 4, Col 'bg')
+	DHUD2.SimpleText(t, nil, 3 + DHUD2.GetDamageShift(), DHUD2.GetDamageShift(), Col 'entitytext')
+
+	HUDCommons.PopDrawMatrix()
 end
 
 DHUD2.RegisterVar('drawnhpbar', false)
@@ -240,6 +244,8 @@ function Default.NPCBars()
 	local name, hp, mhp, percent = Var 'npcname', Var 'npchp', Var 'npcmhp', Var 'npcperc'
 	local w, h = surface.GetTextSize(name)
 	x = x - 5 - (w + 10 + Default.NPC_HPBAR_WIDTH) / 2
+	HUDCommons.DrawCustomCenteredMatrix(x, y, w + 10 + Default.NPC_HPBAR_WIDTH, h)
+	x, y = 0, 0
 	
 	DHUD2.DrawBox(x, y - 2, w + 10 + Default.NPC_HPBAR_WIDTH, h + 4, Col 'bg')
 	DHUD2.SimpleText(name, nil, x + 3 + DHUD2.GetDamageShift(), y - 1 + DHUD2.GetDamageShift(), Col 'npctext')
@@ -250,8 +256,9 @@ function Default.NPCBars()
 	
 	local t = string.format('%s/%s (%s%%)', hp, mhp, math.floor(percent * 100))
 	local w2, h2 = surface.GetTextSize(t)
-	x = rx + Default.NPC_HPBAR_WIDTH / 2 - w2
+	x = Default.NPC_HPBAR_WIDTH / 2 - w2 + 10
 	DHUD2.SimpleText(t, nil, x + 3 + DHUD2.GetDamageShift(), y - 1 + DHUD2.GetDamageShift(), Col 'npctext')
+	HUDCommons.PopDrawMatrix()
 end
 
 Default.ENTITYHP_WIDTH = 300
@@ -263,12 +270,15 @@ function Default.EntityHealth()
 	local hp, mhp, perc = Var 'entityhealth', Var 'entityhealthmax', Var 'entityhealthpercent'
 	local x, y = DHUD2.GetPosition('entityhp')
 	x = x - Default.ENTITYHP_WIDTH / 2
+	HUDCommons.DrawCustomCenteredMatrix(x, y, Default.ENTITYHP_WIDTH, Default.ENTITYHP_HEIGHT)
+	x, y = 0, 0
 	
 	DHUD2.DrawBox(x - 5 + DHUD2.GetDamageShift(), y - 2 + DHUD2.GetDamageShift(), Default.ENTITYHP_WIDTH + 10, Default.ENTITYHP_HEIGHT + 4, Col 'bg')
 	DHUD2.DrawBox(x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), Default.ENTITYHP_WIDTH, Default.ENTITYHP_HEIGHT, Col 'empty_bar')
 	DHUD2.DrawBox(x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), Default.ENTITYHP_WIDTH * perc, Default.ENTITYHP_HEIGHT, Col 'entityhealth')
 	
 	DHUD2.SimpleText(string.format('%s/%s (%s%%)', hp, mhp, math.floor(perc * 100)), nil, x + 5 + DHUD2.GetDamageShift(), y - 1 + DHUD2.GetDamageShift(), Col 'entitytext')
+	HUDCommons.PopDrawMatrix()
 end
 
 local function DRAW(self, ply)
@@ -276,6 +286,8 @@ local function DRAW(self, ply)
 	local RX, RY = x, y
 	
 	x = x - DEFAULT_WIDTH / 2
+	HUDCommons.DrawCustomCenteredMatrix(x, y, DEFAULT_WIDTH, DEFAULT_HEIGHT)
+	x, y = 0, 0
 	
 	local Back = Col 'bg'
 	
@@ -321,6 +333,12 @@ local function DRAW(self, ply)
 	if Var 'weaponname' ~= '???' then
 		Default.DrawWeaponName(x, y)
 	end
+
+	if DHUD2.DrawDarkRP then
+		DHUD2.DrawDarkRP()
+	end
+
+	HUDCommons.PopDrawMatrix()
 	
 	if Var 'entityname' then
 		Default.EntityDisplay()
@@ -332,10 +350,6 @@ local function DRAW(self, ply)
 	
 	if Var 'drawentityhealth' then
 		Default.EntityHealth()
-	end
-	
-	if DHUD2.DrawDarkRP then
-		DHUD2.DrawDarkRP()
 	end
 end
 
