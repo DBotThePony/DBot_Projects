@@ -29,6 +29,14 @@ SWEP.Slot = 3
 SWEP.DefaultViewPunch = Angle(0, 0, 0)
 SWEP.FireOffset = Vector(0, -10, 0)
 
+SWEP.DrawAnimation = 'dh_draw'
+SWEP.IdleAnimation = 'dh_idle'
+SWEP.AttackAnimation = 'dh_fire'
+SWEP.AttackAnimationCrit = 'dh_fire'
+SWEP.ReloadStart = 'dh_reload_start'
+SWEP.ReloadLoop = 'dh_reload_loop'
+SWEP.ReloadEnd = 'dh_reload_finish'
+
 SWEP.Primary = {
     'Ammo': 'RPG_Round'
     'ClipSize': 4

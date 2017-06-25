@@ -15,23 +15,23 @@
 -- limitations under the License.
 --
 
-BaseClass = baseclass.Get('dbot_tf_weapon_base')
+AddCSLuaFile()
 
-SWEP.Base = 'dbot_tf_weapon_base'
+BaseClass = baseclass.Get('dbot_tf_clipbased')
+
+SWEP.Base = 'dbot_tf_clipbased'
 SWEP.Author = 'DBot'
 SWEP.Category = 'TF2'
-SWEP.PrintName = 'TF2 Melee Base'
+SWEP.PrintName = 'TF2 Ranged Base'
 SWEP.Spawnable = false
 SWEP.AdminSpawnable = false
-SWEP.DrawAmmo = true
-SWEP.DrawCrosshair = true
 SWEP.Slot = 2
 SWEP.SlotPos = 16
 
 SWEP.Primary = {
     'Ammo': 'SMG1'
     'ClipSize': 15
-    'DefaultClip': 15
+    'DefaultClip': 40
     'Automatic': true
 }
 
@@ -65,45 +65,16 @@ SWEP.CritExponent = 0.05
 SWEP.CritExponentMax = 10
 SWEP.SingleCrit = false
 
-SWEP.SingleReloadAnimation = false
-SWEP.ReloadLoopRestart = true
-SWEP.DrawAnimation = 'fj_draw'
-SWEP.IdleAnimation = 'fj_idle'
-SWEP.AttackAnimation = 'fj_fire'
-SWEP.AttackAnimationCrit = 'fj_fire'
-SWEP.ReloadStart = 'fj_reload_start'
-SWEP.ReloadLoop = 'fj_reload_loop'
-SWEP.ReloadEnd = 'fj_reload_end'
-
-SWEP.Reloadable = true
-
 SWEP.SetupDataTables = => BaseClass.SetupDataTables(@)
 
-AccessorFunc(SWEP, 'isReloading', 'IsReloading')
-AccessorFunc(SWEP, 'reloadNext', 'ReloadNext')
 AccessorFunc(SWEP, 'lastEmptySound', 'LastEmptySound')
 
 SWEP.Initialize = =>
     BaseClass.Initialize(@)
-    @isReloading = false
-    @reloadNext = 0
     @lastEmptySound = 0
-
-SWEP.Reload = =>
-    return false if not @Reloadable
-    return false if @Clip1() == @GetMaxClip1()
-    return false if @isReloading
-    return false if @GetNextPrimaryFire() > CurTime()
-    return false if @GetOwner()\IsPlayer() and @GetOwner()\GetAmmoCount(@Primary.Ammo) <= 0
-    @isReloading = true
-    @reloadNext = CurTime() + @ReloadDeployTime
-    @SendWeaponSequence(@ReloadStart)
-    @ClearTimeredAnimation()
-    return true
 
 SWEP.Deploy = =>
     BaseClass.Deploy(@)
-    @isReloading = false
     @lastEmptySound = 0
     return true
 
@@ -175,54 +146,11 @@ SWEP.OnHit = (...) => BaseClass.OnHit(@, ...)
 SWEP.OnMiss = => BaseClass.OnMiss(@)
 SWEP.AfterFire = (bulletData = {}) =>
 
-SWEP.ReloadCall = =>
-    oldClip = @Clip1()
-    newClip = math.Clamp(oldClip + @ReloadBullets, 0, @GetMaxClip1())
-    if SERVER
-        @SetClip1(newClip)
-        @GetOwner()\RemoveAmmo(newClip - oldClip, @Primary.Ammo) if @GetOwner()\IsPlayer()
-    return oldClip, newClip
-
-SWEP.Think = =>
-    BaseClass.Think(@)
-    if (SERVER or @GetOwner() == LocalPlayer()) and @isReloading and @reloadNext < CurTime()
-        if @GetOwner()\IsPlayer() and @GetOwner()\GetAmmoCount(@Primary.Ammo) > 0
-            @reloadNext = CurTime() + @ReloadTime
-            oldClip, newClip = @ReloadCall()
-            if not @SingleReloadAnimation
-                if @ReloadLoopRestart
-                    @SendWeaponSequence(@ReloadLoop)
-                else
-                    @SendWeaponSequence(@ReloadLoop) if not @reloadLoopStart
-                    @reloadLoopStart = true
-            if newClip == @GetMaxClip1()
-                @isReloading = false
-                @reloadLoopStart = false
-                @WaitForSequence(@ReloadEnd, @ReloadFinishAnimTime, (-> @WaitForSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if IsValid(@))) if not @SingleReloadAnimation
-                @SendWeaponSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if @SingleReloadAnimation
-        elseif @GetOwner()\IsPlayer() and @GetOwner()\GetAmmoCount(@Primary.Ammo) <= 0 or newClip == @GetMaxClip1()
-            @isReloading = false
-            @reloadLoopStart = false
-            @WaitForSequence(@ReloadEnd, @ReloadFinishAnimTime, (-> @WaitForSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if IsValid(@))) if not @SingleReloadAnimation
-            @SendWeaponSequence(@IdleAnimation, @ReloadFinishAnimTimeIdle) if @SingleReloadAnimation
-    @NextThink(CurTime() + 0.1)
-    return true
-
 SWEP.PrimaryAttack = =>
     return false if @GetNextPrimaryFire() > CurTime()
-    if @Primary.ClipSize > 0
-        if @Clip1() <= 0
-            @Reload()
-            @PlayEmptySound()
-            return false
-    else
-        return false if @GetOwner()\GetAmmoCount(@Primary.Ammo) <= 0
-
     status = BaseClass.PrimaryAttack(@)
     return status if status == false
-    
-    @isReloading = false
-    @TakePrimaryAmmo(@TakeBulletsOnFire)
+
     @PlayFireSound()
 
     @GetOwner()\ViewPunch(@GetViewPunch())

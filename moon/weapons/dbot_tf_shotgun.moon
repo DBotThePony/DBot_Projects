@@ -46,6 +46,14 @@ SWEP.FireSoundsScript = 'Weapon_Shotgun.Single'
 SWEP.FireCritSoundsScript = 'Weapon_Shotgun.SingleCrit'
 SWEP.EmptySoundsScript = 'Weapon_Shotgun.Empty'
 
+SWEP.DrawAnimation = 'fj_draw'
+SWEP.IdleAnimation = 'fj_idle'
+SWEP.AttackAnimation = 'fj_fire'
+SWEP.AttackAnimationCrit = 'fj_fire'
+SWEP.ReloadStart = 'fj_reload_start'
+SWEP.ReloadLoop = 'fj_reload_loop'
+SWEP.ReloadEnd = 'fj_reload_end'
+
 SWEP.Primary = {
     'Ammo': 'Buckshot'
     'ClipSize': 6

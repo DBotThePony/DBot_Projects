@@ -15,6 +15,8 @@
 -- limitations under the License.
 --
 
+AddCSLuaFile()
+
 BaseClass = baseclass.Get('dbot_tf_weapon_base')
 
 SWEP.Base = 'dbot_tf_weapon_base'
@@ -28,13 +30,13 @@ SWEP.DrawCrosshair = true
 SWEP.SlotPos = 16
 SWEP.Slot = 3
 
-SWEP.DrawAnimation = 'dh_draw'
-SWEP.IdleAnimation = 'dh_idle'
-SWEP.AttackAnimation = 'dh_fire'
-SWEP.AttackAnimationCrit = 'dh_fire'
-SWEP.ReloadStart = 'dh_reload_start'
-SWEP.ReloadLoop = 'dh_reload_loop'
-SWEP.ReloadEnd = 'dh_reload_finish'
+SWEP.DrawAnimation = 'fj_draw'
+SWEP.IdleAnimation = 'fj_idle'
+SWEP.AttackAnimation = 'fj_fire'
+SWEP.AttackAnimationCrit = 'fj_fire'
+SWEP.ReloadStart = 'fj_reload_start'
+SWEP.ReloadLoop = 'fj_reload_loop'
+SWEP.ReloadEnd = 'fj_reload_end'
 
 SWEP.TakeBulletsOnFire = 1
 SWEP.ProjectileClass = 'dbot_tf_rocket_projectile'
@@ -45,6 +47,9 @@ SWEP.ReloadFinishAnimTimeIdle = 1
 SWEP.ReloadLoopRestart = true
 SWEP.ReloadPlayExtra = false
 SWEP.SingleReloadAnimation = false
+SWEP.Reloadable = true
+
+SWEP.SetupDataTables = => BaseClass.SetupDataTables(@)
 
 SWEP.Primary = {
     'Ammo': 'SMG1'
@@ -62,11 +67,13 @@ SWEP.Secondary = {
 
 AccessorFunc(SWEP, 'isReloading', 'IsReloading')
 AccessorFunc(SWEP, 'reloadNext', 'NextReload')
+AccessorFunc(SWEP, 'm_currentlyreloadable', 'CurrentlyReloadable')
 
 SWEP.Initialize = =>
     BaseClass.Initialize(@)
     @isReloading = false
     @reloadNext = 0
+    @SetCurrentlyReloadable(@Reloadable)
 
 SWEP.Reload = =>
     return false if @Clip1() == @GetMaxClip1()
@@ -140,9 +147,13 @@ SWEP.OnMiss = => BaseClass.OnMiss(@)
 
 SWEP.PrimaryAttack = =>
     return false if @GetNextPrimaryFire() > CurTime()
-    if @Clip1() <= 0
-        @Reload()
-        return false
+    if @Primary.ClipSize > 0
+        if @Clip1() <= 0
+            @Reload()
+            @PlayEmptySound()
+            return false
+    else
+        return false if @GetOwner()\GetAmmoCount(@Primary.Ammo) <= 0
     
     status = BaseClass.PrimaryAttack(@)
     return status if status == false
