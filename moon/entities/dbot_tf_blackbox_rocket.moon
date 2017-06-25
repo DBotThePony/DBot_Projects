@@ -23,7 +23,7 @@ ENT.Type = 'anim'
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 
-ENT.ExplosionEffect = 'DTF2_Weapon_RPG_BlackBox.Explode'
+ENT.BlowSound = 'DTF2_Weapon_RPG_BlackBox.Explode'
 
 return if CLIENT
 ENT.OnHit = (ent) =>

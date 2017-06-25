@@ -23,5 +23,5 @@ ENT.Type = 'anim'
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 
-ENT.RocketDamage = 90 * .75
-ENT.PhysicsSpeed = 1500 * 1.4
+ENT.ProjectileDamage = 90 * .75
+ENT.ProjectileSpeed = 1500 * 1.4

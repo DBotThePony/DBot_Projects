@@ -23,4 +23,4 @@ ENT.Type = 'anim'
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 
-ENT.ExplosionEffect = 'DTF2_Weapon_QuakeRPG.Explode'
+ENT.BlowSound = 'DTF2_Weapon_QuakeRPG.Explode'

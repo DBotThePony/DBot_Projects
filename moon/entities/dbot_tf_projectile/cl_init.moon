@@ -1,4 +1,4 @@
-
+ 
 --
 -- Copyright (C) 2017 DBot
 --
@@ -15,22 +15,18 @@
 -- limitations under the License.
 --
 
-ENT.PrintName = 'Direct Hit Rocket Projectile'
-ENT.Author = 'DBot'
-ENT.Category = 'TF2'
-ENT.Base = 'dbot_tf_rocket_projectile'
-ENT.Type = 'anim'
-ENT.Spawnable = false
-ENT.AdminSpawnable = false
+ENT.Initialize = =>
+    @SetModel(@ProjectileModel)
+    @initialPosition = @GetPos()
+    @SetOwner(LocalPlayer())
 
-ENT.BlowRadius = 170
-ENT.ProjectileDamage = 110
-ENT.ProjectileSpeed = 1500 * 1.8
-ENT.BlowSound = 'DTF2_Weapon_RPG_DirectHit.Explode'
-ENT.DegradationDivider = 2048
-
-return if CLIENT
-ENT.OnHit = (ent) =>
-    return if not IsValid(ent)
-    if ent.OnGround and not ent\OnGround()
-        @SetIsMiniCritical(true)
+ENT.Draw = =>
+    @DrawModel()
+    return if @particlesSetup
+    @particlesSetup = true
+    for eff in *@DrawEffects
+        CreateParticleSystem(@, eff, PATTACH_ABSORIGIN_FOLLOW) if type(eff) == 'string'
+    
+    if @GetIsCritical() and @DisplayCriticalEffects
+        for eff in *@DrawEffects
+            CreateParticleSystem(@, eff, PATTACH_ABSORIGIN_FOLLOW) if type(eff) == 'string'
