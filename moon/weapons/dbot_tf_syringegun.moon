@@ -53,7 +53,7 @@ SWEP.SingleReloadAnimation = true
 SWEP.FireOffset = Vector(10, -10, -10)
 
 SWEP.Primary = {
-    'Ammo': 'AR2'
+    'Ammo': 'ammo_tf_syringe'
     'ClipSize': 40
     'DefaultClip': 160
     'Automatic': true

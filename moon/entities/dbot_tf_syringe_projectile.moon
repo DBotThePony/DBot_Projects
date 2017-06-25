@@ -38,3 +38,4 @@ ENT.Explosive = false
 ENT.DrawEffects = {}
 ENT.DrawEffectsCriticals = {'critical_rocket_red'}
 ENT.BulletDamageType = DMG_POISON
+ENT.AmmoType = 'ammo_tf_syringe'
