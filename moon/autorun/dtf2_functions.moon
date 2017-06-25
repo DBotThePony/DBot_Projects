@@ -18,10 +18,11 @@
 export DTF2
 DTF2 = DTF2 or {}
 
-DTF2.TableRandom = (tab) ->
+DTF2.TableRandom = (tab, id = 'dtf2_prediction') ->
     valids = [val for val in *tab when type(val) ~= 'table']
     return nil if #valids == 0
-    return valids[math.random(1, #valids)]
+    rand = math.floor(util.SharedRandom('dtf2', 1, #valids * 100, CurTime()) / 100 + 0.5)
+    return valids[rand]
 
 DTF2.ApplyVelocity = (ent, vel) ->
     if not ent\IsPlayer() and not ent\IsNPC()
