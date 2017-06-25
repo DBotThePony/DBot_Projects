@@ -386,7 +386,15 @@ SWEP.PrimaryAttack = =>
         @WaitForSequence(@IdleAnimation, @CooldownTime)
         @incomingFire = true
         @incomingFireTime = CurTime() + @PreFire
-        @NextThink(@incomingFireTime)
+        if @PreFire == 0
+            @incomingFire = false
+            @PreFireTrigger()
+            @FireTrigger()
+            @PostFireTrigger()
+            @incomingCrit = false
+            @incomingMiniCrit = false
+        else
+            @NextThink(@incomingFireTime)
     return true
 
 SWEP.SecondaryAttack = => false

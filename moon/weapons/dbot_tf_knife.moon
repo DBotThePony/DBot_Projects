@@ -53,7 +53,7 @@ SWEP.BulletDamage = 40
 SWEP.DefaultBulletDamage = 40
 SWEP.BulletForce = 5
 SWEP.CooldownTime = 0.8
-SWEP.PreFire = 0.1
+SWEP.PreFire = 0
 
 SWEP.SelectAttackAnimation = => not @isOnBack and @BaseClass.SelectAttackAnimation(@) or @BackstabAnimation
 
