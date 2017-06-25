@@ -30,6 +30,10 @@ SWEP.AdminSpawnable = true
 SWEP.AdminOnly = false
 SWEP.SingleCrit = false
 
+SWEP.CritChance = 1
+SWEP.CritExponent = 0.01
+SWEP.CritExponentMax = 3
+
 SWEP.CooldownTime = 0.1
 
 SWEP.FireSoundsScript = 'Weapon_SyringeGun.Single'
