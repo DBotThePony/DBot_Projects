@@ -37,6 +37,7 @@ SWEP.FireTrigger = =>
         \SetOwner(@GetOwner())                  if .SetOwner
         \SetAttacker(@GetOwner())               if .SetAttacker
         \SetInflictor(@)                        if .SetInflictor
+        \SetWeapon(@)                           if .SetWeapon
         \SetDirection(dir)                      if .SetDirection
         \Think()
         @OnFireTriggered(cEnt)

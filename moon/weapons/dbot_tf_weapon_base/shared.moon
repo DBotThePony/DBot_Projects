@@ -78,6 +78,15 @@ SWEP.CheckNextMiniCrit = => @GetOwner()\GetMiniCritBoosted()
 -- SWEP.ViewModels = {}
 -- SWEP.ViewModelEffects = {}
 
+AccessorFunc(SWEP, 'damageDealtForCrit', 'DamageDealt')
+AccessorFunc(SWEP, 'lastCritsTrigger', 'LastCritsTrigger')
+AccessorFunc(SWEP, 'lastCritsCheck', 'LastCritsCheck')
+AccessorFunc(SWEP, 'lastCritsCheck', 'LastCritsCheck')
+AccessorFunc(SWEP, 'incomingCrit', 'IncomingCrit')
+AccessorFunc(SWEP, 'incomingMiniCrit', 'IncomingMiniCrit')
+
+SWEP.AddDamageDealt = (val = 0) => @SetDamageDealt(@GetDamageDealt() + val)
+
 SWEP.Initialize = =>
     @SetPlaybackRate(0.5)
     @SendWeaponSequence(@IdleAnimation)

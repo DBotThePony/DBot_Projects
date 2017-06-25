@@ -17,6 +17,7 @@
 
 AccessorFunc(ENT, 'm_Attacker', 'Attacker')
 AccessorFunc(ENT, 'm_Inflictor', 'Inflictor')
+AccessorFunc(ENT, 'm_Weapon', 'Weapon')
 AccessorFunc(ENT, 'm_dir', 'Direction')
 AccessorFunc(ENT, 'm_damage', 'Damage')
 AccessorFunc(ENT, 'm_ImpactFleshSound', 'ImpactFleshSound')
@@ -125,6 +126,8 @@ ENT.HitCallback = (ent, attacker, dmg) ->
     elseif ent\IsMarkedForDeath()
         DTF2.PlayMiniCritEffect(ent)
         dmg\ScaleDamage(1.3)
+    if IsValid(@dtf2_weapon)
+        @dtf2_weapon\AddDamageDealt(dmg\GetDamage())
 
 ENT.BulletCallback = (tr, dmg) =>
     dmg\SetAttacker(@GetAttacker())
@@ -135,6 +138,9 @@ ENT.BulletCallback = (tr, dmg) =>
             DTF2.PlayCritEffect(ent)
         elseif @GetIsMiniCritical()
             DTF2.PlayCritEffect(ent)
+        if weapon = @GetWeapon()
+            if IsValid(weapon)
+                weapon\AddDamageDealt(dmg\GetDamage())
 
 ENT.HitEntity = (HitEntity, HitNormal = Vector(0, 0, 0), HitPos = @GetPos()) =>
     mult = @GetIsCritical() and 3 or @GetIsMiniCritical() and 1.3 or 1
@@ -174,6 +180,7 @@ ENT.Explode = (HitEntity, HitNormal = Vector(0, 0, 0), HitPos = @GetPos()) =>
     DirectHitTarget = @GetDirectHitTarget()
     TargetTakesFullDamage = @TargetTakesFullDamage
     stored = @StoreVariables(attacker)
+    weapon = @GetWeapon()
     timer.Simple 0.1, ->
         self = attacker
         @dtf2_incomingDamage = incomingDamage
@@ -187,6 +194,7 @@ ENT.Explode = (HitEntity, HitNormal = Vector(0, 0, 0), HitPos = @GetPos()) =>
         @dtf2_DirectHit = DirectHit
         @dtf2_DirectHitTarget = DirectHitTarget
         @dtf2_TargetTakesFullDamage = TargetTakesFullDamage
+        @dtf2_weapon = weapon
         @[key] = val for key, val in pairs stored
         util.BlastDamage(inflictor, attacker, HitPos - HitNormal * 50, incomingDamage, blow * 3)
         @dtf2_projectile = false
