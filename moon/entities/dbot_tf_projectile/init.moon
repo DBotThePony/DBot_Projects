@@ -50,6 +50,7 @@ ENT.Initialize = =>
     @SetIsExplosive(@Explosive)
     @SetImpactFleshSound(@ImpactFleshSound)
     @SetImpactWorldSound(@ImpactWorldSound)
+    @SetDamageDegradation(@DamageDegradation)
 
     @explodeAt = CurTime() + @ExplodeAt if @ShouldExplode
     @removeAt = CurTime() + @RemoveTimer if @ShouldRemove
@@ -133,14 +134,14 @@ ENT.BulletCallback = (tr, dmg) =>
     dmg\SetAttacker(@GetAttacker())
     dmg\SetInflictor(@GetInflictor())
     ent = tr.Entity
-    if IsValid(ent)
-        if @GetIsCritical()
-            DTF2.PlayCritEffect(ent)
-        elseif @GetIsMiniCritical()
-            DTF2.PlayCritEffect(ent)
-        if weapon = @GetWeapon()
-            if IsValid(weapon)
-                weapon\AddDamageDealt(dmg\GetDamage())
+    return if not IsValid(ent)
+    if @GetIsCritical()
+        DTF2.PlayCritEffect(ent)
+    elseif @GetIsMiniCritical()
+        DTF2.PlayCritEffect(ent)
+    if weapon = @GetWeapon()
+        if IsValid(weapon)
+            weapon\AddDamageDealt(dmg\GetDamage())
 
 ENT.HitEntity = (HitEntity, HitNormal = Vector(0, 0, 0), HitPos = @GetPos()) =>
     mult = @GetIsCritical() and 3 or @GetIsMiniCritical() and 1.3 or 1
