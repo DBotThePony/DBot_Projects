@@ -64,18 +64,9 @@ local function CalcView(ply, pos, ang, fov, nearZ, farZ)
 		
 		if gm and gm.CalcView then
 			newData = gm:CalcView(ply, pos, ang, fov, nearZ, farZ)
-			
-			if not newData then
-				newData = {
-					origin = pos,
-					angles = ang,
-					fov = fov,
-					znear = nearZ,
-					zfar = farZ,
-					drawviewer = inVehicle and veh:GetThirdPersonMode(),
-				}
-			end
-		else
+		end
+		
+		if not newData then
 			newData = {
 				origin = pos,
 				angles = ang,
