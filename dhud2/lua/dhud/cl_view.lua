@@ -51,10 +51,18 @@ local function CalcView(ply, pos, ang, fov, nearZ, farZ)
 	
 	bypass = true
 	for k, v in pairs(hook.GetTable().CalcView) do
-		local Data = v(ply, pos, ang, fov, nearZ, farZ)
-		if Data ~= nil then
-			newData = Data
-			break
+		if type(k) ~= 'string' and IsValid(k) then
+			local Data = v(k, ply, pos, ang, fov, nearZ, farZ)
+			if Data ~= nil then
+				newData = Data
+				break
+			end
+		else
+			local Data = v(ply, pos, ang, fov, nearZ, farZ)
+			if Data ~= nil then
+				newData = Data
+				break
+			end
 		end
 	end
 	bypass = false
@@ -65,7 +73,7 @@ local function CalcView(ply, pos, ang, fov, nearZ, farZ)
 		if gm and gm.CalcView then
 			newData = gm:CalcView(ply, pos, ang, fov, nearZ, farZ)
 		end
-		
+
 		if not newData then
 			newData = {
 				origin = pos,
