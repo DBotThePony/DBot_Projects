@@ -76,7 +76,7 @@ local function Draw()
 	local drawAsShould = false
 	local ent = DHUD2.PlayerIconModel
 	
-	if ply == LocalPlayer() and DHUD2.PredictedEntity ~= ply then
+	if ply == LocalPlayer() and DHUD2.PredictedEntity ~= ply and IsValid(DHUD2.PredictedEntity) then
 		ply = DHUD2.PredictedEntity
 		drawAsShould = true
 	end
