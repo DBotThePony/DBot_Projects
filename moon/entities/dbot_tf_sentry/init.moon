@@ -209,6 +209,10 @@ ENT.BehaveUpdate = (delta) =>
         {:p, :y, :r} = @idleAngle
         @targetAngle = Angle(p + @idlePitch, y + @idleYaw, r)
 
+    if IsValid(@currentTarget) and @lookingAtTarget
+        @FireBullet()
+        @FireRocket() if @GetLevel() == 3
+
 ENT.GetEnemy = => @currentTarget
 ENT.Explode = =>
     @Remove()
@@ -246,8 +250,4 @@ ENT.Think = =>
         @SetPoseParameter('aim_pitch', @GetAimPitch())
         @SetPoseParameter('aim_yaw', @GetAimYaw())
 
-    if IsValid(@currentTarget)
-        lookingAtTarget = diffPitch ~= -2 and diffPitch ~= 2 and diffYaw ~= -2 and diffYaw ~= 2
-        if lookingAtTarget
-            @FireBullet()
-            @FireRocket() if @GetLevel() == 3
+    @lookingAtTarget = diffPitch ~= -2 and diffPitch ~= 2 and diffYaw ~= -2 and diffYaw ~= 2
