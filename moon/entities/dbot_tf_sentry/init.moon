@@ -193,6 +193,7 @@ ENT.BehaveUpdate = (delta) =>
         @idleDirection = false
         @idleYaw = 0
     else
+        @lookingAtTarget = false
         @idleAnim = true
         if @idleWaitOnAngle < cTime
             @idleAngle = @GetAngles()
