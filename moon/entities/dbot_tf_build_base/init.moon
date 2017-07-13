@@ -57,6 +57,15 @@ isEnemy = (ent = NULL) ->
     return false if not ent\IsValid()
     return IsEnemyEntityName(ent\GetClass())
 
+CLASS_SCIENTIST = 27
+CLASS_ENEMY_GRUNT = 28
+CLASS_ALIEN_ARMY = 29
+CLASS_XEN_ANIMALS = 30
+CLASS_XEN_ANIMALS_HEADCRAB = 31
+CLASS_XEN_ANIMALS_HOSTILE = 32
+CLASS_XEN_BUG = 33
+CLASS_SNARK = 35
+
 UpdateTargetList = ->
     findEnts = ents.GetAll()
     VALID_TARGETS = {}
@@ -73,11 +82,19 @@ UpdateTargetList = ->
                 classify == CLASS_PLAYER_ALLY_VITAL or
                 classify == CLASS_CITIZEN_PASSIVE or
                 classify == CLASS_HACKED_ROLLERMINE or
+                classify == CLASS_SCIENTIST or
                 classify == CLASS_EARTH_FAUNA or
                 classify == CLASS_VORTIGAUNT or
                 classify == CLASS_CITIZEN_REBEL) then
                 table.insert(VALID_ALLIES, npcData)
             elseif (classify == CLASS_COMBINE_HUNTER or
+                classify == CLASS_ALIEN_ARMY or
+                classify == CLASS_XEN_ANIMALS or
+                classify == CLASS_XEN_ANIMALS_HOSTILE or
+                classify == CLASS_XEN_ANIMALS_HEADCRAB or
+                classify == CLASS_SNARK or
+                classify == CLASS_XEN_BUG or
+                classify == CLASS_ENEMY_GRUNT or
                 classify == CLASS_SCANNER or
                 classify == CLASS_ZOMBIE or
                 classify == CLASS_PROTOSNIPER or
