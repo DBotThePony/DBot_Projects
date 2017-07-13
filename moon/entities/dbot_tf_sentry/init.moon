@@ -166,7 +166,10 @@ ENT.FireRocket = (force = false) =>
     @DelaySound(2, "weapons/sentry_move_short2.wav")
     return true
 
+ai_disabled = GetConVar('ai_disabled')
+
 ENT.BehaveUpdate = (delta) =>
+    return if ai_disabled\GetBool()
     cTime = CurTime()
     return if @behavePause > cTime
 
