@@ -394,12 +394,12 @@ SWEP.SelectCritAttackAnimation = => @AttackAnimationCritTable and DTF2.TableRand
 
 SWEP.PrimaryAttack = =>
     return false if @GetNextPrimaryFire() > CurTime()
+    @incomingCrit = @CheckNextCrit()
+    @incomingMiniCrit = @CheckNextMiniCrit() if not @incomingCrit
     @SendWeaponSequence(@SelectAttackAnimation()) if not @incomingCrit
     @SendWeaponSequence(@SelectCritAttackAnimation()) if @incomingCrit
     @SetNextPrimaryFire(CurTime() + @CooldownTime)
     if IsFirstTimePredicted()
-        @incomingCrit = @CheckNextCrit()
-        @incomingMiniCrit = @CheckNextMiniCrit() if not @incomingCrit
         @WaitForSequence(@IdleAnimation, @CooldownTime)
         @incomingFire = true
         @incomingFireTime = CurTime() + @PreFire
