@@ -29,6 +29,8 @@ ENT.Timer = 0
 ENT.RespawnTimer = 10
 ENT.Sound = 'items/spawn_item.wav'
 
+AccessorFunc(ENT, 'm_Respawn', 'ShouldRespawn')
+
 function ENT:SpawnFunction(ply, tr, class)
 	if not tr.Hit then return end
 	
@@ -36,6 +38,7 @@ function ENT:SpawnFunction(ply, tr, class)
 	ent:SetPos(tr.HitPos + tr.HitNormal * 8)
 	ent:Spawn()
 	ent:Activate()
+	ent:SetShouldRespawn(true)
 	
 	return ent
 end
@@ -90,6 +93,7 @@ function ENT:End()
 	self.Used = true
 	self.Timer = CurTime() + self.RespawnTimer
 	self:SetNoDraw(true)
+	if not self:GetShouldRespawn() then self:Remove() end
 end
 
 function ENT:Think()
