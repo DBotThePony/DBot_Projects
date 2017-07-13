@@ -79,4 +79,19 @@ SWEP.TriggerCriticals = =>
         timer.Create "DTF2.CriticalsTimer.#{@EntIndex()}", @CritDuration, 1, ->
             @SetNextCrit(false) if @IsValid()
 
+SWEP.OnKilled = (victim = NULL, dmginfo = @lastDMGDealed) =>
+
+hook.Add 'OnNPCKilled', 'DTF2.WeaponTrigger', (npc = NULL, attacker = NULL, weapon = NULL) ->
+    return if not IsValid(weapon)
+    return if not weapon.IsTF2Weapon
+    return if not weapon.OnKilled
+    weapon\OnKilled(npc)
+
+hook.Add 'DoPlayerDeath', 'DTF2.WeaponTrigger', (ply = NULL, attacker = NULL, dmginfo) ->
+    weapon = dmginfo\GetInflictor()
+    return if not IsValid(weapon)
+    return if not weapon.IsTF2Weapon
+    return if not weapon.OnKilled
+    weapon\OnKilled(ply, dmginfo)
+
 return nil

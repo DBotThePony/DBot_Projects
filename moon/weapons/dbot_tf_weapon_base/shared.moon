@@ -283,6 +283,7 @@ SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
 
 SWEP.BulletCallback = (tr = {}, dmginfo) =>
     --SuppressHostEvents(@) if SERVER
+    @lastDMGDealed = dmginfo
     weapon = @GetActiveWeapon()
     dmginfo\SetInflictor(weapon)
     weapon.bulletCallbackCalled = true
