@@ -74,6 +74,7 @@ ENT.SetupDataTables = =>
     @NetworkVar('Int', 3, 'AimYaw')
     @NetworkVar('Int', 4, 'AmmoAmount')
     @NetworkVar('Int', 5, 'Rockets')
+    @anglesUpdated = false
 
 ENT.UpdateSequenceList = =>
     @BaseClass.UpdateSequenceList(@)

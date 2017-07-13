@@ -228,6 +228,10 @@ ENT.OnKilled = (dmg) =>
 
 ENT.Think = =>
     cTime = CurTime()
+    if not @anglesUpdated
+        @anglesUpdated = true
+        @currentAngle = @GetAngles()
+        @targetAngle = @currentAngle
     return if @behavePause > cTime
     delta = cTime - @lastSentryThink
     @lastSentryThink = cTime
