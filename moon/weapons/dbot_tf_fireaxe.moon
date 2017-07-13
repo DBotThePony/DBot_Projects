@@ -17,8 +17,6 @@
 
 AddCSLuaFile()
 
-BaseClass = baseclass.Get('dbot_tf_melee')
-
 SWEP.Base = 'dbot_tf_melee'
 SWEP.Author = 'DBot'
 SWEP.Category = 'TF2 Pyro'
@@ -28,7 +26,6 @@ SWEP.WorldModel = 'models/weapons/c_models/c_fireaxe_pyro/c_fireaxe_pyro.mdl'
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.AdminOnly = false
-SWEP.UseHands = false
 
 SWEP.MissSoundsScript = 'Weapon_FireAxe.Miss'
 SWEP.MissCritSoundsScript = 'Weapon_FireAxe.MissCrit'
