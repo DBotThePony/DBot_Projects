@@ -29,14 +29,14 @@ ENT.Heal = .5
 
 function ENT:OnUse(ply)
 	local hp, mhp = ply:Health(), ply:GetMaxHealth()
-	
+
 	if hp >= mhp then return false end
 	local new = math.Clamp(hp + mhp * self.Heal, 0, mhp)
 	ply:SetHealth(new)
 	hook.Run('PlayerPickupMedkit', ply, self, self.Heal, new - hp)
-	
+
 	ply:EmitSound('items/smallmedkit1.wav')
-	
+
 	return true
 end
 
