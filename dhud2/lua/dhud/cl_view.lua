@@ -87,7 +87,7 @@ local function CalcView(ply, pos, ang, fov, nearZ, farZ)
 	end
 	
 	oldAng = oldAng or newData.angles
-	local newang = LerpAngle(math.min(0.4 * math.sqrt(DHUD2.Multipler), 1), oldAng, newData.angles)
+	local newang = LerpAngle(math.min(0.4 * math.sqrt(DHUD2.Multipler or 1), 1), oldAng, newData.angles)
 	newData.angles = newang
 	oldAng = newang
 	
