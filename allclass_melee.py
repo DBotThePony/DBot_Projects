@@ -37,8 +37,6 @@ weaponBase = '''
 
 AddCSLuaFile()
 
-BaseClass = baseclass.Get('dbot_tf_melee')
-
 SWEP.Base = 'dbot_tf_melee'
 SWEP.Author = 'DBot'
 SWEP.Category = 'TF2 {Class}'
@@ -215,7 +213,7 @@ for weapon in Weapons:
     for myClass in Classes:
         if myClass['name'] in weapon['exclude']:
             continue
-        fil = open('moon/weapons/dbot_tf_{wep}_{iclass}.moon'.format(wep = weapon['classname'], iclass = myClass['fname']), 'w')
+        fil = open('lua_src/weapons/dbot_tf_{wep}_{iclass}.lua'.format(wep = weapon['classname'], iclass = myClass['fname']), 'w')
         formatted = weaponBase.format(
             Class = myClass['hname'],
             Name = weapon['name'],
