@@ -48,8 +48,8 @@ SWEP.ReloadStart = 'reload'
 SWEP.ReloadDeployTime = 1.12
 
 SWEP.Primary = {
-    'Ammo': '357',
-    'ClipSize': 6,
-    'DefaultClip': 24,
-    'Automatic': true
+    ['Ammo'] = '357',
+    ['ClipSize'] = 6,
+    ['DefaultClip'] = 24,
+    ['Automatic'] = true
 }

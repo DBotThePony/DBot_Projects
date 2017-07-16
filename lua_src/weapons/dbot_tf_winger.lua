@@ -31,8 +31,8 @@ SWEP.ReloadBullets = 5
 SWEP.BulletDamage = 19
 
 SWEP.Primary = {
-    'Ammo': 'Pistol',
-    'ClipSize': 5,
-    'DefaultClip': 5,
-    'Automatic': true
+    ['Ammo'] = 'Pistol',
+    ['ClipSize'] = 5,
+    ['DefaultClip'] = 5,
+    ['Automatic'] = true
 }

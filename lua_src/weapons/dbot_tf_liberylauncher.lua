@@ -33,8 +33,8 @@ SWEP.FireSoundsScript = 'Weapon_Liberty_Launcher.Single'
 SWEP.FireCritSoundsScript = 'Weapon_Liberty_Launcher.SingleCrit'
 
 SWEP.Primary = {
-    'Ammo': 'RPG_Round',
-    'ClipSize': 5,
-    'DefaultClip': 20,
-    'Automatic': true
+    ['Ammo'] = 'RPG_Round',
+    ['ClipSize'] = 5,
+    ['DefaultClip'] = 20,
+    ['Automatic'] = true
 }

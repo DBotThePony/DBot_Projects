@@ -48,8 +48,8 @@ SWEP.ReloadPlayExtra = true
 SWEP.FireOffset = Vector(10, -10, -10)
 
 SWEP.Primary = {
-    'Ammo': 'Grenade',
-    'ClipSize': 4,
-    'DefaultClip': 16,
-    'Automatic': true
+    ['Ammo'] = 'Grenade',
+    ['ClipSize'] = 4,
+    ['DefaultClip'] = 16,
+    ['Automatic'] = true
 }

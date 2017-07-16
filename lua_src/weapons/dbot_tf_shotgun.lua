@@ -52,8 +52,8 @@ SWEP.ReloadLoop = 'fj_reload_loop'
 SWEP.ReloadEnd = 'fj_reload_end'
 
 SWEP.Primary = {
-    'Ammo': 'Buckshot',
-    'ClipSize': 6,
-    'DefaultClip': 6,
-    'Automatic': true
+    ['Ammo'] = 'Buckshot',
+    ['ClipSize'] = 6,
+    ['DefaultClip'] = 6,
+    ['Automatic'] = true
 }
