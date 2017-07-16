@@ -41,7 +41,7 @@ SWEP.ReloadLoop = 'reload_loop'
 SWEP.ReloadEnd = 'reload_end'
 
 SWEP.PreOnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
-    if IsValid(hitEntity) and (hitEntity\IsNPC() or hitEntity\IsPlayer()) and not hitEntity\OnGround()
+    if IsValid(hitEntity) and (hitEntity\IsNPC() or hitEntity\IsPlayer()) and not hitEntity\OnGround() and not @GetIncomingCrit()
         @SetSuppressEffects(false)
         @ThatWasMinicrit() if SERVER
     @BaseClass.PreOnHit(@, hitEntity, tr, dmginfo)
