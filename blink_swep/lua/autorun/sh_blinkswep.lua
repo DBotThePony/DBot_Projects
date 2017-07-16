@@ -35,7 +35,7 @@ if CLIENT then
 		wep.Jumping = true
 		wep.JumpTime = CurTime() + net.ReadFloat() --I don't trust replicated convars
 	end)
-	
+
 	net.Receive('dbot_blink.finish', function()
 		local wep = net.ReadEntity()
 		if not IsValid(wep) then return end
@@ -76,7 +76,7 @@ function SWEP:Holster()
 	if self:GetOwner():IsPlayer() then
 		self:GetOwner():DrawViewModel(true)
 	end
-	
+
 	return true
 end
 
@@ -90,7 +90,7 @@ function SWEP:Deploy()
 	if self:GetOwner():IsPlayer() then
 		self:GetOwner():DrawViewModel(false)
 	end
-	
+
 	return true
 end
 
@@ -117,19 +117,19 @@ function SWEP:Trace()
 	local eyes = ply:EyePos()
 	local ang = ply:EyeAngles()
 	local fwd = ang:Forward()
-	
+
 	local H = eyes.z - pos.z
-	
+
 	local filter = {ply}
-	
+
 	if ply:IsPlayer() and ply:InVehicle() and IsValid(ply:GetVehicle()) then
 		table.insert(filter, ply:GetVehicle())
 	end
-	
+
 	if SERVER and ply:IsPlayer() then
 		ply:LagCompensation(true)
 	end
-	
+
 	if TRACE_MODE:GetBool() then
 		tr = util.TraceLine{
 			filter = filter,
@@ -138,7 +138,7 @@ function SWEP:Trace()
 		}
 	else
 		local Mins, Maxs = ply:OBBMins(), ply:OBBMaxs()
-		
+
 		tr = util.TraceHull{
 			filter = filter,
 			start = eyes - fwd * 2,
@@ -146,14 +146,14 @@ function SWEP:Trace()
 			mins = Mins,
 			maxs = Maxs
 		}
-		
+
 		tr.HitPos = tr.HitPos + tr.HitNormal * 4
 	end
-	
+
 	if SERVER and ply:IsPlayer() then
 		ply:LagCompensation(false)
 	end
-	
+
 	return tr
 end
 
@@ -164,34 +164,34 @@ local READY = Color(117, 255, 250)
 
 function SWEP:DrawHUD()
 	local x, y = ScrW() / 2 - 60, ScrH() / 2 + 40
-	
+
 	local cTime = CurTime()
 	local hit = false
-	
+
 	if self.DeployTime > cTime then
 		draw.RoundedBox(4, x, y, 120, 20, NOT_READY)
 		draw.RoundedBox(4, x, y, 120 - (self.DeployTime - cTime) / DEPLOY_DELAY:GetFloat() * 120, 20, READY)
 		hit = true
 	end
-	
+
 	if self.JumpTime > cTime then
 		draw.RoundedBox(4, x, y, 120, 20, NOT_READY)
 		draw.RoundedBox(4, x, y, 120 - (self.JumpTime - cTime) / TIME_PREPARE:GetFloat() * 120, 20, FIRING)
 		hit = true
 	end
-	
+
 	if self.NextJump > cTime then
 		local value = (self.NextJump - cTime) / ATTACK_DELAY:GetFloat() * 120
 		draw.RoundedBoxEx(4, x + value, y, 120 - value, 20, READY, false, true, false, true)
 		draw.RoundedBoxEx(4, x, y, value, 20, RED, true, false, true, false)
 		hit = true
 	end
-	
+
 	if not hit then
 		local tr = self:Trace()
-		
+
 		local dist = math.floor(tr.HitPos:Distance(LocalPlayer():GetPos()) / METRIC_CONV_VAL * 10) / 10
-		
+
 		draw.DrawText('Distance: ' .. dist .. 'm', 'Trebuchet24', x, y, READY)
 	end
 end
@@ -201,15 +201,15 @@ function SWEP:PrimaryAttack()
 	if self.Jumping then return end
 	if self.DeployTime > CurTime() then return end
 	if self.NextJump > CurTime() then return end
-	
+
 	local ply = self:GetOwner()
 	if not IsValid(ply) then return end
-	
+
 	if ply:IsPlayer() then
 		local can = hook.Run('CanPlayerTeleport', ply, self)
 		if can == false then return end
 	end
-	
+
 	self.Jumping = true
 	self.JumpTime = CurTime() + TIME_PREPARE:GetFloat()
 	self:NetMessage()
@@ -219,15 +219,15 @@ function SWEP:Jump()
 	self.Jumping = false
 	local ply = self:GetOwner()
 	self.NextJump = CurTime() + ATTACK_DELAY:GetFloat()
-	
+
 	if not IsValid(ply) then return end --Owner died before jump
 	if CLIENT then return end
-	
+
 	local tr = self:Trace()
-	
+
 	if ply:IsPlayer() then
 		local can = hook.Run('PrePlayerTeleport', ply, self, tr)
-		
+
 		if can ~= false then
 			if ply:InVehicle() then ply:ExitVehicle() end --ply:SetAllowWeaponsInVehicle(true)
 			ply:SetPos(tr.HitPos)
@@ -236,16 +236,16 @@ function SWEP:Jump()
 	else
 		ply:SetPos(tr.HitPos)
 	end
-	
+
 	self:NetMessageFinish()
 end
 
 function SWEP:Think()
 	if CLIENT then return end
-	
+
 	local ply = self:GetOwner()
 	if not IsValid(ply) then return end
-	
+
 	if self.Jumping then
 		if self.JumpTime < CurTime() then
 			self:Jump()

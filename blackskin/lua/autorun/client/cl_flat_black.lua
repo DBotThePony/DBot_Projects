@@ -32,7 +32,7 @@ function DLib.DrawBox(x, y, w, h, color)
 	if color then
 		surface.SetDrawColor(color)
 	end
-	
+
 	surface.SetTexture(nomat)
 	surface.DrawRect(x, y, w, h)
 end
@@ -41,15 +41,15 @@ function DLib.DrawText(text, font, x, y, col, center)
 	if font then
 		surface.SetFont(font)
 	end
-	
+
 	if center then
 		x = x - surface.GetTextSize(text) / 2
 	end
-	
+
 	if col then
 		surface.SetTextColor(col.r, col.g, col.b, col.a)
 	end
-	
+
 	surface.SetTextPos(x, y)
 	surface.DrawText(text)
 end
@@ -179,37 +179,37 @@ skin.ButtonAlpha = 150
 
 function SKIN.tex.Button(x, y, w, h, self)
 	if not self then return end
-	
+
 	self.Neon = self.Neon or 0
 	DLib.DrawBox(x, y, w, h, Color(self.Neon, self.Neon, self.Neon, skin.ButtonAlpha))
-	
+
 	self.Neon = math.max(self.Neon - 5 * (FrameTime() * 66), 0)
 end
 
 function SKIN.tex.Button_Hovered(x, y, w, h, self)
 	if not self then return end
 	self.Neon = self.Neon or 0
-	
+
 	DLib.DrawBox(x, y, w, h, Color(self.Neon, self.Neon, self.Neon, skin.ButtonAlpha))
-	
+
 	self.Neon = math.min(self.Neon + 5 * (FrameTime() * 66), 150)
 end
 
 function SKIN.tex.Button_Down(x, y, w, h, self)
 	if not self then return end
 	self.Neon = self.Neon or 0
-	
+
 	DLib.DrawBox(x, y, w, h, skin.ButtonHoverColor)
-	
+
 	self.Neon = math.min(self.Neon + 5 * (FrameTime() * 66), 150)
 end
 
 function SKIN.tex.Button_Dead(x, y, w, h, self)
 	if not self then return end
 	self.Neon = self.Neon or 0
-	
+
 	DLib.DrawBox(x, y, w, h, skin.ButtonHoverColor)
-	
+
 	self.Neon = math.min(self.Neon + 5 * (FrameTime() * 66), 150)
 end
 
@@ -326,12 +326,12 @@ skin.CloseHoverCol = Color(200, 130, 130, skin.CloseAlpha)
 
 function SKIN.tex.Window.Close(x, y, w, h, self)
 	if not self then return end
-	
+
 	self.Neon = self.Neon or 0
 	DLib.DrawBox(x, y, w, h - 11, Color(200, 50 + self.Neon, 50 + self.Neon, skin.CloseAlpha))
-	
+
 	self.Neon = math.max(self.Neon - 5 * (FrameTime() * 66), 0)
-	
+
 	surface.SetDrawColor(255, self.Neon * 3, self.Neon * 3, self.Neon * 3)
 	surface.DrawLine(x + 2, y + 5, w - 4, h - 16)
 	surface.DrawLine(x + 2, h - 16, w - 4, y + 5)
@@ -339,10 +339,10 @@ end
 
 function SKIN.tex.Window.Close_Hover(x, y, w, h, self)
 	if not self then return end
-	
+
 	self.Neon = self.Neon or 0
 	DLib.DrawBox(x, y, w, h - 11, Color(200, 50 + self.Neon, 50 + self.Neon, skin.CloseAlpha))
-	
+
 	self.Neon = math.min(self.Neon + 5 * (FrameTime() * 66), 50)
 	surface.SetDrawColor(255, self.Neon * 3, self.Neon * 3, self.Neon * 3)
 	surface.DrawLine(x + 2, y + 5, w - 4, h - 16)
@@ -351,12 +351,12 @@ end
 
 function SKIN.tex.Window.Close_Down(x, y, w, h, self)
 	if not self then return end
-	
+
 	self.Neon = self.Neon or 0
 	DLib.DrawBox(x, y, w, h - 11, skin.CloseHoverCol)
-	
+
 	self.Neon = math.min(self.Neon + 5 * (FrameTime() * 66), 50)
-	
+
 	surface.SetDrawColor(255, 200, 200)
 	surface.DrawLine(x + 2, y + 5, w - 4, h - 16)
 	surface.DrawLine(x + 2, h - 16, w - 4, y + 5)
@@ -365,12 +365,12 @@ end
 --Maximize
 function SKIN.tex.Window.Maxi(x, y, w, h, self)
 	if not self then return end
-	
+
 	self.Neon = self.Neon or 0
 	DLib.DrawBox(x, y, w, h - 11, Color(50 + self.Neon, 50 + self.Neon, 50 + self.Neon, skin.CloseAlpha))
-	
+
 	self.Neon = math.max(self.Neon - 5 * (FrameTime() * 66), 0)
-	
+
 	surface.SetDrawColor(125 + self.Neon * 2, 125 + self.Neon * 2, 125 + self.Neon * 2)
 	surface.DrawLine(x + 2, h - 16, w - 4, h - 16)
 	surface.DrawLine(x + 2, h - 24, w - 4, h - 24)
@@ -380,12 +380,12 @@ end
 
 function SKIN.tex.Window.Maxi_Hover(x, y, w, h, self)
 	if not self then return end
-	
+
 	self.Neon = self.Neon or 0
 	DLib.DrawBox(x, y, w, h - 11, Color(50 + self.Neon, 50 + self.Neon, 50 + self.Neon, skin.CloseAlpha))
-	
+
 	self.Neon = math.min(self.Neon + 5 * (FrameTime() * 66), 50)
-	
+
 	surface.SetDrawColor(150 + self.Neon * 2, 150 + self.Neon * 2, 150 + self.Neon * 2)
 	surface.DrawLine(x + 2, h - 16, w - 4, h - 16)
 	surface.DrawLine(x + 2, h - 24, w - 4, h - 24)
@@ -397,12 +397,12 @@ local Col = Color(200, 200, 200)
 
 function SKIN.tex.Window.Maxi_Down(x, y, w, h, self)
 	if not self then return end
-	
+
 	self.Neon = self.Neon or 0
 	DLib.DrawBox(x, y, w, h - 11, Col)
-	
+
 	self.Neon = math.min(self.Neon + 5 * (FrameTime() * 66), 50)
-	
+
 	surface.SetDrawColor(150 + self.Neon * 2, 150 + self.Neon * 2, 150 + self.Neon * 2)
 	surface.DrawLine(x + 2, h - 16, w - 4, h - 16)
 	surface.DrawLine(x + 2, h - 24, w - 4, h - 24)
@@ -412,12 +412,12 @@ end
 
 function SKIN.tex.Window.Restore(x, y, w, h, self)
 	if not self then return end
-	
+
 	self.Neon = self.Neon or 0
 	DLib.DrawBox(x, y, w, h - 11, Color(50 + self.Neon, 50 + self.Neon, 50 + self.Neon, skin.CloseAlpha))
-	
+
 	self.Neon = math.max(self.Neon - 5 * (FrameTime() * 66), 0)
-	
+
 	surface.SetDrawColor(125 + self.Neon * 2, 125 + self.Neon * 2, 125 + self.Neon * 2)
 	surface.DrawLine(x + 2, h - 16, w - 4, h - 16)
 	surface.DrawLine(x + 2, h - 28, w - 4, h - 28)
@@ -427,12 +427,12 @@ end
 
 function SKIN.tex.Window.Restore_Hover(x, y, w, h, self)
 	if not self then return end
-	
+
 	self.Neon = self.Neon or 0
 	DLib.DrawBox(x, y, w, h - 11, Color(50 + self.Neon, 50 + self.Neon, 50 + self.Neon, skin.CloseAlpha))
-	
+
 	self.Neon = math.min(self.Neon + 5 * (FrameTime() * 66), 50)
-	
+
 	surface.SetDrawColor(150 + self.Neon * 2, 150 + self.Neon * 2, 150 + self.Neon * 2)
 	surface.DrawLine(x + 2, h - 16, w - 4, h - 16)
 	surface.DrawLine(x + 2, h - 28, w - 4, h - 28)
@@ -442,12 +442,12 @@ end
 
 function SKIN.tex.Window.Restore_Down(x, y, w, h, self)
 	if not self then return end
-	
+
 	self.Neon = self.Neon or 0
 	DLib.DrawBox(x, y, w, h - 11, Col)
-	
+
 	self.Neon = math.min(self.Neon + 5 * (FrameTime() * 66), 50)
-	
+
 	surface.SetDrawColor(150 + self.Neon * 2, 150 + self.Neon * 2, 150 + self.Neon * 2)
 	surface.DrawLine(x + 2, h - 16, w - 4, h - 16)
 	surface.DrawLine(x + 2, h - 28, w - 4, h - 28)
@@ -457,36 +457,36 @@ end
 
 function SKIN.tex.Window.Mini(x, y, w, h, self)
 	if not self then return end
-	
+
 	self.Neon = self.Neon or 0
 	DLib.DrawBox(x, y, w, h - 11, Color(50 + self.Neon, 50 + self.Neon, 50 + self.Neon, skin.CloseAlpha))
-	
+
 	self.Neon = math.max(self.Neon - 5 * (FrameTime() * 66), 0)
-	
+
 	surface.SetDrawColor(125 + self.Neon * 2, 125 + self.Neon * 2, 125 + self.Neon * 2)
 	surface.DrawLine(x + 2, h - 16, w - 4, h - 16)
 end
 
 function SKIN.tex.Window.Mini_Hover(x, y, w, h, self)
 	if not self then return end
-	
+
 	self.Neon = self.Neon or 0
 	DLib.DrawBox(x, y, w, h - 11, Color(50 + self.Neon, 50 + self.Neon, 50 + self.Neon, skin.CloseAlpha))
-	
+
 	self.Neon = math.min(self.Neon + 5 * (FrameTime() * 66), 50)
-	
+
 	surface.SetDrawColor(125 + self.Neon * 2, 125 + self.Neon * 2, 125 + self.Neon * 2)
 	surface.DrawLine(x + 2, h - 16, w - 4, h - 16)
 end
 
 function SKIN.tex.Window.Mini_Down(x, y, w, h, self)
 	if not self then return end
-	
+
 	self.Neon = self.Neon or 0
 	DLib.DrawBox(x, y, w, h - 11, Col)
-	
+
 	self.Neon = math.min(self.Neon + 5 * (FrameTime() * 66), 50)
-	
+
 	surface.SetDrawColor(125 + self.Neon * 2, 125 + self.Neon * 2, 125 + self.Neon * 2)
 	surface.DrawLine(x + 2, h - 16, w - 4, h - 16)
 end
@@ -831,7 +831,7 @@ function SKIN:PaintTextEntry(panel, w, h)
 			self.tex.TextBox(0, 0, w, h)
 		end
 	end
-	
+
 	panel:DrawTextEntryText(panel.m_colText, panel.m_colHighlight, panel.m_colCursor)
 end
 
@@ -868,7 +868,7 @@ function SKIN:PaintMenuOption(panel, w, h)
 	if panel.m_bBackground and (panel.Hovered or panel.Highlight) then
 		self.tex.MenuBG_Hover(0, 0, w, h)
 	end
-	
+
 	if panel:GetChecked() then
 		self.tex.Menu_Check(5, h/2-7, 15, 15)
 	end
@@ -892,7 +892,7 @@ function SKIN:PaintPropertySheet(panel, w, h)
 	local ActiveTab = panel:GetActiveTab()
 	local Offset = 0
 	if ActiveTab then Offset = ActiveTab:GetTall()-8 end
-	
+
 	self.tex.Tab_Control(0, Offset, w, h-Offset)
 end
 
@@ -903,7 +903,7 @@ function SKIN:PaintTab(panel, w, h)
 	if panel:GetPropertySheet():GetActiveTab() == panel then
 		return self:PaintActiveTab(panel, w, h)
 	end
-	
+
 	self.tex.TabT_Inactive(0, 0, w, h)
 end
 
@@ -916,33 +916,33 @@ end
 -----------------------------------------------------------]]
 function SKIN:PaintWindowCloseButton(panel, w, h)
 	if not panel.m_bBackground then return end
-	
+
 	if panel:GetDisabled() then
 		return self.tex.Window.Close(0, 0, w, h, Color(255, 255, 255, 50))
 	end
-	
+
 	if panel.Depressed or panel:IsSelected() then
 		return self.tex.Window.Close_Down(0, 0, w, h)
 	end
-	
+
 	if panel.Hovered then
 		return self.tex.Window.Close_Hover(0, 0, w, h)
 	end
-	
+
 	self.tex.Window.Close(0, 0, w, h)
 end
 
 function SKIN:PaintWindowMinimizeButton(panel, w, h)
 	if not panel.m_bBackground then return end
-	
+
 	if panel:GetDisabled() then
 		return self.tex.Window.Mini(0, 0, w, h, Color(255, 255, 255, 50))
 	end
-	
+
 	if panel.Depressed or panel:IsSelected() then
 		return self.tex.Window.Mini_Down(0, 0, w, h)
 	end
-	
+
 	if panel.Hovered then
 		return self.tex.Window.Mini_Hover(0, 0, w, h)
 	end
@@ -952,15 +952,15 @@ end
 
 function SKIN:PaintWindowMaximizeButton(panel, w, h)
 	if not panel.m_bBackground then return end
-	
+
 	if panel:GetDisabled() then
 		return self.tex.Window.Maxi(0, 0, w, h, Color(255, 255, 255, 50))
 	end
-	
+
 	if panel.Depressed or panel:IsSelected() then
 		return self.tex.Window.Maxi_Down(0, 0, w, h)
 	end
-	
+
 	if panel.Hovered then
 		return self.tex.Window.Maxi_Hover(0, 0, w, h)
 	end
@@ -982,15 +982,15 @@ function SKIN:PaintScrollBarGrip(panel, w, h)
 	if panel:GetDisabled() then
 		return self.tex.Scroller.ButtonV_Disabled(0, 0, w, h)
 	end
-	
+
 	if panel.Depressed then
 		return self.tex.Scroller.ButtonV_Down(0, 0, w, h)
 	end
-	
+
 	if panel.Hovered then
 		return self.tex.Scroller.ButtonV_Hover(0, 0, w, h)
 	end
-	
+
 	return self.tex.Scroller.ButtonV_Normal(0, 0, w, h)
 end
 
@@ -999,19 +999,19 @@ end
 -----------------------------------------------------------]]
 function SKIN:PaintButtonDown(panel, w, h)
 	if not panel.m_bBackground then return end
-	
+
 	if panel.Depressed or panel:IsSelected() then
 		return self.tex.Scroller.DownButton_Down(0, 0, w, h)
 	end
-	
+
 	if panel:GetDisabled() then
 		return self.tex.Scroller.DownButton_Dead(0, 0, w, h)
 	end
-	
+
 	if panel.Hovered then
 		return self.tex.Scroller.DownButton_Hover(0, 0, w, h)
 	end
-	
+
 	self.tex.Scroller.DownButton_Normal(0, 0, w, h)
 end
 
@@ -1020,19 +1020,19 @@ end
 -----------------------------------------------------------]]
 function SKIN:PaintButtonUp(panel, w, h)
 	if not panel.m_bBackground then return end
-	
+
 	if panel.Depressed or panel:IsSelected() then
 		return self.tex.Scroller.UpButton_Down(0, 0, w, h)
 	end
-	
+
 	if panel:GetDisabled() then
 		return self.tex.Scroller.UpButton_Dead(0, 0, w, h)
 	end
-	
+
 	if panel.Hovered then
 		return self.tex.Scroller.UpButton_Hover(0, 0, w, h)
 	end
-	
+
 	self.tex.Scroller.UpButton_Normal(0, 0, w, h)
 end
 
@@ -1063,19 +1063,19 @@ end
 function SKIN:PaintButtonRight(panel, w, h)
 
 	if not panel.m_bBackground then return end
-	
+
 	if panel.Depressed or panel:IsSelected() then
 		return self.tex.Scroller.RightButton_Down(0, 0, w, h)
 	end
-	
+
 	if panel:GetDisabled() then
 		return self.tex.Scroller.RightButton_Dead(0, 0, w, h)
 	end
-	
+
 	if panel.Hovered then
 		return self.tex.Scroller.RightButton_Hover(0, 0, w, h)
 	end
-	
+
 	self.tex.Scroller.RightButton_Normal(0, 0, w, h)
 
 end
@@ -1087,15 +1087,15 @@ function SKIN:PaintComboDownArrow(panel, w, h)
 	if panel.ComboBox:GetDisabled() then
 		return self.tex.Input.ComboBox.Button.Disabled(0, 0, w, h)
 	end
-	
+
 	if panel.ComboBox.Depressed or panel.ComboBox:IsMenuOpen() then
 		return self.tex.Input.ComboBox.Button.Down(0, 0, w, h)
 	end
-	
+
 	if panel.ComboBox.Hovered then
 		return self.tex.Input.ComboBox.Button.Hover(0, 0, w, h)
 	end
-	
+
 	self.tex.Input.ComboBox.Button.Normal(0, 0, w, h)
 end
 
@@ -1106,15 +1106,15 @@ function SKIN:PaintComboBox(panel, w, h)
 	if panel:GetDisabled() then
 		return self.tex.Input.ComboBox.Disabled(0, 0, w, h)
 	end
-	
+
 	if panel.Depressed or panel:IsMenuOpen() then
 		return self.tex.Input.ComboBox.Down(0, 0, w, h)
 	end
-	
+
 	if panel.Hovered then
 		return self.tex.Input.ComboBox.Hover(0, 0, w, h)
 	end
-	
+
 	self.tex.Input.ComboBox.Normal(0, 0, w, h)
 end
 
@@ -1134,15 +1134,15 @@ function SKIN:PaintNumberUp(panel, w, h)
 	if panel:GetDisabled() then
 		return self.Input.UpDown.Up.Disabled(0, 0, w, h)
 	end
-	
+
 	if panel.Depressed then
 		return self.tex.Input.UpDown.Up.Down(0, 0, w, h)
 	end
-	
+
 	if panel.Hovered then
 		return self.tex.Input.UpDown.Up.Hover(0, 0, w, h)
 	end
-	
+
 	self.tex.Input.UpDown.Up.Normal(0, 0, w, h)
 end
 
@@ -1153,23 +1153,23 @@ function SKIN:PaintNumberDown(panel, w, h)
 	if panel:GetDisabled() then
 		return self.tex.Input.UpDown.Down.Disabled(0, 0, w, h)
 	end
-	
+
 	if panel.Depressed then
 		return self.tex.Input.UpDown.Down.Down(0, 0, w, h)
 	end
-	
+
 	if panel.Hovered then
 		return self.tex.Input.UpDown.Down.Hover(0, 0, w, h)
 	end
-	
+
 	self.tex.Input.UpDown.Down.Normal(0, 0, w, h)
 end
 
 function SKIN:PaintTreeNode(panel, w, h)
 	if not panel.m_bDrawLines then return end
-	
+
 	surface.SetDrawColor(self.Colours.Tree.Lines)
-	
+
 	if panel.m_bLastChild then
 		surface.DrawRect(9, 0, 1, 7)
 		surface.DrawRect(9, 7, 9, 1)
@@ -1181,11 +1181,11 @@ end
 
 function SKIN:PaintTreeNodeButton(panel, w, h)
 	if not panel.m_bSelected then return end
-	
+
 	-- Don't worry this isn't working out the size every render
 	-- it just gets the cached value from inside the Label
 	local w, _ = panel:GetTextSize() 
-	
+
 	self.tex.Selection(38, 0, w + 6, h)
 end
 
@@ -1195,21 +1195,21 @@ end
 
 function SKIN:PaintSliderKnob(panel, w, h)
 	if panel:GetDisabled()  then	return self.tex.Input.Slider.H.Disabled(0, 0, w, h) end
-	
+
 	if panel.Depressed then
 		return self.tex.Input.Slider.H.Down(0, 0, w, h)
 	end
-	
+
 	if panel.Hovered then
 		return self.tex.Input.Slider.H.Hover(0, 0, w, h)
 	end
-	
+
 	self.tex.Input.Slider.H.Normal(0, 0, w, h)
 end
 
 local function PaintNotches(x, y, w, h, num)
 	if not num then return end
-	
+
 	local space = w / num
 	for i=0, num do
 		surface.DrawRect(x + i * space, y + 4, 1,  5)
@@ -1219,7 +1219,7 @@ end
 function SKIN:PaintNumSlider(panel, w, h)
 	surface.SetDrawColor(Color(0, 0, 0, 100))
 	surface.DrawRect(8, h / 2 - 1, w - 15, 1)
-	
+
 	PaintNotches(8, h / 2 - 1, w - 16, 1, panel.m_iNotches)
 end
 
@@ -1232,7 +1232,7 @@ function SKIN:PaintCollapsibleCategory(panel, w, h)
 	if not panel:GetExpanded() and h < 40 then
 		return self.tex.CategoryList.Header(0, 0, w, h)
 	end
-	
+
 	self.tex.CategoryList.Inner(0, 0, w, h)
 end
 
@@ -1282,14 +1282,14 @@ end
 
 function SKIN:PaintMenuBar(panel, w, h)
 	local Childs = panel:GetChildren()
-	
+
 	for k, v in pairs(Childs) do
 		if panel.SetTextColor and not panel.FixFuckingTextColor then
 			panel.FixFuckingTextColor = true
 			panel:SetTextColor(Skin.Colours.Button.Menu)
 		end
 	end
-	
+
 	self.tex.Menu_Strip(0, 0, w, h)
 end
 
@@ -1299,7 +1299,7 @@ function SKIN:PaintMenuOption(panel, w, h)
 	if panel.m_bBackground and (panel.Hovered or panel.Highlight) then
 		self.tex.MenuBG_Hover(0, 0, w, h)
 	end
-	
+
 	if panel:GetChecked() then
 		self.tex.Menu_Check(5, h/2-7, 15, 15)
 	end
@@ -1311,9 +1311,9 @@ function SKIN:PaintMenu(panel, w, h)
 	else
 		self.tex.MenuBG(0, 0, w, h)
 	end
-	
+
 	local Canvas = panel:GetCanvas()
-	
+
 	if IsValid(Canvas) then
 		for k, v in pairs(Canvas:GetChildren()) do
 			if v.SetTextColor and not v.FIX_FUCKING_COLOR then
@@ -1352,53 +1352,53 @@ function SKIN:PaintButton(panel, w, h)
 			panel:SetTextColor(Skin.Colours.Button.Menu)
 		end
 	end
-	
+
 	if not panel.m_bBackground then return end
-	
+
 	if panel.Depressed or panel:IsSelected() or panel:GetToggle() then
 		return self.tex.Button_Down(0, 0, w, h, panel)
 	end
-	
+
 	if panel:GetDisabled() then
 		return self.tex.Button_Dead(0, 0, w, h, panel)
 	end
-	
+
 	if panel.Hovered then
 		return self.tex.Button_Hovered(0, 0, w, h, panel)
 	end
-	
+
 	self.tex.Button(0, 0, w, h, panel)
 end
 
 function SKIN:PaintWindowCloseButton(panel, w, h)
 	if not panel.m_bBackground then return end
-	
+
 	if panel:GetDisabled() then
 		return self.tex.Window.Close(0, 0, w, h, panel)
 	end
-	
+
 	if panel.Depressed or panel:IsSelected() then
 		return self.tex.Window.Close_Down(0, 0, w, h, panel)
 	end
-	
+
 	if panel.Hovered then
 		return self.tex.Window.Close_Hover(0, 0, w, h, panel)
 	end
-	
+
 	self.tex.Window.Close(0, 0, w, h, panel)
 end
 
 function SKIN:PaintWindowMinimizeButton(panel, w, h)
 	if not panel.m_bBackground then return end
-	
+
 	if panel:GetDisabled() then
 		return self.tex.Window.Mini(0, 0, w, h, panel)
 	end
-	
+
 	if panel.Depressed or panel:IsSelected() then
 		return self.tex.Window.Mini_Down(0, 0, w, h, panel)
 	end
-	
+
 	if panel.Hovered then
 		return self.tex.Window.Mini_Hover(0, 0, w, h, panel)
 	end
@@ -1408,15 +1408,15 @@ end
 
 function SKIN:PaintWindowMaximizeButton(panel, w, h)
 	if not panel.m_bBackground then return end
-	
+
 	if panel:GetDisabled() then
 		return self.tex.Window.Maxi(0, 0, w, h, panel)
 	end
-	
+
 	if panel.Depressed or panel:IsSelected() then
 		return self.tex.Window.Maxi_Down(0, 0, w, h, panel)
 	end
-	
+
 	if panel.Hovered then
 		return self.tex.Window.Maxi_Hover(0, 0, w, h, panel)
 	end
@@ -1435,7 +1435,7 @@ local function OverrideFont(status)
 			extended = true,
 			antialias = true,
 		})
-		
+
 		surface.CreateFont('DermaDefaultBold', {
 			font = system.IsOSX() and 'Helvetica' or system.IsLinux() and 'Roboto' or 'Tahoma',
 			size = 13,
@@ -1443,7 +1443,7 @@ local function OverrideFont(status)
 			extended = true,
 			antialias = false,
 		})
-		
+
 		FontIsOverrided = false
 	elseif status and not FontIsOverrided then
 		surface.CreateFont('DermaDefault', {
@@ -1453,7 +1453,7 @@ local function OverrideFont(status)
 			extended = true,
 			antialias = true,
 		})
-		
+
 		surface.CreateFont('DermaDefaultBold', {
 			font = 'Roboto',
 			size = 15,
@@ -1461,7 +1461,7 @@ local function OverrideFont(status)
 			extended = true,
 			antialias = true,
 		})
-		
+
 		FontIsOverrided = true
 	end
 end
@@ -1493,7 +1493,7 @@ local function fuckupCheck(self)
 		self.GetScroll ~= getScroll or
 		self.SetScroll ~= setScroll or
 		self.GetOffset ~= getOffset
-	
+
 	if weAreFuckedUp then
 		reOverride(self)
 	end
@@ -1502,7 +1502,7 @@ end
 local function realUpdate(self)
 	fuckupCheck(self)
 	self:InvalidateLayout()
-	
+
 	if self:GetParent().OnVScroll then
 		self:GetParent():OnVScroll(self:GetOffset())
 	else
@@ -1517,21 +1517,21 @@ local function updateFunction(self)
 		self.RealScroll = 0
 		return
 	end
-	
+
 	if not smoothEnabled() then
 		realUpdate(self)
 		return
 	end
-	
+
 	self.RealScroll = self.RealScroll or 0
 	local Update = self.Scroll ~= self.RealScroll
-	
+
 	if smoothEnabled() then
 		self.Scroll = Lerp(FrameTime() * 4, self.Scroll, self.RealScroll)
 	else
 		self.Scroll = self.RealScroll
 	end
-	
+
 	if not Update then return end
 	realUpdate(self)
 end
@@ -1548,7 +1548,7 @@ local function barThink(self)
 	if smoothEnabled() then
 		self:UpdateScroll()
 	end
-	
+
 	if self.olderBarThink then
 		return self:olderBarThink()
 	elseif self.oldBarThink then
@@ -1564,7 +1564,7 @@ end
 local function getOffset(self)
 	fuckupCheck(self)
 	if not self.Enabled then return 0 end
-	
+
 	if smoothEnabled() then
 		return -self.Scroll
 	else
@@ -1582,17 +1582,17 @@ end
 
 local function UpdateScrollBar()
 	local get = vgui.GetControlTable('DVScrollBar')
-	
+
 	DFlatBlack.DVScrollBar = DFlatBlack.DVScrollBar or get and table.Copy(get)
 	local DVScrollBar = DFlatBlack.DVScrollBar
-	
+
 	if not DVScrollBar then return end
-	
+
 	local DVScrollBar = table.Copy(DVScrollBar)
-	
+
 	DVScrollBar.oldBarThink = DVScrollBar.Think
 	reOverride(DVScrollBar)
-	
+
 	derma.DefineControl("DVScrollBar", "A Scrollbar", DVScrollBar, "Panel")
 end
 

@@ -130,4 +130,3 @@ if CLIENT
 		return if not @SCP522_CLIP
 		render.PopCustomClipPlane()
 		@SCP522_CLIP = false
-		

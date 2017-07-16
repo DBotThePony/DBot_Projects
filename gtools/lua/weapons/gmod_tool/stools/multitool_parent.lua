@@ -30,7 +30,7 @@ else
 	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.name', 'Multi-Parent or Unparent')
 	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.desc', 'Sets Source Engine parents of entities')
 	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.0', '')
-	
+
 	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.left', 'Left Click - select-unselect')
 	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.left_use', 'USE + Left Click - auto-select')
 	language.Add('tool.' .. CURRENT_TOOL_MODE .. '.right', 'Right Click - apply')
@@ -68,7 +68,7 @@ function RebuildPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
 	PANEL = Panel
-	
+
 	GTools.AutoSelectOptions(Panel, CURRENT_TOOL_MODE)
 	GTools.GenericSelectPicker(Panel, CURRENT_TOOL_MODE)
 end
@@ -82,7 +82,7 @@ local function CanUse(ply, ent)
 	if ent.CPPICanTool and not ent:CPPICanTool(ply, CURRENT_TOOL_MODE) then return false end
 	if ent:GetSolid() == SOLID_NONE then return false end
 	if IsValid(ent:GetOwner()) then return false end
-	
+
 	return true
 end
 
@@ -92,103 +92,103 @@ end
 
 function TOOL:DrawHUD()
 	if #SelectTable == 0 then return end
-	
+
 	surface.SetTextColor(200, 50, 50)
 	surface.SetFont('MultiTool.ScreenHeader')
-	
+
 	local w = surface.GetTextSize('Unsaved changes')
-	
+
 	surface.SetTextPos(ScrW() / 2 - w / 2, 180)
 	surface.DrawText('Unsaved changes')
 end
 
 if CLIENT then
 	local cvar = {}
-	
+
 	for k, v in pairs(TOOL.ClientConVar) do
 		cvar[k] = CreateConVar(CURRENT_TOOL_MODE .. '_' .. k, tostring(v), {FCVAR_ARCHIVE, FCVAR_USERINFO}, '')
 	end
-	
+
 	net.Receive(CURRENT_TOOL_MODE .. '.Select', function()
 		local newEnt = net.ReadEntity()
-		
+
 		for k, v in ipairs(SelectTable) do
 			if v == newEnt then
 				table.remove(SelectTable, k)
 				return
 			end
 		end
-		
+
 		table.insert(SelectTable, newEnt)
 	end)
-	
+
 	net.Receive(CURRENT_TOOL_MODE .. '.Clear', function()
 		SelectTable = {}
 		GTools.ChatPrint('Selection Cleared!')
 	end)
-	
+
 	net.Receive(CURRENT_TOOL_MODE .. '.Apply', function()
 		GTools.GenericTableClear(SelectTable)
-		
+
 		net.Start(CURRENT_TOOL_MODE .. '.Apply')
 		net.WriteTable(SelectTable)
 		net.WriteEntity(net.ReadEntity())
 		net.SendToServer()
-		
+
 		SelectTable = {}
 		GTools.ChatPrint('Selection is about to be Applied!')
 	end)
-	
+
 	net.Receive(CURRENT_TOOL_MODE .. '.MultiClear', function()
 		GTools.GenericTableClear(SelectTable)
-		
+
 		net.Start(CURRENT_TOOL_MODE .. '.MultiClear')
 		net.WriteTable(SelectTable)
 		net.SendToServer()
-		
+
 		SelectTable = {}
 		GTools.ChatPrint('Clearing all no-collide constraints and select table')
 	end)
-	
+
 	net.Receive(CURRENT_TOOL_MODE .. '.MultiSelect', function()
 		GTools.GenericMultiselectReceive(SelectTable, cvar)
 	end)
-	
+
 	hook.Add('PostDrawWorldToolgun', CURRENT_TOOL_MODE, function(ply, weapon, mode)
 		if mode ~= CURRENT_TOOL_MODE then return end
-		
+
 		GTools.GenericTableClear(SelectTable)
-		
+
 		local r = cvar.select_r:GetInt() / 255
 		local g = cvar.select_g:GetInt() / 255
 		local b = cvar.select_b:GetInt() / 255
-		
+
 		for i, ent in ipairs(SelectTable) do
 			render.SetColorModulation(r, g, b) -- Make sure that nothing we rendered reseted our color!
 			ent:DrawModel()
 		end
-		
+
 		render.SetColorModulation(1, 1, 1)
 	end)
-	
+
 	language.Add('Undo_NoCollideMulti', 'Undone Multi No-Collide')
 else
 	net.Receive(CURRENT_TOOL_MODE .. '.Apply', function(len, ply)
 		local SelectTable = net.ReadTable()
 		local parentTo = net.ReadEntity()
-		
+
 		if not IsValid(parentTo) then return end
-		
+
 		for i, ent in ipairs(SelectTable) do
 			if ent ~= parentTo and CanUse(ply, ent) then
 				ent:SetParent(parentTo)
 			end
 		end
 	end)
-	
+
 	net.Receive(CURRENT_TOOL_MODE .. '.MultiClear', function(len, ply)
 		local SelectTable = net.ReadTable()
-		
+
 		for i, ent in ipairs(SelectTable) do
 			if not CanUse(ply, ent) then continue end
 			ent:SetParent(NULL)
@@ -198,23 +198,23 @@ end
 
 function TOOL:Reload(tr)
 	local ply = self:GetOwner()
-	
+
 	if ply:KeyDown(IN_SPEED) then
 		if not CanUse(ply, tr.Entity) then return false end
-		
+
 		if SERVER then
 			local get = tr.Entity:GetChildren()
-			
+
 			for k, ent in pairs(get) do
 				ent:SetParent(NULL)
 			end
-			
+
 			ply:ChatPrint('All children unparented')
 		end
-		
+
 		return true
 	end
-	
+
 	if SERVER then
 		if not self:GetOwner():KeyDown(IN_USE) then
 			net.Start(CURRENT_TOOL_MODE .. '.Clear')
@@ -224,7 +224,7 @@ function TOOL:Reload(tr)
 			net.Send(self:GetOwner())
 		end
 	end
-	
+
 	return true
 end
 
@@ -233,13 +233,13 @@ function TOOL:RightClick(tr)
 	if tr.Entity:IsPlayer() then return false end
 	if tr.Entity:IsVehicle() then return false end
 	if tr.Entity:IsNPC() then return false end
-	
+
 	if SERVER then
 		net.Start(CURRENT_TOOL_MODE .. '.Apply')
 		net.WriteEntity(tr.Entity)
 		net.Send(self:GetOwner())
 	end
-	
+
 	return true
 end
 
@@ -247,7 +247,7 @@ function TOOL:LeftClick(tr)
 	local ent = tr.Entity
 	local ply = self:GetOwner()
 	if not ply:KeyDown(IN_USE) and not CanUse(ply, ent) then return end
-	
+
 	if SERVER then
 		if not ply:KeyDown(IN_USE) then
 			net.Start(CURRENT_TOOL_MODE .. '.Select')
@@ -255,13 +255,13 @@ function TOOL:LeftClick(tr)
 			net.Send(self:GetOwner())
 		else
 			local new = GTools.GenericAutoSelect(self, tr)
-			
+
 			net.Start(CURRENT_TOOL_MODE .. '.MultiSelect')
 			GTools.WriteEntityList(new)
 			net.Send(self:GetOwner())
 		end
 	end
-	
+
 	return true
 end
 

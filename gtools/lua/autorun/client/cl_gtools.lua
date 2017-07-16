@@ -31,7 +31,7 @@ function MultiTool_AddSorterChoices(pnl)
 	pnl:AddChoice('Select X - x', '5')
 	pnl:AddChoice('Select y - Y', '6')
 	pnl:AddChoice('Select Y - y', '7')
-	
+
 	pnl:AddChoice('Select x+y - X+Y', '8')
 	pnl:AddChoice('Select X+Y - x+y', '9')
 	pnl:AddChoice('Select x+Y - X+y', '10')
@@ -43,14 +43,14 @@ _G.MultiTool_AddSorterChoices = MultiTool_AddSorterChoices
 function BuildPhysgunMenu(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
-	
+
 	Panel:CheckBox('Draw physgun beams', 'physgun_drawbeams')
 	Panel:CheckBox('Draw physgun halos', 'physgun_halo')
 	Panel:NumSlider('Sensitivity', 'physgun_rotation_sensitivity', 0, 2, 4)
 	Panel:NumSlider('Wheel speed', 'physgun_wheelspeed', 0, 5000, 0)
-	
+
 	local button = Panel:Button('Reset to default')
-	
+
 	function button:DoClick()
 		RunConsoleCommand('physgun_drawbeams', '1')
 		RunConsoleCommand('physgun_halo', '1')
@@ -89,38 +89,38 @@ Sliders = Sliders or {}
 function BuildPhysgunMenuAdmin(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
-	
+
 	local lab = Label('Only super admin can change this settings', Panel)
 	lab:SetDark(true)
 	Panel:AddItem(lab)
-	
+
 	local lab = Label('If you are an server owner and want to disable this menu\nyou need to set gtools_disable_physgun_config to 1 in server console.', Panel)
 	lab:SetDark(true)
 	lab:SetTooltip(lab:GetText())
 	lab:SizeToContents()
 	Panel:AddItem(lab)
-	
+
 	for k, data in ipairs(PhysgunVars) do
 		local slider = Panel:NumSlider(data[2], '', data[3], data[4], data[5])
 		slider:SetTooltip(data[2])
-		
+
 		Sliders[data[1]] = slider
-		
+
 		local ignore = true
-		
+
 		function slider:OnValueChanged(val)
 			if ignore then return end
-			
+
 			timer.Create('_g_set_' .. data[1], 1, 1, function()
 				RunConsoleCommand('_g_' .. data[1], tostring(val))
 			end)
-			
+
 			timer.Create('_g_get_' .. data[1], 2, 1, function()
 				if not IsValid(slider) then return end
 				slider:SetValue(tonumber(GetGlobalString(data[1], 0) or 0) or 0)
 			end)
 		end
-		
+
 		timer.Simple(0.5, function()
 			if IsValid(slider) then
 				ignore = true
@@ -129,9 +129,9 @@ function BuildPhysgunMenuAdmin(Panel)
 			end
 		end)
 	end
-	
+
 	local button = Panel:Button('Reset to default')
-	
+
 	function button:DoClick()
 		for i, data in ipairs(PhysgunVarsDefault) do
 			if IsValid(Sliders[data[1]]) then
@@ -144,25 +144,25 @@ end
 function About(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
-	
+
 	local lab = Label('GTools: By DBotThePony(Robot)', Panel)
 	lab:SetDark(true)
 	Panel:AddItem(lab)
-	
+
 	local button = Panel:Button('GTools workshop link')
-	
+
 	function button:DoClick()
 		gui.OpenURL('http://steamcommunity.com/sharedfiles/filedetails/?id=796786540')
 	end
-	
+
 	local button = Panel:Button('GTools repository')
-	
+
 	function button:DoClick()
 		gui.OpenURL('https://git.dbot.serealia.ca/dbot/dbot_projects')
 	end
-	
+
 	local button = Panel:Button('Questions or ideas? Join Discord!')
-	
+
 	function button:DoClick()
 		gui.OpenURL('https://discord.gg/HG9eS79')
 	end
@@ -172,9 +172,9 @@ function PreRender()
 	if not LocalPlayer():IsValid() then return end
 	local wep = LocalPlayer():GetActiveWeapon()
 	if not wep:IsValid() then return end
-	
+
 	if wep:GetClass() ~= 'gmod_tool' then return end
-	
+
 	pcall(hook.Run, 'PreDrawAnythingToolgun', LocalPlayer(), wep, wep:GetMode())
 end
 
@@ -183,9 +183,9 @@ function PostDrawTranslucentRenderables(a, b)
 	if not LocalPlayer():IsValid() then return end
 	local wep = LocalPlayer():GetActiveWeapon()
 	if not wep:IsValid() then return end
-	
+
 	if wep:GetClass() ~= 'gmod_tool' then return end
-	
+
 	hook.Run('PostDrawWorldToolgun', LocalPlayer(), wep, wep:GetMode())
 end
 
@@ -194,9 +194,9 @@ function PreDrawOpaqueRenderables(a, b)
 	if not LocalPlayer():IsValid() then return end
 	local wep = LocalPlayer():GetActiveWeapon()
 	if not wep:IsValid() then return end
-	
+
 	if wep:GetClass() ~= 'gmod_tool' then return end
-	
+
 	hook.Run('PreDrawWorldToolgun', LocalPlayer(), wep, wep:GetMode())
 end
 
@@ -211,7 +211,7 @@ function AutoSelectOptions(Panel, ToolClass)
 	local Lab = Label('Auto-select settings')
 	Lab:SetDark(true)
 	Panel:AddItem(Lab)
-	
+
 	Panel:NumSlider('Auto Select Range', ToolClass .. '_select_range', 1, 1024, 0)
 	Panel:CheckBox('Auto Select by Model', ToolClass .. '_select_model')
 	Panel:CheckBox('Auto Select by Color', ToolClass .. '_select_color')
@@ -219,20 +219,20 @@ function AutoSelectOptions(Panel, ToolClass)
 	Panel:CheckBox('Auto Select only owned by you entities (Needs CPPI)', ToolClass .. '_select_owned')
 	Panel:CheckBox('Select only constrained entities', ToolClass .. '_select_only_constrained')
 	Panel:CheckBox('Print auto selection into console', ToolClass .. '_select_print')
-	
+
 	local Lab = Label('Firing at entity with color will invert that option\nEntities without color will be selected instead')
 	Lab:SetDark(true)
 	Lab:SizeToContents()
 	Panel:AddItem(Lab)
-	
+
 	Panel:CheckBox('Auto Select by Material', ToolClass .. '_select_material')
-	
+
 	local Lab = Label('Note: It is strict lookup. Material mismatch - don\'t select')
 	Lab:SetDark(true)
 	Panel:AddItem(Lab)
-	
+
 	local combo = Panel:ComboBox('Select Sort Mode', ToolClass .. '_select_sort')
-	
+
 	MultiTool_AddSorterChoices(combo)
 end
 
@@ -241,44 +241,44 @@ function GenericSelectPicker(Panel, ToolClass)
 	Lab:SetDark(true)
 	Lab:SizeToContents()
 	Panel:AddItem(Lab)
-	
+
 	local mixer = vgui.Create('DColorMixer', Panel)
 	Panel:AddItem(mixer)
 	mixer:SetConVarR(ToolClass .. '_select_r')
 	mixer:SetConVarG(ToolClass .. '_select_g')
 	mixer:SetConVarB(ToolClass .. '_select_b')
 	mixer:SetAlphaBar(false)
-	
+
 	return mixer
 end
 
 function GenericMultiselectReceive(tabToInsert, cvar)
 	local read = ReadEntityList()
-	
+
 	for k, new in ipairs(read) do
 		local hit = false
-		
+
 		for i, ent in ipairs(tabToInsert) do
 			if ent == new then
 				if cvar.select_invert:GetBool() then
 					table.remove(tabToInsert, i)
 				end
-				
+
 				hit = true
 				break
 			end
 		end
-		
+
 		if not hit then
 			table.insert(tabToInsert, new)
 		end
 	end
-	
+
 	ChatPrint('Auto Selected ' .. #read .. ' entities')
 
 	if cvar.select_print:GetBool() then
 		ChatPrint('Look into console for the list')
-		
+
 		for k, v in ipairs(read) do
 			PrintEntity(v)
 		end

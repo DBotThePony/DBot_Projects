@@ -19,7 +19,7 @@ if CLIENT then
 	language.Add('tool.fullbright.name', 'Fullbright')
 	language.Add('tool.fullbright.desc', 'Makes entities fullbright')
 	language.Add('tool.fullbright.0', '')
-	
+
 	language.Add('tool.fullbright.left', 'Left Click - make fullbright')
 	language.Add('tool.fullbright.left_use', 'USE + Left Click - make fullbright all constrained entities')
 	language.Add('tool.fullbright.right', 'Right Click - remove fullbright')
@@ -35,7 +35,7 @@ local VALID_ENTS_OPAQUE = {}
 local function UpdateEntities()
 	VALID_ENTS_TRANSLUCENT = {}
 	VALID_ENTS_OPAQUE = {}
-	
+
 	for k, v in ipairs(ents.GetAll()) do
 		if not v:GetNoDraw() and v:GetNWBool('FullBrightTool') then
 			if v:GetRenderGroup() == RENDERGROUP_OPAQUE then
@@ -52,37 +52,37 @@ if CLIENT then
 		if net.ReadEntity() == LocalPlayer() then return end
 		timer.Simple(0.5, UpdateEntities)
 	end)
-	
+
 	timer.Create('FullBrightTool', 5.5, 0, UpdateEntities)
-	
+
 	local function PostDrawTranslucentRenderables(a, b)
 		if a or b then return end
-		
+
 		render.SuppressEngineLighting(true)
-		
+
 		for i, ent in ipairs(VALID_ENTS_TRANSLUCENT) do
 			if IsValid(ent) then
 				ent:DrawModel()
 			end
 		end
-		
+
 		render.SuppressEngineLighting(false)
 	end
-	
+
 	local function PostDrawOpaqueRenderables(a, b)
 		if a or b then return end
-		
+
 		render.SuppressEngineLighting(true)
-		
+
 		for i, ent in ipairs(VALID_ENTS_OPAQUE) do
 			if IsValid(ent) then
 				ent:DrawModel()
 			end
 		end
-		
+
 		render.SuppressEngineLighting(false)
 	end
-	
+
 	hook.Add('PostDrawTranslucentRenderables', 'FullBrightTool', PostDrawTranslucentRenderables)
 	hook.Add('PostDrawOpaqueRenderables', 'FullBrightTool', PostDrawOpaqueRenderables)
 end
@@ -109,20 +109,20 @@ function TOOL:LeftClick(tr)
 	local ent, ply = tr.Entity, self:GetOwner()
 	if not IsValid(ent) then return end
 	if ent:IsPlayer() then return end
-	
+
 	if SERVER then
 		ent:SetNWBool('FullBrightTool', true)
 		net.Start('FullBrightTool.EntityStatusChanges')
 		net.WriteEntity(ply)
 		net.Broadcast()
-		
+
 		if ply:KeyDown(IN_USE) then
 			local get = constraint.GetAllConstrainedEntities(ent)
-			
+
 			for i, ent in pairs(get) do
 				ent:SetNWBool('FullBrightTool', true)
 			end
-			
+
 			net.Start('FullBrightTool.EntityStatusChanges')
 			net.WriteEntity(Entity(0))
 			net.Broadcast()
@@ -131,7 +131,7 @@ function TOOL:LeftClick(tr)
 		ent:SetNWBool('FullBrightTool', true)
 		UpdateEntities()
 	end
-	
+
 	return true
 end
 
@@ -139,20 +139,20 @@ function TOOL:RightClick(tr)
 	local ent, ply = tr.Entity, self:GetOwner()
 	if not IsValid(ent) then return end
 	if ent:IsPlayer() then return end
-	
+
 	if SERVER then
 		ent:SetNWBool('FullBrightTool', false)
 		net.Start('FullBrightTool.EntityStatusChanges')
 		net.WriteEntity(ply)
 		net.Broadcast()
-		
+
 		if ply:KeyDown(IN_USE) then
 			local get = constraint.GetAllConstrainedEntities(ent)
-			
+
 			for i, ent in pairs(get) do
 				ent:SetNWBool('FullBrightTool', false)
 			end
-			
+
 			net.Start('FullBrightTool.EntityStatusChanges')
 			net.WriteEntity(Entity(0))
 			net.Broadcast()
@@ -161,7 +161,7 @@ function TOOL:RightClick(tr)
 		ent:SetNWBool('FullBrightTool', false)
 		UpdateEntities()
 	end
-	
+
 	return true
 end
 

@@ -21,7 +21,7 @@ if CLIENT then
 	language.Add('tool.multifreeze.name', 'Multifreeze')
 	language.Add('tool.multifreeze.desc', 'Freeze-unfreeze entities')
 	language.Add('tool.multifreeze.0', '')
-	
+
 	language.Add('tool.multifreeze.left', 'Freeze selected entities')
 	language.Add('tool.multifreeze.right', 'Unfreeze selected entities')
 	language.Add('tool.multifreeze.reload', 'Highlight selected entities')
@@ -60,9 +60,9 @@ end
 
 function TOOL:LeftClick(tr)
 	if CLIENT then return true end
-	
+
 	local get = GTools.GenericAutoSelect(self, tr)
-	
+
 	for i, v in ipairs(get) do
 		v:GetPhysicsObject():EnableMotion(false)
 		local data = EffectData()
@@ -70,17 +70,17 @@ function TOOL:LeftClick(tr)
 		data:SetEntity(v)
 		util.Effect('entity_remove', data, true, true)
 	end
-	
+
 	GTools.PChatPrint(self:GetOwner(), 'Freezed ' .. #get .. ' physics objects')
-	
+
 	return true
 end
 
 function TOOL:RightClick(tr)
 	if CLIENT then return true end
-	
+
 	local get = GTools.GenericAutoSelect(self, tr)
-	
+
 	for i, v in ipairs(get) do
 		v:GetPhysicsObject():EnableMotion(true)
 		v:GetPhysicsObject():Wake()
@@ -89,9 +89,9 @@ function TOOL:RightClick(tr)
 		data:SetEntity(v)
 		util.Effect('entity_remove', data, true, true)
 	end
-	
+
 	GTools.PChatPrint(self:GetOwner(), 'Unfreezed ' .. #get .. ' physics objects')
-	
+
 	return true
 end
 
@@ -99,70 +99,70 @@ if SERVER then
 	util.AddNetworkString('MultiFreezeTool.ShowUp')
 else
 	local vars = {}
-	
+
 	for k, v in pairs(TOOL.ClientConVar) do
 		vars[k] = CreateConVar('multifreeze_' .. k, tostring(v), {FCVAR_USERINFO, FCVAR_ARCHIVE}, '')
 	end
-	
+
 	local display = 0
 	local DisplayTable = {}
-	
+
 	net.Receive('MultiFreezeTool.ShowUp', function()
 		display = RealTime() + 2
 		DisplayTable = {}
-		
+
 		local max = net.ReadUInt(12)
-		
+
 		for i = 1, max do
 			local new = net.ReadEntity()
-			
+
 			if IsValid(new) then
 				table.insert(DisplayTable, new)
-				
+
 				if vars.select_print:GetBool() then
 					GTools.PrintEntity(new)
 				end
 			end
 		end
-		
+
 		GTools.ChatPrint('Counted ' .. #DisplayTable .. ' physics objects')
-		
+
 		if vars.select_print:GetBool() then
 			GTools.ChatPrint('Look into console for list')
 		end
 	end)
-	
+
 	hook.Add('PostDrawWorldToolgun', 'multifreeze', function(ply, weapon, mode)
 		if mode ~= 'multifreeze' then return end
 		if display < RealTime() then return end
-		
+
 		if RealTime() % 0.5 < .25 then return end
-		
+
 		local r, g, b = vars.select_r:GetInt() / 255, vars.select_g:GetInt() / 255, vars.select_b:GetInt() / 255
-		
+
 		for i, ent in ipairs(DisplayTable) do
 			if not IsValid(ent) then continue end
 			render.SetColorModulation(r, g, b)
 			ent:DrawModel()
 		end
-		
+
 		render.SetColorModulation(1, 1, 1)
 	end)
 end
 
 function TOOL:Reload(tr)
 	if CLIENT then return true end
-	
+
 	local get = GTools.GenericAutoSelect(self, tr)
-	
+
 	net.Start('MultiFreezeTool.ShowUp')
 	net.WriteUInt(#get, 12)
-	
+
 	for i, v in ipairs(get) do
 		net.WriteEntity(v)
 	end
-	
+
 	net.Send(self:GetOwner())
-	
+
 	return true
 end

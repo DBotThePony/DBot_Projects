@@ -47,15 +47,15 @@ end
 
 function WriteEntityList(tab)
 	local toSend = {}
-	
+
 	for k, v in ipairs(tab) do
 		if IsValid(v) and v:EntIndex() > 0 then
 			table.insert(toSend, v)
 		end
 	end
-	
+
 	net.WriteUInt(#toSend, 12)
-	
+
 	for k, v in ipairs(toSend) do
 		net.WriteUInt(v:EntIndex(), 12)
 	end
@@ -64,31 +64,31 @@ end
 function ReadEntityList()
 	local max = net.ReadUInt(12)
 	local reply = {}
-	
+
 	for i = 1, max do
 		local ent = Entity(net.ReadUInt(12))
-		
+
 		if ent:IsValid() then
 			table.insert(reply, ent)
 		end
 	end
-	
+
 	return reply
 end
 
 function GenericTableClear(Tab)
 	local toRemove = {}
-	
+
 	for k, v in ipairs(Tab) do
 		if not v:IsValid() then
 			table.insert(toRemove, k)
 		end
 	end
-	
+
 	for k, v in ipairs(toRemove) do
 		table.remove(Tab, v - k + 1)
 	end
-	
+
 	return tab, #toRemove ~= 0
 end
 
@@ -96,7 +96,7 @@ function HasValueFast(arr, val)
 	for i = 1, #arr do
 		if arr[i] == val then return true end
 	end
-	
+
 	return false
 end
 
@@ -110,6 +110,6 @@ function Prepend(arr, val)
 	for i = #arr, 1, -1 do
 		arr[i + i] = arr[i]
 	end
-	
+
 	arr[1] = val
 end
