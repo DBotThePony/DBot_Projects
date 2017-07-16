@@ -183,6 +183,7 @@ ENT.BehaveUpdate = (delta) =>
     newTarget = @GetFirstVisible()
     if newTarget ~= @currentTarget
         @currentTarget = newTarget
+        @lookingAtTarget = false
         if IsValid(newTarget)
             net.Start('DTF2.SentryWing', true)
             net.WriteEntity(@)
