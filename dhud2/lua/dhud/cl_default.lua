@@ -256,7 +256,7 @@ function Default.NPCBars()
 	
 	local t = string.format('%s/%s (%s%%)', hp, mhp, math.floor(percent * 100))
 	local w2, h2 = surface.GetTextSize(t)
-	x = Default.NPC_HPBAR_WIDTH / 2 - w2 + 10
+	x = x + Default.NPC_HPBAR_WIDTH / 2 - w2
 	DHUD2.SimpleText(t, nil, x + 3 + DHUD2.GetDamageShift(), y - 1 + DHUD2.GetDamageShift(), Col 'npctext')
 	HUDCommons.PopDrawMatrix()
 end
