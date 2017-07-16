@@ -44,7 +44,6 @@ SWEP.PreOnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
     if IsValid(hitEntity) and (hitEntity\IsNPC() or hitEntity\IsPlayer()) and not hitEntity\OnGround() and not @GetIncomingCrit()
         @SetSuppressEffects(false)
         @ThatWasMinicrit() if SERVER
-    @BaseClass.PreOnHit(@, hitEntity, tr, dmginfo)
 
 SWEP.Primary = {
     'Ammo': 'Buckshot'
