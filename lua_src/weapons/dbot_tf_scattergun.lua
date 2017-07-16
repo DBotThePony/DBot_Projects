@@ -17,8 +17,6 @@
 
 AddCSLuaFile()
 
-BaseClass = baseclass.Get('dbot_tf_ranged')
-
 SWEP.Base = 'dbot_tf_ranged'
 SWEP.Author = 'DBot'
 SWEP.Category = 'TF2 Scout'
@@ -46,9 +44,9 @@ SWEP.FireCritSoundsScript = 'Weapon_Scatter_Gun.SingleCrit'
 SWEP.EmptySoundsScript = 'Weapon_Scatter_Gun.Empty'
 
 SWEP.Primary = {
-    'Ammo': 'Buckshot'
-    'ClipSize': 6
-    'DefaultClip': 6
+    'Ammo': 'Buckshot',
+    'ClipSize': 6,
+    'DefaultClip': 6,
     'Automatic': true
 }
 

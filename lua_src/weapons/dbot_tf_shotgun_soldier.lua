@@ -17,37 +17,19 @@
 
 AddCSLuaFile()
 
-BaseClass = baseclass.Get('dbot_tf_launcher')
-
-SWEP.Base = 'dbot_tf_launcher'
+SWEP.Base = 'dbot_tf_shotgun'
 SWEP.Author = 'DBot'
 SWEP.Category = 'TF2 Soldier'
-SWEP.PrintName = 'Rocket Launcher'
+SWEP.PrintName = 'Soldier Shotgun'
 SWEP.ViewModel = 'models/weapons/c_models/c_soldier_arms.mdl'
-SWEP.WorldModel = 'models/weapons/c_models/c_rocketlauncher/c_rocketlauncher.mdl'
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.AdminOnly = false
 
-SWEP.CooldownTime = 0.9
-
-SWEP.FireSoundsScript = 'Weapon_RPG.Single'
-SWEP.FireCritSoundsScript = 'Weapon_RPG.SingleCrit'
-SWEP.EmptySoundsScript = 'Weapon_RPG.ClipEmpty'
-
-SWEP.DrawAnimation = 'dh_draw'
-SWEP.IdleAnimation = 'dh_idle'
-SWEP.AttackAnimation = 'dh_fire'
-SWEP.AttackAnimationCrit = 'dh_fire'
-SWEP.ReloadStart = 'dh_reload_start'
-SWEP.ReloadLoop = 'dh_reload_loop'
-SWEP.ReloadEnd = 'dh_reload_finish'
-SWEP.ReloadDeployTime = 0.7
-SWEP.ReloadTime = 1
-
-SWEP.Primary = {
-    'Ammo': 'RPG_Round'
-    'ClipSize': 4
-    'DefaultClip': 20
-    'Automatic': true
-}
+SWEP.DrawAnimation = 'draw'
+SWEP.IdleAnimation = 'idle'
+SWEP.AttackAnimation = 'fire'
+SWEP.AttackAnimationCrit = 'fire'
+SWEP.ReloadStart = 'reload_start'
+SWEP.ReloadLoop = 'reload_loop'
+SWEP.ReloadEnd = 'reload_end'

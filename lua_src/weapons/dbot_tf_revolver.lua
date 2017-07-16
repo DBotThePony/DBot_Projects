@@ -17,8 +17,6 @@
 
 AddCSLuaFile()
 
-BaseClass = baseclass.Get('dbot_tf_ranged')
-
 SWEP.Base = 'dbot_tf_ranged'
 SWEP.Author = 'DBot'
 SWEP.Category = 'TF2 Spy'
@@ -50,8 +48,8 @@ SWEP.ReloadStart = 'reload'
 SWEP.ReloadDeployTime = 1.12
 
 SWEP.Primary = {
-    'Ammo': '357'
-    'ClipSize': 6
-    'DefaultClip': 24
+    'Ammo': '357',
+    'ClipSize': 6,
+    'DefaultClip': 24,
     'Automatic': true
 }

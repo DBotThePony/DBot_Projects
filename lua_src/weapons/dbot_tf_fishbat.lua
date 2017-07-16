@@ -1,4 +1,5 @@
 
+
 --
 -- Copyright (C) 2017 DBot
 --
@@ -17,26 +18,15 @@
 
 AddCSLuaFile()
 
-BaseClass = baseclass.Get('dbot_tf_melee')
-
-SWEP.Base = 'dbot_tf_melee'
+SWEP.Base = 'dbot_tf_bat'
 SWEP.Author = 'DBot'
-SWEP.Category = 'TF2 Soldier'
-SWEP.PrintName = 'The Shovel'
-SWEP.ViewModel = 'models/weapons/c_models/c_soldier_arms.mdl'
-SWEP.WorldModel = 'models/weapons/c_models/c_shovel/c_shovel.mdl'
+SWEP.Category = 'TF2 Scout'
+SWEP.PrintName = 'Holy Mackerel'
+SWEP.ViewModel = 'models/weapons/c_models/c_scout_arms.mdl'
+SWEP.WorldModel = 'models/weapons/c_models/c_holymackerel.mdl'
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.AdminOnly = false
-SWEP.UseHands = false
 
-SWEP.MissSoundsScript = 'Weapon_Shovel.Miss'
-SWEP.MissCritSoundsScript = 'Weapon_Shovel.MissCrit'
-SWEP.HitSoundsScript = 'Weapon_Shovel.HitWorld'
-SWEP.HitSoundsFleshScript = 'Weapon_Shovel.HitFlesh'
-
-SWEP.DrawAnimation = 's_draw'
-SWEP.IdleAnimation = 's_idle'
-SWEP.AttackAnimation = 's_swing_a'
-SWEP.AttackAnimationTable = {'s_swing_a', 's_swing_b'}
-SWEP.AttackAnimationCrit = 's_swing_c'
+SWEP.HitSoundsScript = 'Weapon_HolyMackerel.HitWorld'
+SWEP.HitSoundsFleshScript = 'Weapon_HolyMackerel.HitFlesh'

@@ -17,8 +17,6 @@
 
 AddCSLuaFile()
 
-BaseClass = baseclass.Get('dbot_tf_ranged')
-
 SWEP.Base = 'dbot_tf_ranged'
 SWEP.Author = 'DBot'
 SWEP.Category = 'TF2 Engineer'
@@ -28,7 +26,6 @@ SWEP.WorldModel = 'models/weapons/c_models/c_shotgun/c_shotgun.mdl'
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.AdminOnly = false
-SWEP.UseHands = false
 
 SWEP.SingleCrit = true
 
@@ -55,8 +52,8 @@ SWEP.ReloadLoop = 'fj_reload_loop'
 SWEP.ReloadEnd = 'fj_reload_end'
 
 SWEP.Primary = {
-    'Ammo': 'Buckshot'
-    'ClipSize': 6
-    'DefaultClip': 6
+    'Ammo': 'Buckshot',
+    'ClipSize': 6,
+    'DefaultClip': 6,
     'Automatic': true
 }

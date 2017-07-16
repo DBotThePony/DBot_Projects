@@ -17,8 +17,6 @@
 
 AddCSLuaFile()
 
-BaseClass = baseclass.Get('dbot_tf_launcher')
-
 SWEP.Base = 'dbot_tf_launcher'
 SWEP.Author = 'DBot'
 SWEP.Category = 'TF2 Demoman'
@@ -50,8 +48,8 @@ SWEP.ReloadPlayExtra = true
 SWEP.FireOffset = Vector(10, -10, -10)
 
 SWEP.Primary = {
-    'Ammo': 'Grenade'
-    'ClipSize': 4
-    'DefaultClip': 16
+    'Ammo': 'Grenade',
+    'ClipSize': 4,
+    'DefaultClip': 16,
     'Automatic': true
 }

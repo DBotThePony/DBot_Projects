@@ -17,22 +17,24 @@
 
 AddCSLuaFile()
 
-SWEP.Base = 'dbot_tf_pistol'
+SWEP.Base = 'dbot_tf_melee'
 SWEP.Author = 'DBot'
-SWEP.Category = 'TF2 Scout'
-SWEP.PrintName = 'Winger'
-SWEP.ViewModel = 'models/weapons/c_models/c_scout_arms.mdl'
-SWEP.WorldModel = 'models/weapons/c_models/c_winger_pistol/c_winger_pistol.mdl'
+SWEP.Category = 'TF2 Soldier'
+SWEP.PrintName = 'The Shovel'
+SWEP.ViewModel = 'models/weapons/c_models/c_soldier_arms.mdl'
+SWEP.WorldModel = 'models/weapons/c_models/c_shovel/c_shovel.mdl'
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.AdminOnly = false
+SWEP.UseHands = false
 
-SWEP.ReloadBullets = 5
-SWEP.BulletDamage = 19
+SWEP.MissSoundsScript = 'Weapon_Shovel.Miss'
+SWEP.MissCritSoundsScript = 'Weapon_Shovel.MissCrit'
+SWEP.HitSoundsScript = 'Weapon_Shovel.HitWorld'
+SWEP.HitSoundsFleshScript = 'Weapon_Shovel.HitFlesh'
 
-SWEP.Primary = {
-    'Ammo': 'Pistol'
-    'ClipSize': 5
-    'DefaultClip': 5
-    'Automatic': true
-}
+SWEP.DrawAnimation = 's_draw'
+SWEP.IdleAnimation = 's_idle'
+SWEP.AttackAnimation = 's_swing_a'
+SWEP.AttackAnimationTable = {'s_swing_a', 's_swing_b'}
+SWEP.AttackAnimationCrit = 's_swing_c'

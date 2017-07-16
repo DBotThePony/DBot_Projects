@@ -17,30 +17,24 @@
 
 AddCSLuaFile()
 
-BaseClass = baseclass.Get('dbot_tf_rocket_launcher')
-
 SWEP.Base = 'dbot_tf_rocket_launcher'
 SWEP.Author = 'DBot'
 SWEP.Category = 'TF2 Soldier'
-SWEP.PrintName = 'The Original'
+SWEP.PrintName = 'Liberty Launcher'
 SWEP.ViewModel = 'models/weapons/c_models/c_soldier_arms.mdl'
-SWEP.WorldModel = 'models/weapons/c_models/c_bet_rocketlauncher/c_bet_rocketlauncher.mdl'
+SWEP.WorldModel = 'models/weapons/c_models/c_liberty_launcher/c_liberty_launcher.mdl'
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.AdminOnly = false
 
-SWEP.FireOffset = Vector(0, 0, -12)
+SWEP.ProjectileClass = 'dbot_tf_llauncher_rocket'
 
-SWEP.ProjectileClass = 'dbot_tf_quake_rocket'
+SWEP.FireSoundsScript = 'Weapon_Liberty_Launcher.Single'
+SWEP.FireCritSoundsScript = 'Weapon_Liberty_Launcher.SingleCrit'
 
-SWEP.FireSoundsScript = 'Weapon_QuakeRPG.Single'
-SWEP.FireCritSoundsScript = 'Weapon_QuakeRPG.SingleCrit'
-SWEP.EmptySoundsScript = 'Weapon_QuakeRPG.ClipEmpty'
-
-SWEP.DrawAnimation = 'bet_draw'
-SWEP.IdleAnimation = 'bet_idle'
-SWEP.AttackAnimation = 'bet_fire'
-SWEP.AttackAnimationCrit = 'bet_fire'
-SWEP.ReloadStart = 'bet_reload_start'
-SWEP.ReloadLoop = 'bet_reload_loop'
-SWEP.ReloadEnd = 'bet_reload_finish'
+SWEP.Primary = {
+    'Ammo': 'RPG_Round',
+    'ClipSize': 5,
+    'DefaultClip': 20,
+    'Automatic': true
+}

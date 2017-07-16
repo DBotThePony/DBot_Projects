@@ -1,5 +1,4 @@
 
-
 --
 -- Copyright (C) 2017 DBot
 --
@@ -18,17 +17,17 @@
 
 AddCSLuaFile()
 
-BaseClass = baseclass.Get('dbot_tf_bat')
-
-SWEP.Base = 'dbot_tf_bat'
+SWEP.Base = 'dbot_tf_rocket_launcher'
 SWEP.Author = 'DBot'
-SWEP.Category = 'TF2 Scout'
-SWEP.PrintName = 'Holy Mackerel'
-SWEP.ViewModel = 'models/weapons/c_models/c_scout_arms.mdl'
-SWEP.WorldModel = 'models/weapons/c_models/c_holymackerel.mdl'
+SWEP.Category = 'TF2 Soldier'
+SWEP.PrintName = 'Direct Hit'
+SWEP.ViewModel = 'models/weapons/c_models/c_soldier_arms.mdl'
+SWEP.WorldModel = 'models/weapons/c_models/c_directhit/c_directhit.mdl'
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.AdminOnly = false
 
-SWEP.HitSoundsScript = 'Weapon_HolyMackerel.HitWorld'
-SWEP.HitSoundsFleshScript = 'Weapon_HolyMackerel.HitFlesh'
+SWEP.ProjectileClass = 'dbot_tf_directhit_rocket'
+
+SWEP.FireSoundsScript = 'Weapon_RPG_DirectHit.Single'
+SWEP.FireCritSoundsScript = 'Weapon_RPG_DirectHit.SingleCrit'
