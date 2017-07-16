@@ -117,6 +117,8 @@ ENT.FireBullet = (force = false) =>
     @SetPoseParameter('aim_yaw', @GetAimYaw())
 
     srcPos = @GetPos() + @GetAdditionalVector()
+    dir = @currentTargetPosition - srcPos
+    dir\Normalize()
     
     bulletData = {
         Attacker: @
@@ -124,7 +126,7 @@ ENT.FireBullet = (force = false) =>
         Damage: @BULLET_DAMAGE
         --Dir: srcAng
         --Src: srcPos
-        Dir: @currentAngle\Forward()
+        Dir: dir
         Src: srcPos
     }
 
@@ -258,4 +260,4 @@ ENT.Think = =>
         @SetPoseParameter('aim_pitch', @GetAimPitch())
         @SetPoseParameter('aim_yaw', @GetAimYaw())
 
-    @lookingAtTarget = diffPitch ~= -2 and diffPitch ~= 2 and diffYaw ~= -2 and diffYaw ~= 2
+    @lookingAtTarget = diffPitch ~= -2 and diffPitch ~= 2 and diffYaw ~= -2 and diffYaw ~= 2 and not @idleAnim
