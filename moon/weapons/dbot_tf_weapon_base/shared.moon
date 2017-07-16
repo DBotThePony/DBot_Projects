@@ -99,6 +99,7 @@ AccessorFunc(SWEP, 'lastCritsCheck', 'LastCritsCheck')
 AccessorFunc(SWEP, 'lastCritsCheck', 'LastCritsCheck')
 AccessorFunc(SWEP, 'incomingCrit', 'IncomingCrit')
 AccessorFunc(SWEP, 'incomingMiniCrit', 'IncomingMiniCrit')
+AccessorFunc(SWEP, 'm_suppressEffects', 'SuppressEffects')
 
 SWEP.AddDamageDealt = (val = 0) => @SetDamageDealt(@GetDamageDealt() + val)
 
@@ -265,8 +266,10 @@ SWEP.DisplayCritEffect = (hitEntity) =>
 
     effData = EffectData()
     effData\SetOrigin(pos)
+    SuppressHostEvents(NULL) if SERVER and not @m_suppressEffects
     util.Effect(@incomingCrit and 'dtf2_critical_hit' or 'dtf2_minicrit', effData)
     hitEntity\EmitSound(@incomingCrit and 'DTF2_TFPlayer.CritHit' or 'DTF2_TFPlayer.CritHitMini')
+    SuppressHostEvents(@GetOwner()) if SERVER and not @m_suppressEffects
 
 SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
     if not @incomingCrit and IsValid(hitEntity)
@@ -318,6 +321,7 @@ SWEP.ThatWasCrit = (hitEntity = @currentHitEntity, dmginfo = @currentDMGInfo) =>
 SWEP.PreFireTrigger = =>
     @suppressing = true
     SuppressHostEvents(@GetOwner()) if SERVER and @GetOwner()\IsPlayer()
+    @m_suppressEffects = true
 
 SWEP.PostFireTrigger = =>
     SuppressHostEvents(NULL) if SERVER
