@@ -18,13 +18,13 @@ limitations under the License.
 local function GetDroppableWeapons(ply)
 	local weaponArray = {}
 	local active = ply:GetActiveWeapon()
-	
+
 	for k, weapon in pairs(ply:GetWeapons()) do
 		if weapon ~= active then
 			local found = true
 			if GAMEMODE.Config.restrictdrop then
 				found = false
-				
+
 				for k, v in pairs(CustomShipments) do
 					if v.entity == weapon:GetClass() then
 						found = true
@@ -32,7 +32,7 @@ local function GetDroppableWeapons(ply)
 					end
 				end
 			end
-			
+
 			if found then
 				local canDrop = hook.Run('canDropWeapon', ply, weapon)
 				if canDrop ~= false then
@@ -41,32 +41,32 @@ local function GetDroppableWeapons(ply)
 			end
 		end
 	end
-	
+
 	return weaponArray
 end
 
 local function TryDrop(ply)
 	local weaponArray = GetDroppableWeapons(ply)
-	
+
 	if #weaponArray == 0 then return end
-	
+
 	local crate = ents.Create('dbot_wcrate')
 	crate:SetPos(ply:EyePos())
 	crate:Spawn()
 	crate:Activate()
-	
+
 	for k, weapon in ipairs(weaponArray) do
 		local w = crate:AddGun(weapon:GetClass())
-		
+
 		local type1 = weapon:GetPrimaryAmmoType()
 		local type2 = weapon:GetSecondaryAmmoType()
-		
+
 		local ammo1 = math.max(ply:GetAmmoCount(type1), 0)
 		local ammo2 = math.max(ply:GetAmmoCount(type2), 0)
-		
+
 		local clip1 = math.max(weapon:Clip1(), 0)
 		local clip2 = math.max(weapon:Clip2(), 0)
-		
+
 		w.Model = weapon:GetModel()
 		w.Clip1 = clip1
 		w.Clip2 = clip2
@@ -74,10 +74,10 @@ local function TryDrop(ply)
 		w.Ammo2 = ammo2
 		w.AmmoID1 = type1
 		w.AmmoID2 = type2
-		
+
 		weapon:Remove()
 	end
-	
+
 	return crate
 end
 
@@ -97,7 +97,7 @@ local function Command(ply)
 	umsg.Start("anim_dropitem")
 		umsg.Entity(ply)
 	umsg.End()
-	
+
 	ply.anim_DroppingItem = true
 
 	timer.Simple(1, function()
@@ -106,7 +106,7 @@ local function Command(ply)
 		if not crate then return end
 		crate:SetPos(crate:GetPos() + ply:GetAimVector() * 60)
 	end)
-	
+
 	return ''
 end
 
