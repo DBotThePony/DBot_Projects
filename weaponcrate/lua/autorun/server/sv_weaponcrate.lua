@@ -55,14 +55,25 @@ local function TryDrop(ply)
 	crate:Spawn()
 	crate:Activate()
 
+	local checkedAmmo = {}
+
 	for k, weapon in ipairs(weaponArray) do
 		local w = crate:AddGun(weapon:GetClass())
 
 		local type1 = weapon:GetPrimaryAmmoType()
 		local type2 = weapon:GetSecondaryAmmoType()
 
-		local ammo1 = math.max(ply:GetAmmoCount(type1), 0)
-		local ammo2 = math.max(ply:GetAmmoCount(type2), 0)
+		local ammo1, ammo2 = 0, 0
+
+		if not checkedAmmo[type1] then
+			ammo1 = math.max(ply:GetAmmoCount(type1), 0)
+			checkedAmmo[type1] = true
+		end
+
+		if not checkedAmmo[type2] then
+			ammo2 = math.max(ply:GetAmmoCount(type2), 0)
+			checkedAmmo[type2] = true
+		end
 
 		local clip1 = math.max(weapon:Clip1(), 0)
 		local clip2 = math.max(weapon:Clip2(), 0)
