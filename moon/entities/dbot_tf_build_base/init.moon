@@ -41,8 +41,12 @@ ENT.OnInjured = (dmg) =>
     if dmg\GetAttacker() == @ or dmg\GetAttacker()\IsValid() and @IsAlly(dmg\GetAttacker())
         dmg\SetDamage(0)
         dmg\SetMaxDamage(0)
+
+ENT.CallDestroy = (attacker = NULL, inflictor = NULL, dmg) =>
 ENT.OnKilled = (dmg) =>
-    hook.Run('OnNPCKilled', @, dmg\GetAttacker(), dmg\GetInflictor())
+    hook.Run('OnNPCKilled', @, dmg\GetAttacker(), dmg\GetInflictor(), dmg)
+    hook.Run('TF2BuildDestroyed', @, dmg\GetAttacker(), dmg\GetInflictor(), dmg)
+    @CallDestroy(dmg\GetAttacker(), dmg\GetInflictor(), dmg)
     @Explode()
 
 ENT.DelayGestureRemove = (gestID = ACT_INVALID, time = 0) => timer.Create "DTF2.RemoveGesture.#{@EntIndex()}.#{gestID}", time, 1, -> @RemoveGesture(gestID) if IsValid(@)

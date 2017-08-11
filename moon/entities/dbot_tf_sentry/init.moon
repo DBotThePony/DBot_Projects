@@ -23,6 +23,8 @@ AddCSLuaFile 'shared.lua'
 util.AddNetworkString('DTF2.SentryWing')
 util.AddNetworkString('DTF2.SentryFire')
 
+ENT.CallDestroy = (attacker = NULL, inflictor = NULL, dmg) => hook.Run('TF2SentryDestroyed', @, attacker, inflictor, dmg)
+
 ENT.Initialize = =>
     @BaseClass.Initialize(@)
     @targetAngle = Angle(0, 0, 0)

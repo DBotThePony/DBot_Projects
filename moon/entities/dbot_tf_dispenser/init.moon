@@ -18,6 +18,8 @@
 include 'shared.lua'
 AddCSLuaFile 'shared.lua'
 
+ENT.CallDestroy = (attacker = NULL, inflictor = NULL, dmg) => hook.Run('TF2DispenserDestroyed', @, attacker, inflictor, dmg)
+
 ENT.Initialize = =>
     @BaseClass.Initialize(@)
     @healing = {}
