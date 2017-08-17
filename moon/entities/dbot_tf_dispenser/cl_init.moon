@@ -49,6 +49,7 @@ HEIGHT_ARROW = 128 / 12
 
 ENT.Draw = =>
     @BaseClass.Draw(@)
+    return if not @IsAvaliable()
     screenMat = SCREEN_BG_BLUE if @GetTeamType()
     screenMat = SCREEN_BG_RED if not @GetTeamType()
     lpos = @GetPos()

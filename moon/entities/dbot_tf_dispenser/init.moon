@@ -42,9 +42,7 @@ ENT.HealTarget = (ent = NULL, delta = 1, cTime = CurTime()) =>
 
 ENT.BehaveUpdate = (delta) =>
     @UpdateRelationships()
-    if not @IsAvaliable()
-        @currentTarget = NULL
-        return
+    return if not @IsAvaliable()
     
     @healing = @GetAlliesVisible()
     beam.__isValid = false for ply, beam in pairs @beams
@@ -80,8 +78,12 @@ ENT.ChargeUp = (force = false) =>
     toAdd = math.Clamp(@GetMaxRessuply() - @GetRessuplyAmount(), 0, @GetChargeAmount())
     @SetRessuplyAmount(@GetRessuplyAmount() + toAdd)
     @EmitSound('weapons/dispenser_generate_metal.wav')
+
 ENT.Think = =>
     @BaseClass.Think(@)
-    @ChargeUp()
+    if not @IsAvaliable()
+        @nextChangeUp = CurTime() + @GetChargeTime()
+    else
+        @ChargeUp()
     @NextThink(CurTime() + 0.1)
     return true
