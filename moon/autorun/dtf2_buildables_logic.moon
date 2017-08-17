@@ -42,7 +42,7 @@ entMeta[k] = v for k, v in pairs PlayerClass
 if SERVER
     func = (soundPlay) ->
         return =>
-            ply = @GetPlayer()
+            ply = @GetTFPlayer()
             -- if IsValid(ply) and ply\IsPlayer()
             if IsValid(ply)
                 ply.__DTF2_LastPlayedDestryReplic = ply.__DTF2_LastPlayedDestryReplic or 0
