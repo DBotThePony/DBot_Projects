@@ -103,8 +103,8 @@ DTF2.DrawBuildingInfo = =>
     w, h = ScrW(), ScrH()
     x, y = w * .5, h * .6
     text = @PrintName
-    if IsValid(@GetPlayer()) and @GetPlayer()\IsPlayer()
-        text ..= " built by #{@GetPlayer()\Nick()}"
+    if IsValid(@GetTFPlayer()) and @GetTFPlayer()\IsPlayer()
+        text ..= " built by #{@GetTFPlayer()\Nick()}"
     hp, mhp = @Health(), @GetMaxHealth()
     text ..= "\nHealth: #{hp}/#{mhp}"
     text ..= "\nUpgrade level: #{@GetUpgradeAmount()}/#{@MAX_UPGRADE}" if @GetLevel() < 3

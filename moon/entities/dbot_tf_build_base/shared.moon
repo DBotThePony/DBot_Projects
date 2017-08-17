@@ -61,8 +61,10 @@ ENT.SetupDataTables = =>
     @NetworkVar('Bool', 17, 'IsMovable')
     @NetworkVar('Int', 1, 'nwLevel')
     @NetworkVar('Int', 16, 'UpgradeAmount')
-    @NetworkVar('Entity', 0, 'Player')
+    @NetworkVar('Entity', 0, 'TFPlayer')
     @SetIsMovable(false)
+
+ENT.SelectAttacker = => IsValid(@GetTFPlayer()) and @GetTFPlayer() or @
 
 ENT.UpdateSequenceList = =>
     @buildSequence = @LookupSequence('build')

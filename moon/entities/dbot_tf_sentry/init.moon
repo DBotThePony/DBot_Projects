@@ -71,6 +71,8 @@ ENT.PlayScanSound = =>
 
 ENT.BulletHit = (tr, dmg) =>
     dmg\SetDamage(@BULLET_DAMAGE)
+    dmg\SetAttacker(@SelectAttacker())
+    dmg\SetInflictor(@)
 
 ENT.SetLevel = (val = 1, playAnimation = true) =>
     oldLevel = @GetLevel()
@@ -157,7 +159,7 @@ ENT.FireRocket = (force = false) =>
     @EmitSound(@ROCKET_SOUND, 100)
     rocket = ents.Create('dbot_sentry_rocket')
     rocket\SetPos(Pos)
-    rocket.attacker = IsValid(@GetPlayer()) and @GetPlayer() or @
+    rocket.attacker = @SelectAttacker()
     rocket.vectorDir = dir
     rocket\SetAngles(dir\Angle())
     rocket\Spawn()
