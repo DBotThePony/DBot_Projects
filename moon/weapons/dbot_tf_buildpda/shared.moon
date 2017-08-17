@@ -152,6 +152,18 @@ SWEP.TriggerBuildRequest = (requestType = @BUILD_SENTRY) =>
         when @BUILD_TELE_OUT
             return false if not @CheckBuildableAvaliability(@SLOT_TELE_OUT)
     
+    if DTF2.PDA_CONSUMES_METAL\GetBool()
+        with @GetOwner()
+            switch requestType
+                when @BUILD_SENTRY
+                    return false if not \CanAffordTF2Metal(DTF2.PDA_COST_SENTRY\GetInt())
+                when @BUILD_DISPENSER
+                    return false if not \CanAffordTF2Metal(DTF2.PDA_COST_DISPENSER\GetInt())
+                when @BUILD_TELE_IN
+                    return false if not \CanAffordTF2Metal(DTF2.PDA_COST_TELE_IN\GetInt())
+                when @BUILD_TELE_OUT
+                    return false if not \CanAffordTF2Metal(DTF2.PDA_COST_TELE_OUT\GetInt())
+
     if CLIENT
         net.Start('DTF2.BuildRequest')
         net.WriteUInt(requestType, 8)
@@ -171,6 +183,17 @@ SWEP.PrimaryAttack = =>
     if not status
         surface.PlaySound(@INVALID_INPUT_SOUND) if CLIENT and IsFirstTimePredicted()
         return false
+    if DTF2.PDA_CONSUMES_METAL\GetBool()
+        with @GetOwner()
+            switch @GetBuildStatus()
+                when @BUILD_SENTRY
+                    return false if not \AffordAndSimulateTF2Metal(DTF2.PDA_COST_SENTRY\GetInt())
+                when @BUILD_DISPENSER
+                    return false if not \AffordAndSimulateTF2Metal(DTF2.PDA_COST_DISPENSER\GetInt())
+                when @BUILD_TELE_IN
+                    return false if not \AffordAndSimulateTF2Metal(DTF2.PDA_COST_TELE_IN\GetInt())
+                when @BUILD_TELE_OUT
+                    return false if not \AffordAndSimulateTF2Metal(DTF2.PDA_COST_TELE_OUT\GetInt())
     return true if CLIENT
     @TriggerBuild()
     return true

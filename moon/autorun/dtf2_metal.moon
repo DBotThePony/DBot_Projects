@@ -26,26 +26,32 @@ else
 
 plyMeta = FindMetaTable('Player')
 
-export DTF2_MAX_METAL
-DTF2_MAX_METAL = CreateConVar('dtf2_max_metal', '200', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Max metal per player')
+DTF2.MAX_METAL = CreateConVar('tf_max_metal', '200', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Max metal per player')
+DTF2.INFINITY_METAL = CreateConVar('tf_infinity_metal', '0', {FCVAR_REPLICARED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Whatever ANY operation consumes metal')
 
 PlayerClass =
-    GetMaxTF2Metal: => @GetNWInt('DTF2.MaxMetal', DTF2_MAX_METAL\GetInt())
-    MaxTF2Metal: => @GetNWInt('DTF2.MaxMetal', DTF2_MAX_METAL\GetInt())
-    SetMaxTF2Metal: (amount = DTF2_MAX_METAL\GetInt()) => @SetNWInt('DTF2.MaxMetal', amount)
-    ResetMaxTF2Metal: => @SetNWInt('DTF2.MaxMetal', DTF2_MAX_METAL\GetInt())
-    ResetTF2Metal: => @SetNWInt('DTF2.Metal', DTF2_MAX_METAL\GetInt())
+    GetMaxTF2Metal: => @GetNWInt('DTF2.MaxMetal', DTF2.MAX_METAL\GetInt())
+    MaxTF2Metal: => @GetNWInt('DTF2.MaxMetal', DTF2.MAX_METAL\GetInt())
+    SetMaxTF2Metal: (amount = DTF2.MAX_METAL\GetInt()) => @SetNWInt('DTF2.MaxMetal', amount)
+    ResetMaxTF2Metal: => @SetNWInt('DTF2.MaxMetal', DTF2.MAX_METAL\GetInt())
+    ResetTF2Metal: => @SetNWInt('DTF2.Metal', DTF2.MAX_METAL\GetInt())
     GetTF2Metal: => @GetNWInt('DTF2.Metal')
     SetTF2Metal: (amount = @GetTF2Metal()) => @SetNWInt('DTF2.Metal', amount)
     AddTF2Metal: (amount = 0) => @SetNWInt('DTF2.Metal', @GetTF2Metal() + amount)
     ReduceTF2Metal: (amount = 0) => @SetNWInt('DTF2.Metal', @GetTF2Metal() - amount)
     RemoveTF2Metal: => @SetNWInt('DTF2.Metal', 0)
     HasTF2Metal: (amount = 0) => @GetTF2Metal() >= amount
+    CanAffordTF2Metal: (amount = 0) => @SimulateTF2MetalRemove(amount, false, false) == amount
+    AffordAndSimulateTF2Metal: (amount = 0, display = true) =>
+        newAmount = @SimulateTF2MetalRemove(amount, false, false)
+        return false if newAmount ~= amount
+        @SimulateTF2MetalRemove(amount, true, display)
+        return true
     SimulateTF2MetalRemove: (amount = 0, apply = true, display = apply) =>
         return 0 if @GetTF2Metal() <= 0
         oldMetal = @GetTF2Metal()
         newMetal = math.Clamp(oldMetal - amount, 0, @GetMaxTF2Metal())
-        @SetTF2Metal(newMetal) if apply
+        @SetTF2Metal(newMetal) if apply and not DTF2.INFINITY_METAL\GetBool()
         if SERVER and display
             net.Start 'DTF2.MetalEffect'
             net.WriteBool false

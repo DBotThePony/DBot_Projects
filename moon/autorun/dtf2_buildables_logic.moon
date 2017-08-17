@@ -18,6 +18,12 @@
 export DTF2
 DTF2 = DTF2 or {}
 
+DTF2.PDA_CONSUMES_METAL = CreateConVar('tf_buildpda_consumes_metal', '1', {FCVAR_REPLICARED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Whatever building buildables using PDA consumes metal')
+DTF2.PDA_COST_SENTRY = CreateConVar('tf_cost_sentry', '130', {FCVAR_REPLICARED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Sentry build cost')
+DTF2.PDA_COST_DISPENSER = CreateConVar('tf_cost_dispenser', '100', {FCVAR_REPLICARED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Dispenser build cost')
+DTF2.PDA_COST_TELE_IN = CreateConVar('tf_cost_tele_in', '50', {FCVAR_REPLICARED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Teleport entrance build cost')
+DTF2.PDA_COST_TELE_OUT = CreateConVar('tf_cost_tele_out', '50', {FCVAR_REPLICARED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Teleport exit build cost')
+
 entMeta = FindMetaTable('Player')
 
 PlayerClass =
