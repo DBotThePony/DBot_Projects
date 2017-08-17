@@ -27,8 +27,11 @@ ENT.Initialize = =>
 
 ENT.OnRemove = =>
     @idleSound\Stop() if @idleSound
+
 ENT.Think = =>
     @BaseClass.Think(@)
+    @idleSound\Stop() if not @IsAvaliable() and @idleSound\IsPlaying()
+    @idleSound\Play() if @IsAvaliable() and not @idleSound\IsPlaying()
 
 SCREEN_BG_RED = Material('vgui/dispenser_meter_bg_red')
 SCREEN_BG_BLUE = Material('vgui/dispenser_meter_bg_blue')
