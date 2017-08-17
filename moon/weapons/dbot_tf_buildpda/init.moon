@@ -84,7 +84,7 @@ SWEP.TriggerBuild = =>
     ent\Spawn()
     ent\Activate()
     ent\SetAngles(ang)
-    ent\SetOwner(ply)
+    ent\SetTFPlayer(ply)
     ent\SetBuildStatus(true)
     @SetBuildStatus(@BUILD_NONE)
     @UpdateModel()
