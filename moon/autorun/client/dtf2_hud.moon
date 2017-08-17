@@ -27,6 +27,8 @@ COLOR_HP_BAR =              HUDCommons.CreateColor('dtf2_hpbar', 'DTF2 HUD HP Ba
 HUD_BAR_BACKGROUND =        HUDCommons.CreateColor('dtf2_bar_bg', 'DTF2 HUD generic bar background', 168, 168, 168)
 HUD_BAR_COLOR =             HUDCommons.CreateColor('dtf2_bar', 'DTF2 HUD generic bar', 235, 235, 235)
 
+DTF2.BACKGROUND_COLOR = BACKGROUND_COLOR
+
 FONT = 'DTF2.HUDFont'
 
 surface.CreateFont(FONT, {
