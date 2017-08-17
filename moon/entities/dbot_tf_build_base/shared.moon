@@ -53,6 +53,19 @@ ENT.MAX_DISTANCE = 512 ^ 2
 
 ENT.GetLevel = => @GetnwLevel()
 
+ENT.GibsValue = 15
+-- ENT.Gibs = {}
+-- ENT.ExplosionSound = 'DTF2_Building_Sentry.Explode'
+
+ENT.GetGibs = =>
+    switch type(@Gibs)
+        when 'function'
+            return @Gibs()
+        when 'table'
+            return @Gibs
+        when 'nil'
+            return {}
+
 ENT.SetupDataTables = =>
     @NetworkVar('Bool', 0, 'IsBuilding')
     @NetworkVar('Bool', 2, 'IsUpgrading')

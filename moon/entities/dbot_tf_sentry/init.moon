@@ -225,13 +225,6 @@ ENT.BehaveUpdate = (delta) =>
         @FireRocket() if @GetLevel() == 3
 
 ENT.GetEnemy = => @currentTarget
-ENT.Explode = =>
-    @Remove()
-
-ENT.OnInjured = (dmg) =>
-ENT.OnKilled = (dmg) =>
-    hook.Run('OnNPCKilled', @, dmg\GetAttacker(), dmg\GetInflictor())
-    @Explode()
 
 ENT.Think = =>
     cTime = CurTime()

@@ -35,6 +35,17 @@ ENT.BodyUpdate = =>
 ENT.RunBehaviour = =>
 ENT.GetEnemy = => @currentTarget
 ENT.Explode = =>
+    pos = @GetPos() + Vector(0, 0, 25)
+    @EmitSound(@ExplosionSound) if @ExplosionSound
+    for gib in *@GetGibs()
+        with ent = ents.Create('dbot_tf_derbis')
+            \SetPos(pos)
+            \SetModel(gib)
+            \Spawn()
+            \Activate()
+            \RealSetModel(gib)
+            \SetDerbisValue(@GibsValue)
+            \Shake()
     @Remove()
 
 ENT.OnInjured = (dmg) =>

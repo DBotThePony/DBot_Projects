@@ -66,6 +66,16 @@ ENT.AMMO_AMOUNT_1 = 40
 ENT.AMMO_AMOUNT_2 = 50
 ENT.AMMO_AMOUNT_3 = 60
 
+ENT.Gibs = {
+    'models/buildables/gibs/dispenser_gib1.mdl'
+    'models/buildables/gibs/dispenser_gib2.mdl'
+    'models/buildables/gibs/dispenser_gib3.mdl'
+    'models/buildables/gibs/dispenser_gib4.mdl'
+    'models/buildables/gibs/dispenser_gib5.mdl'
+}
+
+ENT.ExplosionSound = 'DTF2_Building_Dispenser.Explode'
+
 ENT.GetRessuplyMultiplier = (level = @GetLevel()) =>
     switch level
         when 1

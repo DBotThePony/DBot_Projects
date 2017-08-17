@@ -57,6 +57,40 @@ ENT.BULLET_RELOAD_3 = 0.1
 ENT.ROCKETS_RELOAD = 5
 ENT.ROCKETS_RELOAD_ANIM = 2.75
 
+ENT.Gibs1 = {
+    'models/buildables/gibs/sentry1_gib1.mdl'
+    'models/buildables/gibs/sentry1_gib2.mdl'
+    'models/buildables/gibs/sentry1_gib3.mdl'
+    'models/buildables/gibs/sentry1_gib4.mdl'
+}
+
+ENT.Gibs2 = {
+    'models/buildables/gibs/sentry2_gib1.mdl'
+    'models/buildables/gibs/sentry2_gib2.mdl'
+    'models/buildables/gibs/sentry2_gib3.mdl'
+    'models/buildables/gibs/sentry2_gib4.mdl'
+}
+
+ENT.Gibs3 = {
+    'models/buildables/gibs/sentry2_gib1.mdl'
+    'models/buildables/gibs/sentry2_gib2.mdl'
+    'models/buildables/gibs/sentry2_gib3.mdl'
+    'models/buildables/gibs/sentry2_gib4.mdl'
+    'models/buildables/gibs/sentry3_gib1.mdl'
+}
+
+ENT.ExplosionSound = 'DTF2_Building_Sentry.Explode'
+
+ENT.Gibs = (level = @GetLevel()) =>
+    switch level
+        when 1
+            @Gibs1
+        when 2
+            @Gibs2
+        when 3
+            @Gibs3
+
+
 ENT.GetAmmoPercent = (level = @GetLevel()) => @GetAmmoAmount() / @GetMaxAmmo()
 ENT.GetRocketsPercent = => @GetRockets() / @MAX_ROCKETS
 ENT.GetMaxAmmo = (level = @GetLevel()) =>
