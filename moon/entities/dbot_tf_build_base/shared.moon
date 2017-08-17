@@ -58,9 +58,11 @@ ENT.SetupDataTables = =>
     @NetworkVar('Bool', 2, 'IsUpgrading')
     @NetworkVar('Bool', 1, 'BuildSpeedup')
     @NetworkVar('Bool', 16, 'TeamType')
+    @NetworkVar('Bool', 17, 'IsMovable')
     @NetworkVar('Int', 1, 'nwLevel')
     @NetworkVar('Int', 16, 'UpgradeAmount')
     @NetworkVar('Entity', 0, 'Player')
+    @SetIsMovable(false)
 
 ENT.UpdateSequenceList = =>
     @buildSequence = @LookupSequence('build')

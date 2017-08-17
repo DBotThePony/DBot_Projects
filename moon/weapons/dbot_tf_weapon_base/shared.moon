@@ -90,6 +90,12 @@ SWEP.CheckNextCrit = =>
 
 SWEP.CheckNextMiniCrit = => @GetOwner()\GetMiniCritBoosted()
 
+SWEP.RealSetModel = (mdl = @GetModel()) =>
+    @SetModel(mdl)
+    md = @GetTF2WeaponModel()
+    if IsValid(md)
+        md\SetModel(mdl)
+
 -- SWEP.ViewModels = {}
 -- SWEP.ViewModelEffects = {}
 
