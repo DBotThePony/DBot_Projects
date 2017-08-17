@@ -393,6 +393,7 @@ ENT.SetBuildStatus = (status = false) =>
         @buildFinishAt = CurTime() + @BuildTime
         @OnBuildStart()
         @SetPlaybackRate(0.5)
+        @SetHealth(1)
     else
         @SetModel(@IdleModel1)
         @UpdateSequenceList()
@@ -412,7 +413,10 @@ ENT.Think = =>
     if @GetIsBuilding()
         if @GetBuildSpeedup()
             @buildFinishAt -= delta
-        if @buildFinishAt < cTime
+        deltaBuild = @buildFinishAt - cTime
+        deltaBuildMult = deltaBuild / @BuildTime
+        @SetHealth(math.Clamp(@GetMaxHealth() * (1 - deltaBuildMult), 1, @GetMaxHealth()))
+        if deltaBuild <= 0
             @SetBuildSpeedup(false)
             @SetIsBuilding(false)
             @SetModel(@IdleModel1)
