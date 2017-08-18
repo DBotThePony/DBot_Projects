@@ -22,13 +22,16 @@ ENT.Type = 'anim'
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 
+DERBIS_REMOVE_TIME = CreateConVar('tf_derbis_remove_timer', '15', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Derib removal timer') if SERVER
+
 AccessorFunc(ENT, 'm_DerbisValue', 'DerbisValue')
 AccessorFunc(ENT, 'm_dissolveAt', 'DissolveAt')
 
 ENT.Initialize = =>
     @SetDerbisValue(15)
     -- @RealSetModel('models/buildables/gibs/sentry1_gib2.mdl')
-    @SetDissolveAt(CurTime() + 15)
+    return if CLIENT
+    @SetDissolveAt(CurTime() + DERBIS_REMOVE_TIME\GetInt())
 
 ENT.RealSetModel = (mdl = 'models/buildables/gibs/sentry1_gib2.mdl') =>
     @SetModel(mdl)
