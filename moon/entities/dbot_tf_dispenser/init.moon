@@ -41,8 +41,8 @@ ENT.HealTarget = (ent = NULL, delta = 1, cTime = CurTime()) =>
     @SetRessuplyAmount(@GetRessuplyAmount() - deltaGive)
 
 ENT.BehaveUpdate = (delta) =>
-    @UpdateRelationships()
     return if not @IsAvaliable()
+    @UpdateRelationships()
     
     @healing = @GetAlliesVisible()
     beam.__isValid = false for ply, beam in pairs @beams
