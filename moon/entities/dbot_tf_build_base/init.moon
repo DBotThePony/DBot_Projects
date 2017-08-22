@@ -351,25 +351,25 @@ ENT.GetFirstVisible = =>
 
     return NULL
 
-ENT.SetLevel = (val = 1, playAnimation = true, force = false) =>
+ENT.SetLevel = (val = 1, playAnimation = @UPGRADE_ANIMS, force = false) =>
     return false if not force and val == @GetLevel()
     val = math.Clamp(math.floor(val), 1, 3)
     @SetnwLevel(val)
     @mLevel = val
     switch val
         when 1
-            @RealSetModel(@IdleModel1)
+            @RealSetModel(@IdleModel1) if @GetModel() ~= @IdleModel1
             @SetHealth(@HealthLevel1) if @Health() == @GetMaxHealth()
             @SetMaxHealth(@HealthLevel1)
             @UpdateSequenceList()
         when 2
-            @RealSetModel(@IdleModel2)
+            @RealSetModel(@IdleModel2) if @GetModel() ~= @IdleModel2
             @SetHealth(@HealthLevel2) if @Health() == @GetMaxHealth()
             @SetMaxHealth(@HealthLevel2)
             @UpdateSequenceList()
             @PlayUpgradeAnimation() if playAnimation
         when 3
-            @RealSetModel(@IdleModel3)
+            @RealSetModel(@IdleModel3) if @GetModel() ~= @IdleModel3
             @SetHealth(@HealthLevel3)
             @SetMaxHealth(@HealthLevel3)
             @UpdateSequenceList()
@@ -378,19 +378,19 @@ ENT.SetLevel = (val = 1, playAnimation = true, force = false) =>
     @SetUpgradeAmount(0)
     return true
 
-ENT.PlayUpgradeAnimation = =>
+ENT.PlayUpgradeAnimation = (playOnModel = @MODEL_UPGRADE_ANIMS) =>
     return false if @GetLevel() == 1
     @SetIsUpgrading(true)
     switch @GetLevel()
         when 2
             @upgradeFinishAt = CurTime() + @UPGRADE_TIME_2
-            @RealSetModel(@BuildModel2)
+            @RealSetModel(@BuildModel2) if @GetModel() ~= @BuildModel2 and playOnModel
         when 3
             @upgradeFinishAt = CurTime() + @UPGRADE_TIME_3
-            @RealSetModel(@BuildModel3)
+            @RealSetModel(@BuildModel3) if @GetModel() ~= @BuildModel3 and playOnModel
     @UpdateSequenceList()
-    @StartActivity(ACT_OBJ_UPGRADING)
-    @ResetSequence(@upgradeSequence)
+    @StartActivity(ACT_OBJ_UPGRADING) if playOnModel
+    @ResetSequence(@upgradeSequence) if playOnModel
     return true
 
 ENT.DoSpeedup = (time = 1) =>
@@ -452,9 +452,9 @@ ENT.Think = =>
             @SetIsUpgrading(false)
             switch @GetLevel()
                 when 2
-                    @RealSetModel(@IdleModel2)
+                    @RealSetModel(@IdleModel2) if @GetModel() ~= @IdleModel2
                 when 3
-                    @RealSetModel(@IdleModel3)
+                    @RealSetModel(@IdleModel3) if @GetModel() ~= @IdleModel3
             @UpdateSequenceList()
             @StartActivity(ACT_OBJ_RUNNING)
             @ResetSequence(@idleSequence)
