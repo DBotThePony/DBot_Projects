@@ -25,6 +25,8 @@ util.AddNetworkString('DTF2.SentryFire')
 
 ENT.CallDestroy = (attacker = NULL, inflictor = NULL, dmg) => hook.Run('TF2SentryDestroyed', @, attacker, inflictor, dmg)
 
+ENT.OnOtherKilled = (victim, dmg) => @SetKills(@GetKills() + 1)
+
 ENT.Initialize = =>
     @BaseClass.Initialize(@)
     @targetAngle = Angle(0, 0, 0)

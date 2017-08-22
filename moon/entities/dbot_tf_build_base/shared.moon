@@ -48,6 +48,7 @@ ENT.UPGRADE_TIME_3 = 1.16
 ENT.REPAIR_HEALTH = CreateConVar('tf_build_repair', '40', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Default repair speed for buildables')
 ENT.UPGRADE_HIT = CreateConVar('tf_build_upgrade', '25', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Default upgrade speed for buildables')
 ENT.MAX_UPGRADE = CreateConVar('tf_build_maxupgrade', '200', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Default max upgrade for buildables')
+ENT.GetMaxUpgrade = => DTF2.GrabInt(@MAX_UPGRADE)
 
 ENT.UPGRADE_ANIMS = true
 ENT.MODEL_UPGRADE_ANIMS = true
