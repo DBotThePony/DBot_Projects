@@ -53,7 +53,7 @@ ENT.SetupAsEntrance = (exit = NULL) =>
     @SetIsExit(false)
     return if not IsValid(exit)
     exit\SetIsExit(true)
-    exit\SetEnirance(@)
+    exit\SetEntrance(@)
     exit\SetTeamType(@GetTeamType())
     @SetExit(exit)
     @SelectLevel(exit)
@@ -183,7 +183,7 @@ ENT.BehaveUpdate = (delta) =>
         @currentTeleTimer = 0
         return
     
-    if @IsExit() and not @HasEntrance() or @IsEntrance() and not @HasExit()
+    if not @ReadyToTeleport()
         @ResetSequence(0) if @GetSequence() ~= 0
         @currentTeleTarget = NULL
         @currentTeleTimer = 0

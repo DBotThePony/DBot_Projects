@@ -85,21 +85,25 @@ hook.Add 'CalcView', 'DTF2.TeleportFOV', (origin = Vector(0, 0, 0), angles = Ang
 
 ENT.ClientTeleporterThink = =>
     if @IsValidTeleporter()
-        if @BaseClass.IsAvaliable(@)
-            if not @spinningSound
-                @spinningSound = CreateSound(@, @GetSpinSound())
-                @spinningSound\Play()
+        if @ReadyToTeleport()
+            if @BaseClass.IsAvaliable(@)
+                if not @spinningSound
+                    @spinningSound = CreateSound(@, @GetSpinSound())
+                    @spinningSound\Play()
+            else
+                if @spinningSound
+                    @spinningSound\Stop()
+                    @spinningSound = nil
+            
+            if @IsAvaliable()
+                if not @playedReady
+                    @EmitSound(@READY_SOUND)
+                    @playedReady = true
         else
+            @playedReady = false
             if @spinningSound
                 @spinningSound\Stop()
                 @spinningSound = nil
-
-        if @IsAvaliable()
-            if not @playedReady
-                @EmitSound(@READY_SOUND)
-                @playedReady = true
-        else
-            @playedReady = false
     else
         if @spinningSound
             @spinningSound\Stop()
@@ -108,21 +112,29 @@ ENT.ClientTeleporterThink = =>
 
 ENT.Draw = =>
     @BaseClass.Draw(@)
-    if @IsAvaliable() and @IsValidTeleporter() and @IsEntrance()
-        if not @particlesReady
-            @particlesReady = CreateParticleSystem(@, @GetChargedEffect(), PATTACH_ABSORIGIN_FOLLOW, 0)
-    else
-        if @particlesReady
-            @particlesReady\StopEmission()
-            @particlesReady = nil
-    
-    if @BaseClass.IsAvaliable(@) and @IsValidTeleporter()
-        if not @particlesAvaliable
-            @particlesAvaliable = CreateParticleSystem(@, @GetAvaliableEffect(), PATTACH_ABSORIGIN_FOLLOW, 0)
+    if @OtherSideIsReady()
+        if @IsAvaliable() and @IsValidTeleporter() and @IsEntrance()
+            if not @particlesReady
+                @particlesReady = CreateParticleSystem(@, @GetChargedEffect(), PATTACH_ABSORIGIN_FOLLOW, 0)
+        else
+            if @particlesReady
+                @particlesReady\StopEmission()
+                @particlesReady = nil
+        
+        if @BaseClass.IsAvaliable(@) and @IsValidTeleporter()
+            if not @particlesAvaliable
+                @particlesAvaliable = CreateParticleSystem(@, @GetAvaliableEffect(), PATTACH_ABSORIGIN_FOLLOW, 0)
+        else
+            if @particlesAvaliable
+                @particlesAvaliable\StopEmission()
+                @particlesAvaliable = nil
     else
         if @particlesAvaliable
             @particlesAvaliable\StopEmission()
             @particlesAvaliable = nil
+        if @particlesReady
+            @particlesReady\StopEmission()
+            @particlesReady = nil
 
 ENT.OnRemove = =>
     @BaseClass.OnRemove(@) if @BaseClass.OnRemove

@@ -68,7 +68,8 @@ SWEP.TriggerBuild = =>
     return false if @GetBuildStatus() == @BUILD_NONE
     ply = @GetOwner()
     local ent
-    switch @GetBuildStatus()
+    status = @GetBuildStatus()
+    switch status
         when @BUILD_SENTRY
             ent = ents.Create(@CLASS_SENTRY)
             ply\SetBuildedSentry(ent)
@@ -77,6 +78,14 @@ SWEP.TriggerBuild = =>
             ent = ents.Create(@CLASS_DISPENSER)
             ply\SetBuildedDispenser(ent)
             ply\EmitSound(table.Random(@DISPENSER_BUILDUP), 55, 100, 1)
+        when @BUILD_TELE_IN
+            ent = ents.Create(@CLASS_TELEPORT)
+            ply\SetBuildedTeleporterIn(ent)
+            ply\EmitSound(table.Random(@TELEPORTER_BUILDUP), 55, 100, 1)
+        when @BUILD_TELE_OUT
+            ent = ents.Create(@CLASS_TELEPORT)
+            ply\SetBuildedTeleporterOut(ent)
+            ply\EmitSound(table.Random(@TELEPORTER_BUILDUP), 55, 100, 1)
     return false if not IsValid(ent)
     ang = @GetBuildAngle()
     ent\SetPos(tr.HitPos)
@@ -91,4 +100,13 @@ SWEP.TriggerBuild = =>
     @SendWeaponSequence(@IdleAnimation)
     ent\CPPISetOwner(@GetOwner()) if ent.CPPISetOwner
     @SwitchToWrench()
+    switch status
+        when @BUILD_TELE_IN
+            tele2 = ply\GetBuildedTeleporterOut()
+            if IsValid(tele2)
+                tele2\SetupAsExit(ent)
+        when @BUILD_TELE_OUT
+            tele2 = ply\GetBuildedTeleporterIn()
+            if IsValid(tele2)
+                tele2\SetupAsEntrance(ent)
     return ent

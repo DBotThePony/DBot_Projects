@@ -85,6 +85,10 @@ ENT.ValidEntrance = => @IsEntrance() and @HasExit()
 ENT.ValidExit = => @IsExit() and @HasEntrance()
 ENT.IsValidTeleporter = => @ValidEntrance() or @ValidExit()
 ENT.GetConnectedTeleporter = => @IsExit() and @GetEntrance() or @GetExit()
+ENT.ReadyToTeleport = => @IsValidTeleporter() and @GetConnectedTeleporter()\IsAvaliable()
+ENT.OtherSideIsReady = =>
+    side = @GetConnectedTeleporter()
+    return @IsValidTeleporter() and side.BaseClass.IsAvaliable(side)
 
 ENT.GetTeleAngles = =>
     ang = @GetAngles()
@@ -167,7 +171,6 @@ ENT.GetSpinSound = (level = @GetLevel()) =>
 ENT.SetupDataTables = =>
     @BaseClass.SetupDataTables(@)
     @NetworkVar('Bool', 8, 'IsExit')
-    @SetIsExit(false)
     @NetworkVar('Entity', 16, 'Exit')
     @NetworkVar('Entity', 17, 'Entrance')
     @NetworkVar('Float', 16, 'ResetAt')

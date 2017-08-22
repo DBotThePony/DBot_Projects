@@ -63,12 +63,12 @@ SWEP.TriggerPlayerInput = (key = KEY_1) =>
         when KEY_2
             reply = @TriggerBuildRequest(@BUILD_DISPENSER)
             surface.PlaySound(@INVALID_INPUT_SOUND) if not reply
-        --when KEY_3
-        --    reply = @TriggerBuildRequest(@BUILD_TELE_IN)
-        --    surface.PlaySound(@INVALID_INPUT_SOUND) if not reply
-        --when KEY_4
-        --    reply = @TriggerBuildRequest(@BUILD_TELE_OUT)
-        --    surface.PlaySound(@INVALID_INPUT_SOUND) if not reply
+        when KEY_3
+            reply = @TriggerBuildRequest(@BUILD_TELE_IN)
+            surface.PlaySound(@INVALID_INPUT_SOUND) if not reply
+        when KEY_4
+            reply = @TriggerBuildRequest(@BUILD_TELE_OUT)
+            surface.PlaySound(@INVALID_INPUT_SOUND) if not reply
 
 hook.Add 'Think', 'DTF2.BuildPDACapture', ->
     ply = LocalPlayer()
