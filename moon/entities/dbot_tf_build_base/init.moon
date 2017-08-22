@@ -175,6 +175,10 @@ hook.Add 'EntityTakeDamage', 'DTF2.Bullseye', (dmg) =>
 include 'shared.lua'
 AddCSLuaFile 'shared.lua'
 
+ENT.DuplicatorFunc = =>
+    return if not @IsAvaliable()
+    @SetLevel(@GetLevel(), false, true)
+
 ENT.Initialize = =>
     @npc_bullseye = {}
     @DrawShadow(false)
@@ -198,6 +202,7 @@ ENT.Initialize = =>
     @UpdateSequenceList()
     @StartActivity(ACT_OBJ_RUNNING)
     @CreateBullseye()
+    timer.Simple 0.1, -> @DuplicatorFunc() if @IsValid()
 
 ENT.RealSetModel = (mdl = @GetModel()) =>
     @SetModel(mdl)
@@ -223,7 +228,7 @@ ENT.IsAlly = (target = NULL) =>
 
 ENT.CreateBullseye = =>
     if @npc_bullseye
-        eye\Remove() for eye in *@npc_bullseye
+        eye\Remove() for eye in *@npc_bullseye when IsValid(eye)
     
     mins, maxs, center = @OBBMins(), @OBBMaxs(), @OBBCenter()
 
@@ -346,8 +351,8 @@ ENT.GetFirstVisible = =>
 
     return NULL
 
-ENT.SetLevel = (val = 1, playAnimation = true) =>
-    return false if val == @GetLevel()
+ENT.SetLevel = (val = 1, playAnimation = true, force = false) =>
+    return false if not force and val == @GetLevel()
     val = math.Clamp(math.floor(val), 1, 3)
     @SetnwLevel(val)
     @mLevel = val

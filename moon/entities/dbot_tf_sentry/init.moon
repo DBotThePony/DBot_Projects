@@ -74,9 +74,9 @@ ENT.BulletHit = (tr, dmg) =>
     dmg\SetAttacker(@SelectAttacker())
     dmg\SetInflictor(@)
 
-ENT.SetLevel = (val = 1, playAnimation = true) =>
+ENT.SetLevel = (val = 1, playAnimation = true, force = false) =>
     oldLevel = @GetLevel()
-    status = @BaseClass.SetLevel(@, val, playAnimation)
+    status = @BaseClass.SetLevel(@, val, playAnimation, force)
     return status if not status
     switch val
         when 1
