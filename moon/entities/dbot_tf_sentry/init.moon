@@ -128,7 +128,7 @@ ENT.FireBullet = (force = false) =>
     }
 
     @AddGesture(ACT_RANGE_ATTACK1)
-    @DelayGestureRemove(ACT_RANGE_ATTACK1, DTF2.GrabInt(@BULLET_RELOAD_1))
+    --@DelayGestureRemove(ACT_RANGE_ATTACK1, DTF2.GrabInt(@BULLET_RELOAD_1))
 
     @FireBullets(bulletData)
     net.Start('DTF2.SentryFire', true)
