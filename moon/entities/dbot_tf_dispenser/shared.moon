@@ -74,6 +74,8 @@ ENT.Gibs = {
     'models/buildables/gibs/dispenser_gib5.mdl'
 }
 
+ENT.GibsValue = CreateConVar('tf_dispenser_gibs', '15', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Gibs value for dispenser')
+
 ENT.ExplosionSound = 'DTF2_Building_Dispenser.Explode'
 
 ENT.GetRessuplyMultiplier = (level = @GetLevel()) =>

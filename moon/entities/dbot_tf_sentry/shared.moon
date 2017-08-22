@@ -79,6 +79,8 @@ ENT.Gibs3 = {
     'models/buildables/gibs/sentry3_gib1.mdl'
 }
 
+ENT.GibsValue = CreateConVar('tf_sentry_gibs', '15', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Gibs value for sentry')
+
 ENT.ExplosionSound = 'DTF2_Building_Sentry.Explode'
 
 ENT.Gibs = (level = @GetLevel()) =>

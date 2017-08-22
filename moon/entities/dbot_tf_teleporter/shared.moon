@@ -51,6 +51,8 @@ ENT.BREAD_MODELS = {
     'models/weapons/c_models/c_bread/c_bread_russianblack.mdl'
 }
 
+ENT.GibsValue = CreateConVar('tf_teleport_gibs', '15', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Gibs value for teleporter')
+
 ENT.BuildModel1 = 'models/buildables/teleporter.mdl'
 ENT.IdleModel1 = 'models/buildables/teleporter_light.mdl'
 ENT.BuildModel2 = 'models/buildables/teleporter.mdl'
