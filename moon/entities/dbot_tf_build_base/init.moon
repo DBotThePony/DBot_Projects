@@ -199,6 +199,11 @@ ENT.Initialize = =>
     @StartActivity(ACT_OBJ_RUNNING)
     @CreateBullseye()
 
+ENT.RealSetModel = (mdl = @GetModel()) =>
+    @SetModel(mdl)
+    @PhysicsInitBox(@BuildingMins, @BuildingMaxs)
+    @SetMoveType(MOVETYPE_NONE)
+
 ENT.GetAllies = => [ent for ent in *VALID_ALLIES]
 ENT.GetEnemies = => [ent for ent in *VALID_TARGETS]
 ENT.GetAlliesTable = => VALID_ALLIES
@@ -348,18 +353,18 @@ ENT.SetLevel = (val = 1, playAnimation = true) =>
     @mLevel = val
     switch val
         when 1
-            @SetModel(@IdleModel1)
+            @RealSetModel(@IdleModel1)
             @SetHealth(@HealthLevel1) if @Health() == @GetMaxHealth()
             @SetMaxHealth(@HealthLevel1)
             @UpdateSequenceList()
         when 2
-            @SetModel(@IdleModel2)
+            @RealSetModel(@IdleModel2)
             @SetHealth(@HealthLevel2) if @Health() == @GetMaxHealth()
             @SetMaxHealth(@HealthLevel2)
             @UpdateSequenceList()
             @PlayUpgradeAnimation() if playAnimation
         when 3
-            @SetModel(@IdleModel3)
+            @RealSetModel(@IdleModel3)
             @SetHealth(@HealthLevel3)
             @SetMaxHealth(@HealthLevel3)
             @UpdateSequenceList()
@@ -374,10 +379,10 @@ ENT.PlayUpgradeAnimation = =>
     switch @GetLevel()
         when 2
             @upgradeFinishAt = CurTime() + @UPGRADE_TIME_2
-            @SetModel(@BuildModel2)
+            @RealSetModel(@BuildModel2)
         when 3
             @upgradeFinishAt = CurTime() + @UPGRADE_TIME_3
-            @SetModel(@BuildModel3)
+            @RealSetModel(@BuildModel3)
     @UpdateSequenceList()
     @StartActivity(ACT_OBJ_UPGRADING)
     @ResetSequence(@upgradeSequence)
@@ -396,7 +401,7 @@ ENT.SetBuildStatus = (status = false) =>
     return false if @GetIsBuilding() == status
     @SetIsBuilding(status)
     if status
-        @SetModel(@BuildModel1)
+        @RealSetModel(@BuildModel1)
         @UpdateSequenceList()
         @SetBuildSpeedup(false)
         @StartActivity(ACT_OBJ_PLACING)
@@ -406,7 +411,7 @@ ENT.SetBuildStatus = (status = false) =>
         @SetPlaybackRate(0.5)
         @SetHealth(1)
     else
-        @SetModel(@IdleModel1)
+        @RealSetModel(@IdleModel1)
         @UpdateSequenceList()
         @ResetSequence(@idleSequence)
         @StartActivity(ACT_OBJ_RUNNING)
@@ -430,7 +435,7 @@ ENT.Think = =>
         if deltaBuild <= 0
             @SetBuildSpeedup(false)
             @SetIsBuilding(false)
-            @SetModel(@IdleModel1)
+            @RealSetModel(@IdleModel1)
             @UpdateSequenceList()
             @StartActivity(ACT_OBJ_RUNNING)
             @ResetSequence(@idleSequence)
@@ -442,11 +447,10 @@ ENT.Think = =>
             @SetIsUpgrading(false)
             switch @GetLevel()
                 when 2
-                    @SetModel(@IdleModel2)
+                    @RealSetModel(@IdleModel2)
                 when 3
-                    @SetModel(@IdleModel3)
+                    @RealSetModel(@IdleModel3)
             @UpdateSequenceList()
             @StartActivity(ACT_OBJ_RUNNING)
             @ResetSequence(@idleSequence)
             @OnUpgradeFinish()
-            

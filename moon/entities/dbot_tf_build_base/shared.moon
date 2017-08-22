@@ -33,8 +33,8 @@ ENT.HealthLevel3 = 216
 
 ENT.BuildTime = 2
 
-ENT.BuildingMins = Vector(-16, -16, 0)
-ENT.BuildingMaxs = Vector(16, 16, 48)
+ENT.BuildingMins = Vector(-18, -18, 0)
+ENT.BuildingMaxs = Vector(18, 18, 55)
 
 ENT.Author = 'DBot'
 ENT.PrintName = 'TF2 Buildable base'
