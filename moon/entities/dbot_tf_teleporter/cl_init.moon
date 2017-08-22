@@ -108,7 +108,7 @@ ENT.ClientTeleporterThink = =>
 
 ENT.Draw = =>
     @BaseClass.Draw(@)
-    if @IsAvaliable() and @IsValidTeleporter()
+    if @IsAvaliable() and @IsValidTeleporter() and @IsEntrance()
         if not @particlesReady
             @particlesReady = CreateParticleSystem(@, @GetChargedEffect(), PATTACH_ABSORIGIN_FOLLOW, 0)
     else
