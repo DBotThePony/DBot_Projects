@@ -63,7 +63,8 @@ ENT.BuildTime = 20
 ENT.BuildingMins = Vector(-20, -20, 0)
 ENT.BuildingMaxs = Vector(20, 20, 18)
 
-ENT.TeleDelay = 0.5
+ENT.TELE_WAIT = 1.25
+ENT.TELE_DELAY = 0.5
 
 ENT.IsLoaded = => @GetResetAt() < CurTime()
 ENT.IsAvaliable = => @BaseClass.IsAvaliable(@) and @GetResetAt() < CurTime()

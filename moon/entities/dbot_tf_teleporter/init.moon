@@ -19,6 +19,7 @@ include 'shared.lua'
 AddCSLuaFile 'shared.lua'
 
 util.AddNetworkString('DTF2.TeleportedEntity')
+util.AddNetworkString('DTF2.TeleportEntity')
 
 ENT.Initialize = =>
     @BaseClass.Initialize(@)
@@ -51,14 +52,24 @@ ENT.DoReset = => @SetResetAt(CurTime() + @GetReloadTime())
 
 ENT.TriggerTeleport = (ent = NULL, force = false) =>
     return false if @GetIsExit() or not IsValid(ent) or not @HasExit() or not force and not @IsAlly(ent)
-    @GetExit()\TriggerReceive(ent, force)
     @DoReset()
-    net.Start('DTF2.TeleportedEntity', true)
+    net.Start('DTF2.TeleportEntity', true)
     net.WriteEntity(ent)
     net.WriteEntity(@)
     net.WriteEntity(@GetExit())
-    -- net.WriteBool(math.random(1, 100) > 50)
     net.Broadcast()
+    @isTeleporting = true
+    timer.Simple @TELE_DELAY, ->
+        return if not @IsValid()
+        @isTeleporting = false
+        return if not IsValid(@GetExit())
+        @GetExit()\TriggerReceive(ent, force)
+        net.Start('DTF2.TeleportedEntity', true)
+        net.WriteEntity(ent)
+        net.WriteEntity(@)
+        net.WriteEntity(@GetExit())
+        -- net.WriteBool(math.random(1, 100) > 50)
+        net.Broadcast()
 
 DAMAGE_TYPES = {
 	DMG_GENERIC
@@ -94,7 +105,7 @@ ENT.TriggerReceive = (ent = NULL, force = false) =>
     targets = {}
     trData = {
         start: pos
-        endpos: pos
+        endpos: pos + Vector(0, 0, 1)
         :mins, :maxs
         filter: (entHit) ->
             return false if entHit == @ or entHit == ent or not IsValid(entHit)
@@ -135,6 +146,7 @@ ENT.TriggerReceive = (ent = NULL, force = false) =>
         timer.Simple math.random(@MIN_BREAD_TTL, @MAX_BREAD_TTL), -> ent\Remove() for ent in *spawnedEnts when ent\IsValid()
 
 ENT.BehaveUpdate = (delta) =>
+    return if @isTeleporting
     if not @IsAvaliable()
         @currentTeleTarget = NULL
         @currentTeleTimer = 0
@@ -160,7 +172,7 @@ ENT.BehaveUpdate = (delta) =>
         @currentTeleTimer = 0
     
     @currentTeleTimer += delta
-    if @currentTeleTimer > 1.25
+    if @currentTeleTimer > @TELE_WAIT
         @TriggerTeleport(ent)
         @currentTeleTarget = NULL
         @currentTeleTimer = 0

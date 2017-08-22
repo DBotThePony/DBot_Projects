@@ -18,8 +18,19 @@
 include 'shared.lua'
 
 FLASH_TIME = 1.2
-FOV_TIME = 0.8
+FOV_TIME = 0.5
 FOV_STRENGTH = 60
+
+net.Receive 'DTF2.TeleportEntity', ->
+    ent = net.ReadEntity()
+    entrance = net.ReadEntity()
+    exit = net.ReadEntity()
+    teamType = false
+    teamType = entrance\GetTeamType() if IsValid(entrance)
+
+    if IsValid(entrance)
+        entrance\EmitSound(entrance.SEND_SOUND)
+        CreateParticleSystem(entrance, teamType and 'teleported_blue' or 'teleported_red', PATTACH_ABSORIGIN_FOLLOW, 0)
 
 net.Receive 'DTF2.TeleportedEntity', ->
     ent = net.ReadEntity()
@@ -31,13 +42,17 @@ net.Receive 'DTF2.TeleportedEntity', ->
     
     if IsValid(ent)
         particleSystem = CreateParticleSystem(ent, teamType and 'player_recent_teleport_blue' or 'player_recent_teleport_red', PATTACH_ABSORIGIN_FOLLOW, 0)
+        CreateParticleSystem(ent, 'teleported_flash', PATTACH_ABSORIGIN_FOLLOW, 0)
         timer.Simple 15, -> particleSystem\StopEmission() if particleSystem\IsValid()
         if ent == LocalPlayer()
             ent\ScreenFade(SCREENFADE.IN, color_white, FLASH_TIME, 0)
             ent.__teleFOV = RealTime() + FOV_TIME
     
-    entrance\EmitSound(entrance.SEND_SOUND) if IsValid(entrance)
-    exit\EmitSound(exit.RECEIVE_SOUND) if IsValid(exit)
+    if IsValid(exit)
+        exit\EmitSound(exit.RECEIVE_SOUND)
+        CreateParticleSystem(entrance, teamType and 'teleportedin_blue' or 'teleportedin_red', PATTACH_ABSORIGIN_FOLLOW, 0)
+    
+    CreateParticleSystem(entrance, 'teleported_flash', PATTACH_ABSORIGIN_FOLLOW, 0) if IsValid(entrance)
     
     -- if IsValid(exit) and spawnBread
     --     tpPoint = exit\GetBreadPoint()
