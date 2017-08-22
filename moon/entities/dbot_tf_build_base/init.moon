@@ -54,6 +54,10 @@ ENT.Explode = =>
             \SetDerbisValue(DTF2.GrabInt(@GibsValue))
             \Shake()
     @CallDestruction()
+    effData = EffectData()
+    effData\SetNormal(Vector(0, 0, 1))
+    effData\SetOrigin(@GetPos() + Vector(0, 0, 5))
+    util.Effect('dtf2_building_explosion', effData)
     @Remove()
 
 ENT.OnInjured = (dmg) =>
