@@ -25,6 +25,8 @@ ENT.Initialize = =>
     @BaseClass.Initialize(@)
     @currentTeleTarget = NULL
     @currentTeleTimer = 0
+    @targetPlayback = 1
+    @currentPlayback = 1
 
 ENT.SetupAsExit = (entrance = NULL) =>
     @SetIsExit(true)
@@ -52,7 +54,6 @@ ENT.DoReset = => @SetResetAt(CurTime() + @GetReloadTime())
 
 ENT.TriggerTeleport = (ent = NULL, force = false) =>
     return false if @GetIsExit() or not IsValid(ent) or not @HasExit() or not force and not @IsAlly(ent)
-    @DoReset()
     net.Start('DTF2.TeleportEntity', true)
     net.WriteEntity(ent)
     net.WriteEntity(@)
@@ -63,6 +64,7 @@ ENT.TriggerTeleport = (ent = NULL, force = false) =>
         return if not @IsValid()
         @isTeleporting = false
         return if not IsValid(@GetExit())
+        @DoReset()
         @GetExit()\TriggerReceive(ent, force)
         net.Start('DTF2.TeleportedEntity', true)
         net.WriteEntity(ent)
@@ -88,6 +90,9 @@ DAMAGE_TYPES = {
 	DMG_PHYSGUN
 	DMG_RADIATION
 }
+
+ENT.OnBuildFinish = => @SetResetAt(CurTime())
+ENT.OnUpgradeFinish = => @SetResetAt(CurTime())
 
 ENT.TriggerReceive = (ent = NULL, force = false) =>
     return false if not force and (not @IsAlly(ent) or not @GetIsExit()) or not IsValid(ent)

@@ -76,8 +76,8 @@ ENT.HasExit = => IsValid(@GetExit())
 ENT.HasEntrance = => IsValid(@GetEntrance())
 ENT.ValidEntrance = => @IsEntrance() and @HasExit()
 ENT.ValidExit = => @IsExit() and @HasEntrance()
-
 ENT.IsValidTeleporter = => @ValidEntrance() or @ValidExit()
+ENT.GetConnectedTeleporter = => @IsExit() and @GetEntrance() or @GetExit()
 
 ENT.GetTeleAngles = =>
     ang = @GetAngles()
@@ -167,19 +167,40 @@ ENT.SetupDataTables = =>
     @NetworkVar('Int', 16, 'Uses')
     @SetResetAt(0)
 
+ENT.ThinkPlaybackRate = =>
+    oldPlayback = @currentPlayback
+    if @BaseClass.IsAvaliable(@)
+        @currentPlayback = Lerp(0.05, @currentPlayback, @targetPlayback)
+    else
+        if @GetIsBuilding()
+            @currentPlayback = Lerp(0.05, @currentPlayback, 0.5)
+        else
+            @currentPlayback = Lerp(0.05, @currentPlayback, 1)
+    
+    if oldPlayback ~= @currentPlayback
+        @SetPlaybackRate(@currentPlayback)
+
+ENT.CalculatePlaybackRate = (animTime = 1 - (@GetResetAt() - CurTime()) / @GetReloadTime()) =>
+    if animTime < 0.15
+        return 1 - animTime / 0.15
+    elseif animTime < 0.85
+        return 0.15
+    else
+        return 0.5
+
+
 ENT.Think = =>
     @BaseClass.Think(@)
-    if @BaseClass.IsAvaliable(@) and @GetResetAt() > CurTime()
-        if not @slowedDown
-            @playbackRate = 1
-            @SetPlaybackRate(1)
-            @slowedDownAnim = true
+    @ThinkPlaybackRate()
+    
+    if @BaseClass.IsAvaliable(@)
+        if @IsValidTeleporter()
+            if @GetResetAt() > CurTime()
+                @targetPlayback = @CalculatePlaybackRate()
+            else
+                @targetPlayback = 1
         else
-            @playbackRate = Lerp(0.05, @playbackRate, 0.1)
-            @SetPlaybackRate(1)
-    elseif @slowedDownAnim
-        @playbackRate = Lerp(0.05, @playbackRate, 1)
-        @SetPlaybackRate(@playbackRate)
-        @slowedDownAnim = @playbackRate ~= 1
+            @targetPlayback = 0
+
     @ClientTeleporterThink() if CLIENT
     return true

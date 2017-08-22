@@ -21,6 +21,11 @@ FLASH_TIME = 1.2
 FOV_TIME = 0.5
 FOV_STRENGTH = 60
 
+ENT.Initialize = =>
+    @BaseClass.Initialize(@)
+    @targetPlayback = 1
+    @currentPlayback = 1
+
 net.Receive 'DTF2.TeleportEntity', ->
     ent = net.ReadEntity()
     entrance = net.ReadEntity()
@@ -121,4 +126,4 @@ ENT.Draw = =>
 
 ENT.OnRemove = =>
     @BaseClass.OnRemove(@) if @BaseClass.OnRemove
-    @readySound\Stop() if @readySound
+    @spinningSound\Stop() if @spinningSound
