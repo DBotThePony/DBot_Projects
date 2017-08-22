@@ -19,7 +19,7 @@ include 'shared.lua'
 
 ENT.Initialize = =>
     @DrawShadow(false)
-    @SetModel(@IdleModel1)
+    -- @SetModel(@IdleModel1)
     
     @UpdateSequenceList()
     @lastSeqModel = @IdleModel1
