@@ -28,20 +28,35 @@ ENT.Initialize = =>
     @targetPlayback = 1
     @currentPlayback = 1
 
+ENT.SelectLevel = (target) =>
+    lvl1, lvl2 = target\GetLevel(), @GetLevel()
+    if lvl1 > lvl2
+        @SetLevel(lvl1, false)
+        @SetUpgradeAmount(target\GetUpgradeAmount())
+    elseif lvl1 < lvl2
+        target\SetLevel(lvl2, false)
+        target\SetUpgradeAmount(@GetUpgradeAmount())
+    else
+        upgrade = math.max(@GetUpgradeAmount(), target\GetUpgradeAmount())
+        @SetUpgradeAmount(upgrade)
+        target\SetUpgradeAmount(upgrade)
+
 ENT.SetupAsExit = (entrance = NULL) =>
     @SetIsExit(true)
-    if IsValid(entrance)
-        entrance\SetExit(@)
-        entrance\SetTeamType(@GetTeamType())
-        @SetEntrance(entrance)
+    return if not IsValid(entrance)
+    entrance\SetExit(@)
+    entrance\SetTeamType(@GetTeamType())
+    @SetEntrance(entrance)
+    @SelectLevel(entrance)
 
 ENT.SetupAsEntrance = (exit = NULL) =>
     @SetIsExit(false)
-    if IsValid(exit)
-        exit\SetIsExit(true)
-        exit\SetEnirance(@)
-        exit\SetTeamType(@GetTeamType())
-        @SetExit(exit)
+    return if not IsValid(exit)
+    exit\SetIsExit(true)
+    exit\SetEnirance(@)
+    exit\SetTeamType(@GetTeamType())
+    @SetExit(exit)
+    @SelectLevel(exit)
 
 ENT.DetectStanding = =>
     pos = @GetPos() + Vector(0, 0, 4)
