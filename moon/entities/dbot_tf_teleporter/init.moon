@@ -94,6 +94,13 @@ DAMAGE_TYPES = {
 ENT.OnBuildFinish = => @SetResetAt(CurTime())
 ENT.OnUpgradeFinish = => @SetResetAt(CurTime())
 
+ENT.CallDestroy = (attacker = NULL, inflictor = NULL, dmg) =>
+    hook.Run('TF2TeleporterDestroyed', @, attacker, inflictor, dmg)
+    tele2 = @GetConnectedTeleporter()
+    if IsValid(tele2)
+        tele2\SetLevel(1, false)
+        tele2\SetUpgradeAmount(0)
+
 ENT.TriggerReceive = (ent = NULL, force = false) =>
     return false if not force and (not @IsAlly(ent) or not @GetIsExit()) or not IsValid(ent)
     pos = @GetStandPos()
