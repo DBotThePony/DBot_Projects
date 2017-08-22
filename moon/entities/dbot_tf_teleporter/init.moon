@@ -198,6 +198,7 @@ ENT.BehaveUpdate = (delta) =>
         return
     
     ent = tr.Entity
+    return if ent\IsPlayer() and ent\InVehicle()
     if @currentTeleTarget ~= ent
         @currentTeleTarget = ent
         @currentTeleTimer = 0
