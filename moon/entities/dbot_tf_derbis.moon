@@ -22,7 +22,7 @@ ENT.Type = 'anim'
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 
-DERBIS_REMOVE_TIME = CreateConVar('tf_derbis_remove_timer', '15', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Derib removal timer') if SERVER
+DERBIS_REMOVE_TIME = CreateConVar('tf_derbis_remove_timer', '45', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Derib removal timer') if SERVER
 
 AccessorFunc(ENT, 'm_DerbisValue', 'DerbisValue')
 AccessorFunc(ENT, 'm_dissolveAt', 'DissolveAt')

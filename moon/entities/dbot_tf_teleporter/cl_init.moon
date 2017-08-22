@@ -48,7 +48,7 @@ net.Receive 'DTF2.TeleportedEntity', ->
     if IsValid(ent)
         particleSystem = CreateParticleSystem(ent, teamType and 'player_recent_teleport_blue' or 'player_recent_teleport_red', PATTACH_ABSORIGIN_FOLLOW, 0)
         CreateParticleSystem(ent, 'teleported_flash', PATTACH_ABSORIGIN_FOLLOW, 0)
-        timer.Simple 15, -> particleSystem\StopEmission() if particleSystem\IsValid()
+        timer.Simple 18, -> particleSystem\StopEmission() if particleSystem\IsValid()
         if ent == LocalPlayer()
             ent\ScreenFade(SCREENFADE.IN, color_white, FLASH_TIME, 0)
             ent.__teleFOV = RealTime() + FOV_TIME
