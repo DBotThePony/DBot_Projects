@@ -188,7 +188,6 @@ ENT.CalculatePlaybackRate = (animTime = 1 - (@GetResetAt() - CurTime()) / @GetRe
     else
         return 0.5
 
-
 ENT.Think = =>
     @BaseClass.Think(@)
     @ThinkPlaybackRate()

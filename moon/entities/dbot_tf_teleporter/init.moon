@@ -97,6 +97,22 @@ ENT.OnUpgradeFinish = => @SetResetAt(CurTime())
 ENT.TriggerReceive = (ent = NULL, force = false) =>
     return false if not force and (not @IsAlly(ent) or not @GetIsExit()) or not IsValid(ent)
     pos = @GetStandPos()
+    mins, maxs = ent\OBBMins(), ent\OBBMaxs()
+
+    targets = {}
+    trData = {
+        start: pos
+        endpos: pos + Vector(0, 0, 24)
+        mask: MASK_SOLID
+        :mins, :maxs
+        filter: (entHit) -> 
+            return false if entHit == @ or entHit == ent or not IsValid(entHit)
+            table.insert(targets, entHit) if not @IsAlly(entHit)
+            return false
+    }
+
+    util.TraceHull(trData)
+
     ent\SetPos(pos)
 
     if ent\IsPlayer()
@@ -105,18 +121,6 @@ ENT.TriggerReceive = (ent = NULL, force = false) =>
         ent\SetAngles(@GetTeleAngles())
     
     @DoReset()
-    mins, maxs = ent\WorldSpaceAABB()
-
-    targets = {}
-    trData = {
-        start: pos
-        endpos: pos + Vector(0, 0, 1)
-        :mins, :maxs
-        filter: (entHit) ->
-            return false if entHit == @ or entHit == ent or not IsValid(entHit)
-            table.insert(targets) if not @IsAlly(entHit)
-            return false
-    }
     
     for tr in *targets
         dmg = tr\Health() * 6
@@ -126,8 +130,8 @@ ENT.TriggerReceive = (ent = NULL, force = false) =>
             newDMG\SetInflictor(@)
             newDMG\SetDamage(dmg)
             newDMG\SetMaxDamage(dmg)
-            newDMG\SetReportedPosition(@)
-            newDMG\SetDamagePosition(@)
+            newDMG\SetReportedPosition(pos)
+            newDMG\SetDamagePosition(pos)
             newDMG\SetDamageType(dmgtype)
             tr\TakeDamageInfo(newDMG)
     
