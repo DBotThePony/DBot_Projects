@@ -181,7 +181,7 @@ DTF2.DestructionPDAHUD = (ply = LocalPlayer(), sentryStatus = IsValid(ply\GetBui
             surface.DrawTexturedRect(x, y + h + 4, ICON_WIDTH, ICON_HEIGHT)
             surface.SetTextColor(BUILD_FONT_COLOR())
         else
-            surface.SetTextPos(x + 36, y + ICON_HEIGHT / 2 - 4)
+            surface.SetTextPos(x + 38, y + ICON_HEIGHT / 2 - 4)
             surface.DrawText('NOT')
             surface.SetTextPos(x + 33, y + ICON_HEIGHT / 2 + h)
             surface.DrawText('BUILT')
