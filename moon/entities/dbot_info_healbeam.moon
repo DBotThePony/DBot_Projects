@@ -93,3 +93,5 @@ if CLIENT
         }
 
         @particleEffect = @CreateParticleEffect(@GetBeamType() and 'dispenser_heal_blue' or 'dispenser_heal_red', {pointOne, pointTwo})
+    
+    ENT.Think = ENT.Draw
