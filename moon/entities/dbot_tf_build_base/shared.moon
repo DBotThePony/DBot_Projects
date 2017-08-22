@@ -93,6 +93,16 @@ ENT.CustomRepair = (thersold = 200, simulate = CLIENT) =>
     weight = 0
     return weight
 
+ENT.SimulateUpgrade = (thersold = 200, simulate = CLIENT) =>
+    return 0 if thersold == 0
+    weight = 0
+    if @GetLevel() < 3 and @IsAvaliable()
+        upgradeAmount = math.Clamp(math.min(@MAX_UPGRADE - @GetUpgradeAmount(), @UPGRADE_HIT), 0, thersold - weight)
+        weight += upgradeAmount if upgradeAmount ~= 0
+        @SetUpgradeAmount(@GetUpgradeAmount() + upgradeAmount) if upgradeAmount ~= 0 and not simulate
+        @SetLevel(@GetLevel() + 1) if @GetUpgradeAmount() >= @MAX_UPGRADE
+    return weight
+
 ENT.SimulateRepair = (thersold = 200, simulate = CLIENT) =>
     return 0 if thersold == 0
     weight = 0
@@ -102,11 +112,5 @@ ENT.SimulateRepair = (thersold = 200, simulate = CLIENT) =>
     weight += repairHP if repairHP ~= 0 
     @SetHealth(@Health() + repairHP) if repairHP ~= 0 and not simulate
     weight += @CustomRepair(thersold - weight, simulate)
-
-    if @GetLevel() < 3 and weight ~= thersold and @IsAvaliable()
-        upgradeAmount = math.Clamp(math.min(@MAX_UPGRADE - @GetUpgradeAmount(), @UPGRADE_HIT), 0, thersold - weight)
-        weight += upgradeAmount if upgradeAmount ~= 0
-        @SetUpgradeAmount(@GetUpgradeAmount() + upgradeAmount) if upgradeAmount ~= 0 and not simulate
-        @SetLevel(@GetLevel() + 1) if @GetUpgradeAmount() >= @MAX_UPGRADE
-    
+    weight += @SimulateUpgrade(thersold - weight, simulate)
     return weight

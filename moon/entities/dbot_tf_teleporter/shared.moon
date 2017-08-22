@@ -203,3 +203,24 @@ ENT.Think = =>
 
     @ClientTeleporterThink() if CLIENT
     return true
+
+ENT.SimulateUpgrade = (thersold = 200, simulate = CLIENT) =>
+    if @isRepairedConnected
+        @BaseClass.SimulateUpgrade(@, @realThersold, simulate)
+        return 0
+    else
+        return @BaseClass.SimulateUpgrade(@, thersold, simulate)
+
+ENT.SimulateRepair = (thersold = 200, simulate = CLIENT, isConnected = false) =>
+    if not isConnected
+        weight = @BaseClass.SimulateRepair(@, thersold, simulate)
+        tele2 = @GetConnectedTeleporter()
+        if IsValid(tele2)
+            weight += tele2\SimulateRepair(thersold, simulate, true)
+        return weight
+    else
+        @isRepairedConnected = true
+        @realThersold = thersold
+        weight = @BaseClass.SimulateRepair(@, thersold, simulate)
+        @isRepairedConnected = false
+        return weight
