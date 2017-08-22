@@ -62,8 +62,8 @@ ENT.RECEIVE_SOUND = 'DTF2_Building_Teleporter.Receive'
 ENT.ExplosionSound = 'DTF2_Building_Teleporter.Explode'
 
 ENT.ReloadTime1 = 10
-ENT.ReloadTime2 = 3
-ENT.ReloadTime3 = 1
+ENT.ReloadTime2 = 5
+ENT.ReloadTime3 = 3
 
 ENT.BuildTime = 20
 
