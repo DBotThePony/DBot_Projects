@@ -88,6 +88,7 @@ ENT.UpdateSequenceList = =>
 -- hehehe
 
 ENT.IsAvaliable = => not @GetIsBuilding() and not @GetIsUpgrading()
+ENT.IsAvaliableForRepair = => not @GetIsBuilding() and not @GetIsUpgrading()
 ENT.CustomRepair = (thersold = 200, simulate = CLIENT) =>
     return 0 if thersold == 0
     weight = 0
@@ -96,7 +97,7 @@ ENT.CustomRepair = (thersold = 200, simulate = CLIENT) =>
 ENT.SimulateUpgrade = (thersold = 200, simulate = CLIENT) =>
     return 0 if thersold == 0
     weight = 0
-    if @GetLevel() < 3 and @IsAvaliable()
+    if @GetLevel() < 3 and @IsAvaliableForRepair()
         upgradeAmount = math.Clamp(math.min(@MAX_UPGRADE - @GetUpgradeAmount(), @UPGRADE_HIT), 0, thersold - weight)
         weight += upgradeAmount if upgradeAmount ~= 0
         @SetUpgradeAmount(@GetUpgradeAmount() + upgradeAmount) if upgradeAmount ~= 0 and not simulate
@@ -107,7 +108,7 @@ ENT.SimulateRepair = (thersold = 200, simulate = CLIENT) =>
     return 0 if thersold == 0
     weight = 0
     repairHP = 0
-    repairHP = math.Clamp(math.min(@GetMaxHealth() - @Health(), @REPAIR_HEALTH), 0, thersold - weight) if @IsAvaliable()
+    repairHP = math.Clamp(math.min(@GetMaxHealth() - @Health(), @REPAIR_HEALTH), 0, thersold - weight) if @IsAvaliableForRepair()
 
     weight += repairHP if repairHP ~= 0 
     @SetHealth(@Health() + repairHP) if repairHP ~= 0 and not simulate
