@@ -27,9 +27,9 @@ ENT.IdleModel1 = 'models/buildables/dispenser_light.mdl'
 ENT.IdleModel2 = 'models/buildables/dispenser_lvl2_light.mdl'
 ENT.IdleModel3 = 'models/buildables/dispenser_lvl3_light.mdl'
 
-ENT.HealthLevel1 = 150
-ENT.HealthLevel2 = 180
-ENT.HealthLevel3 = 216
+ENT.HealthLevel1 = CreateConVar('tf_build_hp1', '150', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Default Max HP for 1 level buildables')
+ENT.HealthLevel2 = CreateConVar('tf_build_hp2', '180', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Default Max HP for 2 level buildables')
+ENT.HealthLevel3 = CreateConVar('tf_build_hp3', '216', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Default Max HP for 3 level buildables')
 
 ENT.BuildTime = 2
 
@@ -45,18 +45,18 @@ ENT.IDLE_ANIM = 'ref'
 ENT.UPGRADE_TIME_2 = 1.16
 ENT.UPGRADE_TIME_3 = 1.16
 
-ENT.REPAIR_HEALTH = 40
-ENT.UPGRADE_HIT = 25
-ENT.MAX_UPGRADE = 200
+ENT.REPAIR_HEALTH = CreateConVar('tf_build_repair', '40', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Default repair speed for buildables')
+ENT.UPGRADE_HIT = CreateConVar('tf_build_upgrade', '25', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Default upgrade speed for buildables')
+ENT.MAX_UPGRADE = CreateConVar('tf_build_maxupgrade', '200', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Default max upgrade for buildables')
 
 ENT.UPGRADE_ANIMS = true
 ENT.MODEL_UPGRADE_ANIMS = true
 
-ENT.MAX_DISTANCE = 512 ^ 2
+ENT.MAX_DISTANCE = 512
 
 ENT.GetLevel = => @GetnwLevel()
 
-ENT.GibsValue = 15
+ENT.GibsValue = CreateConVar('tf_build_gibs', '15', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Default gibs value for buildables')
 -- ENT.Gibs = {}
 -- ENT.ExplosionSound = 'DTF2_Building_Sentry.Explode'
 
@@ -90,6 +90,17 @@ ENT.UpdateSequenceList = =>
 -- I use different priorities than original TF2 code
 -- hehehe
 
+ENT.GetMaxHP = (level = @GetLevel()) =>
+    switch @GetLevel()
+        when 1
+            DTF2.GrabInt(@HealthLevel1)
+        when 2
+            DTF2.GrabInt(@HealthLevel2)
+        when 3
+            DTF2.GrabInt(@HealthLevel3)
+        else
+            DTF2.GrabInt(@HealthLevel1)
+
 ENT.IsAvaliable = => not @GetIsBuilding() and not @GetIsUpgrading()
 ENT.IsAvaliableForRepair = => not @GetIsBuilding() and not @GetIsUpgrading()
 ENT.CustomRepair = (thersold = 200, simulate = CLIENT) =>
@@ -101,17 +112,17 @@ ENT.SimulateUpgrade = (thersold = 200, simulate = CLIENT) =>
     return 0 if thersold == 0
     weight = 0
     if @GetLevel() < 3 and @IsAvaliableForRepair()
-        upgradeAmount = math.Clamp(math.min(@MAX_UPGRADE - @GetUpgradeAmount(), @UPGRADE_HIT), 0, thersold - weight)
+        upgradeAmount = math.Clamp(math.min(DTF2.GrabInt(@MAX_UPGRADE) - @GetUpgradeAmount(), DTF2.GrabInt(@UPGRADE_HIT)), 0, thersold - weight)
         weight += upgradeAmount if upgradeAmount ~= 0
         @SetUpgradeAmount(@GetUpgradeAmount() + upgradeAmount) if upgradeAmount ~= 0 and not simulate
-        @SetLevel(@GetLevel() + 1) if @GetUpgradeAmount() >= @MAX_UPGRADE
+        @SetLevel(@GetLevel() + 1) if @GetUpgradeAmount() >= DTF2.GrabInt(@MAX_UPGRADE)
     return weight
 
 ENT.SimulateRepair = (thersold = 200, simulate = CLIENT) =>
     return 0 if thersold == 0
     weight = 0
     repairHP = 0
-    repairHP = math.Clamp(math.min(@GetMaxHealth() - @Health(), @REPAIR_HEALTH), 0, thersold - weight) if @IsAvaliableForRepair()
+    repairHP = math.Clamp(math.min(@GetMaxHealth() - @Health(), DTF2.GrabInt(@REPAIR_HEALTH)), 0, thersold - weight) if @IsAvaliableForRepair()
 
     weight += repairHP if repairHP ~= 0 
     @SetHealth(@Health() + repairHP) if repairHP ~= 0 and not simulate

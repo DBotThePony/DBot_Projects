@@ -43,9 +43,9 @@ ENT.Initialize = =>
     @lastBulletFire = 0
     @lastRocketsFire = 0
     @waitSequenceReset = 0
-    @SetAmmoAmount(@MAX_AMMO_1)
-    @SetHealth(@HealthLevel1)
-    @SetMaxHealth(@HealthLevel1)
+    @SetAmmoAmount(DTF2.GrabInt(@MAX_AMMO_1))
+    @SetHealth(@GetMaxHP())
+    @SetMaxHealth(@GetMaxHP())
     @fireNext = 0
     @behavePause = 0
     @nextPoseUpdate = 0
@@ -54,7 +54,7 @@ ENT.Initialize = =>
     @muzzle_r = 0
     @nextMuzzle = false
     @UpdateSequenceList()
-    @SetRockets(@MAX_ROCKETS)
+    @SetRockets(DTF2.GrabInt(@MAX_ROCKETS))
 
 ENT.HULL_SIZE = 2
 ENT.HULL_TRACE_MINS = Vector(-ENT.HULL_SIZE, -ENT.HULL_SIZE, -ENT.HULL_SIZE)
@@ -70,7 +70,7 @@ ENT.PlayScanSound = =>
             @EmitSound('weapons/sentry_scan3.wav')
 
 ENT.BulletHit = (tr, dmg) =>
-    dmg\SetDamage(@BULLET_DAMAGE)
+    dmg\SetDamage(DTF2.GrabFloat(@BULLET_DAMAGE))
     dmg\SetAttacker(@SelectAttacker())
     dmg\SetInflictor(@)
 
@@ -80,11 +80,11 @@ ENT.SetLevel = (val = 1, playAnimation = true, force = false) =>
     return status if not status
     switch val
         when 1
-            @SetAmmoAmount(@MAX_AMMO_1) if @GetAmmoAmount() == @GetMaxAmmo(oldLevel)
+            @SetAmmoAmount(DTF2.GrabInt(@MAX_AMMO_1)) if @GetAmmoAmount() == @GetMaxAmmo(oldLevel)
         when 2
-            @SetAmmoAmount(@MAX_AMMO_2) if @GetAmmoAmount() == @GetMaxAmmo(oldLevel)
+            @SetAmmoAmount(DTF2.GrabInt(@MAX_AMMO_2)) if @GetAmmoAmount() == @GetMaxAmmo(oldLevel)
         when 3
-            @SetAmmoAmount(@MAX_AMMO_3) if @GetAmmoAmount() == @GetMaxAmmo(oldLevel)
+            @SetAmmoAmount(DTF2.GrabInt(@MAX_AMMO_3)) if @GetAmmoAmount() == @GetMaxAmmo(oldLevel)
             
     return true
 
@@ -99,14 +99,7 @@ ENT.GetAdditionalVector = =>
 
 ENT.FireBullet = (force = false) =>
     return false if @lastBulletFire > CurTime() and not force
-
-    switch @GetLevel()
-        when 1
-            @lastBulletFire = CurTime() + @BULLET_RELOAD_1
-        when 2
-            @lastBulletFire = CurTime() + @BULLET_RELOAD_2
-        when 3
-            @lastBulletFire = CurTime() + @BULLET_RELOAD_3
+    @lastBulletFire = CurTime() + @GetReloadTime()
     
     if @GetAmmoAmount() <= 0 and not force
         net.Start('DTF2.SentryFire', true)
@@ -127,7 +120,7 @@ ENT.FireBullet = (force = false) =>
     bulletData = {
         Attacker: @
         Callback: @BulletHit
-        Damage: @BULLET_DAMAGE
+        Damage: DTF2.GrabFloat(@BULLET_DAMAGE)
         --Dir: srcAng
         --Src: srcPos
         Dir: dir
@@ -135,7 +128,7 @@ ENT.FireBullet = (force = false) =>
     }
 
     @AddGesture(ACT_RANGE_ATTACK1)
-    @DelayGestureRemove(ACT_RANGE_ATTACK1, @BULLET_RELOAD_1)
+    @DelayGestureRemove(ACT_RANGE_ATTACK1, DTF2.GrabInt(@BULLET_RELOAD_1))
 
     @FireBullets(bulletData)
     net.Start('DTF2.SentryFire', true)
@@ -146,7 +139,7 @@ ENT.FireBullet = (force = false) =>
 
 ENT.FireRocket = (force = false) =>
     return false if @lastRocketsFire > CurTime() and not force
-    @lastRocketsFire = CurTime() + @ROCKETS_RELOAD
+    @lastRocketsFire = CurTime() + DTF2.GrabInt(@ROCKETS_RELOAD)
     
     return false if @GetRockets() <= 0 and not force
     
@@ -208,11 +201,11 @@ ENT.BehaveUpdate = (delta) =>
         if @idleWaitOnAngle < cTime
             @idleAngle = @GetAngles()
         
-        @idleYaw += delta * @SENTRY_SCAN_YAW_MULT if @idleDirection
-        @idleYaw -= delta * @SENTRY_SCAN_YAW_MULT if not @idleDirection
-        if @idleYaw > @SENTRY_SCAN_YAW_CONST or @idleYaw < -@SENTRY_SCAN_YAW_CONST
-            @idleDirection = false if @idleYaw > @SENTRY_SCAN_YAW_CONST
-            @idleDirection = true if @idleYaw < -@SENTRY_SCAN_YAW_CONST
+        @idleYaw += delta * DTF2.GrabInt(@SENTRY_SCAN_YAW_MULT) if @idleDirection
+        @idleYaw -= delta * DTF2.GrabInt(@SENTRY_SCAN_YAW_MULT) if not @idleDirection
+        if @idleYaw > DTF2.GrabInt(@SENTRY_SCAN_YAW_CONST) or @idleYaw < -DTF2.GrabInt(@SENTRY_SCAN_YAW_CONST)
+            @idleDirection = false if @idleYaw > DTF2.GrabInt(@SENTRY_SCAN_YAW_CONST)
+            @idleDirection = true if @idleYaw < -DTF2.GrabInt(@SENTRY_SCAN_YAW_CONST)
             @idlePitch += 2 if @idlePitchDirection
             @idlePitch -= 2 if not @idlePitchDirection
             @idlePitchDirection = not @idlePitchDirection if @idlePitch <= -6 or @idlePitch >= 6
@@ -243,8 +236,8 @@ ENT.Think = =>
     
     diffPitch = math.Clamp(math.AngleDifference(@currentAngle.p, @targetAngle.p), -2, 2)
     diffYaw = math.Clamp(math.AngleDifference(@currentAngle.y, @targetAngle.y), -2, 2)
-    newPitch = @currentAngle.p - diffPitch * delta * @SENTRY_ANGLE_CHANGE_MULT
-    newYaw = @currentAngle.y - diffYaw * delta * @SENTRY_ANGLE_CHANGE_MULT
+    newPitch = @currentAngle.p - diffPitch * delta * DTF2.GrabFloat(@SENTRY_ANGLE_CHANGE_MULT)
+    newYaw = @currentAngle.y - diffYaw * delta * DTF2.GrabFloat(@SENTRY_ANGLE_CHANGE_MULT)
     @currentAngle = Angle(newPitch, newYaw, 0)
     {p: cp, y: cy, r: cr} = @GetAngles()
     posePitch = math.floor(math.NormalizeAngle(cp - newPitch))

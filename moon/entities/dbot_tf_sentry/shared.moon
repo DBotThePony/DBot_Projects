@@ -33,28 +33,28 @@ ENT.IdleModel3 = 'models/buildables/sentry3.mdl'
 
 ENT.ROCKET_SOUND = 'weapons/sentry_rocket.wav'
 
-ENT.BuildTime = 10
+ENT.BuildTime = CreateConVar('tf_sentry_build', '10', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Sentry buildup time')
 
-ENT.SENTRY_ANGLE_CHANGE_MULT = 50
-ENT.SENTRY_SCAN_YAW_MULT = 30
-ENT.SENTRY_SCAN_YAW_CONST = 30
+ENT.SENTRY_ANGLE_CHANGE_MULT = CreateConVar('tf_dbg_sentry_angle', '50', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Sentry angle change multiplier')
+ENT.SENTRY_SCAN_YAW_MULT = CreateConVar('tf_dbg_sentry_scan_m', '50', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Sentry scan multiplier')
+ENT.SENTRY_SCAN_YAW_CONST = CreateConVar('tf_dbg_sentry_scan_c', '45', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Sentry scan constant')
 
 ENT.IDLE_ANIM = 'idle_off'
 
-ENT.MAX_DISTANCE = 1024 ^ 2
+ENT.MAX_DISTANCE = CreateConVar('tf_dbg_sentry_range', '1100', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Sentry targeting range')
 
-ENT.MAX_AMMO_1 = 150
-ENT.MAX_AMMO_2 = 200
-ENT.MAX_AMMO_3 = 200
-ENT.MAX_ROCKETS = 20
-ENT.AMMO_RESTORE_ON_HIT = 75
-ENT.ROCKETS_RESTORE_ON_HIT = 10
+ENT.MAX_AMMO_1 = CreateConVar('tf_sentry_ammo1', '150', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Maximal amount of lvl 1 sentry ammo')
+ENT.MAX_AMMO_2 = CreateConVar('tf_sentry_ammo2', '200', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Maximal amount of lvl 2 sentry ammo')
+ENT.MAX_AMMO_3 = CreateConVar('tf_sentry_ammo3', '200', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Maximal amount of lvl 3 sentry ammo')
+ENT.MAX_ROCKETS = CreateConVar('tf_sentry_rockets', '20', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Maximal amount of lvl 3 sentry rockets')
+ENT.AMMO_RESTORE_ON_HIT = CreateConVar('tf_dbg_ammo_restore', '75', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Ammo restored on wrench hit')
+ENT.ROCKETS_RESTORE_ON_HIT = CreateConVar('tf_dbg_rockets_restore', '5', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Rockets restored on wrench hit')
 
-ENT.BULLET_DAMAGE = 12
-ENT.BULLET_RELOAD_1 = 0.3
-ENT.BULLET_RELOAD_2 = 0.1
-ENT.BULLET_RELOAD_3 = 0.1
-ENT.ROCKETS_RELOAD = 5
+ENT.BULLET_DAMAGE = CreateConVar('tf_dbg_sentry_damage', '12', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Sentry bullets damage')
+ENT.BULLET_RELOAD_1 = CreateConVar('tf_dbg_sentry_reload1', '0.3', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Sentry bullets reload time')
+ENT.BULLET_RELOAD_2 = CreateConVar('tf_dbg_sentry_reload2', '0.1', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Sentry bullets reload time')
+ENT.BULLET_RELOAD_3 = CreateConVar('tf_dbg_sentry_reload3', '0.1', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Sentry bullets reload time')
+ENT.ROCKETS_RELOAD = CreateConVar('tf_dbg_sentry_reloadr', '5', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Sentry rockets reload time')
 ENT.ROCKETS_RELOAD_ANIM = 2.75
 
 ENT.Gibs1 = {
@@ -90,17 +90,25 @@ ENT.Gibs = (level = @GetLevel()) =>
         when 3
             @Gibs3
 
+ENT.GetReloadTime = (level = @GetLevel()) =>
+    switch level
+        when 1
+            DTF2.GrabFloat(@BULLET_RELOAD_1)
+        when 2
+            DTF2.GrabFloat(@BULLET_RELOAD_2)
+        when 3
+            DTF2.GrabFloat(@BULLET_RELOAD_3)
 
 ENT.GetAmmoPercent = (level = @GetLevel()) => @GetAmmoAmount() / @GetMaxAmmo()
-ENT.GetRocketsPercent = => @GetRockets() / @MAX_ROCKETS
+ENT.GetRocketsPercent = => @GetRockets() / DTF2.GrabInt(@MAX_ROCKETS)
 ENT.GetMaxAmmo = (level = @GetLevel()) =>
     switch level
         when 1
-            @MAX_AMMO_1
+            DTF2.GrabInt(@MAX_AMMO_1)
         when 2
-            @MAX_AMMO_2
+            DTF2.GrabInt(@MAX_AMMO_2)
         when 3
-            @MAX_AMMO_3
+            DTF2.GrabInt(@MAX_AMMO_3)
 
 ENT.SetupDataTables = =>
     @BaseClass.SetupDataTables(@)
@@ -122,8 +130,8 @@ ENT.CustomRepair = (thersold = 200, simulate = CLIENT) =>
     weight = 0
     rockets = 0
     ammo = 0
-    ammo = math.Clamp(math.min(@GetMaxAmmo() - @GetAmmoAmount(), @AMMO_RESTORE_ON_HIT), 0, thersold - weight)
-    rockets = math.Clamp(math.min(@MAX_ROCKETS - @GetRockets(), @ROCKETS_RESTORE_ON_HIT) * 2, 0, thersold - weight) if @GetLevel() == 3
+    ammo = math.Clamp(math.min(@GetMaxAmmo() - @GetAmmoAmount(), DTF2.GrabInt(@AMMO_RESTORE_ON_HIT)), 0, thersold - weight)
+    rockets = math.Clamp(math.min(DTF2.GrabInt(@MAX_ROCKETS) - @GetRockets(), DTF2.GrabInt(@ROCKETS_RESTORE_ON_HIT)) * 2, 0, thersold - weight) if @GetLevel() == 3
     rockets -= 1 if math.floor(rockets / 2) ~= rockets / 2
     weight += ammo
     weight += rockets

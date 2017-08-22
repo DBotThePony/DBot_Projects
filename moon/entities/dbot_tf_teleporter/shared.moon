@@ -24,11 +24,13 @@ ENT.AdminOnly = false
 ENT.Author = 'DBot'
 ENT.Category = 'TF2'
 
-ENT.MIN_BREAD = 4
-ENT.MAX_BREAD = 7
+ENT.SPAWN_BREAD = CreateConVar('tf_teleport_bread', '1', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Spawn bread?')
+ENT.BREAD_CHANCE = CreateConVar('tf_teleport_breadchance', '50', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Bread chance')
+ENT.MIN_BREAD = CreateConVar('tf_teleport_minbread', '4', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Minimal amount of bread')
+ENT.MAX_BREAD = CreateConVar('tf_teleport_maxbread', '7', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Maximal amount of bread')
 
-ENT.MIN_BREAD_TTL = 15
-ENT.MAX_BREAD_TTL = 20
+ENT.MIN_BREAD_TTL = CreateConVar('tf_teleport_minbread_ttl', '15', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Minimal bread time to live')
+ENT.MAX_BREAD_TTL = CreateConVar('tf_teleport_maxbread_ttl', '20', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Maximal bread time to live')
 
 ENT.Gibs = {
     'models/buildables/gibs/teleporter_gib1.mdl'
@@ -61,19 +63,21 @@ ENT.SEND_SOUND = 'DTF2_Building_Teleporter.Send'
 ENT.RECEIVE_SOUND = 'DTF2_Building_Teleporter.Receive'
 ENT.ExplosionSound = 'DTF2_Building_Teleporter.Explode'
 
-ENT.ReloadTime1 = 10
-ENT.ReloadTime2 = 5
-ENT.ReloadTime3 = 3
+ENT.ReloadTime1 = CreateConVar('tf_teleport_reload1', '10', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Teleport reload time')
+ENT.ReloadTime2 = CreateConVar('tf_teleport_reload2', '5', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Teleport reload time')
+ENT.ReloadTime3 = CreateConVar('tf_teleport_reload3', '3', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Teleport reload time')
 
-ENT.BuildTime = 20
+ENT.BuildTime = CreateConVar('tf_teleport_build', '20', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Teleport build time')
 
 ENT.BuildingMins = Vector(-20, -20, 0)
 ENT.BuildingMaxs = Vector(20, 20, 18)
 
-ENT.TELE_WAIT = 1.25
-ENT.TELE_DELAY = 0.5
+ENT.TELE_WAIT = CreateConVar('tf_dbg_teleport_wait', '1.25', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Wait before teleporting')
+ENT.TELE_DELAY = CreateConVar('tf_dbg_teleport_delay', '0.5', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Delay before teleporting')
 
 ENT.MODEL_UPGRADE_ANIMS = false
+
+ENT.GetDrawText = => @IsExit() and 'Teleporter Exit' or 'Teleporter Entrance'
 
 ENT.IsLoaded = => @GetResetAt() < CurTime()
 ENT.IsAvaliable = => @BaseClass.IsAvaliable(@) and @GetResetAt() < CurTime()
@@ -155,11 +159,11 @@ ENT.GetAvaliableEffect = (level = @GetLevel()) =>
 ENT.GetReloadTime = (level = @GetLevel()) =>
     switch level
         when 1
-            @ReloadTime1
+            DTF2.GrabFloat(@ReloadTime1)
         when 2
-            @ReloadTime2
+            DTF2.GrabFloat(@ReloadTime2)
         when 3
-            @ReloadTime3
+            DTF2.GrabFloat(@ReloadTime3)
 
 ENT.GetSpinSound = (level = @GetLevel()) =>
     switch level

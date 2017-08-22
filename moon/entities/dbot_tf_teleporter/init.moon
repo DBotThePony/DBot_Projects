@@ -75,7 +75,7 @@ ENT.TriggerTeleport = (ent = NULL, force = false) =>
     net.WriteEntity(@GetExit())
     net.Broadcast()
     @isTeleporting = true
-    timer.Simple @TELE_DELAY, ->
+    timer.Simple DTF2.GrabFloat(@TELE_DELAY), ->
         return if not @IsValid()
         @isTeleporting = false
         return if not IsValid(@GetExit())
@@ -116,24 +116,39 @@ ENT.CallDestroy = (attacker = NULL, inflictor = NULL, dmg) =>
         tele2\SetLevel(1, false)
         tele2\SetUpgradeAmount(0)
 
+TELEFRAG = CreateConVar('tf_teleport_telefrag', '1', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Allow to telefrag')
+
 ENT.TriggerReceive = (ent = NULL, force = false) =>
     return false if not force and (not @IsAlly(ent) or not @GetIsExit()) or not IsValid(ent)
     pos = @GetStandPos()
     mins, maxs = ent\OBBMins(), ent\OBBMaxs()
 
-    targets = {}
-    trData = {
-        start: pos
-        endpos: pos + Vector(0, 0, 24)
-        mask: MASK_SOLID
-        :mins, :maxs
-        filter: (entHit) -> 
-            return false if entHit == @ or entHit == ent or not IsValid(entHit)
-            table.insert(targets, entHit) if not @IsAlly(entHit)
-            return false
-    }
+    if TELEFRAG\GetBool()
+        targets = {}
+        trData = {
+            start: pos
+            endpos: pos + Vector(0, 0, 24)
+            mask: MASK_SOLID
+            :mins, :maxs
+            filter: (entHit) -> 
+                return false if entHit == @ or entHit == ent or not IsValid(entHit)
+                table.insert(targets, entHit) if not @IsAlly(entHit)
+                return false
+        }
 
-    util.TraceHull(trData)
+        util.TraceHull(trData)
+        for tr in *targets
+            dmg = tr\Health() * 6
+            for dmgtype in *DAMAGE_TYPES
+                newDMG = DamageInfo()
+                newDMG\SetAttacker(ent)
+                newDMG\SetInflictor(@)
+                newDMG\SetDamage(dmg)
+                newDMG\SetMaxDamage(dmg)
+                newDMG\SetReportedPosition(pos)
+                newDMG\SetDamagePosition(pos)
+                newDMG\SetDamageType(dmgtype)
+                tr\TakeDamageInfo(newDMG)
 
     ent\SetPos(pos)
 
@@ -144,23 +159,10 @@ ENT.TriggerReceive = (ent = NULL, force = false) =>
     
     @DoReset()
     
-    for tr in *targets
-        dmg = tr\Health() * 6
-        for dmgtype in *DAMAGE_TYPES
-            newDMG = DamageInfo()
-            newDMG\SetAttacker(ent)
-            newDMG\SetInflictor(@)
-            newDMG\SetDamage(dmg)
-            newDMG\SetMaxDamage(dmg)
-            newDMG\SetReportedPosition(pos)
-            newDMG\SetDamagePosition(pos)
-            newDMG\SetDamageType(dmgtype)
-            tr\TakeDamageInfo(newDMG)
-    
-    if spawnBread
+    if @SPAWN_BREAD\GetBool() and math.random(1, 100) < @BREAD_CHANCE\GetInt()
         tpPoint = @GetBreadPoint()
         spawnedEnts = {}
-        for i = 1, math.random(@MIN_BREAD, @MAX_BREAD)
+        for i = 1, math.random(DTF2.GrabInt(@MIN_BREAD), DTF2.GrabInt(@MAX_BREAD))
             with spawned = ents.Create('prop_physics')
                 mdl = table.Random(@BREAD_MODELS)
                 \SetModel(mdl)
@@ -174,7 +176,7 @@ ENT.TriggerReceive = (ent = NULL, force = false) =>
                     \Wake()
                     \SetVelocity(VectorRand() * math.random(160, 400))
                 table.insert(spawnedEnts, spawned)
-        timer.Simple math.random(@MIN_BREAD_TTL, @MAX_BREAD_TTL), -> ent\Remove() for ent in *spawnedEnts when ent\IsValid()
+        timer.Simple math.random(DTF2.GrabInt(@MIN_BREAD_TTL), DTF2.GrabInt(@MAX_BREAD_TTL)), -> ent\Remove() for ent in *spawnedEnts when ent\IsValid()
 
 ENT.BehaveUpdate = (delta) =>
     return if @isTeleporting
@@ -204,7 +206,7 @@ ENT.BehaveUpdate = (delta) =>
         @currentTeleTimer = 0
     
     @currentTeleTimer += delta
-    if @currentTeleTimer > @TELE_WAIT
+    if @currentTeleTimer > DTF2.GrabFloat(@TELE_WAIT)
         @TriggerTeleport(ent)
         @currentTeleTarget = NULL
         @currentTeleTimer = 0

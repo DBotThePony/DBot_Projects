@@ -53,3 +53,21 @@ DTF2.PlayMiniCritEffect = (hitEntity) ->
     effData\SetOrigin(pos)
     util.Effect('dtf2_minicrit', effData)
     hitEntity\EmitSound('DTF2_TFPlayer.CritHitMini')
+
+DTF2.GrabInt = (obj, def = 0) ->
+    switch type(obj)
+        when 'ConVar'
+            obj\GetInt() or math.floor(tonumber(obj\GetDefault()))
+        when 'number'
+            math.floor(obj)
+        when 'string'
+            math.floor(tonumber(obj) or def)
+
+DTF2.GrabFloat = (obj, def = 0) ->
+    switch type(obj)
+        when 'ConVar'
+            obj\GetFloat() or tonumber(obj\GetDefault())
+        when 'number'
+            obj
+        when 'string'
+            tonumber(obj) or def

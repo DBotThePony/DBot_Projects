@@ -44,7 +44,7 @@ ENT.Explode = =>
             \Spawn()
             \Activate()
             \RealSetModel(gib)
-            \SetDerbisValue(@GibsValue)
+            \SetDerbisValue(DTF2.GrabInt(@GibsValue))
             \Shake()
     @Remove()
 
@@ -183,8 +183,8 @@ ENT.Initialize = =>
     @npc_bullseye = {}
     @DrawShadow(false)
     @SetModel(@IdleModel1)
-    @SetHealth(@HealthLevel1)
-    @SetMaxHealth(@HealthLevel1)
+    @SetHealth(@GetMaxHP())
+    @SetMaxHealth(@GetMaxHP())
     @mLevel = 1
 
     @PhysicsInitBox(@BuildingMins, @BuildingMaxs)
@@ -268,10 +268,11 @@ ENT.UpdateRelationships = =>
 ENT.GetAlliesVisible = =>
     output = {}
     pos = @GetPos()
+    mx = DTF2.GrabInt(@MAX_DISTANCE) ^ 2
     
     for {target, tpos, mins, maxs, center, rotatedCenter} in *VALID_ALLIES
         dist = pos\DistToSqr(tpos)
-        if target\IsValid() and dist < @MAX_DISTANCE
+        if target\IsValid() and dist < mx
             table.insert(output, {target, tpos, dist, rotatedCenter})
     
     table.sort output, (a, b) -> a[3] < b[3]
@@ -297,10 +298,11 @@ ENT.GetAlliesVisible = =>
 ENT.GetTargetsVisible = =>
     output = {}
     pos = @GetPos()
+    mx = DTF2.GrabInt(@MAX_DISTANCE) ^ 2
     
     for {target, tpos, mins, maxs, center, rotatedCenter} in *VALID_TARGETS
         dist = pos\DistToSqr(tpos)
-        if target\IsValid() and dist < @MAX_DISTANCE
+        if target\IsValid() and dist < mx
             table.insert(output, {target, tpos, dist, rotatedCenter})
     
     table.sort output, (a, b) -> a[3] < b[3]
@@ -326,10 +328,11 @@ ENT.GetTargetsVisible = =>
 ENT.GetFirstVisible = =>
     output = {}
     pos = @GetPos()
+    mx = DTF2.GrabInt(@MAX_DISTANCE) ^ 2
     
     for {target, tpos, mins, maxs, center, rotatedCenter} in *VALID_TARGETS
         dist = pos\DistToSqr(tpos)
-        if target\IsValid() and dist < @MAX_DISTANCE
+        if target\IsValid() and dist < mx
             table.insert(output, {target, tpos, dist, rotatedCenter})
     
     table.sort output, (a, b) -> a[3] < b[3]
@@ -359,19 +362,19 @@ ENT.SetLevel = (val = 1, playAnimation = @UPGRADE_ANIMS, force = false) =>
     switch val
         when 1
             @RealSetModel(@IdleModel1) if @GetModel() ~= @IdleModel1
-            @SetHealth(@HealthLevel1) if @Health() == @GetMaxHealth()
-            @SetMaxHealth(@HealthLevel1)
+            @SetHealth(DTF2.GrabInt(@HealthLevel1)) if @Health() == @GetMaxHealth()
+            @SetMaxHealth(DTF2.GrabInt(@HealthLevel1))
             @UpdateSequenceList()
         when 2
             @RealSetModel(@IdleModel2) if @GetModel() ~= @IdleModel2
-            @SetHealth(@HealthLevel2) if @Health() == @GetMaxHealth()
-            @SetMaxHealth(@HealthLevel2)
+            @SetHealth(DTF2.GrabInt(@HealthLevel2)) if @Health() == @GetMaxHealth()
+            @SetMaxHealth(DTF2.GrabInt(@HealthLevel2))
             @UpdateSequenceList()
             @PlayUpgradeAnimation() if playAnimation
         when 3
             @RealSetModel(@IdleModel3) if @GetModel() ~= @IdleModel3
-            @SetHealth(@HealthLevel3)
-            @SetMaxHealth(@HealthLevel3)
+            @SetHealth(DTF2.GrabInt(@HealthLevel3))
+            @SetMaxHealth(DTF2.GrabInt(@HealthLevel3))
             @UpdateSequenceList()
             @PlayUpgradeAnimation() if playAnimation
     @CreateBullseye()
@@ -411,7 +414,7 @@ ENT.SetBuildStatus = (status = false) =>
         @SetBuildSpeedup(false)
         @StartActivity(ACT_OBJ_PLACING)
         @ResetSequence(@buildSequence)
-        @buildFinishAt = CurTime() + @BuildTime
+        @buildFinishAt = CurTime() + DTF2.GrabFloat(@BuildTime)
         @OnBuildStart()
         @SetPlaybackRate(0.5)
         @SetHealth(1)
@@ -435,7 +438,7 @@ ENT.Think = =>
         if @GetBuildSpeedup()
             @buildFinishAt -= delta
         deltaBuild = @buildFinishAt - cTime
-        deltaBuildMult = deltaBuild / @BuildTime
+        deltaBuildMult = deltaBuild / DTF2.GrabFloat(@BuildTime)
         @SetHealth(math.Clamp(@GetMaxHealth() * (1 - deltaBuildMult), 1, @GetMaxHealth()))
         if deltaBuild <= 0
             @SetBuildSpeedup(false)

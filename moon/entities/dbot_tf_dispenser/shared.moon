@@ -40,31 +40,31 @@ ENT.BuildingMaxs = Vector(18, 16, 64)
 ENT.BuildTime = 20
 ENT.IDLE_ANIM = 'ref'
 
-ENT.MAX_DISTANCE = 128 ^ 2
+ENT.MAX_DISTANCE = CreateConVar('tf_dbg_disp_range', '128', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Dispenser range')
 
-ENT.RESSUPLY_MULTIPLIER_1 = 1
-ENT.RESSUPLY_MULTIPLIER_2 = 2
-ENT.RESSUPLY_MULTIPLIER_3 = 3
+ENT.RESSUPLY_MULTIPLIER_1 = CreateConVar('tf_dbg_disp_mult1', '1', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Ressuply speed multiplier on lvl 1')
+ENT.RESSUPLY_MULTIPLIER_2 = CreateConVar('tf_dbg_disp_mult2', '2', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Ressuply speed multiplier on lvl 2')
+ENT.RESSUPLY_MULTIPLIER_3 = CreateConVar('tf_dbg_disp_mult3', '3', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Ressuply speed multiplier on lvl 3')
 
-ENT.MAS_RESSUPLY_1 = 300
-ENT.MAS_RESSUPLY_2 = 400
-ENT.MAS_RESSUPLY_3 = 500
+ENT.MAS_RESSUPLY_1 = CreateConVar('tf_disp_ammo1', '400', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Maximal amount of lvl 1 dispenser ammo')
+ENT.MAS_RESSUPLY_2 = CreateConVar('tf_disp_ammo2', '400', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Maximal amount of lvl 2 dispenser ammo')
+ENT.MAS_RESSUPLY_3 = CreateConVar('tf_disp_ammo3', '400', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Maximal amount of lvl 3 dispenser ammo')
 
-ENT.AMMO_RESSUPLY_MAX_1 = 40
-ENT.AMMO_RESSUPLY_MAX_2 = 50
-ENT.AMMO_RESSUPLY_MAX_3 = 60
+ENT.AMMO_RESSUPLY_MAX_1 = CreateConVar('tf_disp_resupply1', '40', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Dispenser metal resupply on lvl 1')
+ENT.AMMO_RESSUPLY_MAX_2 = CreateConVar('tf_disp_resupply2', '50', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Dispenser metal resupply on lvl 2')
+ENT.AMMO_RESSUPLY_MAX_3 = CreateConVar('tf_disp_resupply3', '60', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Dispenser metal resupply on lvl 3')
 
-ENT.CHARGE_TIME_1 = 5
-ENT.CHARGE_TIME_2 = 5
-ENT.CHARGE_TIME_3 = 5
+ENT.AMMO_AMOUNT_1 = CreateConVar('tf_disp_amount1', '40', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Dispenser ammo amount on lvl 1')
+ENT.AMMO_AMOUNT_2 = CreateConVar('tf_disp_amount2', '50', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Dispenser ammo amount on lvl 2')
+ENT.AMMO_AMOUNT_3 = CreateConVar('tf_disp_amount3', '60', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Dispenser ammo amount on lvl 3')
 
-ENT.CHARGE_AMOUNT_1 = 40
-ENT.CHARGE_AMOUNT_2 = 50
-ENT.CHARGE_AMOUNT_3 = 60
+ENT.CHARGE_AMOUNT_1 = CreateConVar('tf_disp_charge1', '40', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Dispenser metal charge on lvl 1')
+ENT.CHARGE_AMOUNT_2 = CreateConVar('tf_disp_charge2', '50', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Dispenser metal charge on lvl 2')
+ENT.CHARGE_AMOUNT_3 = CreateConVar('tf_disp_charge3', '60', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Dispenser metal charge on lvl 3')
 
-ENT.AMMO_AMOUNT_1 = 40
-ENT.AMMO_AMOUNT_2 = 50
-ENT.AMMO_AMOUNT_3 = 60
+ENT.CHARGE_TIME_1 = CreateConVar('tf_dbg_disp_charge1', '5', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Dispenser metal charge timer on lvl 1')
+ENT.CHARGE_TIME_2 = CreateConVar('tf_dbg_disp_charge2', '5', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Dispenser metal charge timer on lvl 2')
+ENT.CHARGE_TIME_3 = CreateConVar('tf_dbg_disp_charge3', '5', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Dispenser metal charge timer on lvl 3')
 
 ENT.Gibs = {
     'models/buildables/gibs/dispenser_gib1.mdl'
@@ -79,56 +79,56 @@ ENT.ExplosionSound = 'DTF2_Building_Dispenser.Explode'
 ENT.GetRessuplyMultiplier = (level = @GetLevel()) =>
     switch level
         when 1
-            @RESSUPLY_MULTIPLIER_1
+            DTF2.GrabInt(@RESSUPLY_MULTIPLIER_1)
         when 2
-            @RESSUPLY_MULTIPLIER_2
+            DTF2.GrabInt(@RESSUPLY_MULTIPLIER_2)
         when 3
-            @RESSUPLY_MULTIPLIER_3
+            DTF2.GrabInt(@RESSUPLY_MULTIPLIER_3)
 
 ENT.GetMaxRessuply = (level = @GetLevel()) =>
     switch level
         when 1
-            @MAS_RESSUPLY_1
+            DTF2.GrabInt(@MAS_RESSUPLY_1)
         when 2
-            @MAS_RESSUPLY_2
+            DTF2.GrabInt(@MAS_RESSUPLY_2)
         when 3
-            @MAS_RESSUPLY_3
+            DTF2.GrabInt(@MAS_RESSUPLY_3)
 
 ENT.GetAmmoRessuply = (level = @GetLevel()) =>
     switch level
         when 1
-            @AMMO_RESSUPLY_MAX_1
+            DTF2.GrabInt(@AMMO_RESSUPLY_MAX_1)
         when 2
-            @AMMO_RESSUPLY_MAX_2
+            DTF2.GrabInt(@AMMO_RESSUPLY_MAX_2)
         when 3
-            @AMMO_RESSUPLY_MAX_3
+            DTF2.GrabInt(@AMMO_RESSUPLY_MAX_3)
 
 ENT.GetChargeTime = (level = @GetLevel()) =>
     switch level
         when 1
-            @CHARGE_TIME_1
+            DTF2.GrabInt(@CHARGE_TIME_1)
         when 2
-            @CHARGE_TIME_2
+            DTF2.GrabInt(@CHARGE_TIME_2)
         when 3
-            @CHARGE_TIME_3
+            DTF2.GrabInt(@CHARGE_TIME_3)
 
 ENT.GetChargeAmount = (level = @GetLevel()) =>
     switch level
         when 1
-            @CHARGE_AMOUNT_1
+            DTF2.GrabInt(@CHARGE_AMOUNT_1)
         when 2
-            @CHARGE_AMOUNT_2
+            DTF2.GrabInt(@CHARGE_AMOUNT_2)
         when 3
-            @CHARGE_AMOUNT_3
+            DTF2.GrabInt(@CHARGE_AMOUNT_3)
 
 ENT.GetAmmoToAmount = (level = @GetLevel()) =>
     switch level
         when 1
-            @AMMO_AMOUNT_1
+            DTF2.GrabInt(@AMMO_AMOUNT_1)
         when 2
-            @AMMO_AMOUNT_2
+            DTF2.GrabInt(@AMMO_AMOUNT_2)
         when 3
-            @AMMO_AMOUNT_3
+            DTF2.GrabInt(@AMMO_AMOUNT_3)
 
 ENT.GetAvaliableForAmmo = (level = @GetLevel()) => math.Clamp(@GetAmmoRessuply(), 0, math.min(@GetRessuplyAmount(), @GetAmmoToAmount(level)))
 ENT.GetAvaliablePercent = (level = @GetLevel()) => @GetRessuplyAmount() / @GetMaxRessuply()

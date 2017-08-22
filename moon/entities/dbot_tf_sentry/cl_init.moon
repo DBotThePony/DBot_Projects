@@ -37,7 +37,7 @@ ENT.Initialize = =>
 
 ENT.GetHUDText = =>
     text = "Bullets: #{@GetAmmoAmount()}/#{@GetMaxAmmo()}\n"
-    text ..= "Rockets: #{@GetRockets()}/#{@MAX_ROCKETS}\n" if @GetLevel() == 3
+    text ..= "Rockets: #{@GetRockets()}/#{DTF2.GrabInt(@MAX_ROCKETS)}\n" if @GetLevel() == 3
     return text
 
 ENT.CreateMuzzleflashModel = (attach = '') =>

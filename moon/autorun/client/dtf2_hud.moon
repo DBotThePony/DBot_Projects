@@ -102,12 +102,12 @@ DTF2.DrawSmallCenteredBar = (mult = 0.5, text) ->
 DTF2.DrawBuildingInfo = =>
     w, h = ScrW(), ScrH()
     x, y = w * .5, h * .6
-    text = @PrintName
+    text = @GetDrawText and @GetDrawText() or @PrintName
     if IsValid(@GetTFPlayer()) and @GetTFPlayer()\IsPlayer()
         text ..= " built by #{@GetTFPlayer()\Nick()}"
     hp, mhp = @Health(), @GetMaxHealth()
     text ..= "\nHealth: #{hp}/#{mhp}"
-    text ..= "\nUpgrade level: #{@GetUpgradeAmount()}/#{@MAX_UPGRADE}" if @GetLevel() < 3
+    text ..= "\nUpgrade level: #{@GetUpgradeAmount()}/#{DTF2.GrabInt(@MAX_UPGRADE)}" if @GetLevel() < 3
     text ..= '\n'
     text ..= @GetHUDText()
 
