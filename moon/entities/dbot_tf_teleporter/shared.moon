@@ -30,6 +30,13 @@ ENT.MAX_BREAD = 7
 ENT.MIN_BREAD_TTL = 15
 ENT.MAX_BREAD_TTL = 20
 
+ENT.Gibs = {
+    'models/buildables/gibs/teleporter_gib1.mdl'
+    'models/buildables/gibs/teleporter_gib2.mdl'
+    'models/buildables/gibs/teleporter_gib3.mdl'
+    'models/buildables/gibs/teleporter_gib4.mdl'
+}
+
 ENT.BREAD_MODELS = {
     'models/weapons/c_models/c_bread/c_bread_baguette.mdl'
     'models/weapons/c_models/c_bread/c_bread_burnt.mdl'
