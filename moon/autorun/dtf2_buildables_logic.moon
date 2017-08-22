@@ -41,7 +41,8 @@ entMeta[k] = v for k, v in pairs PlayerClass
 
 if SERVER
     func = (soundPlay) ->
-        return =>
+        return (isSilent = false) =>
+            return if isSilent
             ply = @GetTFPlayer()
             -- if IsValid(ply) and ply\IsPlayer()
             if IsValid(ply)

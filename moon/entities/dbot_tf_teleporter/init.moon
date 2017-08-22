@@ -111,6 +111,8 @@ ENT.OnUpgradeFinish = => @SetResetAt(CurTime())
 
 ENT.CallDestroy = (attacker = NULL, inflictor = NULL, dmg) =>
     hook.Run('TF2TeleporterDestroyed', @, attacker, inflictor, dmg)
+
+ENT.CallDestruction = =>
     tele2 = @GetConnectedTeleporter()
     if IsValid(tele2)
         tele2\SetLevel(1, false)

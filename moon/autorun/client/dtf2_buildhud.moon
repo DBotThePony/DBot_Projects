@@ -23,6 +23,19 @@ eng_build_tele_entrance_blueprint = Material('hud/eng_build_tele_entrance_bluepr
 eng_build_tele_exit_blueprint = Material('hud/eng_build_tele_exit_blueprint')
 eng_build_dispenser_blueprint = Material('hud/eng_build_dispenser_blueprint')
 
+ico_demolish = Material('hud/ico_demolish')
+hud_obj_status_sentry_1 = Material('hud/hud_obj_status_sentry_1')
+hud_obj_status_sentry_2 = Material('hud/hud_obj_status_sentry_2')
+hud_obj_status_sentry_3 = Material('hud/hud_obj_status_sentry_3')
+hud_obj_status_tele_entrance = Material('hud/hud_obj_status_tele_entrance')
+hud_obj_status_tele_exit = Material('hud/hud_obj_status_tele_exit')
+hud_obj_status_dispenser = Material('hud/hud_obj_status_dispenser')
+hud_obj_status_sapper = Material('hud/hud_obj_status_sapper')
+hud_obj_status_rockets_64 = Material('hud/hud_obj_status_rockets_64')
+hud_obj_status_kill_64 = Material('hud/hud_obj_status_kill_64')
+hud_obj_status_teleport_64 = Material('hud/hud_obj_status_teleport_64')
+hud_obj_status_ammo_64 = Material('hud/hud_obj_status_ammo_64')
+
 surface.CreateFont('DTF2.BuildUpFont', {
     'font': 'Roboto'
     'size': 32
@@ -112,6 +125,72 @@ DTF2.DrawPDAHUD = (ply = LocalPlayer(), sentryStatus = IsValid(ply\GetBuildedSen
         surface.SetDrawColor(DTF2.BACKGROUND_COLOR())
         surface.DrawRect(lx + ICON_WIDTH / 2 - 10, ly + ICON_HEIGHT + 23, 20, 22)
         surface.SetTextPos(lx + ICON_WIDTH / 2 - 5, ly + ICON_HEIGHT + 26)
+        surface.DrawText(cnt)
+
+        x += ICON_WIDTH + ICONS_SPACING
+        cnt += 1
+
+DTF2.DestructionPDAHUD = (ply = LocalPlayer(), sentryStatus = IsValid(ply\GetBuildedSentry()), dispenserStatus = IsValid(ply\GetBuildedDispenser()), teleInStatus = IsValid(ply\GetBuildedTeleporterIn()), teleOutStatus = IsValid(ply\GetBuildedTeleporterOut())) ->
+    surface.SetFont('DTF2.BuildUpFont')
+    surface.SetTextColor(BUILD_FONT_COLOR())
+    x, y = BUILD_POSITION()
+    rx, ry = x, y
+    x -= WIDTH / 2
+    surface.SetDrawColor(DTF2.BACKGROUND_COLOR())
+    surface.DrawRect(x, y, WIDTH, HEIGHT)
+    w, h = surface.GetTextSize('DEMOLISH')
+    surface.DrawRect(x + 4, y + 4, WIDTH - 8, h + 4)
+    surface.SetTextPos(rx - w / 2, ry + 5)
+    surface.DrawText('DEMOLISH')
+    sentry_s = hud_obj_status_sentry_1
+    sentry = ply\GetBuildedSentry()
+    if IsValid(sentry)
+        switch sentry\GetLevel()
+            when 1
+                sentry_s = hud_obj_status_sentry_1
+            when 2
+                sentry_s = hud_obj_status_sentry_2
+            when 3
+                sentry_s = hud_obj_status_sentry_3
+
+    buttons = {
+        {sentry_s, sentryStatus, 'SENTRY GUN'}
+        {hud_obj_status_dispenser, dispenserStatus, 'DISPENSER'}
+        {hud_obj_status_tele_entrance, teleInStatus, 'TELEPORT ENTRANCE'}
+        {hud_obj_status_tele_exit, teleOutStatus, 'TELEPORT EXIT'}
+    }
+
+    y += h + 8
+    x += 8
+    cnt = 1
+
+    for {mat, status, text} in *buttons
+        surface.SetFont('DTF2.BuildSmallFont')
+        surface.SetTextColor(BUILD_FONT_COLOR())
+        surface.SetDrawColor(DTF2.BACKGROUND_COLOR())
+        w, h = surface.GetTextSize(text)
+        surface.SetTextPos(x + ICON_WIDTH / 2 - w / 2, y)
+        surface.DrawText(text)
+        surface.DrawRect(x, y + h + 2, ICON_WIDTH, ICON_HEIGHT)
+        
+        if status
+            surface.SetMaterial(ico_demolish)
+            surface.SetDrawColor(255, 255, 255)
+            surface.DrawTexturedRect(x, y + h + 4, ICON_WIDTH, ICON_HEIGHT)
+            surface.SetMaterial(mat)
+            surface.DrawTexturedRect(x, y + h + 4, ICON_WIDTH, ICON_HEIGHT)
+            surface.SetTextColor(BUILD_FONT_COLOR())
+        else
+            surface.SetTextPos(x + 36, y + ICON_HEIGHT / 2 - 4)
+            surface.DrawText('NOT')
+            surface.SetTextPos(x + 33, y + ICON_HEIGHT / 2 + h)
+            surface.DrawText('BUILT')
+            surface.SetTextColor(BUILD_FONT_COLOR_INACTIVE())
+        
+        surface.SetFont('DTF2.BuildMediumFont')
+        surface.SetDrawColor(DTF2.BACKGROUND_COLOR())
+        surface.DrawRect(x + ICON_WIDTH / 2 - 10, y + ICON_HEIGHT + 23, 20, 22)
+        surface.SetTextPos(x + ICON_WIDTH / 2 - 5, y + ICON_HEIGHT + 26)
         surface.DrawText(cnt)
 
         x += ICON_WIDTH + ICONS_SPACING

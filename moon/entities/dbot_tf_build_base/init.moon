@@ -34,6 +34,13 @@ ENT.BodyUpdate = =>
     @FrameAdvance()
 ENT.RunBehaviour = =>
 ENT.GetEnemy = => @currentTarget
+
+ENT.TriggerDestruction = (trigger = @GetTFPlayer()) =>
+    hook.Run 'TF2BuildDestructed', @, trigger
+    @Explode()
+
+ENT.CallDestruction = =>
+
 ENT.Explode = =>
     pos = @GetPos() + Vector(0, 0, 25)
     @EmitSound(@ExplosionSound) if @ExplosionSound
@@ -46,6 +53,7 @@ ENT.Explode = =>
             \RealSetModel(gib)
             \SetDerbisValue(DTF2.GrabInt(@GibsValue))
             \Shake()
+    @CallDestruction()
     @Remove()
 
 ENT.OnInjured = (dmg) =>
