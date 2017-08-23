@@ -649,13 +649,16 @@ ENT.PlayUpgradeAnimation = (playOnModel = @MODEL_UPGRADE_ANIMS) =>
     @ResetSequence(@upgradeSequence) if playOnModel
     return true
 
-ENT.DoSpeedup = (time = 1) =>
+ENT.DoSpeedup = (time = DTF2.GrabFloat(@SPEEDUP_TIME), strength = DTF2.GrabFloat(@SPEEDUP_MULT)) =>
+    return false if not @GetIsBuilding()
     @SetBuildSpeedup(true)
-    @SetPlaybackRate(0.5)
+    @SetPlaybackRate(0.5 + 0.5 * strength)
+    @CURRENT_SPEEDUP_MULT = strength
     timer.Create "DTF2.BuildSpeedup.#{@EntIndex()}", time, 1, ->
         return if not IsValid(@)
         @SetBuildSpeedup(false)
-        @SetPlaybackRate(1)
+        @SetPlaybackRate(0.5)
+    return true
 
 ENT.SetBuildStatus = (status = false) =>
     return false if @GetLevel() > 1
@@ -696,7 +699,7 @@ ENT.Think = =>
     isBuild, leftBuild, buildMult = @GetBuildingStatus()
     if isBuild
         if @GetBuildSpeedup()
-            @SetBuildFinishAt(@GetBuildFinishAt() - delta)
+            @SetBuildFinishAt(@GetBuildFinishAt() - delta * @CURRENT_SPEEDUP_MULT)
             isBuild, leftBuild, buildMult = @GetBuildingStatus()
         @SetHealth(math.Clamp(@GetMaxHealth() * buildMult, 1, @GetMaxHealth()))
         if leftBuild <= 0
