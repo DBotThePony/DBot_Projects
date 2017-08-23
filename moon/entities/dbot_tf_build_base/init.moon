@@ -16,6 +16,8 @@
 --
 
 ATTACK_PLAYERS = CreateConVar('tf_attack_players', '0', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Sentries attacks players')
+FORGIVE = CreateConVar('tf_forgive', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Forgive attackers')
+FORGIVE_TIMER = CreateConVar('tf_forgive_timer', '30', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Forgivtion timer')
 UPDATE_OWNED_RELATIONSHIPS = CreateConVar('tf_attack_attackers', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Sentries should attack players who injured its owner')
 UPDATE_OWNED_RELATIONSHIPS_ALL = CreateConVar('tf_attack_attackers_all', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Sentries should attack entities who are injuring their allies')
 
@@ -252,6 +254,13 @@ hook.Add 'EntityTakeDamage', 'DTF2.CheckBuildablesOwner', (dmg) =>
     dispenser\MarkAsEnemy(attacker) if IsValid(dispenser)
     entrance\MarkAsEnemy(attacker) if IsValid(entrance)
     exit\MarkAsEnemy(attacker) if IsValid(exit)
+    return if not FORGIVE\GetBool()
+    timer.Create 'DTF2.Forgive.' .. tostring(@), FORGIVE_TIMER\GetInt(), 1, ->
+        return if not IsValid(attacker)
+        sentry\UnmarkEntity(attacker) if IsValid(sentry)
+        dispenser\UnmarkEntity(attacker) if IsValid(dispenser)
+        entrance\UnmarkEntity(attacker) if IsValid(entrance)
+        exit\UnmarkEntity(attacker) if IsValid(exit)
 
 ENTS_TO_CHECK = {}
 
@@ -264,6 +273,7 @@ hook.Add 'Think', 'DTF2.CheckBuildablesAllies', ->
         for build in *buildables
             if build\IsAllyLight(victim, true) and not build\IsAllyLight(attacker, false)
                 build\MarkAsEnemy(attacker)
+                timer.Create("DTF2.Forgive.#{build}.#{attacker}", FORGIVE_TIMER\GetInt(), 1, -> build\UnmarkEntity(attacker) if IsValid(attacker) and IsValid(build)) if FORGIVE\GetBool()
 
 hook.Add 'EntityTakeDamage', 'DTF2.CheckBuildablesAllies', (dmg) =>
     return if not UPDATE_OWNED_RELATIONSHIPS_ALL\GetBool()
