@@ -232,7 +232,7 @@ ENT.SimulateUpgrade = (thersold = 200, simulate = CLIENT) =>
 ENT.SimulateRepair = (thersold = 200, simulate = CLIENT, isConnected = false) =>
     if not isConnected
         tele2 = @GetConnectedTeleporter()
-        return if IsValid(tele2) and not tele2\IsAvaliableForRepair()
+        return 0 if IsValid(tele2) and not tele2\IsAvaliableForRepair()
         weight = @BaseClass.SimulateRepair(@, thersold, simulate)
         tele2 = @GetConnectedTeleporter()
         if IsValid(tele2)
