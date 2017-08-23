@@ -74,6 +74,7 @@ ENT.TriggerTeleport = (ent = NULL, force = false) =>
     net.WriteEntity(@)
     net.WriteEntity(@GetExit())
     net.Broadcast()
+    @SetUses(@GetUses() + 1)
     @isTeleporting = true
     timer.Simple DTF2.GrabFloat(@TELE_DELAY), ->
         return if not @IsValid()

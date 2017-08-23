@@ -182,7 +182,7 @@ ENT.SetupDataTables = =>
     @NetworkVar('Entity', 16, 'Exit')
     @NetworkVar('Entity', 17, 'Entrance')
     @NetworkVar('Float', 16, 'ResetAt')
-    @NetworkVar('Int', 16, 'Uses')
+    @NetworkVar('Int', 17, 'Uses')
     @SetResetAt(0)
 
 ENT.ThinkPlaybackRate = =>
