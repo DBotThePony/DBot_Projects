@@ -42,17 +42,17 @@ SWEP.DrawHUD = =>
     DTF2.DrawMetalCounter()
     DTF2.DrawBuildablesHUD()
 
-if SERVER
-    SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
-        return @BaseClass.OnHit(@, hitEntity, tr, dmginfo) if not hitEntity.IsTF2Building or not hitEntity\IsAlly(@GetOwner())
-        dmginfo\SetDamage(0)
-        dmginfo\SetDamageType(0)
-        if hitEntity\DoSpeedup()
-            @EmitSoundServerside('Weapon_Wrench.HitBuilding_Success')
-            return
-        amount = hitEntity\SimulateRepair(@GetOwner()\GetTF2Metal())
-        if amount > 0
-            @GetOwner()\SimulateTF2MetalRemove(amount)
-            @EmitSoundServerside('Weapon_Wrench.HitBuilding_Success')
-        else
-            @EmitSoundServerside('Weapon_Wrench.HitBuilding_Failure')
+SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
+    return @BaseClass.OnHit(@, hitEntity, tr, dmginfo) if not hitEntity.IsTF2Building or SERVER and not hitEntity\IsAlly(@GetOwner())
+    return if CLIENT
+    dmginfo\SetDamage(0)
+    dmginfo\SetDamageType(0)
+    if hitEntity\DoSpeedup()
+        @EmitSoundServerside('Weapon_Wrench.HitBuilding_Success')
+        return
+    amount = hitEntity\SimulateRepair(@GetOwner()\GetTF2Metal())
+    if amount > 0
+        @GetOwner()\SimulateTF2MetalRemove(amount)
+        @EmitSoundServerside('Weapon_Wrench.HitBuilding_Success')
+    else
+        @EmitSoundServerside('Weapon_Wrench.HitBuilding_Failure')
