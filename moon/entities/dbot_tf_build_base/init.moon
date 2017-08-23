@@ -357,7 +357,7 @@ ENT.RebuildMarkedList = =>
 ENT.UpdateMarkedList = =>
     pl = @GetTFPlayer()
     @markedTargets = for {ent, pos, mins, maxs, center1, center} in *@markedTargets
-        return @RebuildMarkedList() if not ent\IsValid() or ent == pl or not @CheckTarget(ent)
+        return @RebuildMarkedList() if not @CheckTarget(ent) or ent == pl
         center = ent\OBBCenter()
         center\Rotate(ent\GetAngles())
         {ent, ent\GetPos(), mins, maxs, center1, center}
