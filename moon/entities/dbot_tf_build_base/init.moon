@@ -167,6 +167,20 @@ hook.Add 'OnEntityCreated', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.Updat
 hook.Add 'EntityRemoved', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTargetList', 0, 1, UpdateTargetList
 hook.Add 'OnNPCKilled', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTargetList', 0, 1, UpdateTargetList
 
+RemoveTFTarget = (target) ->
+    for ent in *ents.FindByClass('dbot_tf_*')
+        if ent.IsTF2Building
+            ent\UnmarkEntity(target)
+
+hook.Add 'OnNPCKilled', 'DTF2.BuildablesTargetList', (npc, attacker, inflictor) ->
+    attacker\UnmarkEntity(npc) if IsValid(attacker) and attacker.IsTF2Building
+    inflictor\UnmarkEntity(npc) if IsValid(inflictor) and inflictor.IsTF2Building and inflictor ~= attacker
+
+hook.Add 'PlayerDeath', 'DTF2.BuildablesTargetList', (ply, inflictor, attacker) ->
+    attacker\UnmarkEntity(ply) if IsValid(attacker) and attacker.IsTF2Building
+    inflictor\UnmarkEntity(ply) if IsValid(inflictor) and inflictor.IsTF2Building and inflictor ~= attacker
+    RemoveTFTarget(ply)
+
 UpdateTargetList()
 
 hook.Add 'EntityTakeDamage', 'DTF2.Bullseye', (dmg) =>
@@ -183,6 +197,18 @@ hook.Add 'EntityTakeDamage', 'DTF2.Bullseye', (dmg) =>
         return true
     if parent
         @TakeDamageInfo(dmg)
+
+hook.Add 'EntityTakeDamage', 'DTF2.CheckBuildablesOwner', (dmg) =>
+    attacker = dmg\GetAttacker()
+    return if attacker == @ or not IsValid(attacker) or not @GetBuildedSentry
+    sentry = @GetBuildedSentry()
+    dispenser = @GetBuildedDispenser()
+    entrance = @GetBuildedTeleporterIn()
+    exit = @GetBuildedTeleporterOut()
+    sentry\MarkAsEnemy(attacker) if IsValid(sentry)
+    dispenser\MarkAsEnemy(attacker) if IsValid(dispenser)
+    entrance\MarkAsEnemy(attacker) if IsValid(entrance)
+    exit\MarkAsEnemy(attacker) if IsValid(exit)
 
 include 'shared.lua'
 AddCSLuaFile 'shared.lua'
@@ -214,6 +240,9 @@ ENT.Initialize = =>
     @UpdateSequenceList()
     @StartActivity(ACT_OBJ_RUNNING)
     @CreateBullseye()
+    @markedTargets = {}
+    @markedAllies = {}
+    @nextMarkedRebuild = CurTime() + 60
     timer.Simple 0.1, -> @DuplicatorFunc() if @IsValid()
 
 ENT.RealSetModel = (mdl = @GetModel()) =>
@@ -226,14 +255,77 @@ ENT.GetEnemies = => [ent for ent in *VALID_TARGETS]
 ENT.GetAlliesTable = => VALID_ALLIES
 ENT.GetEnemiesTable = => VALID_TARGETS
 
+ENT.RebuildMarkedList = =>
+    @markedTargets = [target for target in *@markedTargets when target[1]\IsValid()]
+    @markedAllies = [target for target in *@markedAllies when target[1]\IsValid()]
+
+ENT.UpdateMarkedList = =>
+    @markedTargets = for {ent, pos, mins, maxs, center1, center} in *@markedTargets
+        return @RebuildMarkedList() if not ent\IsValid()
+        center = ent\OBBCenter()
+        center\Rotate(ent\GetAngles())
+        {ent, ent\GetPos(), mins, maxs, center1, center}
+    @markedAllies = for {ent, pos, mins, maxs, center1, center} in *@markedAllies
+        return @RebuildMarkedList() if not ent\IsValid()
+        center = ent\OBBCenter()
+        center\Rotate(ent\GetAngles())
+        {ent, ent\GetPos(), mins, maxs, center1, center}
+
+ENT.MarkAsEnemy = (ent = NULL) =>
+    return false if not IsValid(ent)
+    for target in *@markedTargets
+        return false if target[1] == ent
+    
+    for i = 1, #@markedAllies
+        if @markedAllies[i][1] == ent
+            table.remove(@markedAllies, i)
+            break
+
+    center = ent\OBBCenter()
+    center\Rotate(ent\GetAngles())
+    return true, table.insert(@markedTargets, {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center})
+
+ENT.UnmarkEntity = (ent = NULL) =>
+    return false if not IsValid(ent)
+
+    for i = 1, #@markedAllies
+        if @markedAllies[i][1] == ent
+            table.remove(@markedAllies, i)
+            return true, i
+
+    for i = 1, #@markedTargets
+        if @markedTargets[i][1] == ent
+            table.remove(@markedTargets, i)
+            return true, i
+
+    return false
+
+ENT.MarkAsAlly = (ent = NULL) =>
+    return false if not IsValid(ent)
+    for target in *@markedAllies
+        return false if target[1] == ent
+    
+    for i = 1, #@markedTargets
+        if @markedTargets[i][1] == ent
+            table.remove(@markedTargets, i)
+            break
+
+    center = ent\OBBCenter()
+    center\Rotate(ent\GetAngles())
+    return true, table.insert(@markedAllies, {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center})
+
 ENT.IsEnemy = (target = NULL) =>
     return true if not IsValid(target)
+    for ent in *@markedTargets
+        return true if target == ent[1]
     for ent in *VALID_TARGETS
         return true if ent[1] == target
     return true
 
 ENT.IsAlly = (target = NULL) =>
     return false if not IsValid(target)
+    for ent in *@markedAllies
+        return true if target == ent[1]
     for ent in *VALID_ALLIES
         return true if ent[1] == target
     return false
@@ -276,6 +368,12 @@ ENT.UpdateRelationships = =>
     for {target} in *VALID_ALLIES
         if target\IsValid() and target\IsNPC()
             target\AddEntityRelationship(eye, D_LI, 0) for eye in *@npc_bullseye
+    for {target} in *@markedTargets
+        if target\IsValid() and target\IsNPC()
+            target\AddEntityRelationship(eye, D_HT, 0) for eye in *@npc_bullseye
+    for {target} in *@markedAllies
+        if target\IsValid() and target\IsNPC()
+            target\AddEntityRelationship(eye, D_LI, 0) for eye in *@npc_bullseye
 
 ENT.GetAlliesVisible = =>
     output = {}
@@ -283,6 +381,17 @@ ENT.GetAlliesVisible = =>
     mx = DTF2.GrabInt(@MAX_DISTANCE) ^ 2
     
     for {target, tpos, mins, maxs, center, rotatedCenter} in *VALID_ALLIES
+        hit = false
+        for target2 in *@markedTargets
+            if target2[1] == target
+                hit = true
+                break
+        if not hit
+            dist = pos\DistToSqr(tpos)
+            if target\IsValid() and dist < mx
+                table.insert(output, {target, tpos, dist, rotatedCenter})
+    
+    for {target, tpos, mins, maxs, center, rotatedCenter} in *@markedAllies
         dist = pos\DistToSqr(tpos)
         if target\IsValid() and dist < mx
             table.insert(output, {target, tpos, dist, rotatedCenter})
@@ -313,10 +422,21 @@ ENT.GetTargetsVisible = =>
     mx = DTF2.GrabInt(@MAX_DISTANCE) ^ 2
     
     for {target, tpos, mins, maxs, center, rotatedCenter} in *VALID_TARGETS
+        hit = false
+        for target2 in *@markedAllies
+            if target2[1] == target
+                hit = true
+                break
+        if not hit
+            dist = pos\DistToSqr(tpos)
+            if target\IsValid() and dist < mx
+                table.insert(output, {target, tpos, dist, rotatedCenter})
+    
+    for {target, tpos, mins, maxs, center, rotatedCenter} in *@markedTargets
         dist = pos\DistToSqr(tpos)
         if target\IsValid() and dist < mx
             table.insert(output, {target, tpos, dist, rotatedCenter})
-    
+
     table.sort output, (a, b) -> a[3] < b[3]
     newOutput = {}
     trFilter = [eye for eye in *@npc_bullseye]
@@ -343,6 +463,17 @@ ENT.GetFirstVisible = =>
     mx = DTF2.GrabInt(@MAX_DISTANCE) ^ 2
     
     for {target, tpos, mins, maxs, center, rotatedCenter} in *VALID_TARGETS
+        hit = false
+        for target2 in *@markedAllies
+            if target2[1] == target
+                hit = true
+                break
+        if not hit
+            dist = pos\DistToSqr(tpos)
+            if target\IsValid() and dist < mx
+                table.insert(output, {target, tpos, dist, rotatedCenter})
+    
+    for {target, tpos, mins, maxs, center, rotatedCenter} in *@markedTargets
         dist = pos\DistToSqr(tpos)
         if target\IsValid() and dist < mx
             table.insert(output, {target, tpos, dist, rotatedCenter})
@@ -446,6 +577,11 @@ ENT.Think = =>
     cTime = CurTime()
     delta = cTime - @lastThink
     @lastThink = cTime
+    if @nextMarkedRebuild < CurTime()
+        @RebuildMarkedList()
+        @nextMarkedRebuild = CurTime() + 60
+    else
+        @UpdateMarkedList()
     if @GetIsBuilding()
         if @GetBuildSpeedup()
             @buildFinishAt -= delta
