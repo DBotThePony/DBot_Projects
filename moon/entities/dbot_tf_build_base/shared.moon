@@ -79,7 +79,9 @@ ENT.SetupDataTables = =>
     @NetworkVar('Int', 1, 'nwLevel')
     @NetworkVar('Int', 16, 'UpgradeAmount')
     @NetworkVar('Entity', 0, 'TFPlayer')
+    @NetworkVar('Float', 0, 'BuildFinishAt')
     @SetIsMovable(false)
+    @SetBuildFinishAt(0)
 
 ENT.SelectAttacker = => IsValid(@GetTFPlayer()) and @GetTFPlayer() or @
 
@@ -108,6 +110,14 @@ ENT.CustomRepair = (thersold = 200, simulate = CLIENT) =>
     return 0 if thersold == 0
     weight = 0
     return weight
+
+ENT.GetBuildingStatus = =>
+    if @GetIsBuilding()
+        deltaBuild = math.Clamp(@GetBuildFinishAt() - CurTime(), 0, DTF2.GrabFloat(@BuildTime))
+        deltaBuildMult = math.Clamp(1 - deltaBuild / DTF2.GrabFloat(@BuildTime), 0, 1)
+        return true, deltaBuild, deltaBuildMult
+    else
+        return false, 0, 1
 
 ENT.SimulateUpgrade = (thersold = 200, simulate = CLIENT) =>
     return 0 if thersold == 0

@@ -24,8 +24,9 @@ checkInputs = {KEY_1, KEY_2, KEY_3, KEY_4}
 SWEP.INVALID_INPUT_SOUND = 'weapons/medigun_no_target.wav'
 
 SWEP.DrawHUD = =>
-    DTF2.DestructionPDAHUD()
+    DTF2.DestructionPDAHUD(@GetOwner())
     DTF2.DrawMetalCounter()
+    DTF2.DrawBuildablesHUD()
 
 SWEP.TriggerPlayerInput = (key = KEY_1) =>
     switch key

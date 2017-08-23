@@ -55,3 +55,8 @@ SWEP.Primary = {
     ['DefaultClip'] = 12,
     ['Automatic'] = true
 }
+
+function SWEP:DrawHUD()
+    DTF2.DrawBuildablesHUD()
+    DTF2.DrawMetalCounter()
+end

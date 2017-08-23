@@ -309,7 +309,6 @@ ENT.Initialize = =>
     @SetBuildSpeedup(false)
     @lastThink = CurTime()
     @buildSpeedupUntil = 0
-    @buildFinishAt = 0
     @upgradeFinishAt = 0
     @UpdateSequenceList()
     @StartActivity(ACT_OBJ_RUNNING)
@@ -646,7 +645,7 @@ ENT.SetBuildStatus = (status = false) =>
         @SetBuildSpeedup(false)
         @StartActivity(ACT_OBJ_PLACING)
         @ResetSequence(@buildSequence)
-        @buildFinishAt = CurTime() + DTF2.GrabFloat(@BuildTime)
+        @SetBuildFinishAt(CurTime() + DTF2.GrabFloat(@BuildTime))
         @OnBuildStart()
         @SetPlaybackRate(0.5)
         @SetHealth(1)
@@ -671,13 +670,14 @@ ENT.Think = =>
         @nextMarkedRebuild = CurTime() + 60
     else
         @UpdateMarkedList()
-    if @GetIsBuilding()
+    
+    isBuild, leftBuild, buildMult = @GetBuildingStatus()
+    if isBuild
         if @GetBuildSpeedup()
-            @buildFinishAt -= delta
-        deltaBuild = @buildFinishAt - cTime
-        deltaBuildMult = deltaBuild / DTF2.GrabFloat(@BuildTime)
-        @SetHealth(math.Clamp(@GetMaxHealth() * (1 - deltaBuildMult), 1, @GetMaxHealth()))
-        if deltaBuild <= 0
+            @SetBuildFinishAt(@GetBuildFinishAt() - delta)
+            isBuild, leftBuild, buildMult = @GetBuildingStatus()
+        @SetHealth(math.Clamp(@GetMaxHealth() * buildMult, 1, @GetMaxHealth()))
+        if leftBuild <= 0
             @SetBuildSpeedup(false)
             @SetIsBuilding(false)
             @RealSetModel(@IdleModel1)

@@ -40,6 +40,7 @@ SWEP.HitSoundsFleshScript = 'Weapon_Wrench.HitFlesh'
 
 SWEP.DrawHUD = =>
     DTF2.DrawMetalCounter()
+    DTF2.DrawBuildablesHUD()
 
 SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
     return @BaseClass.OnHit(@, hitEntity, tr, dmginfo) if not hitEntity.IsTF2Building

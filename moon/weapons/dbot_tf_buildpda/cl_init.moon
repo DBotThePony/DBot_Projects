@@ -51,8 +51,9 @@ SWEP.OnRemove = =>
     @blueprintModel\Remove() if IsValid(@blueprintModel)
 
 SWEP.DrawHUD = =>
-    DTF2.DrawPDAHUD() if @GetBuildStatus() == @BUILD_NONE
+    DTF2.DrawPDAHUD(@GetOwner()) if @GetBuildStatus() == @BUILD_NONE
     DTF2.DrawMetalCounter()
+    DTF2.DrawBuildablesHUD()
 
 SWEP.TriggerPlayerInput = (key = KEY_1) =>
     return if @GetBuildStatus() ~= @BUILD_NONE
