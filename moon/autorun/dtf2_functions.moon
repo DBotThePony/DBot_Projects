@@ -18,6 +18,23 @@
 export DTF2
 DTF2 = DTF2 or {}
 
+BOOL_OR_FUNC = (val, undef = true, ...) ->
+    switch type(val)
+        when 'function'
+            return val(...)
+        when 'nil'
+            return undef
+        else
+            return val
+
+DTF2.IsValidTarget = =>
+    IsValid(@) and ((@IsPlayer() or @IsNPC() or @IsTF2Building) or (
+    not BOOL_OR_FUNC(@IsDroneDestroyed, false, @) and
+    BOOL_OR_FUNC(@IsDestroyed, true, @) and
+    BOOL_OR_FUNC(@IsWorking, true, @) and
+    (@GetMaxHealth() <= 0 or @Health() > 0) and
+    (BOOL_OR_FUNC(@GetMaxHP, 0, @) <= 0 or BOOL_OR_FUNC(@GetHP, 1, @) > 0)))
+
 DTF2.TableRandom = (tab, id = 'dtf2_prediction') ->
     valids = [val for val in *tab when type(val) ~= 'table']
     return nil if #valids == 0

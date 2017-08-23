@@ -43,7 +43,7 @@ ENT.ProjectileSpeed = 1200
 
 ENT.DrawEffects = {'pipebombtrail_red'}
 ENT.DrawEffectsCriticals = {'critical_grenade_red'}
-ENT.ZAddition = 0.18
+ENT.ZAddition = 0.14
 ENT.TargetTakesFullDamage = true
 
 if SERVER
