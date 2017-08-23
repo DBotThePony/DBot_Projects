@@ -15,7 +15,9 @@
 -- limitations under the License.
 --
 
-ATTACK_PLAYERS = CreateConVar('dtf2_attack_players', '0', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Sentries attacks players')
+ATTACK_PLAYERS = CreateConVar('tf_attack_players', '0', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Sentries attacks players')
+UPDATE_OWNED_RELATIONSHIPS = CreateConVar('tf_attack_attackers', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Sentries should attack players who injured its owner')
+UPDATE_OWNED_RELATIONSHIPS_ALL = CreateConVar('tf_attack_attackers_all', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Sentries should attack entities who are injuring their allies')
 
 ENT.OnLeaveGround = =>
 ENT.OnLandOnGround = =>
@@ -92,6 +94,46 @@ CLASS_XEN_ANIMALS_HEADCRAB = 31
 CLASS_XEN_ANIMALS_HOSTILE = 32
 CLASS_XEN_BUG = 33
 CLASS_SNARK = 35
+
+IS_ALLY = (ent, def = false) ->
+    return not ATTACK_PLAYERS\GetBool() if ent\IsPlayer()
+    return def if not ent.Classify
+    classify = ent\Classify()
+    return classify == CLASS_PLAYER_ALLY or
+            classify == CLASS_PLAYER_ALLY_VITAL or
+            classify == CLASS_PLAYER_ALLY_VITAL or
+            classify == CLASS_CITIZEN_PASSIVE or
+            classify == CLASS_HACKED_ROLLERMINE or
+            classify == CLASS_SCIENTIST or
+            classify == CLASS_EARTH_FAUNA or
+            classify == CLASS_VORTIGAUNT or
+            classify == CLASS_CITIZEN_REBEL
+
+IS_ENEMY = (ent, def = true) ->
+    return ATTACK_PLAYERS\GetBool() if ent\IsPlayer()
+    return def if not ent.Classify
+    classify = ent\Classify()
+    return classify == CLASS_COMBINE_HUNTER or
+            classify == CLASS_ALIEN_ARMY or
+            classify == CLASS_XEN_ANIMALS or
+            classify == CLASS_XEN_ANIMALS_HOSTILE or
+            classify == CLASS_XEN_ANIMALS_HEADCRAB or
+            classify == CLASS_SNARK or
+            classify == CLASS_XEN_BUG or
+            classify == CLASS_ENEMY_GRUNT or
+            classify == CLASS_SCANNER or
+            classify == CLASS_ZOMBIE or
+            classify == CLASS_PROTOSNIPER or
+            classify == CLASS_STALKER or
+            classify == CLASS_MILITARY or
+            classify == CLASS_METROPOLICE or
+            classify == CLASS_MANHACK or
+            classify == CLASS_HEADCRAB or
+            classify == CLASS_COMBINE_GUNSHIP or
+            classify == CLASS_BARNACLE or
+            classify == CLASS_ANTLION or
+            classify == CLASS_NONE or
+            classify == CLASS_COMBINE
 
 UpdateTargetList = ->
     findEnts = ents.GetAll()
@@ -199,6 +241,7 @@ hook.Add 'EntityTakeDamage', 'DTF2.Bullseye', (dmg) =>
         @TakeDamageInfo(dmg)
 
 hook.Add 'EntityTakeDamage', 'DTF2.CheckBuildablesOwner', (dmg) =>
+    return if not UPDATE_OWNED_RELATIONSHIPS\GetBool()
     attacker = dmg\GetAttacker()
     return if attacker == @ or not IsValid(attacker) or not @GetBuildedSentry
     sentry = @GetBuildedSentry()
@@ -209,6 +252,27 @@ hook.Add 'EntityTakeDamage', 'DTF2.CheckBuildablesOwner', (dmg) =>
     dispenser\MarkAsEnemy(attacker) if IsValid(dispenser)
     entrance\MarkAsEnemy(attacker) if IsValid(entrance)
     exit\MarkAsEnemy(attacker) if IsValid(exit)
+
+ENTS_TO_CHECK = {}
+
+hook.Add 'Think', 'DTF2.CheckBuildablesAllies', ->
+    return if not UPDATE_OWNED_RELATIONSHIPS_ALL\GetBool()
+    buildables = [ent for ent in *ents.FindByClass('dbot_tf_*') when ent.IsTF2Building]
+    check = ENTS_TO_CHECK
+    ENTS_TO_CHECK = {}
+    for {victim, attacker} in *check
+        for build in *buildables
+            if build\IsAllyLight(victim, true) and not build\IsAllyLight(attacker, false)
+                build\MarkAsEnemy(attacker)
+
+hook.Add 'EntityTakeDamage', 'DTF2.CheckBuildablesAllies', (dmg) =>
+    return if not UPDATE_OWNED_RELATIONSHIPS_ALL\GetBool()
+    attacker = dmg\GetAttacker()
+    inflictor = dmg\GetInflictor()
+    return if attacker == @ or not IsValid(attacker) or attacker.IsTF2Building or @IsTF2Building or IsValid(inflictor) and inflictor.IsTF2Building or IS_ENEMY(attacker, false) or not IS_ALLY(@) or IS_ALLY(@) and IS_ALLY(attacker)
+    for {victim, attacker2} in *ENTS_TO_CHECK
+        return if victim == @ and attacker2 == attacker
+    table.insert(ENTS_TO_CHECK, {@, attacker})
 
 include 'shared.lua'
 AddCSLuaFile 'shared.lua'
@@ -256,23 +320,25 @@ ENT.GetAlliesTable = => VALID_ALLIES
 ENT.GetEnemiesTable = => VALID_TARGETS
 
 ENT.RebuildMarkedList = =>
-    @markedTargets = [target for target in *@markedTargets when target[1]\IsValid()]
-    @markedAllies = [target for target in *@markedAllies when target[1]\IsValid()]
+    @markedTargets = [target for target in *@markedTargets when target[1]\IsValid() and target[1] ~= @GetTFPlayer()]
+    @markedAllies = [target for target in *@markedAllies when target[1]\IsValid() and target[1] ~= @GetTFPlayer()]
 
 ENT.UpdateMarkedList = =>
+    pl = @GetTFPlayer()
     @markedTargets = for {ent, pos, mins, maxs, center1, center} in *@markedTargets
-        return @RebuildMarkedList() if not ent\IsValid()
+        return @RebuildMarkedList() if not ent\IsValid() or ent == pl
         center = ent\OBBCenter()
         center\Rotate(ent\GetAngles())
         {ent, ent\GetPos(), mins, maxs, center1, center}
     @markedAllies = for {ent, pos, mins, maxs, center1, center} in *@markedAllies
-        return @RebuildMarkedList() if not ent\IsValid()
+        return @RebuildMarkedList() if not ent\IsValid() or ent == pl
         center = ent\OBBCenter()
         center\Rotate(ent\GetAngles())
         {ent, ent\GetPos(), mins, maxs, center1, center}
 
 ENT.MarkAsEnemy = (ent = NULL) =>
     return false if not IsValid(ent)
+    return false if ent == @GetTFPlayer()
     for target in *@markedTargets
         return false if target[1] == ent
     
@@ -287,6 +353,7 @@ ENT.MarkAsEnemy = (ent = NULL) =>
 
 ENT.UnmarkEntity = (ent = NULL) =>
     return false if not IsValid(ent)
+    return false if ent == @GetTFPlayer()
 
     for i = 1, #@markedAllies
         if @markedAllies[i][1] == ent
@@ -329,6 +396,18 @@ ENT.IsAlly = (target = NULL) =>
     for ent in *VALID_ALLIES
         return true if ent[1] == target
     return false
+
+ENT.IsEnemyLight = (target = NULL, def = true) =>
+    return def if not IsValid(target)
+    for ent in *@markedTargets
+        return true if target == ent[1]
+    return def
+
+ENT.IsAllyLight = (target = NULL, def = false) =>
+    return def if not IsValid(target)
+    for ent in *@markedAllies
+        return true if target == ent[1]
+    return def
 
 ENT.CreateBullseye = =>
     if @npc_bullseye
