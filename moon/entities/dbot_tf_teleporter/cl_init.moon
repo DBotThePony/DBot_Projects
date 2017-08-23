@@ -114,25 +114,25 @@ ENT.Draw = =>
     @BaseClass.Draw(@)
     if @OtherSideIsReady()
         if @IsAvaliable() and @IsValidTeleporter() and @IsEntrance()
-            if not @particlesReady
+            if not IsValid(@particlesReady)
                 @particlesReady = CreateParticleSystem(@, @GetChargedEffect(), PATTACH_ABSORIGIN_FOLLOW, 0)
         else
-            if @particlesReady
+            if IsValid(@particlesReady)
                 @particlesReady\StopEmission()
                 @particlesReady = nil
         
         if @BaseClass.IsAvaliable(@) and @IsValidTeleporter()
-            if not @particlesAvaliable
+            if not IsValid(@particlesAvaliable)
                 @particlesAvaliable = CreateParticleSystem(@, @GetAvaliableEffect(), PATTACH_ABSORIGIN_FOLLOW, 0)
         else
-            if @particlesAvaliable
+            if IsValid(@particlesAvaliable)
                 @particlesAvaliable\StopEmission()
                 @particlesAvaliable = nil
     else
-        if @particlesAvaliable
+        if IsValid(@particlesAvaliable)
             @particlesAvaliable\StopEmission()
             @particlesAvaliable = nil
-        if @particlesReady
+        if IsValid(@particlesReady)
             @particlesReady\StopEmission()
             @particlesReady = nil
 
