@@ -111,7 +111,9 @@ DTF2.GiveAmmo = (weightThersold = 40) =>
     
     return oldWeight - weightThersold
 
-DTF2.CreateDeathRagdoll = (duration = 25) =>
+RAGDOLL_DURATION = CreateConVar('tf_dbg_fake_rag_duration', '25', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Fake ragdolls TTL duration')
+
+DTF2.CreateDeathRagdoll = (duration = RAGDOLL_DURATION\GetFloat()) =>
     with ents.Create('prop_ragdoll')
         \SetPos(@GetPos())
         \SetAngles(@GetAngles())
