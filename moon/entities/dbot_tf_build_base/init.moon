@@ -219,11 +219,13 @@ RemoveTFTarget = (target) ->
 hook.Add 'OnNPCKilled', 'DTF2.BuildablesTargetList', (npc, attacker, inflictor) ->
     attacker\UnmarkEntity(npc) if IsValid(attacker) and attacker.IsTF2Building
     inflictor\UnmarkEntity(npc) if IsValid(inflictor) and inflictor.IsTF2Building and inflictor ~= attacker
+    return
 
 hook.Add 'PlayerDeath', 'DTF2.BuildablesTargetList', (ply, inflictor, attacker) ->
     attacker\UnmarkEntity(ply) if IsValid(attacker) and attacker.IsTF2Building
     inflictor\UnmarkEntity(ply) if IsValid(inflictor) and inflictor.IsTF2Building and inflictor ~= attacker
     RemoveTFTarget(ply)
+    return
 
 UpdateTargetList()
 
@@ -261,6 +263,7 @@ hook.Add 'EntityTakeDamage', 'DTF2.CheckBuildablesOwner', (dmg) =>
         dispenser\UnmarkEntity(attacker) if IsValid(dispenser)
         entrance\UnmarkEntity(attacker) if IsValid(entrance)
         exit\UnmarkEntity(attacker) if IsValid(exit)
+    return
 
 ENTS_TO_CHECK = {}
 
@@ -274,6 +277,7 @@ hook.Add 'Think', 'DTF2.CheckBuildablesAllies', ->
             if build\IsAllyLight(victim, true) and not build\IsAllyLight(attacker, false)
                 build\MarkAsEnemy(attacker)
                 timer.Create("DTF2.Forgive.#{build}.#{attacker}", FORGIVE_TIMER\GetInt(), 1, -> build\UnmarkEntity(attacker) if IsValid(attacker) and IsValid(build)) if FORGIVE\GetBool()
+    return
 
 hook.Add 'EntityTakeDamage', 'DTF2.CheckBuildablesAllies', (dmg) =>
     return if not UPDATE_OWNED_RELATIONSHIPS_ALL\GetBool()
@@ -283,6 +287,7 @@ hook.Add 'EntityTakeDamage', 'DTF2.CheckBuildablesAllies', (dmg) =>
     for {victim, attacker2} in *ENTS_TO_CHECK
         return if victim == @ and attacker2 == attacker
     table.insert(ENTS_TO_CHECK, {@, attacker})
+    return
 
 include 'shared.lua'
 AddCSLuaFile 'shared.lua'
