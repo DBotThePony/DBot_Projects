@@ -17,29 +17,31 @@
 
 AddCSLuaFile()
 
-DEFINE_BASECLASS('dbot_tf_melee')
+DEFINE_BASECLASS('dbot_tf_machete')
 
-SWEP.Base = 'dbot_tf_melee'
+SWEP.Base = 'dbot_tf_machete'
 SWEP.Author = 'DBot'
 SWEP.Category = 'TF2 Sniper'
-SWEP.PrintName = 'Machete'
+SWEP.PrintName = 'The Bushwacka'
 SWEP.ViewModel = 'models/weapons/c_models/c_sniper_arms.mdl'
-SWEP.WorldModel = 'models/weapons/c_models/c_machete/c_machete.mdl'
+SWEP.WorldModel = 'models/weapons/c_models/c_croc_knife/c_croc_knife.mdl'
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.AdminOnly = false
+SWEP.RandomCriticals = false
 
-SWEP.MissSoundsScript = 'Weapon_Machete.Miss'
-SWEP.MissCritSoundsScript = 'Weapon_Machete.MissCrit'
-SWEP.HitSoundsScript = 'Weapon_Machete.HitWorld'
-SWEP.HitSoundsFleshScript = 'Weapon_Machete.HitFlesh'
+function SWEP:OnHit(ent, tr, dmginfo)
+    if self.incomingMiniCrit then
+        self:ThatWasCrit()
+    end
 
-SWEP.DrawAnimation = 'm_draw'
-SWEP.IdleAnimation = 'm_idle'
-SWEP.AttackAnimation = 'm_swing_a'
-SWEP.AttackAnimationTable = {'m_swing_a', 'm_swing_b'}
-SWEP.AttackAnimationCrit = 'm_swing_c'
+    return BaseClass.OnHit(self, ent, tr, dmginfo)
+end
 
-function SWEP.OnHit(...)
-    return BaseClass.OnHit(...)
+if SERVER then
+    hook.Add('EntityTakeDamage', 'DTF2.Bushwacka', function(self, dmg)
+        if self.GetActiveWeapon and self:GetActiveWeapon():IsValid() and self:GetActiveWeapon():GetClass() == 'dbot_tf_bushwacka' then
+            dmg:ScaleDamage(1.2)
+        end
+    end)
 end
