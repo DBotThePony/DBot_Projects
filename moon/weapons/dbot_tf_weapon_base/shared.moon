@@ -57,6 +57,7 @@ SWEP.SingleCrit = true
 SWEP.CritDuration = 4
 SWEP.CritsCooldown = 2
 SWEP.CritsCheckCooldown = 0
+SWEP.SILENT_CRITS = false
 
 SWEP.Primary = {
     'Ammo': 'none'
@@ -72,13 +73,13 @@ SWEP.Secondary = {
     'Automatic': false
 }
 
-
 SWEP.SetupDataTables = =>
     @NetworkVar('Bool', 0, 'NextCrit')
     @NetworkVar('Bool', 1, 'CritBoosted')
     @NetworkVar('Bool', 2, 'TeamType')
     @NetworkVar('Float', 0, 'CriticalsDuration')
     @NetworkVar('Entity', 0, 'TF2WeaponModel')
+    @NetworkVar('Bool', 3, 'HideVM')
 
 SWEP.CheckNextCrit = =>
     return true if @GetCritBoosted()
@@ -274,7 +275,7 @@ SWEP.DisplayCritEffect = (hitEntity) =>
     effData\SetOrigin(pos)
     SuppressHostEvents(NULL) if SERVER and not @m_suppressEffects
     util.Effect(@incomingCrit and 'dtf2_critical_hit' or 'dtf2_minicrit', effData)
-    hitEntity\EmitSound(@incomingCrit and 'DTF2_TFPlayer.CritHit' or 'DTF2_TFPlayer.CritHitMini')
+    hitEntity\EmitSound(@incomingCrit and 'DTF2_TFPlayer.CritHit' or 'DTF2_TFPlayer.CritHitMini') if not @SILENT_CRITS
     SuppressHostEvents(@GetOwner()) if SERVER and not @m_suppressEffects
 
 SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
@@ -371,6 +372,7 @@ AccessorFunc(SWEP, 'incomingFire', 'IncomingFire')
 AccessorFunc(SWEP, 'incomingFireTime', 'IncomingFireTime')
 
 SWEP.Think = =>
+    @GetOwner()\GetViewModel()\SetNoDraw(@GetHideVM()) if @GetOwner().GetViewModel and IsValid(@GetOwner()\GetViewModel())
     if @incomingFire and @incomingFireTime < CurTime()
         @incomingFire = false
         @PreFireTrigger()

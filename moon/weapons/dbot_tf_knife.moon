@@ -55,10 +55,12 @@ SWEP.BulletForce = 5
 SWEP.CooldownTime = 0.8
 SWEP.PreFire = 0
 
-SWEP.SelectAttackAnimation = => not @isOnBack and @BaseClass.SelectAttackAnimation(@) or @BackstabAnimation
+SWEP.SetupDataTables = => BaseClass.SetupDataTables(@)
+SWEP.PrimaryAttack = (...) => BaseClass.PrimaryAttack(@, ...)
+SWEP.SelectAttackAnimation = => not @isOnBack and BaseClass.SelectAttackAnimation(@) or @BackstabAnimation
 
 SWEP.Initialize = =>
-    @BaseClass.Initialize(@)
+    BaseClass.Initialize(@)
     @isOnBack = false
     @backstabAnimActive = false
     @knifeEntityLookup = NULL
@@ -83,7 +85,7 @@ DAMAGE_TYPES = {
 }
 
 SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
-    @BaseClass.OnHit(@, hitEntity, tr, dmginfo)
+    BaseClass.OnHit(@, hitEntity, tr, dmginfo)
 
     if IsValid(hitEntity) and SERVER and @isOnBack
         for dmgtype in *DAMAGE_TYPES
@@ -98,7 +100,7 @@ SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
             hitEntity\TakeDamageInfo(newDMG)
 
 SWEP.PreFireTrigger = =>
-    @BaseClass.PreFireTrigger(@)
+    BaseClass.PreFireTrigger(@)
     if @isOnBack
         @BulletDamage = @knifeEntityLookup\Health() * 2
         @incomingCrit = true
@@ -134,5 +136,5 @@ SWEP.Think = =>
             @SendWeaponSequence(@BackstabAnimationDown)
             @WaitForSequence(@IdleAnimation, @BackstabAnimationDownTime)
     
-    @BaseClass.Think(@)
+    BaseClass.Think(@)
     return true

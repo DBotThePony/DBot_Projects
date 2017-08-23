@@ -30,6 +30,7 @@ if SERVER
         if IsValid(@__dtf2_burn_logic)
             @__dtf2_burn_logic\UpdateDuration(duration)
             return @__dtf2_burn_logic
+        return NULL if hook.Run('DTF2.BurnTarget', @, duration) == false
         @__dtf2_burn_logic = ents.Create('dbot_tf_logic_burn')
         @__dtf2_burn_logic\SetPos(@GetPos())
         @__dtf2_burn_logic\Spawn()

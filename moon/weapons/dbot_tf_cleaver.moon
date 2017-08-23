@@ -79,8 +79,9 @@ SWEP.Think = =>
     
     old = @lastProjectileStatus
     newStatus = @ProjectileIsReady()
-
-    @vmModel\SetNoDraw(not newStatus and @GetHideProjectile() < CurTime()) if IsValid(@vmModel)
+    doDraw = not newStatus and @GetHideProjectile() < CurTime()
+    @SetHideVM(doDraw)
+    @vmModel\SetNoDraw(doDraw) if IsValid(@vmModel)
 
     if old ~= newStatus
         @lastProjectileStatus = newStatus

@@ -48,6 +48,13 @@ SWEP.Secondary = {
     'Automatic': true
 }
 
+SWEP.SetupDataTables = => BaseClass.SetupDataTables(@)
+SWEP.Initialize = => BaseClass.Initialize(@)
+SWEP.Think = => BaseClass.Think(@)
+SWEP.PreFireTrigger = (...) => BaseClass.PreFireTrigger(@, ...)
+SWEP.PrimaryAttack = (...) => BaseClass.PrimaryAttack(@, ...)
+SWEP.SelectAttackAnimation = (...) => BaseClass.SelectAttackAnimation(@, ...)
+
 SWEP.DrawTime = 0.66
 SWEP.DrawTimeAnimation = 1.16
 SWEP.PreFire = 0.24

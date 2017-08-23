@@ -48,6 +48,7 @@ SWEP.SendWeaponAnim2 = (act = ACT_INVALID) =>
     hands\ResetSequence(seqId) if seqId
 
 SWEP.PostDrawViewModel = (viewmodel = NULL, weapon = NULL, ply = NULL) =>
+    return if @GetHideVM()
     return if not IsValid(@GetTF2WeaponModel())
     @GetTF2WeaponModel()\DrawModel()
 

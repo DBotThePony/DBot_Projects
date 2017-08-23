@@ -110,3 +110,32 @@ DTF2.GiveAmmo = (weightThersold = 40) =>
         return oldWeight if weightedDelta <= 0
     
     return oldWeight - weightThersold
+
+DTF2.CreateDeathRagdoll = (duration = 25) =>
+    with ents.Create('prop_ragdoll')
+        \SetPos(@GetPos())
+        \SetAngles(@GetAngles())
+        \SetModel(@GetModel())
+        \Spawn()
+        \Activate()
+        for boneID = 0, \GetBoneCount() - 1
+            physobjID = \TranslateBoneToPhysBone(boneID)
+            pos, ang = @GetBonePosition(boneID)
+            with o = \GetPhysicsObjectNum(physobjID)
+                if IsValid(o)
+                    -- \SetVelocity(vel)
+                    \SetMass(300) -- lol
+                    \SetPos(pos, true) if pos
+                    \SetAngles(ang) if ang
+        \SetCollisionGroup(COLLISION_GROUP_DEBRIS)
+        timer.Simple duration, -> \Remove() if \IsValid()
+
+-- yeah from original statue code
+DTF2.MakeStatue = =>
+    return false if @StatueInfo
+    @StatueInfo = {}
+    for i = 1, @GetPhysicsObjectCount() - 1
+        cnst = constraint.Weld(@, @, 0, i)
+        @StatueInfo[i] = cnst if cnst
+    @SetNWBool('IsStatue', true)
+    return true
