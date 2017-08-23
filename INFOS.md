@@ -50,7 +50,7 @@ Model: `models/weapons/c_models/c_spy_arms.mdl`
 ## Scout
 
 
-```none
+```
 0     =    c_scout_arms
 1     =    r_handposes
 2     =    b_idle
@@ -131,13 +131,13 @@ Model: `models/weapons/c_models/c_spy_arms.mdl`
 77    =    PASSTIME_ball_throw_end
 78    =    PASSTIME_ball_throw_start
 79    =    PASSTIME_ball_throw_loop
-```none
+```
 
 
 ## Soldier
 
 
-```none
+```
 0     =    c_soldier_arms
 1     =    r_handposes
 2     =    dh_idle
@@ -227,13 +227,13 @@ Model: `models/weapons/c_models/c_spy_arms.mdl`
 86    =    PASSTIME_ball_throw_end
 87    =    PASSTIME_ball_throw_start
 88    =    PASSTIME_ball_throw_loop
-```none
+```
 
 
 ## Pyro
 
 
-```none
+```
 0     =    c_pyro_arms
 1     =    r_handposes
 2     =    fa_idle
@@ -294,12 +294,12 @@ Model: `models/weapons/c_models/c_spy_arms.mdl`
 57    =    PASSTIME_ball_throw_end
 58    =    PASSTIME_ball_throw_start
 59    =    PASSTIME_ball_throw_loop
-```none
+```
 
 
 ## Demoman
 
-```none
+```
 0     =    c_demo_arms
 1     =    r_handposes
 2     =    b_draw
@@ -368,12 +368,12 @@ Model: `models/weapons/c_models/c_spy_arms.mdl`
 65    =    PASSTIME_ball_throw_end
 66    =    PASSTIME_ball_throw_start
 67    =    PASSTIME_ball_throw_loop
-```none
+```
 
 
 ## Heavy
 
-```none
+```
 0     =    c_heavy_arms
 1     =    r_handposes
 2     =    sw_draw
@@ -443,12 +443,12 @@ Model: `models/weapons/c_models/c_spy_arms.mdl`
 66    =    PASSTIME_ball_throw_end
 67    =    PASSTIME_ball_throw_start
 68    =    PASSTIME_ball_throw_loop
-```none
+```
 
 
 ## Engineer
 
-```none
+```
 0     =    c_engineer_arms
 1     =    r_handposes
 2     =    fj_draw
@@ -539,12 +539,12 @@ Model: `models/weapons/c_models/c_spy_arms.mdl`
 87    =    PASSTIME_ball_throw_end
 88    =    PASSTIME_ball_throw_start
 89    =    PASSTIME_ball_throw_loop
-```none
+```
 
 
 ## Medic
 
-```none
+```
 0     =    c_medic_arms
 1     =    r_handposes
 2     =    bs_draw
@@ -596,12 +596,12 @@ Model: `models/weapons/c_models/c_spy_arms.mdl`
 48    =    PASSTIME_ball_throw_end
 49    =    PASSTIME_ball_throw_start
 50    =    PASSTIME_ball_throw_loop
-```none
+```
 
 
 ## Sniper
 
-```none
+```
 0     =    ref
 1     =    r_handposes
 2     =    smg_draw
@@ -677,12 +677,12 @@ Model: `models/weapons/c_models/c_spy_arms.mdl`
 72    =    PASSTIME_ball_throw_end
 73    =    PASSTIME_ball_throw_start
 74    =    PASSTIME_ball_throw_loop
-```none
+```
 
 
 ## Spy
 
-```none
+```
 0     =    c_spy_arms
 1     =    r_handposes
 2     =    draw
@@ -772,10 +772,10 @@ Model: `models/weapons/c_models/c_spy_arms.mdl`
 86    =    PASSTIME_ball_throw_end
 87    =    PASSTIME_ball_throw_start
 88    =    PASSTIME_ball_throw_loop
-```none
+```
 
 # All C_ Models
-```none
+```
 models/weapons/c_models/c_8mm_camera/c_8mm_camera.mdl
 models/weapons/c_models/c_acr_hookblade/c_acr_hookblade.mdl
 models/weapons/c_models/c_ambassador/c_ambassador.mdl
@@ -1185,7 +1185,7 @@ models/weapons/w_models/w_tranq.mdl
 models/weapons/w_models/w_ttg_max_gun.mdl
 models/weapons/w_models/w_wrangler.mdl
 models/weapons/w_models/w_wrench.mdl
-```none
+```
 
 # Particles
 
@@ -1193,7 +1193,7 @@ models/weapons/w_models/w_wrench.mdl
 ## BIGBOOM.PCF
 
 
-```none
+```
 explosion_trailFire
 explosion_trailFire_mvm
 explosion_trailSmoke
@@ -1217,13 +1217,13 @@ fluidSmokeExpl_track
 sparks_metal
 sparks_metal_2
 woodSplinter
-```none
+```
 
 
 ## BL_KILLTAUNT.PCF
 
 
-```none
+```
 bl_killtaunt
 bl_killtaunt_appear
 bl_killtaunt_disappear
@@ -1269,13 +1269,13 @@ bl_killtaunt_sparks02b
 bl_killtaunt_sparks03a
 bl_killtaunt_sparks03b
 bl_killtaunt_spotlight
-```none
+```
 
 
 ## BLOOD_IMPACT.PCF
 
 
-```none
+```
 blood_bread_biting
 blood_bread_biting2
 blood_decap
@@ -1320,33 +1320,33 @@ tfc_sniper_mist_streaks
 water_blood_impact_red_01
 water_blood_impact_red_01_chunk
 water_blood_impact_red_01_goop
-```none
+```
 
 
 ## BLOOD_TRAIL.PCF
 
 
-```none
+```
 blood_trail_red_01_droplets
 blood_trail_red_01_goop
-```none
+```
  
 
 ## BOMBINOMICON.PCF
 
 
-```none
+```
 bomb_vortex_skull
 bombinomicon_airwaves
 bombinomicon_airwaves_base
 bombinomicon_vortex
-```none
+```
   
 
 ## BUILDINGDAMAGE.PCF
 
 
-```none
+```
 buildingdamage_dispenser_fire0
 buildingdamage_dispenser_fire1
 buildingdamage_fire1
@@ -1377,13 +1377,13 @@ tpdamage_2
 tpdamage_3
 tpdamage_4
 tpdamage_smoke1
-```none
+```
 
 
 ## BULLET_TRACERS.PCF
 
 
-```none
+```
 bullet_bignasty_impact_chunks
 bullet_bignasty_tracer01_blue
 bullet_bignasty_tracer01_blue_crit
@@ -1418,13 +1418,13 @@ bullet_tracer02_red
 bullet_tracer02_red_crit
 tfc_sniper_distortion_trail
 tfc_sniper_distortion_trail_noise
-```none
+```
 
 
 ## BURNINGPLAYER.PCF
 
 
-```none
+```
 _brushstroke
 burning_torch
 burninggibs
@@ -1480,20 +1480,20 @@ pyrovision_flying_flaming_arrow
 pyrovision_v_flaming_arrow
 v_flaming_arrow
 v_flaming_arrow_smoke
-```none
+```
 
 
 ## CIG_SMOKE.PCF
 
-```none
+```
 cig_burn
 cig_smoke
 drg_pipe_smoke
-```none
+```
 
 ## CINEFX.PCF
 
-```none
+```
 bombinomicon_burning_piece
 bombinomicon_burning_piece_halloween
 bombinomicon_burningdebris
@@ -1532,11 +1532,11 @@ skull_island_explosion
 skull_island_flash
 skull_island_hugedustup
 skull_island_intial_smoke
-```none
+```
 
 ## CLASS_FX.PCF
 
-```none
+```
 dodge_test
 eye_powerup_blue_lvl_1
 eye_powerup_blue_lvl_1b
@@ -1636,11 +1636,11 @@ set_taunt_saharan_spy_whirlwind
 set_taunt_saharan_spy_whirlwind2
 set_taunt_saharan_spy_whirlwind3
 warp_version
-```none
+```
 
 ## CLASSIC_ROCKET_TRAIL.PCF
 
-```none
+```
 rocket_explosion_classic
 rocket_explosion_classic_b
 rocket_explosion_classic_crit_blue
@@ -1650,28 +1650,28 @@ rocket_trail_classic_b
 rocket_trail_classic_crit_blue
 rocket_trail_classic_crit_red
 test_classic_trail
-```none
+```
 
 ## COIN_SPIN.PCF
 
-```none
+```
 coin_spin
-```none
+```
 
 ## CONC_STARS.PCF
 
-```none
+```
 bonk_text
 conc_stars
 conc_trail
 ghost_trail
 yikes_fx
 yikes_text
-```none
+```
 
 ## CRIT.PCF
 
-```none
+```
 achieved
 crit_text
 doubledonk_test
@@ -1681,17 +1681,17 @@ mini_firework_flare
 mini_fireworks
 minicrit_text
 miss_text
-```none
+```
 
 ## DEFAULT.PCF
 
-```none
+```
 default
-```none
+```
 
 ## DIRTY_EXPLODE.PCF
 
-```none
+```
 asplode_hoodoo
 asplode_hoodoo_burning_debris
 asplode_hoodoo_burning_piece
@@ -1717,11 +1717,11 @@ cinefx_goldrush_initial_smoke
 cinefx_goldrush_initial_smoke2
 cinefx_goldrush_pitglow
 cinefx_goldrush_smoke
-```none
+```
 
 ## DISGUISE.PCF
 
-```none
+```
 disguise_flash_blue
 disguise_flash_red
 spy_start_disguise_blue
@@ -1730,11 +1730,11 @@ spy_stolen_flash_blue
 spy_stolen_flash_red
 spy_stolen_smoke_blue
 spy_stolen_smoke_red
-```none
+```
 
 ## DOOMSDAY_FX.PCF
 
-```none
+```
 australium_bar_glow
 australium_bubbles
 base_destroyed_smoke_doomsday
@@ -1746,11 +1746,11 @@ rockettrail_doomsday
 rockettrail_fire_doomsday
 rockettrail_vents_doomsday
 shockwave_ring_doomsday
-```none
+```
 
 ## DRG_BISON.PCF
 
-```none
+```
 bison_idle_child_electro
 bison_idle_child_sparks01
 bison_idle_child_sparks02
@@ -1780,11 +1780,11 @@ drg_bison_muzzleflash
 drg_bison_projectile
 drg_bison_projectile_crit
 drg_bison_reload
-```none
+```
 
 ## DRG_COWMANGLER.PCF
 
-```none
+```
 cowmangler_idle_child_beam01
 cowmangler_idle_child_electro1
 cowmangler_idle_child_electro2
@@ -1863,11 +1863,11 @@ drg_cowmangler_muzzleflash_chargeup
 drg_cowmangler_muzzleflash_normal
 drg_cowmangler_trail_charged
 drg_cowmangler_trail_normal
-```none
+```
 
 ## DRG_ENGINEER.PCF
 
-```none
+```
 drg_pomson_idle
 drg_pomson_impact
 drg_pomson_impact_drain
@@ -1898,11 +1898,11 @@ wrenchmotron_teleport_beam
 wrenchmotron_teleport_flash
 wrenchmotron_teleport_glow_big
 wrenchmotron_teleport_sparks
-```none
+```
 
 ## DRG_PYRO.PCF
 
-```none
+```
 3rd_attack_glow
 3rd_idle_glow
 3rd_trail
@@ -1956,11 +1956,11 @@ phlo_stream_muzzle
 phlo_stream_noise
 phlo_stream_noise_sharp
 phlo_stream_noise_unlocked
-```none
+```
 
 ## DXHR_FX.PCF
 
-```none
+```
 arm_detonate_electro
 arm_detonate_flare
 arm_detonate_sparks
@@ -2011,11 +2011,11 @@ sniper_dxhr_rail_red
 widowmaker_absorb_nutsnbolts
 widowmaker_absorb_sparks
 widowmaker_shelleject_nutsnbolts
-```none
+```
 
 ## EXPLOSION.PCF
 
-```none
+```
 bday_1balloon
 bday_balloon01
 bday_balloon02
@@ -2062,11 +2062,11 @@ sapper_flash
 sapper_flashup
 sapper_flyingembers
 sapper_smoke
-```none
+```
 
 ## EYEBOSS.PCF
 
-```none
+```
 eb_aura_angry01
 eb_aura_angry02
 eb_aura_angry_warp
@@ -2135,21 +2135,21 @@ eyeboss_tp_player
 eyeboss_tp_vortex
 eyeboss_vortex_blue
 eyeboss_vortex_red
-```none
+```
 
 ## FIRSTPERSON_WEAPON_FX.PCF
 
-```none
+```
 critgun_weaponmodel_blu
 critgun_weaponmodel_blu_glow
 critgun_weaponmodel_red
 critgun_weaponmodel_red_glow
 crutgun_firstperson
-```none
+```
 
 ## FLAG_PARTICLES.PCF
 
-```none
+```
 cart_flashinglight
 cart_flashinglight_glow
 cart_flashinglight_glow_red
@@ -2162,11 +2162,11 @@ player_australium_sparkles
 player_intel_papertrail
 player_intel_trail_blue
 player_intel_trail_red
-```none
+```
 
 ## FLAMETHROWER.PCF
 
-```none
+```
 _flamethrower_REAL
 flamethrower
 flamethrower_blue
@@ -2246,11 +2246,11 @@ pyrotaunt_rainbow_stars
 pyrotaunt_rainbow_sun
 pyrotaunt_rainbow_sunglow
 pyrotaunt_rainbow_TOP
-```none
+```
 
 ## FLAMETHROWER_MVM.PCF
 
-```none
+```
 flamethrower_crit_giant_mvm
 flamethrower_crit_glow_giant_mvm
 flamethrower_crit_pilot_giant_mvm
@@ -2261,11 +2261,11 @@ flamethrower_fire_1
 flamethrower_fire_1_giant_mvm
 flamethrower_giant_mvm
 flamethrower_pilot_giant_mvm
-```none
+```
 
 ## FLAMETHROWERTEST.PCF
 
-```none
+```
 flamethrower
 flamethrower_blue
 flamethrower_crit_blue
@@ -2285,11 +2285,11 @@ pyrotaunt
 pyrotaunt_flame
 pyrotaunt_glow
 pyrotaunt_powerup
-```none
+```
 
 ## HALLOWEEN.PCF
 
-```none
+```
 bombonomicon_spell_trail
 fuse_flame
 fuse_smoke
@@ -2466,11 +2466,11 @@ underworld_smoke02
 underworld_smoke03
 underworld_smoke04
 underworld_yellow_steam
-```none
+```
 
 ## HARBOR_FX.PCF
 
-```none
+```
 cauldron_embers
 cauldron_flamethrower
 cauldron_flamethrower_pilot
@@ -2482,11 +2482,11 @@ harbor_smoke_whitebillow_skybox
 steam_jet
 steam_plume
  
-```none
+```
 
 ## IMPACT_FX
 
-```none
+```
 
 impact_antlion
 impact_computer
@@ -2518,11 +2518,11 @@ impact_wood_child_puff
 impact_woodbroken
 ricochet_sparks
 
-```none
+```
 
 ## ITEM_FX.PCF
 
-```none
+```
  
 birthday_player_circling
 birthday_player_circling_flame
@@ -2829,11 +2829,11 @@ unusual_zap_green_glow
 unusual_zap_yellow
 unusual_zap_yellow_glow
 
-```none
+```
 
 ## ITEMS_DEMO.PCF
 
-```none
+```
 
 loose_cannon_buildup_glow
 loose_cannon_buildup_glow1
@@ -2852,11 +2852,11 @@ loose_cannon_sparks2
 loose_cannon_sparks_bang
 loose_cannon_sparks_flash
 
-```none
+```
 
 ## ITEMS_ENGINEER.PCF
 
-```none
+```
 
 repair_claw_heal_blue
 repair_claw_heal_blue2
@@ -2865,11 +2865,11 @@ repair_claw_heal_red
 repair_claw_heal_red2
 repair_claw_heal_red3
 
-```none
+```
 
 ## KILLSTREAK.PCF
 
-```none
+```
 
 killstreak_eyes_base
 killstreak_eyes_bits01
@@ -2892,11 +2892,11 @@ killstreak_eyes_spikes01
 killstreak_eyes_trails01
 killstreak_eyes_trails02
 
-```none
+```
 
 ## LEVEL_FX.PCF
 
-```none
+```
 
 hell_megaheal_blue_shower
 hell_megaheal_red_shower
@@ -2909,11 +2909,11 @@ mannworks_smoke
 nucleus_core_bits1
 nucleus_core_steady
 
-```none
+```
 
 ## MEDICGUN_ATTRIB.PCF
 
-```none
+```
 
 medicgun_beam_attrib_drips
 medicgun_beam_attrib_healing
@@ -2925,11 +2925,11 @@ medicgun_beam_attrib_shards
 overhealedplayer_blue_pluses
 overhealedplayer_red_pluses
 
-```none
+```
 
 ## MEDICGUN_BEAM.PCF
 
-```none
+```
 
 dispenser_beam_blue_pluses
 dispenser_beam_blue_trail
@@ -3000,11 +3000,11 @@ vaccinator_red_buff2_burst
 vaccinator_red_buff3
 vaccinator_red_buff3_burst
 
-```none
+```
 
 ## MUZZLE_FLASH.PCF
 
-```none
+```
 
 muzzle_bignasty
 muzzle_bignasty_flash
@@ -3042,11 +3042,11 @@ muzzle_smg_sparks
 muzzle_sniperrifle
 muzzle_syringe
    
-```none
+```
 
 ## MVM.PCF
 
-```none
+```
  
 bot_death
 bot_death_bolts
@@ -3168,32 +3168,32 @@ mvm_wood_boards_splinters_2BR
 mvm_wood_boards_splinters_MW
 smoke_marker
  
-```none
+```
 
 ## NAILTRAILS.PCF
 
-```none
+```
 nailtrails_medic_blue
 nailtrails_medic_blue_crit
 nailtrails_medic_red
 nailtrails_medic_red_crit
 
-```none
+```
 
 ## NEMESIS.PCF
 
-```none
+```
 
 particle_nemesis_blue
 particle_nemesis_burst_blue
 particle_nemesis_burst_red
 particle_nemesis_red
 
-```none
+```
 
 ## NPC_FX PCF
 
-```none
+```
  
 charge_up
 charge_up_glow
@@ -3203,11 +3203,11 @@ npc_boss_bomb_alert_plate
 npc_boss_bomb_aoewarn
 npc_boss_bomb_shadow
 
-```none
+```
 
 ## PLAYER_RECENT_TELEPORT.PCF
 
-```none
+```
 
 bot_drips_cheap
 bot_recent_teleport_blue
@@ -3220,11 +3220,11 @@ player_recent_teleport_red
 player_sparkles_blue
 player_sparkles_red
 
-```none
+```
 
 ## RAIN_CUSTOM.PCF
 
-```none
+```
 
 env_rain_128
 env_rain_128_streaks
@@ -3239,20 +3239,20 @@ env_rain_512x1792
 env_rain_512x768
 test
 
-```none
+```
 
 ## ROCKETBACKBLAST.PCF
 
-```none
+```
 
 rocketbackblast
 rocketbackblastsparks
 
-```none
+```
 
 ## ROCKETJUMPTRAIL.PCF
 
-```none
+```
 
 deflect_fx
 deflect_temp
@@ -3266,11 +3266,11 @@ rocketjump_flame
 rocketjump_flash
 rocketjump_smoke
 
-```none
+```
 
 ## ROCKETTRAIL.PCF
 
-```none
+```
 
 bullet_distortion_trail
 bullet_distortion_trail_tracer
@@ -3322,11 +3322,11 @@ tranq_distortion_trail
 tranq_tracer_teamcolor_blue
 tranq_tracer_teamcolor_red
 
-```none
+```
 
 ## RPS.PCF
 
-```none
+```
 
 particle_rps_burst_blue_left
 particle_rps_burst_blue_right
@@ -3374,11 +3374,11 @@ rps_win_flash_glow
 rps_win_flash_red
 rps_win_sparks
 
-```none
+```
 
 ## SCARY_GHOST.PCF
 
-```none
+```
 
 ghost_appearation
 ghost_firepit
@@ -3408,19 +3408,19 @@ halloween_boss_trailing_goop
 halloween_ghost_flash
 halloween_ghost_smoke
 
-```none
+```
 
 ## SHELLEJECTION.PCF
 
-```none
+```
 
 eject_minigunbrass
 
-```none
+```
 
 ## SMOKE_BLACKBILLOW.PCF
 
-```none
+```
 
 smoke_blackbillow
 smoke_blackbillow_dustbowl_skybox
@@ -3450,19 +3450,19 @@ smoke_wispy_black_granary
 smoke_wispy_black_gravelpit
 smoke_wispy_black_skybox
 
-```none
+```
 
 ## SMOKE_BLACKBILLOW_HOODOO.PCF
 
-```none
+```
 
 smoke_wispy_black_hoodoo
 
-```none
+```
 
 ## SOLDIERBUFF.PCF
 
-```none
+```
 
 soldierbuff_blue_buffed
 soldierbuff_blue_soldier
@@ -3480,11 +3480,11 @@ soldierbuff_red_spirial
 soldierbuff_red_volume
 speed_boost_trail
 
-```none
+```
 
 ## SPARKS.PCF
 
-```none
+```
 
 candle_light1
 candle_light2
@@ -3494,11 +3494,11 @@ sapper_sentry1_sparks2
 spark_electric01
 spark_electric01_embers
 
-```none
+```
 
 ## SPEECHBUBBLES.PCF
 
-```none
+```
 
 speech_mediccall
 speech_mediccall_attention
@@ -3513,19 +3513,19 @@ speech_taunt_red
 speech_typing
 speech_voice
    
-```none
+```
 
 ## STAMP_SPIN.PCF
 
-```none
+```
  
 Stamp_spin
 
-```none
+```
 
 ## STICKYBOMB.PCF
 
-```none
+```
 
 critical_grenade_blue
 critical_grenade_blue_extra
@@ -3548,20 +3548,20 @@ stunballtrail_blue_crit
 stunballtrail_red
 stunballtrail_red_crit
 
-```none
+```
 
 ## STORMFRONT.PCF
 
-```none
+```
  
 env_snow_stormfront_001
 env_snow_stormfront_mist
 
-```none
+```
 
 ## TAUNT_FX.PCF
 
-```none
+```
 
 highfive_blue
 highfive_blue_border
@@ -3751,11 +3751,11 @@ utaunt_tornado_parent_black
 utaunt_tornado_twist_black
 utaunt_tornado_twist_white
 
-```none
+```
 
 ## TELEPORT_STATUS.PCF
 
-```none
+```
 
 teleporter_arms_circle_blue
 teleporter_arms_circle_blue_blink
@@ -3798,11 +3798,11 @@ teleporter_red_floorglow
 teleporter_red_wisps_level2
 teleporter_red_wisps_level3
 
-```none
+```
 
 ## TELEPORTED_FX.PCF
 
-```none
+```
 
 teleported_blue
 teleported_flash
@@ -3836,11 +3836,11 @@ teleporter_mvm_bot_persist_ring01
 teleporter_mvm_bot_persist_skyglow
 teleporter_mvm_bot_ring
 
-```none
+```
 
 ## TRAINING.PCF
 
-```none
+```
 
 coin_blue
 coin_large_blue
@@ -3854,18 +3854,18 @@ tr_bday_confetti_colors
 tr_waterfall_bottomsplash
 waterfall_bottom
 
-```none
+```
 
 ## URBAN_FX.PCF
 
-```none
+```
 smoke_urbantower_skybox
 
-```none
+```
 
 ## WATER.PCF
 
-```none
+```
 
 env_rain_001
 env_rain_001_mist
@@ -3906,11 +3906,11 @@ waterfall_rocksplash
 waterfall_rocksplash_2
 waterfall_sides
    
-```none
+```
 
 ## XMS.PCF
 
-```none
+```
 
 taunt_pyro_dosido
 taunt_pyro_dosido_embers
