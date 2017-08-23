@@ -82,6 +82,8 @@ SWEP.GetBulletSpread = => @DefaultSpread
 SWEP.GetBulletAmount = => @BulletsAmount
 SWEP.GetViewPunch = => @DefaultViewPunch
 
+SWEP.Think = => BaseClass.Think(@)
+
 SWEP.ClientBulletOriginShift = Vector(0, 0, 10)
 
 SWEP.GetBulletOrigin = =>
