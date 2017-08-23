@@ -333,14 +333,31 @@ ENT.GetEnemies = => [ent for ent in *VALID_TARGETS]
 ENT.GetAlliesTable = => VALID_ALLIES
 ENT.GetEnemiesTable = => VALID_TARGETS
 
+BOOL_OR_FUNC = (val, undef = true, ...) ->
+    switch type(val)
+        when 'function'
+            return val(...)
+        when 'nil'
+            return undef
+        else
+            return val
+
+ENT.CheckTarget = (target = NULL) =>
+    target\IsValid() and
+    not BOOL_OR_FUNC(target.IsDroneDestroyed, false, target) and
+    BOOL_OR_FUNC(target.IsDestroyed, true, target) and
+    BOOL_OR_FUNC(target.IsWorking, true, target) and
+    (target\GetMaxHealth() <= 0 or target\Health() > 0) and
+    (BOOL_OR_FUNC(target.GetMaxHP, 0, target) <= 0 or BOOL_OR_FUNC(target.GetHP, 1, target) > 0)
+
 ENT.RebuildMarkedList = =>
-    @markedTargets = [target for target in *@markedTargets when target[1]\IsValid() and target[1] ~= @GetTFPlayer()]
+    @markedTargets = [target for target in *@markedTargets when @CheckTarget(target[1]) and target[1] ~= @GetTFPlayer()]
     @markedAllies = [target for target in *@markedAllies when target[1]\IsValid() and target[1] ~= @GetTFPlayer()]
 
 ENT.UpdateMarkedList = =>
     pl = @GetTFPlayer()
     @markedTargets = for {ent, pos, mins, maxs, center1, center} in *@markedTargets
-        return @RebuildMarkedList() if not ent\IsValid() or ent == pl
+        return @RebuildMarkedList() if not ent\IsValid() or ent == pl or not @CheckTarget(ent)
         center = ent\OBBCenter()
         center\Rotate(ent\GetAngles())
         {ent, ent\GetPos(), mins, maxs, center1, center}
@@ -351,7 +368,7 @@ ENT.UpdateMarkedList = =>
         {ent, ent\GetPos(), mins, maxs, center1, center}
 
 ENT.MarkAsEnemy = (ent = NULL) =>
-    return false if not IsValid(ent)
+    return false if not @CheckTarget(ent)
     return false if ent == @GetTFPlayer()
     for target in *@markedTargets
         return false if target[1] == ent
