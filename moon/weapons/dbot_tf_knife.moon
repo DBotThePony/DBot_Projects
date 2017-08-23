@@ -59,6 +59,8 @@ SWEP.SetupDataTables = => BaseClass.SetupDataTables(@)
 SWEP.PrimaryAttack = (...) => BaseClass.PrimaryAttack(@, ...)
 SWEP.SelectAttackAnimation = => not @isOnBack and BaseClass.SelectAttackAnimation(@) or @BackstabAnimation
 
+SWEP.Deploy = => BaseClass.Deploy(@)
+
 SWEP.Initialize = =>
     BaseClass.Initialize(@)
     @isOnBack = false

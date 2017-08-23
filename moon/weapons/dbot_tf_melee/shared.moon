@@ -54,6 +54,7 @@ SWEP.Think = => BaseClass.Think(@)
 SWEP.PreFireTrigger = (...) => BaseClass.PreFireTrigger(@, ...)
 SWEP.PrimaryAttack = (...) => BaseClass.PrimaryAttack(@, ...)
 SWEP.SelectAttackAnimation = (...) => BaseClass.SelectAttackAnimation(@, ...)
+SWEP.Deploy = => BaseClass.Deploy(@)
 
 SWEP.DrawTime = 0.66
 SWEP.DrawTimeAnimation = 1.16
