@@ -76,6 +76,7 @@ SWEP.Secondary = {
 SWEP.SetupDataTables = =>
     @NetworkVar('Bool', 0, 'NextCrit')
     @NetworkVar('Bool', 1, 'CritBoosted')
+    @NetworkVar('Bool', 4, 'MiniCritBoosted')
     @NetworkVar('Bool', 2, 'TeamType')
     @NetworkVar('Float', 0, 'CriticalsDuration')
     @NetworkVar('Entity', 0, 'TF2WeaponModel')
@@ -89,7 +90,7 @@ SWEP.CheckNextCrit = =>
     @CheckCritical() if SERVER
     return false
 
-SWEP.CheckNextMiniCrit = => @GetOwner()\GetMiniCritBoosted()
+SWEP.CheckNextMiniCrit = => @GetOwner()\GetMiniCritBoosted() or @GetMiniCritBoosted()
 
 SWEP.RealSetModel = (mdl = @GetModel()) =>
     @SetModel(mdl)
