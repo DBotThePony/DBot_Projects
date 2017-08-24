@@ -40,21 +40,21 @@ ENT.Initialize = =>
     @SetModel(@ProjectileModel)
     @PhysicsInitSphere(@ProjectileSize)
     @initialPosition = @GetPos()
-    @SetBlowRadius(@BlowRadius)
-    @SetInflictor(@)
-    @SetAttacker(@)
-    @SetDamage(@ProjectileDamage)
-    @SetBlowEffect(@BlowEffect)
-    @SetProjectileForce(@ProjectileForce)
-    @SetAmmoType(@AmmoType)
-    @SetBlowSound(@BlowSound)
-    @SetProjectileSpeed(@ProjectileSpeed)
-    @SetDegradationDivider(@DegradationDivider)
-    @SetIsExplosive(@Explosive)
-    @SetImpactFleshSound(@ImpactFleshSound)
-    @SetImpactWorldSound(@ImpactWorldSound)
-    @SetDamageDegradation(@DamageDegradation)
-    @SetBulletDamageType(@BulletDamageType)
+    @SetBlowRadius(@BlowRadius) if @GetBlowRadius() == nil
+    @SetInflictor(@) if @GetInflictor() == nil
+    @SetAttacker(@) if @GetAttacker() == nil
+    @SetDamage(@ProjectileDamage) if @GetDamage() == nil
+    @SetBlowEffect(@BlowEffect) if @GetBlowEffect() == nil
+    @SetProjectileForce(@ProjectileForce) if @GetProjectileForce() == nil
+    @SetAmmoType(@AmmoType) if @GetAmmoType() == nil
+    @SetBlowSound(@BlowSound) if @GetBlowSound() == nil
+    @SetProjectileSpeed(@ProjectileSpeed) if @GetProjectileSpeed() == nil
+    @SetDegradationDivider(@DegradationDivider) if @GetDegradationDivider() == nil
+    @SetIsExplosive(@Explosive) if @GetIsExplosive() == nil
+    @SetImpactFleshSound(@ImpactFleshSound) if @GetImpactFleshSound() == nil
+    @SetImpactWorldSound(@ImpactWorldSound) if @GetImpactWorldSound() == nil
+    @SetDamageDegradation(@DamageDegradation) if @GetDamageDegradation() == nil
+    @SetBulletDamageType(@BulletDamageType) if @GetBulletDamageType() == nil
 
     @explodeAt = CurTime() + @ExplodeAt if @ShouldExplode
     @removeAt = CurTime() + @RemoveTimer if @ShouldRemove
