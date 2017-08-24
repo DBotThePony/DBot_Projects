@@ -90,7 +90,7 @@ SWEP.ReloadCall = =>
 hook.Add 'SetupMove', 'DTF2.CowMangler', (mv, cmd) =>
     wep = @GetWeapon('dbot_tf_cowmangler')
     return if not IsValid(wep)
-    return if not wep\GetIsCharging()
+    return if not wep.GetIsCharging or not wep\GetIsCharging()
     mv\SetMaxClientSpeed(90)
 
 if CLIENT
