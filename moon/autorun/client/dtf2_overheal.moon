@@ -42,11 +42,11 @@ hook.Add 'Think', 'DTF2.OverhealThink', ->
         return REBUILD_TRACKED_ENTS() if not @IsValid()
         if @Health() > @GetMaxHealth()
             if not IsValid(@DTF2_OverhealParticleSystem)
-                @DTF2_OverhealParticleSystem = CreateParticleSystem(@, 'overhealedplayer_red_pluses', PATTACH_ABSORIGIN_FOLLOW, 0) if not @DTF2_OverhealParticleSystem
-                @DTF2_OverhealParticleSystem\StartEmission()
+                @DTF2_OverhealParticleSystem = CreateParticleSystem(@, 'overhealedplayer_red_pluses', PATTACH_ABSORIGIN_FOLLOW, 0)
         else
             if IsValid(@DTF2_OverhealParticleSystem)
                 @DTF2_OverhealParticleSystem\StopEmission()
+                @DTF2_OverhealParticleSystem = nil
             hitUpdate = true
         
     REBUILD_TRACKED_ENTS() if hitUpdate
