@@ -17,33 +17,31 @@
 
 AddCSLuaFile()
 
-DEFINE_BASECLASS('dbot_tf_melee')
+DEFINE_BASECLASS('dbot_tf_machete')
 
-SWEP.Base = 'dbot_tf_melee'
+SWEP.Base = 'dbot_tf_machete'
 SWEP.Author = 'DBot'
 SWEP.Category = 'TF2 Sniper'
-SWEP.PrintName = 'Machete'
+SWEP.PrintName = 'The Shahanshah'
 SWEP.ViewModel = 'models/weapons/c_models/c_sniper_arms.mdl'
-SWEP.WorldModel = 'models/weapons/c_models/c_machete/c_machete.mdl'
+SWEP.WorldModel = 'models/weapons/c_models/c_scimitar/c_scimitar.mdl'
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.AdminOnly = false
+SWEP.RandomCriticals = false
 
-SWEP.MissSoundsScript = 'Weapon_Machete.Miss'
-SWEP.MissCritSoundsScript = 'Weapon_Machete.MissCrit'
-SWEP.HitSoundsScript = 'Weapon_Machete.HitWorld'
-SWEP.HitSoundsFleshScript = 'Weapon_Machete.HitFlesh'
+SWEP.DECREASED_DAMAGE = 65 * 0.75
+SWEP.INCREASED_DAMAGE = 65 * 1.25
 
-SWEP.DrawAnimation = 'm_draw'
-SWEP.IdleAnimation = 'm_idle'
-SWEP.AttackAnimation = 'm_swing_a'
-SWEP.AttackAnimationTable = {'m_swing_a', 'm_swing_b'}
-SWEP.AttackAnimationCrit = 'm_swing_c'
+if SERVER then
+    function SWEP:Think()
+        local ply = self:GetOwner()
+        if ply:Health() > ply:GetMaxHealth() / 2 then
+            self.BulletDamage = self.DECREASED_DAMAGE
+        else
+            self.BulletDamage = self.INCREASED_DAMAGE
+        end
 
-function SWEP.OnHit(...)
-    return BaseClass.OnHit(...)
-end
-
-function SWEP:Think()
-    return BaseClass.Think(self)
+        return BaseClass.Think(self)
+    end
 end
