@@ -242,7 +242,7 @@ hook.Add 'EntityTakeDamage', 'DTF2.Bullseye', (dmg) =>
 hook.Add 'EntityTakeDamage', 'DTF2.BuildablesFriendlyFire', (dmg) =>
     attacker = dmg\GetAttacker()
     inflictor = dmg\GetInflictor()
-    if @IsTF2Building and (dmg\GetAttacker()\IsValid() and @IsAlly(dmg\GetAttacker()) or dmg\GetAttacker() == @)
+    if @IsTF2Building and (attacker\IsValid() and (@IsAlly(attacker) or attacker == @))
         dmg\SetDamage(0)
         dmg\SetDamageBonus(0)
         dmg\SetMaxDamage(0)
@@ -438,6 +438,8 @@ ENT.IsEnemy = (target = NULL) =>
 
 ENT.IsAlly = (target = NULL) =>
     return false if not IsValid(target)
+    for ent in *@markedTargets
+        return false if target == ent[1]
     for ent in *@markedAllies
         return true if target == ent[1]
     for ent in *VALID_ALLIES
