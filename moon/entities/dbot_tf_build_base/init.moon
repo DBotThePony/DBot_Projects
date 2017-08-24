@@ -146,7 +146,7 @@ UpdateTargetList = ->
         if ent\IsNPC() and ent\GetClass() ~= 'npc_bullseye' and ent\GetNPCState() ~= NPC_STATE_DEAD
             center = ent\OBBCenter()
             center\Rotate(ent\GetAngles())
-            npcData = {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center}
+            npcData = {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center, DTF2.Pointer(ent)}
             classify = ent\Classify()
             if (classify == CLASS_PLAYER_ALLY or
                 classify == CLASS_PLAYER_ALLY_VITAL or
@@ -185,24 +185,24 @@ UpdateTargetList = ->
         for ent in *player.GetAll()
             center = ent\OBBCenter()
             center\Rotate(ent\GetAngles())
-            table.insert(VALID_TARGETS, {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center})
+            table.insert(VALID_TARGETS, {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center, DTF2.Pointer(ent)})
     else
         for ent in *player.GetAll()
             center = ent\OBBCenter()
             center\Rotate(ent\GetAngles())
-            table.insert(VALID_ALLIES, {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center})
+            table.insert(VALID_ALLIES, {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center, DTF2.Pointer(ent)})
 
 UpdateTargetListLight = ->
-    VALID_TARGETS = for {ent, pos, mins, maxs, center1, center} in *VALID_TARGETS
+    VALID_TARGETS = for {ent, pos, mins, maxs, center1, center, pointer} in *VALID_TARGETS
         return UpdateTargetList() if not ent\IsValid()
         center = ent\OBBCenter()
         center\Rotate(ent\GetAngles())
-        {ent, ent\GetPos(), mins, maxs, center1, center}
-    VALID_ALLIES = for {ent, pos, mins, maxs, center1, center} in *VALID_ALLIES
+        {ent, ent\GetPos(), mins, maxs, center1, center, pointer}
+    VALID_ALLIES = for {ent, pos, mins, maxs, center1, center, pointer} in *VALID_ALLIES
         return UpdateTargetList() if not ent\IsValid()
         center = ent\OBBCenter()
         center\Rotate(ent\GetAngles())
-        {ent, ent\GetPos(), mins, maxs, center1, center}
+        {ent, ent\GetPos(), mins, maxs, center1, center, pointer}
 
 hook.Add 'Think', 'DTF2.FetchTagrets', UpdateTargetListLight
 hook.Add 'PlayerSpawn', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTargetList', 0, 1, UpdateTargetList
@@ -372,16 +372,16 @@ ENT.RebuildMarkedList = =>
 
 ENT.UpdateMarkedList = =>
     pl = @GetTFPlayer()
-    @markedTargets = for {ent, pos, mins, maxs, center1, center} in *@markedTargets
+    @markedTargets = for {ent, pos, mins, maxs, center1, center, pointer} in *@markedTargets
         return @RebuildMarkedList() if not @CheckTarget(ent) or ent == pl
         center = ent\OBBCenter()
         center\Rotate(ent\GetAngles())
-        {ent, ent\GetPos(), mins, maxs, center1, center}
-    @markedAllies = for {ent, pos, mins, maxs, center1, center} in *@markedAllies
+        {ent, ent\GetPos(), mins, maxs, center1, center, pointer}
+    @markedAllies = for {ent, pos, mins, maxs, center1, center, pointer} in *@markedAllies
         return @RebuildMarkedList() if not ent\IsValid() or ent == pl
         center = ent\OBBCenter()
         center\Rotate(ent\GetAngles())
-        {ent, ent\GetPos(), mins, maxs, center1, center}
+        {ent, ent\GetPos(), mins, maxs, center1, center, pointer}
 
 ENT.MarkAsEnemy = (ent = NULL) =>
     return false if not @CheckTarget(ent)
@@ -396,7 +396,7 @@ ENT.MarkAsEnemy = (ent = NULL) =>
 
     center = ent\OBBCenter()
     center\Rotate(ent\GetAngles())
-    return true, table.insert(@markedTargets, {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center})
+    return true, table.insert(@markedTargets, {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center, DTF2.Pointer(ent)})
 
 ENT.UnmarkEntity = (ent = NULL) =>
     return false if not IsValid(ent)
@@ -426,7 +426,7 @@ ENT.MarkAsAlly = (ent = NULL) =>
 
     center = ent\OBBCenter()
     center\Rotate(ent\GetAngles())
-    return true, table.insert(@markedAllies, {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center})
+    return true, table.insert(@markedAllies, {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center, DTF2.Pointer(ent)})
 
 ENT.IsEnemy = (target = NULL) =>
     return true if not IsValid(target)
@@ -460,7 +460,7 @@ ENT.IsAllyLight = (target = NULL, def = false) =>
 
 ENT.CreateBullseye = =>
     if @npc_bullseye
-        eye\Remove() for eye in *@npc_bullseye when IsValid(eye)
+        eye\Remove() for {eye} in *@npc_bullseye when IsValid(eye)
     
     mins, maxs, center = @OBBMins(), @OBBMaxs(), @OBBCenter()
 
@@ -476,7 +476,8 @@ ENT.CreateBullseye = =>
 	}
 
 	@npc_bullseye = for vec in *box
-		with ents.Create('npc_bullseye')
+        ent = ents.Create('npc_bullseye')
+		with ent
 			\SetKeyValue('targetname', 'dtf2_bullseye')
 			\SetKeyValue('spawnflags', '131072')
 			\SetPos(@LocalToWorld(vec))
@@ -488,20 +489,22 @@ ENT.CreateBullseye = =>
             \SetNotSolid(true)
             .DTF2_Parent = @
             .DTF2_LastDMG = 0
+        {ent, DTF2.Pointer(ent)}
 
 ENT.UpdateRelationships = =>
+    pointerPrefix = 'DTF2_B_P_' .. DTF2.Pointer(@) .. '_'
     for {target} in *VALID_TARGETS
         if target\IsValid() and target\IsNPC()
-            target\AddEntityRelationship(eye, D_HT, 0) for eye in *@npc_bullseye
+            target[pointerPrefix .. DTF2.Pointer(target) .. '_' .. pointer] = target\AddEntityRelationship(eye, D_HT, 0) or D_HT for {eye, pointer} in *@npc_bullseye when target[pointerPrefix .. DTF2.Pointer(target) .. '_' .. pointer] ~= D_HT
     for {target} in *VALID_ALLIES
         if target\IsValid() and target\IsNPC()
-            target\AddEntityRelationship(eye, D_LI, 0) for eye in *@npc_bullseye
+            target[pointerPrefix .. DTF2.Pointer(target) .. '_' .. pointer] = target\AddEntityRelationship(eye, D_LI, 0) or D_LI for {eye, pointer} in *@npc_bullseye when target[pointerPrefix .. DTF2.Pointer(target) .. '_' .. pointer] ~= D_LI
     for {target} in *@markedTargets
         if target\IsValid() and target\IsNPC()
-            target\AddEntityRelationship(eye, D_HT, 0) for eye in *@npc_bullseye
+            target[pointerPrefix .. DTF2.Pointer(target) .. '_' .. pointer] = target\AddEntityRelationship(eye, D_HT, 0) or D_HT for {eye, pointer} in *@npc_bullseye when target[pointerPrefix .. DTF2.Pointer(target) .. '_' .. pointer] ~= D_HT
     for {target} in *@markedAllies
         if target\IsValid() and target\IsNPC()
-            target\AddEntityRelationship(eye, D_LI, 0) for eye in *@npc_bullseye
+            target[pointerPrefix .. DTF2.Pointer(target) .. '_' .. pointer] = target\AddEntityRelationship(eye, D_LI, 0) or D_LI for {eye, pointer} in *@npc_bullseye when target[pointerPrefix .. DTF2.Pointer(target) .. '_' .. pointer] ~= D_LI
 
 ENT.GetAlliesVisible = =>
     output = {}
@@ -526,7 +529,7 @@ ENT.GetAlliesVisible = =>
     
     table.sort output, (a, b) -> a[3] < b[3]
     newOutput = {}
-    trFilter = [eye for eye in *@npc_bullseye]
+    trFilter = [eye for {eye} in *@npc_bullseye]
     table.insert(trFilter, @)
 
     for {target, tpos, dist, center} in *output
@@ -567,7 +570,7 @@ ENT.GetTargetsVisible = =>
 
     table.sort output, (a, b) -> a[3] < b[3]
     newOutput = {}
-    trFilter = [eye for eye in *@npc_bullseye]
+    trFilter = [eye for {eye} in *@npc_bullseye]
     table.insert(trFilter, @)
 
     for {target, tpos, dist, center} in *output
@@ -607,7 +610,7 @@ ENT.GetFirstVisible = =>
             table.insert(output, {target, tpos, dist, rotatedCenter})
     
     table.sort output, (a, b) -> a[3] < b[3]
-    trFilter = [eye for eye in *@npc_bullseye]
+    trFilter = [eye for {eye} in *@npc_bullseye]
     table.insert(trFilter, @)
 
     for {target, tpos, dist, center} in *output

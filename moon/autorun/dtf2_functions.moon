@@ -35,6 +35,8 @@ DTF2.IsValidTarget = =>
     (@GetMaxHealth() <= 0 or @Health() > 0) and
     (BOOL_OR_FUNC(@GetMaxHP, 0, @) <= 0 or BOOL_OR_FUNC(@GetHP, 1, @) > 0)))
 
+DTF2.Pointer = => string.format('%p', @)
+
 DTF2.TableRandom = (tab, id = 'dtf2_prediction') ->
     valids = [val for val in *tab when type(val) ~= 'table']
     return nil if #valids == 0
