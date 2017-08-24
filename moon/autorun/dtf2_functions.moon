@@ -90,3 +90,14 @@ DTF2.GrabFloat = (obj, def = 0) ->
             obj
         when 'string'
             tonumber(obj) or def
+
+DTF2.GrabBool = (obj, def = false) ->
+    switch type(obj)
+        when 'ConVar'
+            obj\GetBool()
+        when 'nil'
+            def
+        when 'boolean'
+            obj
+        when 'string', 'number'
+            tobool(obj)
