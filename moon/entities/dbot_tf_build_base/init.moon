@@ -97,9 +97,17 @@ CLASS_XEN_ANIMALS_HOSTILE = 32
 CLASS_XEN_BUG = 33
 CLASS_SNARK = 35
 
+IS_ENEMY_CLASS = (entClass, def = false) ->
+    entClass = entClass\GetClass() if type(entClass) ~= 'string'
+    switch entClass
+        when 'replicator_queen_hive', 'replicator_queen', 'replicator_worker'
+            return true
+        else
+            return def
+
 IS_ALLY = (ent, def = false) ->
     return not ATTACK_PLAYERS\GetBool() if ent\IsPlayer()
-    return def if not ent.Classify
+    return IS_ENEMY_CLASS(ent, def) if not ent.Classify
     classify = ent\Classify()
     return classify == CLASS_PLAYER_ALLY or
             classify == CLASS_PLAYER_ALLY_VITAL or
@@ -113,7 +121,7 @@ IS_ALLY = (ent, def = false) ->
 
 IS_ENEMY = (ent, def = true) ->
     return ATTACK_PLAYERS\GetBool() if ent\IsPlayer()
-    return def if not ent.Classify
+    return IS_ENEMY_CLASS(ent, def) if not ent.Classify
     classify = ent\Classify()
     return classify == CLASS_COMBINE_HUNTER or
             classify == CLASS_ALIEN_ARMY or
@@ -143,12 +151,15 @@ UpdateTargetList = ->
     VALID_ALLIES = {}
 
     for ent in *findEnts
-        if ent\IsNPC() and ent\GetClass() ~= 'npc_bullseye' and ent\GetNPCState() ~= NPC_STATE_DEAD
+        isEnemyClass = IS_ENEMY_CLASS(ent)
+        if (ent\IsNPC() and ent\GetClass() ~= 'npc_bullseye' and ent\GetNPCState() ~= NPC_STATE_DEAD) or isEnemyClass
             center = ent\OBBCenter()
             center\Rotate(ent\GetAngles())
             npcData = {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center, DTF2.Pointer(ent)}
-            classify = ent\Classify()
-            if (classify == CLASS_PLAYER_ALLY or
+            classify = ent.Classify and ent\Classify() or 0
+            if isEnemyClass
+                table.insert(VALID_TARGETS, npcData)
+            elseif (classify == CLASS_PLAYER_ALLY or
                 classify == CLASS_PLAYER_ALLY_VITAL or
                 classify == CLASS_PLAYER_ALLY_VITAL or
                 classify == CLASS_CITIZEN_PASSIVE or
