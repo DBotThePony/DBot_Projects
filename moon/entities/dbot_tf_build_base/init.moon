@@ -236,13 +236,27 @@ hook.Add 'EntityTakeDamage', 'DTF2.Bullseye', (dmg) =>
         @DTF2_LastDMG = CurTime() + 0.1
         @ = @DTF2_Parent
         parent = true
+    if parent
+        @TakeDamageInfo(dmg)
+
+hook.Add 'EntityTakeDamage', 'DTF2.BuildablesFriendlyFire', (dmg) =>
+    attacker = dmg\GetAttacker()
+    inflictor = dmg\GetInflictor()
     if @IsTF2Building and (dmg\GetAttacker()\IsValid() and @IsAlly(dmg\GetAttacker()) or dmg\GetAttacker() == @)
         dmg\SetDamage(0)
         dmg\SetDamageBonus(0)
         dmg\SetMaxDamage(0)
         return true
-    if parent
-        @TakeDamageInfo(dmg)
+    if IsValid(attacker) and attacker.IsTF2Building and attacker\IsAlly(@)
+        dmg\SetDamage(0)
+        dmg\SetDamageBonus(0)
+        dmg\SetMaxDamage(0)
+        return true
+    if IsValid(inflictor) and (inflictor.IsTF2Building and inflictor\IsAlly(@) or inflictor.IsBuildingPart and IsValid(inflictor\GetBuildableOwner()) and inflictor\GetBuildableOwner()\IsAlly(@))
+        dmg\SetDamage(0)
+        dmg\SetDamageBonus(0)
+        dmg\SetMaxDamage(0)
+        return true
 
 hook.Add 'EntityTakeDamage', 'DTF2.CheckBuildablesOwner', (dmg) =>
     return if not UPDATE_OWNED_RELATIONSHIPS\GetBool()

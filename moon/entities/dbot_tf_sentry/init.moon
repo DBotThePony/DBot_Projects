@@ -154,8 +154,9 @@ ENT.FireRocket = (force = false) =>
     @EmitSound(@ROCKET_SOUND, 100)
     rocket = ents.Create('dbot_sentry_rocket')
     rocket\SetPos(Pos)
-    rocket.attacker = @SelectAttacker()
-    rocket.vectorDir = dir
+    rocket\SetBuildableOwner(@)
+    rocket\SetAttacker(@SelectAttacker())
+    rocket\SetFireDirection(dir)
     rocket\SetAngles(dir\Angle())
     rocket\Spawn()
     rocket\Activate()

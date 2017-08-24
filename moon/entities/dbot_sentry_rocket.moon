@@ -22,14 +22,22 @@ ENT.Base = 'base_anim'
 ENT.Type = 'anim'
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
+ENT.IsBuildingPart = true
+ENT.m_BuildableOwner = NULL
+
+AccessorFunc(ENT, 'm_BuildableOwner', 'BuildableOwner')
+AccessorFunc(ENT, 'm_Attacker', 'Attacker')
+AccessorFunc(ENT, 'm_Inflictor', 'Inflictor')
+AccessorFunc(ENT, 'm_FireDir', 'FireDirection')
 
 ENT.Initialize = =>
     @SetModel('models/buildables/sentry3_rockets.mdl')
     return if CLIENT
+    @SetInflictor(@) if not @GetInflictor()
+    @SetAttacker(@) if not @GetAttacker()
     @PhysicsInitSphere(12)
-    phys = @GetPhysicsObject()
-    @phys = phys
-    with phys
+    @SetFireDirection(Vector(0, 0, 0)) if not @GetFireDirection()
+    with @phys = @GetPhysicsObject()
         \EnableMotion(true)
         \SetMass(5)
         \EnableGravity(false)
@@ -38,13 +46,13 @@ ENT.Initialize = =>
 ENT.Think = =>
     return if CLIENT
     return @Remove() if not @phys\IsValid()
-    @phys\SetVelocity(@vectorDir * 1500)
+    @phys\SetVelocity(@GetFireDirection() * 1500)
 
 ENT.PhysicsCollide = (data = {}, colldier) =>
     {:HitPos, :HitEntity, :HitNormal} = data
     return false if HitEntity == @attacker
     @SetSolid(SOLID_NONE)
-    util.BlastDamage(@, @attacker or @, HitPos + HitNormal, 64, 128)
+    util.BlastDamage(IsValid(@GetInflictor()) and @GetInflictor() or @, IsValid(@GetAttacker()) and @GetAttacker() or @, HitPos + HitNormal, 64, 128)
     effData = EffectData()
     effData\SetNormal(-HitNormal)
     effData\SetOrigin(HitPos - HitNormal)
