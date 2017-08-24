@@ -146,6 +146,7 @@ SWEP.OnHit = (...) => BaseClass.OnHit(@, ...)
 SWEP.OnMiss = => BaseClass.OnMiss(@)
 
 SWEP.PlayEmptySound = =>
+    @lastEmptySound = @lastEmptySound or 0
     return if @lastEmptySound > CurTime()
     @lastEmptySound = CurTime() + 1
     return @EmitSound('DTF2_' .. @EmptySoundsScript) if @EmptySoundsScript
