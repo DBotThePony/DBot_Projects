@@ -97,15 +97,16 @@ ENT.PhysicsCollide = (data = {}, colldier) =>
     @SetCollisionGroup(@ImpactCollisionGroup)
 
     if @GetIsExplosive()
-        if IsValid(HitEntity)
-            if @ExplodeOnEntityImpact or @ExplodeOnWorldImpact
-                @SetDirectHit(true)
+        if @ExplodeOnEntityImpact or @ExplodeOnWorldImpact
+            if IsValid(HitEntity)
+                @SetDirectHit(HitEntity)
                 @SetDirectHitTarget(HitEntity)
-                @Explode(HitEntity, HitNormal, HitPos)
-            else
-                @EmitSound(@GetImpactFleshSound())
+            @Explode(HitEntity, HitNormal, HitPos)
         else
-            @EmitSound(@GetImpactWorldSound())
+            if IsValid(HitEntity)
+                @EmitSound(@GetImpactFleshSound()) 
+            else
+                @EmitSound(@GetImpactWorldSound())
     else
         @HitEntity(HitEntity, HitNormal, HitPos)
         if IsValid(HitEntity)
@@ -131,8 +132,8 @@ ENT.HitCallback = (ent, attacker, dmg) ->
     elseif ent\IsMarkedForDeath()
         DTF2.PlayMiniCritEffect(ent)
         dmg\ScaleDamage(1.3)
-    if IsValid(@dtf2_weapon)
-        @dtf2_weapon\AddDamageDealt(dmg\GetDamage())
+    if IsValid(attacker.dtf2_weapon)
+        attacker.dtf2_weapon\AddDamageDealt(dmg\GetDamage())
 
 ENT.BulletCallback = (tr, dmg) =>
     dmg\SetAttacker(@GetAttacker())
