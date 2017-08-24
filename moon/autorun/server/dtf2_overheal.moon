@@ -15,6 +15,8 @@
 -- limitations under the License.
 --
 
+util.AddNetworkString('DTF2.TrackOverhealEffect')
+
 entMeta = FindMetaTable('Entity')
 
 TRACKED_ENTITIES = {}
@@ -28,6 +30,10 @@ SwitchStatus = (val = false) =>
     prev = @GetNWBool('DTF2.AffectOverlealing')
     return if prev == val
     @SetNWBool('DTF2.AffectOverlealing', val)
+    net.Start('DTF2.TrackOverhealEffect')
+    net.WriteEntity(@)
+    net.WriteBool(val)
+    net.Broadcast()
     if val
         @DTF2_Overheal_NextHealthDecay = CurTime() + HEALTH_DECAY_SPEED\GetFloat()
         for ent in *TRACKED_ENTITIES

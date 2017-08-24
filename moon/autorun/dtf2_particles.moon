@@ -731,6 +731,15 @@ toPrecache = {
     'teleporter_mvm_bot_persist_ring01'
     'teleporter_mvm_bot_persist_skyglow'
     'teleporter_mvm_bot_ring'
+    'medicgun_beam_attrib_drips'
+    'medicgun_beam_attrib_healing'
+    'medicgun_beam_attrib_muzzle'
+    'medicgun_beam_attrib_overheal'
+    'medicgun_beam_attrib_overheal_blue'
+    'medicgun_beam_attrib_overheal_red'
+    'medicgun_beam_attrib_shards'
+    'overhealedplayer_blue_pluses'
+    'overhealedplayer_red_pluses'
 }
 
 PrecacheParticleSystem(part) for part in *toPrecache
