@@ -97,8 +97,23 @@ CLASS_XEN_ANIMALS_HOSTILE = 32
 CLASS_XEN_BUG = 33
 CLASS_SNARK = 35
 
+ENTMETA = FindMetaTable('Entity')
+NPCMETA = FindMetaTable('NPC')
+ENT_GETCLASS = ENTMETA.GetClass
+NPC_CLASSIFY = NPCMETA.Classify
+ENT_GETPOS = ENTMETA.GetPos
+ENT_OBBMINS = ENTMETA.OBBMins
+ENT_OBBMAXS = ENTMETA.OBBMaxs
+ENT_OBBCENTER = ENTMETA.OBBCenter
+ENT_ISNPC = ENTMETA.IsNPC
+NPC_GETNPCSTATE = NPCMETA.GetNPCState
+VECTOR_ROTATE = Vector(0, 0, 0).Rotate
+ENT_GETANGLES = ENTMETA.GetAngles
+DTF2_Pointer = DTF2.Pointer
+table_insert = table.insert
+
 IS_ENEMY_CLASS = (entClass, def = false) ->
-    entClass = entClass\GetClass() if type(entClass) ~= 'string'
+    entClass = ENT_GETCLASS(entClass) if type(entClass) ~= 'string'
     switch entClass
         when 'replicator_queen_hive', 'replicator_queen', 'replicator_worker'
             return true
@@ -151,14 +166,16 @@ UpdateTargetList = ->
     VALID_ALLIES = {}
 
     for ent in *findEnts
-        isEnemyClass = IS_ENEMY_CLASS(ent)
-        if (ent\IsNPC() and ent\GetClass() ~= 'npc_bullseye' and ent\GetNPCState() ~= NPC_STATE_DEAD) or isEnemyClass
-            center = ent\OBBCenter()
-            center\Rotate(ent\GetAngles())
-            npcData = {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center, DTF2.Pointer(ent)}
-            classify = ent.Classify and ent\Classify() or 0
+        nClass = ENT_GETCLASS(ent)
+        isEnemyClass = IS_ENEMY_CLASS(nClass)
+        isNPC = ENT_ISNPC(ent)
+        if (isNPC and nClass ~= 'npc_bullseye' and NPC_GETNPCSTATE(ent) ~= NPC_STATE_DEAD) or isEnemyClass
+            center = ENT_OBBCENTER(ent)
+            VECTOR_ROTATE(center, ENT_GETANGLES(ent))
+            npcData = {ent, ENT_GETPOS(ent), ENT_OBBMINS(ent), ENT_OBBMAXS(ent), ENT_OBBCENTER(ent), center, DTF2_Pointer(ent)}
+            classify = isNPC and NPC_CLASSIFY(ent) or 0
             if isEnemyClass
-                table.insert(VALID_TARGETS, npcData)
+                table_insert(VALID_TARGETS, npcData)
             elseif (classify == CLASS_PLAYER_ALLY or
                 classify == CLASS_PLAYER_ALLY_VITAL or
                 classify == CLASS_PLAYER_ALLY_VITAL or
@@ -168,7 +185,7 @@ UpdateTargetList = ->
                 classify == CLASS_EARTH_FAUNA or
                 classify == CLASS_VORTIGAUNT or
                 classify == CLASS_CITIZEN_REBEL) then
-                table.insert(VALID_ALLIES, npcData)
+                table_insert(VALID_ALLIES, npcData)
             elseif (classify == CLASS_COMBINE_HUNTER or
                 classify == CLASS_ALIEN_ARMY or
                 classify == CLASS_XEN_ANIMALS or
@@ -190,30 +207,30 @@ UpdateTargetList = ->
                 classify == CLASS_ANTLION or
                 classify == CLASS_NONE or
                 classify == CLASS_COMBINE) then
-                table.insert(VALID_TARGETS, npcData)
+                table_insert(VALID_TARGETS, npcData)
     
     if ATTACK_PLAYERS\GetBool()
         for ent in *player.GetAll()
-            center = ent\OBBCenter()
-            center\Rotate(ent\GetAngles())
-            table.insert(VALID_TARGETS, {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center, DTF2.Pointer(ent)})
+            center = ENT_OBBCENTER(ent)
+            VECTOR_ROTATE(center, ENT_GETANGLES(ent))
+            table_insert(VALID_TARGETS, {ent, ENT_GETPOS(ent), ENT_OBBMINS(ent), ENT_OBBMAXS(ent), ENT_OBBCENTER(ent), center, DTF2.Pointer(ent)})
     else
         for ent in *player.GetAll()
-            center = ent\OBBCenter()
-            center\Rotate(ent\GetAngles())
-            table.insert(VALID_ALLIES, {ent, ent\GetPos(), ent\OBBMins(), ent\OBBMaxs(), ent\OBBCenter(), center, DTF2.Pointer(ent)})
+            center = ENT_OBBCENTER(ent)
+            VECTOR_ROTATE(center, ENT_GETANGLES(ent))
+            table_insert(VALID_ALLIES, {ent, ENT_GETPOS(ent), ENT_OBBMINS(ent), ENT_OBBMAXS(ent), ENT_OBBCENTER(ent), center, DTF2.Pointer(ent)})
 
 UpdateTargetListLight = ->
     VALID_TARGETS = for {ent, pos, mins, maxs, center1, center, pointer} in *VALID_TARGETS
         return UpdateTargetList() if not ent\IsValid()
-        center = ent\OBBCenter()
-        center\Rotate(ent\GetAngles())
-        {ent, ent\GetPos(), mins, maxs, center1, center, pointer}
+        center = ENT_OBBCENTER(ent)
+        VECTOR_ROTATE(center, ENT_GETANGLES(ent))
+        {ent, ENT_GETPOS(ent), mins, maxs, center1, center, pointer}
     VALID_ALLIES = for {ent, pos, mins, maxs, center1, center, pointer} in *VALID_ALLIES
         return UpdateTargetList() if not ent\IsValid()
-        center = ent\OBBCenter()
-        center\Rotate(ent\GetAngles())
-        {ent, ent\GetPos(), mins, maxs, center1, center, pointer}
+        center = ENT_OBBCENTER(ent)
+        VECTOR_ROTATE(center, ENT_GETANGLES(ent))
+        {ent, ENT_GETPOS(ent), mins, maxs, center1, center, pointer}
 
 hook.Add 'Think', 'DTF2.FetchTagrets', UpdateTargetListLight
 hook.Add 'PlayerSpawn', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTargetList', 0, 1, UpdateTargetList
