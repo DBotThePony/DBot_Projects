@@ -51,7 +51,7 @@ self = DTF2.HookStruct
         return if not affectNPC and (@IsNPC() or ent.Type == 'nextbot')
         return if not affectBuildables and @IsTF2Building
         attacker = dmg\GetAttacker()
-        return if not IsValid(attacker)
+        return if not IsValid(attacker) or not attacker.GetWeapon
         wep = attacker\GetWeapon(wepClasss)
         return if not IsValid(wep)
         callback(attacker, wep, @, dmg)
@@ -63,7 +63,7 @@ self = DTF2.HookStruct
         return if not affectNPC and (@IsNPC() or ent.Type == 'nextbot')
         return if not affectBuildables and @IsTF2Building
         attacker = dmg\GetAttacker()
-        return if not IsValid(attacker)
+        return if not IsValid(attacker) or not attacker.GetActiveWeapon
         wep = attacker\GetActiveWeapon()
         return if not IsValid(wep) or wep\GetClass() ~= wepClasss
         callback(attacker, wep, @, dmg)
