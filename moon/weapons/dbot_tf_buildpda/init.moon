@@ -28,7 +28,7 @@ SWEP.SENTRY_BUILDUP = {'vo/engineer_autobuildingsentry01.mp3', 'vo/engineer_auto
 SWEP.DISPENSER_BUILDUP = {'vo/engineer_autobuildingdispenser01.mp3', 'vo/engineer_autobuildingdispenser02.mp3'}
 SWEP.TELEPORTER_BUILDUP = {'vo/engineer_autobuildingteleporter01.mp3', 'vo/engineer_autobuildingteleporter02.mp3'}
 
-BaseClass = baseclass.Get('dbot_tf_weapon_base')
+DEFINE_BASECLASS('dbot_tf_weapon_base')
 
 net.Receive 'DTF2.BuildRequest', (len = 0, ply = NULL) ->
     return if not IsValid(ply)

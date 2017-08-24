@@ -17,7 +17,7 @@
 
 include 'shared.lua'
 
-BaseClass = baseclass.Get('dbot_tf_weapon_base')
+DEFINE_BASECLASS('dbot_tf_weapon_base')
 
 checkInputs = {KEY_1, KEY_2, KEY_3, KEY_4}
 

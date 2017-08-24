@@ -18,7 +18,7 @@
 
 AddCSLuaFile()
 
-BaseClass = baseclass.Get('dbot_tf_bat')
+DEFINE_BASECLASS('dbot_tf_bat')
 
 SWEP.Base = 'dbot_tf_bat'
 SWEP.Author = 'DBot'

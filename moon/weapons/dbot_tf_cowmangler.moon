@@ -17,7 +17,7 @@
 
 AddCSLuaFile()
 
-BaseClass = baseclass.Get('dbot_tf_rocket_launcher')
+DEFINE_BASECLASS('dbot_tf_rocket_launcher')
 
 SWEP.Base = 'dbot_tf_rocket_launcher'
 SWEP.Author = 'DBot'

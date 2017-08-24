@@ -20,7 +20,7 @@ include 'shared.lua'
 
 util.AddNetworkString('DTF2.DestroyRequest')
 
-BaseClass = baseclass.Get('dbot_tf_weapon_base')
+DEFINE_BASECLASS('dbot_tf_weapon_base')
 
 net.Receive 'DTF2.DestroyRequest', (len = 0, ply = NULL) ->
     return if not IsValid(ply)

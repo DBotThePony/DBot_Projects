@@ -15,7 +15,7 @@
 -- limitations under the License.
 --
 
-BaseClass = baseclass.Get('dbot_tf_weapon_base')
+DEFINE_BASECLASS('dbot_tf_weapon_base')
 
 SWEP.Base = 'dbot_tf_weapon_base'
 SWEP.Author = 'DBot'

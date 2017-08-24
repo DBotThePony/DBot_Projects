@@ -15,7 +15,7 @@
 -- limitations under the License.
 --
 
-BaseClass = baseclass.Get('weapon_base')
+DEFINE_BASECLASS('weapon_base')
 
 SWEP.Base = 'weapon_base'
 SWEP.Author = 'DBot'

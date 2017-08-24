@@ -17,7 +17,7 @@
 
 AddCSLuaFile()
 
-BaseClass = baseclass.Get('dbot_tf_clipbased')
+DEFINE_BASECLASS('dbot_tf_clipbased')
 
 SWEP.Base = 'dbot_tf_clipbased'
 SWEP.Author = 'DBot'
