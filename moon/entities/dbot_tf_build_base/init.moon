@@ -325,6 +325,8 @@ ENT.Initialize = =>
 
 ENT.RealSetModel = (mdl = @GetModel()) =>
     @SetModel(mdl)
+    with @GetPhysicsObject()
+        \EnableCollisions(false) if \IsValid()
     @PhysicsInitBox(@BuildingMins, @BuildingMaxs)
     @SetMoveType(MOVETYPE_NONE)
 
