@@ -117,7 +117,7 @@ function ENT:Think()
 	for k, v in ipairs(player.GetAll()) do
 		if not v:IsPlayer() then continue end
 		if not v:Alive() then continue end
-		if v:GetPos():Distance(pos) > 128 then continue end
+		if v:GetPos():Distance(pos) > 70 then continue end
 		if not self:OnUse(v) then continue end
 
 		self:End()

@@ -30,8 +30,12 @@ ENT.AmmoWeight = 0
 
 function ENT:OnUse(ply)
 	if self.AmmoWeight > 0 then
-		DTF2.GiveAmmo(ply, self.AmmoWeight)
-		ply:EmitSound('items/gunpickup2.wav')
+		local simulate = DTF2.GiveAmmo(ply, self.AmmoWeight)
+		if simulate > 0 then
+			ply:EmitSound('items/gunpickup2.wav')
+		else
+			return false
+		end
 	end
 
 	return true
