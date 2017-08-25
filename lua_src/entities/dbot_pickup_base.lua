@@ -43,18 +43,23 @@ function ENT:SpawnFunction(ply, tr, class)
 	return ent
 end
 
+function ENT:CreateModel()
+	if IsValid(self.ClientsideModel) then self.ClientsideModel:Remove() end
+	self.ClientsideModel = ClientsideModel(self.Model or 'error.mdl')
+	self.ClientsideModel:SetPos(self:GetPos())
+	self.ClientsideModel:SetAngles(self:GetAngles())
+	self.ClientsideModel:SetParent(self)
+	self.ClientsideModel:SetNoDraw(true)
+	self.CurrAng = Angle()
+	self.LastDraw = 0
+end
+
 function ENT:Initialize()
 	self:SetModel(self.Model or 'error.mdl')
 	self:DrawShadow(false)
 
 	if CLIENT then
-		self.ClientsideModel = ClientsideModel(self.Model or 'error.mdl')
-		self.ClientsideModel:SetPos(self:GetPos())
-		self.ClientsideModel:SetAngles(self:GetAngles())
-		self.ClientsideModel:SetParent(self)
-		self.ClientsideModel:SetNoDraw(true)
-		self.CurrAng = Angle()
-		self.LastDraw = 0
+		self:CreateModel()
 		return
 	end
 
@@ -125,6 +130,10 @@ function ENT:Draw()
 	self.CurrAng.y = self.CurrAng.y + (self.LastDraw - CurTime()) * 44
 	self.LastDraw = CurTime()
 	self.CurrAng:Normalize()
-	self.ClientsideModel:SetAngles(self.CurrAng)
-	self.ClientsideModel:DrawModel()
+	if IsValid(self.ClientsideModel) then
+		self.ClientsideModel:SetAngles(self.CurrAng)
+		self.ClientsideModel:DrawModel()
+	else
+		self:CreateModel()
+	end
 end
