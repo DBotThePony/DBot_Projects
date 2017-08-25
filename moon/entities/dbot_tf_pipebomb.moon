@@ -36,6 +36,7 @@ ENT.ShouldExplode = true
 ENT.ExplodeAt = 2.3
 ENT.TargetTakesFullDamage = true
 ENT.Gravity = true
+ENT.ExplodeOnWorldImpact = false
 
 ENT.ProjectileDamage = 100
 ENT.DefaultDamageBounce = 60

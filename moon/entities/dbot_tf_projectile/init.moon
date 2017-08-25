@@ -93,7 +93,8 @@ ENT.PhysicsCollide = (data = {}, colldier) =>
     
     return unless @IsValid() and @GetIsFlying()
     @SetIsFlying(false)
-    @OnHit(HitEntity, HitNormal, HitPos)
+    status = @OnHit(HitEntity, HitNormal, HitPos)
+    return if status == false
     @SetCollisionGroup(@ImpactCollisionGroup)
 
     if @GetIsExplosive()
@@ -101,7 +102,9 @@ ENT.PhysicsCollide = (data = {}, colldier) =>
             if IsValid(HitEntity)
                 @SetDirectHit(HitEntity)
                 @SetDirectHitTarget(HitEntity)
-            @Explode(HitEntity, HitNormal, HitPos)
+                @Explode(HitEntity, HitNormal, HitPos) if @ExplodeOnEntityImpact
+            else
+                @Explode(HitEntity, HitNormal, HitPos) if @ExplodeOnWorldImpact
         else
             if IsValid(HitEntity)
                 @EmitSound(@GetImpactFleshSound()) 

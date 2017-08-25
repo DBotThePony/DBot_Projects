@@ -33,6 +33,7 @@ if SERVER
             eff = EffectData()
             eff\SetOrigin(@GetPos())
             util.Effect('StunstickImpact', eff)
+            return false
     
     ENT.OnHitAfter = (attacker, ent, dmg) ->
         if ent.IsTF2Building
