@@ -23,7 +23,7 @@ ENT.PrintName = 'Medkit Base'
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 ENT.Author = 'DBot'
-ENT.Category = 'DBot'
+ENT.Category = 'TF2'
 ENT.Model = 'models/items/medkit_medium.mdl'
 ENT.Heal = .5
 

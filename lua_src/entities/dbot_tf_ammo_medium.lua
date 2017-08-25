@@ -21,15 +21,8 @@ ENT.Type = 'anim'
 ENT.Base = 'dbot_tf_ammo_base'
 ENT.PrintName = 'Medium Ammo Pack'
 ENT.Author = 'DBot'
-ENT.Category = 'DBot'
+ENT.Category = 'TF2'
 ENT.Spawnable = true
 ENT.AdminSpawnable = true
 ENT.Model = 'models/items/ammopack_medium.mdl'
-
-ENT.Ammo = {
-	Pistol = 120,
-	SMG1 = 120,
-	AR2 = 30,
-	AR2AltFire = 1,
-	['357'] = 6,
-}
+ENT.AmmoWeight = 100

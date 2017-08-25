@@ -25,15 +25,4 @@ ENT.Category = 'DBot'
 ENT.Spawnable = true
 ENT.AdminSpawnable = true
 ENT.Model = 'models/items/ammopack_large.mdl'
-
-ENT.Ammo = {
-	Pistol = 120,
-	SMG1 = 180,
-	AR2 = 60,
-	AR2AltFire = 2,
-	['357'] = 12,
-	['XBowBolt'] = 6,
-	['RPG_Round'] = 2,
-	['SMG1_Grenade'] = 3,
-	['Grenade'] = 3,
-}
+ENT.AmmoWeight = 200

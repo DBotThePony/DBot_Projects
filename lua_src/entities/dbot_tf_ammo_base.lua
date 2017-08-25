@@ -23,15 +23,16 @@ ENT.PrintName = 'Ammo Pickup Base'
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 ENT.Author = 'DBot'
-ENT.Category = 'DBot'
+ENT.Category = 'TF2'
 ENT.Model = 'models/items/ammopack_medium.mdl'
 
-function ENT:OnUse(ply)
-	for k, v in pairs(self.Ammo) do
-		ply:GiveAmmo(v, k)
-	end
+ENT.AmmoWeight = 0
 
-	ply:EmitSound('items/gunpickup2.wav')
+function ENT:OnUse(ply)
+	if self.AmmoWeight > 0 then
+		DTF2.GiveAmmo(ply, self.AmmoWeight)
+		ply:EmitSound('items/gunpickup2.wav')
+	end
 
 	return true
 end

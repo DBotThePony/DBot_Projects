@@ -21,12 +21,8 @@ ENT.Type = 'anim'
 ENT.Base = 'dbot_tf_ammo_base'
 ENT.PrintName = 'Small Ammo Pack'
 ENT.Author = 'DBot'
-ENT.Category = 'DBot'
+ENT.Category = 'TF2'
 ENT.Spawnable = true
 ENT.AdminSpawnable = true
 ENT.Model = 'models/items/ammopack_small.mdl'
-
-ENT.Ammo = {
-	Pistol = 60,
-	SMG1 = 30,
-}
+ENT.AmmoWeight = 41

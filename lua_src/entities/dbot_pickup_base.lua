@@ -20,7 +20,7 @@ AddCSLuaFile()
 ENT.Type = 'anim'
 ENT.PrintName = 'Pickup Base'
 ENT.Author = 'DBot'
-ENT.Category = 'DBot'
+ENT.Category = 'TF2'
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 ENT.Used = false
