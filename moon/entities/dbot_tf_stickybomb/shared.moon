@@ -42,18 +42,23 @@ ENT.GIBS = {
     'models/weapons/w_models/w_stickybomb_gib6.mdl'
 }
 
-ENT.MIN_GIBS = 2
+ENT.MIN_GIBS = 1
 ENT.MAX_GIBS = 3
 ENT.GIBS_TTL = 15
+
+ENT.DamageDegradation = false
+ENT.DAMAGE_DEGRADATION_RADIUS = true
 
 ENT.EndlessFlight = false
 ENT.ShouldExplode = false
 ENT.ExplodeOnEntityImpact = false
 ENT.ExplodeOnWorldImpact = false
+ENT.Gravity = true
 
-ENT.ProjectileDamage = 100
+ENT.ProjectileDamage = 80
 ENT.DefaultDamageBounce = 60
 ENT.ProjectileSpeed = 800
+ENT.ProjectileSize = 6
 
 ENT.MAX_STICKIES = 8
 ENT.HANDLE_MAX_STICKIES = CreateConVar('tf_finite_stickies', '1', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Set to 0 to make infinite placeable sticky bombs')
@@ -61,7 +66,7 @@ ENT.ACTIVATE_TIMER = 0.7
 
 ENT.DrawEffects = {'pipebombtrail_red'}
 ENT.DrawEffectsCriticals = {'critical_grenade_red'}
-ENT.ZAddition = 0.14
+ENT.ZAddition = 0.18
 
 entMeta = FindMetaTable('Entity')
 

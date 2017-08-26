@@ -36,6 +36,7 @@ ENT.ProjectileDamage = 90
 ENT.ProjectileSpeed = 1500
 ENT.DegradationDivider = 1024
 ENT.DamageDegradation = true
+ENT.DAMAGE_DEGRADATION_RADIUS = true
 ENT.EndlessFlight = true
 ENT.ZAddition = 0
 ENT.Gravity = false

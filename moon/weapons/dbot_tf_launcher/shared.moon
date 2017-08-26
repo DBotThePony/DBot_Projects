@@ -55,7 +55,9 @@ SWEP.PreFireTrigger = =>
 SWEP.PostFireTrigger = =>
 SWEP.EmitMuzzleFlash = =>
 SWEP.GetViewPunch = => @DefaultViewPunch
-
+SWEP.Initialize = => BaseClass.Initialize(@)
+SWEP.Holster = => BaseClass.Holster(@)
+SWEP.HANDLE_FIRE_SOUND = true
 SWEP.PlayFireSound = (isCrit = @incomingCrit) =>
     if not isCrit
         return @EmitSound('DTF2_' .. @FireSoundsScript) if @FireSoundsScript
@@ -71,7 +73,7 @@ SWEP.PrimaryAttack = =>
     status = BaseClass.PrimaryAttack(@)
     return status if status == false
 
-    @PlayFireSound()
+    @PlayFireSound() if @HANDLE_FIRE_SOUND
     @GetOwner()\ViewPunch(@GetViewPunch())
 
     if game.SinglePlayer() and SERVER
@@ -81,3 +83,5 @@ SWEP.PrimaryAttack = =>
         @EmitMuzzleFlash()
     
     return true
+
+SWEP.Think = => BaseClass.Think(@)

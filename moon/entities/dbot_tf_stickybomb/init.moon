@@ -33,10 +33,15 @@ ENT.Initialize = =>
     table.insert(ENT_CHECK, @)
 
 ENT.OnHit = (entHit, normal, reportedPos) =>
-    return if IsValid(entHit)
+    return false if IsValid(entHit)
     @SetMoveType(MOVETYPE_NONE)
     @__normal = normal
     @__reportedPos = reportedPos
+    return true
+
+ENT.SetDirection = (dir = Vector(0, 0, 0)) =>
+    BaseClass.SetDirection(@, dir)
+    @phys\AddAngleVelocity(VectorRand() * 400)
 
 ENT.Destruct = =>
     eff = EffectData()
@@ -50,7 +55,7 @@ ENT.Destruct = =>
             \SetPos(@GetPos() + VectorRand() * 4)
             \Spawn()
             \Activate()
-            \SetCollisionGroup(COLLISION_GROUP_DERBIS)
+            \SetCollisionGroup(COLLISION_GROUP_DEBRIS)
     timer.Simple DTF2.GrabFloat(@GIBS_TTL), -> ent\Remove() for ent in *spawnedEnts when ent\IsValid()
     @Remove()
 
@@ -61,8 +66,9 @@ ENT.OnTakeDamage = (dmgInfo) =>
     @Destruct()
 
 ENT.Explode = (force = false) =>
+    return false if @GetIsExploded()
     return false if not force and @__activateAt and @__activateAt > CurTime()
-    return true, BaseClass.Explode(NULL, @__normal, @__reportedPos)
+    return true, BaseClass.Explode(@, NULL, @__normal, @__reportedPos)
 
 ENT.Think = =>
     BaseClass.Think(@)
@@ -76,6 +82,7 @@ hook.Add 'PlayerDeath', 'DTF2.StickyBombs', =>
     ENT_CACHE = [ent for ent in *ENT_CACHE when ent\IsValid()]
     for ent in *ENT_CACHE
         ent\Destruct() if ent\GetAttacker() == @
+    timer.Simple 0.2, -> @RefreshTFStickies() if @IsValid()
 
 hook.Add 'Think', 'DTF2.StickyBombs', ->
     check = ENT_CHECK
@@ -88,7 +95,10 @@ hook.Add 'Think', 'DTF2.StickyBombs', ->
                 dict = 'DTF2_Stickies_' .. mclass
                 ply[dict] = ply[dict] or {}
                 table.insert(ply[dict], ent)
-                ply[dict] = [ent2 for ent2 in *ply[dict] when ent2\IsValid()]
+                for ent3 in *ply[dict]
+                    if not ent3\IsValid()
+                        ply[dict] = [ent2 for ent2 in *ply[dict] when ent2\IsValid()]
+                        break
                 stickiesCount = #ply[dict]
                 if DTF2.GrabBool(ent.HANDLE_MAX_STICKIES) and ent.MAX_STICKIES < stickiesCount and ent.MAX_STICKIES >= 1
                     while ent.MAX_STICKIES < stickiesCount
@@ -96,3 +106,35 @@ hook.Add 'Think', 'DTF2.StickyBombs', ->
                         pop\Explode(true)
                         stickiesCount -= 1
                 ply\SetNWInt('DTF2.Stickies.' .. mclass, stickiesCount)
+
+entMeta = FindMetaTable('Entity')
+
+EntityClass = 
+    RefreshTFStickies: (mclass = 'dbot_tf_stickybomb') =>
+        dict = 'DTF2_Stickies_' .. mclass
+        @[dict] = [ent2 for ent2 in *@[dict] when ent2\IsValid()]
+        ent = @[dict][1]
+        if ent
+            stickiesCount = #@[dict]
+            if DTF2.GrabBool(ent.HANDLE_MAX_STICKIES) and ent.MAX_STICKIES < stickiesCount and ent.MAX_STICKIES >= 1
+                while ent.MAX_STICKIES < stickiesCount
+                    pop = table.remove(@[dict], 1)
+                    pop\Explode(true)
+                    stickiesCount -= 1
+            @SetNWInt('DTF2.Stickies.' .. mclass, stickiesCount)
+        else
+            @SetNWInt('DTF2.Stickies.' .. mclass, 0)
+    GetTFStickies: (mclass = 'dbot_tf_stickybomb', copy = true) =>
+        dict = 'DTF2_Stickies_' .. mclass
+        @[dict] = @[dict] or {}
+        for ent in *@[dict]
+            if not ent\IsValid()
+                @RefreshTFStickies()
+                break
+        return [ent for ent in *@[dict]] if copy
+        return @[dict] if not copy
+    GetTFSticky: (...) => @GetTFStickies(...)
+    GetTFStickyBombs: (...) => @GetTFStickies(...)
+    GetTFStickiesBombs: (...) => @GetTFStickies(...)
+
+entMeta[k] = v for k, v in pairs EntityClass

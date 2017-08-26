@@ -35,11 +35,16 @@ AccessorFunc(ENT, 'm_BlowEffect', 'BlowEffect')
 AccessorFunc(ENT, 'm_ProjectileForce', 'ProjectileForce')
 AccessorFunc(ENT, 'm_AmmoType', 'AmmoType')
 AccessorFunc(ENT, 'm_BulletDamageType', 'BulletDamageType')
+AccessorFunc(ENT, 'm_playSound', 'PlayExplosionSound')
+AccessorFunc(ENT, 'm_Exploded', 'IsExploded')
+AccessorFunc(ENT, 'm_damageDegradationPerRadius', 'DegradationPerRadius')
 
 ENT.Initialize = =>
     @SetModel(@ProjectileModel)
     @PhysicsInitSphere(@ProjectileSize)
     @initialPosition = @GetPos()
+    @SetDegradationPerRadius(@DAMAGE_DEGRADATION_RADIUS) if @GetDegradationPerRadius() == nil
+    @SetPlayExplosionSound(true) if @GetPlayExplosionSound() == nil
     @SetBlowRadius(@BlowRadius) if @GetBlowRadius() == nil
     @SetInflictor(@) if @GetInflictor() == nil
     @SetAttacker(@) if @GetAttacker() == nil
@@ -92,9 +97,9 @@ ENT.PhysicsCollide = (data = {}, colldier) =>
     @OnCollision(HitEntity, HitNormal, HitPos)
     
     return unless @IsValid() and @GetIsFlying()
-    @SetIsFlying(false)
     status = @OnHit(HitEntity, HitNormal, HitPos)
     return if status == false
+    @SetIsFlying(false)
     @SetCollisionGroup(@ImpactCollisionGroup)
 
     if @GetIsExplosive()
@@ -124,8 +129,8 @@ ENT.StoreVariables = (attacker) => {}
 
 ENT.HitCallback = (ent, attacker, dmg) ->
     attacker\dtf2_projectile_toCallAfter(ent, dmg)
-    --if not attacker.dtf2_GetIsCritical
-    --    dmg\SetDamage(attacker.dtf2_incomingDamage * (1 - math.Clamp(attacker.dtf2_hitPos\Distance(ent\GetPos()) / attacker.dtf2_blowRadius / 2, 0, 1)))
+    if not attacker.dtf2_GetIsCritical and attacker.dtf2_DAMAGE_DEGRADATION_RADIUS
+        dmg\SetDamage(attacker.dtf2_incomingDamage * (1 - math.Clamp(attacker.dtf2_hitPos\Distance(ent\GetPos()) / attacker.dtf2_blowRadius / 2, 0, 1)))
     if attacker.dtf2_TargetTakesFullDamage and attacker.dtf2_DirectHitTarget == ent
         dmg\SetDamage(attacker.dtf2_incomingDamage)
     if attacker.dtf2_GetIsCritical
@@ -171,16 +176,18 @@ ENT.HitEntity = (HitEntity, HitNormal = Vector(0, 0, 0), HitPos = @GetPos()) =>
     @FireBullets(bulletData)
     @Remove()
 
-ENT.Explode = (HitEntity, HitNormal = Vector(0, 0, 0), HitPos = @GetPos()) =>
+ENT.Explode = (HitEntity, HitNormal = Vector(0, 0, 1), HitPos = @GetPos()) =>
+    return false if @m_Exploded
+    @m_Exploded = true
     @SetSolid(SOLID_NONE)
-    @EmitSound(@GetBlowSound())
+    @EmitSound(@GetBlowSound()) if @GetPlayExplosionSound()
     mult = @GetIsCritical() and 3 or @GetIsMiniCritical() and 1.3 or 1
     degradation = 1
     if not @GetIsCritical() and @GetDamageDegradation()
         degradation = 1 - math.Clamp(@initialPosition\Distance(HitPos) / @GetDegradationDivider() - .2, -0.1, @GetIsMiniCritical() and 0.1 or 0.3)
 
-    attacker = @GetAttacker()
-    inflictor = @GetInflictor()
+    attacker = IsValid(@GetAttacker()) and @GetAttacker() or @
+    inflictor = IsValid(@GetInflictor()) and @GetInflictor() or attacker
     blow = @GetBlowRadius()
     GetIsCritical = @GetIsCritical()
     GetIsMiniCritical = @GetIsMiniCritical()
@@ -192,8 +199,11 @@ ENT.Explode = (HitEntity, HitNormal = Vector(0, 0, 0), HitPos = @GetPos()) =>
     TargetTakesFullDamage = @TargetTakesFullDamage
     stored = @StoreVariables(attacker)
     weapon = @GetWeapon()
+    DAMAGE_DEGRADATION_RADIUS = @GetDegradationPerRadius()
+    projSELF = @
     timer.Simple 0.1, ->
         self = attacker
+        @dtf2_DAMAGE_DEGRADATION_RADIUS = DAMAGE_DEGRADATION_RADIUS
         @dtf2_incomingDamage = incomingDamage
         @dtf2_hitPos = HitPos
         @dtf2_blowRadius = blow
@@ -209,12 +219,13 @@ ENT.Explode = (HitEntity, HitNormal = Vector(0, 0, 0), HitPos = @GetPos()) =>
         @[key] = val for key, val in pairs stored
         util.BlastDamage(inflictor, attacker, HitPos - HitNormal * 50, incomingDamage, blow * 3)
         @dtf2_projectile = false
+        @Remove() if projSELF == @
 
     effData = EffectData()
     effData\SetNormal(-HitNormal)
     effData\SetOrigin(HitPos - HitNormal * 12)
     util.Effect(@GetBlowEffect(), effData)
-    @Remove()
+    @Remove() if attacker ~= @
 
 hook.Add 'EntityTakeDamage', 'DTF2.ProjectileExplosion', (ent, dmg) ->
     if attacker = dmg\GetAttacker()

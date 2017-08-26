@@ -136,6 +136,7 @@ SWEP.Think = =>
     @NextThink(CurTime() + 0.1)
     return true
 
+SWEP.Holster = => BaseClass.Holster(@)
 SWEP.Deploy = =>
     BaseClass.Deploy(@)
     @isReloading = false
