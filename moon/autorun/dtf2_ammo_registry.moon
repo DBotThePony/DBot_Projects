@@ -36,3 +36,14 @@ game.AddAmmoType({
     minsplash: 0
     maxsplash: 0
 })
+
+game.AddAmmoType({
+    name: 'ammo_tf_stickybomb'
+    dmgtype: DMG_BLAST
+    tracer: TRACER_NONE
+    plydmg: 80
+    npcdmg: 80
+    force: 150
+    minsplash: 0
+    maxsplash: 0
+})

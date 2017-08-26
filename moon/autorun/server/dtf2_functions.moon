@@ -34,6 +34,20 @@ AMMO_TO_GIVE = {
     }
 
     {
+        'name': 'ammo_tf_syringe'
+        'weight': 1
+        'maximal': 160
+        'nominal': 25
+    }
+
+    {
+        'name': 'ammo_tf_flame'
+        'weight': 1
+        'maximal': 200
+        'nominal': 40
+    }
+
+    {
         'name': 'Buckshot'
         'weight': 2
         'maximal': 72
@@ -49,6 +63,13 @@ AMMO_TO_GIVE = {
 
     {
         'name': 'Grenade'
+        'weight': 5
+        'maximal': 10
+        'nominal': 1
+    }
+
+    {
+        'name': 'ammo_tf_stickybomb'
         'weight': 5
         'maximal': 10
         'nominal': 1
