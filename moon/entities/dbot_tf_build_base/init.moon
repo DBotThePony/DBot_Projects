@@ -172,7 +172,6 @@ UpdateTargetList = ->
         --isNPC = NPC_ISNPC(ent)
         isNPC = type(ent) == 'NPC'
         if (isNPC and nClass ~= 'npc_bullseye' and NPC_GETNPCSTATE(ent) ~= NPC_STATE_DEAD) or isEnemyClass
-            print ent
             center = ENT_OBBCENTER(ent)
             VECTOR_ROTATE(center, ENT_GETANGLES(ent))
             npcData = {ent, ENT_GETPOS(ent), ENT_OBBMINS(ent), ENT_OBBMAXS(ent), ENT_OBBCENTER(ent), center, DTF2_Pointer(ent)}
