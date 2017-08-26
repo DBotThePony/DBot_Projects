@@ -106,6 +106,7 @@ ENT_OBBMINS = ENTMETA.OBBMins
 ENT_OBBMAXS = ENTMETA.OBBMaxs
 ENT_OBBCENTER = ENTMETA.OBBCenter
 ENT_ISNPC = ENTMETA.IsNPC
+NPC_ISNPC = NPCMETA.IsNPC
 NPC_GETNPCSTATE = NPCMETA.GetNPCState
 VECTOR_ROTATE = Vector(0, 0, 0).Rotate
 ENT_GETANGLES = ENTMETA.GetAngles
@@ -168,8 +169,10 @@ UpdateTargetList = ->
     for ent in *findEnts
         nClass = ENT_GETCLASS(ent)
         isEnemyClass = IS_ENEMY_CLASS(nClass)
-        isNPC = ENT_ISNPC(ent)
+        --isNPC = NPC_ISNPC(ent)
+        isNPC = type(ent) == 'NPC'
         if (isNPC and nClass ~= 'npc_bullseye' and NPC_GETNPCSTATE(ent) ~= NPC_STATE_DEAD) or isEnemyClass
+            print ent
             center = ENT_OBBCENTER(ent)
             VECTOR_ROTATE(center, ENT_GETANGLES(ent))
             npcData = {ent, ENT_GETPOS(ent), ENT_OBBMINS(ent), ENT_OBBMAXS(ent), ENT_OBBCENTER(ent), center, DTF2_Pointer(ent)}
@@ -557,7 +560,7 @@ ENT.GetAlliesVisible = =>
     
     table.sort output, (a, b) -> a[3] < b[3]
     newOutput = {}
-    trFilter = [eye for {eye} in *@npc_bullseye]
+    trFilter = [eye[1] for eye in *@npc_bullseye]
     table.insert(trFilter, @)
 
     for {target, tpos, dist, center} in *output
@@ -598,7 +601,7 @@ ENT.GetTargetsVisible = =>
 
     table.sort output, (a, b) -> a[3] < b[3]
     newOutput = {}
-    trFilter = [eye for {eye} in *@npc_bullseye]
+    trFilter = [eye[1] for eye in *@npc_bullseye]
     table.insert(trFilter, @)
 
     for {target, tpos, dist, center} in *output
@@ -631,14 +634,14 @@ ENT.GetFirstVisible = =>
             dist = pos\DistToSqr(tpos)
             if target\IsValid() and dist < mx
                 table.insert(output, {target, tpos, dist, rotatedCenter})
-    
+
     for {target, tpos, mins, maxs, center, rotatedCenter} in *@markedTargets
         dist = pos\DistToSqr(tpos)
         if target\IsValid() and dist < mx
             table.insert(output, {target, tpos, dist, rotatedCenter})
     
     table.sort output, (a, b) -> a[3] < b[3]
-    trFilter = [eye for {eye} in *@npc_bullseye]
+    trFilter = [eye[1] for eye in *@npc_bullseye]
     table.insert(trFilter, @)
 
     for {target, tpos, dist, center} in *output

@@ -36,6 +36,9 @@ ENT.BuildTime = 2
 ENT.BuildingMins = Vector(-18, -18, 0)
 ENT.BuildingMaxs = Vector(18, 18, 55)
 
+ENT.HULL_TRACE_MINS = Vector(-2, -2, -2)
+ENT.HULL_TRACE_MAXS = Vector(2, 2, 2)
+
 ENT.Author = 'DBot'
 ENT.PrintName = 'TF2 Buildable base'
 ENT.Spawnable = false
