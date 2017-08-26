@@ -176,7 +176,7 @@ ENT.HitEntity = (HitEntity, HitNormal = Vector(0, 0, 0), HitPos = @GetPos()) =>
     @FireBullets(bulletData)
     @Remove()
 
-ENT.Explode = (HitEntity, HitNormal = Vector(0, 0, 1), HitPos = @GetPos()) =>
+ENT.Explode = (HitEntity, HitNormal = Vector(0, 0, -1), HitPos = @GetPos()) =>
     return false if @m_Exploded
     @m_Exploded = true
     @SetSolid(SOLID_NONE)
