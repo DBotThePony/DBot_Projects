@@ -77,6 +77,7 @@ SWEP.FireTrigger = =>
     @incomingMiniCrit = false
     @SetIsCharging(false)
     @SetStickyChargeStart(0)
+    @SetNextPrimaryFire(CurTime() + @CooldownTime)
 
 SWEP.SecondaryAttack = =>
     stickies = @GetOwner()\GetTFStickies()
