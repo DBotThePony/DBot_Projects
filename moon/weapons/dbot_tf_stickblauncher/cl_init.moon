@@ -62,6 +62,7 @@ SWEP.FireTrigger = =>
     @incomingCrit = false
     @incomingMiniCrit = false
     @SetNextPrimaryFire(CurTime() + @CooldownTime)
+    @EmitMuzzleFlash()
     if @chargeSound
         @chargeSound\Stop()
         @chargeSound = nil
