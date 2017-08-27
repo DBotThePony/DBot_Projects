@@ -129,7 +129,7 @@ ENT.StoreVariables = (attacker) => {}
 
 ENT.HitCallback = (ent, attacker, dmg) ->
     attacker\dtf2_projectile_toCallAfter(ent, dmg)
-    if not attacker.dtf2_GetIsCritical and attacker.dtf2_DAMAGE_DEGRADATION_RADIUS
+    if attacker.dtf2_DAMAGE_DEGRADATION_RADIUS
         dmg\SetDamage(attacker.dtf2_incomingDamage * (1 - math.Clamp(attacker.dtf2_hitPos\Distance(ent\GetPos()) / attacker.dtf2_blowRadius / 2, 0, 1)))
     if attacker.dtf2_TargetTakesFullDamage and attacker.dtf2_DirectHitTarget == ent
         dmg\SetDamage(attacker.dtf2_incomingDamage)
