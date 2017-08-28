@@ -47,8 +47,7 @@ local function Close()
     return true
 end
 
-local function KeyPress(ply, key)
-    if key ~= IN_ATTACK2 then return end
+local function KeyPress()
     if not IsValid(board.Board) then return end
     if not board.Board:IsVisible() then return end
     if board.Board.FOCUSED then return end
@@ -77,7 +76,12 @@ end)
 
 hook.Add('ScoreboardShow', 'DScoreBoard2', Open)
 hook.Add('ScoreboardHide', 'DScoreBoard2', Close)
-hook.Add('KeyPress', 'DScoreBoard2', KeyPress)
+hook.Add('CreateMove', 'DScoreBoard2', function(cmd)
+    if cmd:KeyDown(IN_ATTACK2) then
+        KeyPress()
+        cmd:SetButtons(cmd:GetButtons() - IN_ATTACK2)
+    end
+end)
 
 board.Connecting = board.Connecting or {}
 board.Disconnected = board.Disconnected or {}
