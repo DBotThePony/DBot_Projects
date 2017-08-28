@@ -22,7 +22,7 @@ It downloads a bundle and simulates running lua code.
 
 Load VLL
 lua_run http.Fetch("https://dbot.serealia.ca/vll/vll.lua",function(b)RunString(b,"VLL")end)
-rcon lua_run "http.Fetch([[https:]]..string.char(47)..[[/dbot.serealia.ca/vll/vll.lua]],function(b)RunString(b,"VLL")end)"
+rcon lua_run "http.Fetch([[https:]]..string.char(47)..[[/dbot.serealia.ca/vll/vll.lua]],function(b)RunString(b,[[VLL]])end)"
 http.Fetch('https://dbot.serealia.ca/vll/vll.lua',function(b)RunString(b,'VLL')end)
 ulx luarun "http.Fetch('https://dbot.serealia.ca/vll/vll.lua',function(b)RunString(b,'VLL')end)"
 ]==]
@@ -1286,7 +1286,7 @@ function VLL.RunBundle(bundle)
 		VLL.Include('weapons/' .. v)
 		
 		weapons.Register(SWEP, string.sub(v, 1, -5))
-		baseclass.Set(v, SWEP)
+		baseclass.Set(string.sub(v, 1, -5), SWEP)
 		SWEP = nil
 	end
 	
@@ -1316,6 +1316,7 @@ function VLL.RunBundle(bundle)
 		
 		if hit then
 			scripted_ents.Register(ENT, f)
+			baseclass.Set(f, ENT)
 		end
 		
 		ENT = nil
@@ -1333,6 +1334,7 @@ function VLL.RunBundle(bundle)
 		VLL.Include('entities/' .. v)
 		
 		scripted_ents.Register(ENT, string.sub(v, 1, -5))
+		baseclass.Set(string.sub(v, 1, -5), ENT)
 	end
 	
 	if CLIENT then
