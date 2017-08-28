@@ -48,10 +48,11 @@ local function Close()
 end
 
 local function KeyPress()
-    if not IsValid(board.Board) then return end
-    if not board.Board:IsVisible() then return end
-    if board.Board.FOCUSED then return end
+    if not IsValid(board.Board) then return false end
+    if not board.Board:IsVisible() then return false end
+    if board.Board.FOCUSED then return false end
     board.Board:Focus()
+    return true
 end
 
 board.ServerMem = 0
@@ -78,8 +79,9 @@ hook.Add('ScoreboardShow', 'DScoreBoard2', Open)
 hook.Add('ScoreboardHide', 'DScoreBoard2', Close)
 hook.Add('CreateMove', 'DScoreBoard2', function(cmd)
     if cmd:KeyDown(IN_ATTACK2) then
-        KeyPress()
-        cmd:SetButtons(cmd:GetButtons() - IN_ATTACK2)
+        if KeyPress() then
+            cmd:SetButtons(cmd:GetButtons() - IN_ATTACK2)
+        end
     end
 end)
 
