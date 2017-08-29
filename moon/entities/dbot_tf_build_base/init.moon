@@ -269,7 +269,7 @@ hook.Add 'EntityTakeDamage', 'DTF2.Bullseye', (dmg) =>
     if parent
         @TakeDamageInfo(dmg)
 
-hook.Add 'EntityTakeDamage', 'DTF2.BuildablesFriendlyFire', (dmg) =>
+checkFriendlyFire = (dmg) =>
     attacker = dmg\GetAttacker()
     inflictor = dmg\GetInflictor()
     if @IsTF2Building and (attacker\IsValid() and (@IsAlly(attacker) or attacker == @))
@@ -288,10 +288,12 @@ hook.Add 'EntityTakeDamage', 'DTF2.BuildablesFriendlyFire', (dmg) =>
         dmg\SetMaxDamage(0)
         return true
 
+hook.Add 'EntityTakeDamage', 'DTF2.BuildablesFriendlyFire', checkFriendlyFire
+
 hook.Add 'EntityTakeDamage', 'DTF2.CheckBuildablesOwner', (dmg) =>
     return if not UPDATE_OWNED_RELATIONSHIPS\GetBool()
     attacker = dmg\GetAttacker()
-    return if attacker == @ or not IsValid(attacker) or not @GetBuildedSentry
+    return if attacker == @ or not IsValid(attacker) or not @GetBuildedSentry or dmg\GetDamage() <= 0 or checkFriendlyFire(@, dmg)
     sentry = @GetBuildedSentry()
     dispenser = @GetBuildedDispenser()
     entrance = @GetBuildedTeleporterIn()
