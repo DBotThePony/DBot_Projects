@@ -25,7 +25,7 @@ util.AddNetworkString('DTF2.SentryFire')
 
 ENT.CallDestroy = (attacker = NULL, inflictor = NULL, dmg) => hook.Run('TF2SentryDestroyed', @, attacker, inflictor, dmg)
 
-ENT.OnOtherKilled = (victim, dmg) => @SetKills(@GetKills() + 1)
+ENT.OnOtherKilled = (victim, dmg) => @SetKills(@GetKills() + 1) if dmg\GetAttacker() == @ or dmg\GetInflictor() == @ or IsValid(dmg\GetInflictor()) and dmg\GetInflictor().IsBuildingPart and dmg\GetInflictor().IsBuildingPart and dmg\GetInflictor()\GetBuildableOwner() == @
 
 ENT.Initialize = =>
     @BaseClass.Initialize(@)
