@@ -112,6 +112,7 @@ entMeta = FindMetaTable('Entity')
 EntityClass = 
     RefreshTFStickies: (mclass = 'dbot_tf_stickybomb') =>
         dict = 'DTF2_Stickies_' .. mclass
+        @[dict] = @[dict] or {}
         @[dict] = [ent2 for ent2 in *@[dict] when ent2\IsValid()]
         ent = @[dict][1]
         if ent
