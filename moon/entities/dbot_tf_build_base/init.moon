@@ -97,6 +97,9 @@ CLASS_XEN_ANIMALS_HOSTILE = 32
 CLASS_XEN_BUG = 33
 CLASS_SNARK = 35
 
+_G.DTF2 = _G.DTF2 or {}
+DTF2 = _G.DTF2
+
 ENTMETA = FindMetaTable('Entity')
 NPCMETA = FindMetaTable('NPC')
 ENT_GETCLASS = ENTMETA.GetClass
@@ -113,18 +116,10 @@ ENT_GETANGLES = ENTMETA.GetAngles
 DTF2_Pointer = DTF2.Pointer
 table_insert = table.insert
 
-IS_ENEMY_CLASS = (entClass, def = false) ->
-	entClass = ENT_GETCLASS(entClass) if type(entClass) ~= 'string'
-	switch entClass
-		when 'replicator_queen_hive', 'replicator_queen', 'replicator_worker'
-			return true
-		else
-			return def
-
 IS_ALLY = (ent, def = false) ->
-	return not ATTACK_PLAYERS\GetBool() if ent\IsPlayer()
-	return IS_ENEMY_CLASS(ent, def) if not ent.Classify
-	classify = ent\Classify()
+	return not ATTACK_PLAYERS\GetBool() if type(ent) == 'Player'
+	return DTF2.IS_ENEMY_CLASS(ent, def) if type(ent) ~= 'NPC'
+	classify = NPC_CLASSIFY(ent)
 	return classify == CLASS_PLAYER_ALLY or
 			classify == CLASS_PLAYER_ALLY_VITAL or
 			classify == CLASS_PLAYER_ALLY_VITAL or
@@ -136,9 +131,9 @@ IS_ALLY = (ent, def = false) ->
 			classify == CLASS_CITIZEN_REBEL
 
 IS_ENEMY = (ent, def = true) ->
-	return ATTACK_PLAYERS\GetBool() if ent\IsPlayer()
-	return IS_ENEMY_CLASS(ent, def) if not ent.Classify
-	classify = ent\Classify()
+	return ATTACK_PLAYERS\GetBool() if type(ent) == 'Player'
+	return DTF2.IS_ENEMY_CLASS(ent, def) if type(ent) ~= 'NPC'
+	classify = NPC_CLASSIFY(ent)
 	return classify == CLASS_COMBINE_HUNTER or
 			classify == CLASS_ALIEN_ARMY or
 			classify == CLASS_XEN_ANIMALS or
@@ -168,16 +163,15 @@ UpdateTargetList = ->
 
 	for ent in *findEnts
 		nClass = ENT_GETCLASS(ent)
-		isEnemyClass = IS_ENEMY_CLASS(nClass)
-		--isNPC = NPC_ISNPC(ent)
+		isEnemyClass = DTF2.IS_ENEMY_CLASS(nClass)
 		isNPC = type(ent) == 'NPC'
-		if (isNPC and nClass ~= 'npc_bullseye' and NPC_GETNPCSTATE(ent) ~= NPC_STATE_DEAD) or isEnemyClass
+		if isEnemyClass or (isNPC and nClass ~= 'npc_bullseye' and NPC_GETNPCSTATE(ent) ~= NPC_STATE_DEAD)
 			center = ENT_OBBCENTER(ent)
 			VECTOR_ROTATE(center, ENT_GETANGLES(ent))
 			npcData = {ent, ENT_GETPOS(ent), ENT_OBBMINS(ent), ENT_OBBMAXS(ent), ENT_OBBCENTER(ent), center, DTF2_Pointer(ent)}
 			classify = isNPC and NPC_CLASSIFY(ent) or 0
 			if isEnemyClass
-				table_insert(VALID_TARGETS, npcData)
+				VALID_TARGETS[#VALID_TARGETS] = npcData
 			elseif (classify == CLASS_PLAYER_ALLY or
 				classify == CLASS_PLAYER_ALLY_VITAL or
 				classify == CLASS_PLAYER_ALLY_VITAL or
@@ -187,7 +181,7 @@ UpdateTargetList = ->
 				classify == CLASS_EARTH_FAUNA or
 				classify == CLASS_VORTIGAUNT or
 				classify == CLASS_CITIZEN_REBEL) then
-				table_insert(VALID_ALLIES, npcData)
+				VALID_ALLIES[#VALID_ALLIES] = npcData
 			elseif (classify == CLASS_COMBINE_HUNTER or
 				classify == CLASS_ALIEN_ARMY or
 				classify == CLASS_XEN_ANIMALS or
@@ -209,7 +203,7 @@ UpdateTargetList = ->
 				classify == CLASS_ANTLION or
 				classify == CLASS_NONE or
 				classify == CLASS_COMBINE) then
-				table_insert(VALID_TARGETS, npcData)
+				VALID_TARGETS[#VALID_TARGETS] = npcData
 	
 	if ATTACK_PLAYERS\GetBool()
 		for ent in *player.GetAll()
