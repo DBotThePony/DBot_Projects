@@ -20,28 +20,28 @@ AddCSLuaFile 'shared.lua'
 
 SWEP.OnFireTriggered = (projectile = NULL) =>
 SWEP.FireTrigger = =>
-    owner = @GetOwner()
-    offset = Vector(@FireOffset)
-    offset\Rotate(owner\EyeAngles())
-    origin = owner\EyePos() + offset
-    aimPos = owner\GetEyeTrace().HitPos
-    dir = aimPos - origin
-    dir\Normalize()
+	owner = @GetOwner()
+	offset = Vector(@FireOffset)
+	offset\Rotate(owner\EyeAngles())
+	origin = owner\EyePos() + offset
+	aimPos = owner\GetEyeTrace().HitPos
+	dir = aimPos - origin
+	dir\Normalize()
 
-    with cEnt = ents.Create(@ProjectileClass)
-        \SetPos(origin)
-        \Spawn()
-        \Activate()
-        \SetIsMiniCritical(@incomingMiniCrit)   if .SetIsMiniCritical
-        \SetIsCritical(@incomingCrit)           if .SetIsCritical
-        \SetOwner(@GetOwner())                  if .SetOwner
-        \SetAttacker(@GetOwner())               if .SetAttacker
-        \SetInflictor(@)                        if .SetInflictor
-        \SetWeapon(@)                           if .SetWeapon
-        \SetDirection(dir)                      if .SetDirection
-        \Think()
-        @OnFireTriggered(cEnt)
+	with cEnt = ents.Create(@ProjectileClass)
+		\SetPos(origin)
+		\Spawn()
+		\Activate()
+		\SetIsMiniCritical(@incomingMiniCrit)   if .SetIsMiniCritical
+		\SetIsCritical(@incomingCrit)           if .SetIsCritical
+		\SetOwner(@GetOwner())                  if .SetOwner
+		\SetAttacker(@GetOwner())               if .SetAttacker
+		\SetInflictor(@)                        if .SetInflictor
+		\SetWeapon(@)                           if .SetWeapon
+		\SetDirection(dir)                      if .SetDirection
+		\Think()
+		@OnFireTriggered(cEnt)
 
-    @incomingCrit = false
-    @incomingMiniCrit = false
+	@incomingCrit = false
+	@incomingMiniCrit = false
 

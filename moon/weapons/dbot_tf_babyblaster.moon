@@ -37,48 +37,48 @@ SWEP.FireCritSoundsScript = 'Weapon_Brawler_Blaster.SingleCrit'
 SWEP.EmptySoundsScript = 'Weapon_Brawler_Blaster.Empty'
 
 SWEP.SetupDataTables = =>
-    @BaseClass.SetupDataTables(@)
-    @NetworkVar('Int', 16, 'BabyCharge')
+	@BaseClass.SetupDataTables(@)
+	@NetworkVar('Int', 16, 'BabyCharge')
 
 SWEP.Primary = {
-    'Ammo': 'Buckshot'
-    'ClipSize': 4
-    'DefaultClip': 4
-    'Automatic': true
+	'Ammo': 'Buckshot'
+	'ClipSize': 4
+	'DefaultClip': 4
+	'Automatic': true
 }
 
 hook.Add 'SetupMove', 'DTF2.BabyFaceBlaster', (mv, cmd) =>
-    wep = @GetWeapon('dbot_tf_babyblaster')
-    return if not IsValid(wep)
-    mult = 1 + (wep\GetBabyCharge() - wep.ChargeThersold) / wep.ChargeDivider
-    mv\SetMaxClientSpeed(mv\GetMaxClientSpeed() * mult)
-    mv\SetForwardSpeed(mv\GetForwardSpeed() * mult)
-    mv\SetSideSpeed(mv\GetSideSpeed() * mult)
-    @__babyBlasterSpeed = @GetWalkSpeed()
-    @__babyBlasterRSpeed = @GetRunSpeed()
-    @SetWalkSpeed(@__babyBlasterSpeed * mult)
-    @SetRunSpeed(@__babyBlasterRSpeed * mult)
+	wep = @GetWeapon('dbot_tf_babyblaster')
+	return if not IsValid(wep)
+	mult = 1 + (wep\GetBabyCharge() - wep.ChargeThersold) / wep.ChargeDivider
+	mv\SetMaxClientSpeed(mv\GetMaxClientSpeed() * mult)
+	mv\SetForwardSpeed(mv\GetForwardSpeed() * mult)
+	mv\SetSideSpeed(mv\GetSideSpeed() * mult)
+	@__babyBlasterSpeed = @GetWalkSpeed()
+	@__babyBlasterRSpeed = @GetRunSpeed()
+	@SetWalkSpeed(@__babyBlasterSpeed * mult)
+	@SetRunSpeed(@__babyBlasterRSpeed * mult)
 
 hook.Add 'FinishMove', 'DTF2.BabyFaceBlaster', (mv, cmd) =>
-    if @__babyBlasterSpeed
-        @SetWalkSpeed(@__babyBlasterSpeed)
-        @__babyBlasterSpeed = nil
-    if @__babyBlasterRSpeed
-        @SetRunSpeed(@__babyBlasterRSpeed)
-        @__babyBlasterRSpeed = nil
+	if @__babyBlasterSpeed
+		@SetWalkSpeed(@__babyBlasterSpeed)
+		@__babyBlasterSpeed = nil
+	if @__babyBlasterRSpeed
+		@SetRunSpeed(@__babyBlasterRSpeed)
+		@__babyBlasterRSpeed = nil
 
 if SERVER
-    hook.Add 'EntityTakeDamage', 'DTF2.BabyFaceBlaster', (ent, dmg) ->
-        return unless ent\IsNPC() or ent\IsPlayer() or ent.Type == 'nextbot'
-        if ent\IsPlayer()
-            wep = ent\GetWeapon('dbot_tf_babyblaster')
-            if IsValid(wep)
-                wep\SetBabyCharge(math.Clamp(wep\GetBabyCharge() - math.max(dmg\GetDamage(), 0) * 4, 0, wep.MaxCharge))
-        attacker = dmg\GetAttacker()
-        if IsValid(attacker) and attacker\IsPlayer()
-            wep = attacker\GetWeapon('dbot_tf_babyblaster')
-            if IsValid(wep)
-                wep\SetBabyCharge(math.min(wep\GetBabyCharge() + math.max(dmg\GetDamage(), 0), wep.MaxCharge))
+	hook.Add 'EntityTakeDamage', 'DTF2.BabyFaceBlaster', (ent, dmg) ->
+		return unless ent\IsNPC() or ent\IsPlayer() or ent.Type == 'nextbot'
+		if ent\IsPlayer()
+			wep = ent\GetWeapon('dbot_tf_babyblaster')
+			if IsValid(wep)
+				wep\SetBabyCharge(math.Clamp(wep\GetBabyCharge() - math.max(dmg\GetDamage(), 0) * 4, 0, wep.MaxCharge))
+		attacker = dmg\GetAttacker()
+		if IsValid(attacker) and attacker\IsPlayer()
+			wep = attacker\GetWeapon('dbot_tf_babyblaster')
+			if IsValid(wep)
+				wep\SetBabyCharge(math.min(wep\GetBabyCharge() + math.max(dmg\GetDamage(), 0), wep.MaxCharge))
 else
-    SWEP.DrawHUD = =>
-        DTF2.DrawCenteredBar(@GetBabyCharge() / @MaxCharge, 'Charge')
+	SWEP.DrawHUD = =>
+		DTF2.DrawCenteredBar(@GetBabyCharge() / @MaxCharge, 'Charge')

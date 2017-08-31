@@ -16,14 +16,14 @@
 --
 
 EFFECT.Init = (effData) =>
-    pos = effData\GetOrigin()
-    ang = effData\GetNormal()\Angle()
-    ParticleEffect('Explosion_CoreFlash', pos, ang)
-    ParticleEffect('Explosion_Dustup', pos, ang)
-    ParticleEffect('Explosion_Dustup_2', pos, ang)
-    ParticleEffect('Explosion_Smoke_1', pos, ang)
-    ParticleEffect('Explosion_Flashup', pos, ang)
-    util.Decal('DTF2_RocketExplosion', effData\GetOrigin() + effData\GetNormal(), effData\GetOrigin() - effData\GetNormal())
+	pos = effData\GetOrigin()
+	ang = effData\GetNormal()\Angle()
+	ParticleEffect('Explosion_CoreFlash', pos, ang)
+	ParticleEffect('Explosion_Dustup', pos, ang)
+	ParticleEffect('Explosion_Dustup_2', pos, ang)
+	ParticleEffect('Explosion_Smoke_1', pos, ang)
+	ParticleEffect('Explosion_Flashup', pos, ang)
+	util.Decal('DTF2_RocketExplosion', effData\GetOrigin() + effData\GetNormal(), effData\GetOrigin() - effData\GetNormal())
 
 EFFECT.Think = => false
 EFFECT.Render = =>

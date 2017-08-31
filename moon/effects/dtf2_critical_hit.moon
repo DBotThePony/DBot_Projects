@@ -18,33 +18,33 @@
 -- Target color - 82, 233, 68
 
 CriticalHitLabel = CreateMaterial('effects/crit_unlit', 'UnlitGeneric', {
-    '$basetexture': 'effects/crit'
-    '$ignorez': 1
-    '$vertexcolor': 1
-    '$vertexalpha': 1
-    '$nolod': 1
+	'$basetexture': 'effects/crit'
+	'$ignorez': 1
+	'$vertexcolor': 1
+	'$vertexalpha': 1
+	'$nolod': 1
 })
 
 EFFECT.Init = (effData) =>
-    @realpos = Vector(effData\GetOrigin())
-    @pos = Vector(effData\GetOrigin())
-    @size = 2
-    @r = 255
-    @g = 255
-    @b = 255
-    @a = 255
-    @shift = 0
+	@realpos = Vector(effData\GetOrigin())
+	@pos = Vector(effData\GetOrigin())
+	@size = 2
+	@r = 255
+	@g = 255
+	@b = 255
+	@a = 255
+	@shift = 0
 
 EFFECT.Think = =>
-    @size -= FrameTime() * 2 if @size > 1
-    @shift += FrameTime() * 60 if @size <= 1
-    delta = math.max(@size - 1, 0)
-    @r = 82 + 173 * delta
-    @g = 233 + 22 * delta
-    @b = 68 + 187 * delta
-    @pos.z = @realpos.z + @shift
-    return @shift < 200
+	@size -= FrameTime() * 2 if @size > 1
+	@shift += FrameTime() * 60 if @size <= 1
+	delta = math.max(@size - 1, 0)
+	@r = 82 + 173 * delta
+	@g = 233 + 22 * delta
+	@b = 68 + 187 * delta
+	@pos.z = @realpos.z + @shift
+	return @shift < 200
 
 EFFECT.Render = =>
-    render.SetMaterial(CriticalHitLabel)
-    render.DrawSprite(@pos, 32 * @size, 32 * @size, Color(@r, @g, @b, @a))
+	render.SetMaterial(CriticalHitLabel)
+	render.DrawSprite(@pos, 32 * @size, 32 * @size, Color(@r, @g, @b, @a))

@@ -27,52 +27,52 @@ HEALTH_DECAY_SPEED = CreateConVar('tf_dbg_overheal_decay', '0.25', {FCVAR_ARCHIV
 HEALTH_DECAY_STEP = CreateConVar('tf_dbg_overheal_step', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Overheal Decay step')
 
 SwitchStatus = (val = false) =>
-    prev = @GetNWBool('DTF2.AffectOverlealing')
-    return if prev == val
-    @SetNWBool('DTF2.AffectOverlealing', val)
-    net.Start('DTF2.TrackOverhealEffect')
-    net.WriteEntity(@)
-    net.WriteBool(val)
-    net.Broadcast()
-    if val
-        @DTF2_Overheal_NextHealthDecay = CurTime() + HEALTH_DECAY_SPEED\GetFloat()
-        for ent in *TRACKED_ENTITIES
-            return if ent == @
-        table.insert(TRACKED_ENTITIES, @)
-    else
-        @DTF2_Overheal_NextHealthDecay = nil
-        for i = 1, #TRACKED_ENTITIES
-            if TRACKED_ENTITIES[i] == @
-                table.remove(TRACKED_ENTITIES, i)
-                return
+	prev = @GetNWBool('DTF2.AffectOverlealing')
+	return if prev == val
+	@SetNWBool('DTF2.AffectOverlealing', val)
+	net.Start('DTF2.TrackOverhealEffect')
+	net.WriteEntity(@)
+	net.WriteBool(val)
+	net.Broadcast()
+	if val
+		@DTF2_Overheal_NextHealthDecay = CurTime() + HEALTH_DECAY_SPEED\GetFloat()
+		for ent in *TRACKED_ENTITIES
+			return if ent == @
+		table.insert(TRACKED_ENTITIES, @)
+	else
+		@DTF2_Overheal_NextHealthDecay = nil
+		for i = 1, #TRACKED_ENTITIES
+			if TRACKED_ENTITIES[i] == @
+				table.remove(TRACKED_ENTITIES, i)
+				return
 
 EntityClass =
-    SetTFIsOverhealed: SwitchStatus
-    SetTFAffectAsOverheal: SwitchStatus
-    SetTFAffectOverheal: SwitchStatus
-    SetTFOverheal: SwitchStatus
-    SetTFAffectedByOverheal: SwitchStatus
-    AddTFOverheal: (amount = 0) =>
-        return if amount <= 0
-        hp, mhp = @Health(), @GetMaxHealth()
-        @SetTFIsOverhealed(hp + amount > mhp)
-        @SetHealth(hp + amount)
+	SetTFIsOverhealed: SwitchStatus
+	SetTFAffectAsOverheal: SwitchStatus
+	SetTFAffectOverheal: SwitchStatus
+	SetTFOverheal: SwitchStatus
+	SetTFAffectedByOverheal: SwitchStatus
+	AddTFOverheal: (amount = 0) =>
+		return if amount <= 0
+		hp, mhp = @Health(), @GetMaxHealth()
+		@SetTFIsOverhealed(hp + amount > mhp)
+		@SetHealth(hp + amount)
 
 entMeta[k] = v for k, v in pairs EntityClass
 
 hook.Add 'Think', 'DTF2.OverhealThink', ->
-    hitUpdate = false
-    cTime = CurTime()
-    decaySP, decayST = HEALTH_DECAY_SPEED\GetFloat(), HEALTH_DECAY_STEP\GetInt()
-    for self in *TRACKED_ENTITIES
-        return REBUILD_TRACKED_ENTS() if not @IsValid()
-        hp, mhp = @Health(), @GetMaxHealth()
-        if hp > mhp
-            if @DTF2_Overheal_NextHealthDecay < cTime
-                @DTF2_Overheal_NextHealthDecay = cTime + decaySP
-                @SetHealth(math.max(hp - decayST, mhp))
-        else
-            @SetTFIsOverhealed(false)
-            hitUpdate = true
-        
-    REBUILD_TRACKED_ENTS() if hitUpdate
+	hitUpdate = false
+	cTime = CurTime()
+	decaySP, decayST = HEALTH_DECAY_SPEED\GetFloat(), HEALTH_DECAY_STEP\GetInt()
+	for self in *TRACKED_ENTITIES
+		return REBUILD_TRACKED_ENTS() if not @IsValid()
+		hp, mhp = @Health(), @GetMaxHealth()
+		if hp > mhp
+			if @DTF2_Overheal_NextHealthDecay < cTime
+				@DTF2_Overheal_NextHealthDecay = cTime + decaySP
+				@SetHealth(math.max(hp - decayST, mhp))
+		else
+			@SetTFIsOverhealed(false)
+			hitUpdate = true
+		
+	REBUILD_TRACKED_ENTS() if hitUpdate

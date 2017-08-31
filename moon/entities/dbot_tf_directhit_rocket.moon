@@ -31,6 +31,6 @@ ENT.DegradationDivider = 2048
 
 return if CLIENT
 ENT.OnHit = (ent) =>
-    return if not IsValid(ent)
-    if ent.OnGround and not ent\OnGround()
-        @SetIsMiniCritical(true)
+	return if not IsValid(ent)
+	if ent.OnGround and not ent\OnGround()
+		@SetIsMiniCritical(true)

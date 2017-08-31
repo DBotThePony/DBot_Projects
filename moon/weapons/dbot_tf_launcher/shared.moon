@@ -38,17 +38,17 @@ SWEP.ReloadLoop = 'dh_reload_loop'
 SWEP.ReloadEnd = 'dh_reload_finish'
 
 SWEP.Primary = {
-    'Ammo': 'RPG_Round'
-    'ClipSize': 4
-    'DefaultClip': 4
-    'Automatic': true
+	'Ammo': 'RPG_Round'
+	'ClipSize': 4
+	'DefaultClip': 4
+	'Automatic': true
 }
 
 SWEP.Secondary = {
-    'Ammo': 'none'
-    'ClipSize': -1
-    'DefaultClip': 0
-    'Automatic': false
+	'Ammo': 'none'
+	'ClipSize': -1
+	'DefaultClip': 0
+	'Automatic': false
 }
 
 SWEP.PreFireTrigger = =>
@@ -59,29 +59,29 @@ SWEP.Initialize = => BaseClass.Initialize(@)
 SWEP.Holster = => BaseClass.Holster(@)
 SWEP.HANDLE_FIRE_SOUND = true
 SWEP.PlayFireSound = (isCrit = @incomingCrit) =>
-    if not isCrit
-        return @EmitSound('DTF2_' .. @FireSoundsScript) if @FireSoundsScript
-        playSound = table.Random(@FireSounds) if @FireSounds
-        @EmitSound(playSound, SNDLVL_GUNSHOT, 100, .7, CHAN_WEAPON) if playSound
-    else
-        return @EmitSound('DTF2_' .. @FireCritSoundsScript) if @FireCritSoundsScript
-        playSound = table.Random(@FireCritSounds) if @FireCritSounds
-        @EmitSound(playSound, SNDLVL_GUNSHOT, 100, .7, CHAN_WEAPON) if playSound
+	if not isCrit
+		return @EmitSound('DTF2_' .. @FireSoundsScript) if @FireSoundsScript
+		playSound = table.Random(@FireSounds) if @FireSounds
+		@EmitSound(playSound, SNDLVL_GUNSHOT, 100, .7, CHAN_WEAPON) if playSound
+	else
+		return @EmitSound('DTF2_' .. @FireCritSoundsScript) if @FireCritSoundsScript
+		playSound = table.Random(@FireCritSounds) if @FireCritSounds
+		@EmitSound(playSound, SNDLVL_GUNSHOT, 100, .7, CHAN_WEAPON) if playSound
 
 SWEP.PrimaryAttack = =>
-    return false if @GetNextPrimaryFire() > CurTime()
-    status = BaseClass.PrimaryAttack(@)
-    return status if status == false
+	return false if @GetNextPrimaryFire() > CurTime()
+	status = BaseClass.PrimaryAttack(@)
+	return status if status == false
 
-    @PlayFireSound() if @HANDLE_FIRE_SOUND
-    @GetOwner()\ViewPunch(@GetViewPunch())
+	@PlayFireSound() if @HANDLE_FIRE_SOUND
+	@GetOwner()\ViewPunch(@GetViewPunch())
 
-    if game.SinglePlayer() and SERVER
-        @CallOnClient('EmitMuzzleFlash')
-    if CLIENT and @GetOwner() == LocalPlayer() and @lastMuzzle ~= FrameNumber()
-        @lastMuzzle = FrameNumber()
-        @EmitMuzzleFlash()
-    
-    return true
+	if game.SinglePlayer() and SERVER
+		@CallOnClient('EmitMuzzleFlash')
+	if CLIENT and @GetOwner() == LocalPlayer() and @lastMuzzle ~= FrameNumber()
+		@lastMuzzle = FrameNumber()
+		@EmitMuzzleFlash()
+	
+	return true
 
 SWEP.Think = => BaseClass.Think(@)

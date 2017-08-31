@@ -63,7 +63,7 @@ ENT.RemoveTimer = 10
 ENT.TargetTakesFullDamage = false
 
 ENT.SetupDataTables = =>
-    @NetworkVar('Bool', 0, 'IsCritical')
-    @NetworkVar('Bool', 1, 'IsMiniCritical')
-    @NetworkVar('Bool', 2, 'IsFlying')
-    @SetIsFlying(true)
+	@NetworkVar('Bool', 0, 'IsCritical')
+	@NetworkVar('Bool', 1, 'IsMiniCritical')
+	@NetworkVar('Bool', 2, 'IsFlying')
+	@SetIsFlying(true)

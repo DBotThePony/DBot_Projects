@@ -27,39 +27,39 @@ entMeta = FindMetaTable('Entity')
 entMeta.IsMarkedForDeath = => @GetNWInt('DTF2.MarksForDeath') > 0
 
 with ENT
-    .SetupDataTables = =>
-        @NetworkVar('Entity', 0, 'MarkOwner')
-    
-    .Initialize = =>
-        @SetNoDraw(true)
-        @SetNotSolid(true)
-        return if CLIENT
-        @markStart = CurTime()
-        @duration = 4
-        @markEnd = @markStart + 4
-        @SetMoveType(MOVETYPE_NONE)
-    
-    .UpdateDuration = (newtime = 0) =>
-        return if @markEnd - CurTime() > newtime
-        @duration = newtime
-        @markEnd = CurTime() + newtime
-    
-    .SetupOwner = (owner) =>
-        @SetPos(owner\GetPos())
-        return if owner == @GetOwner()
-        if IsValid(@GetOwner())
-            @GetOwner()\SetNWInt('DTF2.MarksForDeath', @GetOwner()\GetNWInt('DTF2.MarksForDeath') - 1)
-        @SetOwner(owner)
-        @SetParent(owner)
-        owner\SetNWInt('DTF2.MarksForDeath', owner\GetNWInt('DTF2.MarksForDeath') + 1)
+	.SetupDataTables = =>
+		@NetworkVar('Entity', 0, 'MarkOwner')
+	
+	.Initialize = =>
+		@SetNoDraw(true)
+		@SetNotSolid(true)
+		return if CLIENT
+		@markStart = CurTime()
+		@duration = 4
+		@markEnd = @markStart + 4
+		@SetMoveType(MOVETYPE_NONE)
+	
+	.UpdateDuration = (newtime = 0) =>
+		return if @markEnd - CurTime() > newtime
+		@duration = newtime
+		@markEnd = CurTime() + newtime
+	
+	.SetupOwner = (owner) =>
+		@SetPos(owner\GetPos())
+		return if owner == @GetOwner()
+		if IsValid(@GetOwner())
+			@GetOwner()\SetNWInt('DTF2.MarksForDeath', @GetOwner()\GetNWInt('DTF2.MarksForDeath') - 1)
+		@SetOwner(owner)
+		@SetParent(owner)
+		owner\SetNWInt('DTF2.MarksForDeath', owner\GetNWInt('DTF2.MarksForDeath') + 1)
 
-    .Think = =>
-        return if CLIENT
-        return @Remove() if @markEnd < CurTime()
-        return @Remove() if not IsValid(@GetOwner())
-    
-    .OnRemove = =>
-        owner = @GetOwner()
-        return if not IsValid(owner)
-        owner\SetNWInt('DTF2.MarksForDeath', owner\GetNWInt('DTF2.MarksForDeath') - 1)
-    .Draw = => false
+	.Think = =>
+		return if CLIENT
+		return @Remove() if @markEnd < CurTime()
+		return @Remove() if not IsValid(@GetOwner())
+	
+	.OnRemove = =>
+		owner = @GetOwner()
+		return if not IsValid(owner)
+		owner\SetNWInt('DTF2.MarksForDeath', owner\GetNWInt('DTF2.MarksForDeath') - 1)
+	.Draw = => false

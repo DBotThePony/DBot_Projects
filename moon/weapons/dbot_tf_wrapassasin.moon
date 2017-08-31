@@ -59,87 +59,87 @@ SWEP.HitSoundsFleshScript = 'BallBuster.HitFlesh'
 SWEP.BallIsReady = => @GetBallReady() >= @BallRestoreTime
 
 SWEP.CheckAnimations = =>
-    if @BallIsReady()
-        @DrawAnimation = @Avaliable_DrawAnimation
-        @IdleAnimation = @Avaliable_IdleAnimation
-        @AttackAnimation = @Avaliable_AttackAnimation
-        @AttackAnimationTable = @Avaliable_AttackAnimationTable
-        @AttackAnimationCrit = @Avaliable_AttackAnimationCrit
-    else
-        @DrawAnimation = @Unavaliable_DrawAnimation
-        @IdleAnimation = @Unavaliable_IdleAnimation
-        @AttackAnimation = @Unavaliable_AttackAnimation
-        @AttackAnimationTable = @Unavaliable_AttackAnimationTable
-        @AttackAnimationCrit = @Unavaliable_AttackAnimationCrit
+	if @BallIsReady()
+		@DrawAnimation = @Avaliable_DrawAnimation
+		@IdleAnimation = @Avaliable_IdleAnimation
+		@AttackAnimation = @Avaliable_AttackAnimation
+		@AttackAnimationTable = @Avaliable_AttackAnimationTable
+		@AttackAnimationCrit = @Avaliable_AttackAnimationCrit
+	else
+		@DrawAnimation = @Unavaliable_DrawAnimation
+		@IdleAnimation = @Unavaliable_IdleAnimation
+		@AttackAnimation = @Unavaliable_AttackAnimation
+		@AttackAnimationTable = @Unavaliable_AttackAnimationTable
+		@AttackAnimationCrit = @Unavaliable_AttackAnimationCrit
 
 SWEP.Deploy = =>
-    @BaseClass.Deploy(@)
-    @CheckAnimations()
+	@BaseClass.Deploy(@)
+	@CheckAnimations()
 
 SWEP.PostModelCreated = (...) =>
-    @BaseClass.PostModelCreated(@, ...)
-    @ballViewModel = ents.Create('dbot_tf_viewmodel')
-    with @ballViewModel
-        \SetModel(@BallModel)
-        \SetPos(@GetPos())
-        \Spawn()
-        \Activate()
-        \DoSetup(@)
-    @SetTF2BallModel(@ballViewModel)
+	@BaseClass.PostModelCreated(@, ...)
+	@ballViewModel = ents.Create('dbot_tf_viewmodel')
+	with @ballViewModel
+		\SetModel(@BallModel)
+		\SetPos(@GetPos())
+		\Spawn()
+		\Activate()
+		\DoSetup(@)
+	@SetTF2BallModel(@ballViewModel)
 
 SWEP.PostDrawViewModel = (...) =>
-    @BaseClass.PostDrawViewModel(@, ...)
-    return if not IsValid(@GetTF2BallModel())
-    @GetTF2BallModel()\DrawModel()
+	@BaseClass.PostDrawViewModel(@, ...)
+	return if not IsValid(@GetTF2BallModel())
+	@GetTF2BallModel()\DrawModel()
 
 SWEP.SetupDataTables = =>
-    @BaseClass.SetupDataTables(@)
-    @NetworkVar('Float', 16, 'BallReady')
-    @NetworkVar('Entity', 16, 'TF2BallModel')
+	@BaseClass.SetupDataTables(@)
+	@NetworkVar('Float', 16, 'BallReady')
+	@NetworkVar('Entity', 16, 'TF2BallModel')
 
 SWEP.Initialize = =>
-    @BaseClass.Initialize(@)
-    @SetBallReady(@BallRestoreTime)
-    @lastBallThink = CurTime()
-    @lastBallStatus = true
+	@BaseClass.Initialize(@)
+	@SetBallReady(@BallRestoreTime)
+	@lastBallThink = CurTime()
+	@lastBallStatus = true
 
 SWEP.Think = =>
-    @BaseClass.Think(@)
-    if SERVER
-        delta = CurTime() - @lastBallThink
-        @lastBallThink = CurTime()
-        if @GetBallReady() < @BallRestoreTime
-            @SetBallReady(math.Clamp(@GetBallReady() + delta, 0, @BallRestoreTime))
-    
-    old = @lastBallStatus
-    newStatus = @BallIsReady()
+	@BaseClass.Think(@)
+	if SERVER
+		delta = CurTime() - @lastBallThink
+		@lastBallThink = CurTime()
+		if @GetBallReady() < @BallRestoreTime
+			@SetBallReady(math.Clamp(@GetBallReady() + delta, 0, @BallRestoreTime))
+	
+	old = @lastBallStatus
+	newStatus = @BallIsReady()
 
-    if old ~= newStatus
-        @lastBallStatus = newStatus
-        @CheckAnimations()
-        @SendWeaponSequence(@IdleAnimation)
-        -- surface.PlaySound() if newStatus
+	if old ~= newStatus
+		@lastBallStatus = newStatus
+		@CheckAnimations()
+		@SendWeaponSequence(@IdleAnimation)
+		-- surface.PlaySound() if newStatus
 
 SWEP.DrawHUD = => DTF2.DrawCenteredBar(@GetBallReady() / @BallRestoreTime, 'Ball')
 
 SWEP.SecondaryAttack = =>
-    return false if not @BallIsReady()
-    incomingCrit = @CheckNextCrit()
-    @SetBallReady(0)
-    @lastBallStatus = false
-    @SendWeaponSequence(@BallThrowAnimation)
-    @CheckAnimations()
-    @WaitForSequence(@IdleAnimation, @BallThrowAnimationTime)
-    @WaitForSoundSuppress(@BallThrowSound, @BallThrowSoundTime)
-    return if CLIENT
-    timer.Simple 0, ->
-        return if not IsValid(@) or not IsValid(@GetOwner())
-        ballEntity = ents.Create('dbot_ball_projectile')
-        ballEntity\SetPos(@GetOwner()\EyePos())
-        ballEntity\Spawn()
-        ballEntity\Activate()
-        ballEntity\SetIsCritical(incomingCrit)
-        ballEntity\SetOwner(@GetOwner())
-        ballEntity\SetAttacker(@GetOwner())
-        ballEntity\SetInflictor(@)
-        ballEntity\SetDirection(@GetOwner()\GetAimVector())
+	return false if not @BallIsReady()
+	incomingCrit = @CheckNextCrit()
+	@SetBallReady(0)
+	@lastBallStatus = false
+	@SendWeaponSequence(@BallThrowAnimation)
+	@CheckAnimations()
+	@WaitForSequence(@IdleAnimation, @BallThrowAnimationTime)
+	@WaitForSoundSuppress(@BallThrowSound, @BallThrowSoundTime)
+	return if CLIENT
+	timer.Simple 0, ->
+		return if not IsValid(@) or not IsValid(@GetOwner())
+		ballEntity = ents.Create('dbot_ball_projectile')
+		ballEntity\SetPos(@GetOwner()\EyePos())
+		ballEntity\Spawn()
+		ballEntity\Activate()
+		ballEntity\SetIsCritical(incomingCrit)
+		ballEntity\SetOwner(@GetOwner())
+		ballEntity\SetAttacker(@GetOwner())
+		ballEntity\SetInflictor(@)
+		ballEntity\SetDirection(@GetOwner()\GetAimVector())

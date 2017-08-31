@@ -21,49 +21,49 @@ DTF2.HookStruct = {}
 self = DTF2.HookStruct
 
 @Damage = (wepClasss = '', affectNPC = true, affectPlayers = true, affectBuildables = false, callback) ->
-    return if not callback
-    return (dmg) =>
-        return if not affectPlayers and @IsPlayer()
-        return if not affectNPC and (@IsNPC() or ent.Type == 'nextbot')
-        return if not affectBuildables and @IsTF2Building
-        attacker = dmg\GetAttacker()
-        return if not IsValid(attacker) or not attacker\IsPlayer()
-        wep = attacker\GetWeapon(wepClasss)
-        return if not IsValid(wep)
-        callback(attacker, wep, @, dmg)
+	return if not callback
+	return (dmg) =>
+		return if not affectPlayers and @IsPlayer()
+		return if not affectNPC and (@IsNPC() or ent.Type == 'nextbot')
+		return if not affectBuildables and @IsTF2Building
+		attacker = dmg\GetAttacker()
+		return if not IsValid(attacker) or not attacker\IsPlayer()
+		wep = attacker\GetWeapon(wepClasss)
+		return if not IsValid(wep)
+		callback(attacker, wep, @, dmg)
 
 @ExplicitDamage = (wepClasss = '', affectNPC = true, affectPlayers = true, affectBuildables = false, callback) ->
-    return if not callback
-    return (dmg) =>
-        return if not affectPlayers and @IsPlayer()
-        return if not affectNPC and (@IsNPC() or ent.Type == 'nextbot')
-        return if not affectBuildables and @IsTF2Building
-        attacker = dmg\GetAttacker()
-        return if not IsValid(attacker) or not attacker\IsPlayer()
-        wep = attacker\GetActiveWeapon()
-        return if not IsValid(wep) or wep\GetClass() ~= wepClasss
-        callback(attacker, wep, @, dmg)
+	return if not callback
+	return (dmg) =>
+		return if not affectPlayers and @IsPlayer()
+		return if not affectNPC and (@IsNPC() or ent.Type == 'nextbot')
+		return if not affectBuildables and @IsTF2Building
+		attacker = dmg\GetAttacker()
+		return if not IsValid(attacker) or not attacker\IsPlayer()
+		wep = attacker\GetActiveWeapon()
+		return if not IsValid(wep) or wep\GetClass() ~= wepClasss
+		callback(attacker, wep, @, dmg)
 
 @AllDamage = (wepClasss = '', affectNPC = true, affectPlayers = true, affectBuildables = false, callback) ->
-    return if not callback
-    return (dmg) =>
-        return if not affectPlayers and @IsPlayer()
-        return if not affectNPC and (@IsNPC() or ent.Type == 'nextbot')
-        return if not affectBuildables and @IsTF2Building
-        attacker = dmg\GetAttacker()
-        return if not IsValid(attacker) or not attacker.GetWeapon
-        wep = attacker\GetWeapon(wepClasss)
-        return if not IsValid(wep)
-        callback(attacker, wep, @, dmg)
+	return if not callback
+	return (dmg) =>
+		return if not affectPlayers and @IsPlayer()
+		return if not affectNPC and (@IsNPC() or ent.Type == 'nextbot')
+		return if not affectBuildables and @IsTF2Building
+		attacker = dmg\GetAttacker()
+		return if not IsValid(attacker) or not attacker.GetWeapon
+		wep = attacker\GetWeapon(wepClasss)
+		return if not IsValid(wep)
+		callback(attacker, wep, @, dmg)
 
 @AllExplicitDamage = (wepClasss = '', affectNPC = true, affectPlayers = true, affectBuildables = false, callback) ->
-    return if not callback
-    return (dmg) =>
-        return if not affectPlayers and @IsPlayer()
-        return if not affectNPC and (@IsNPC() or ent.Type == 'nextbot')
-        return if not affectBuildables and @IsTF2Building
-        attacker = dmg\GetAttacker()
-        return if not IsValid(attacker) or not attacker.GetActiveWeapon
-        wep = attacker\GetActiveWeapon()
-        return if not IsValid(wep) or wep\GetClass() ~= wepClasss
-        callback(attacker, wep, @, dmg)
+	return if not callback
+	return (dmg) =>
+		return if not affectPlayers and @IsPlayer()
+		return if not affectNPC and (@IsNPC() or ent.Type == 'nextbot')
+		return if not affectBuildables and @IsTF2Building
+		attacker = dmg\GetAttacker()
+		return if not IsValid(attacker) or not attacker.GetActiveWeapon
+		wep = attacker\GetActiveWeapon()
+		return if not IsValid(wep) or wep\GetClass() ~= wepClasss
+		callback(attacker, wep, @, dmg)

@@ -31,82 +31,82 @@ SWEP.TELEPORTER_BUILDUP = {'vo/engineer_autobuildingteleporter01.mp3', 'vo/engin
 DEFINE_BASECLASS('dbot_tf_weapon_base')
 
 net.Receive 'DTF2.BuildRequest', (len = 0, ply = NULL) ->
-    return if not IsValid(ply)
-    slot = net.ReadUInt(8)
-    ent = net.ReadEntity()
-    return if not IsValid(ply)
-    return if ent\GetClass() ~= 'dbot_tf_buildpda'
-    ent\TriggerBuildRequest(slot)
+	return if not IsValid(ply)
+	slot = net.ReadUInt(8)
+	ent = net.ReadEntity()
+	return if not IsValid(ply)
+	return if ent\GetClass() ~= 'dbot_tf_buildpda'
+	ent\TriggerBuildRequest(slot)
 
 holster = (ply, wep) =>
-    ply\SetActiveWeapon(wep)
-    ply\SelectWeapon(wep)
-    @Holster()
+	ply\SetActiveWeapon(wep)
+	ply\SelectWeapon(wep)
+	@Holster()
 
 SWEP.SwitchToWrench = =>
-    weapon_crowbar = false
-    dbot_tf_wrench = false
-    ply = @GetOwner()
-    return false if not IsValid(ply) or not ply\IsPlayer()
-    for wep in *ply\GetWeapons()
-        switch wep\GetClass()
-            when 'weapon_crowbar'
-                weapon_crowbar = true
-            when 'dbot_tf_wrench'
-                dbot_tf_wrench = true
-    if dbot_tf_wrench
-        holster(@, ply, 'dbot_tf_wrench')
-        return true
-    elseif weapon_crowbar
-        holster(@, ply, 'weapon_crowbar')
-        return true
-    return false
+	weapon_crowbar = false
+	dbot_tf_wrench = false
+	ply = @GetOwner()
+	return false if not IsValid(ply) or not ply\IsPlayer()
+	for wep in *ply\GetWeapons()
+		switch wep\GetClass()
+			when 'weapon_crowbar'
+				weapon_crowbar = true
+			when 'dbot_tf_wrench'
+				dbot_tf_wrench = true
+	if dbot_tf_wrench
+		holster(@, ply, 'dbot_tf_wrench')
+		return true
+	elseif weapon_crowbar
+		holster(@, ply, 'weapon_crowbar')
+		return true
+	return false
 
 SWEP.TriggerBuild = =>
-    status, tr = @CalcAndCheckBuildSpot()
-    return false if not status
-    return false if @GetBuildStatus() == @BUILD_NONE
-    ply = @GetOwner()
-    local ent
-    status = @GetBuildStatus()
-    switch status
-        when @BUILD_SENTRY
-            ent = ents.Create(@CLASS_SENTRY)
-            ply\SetBuildedSentry(ent)
-            ply\EmitSound(table.Random(@SENTRY_BUILDUP), 55, 100, 1)
-        when @BUILD_DISPENSER
-            ent = ents.Create(@CLASS_DISPENSER)
-            ply\SetBuildedDispenser(ent)
-            ply\EmitSound(table.Random(@DISPENSER_BUILDUP), 55, 100, 1)
-        when @BUILD_TELE_IN
-            ent = ents.Create(@CLASS_TELEPORT)
-            ply\SetBuildedTeleporterIn(ent)
-            ply\EmitSound(table.Random(@TELEPORTER_BUILDUP), 55, 100, 1)
-        when @BUILD_TELE_OUT
-            ent = ents.Create(@CLASS_TELEPORT)
-            ply\SetBuildedTeleporterOut(ent)
-            ply\EmitSound(table.Random(@TELEPORTER_BUILDUP), 55, 100, 1)
-    return false if not IsValid(ent)
-    ang = @GetBuildAngle()
-    ent\SetPos(tr.HitPos)
-    ent\SetAngles(ang)
-    ent\Spawn()
-    ent\Activate()
-    ent\SetAngles(ang)
-    ent\SetTFPlayer(ply)
-    ent\SetBuildStatus(true)
-    @SetBuildStatus(@BUILD_NONE)
-    @UpdateModel()
-    @SendWeaponSequence(@IdleAnimation)
-    ent\CPPISetOwner(@GetOwner()) if ent.CPPISetOwner
-    @SwitchToWrench()
-    switch status
-        when @BUILD_TELE_IN
-            tele2 = ply\GetBuildedTeleporterOut()
-            if IsValid(tele2)
-                tele2\SetupAsExit(ent)
-        when @BUILD_TELE_OUT
-            tele2 = ply\GetBuildedTeleporterIn()
-            if IsValid(tele2)
-                tele2\SetupAsEntrance(ent)
-    return ent
+	status, tr = @CalcAndCheckBuildSpot()
+	return false if not status
+	return false if @GetBuildStatus() == @BUILD_NONE
+	ply = @GetOwner()
+	local ent
+	status = @GetBuildStatus()
+	switch status
+		when @BUILD_SENTRY
+			ent = ents.Create(@CLASS_SENTRY)
+			ply\SetBuildedSentry(ent)
+			ply\EmitSound(table.Random(@SENTRY_BUILDUP), 55, 100, 1)
+		when @BUILD_DISPENSER
+			ent = ents.Create(@CLASS_DISPENSER)
+			ply\SetBuildedDispenser(ent)
+			ply\EmitSound(table.Random(@DISPENSER_BUILDUP), 55, 100, 1)
+		when @BUILD_TELE_IN
+			ent = ents.Create(@CLASS_TELEPORT)
+			ply\SetBuildedTeleporterIn(ent)
+			ply\EmitSound(table.Random(@TELEPORTER_BUILDUP), 55, 100, 1)
+		when @BUILD_TELE_OUT
+			ent = ents.Create(@CLASS_TELEPORT)
+			ply\SetBuildedTeleporterOut(ent)
+			ply\EmitSound(table.Random(@TELEPORTER_BUILDUP), 55, 100, 1)
+	return false if not IsValid(ent)
+	ang = @GetBuildAngle()
+	ent\SetPos(tr.HitPos)
+	ent\SetAngles(ang)
+	ent\Spawn()
+	ent\Activate()
+	ent\SetAngles(ang)
+	ent\SetTFPlayer(ply)
+	ent\SetBuildStatus(true)
+	@SetBuildStatus(@BUILD_NONE)
+	@UpdateModel()
+	@SendWeaponSequence(@IdleAnimation)
+	ent\CPPISetOwner(@GetOwner()) if ent.CPPISetOwner
+	@SwitchToWrench()
+	switch status
+		when @BUILD_TELE_IN
+			tele2 = ply\GetBuildedTeleporterOut()
+			if IsValid(tele2)
+				tele2\SetupAsExit(ent)
+		when @BUILD_TELE_OUT
+			tele2 = ply\GetBuildedTeleporterIn()
+			if IsValid(tele2)
+				tele2\SetupAsEntrance(ent)
+	return ent

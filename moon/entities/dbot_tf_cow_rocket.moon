@@ -31,18 +31,18 @@ ENT.BlowSound2 = 'DTF2_Weapon_CowMangler.ExplodeCharged'
 ENT.BurnTime = 6
 
 ENT.Draw = =>
-    return if @particleSetup
-    @particleSetup = true
-    CreateParticleSystem(@, 'drg_cow_rockettrail_normal', PATTACH_ABSORIGIN_FOLLOW) if not @GetIsMiniCritical()
-    CreateParticleSystem(@, 'drg_cow_rockettrail_charged', PATTACH_ABSORIGIN_FOLLOW) if @GetIsMiniCritical()
+	return if @particleSetup
+	@particleSetup = true
+	CreateParticleSystem(@, 'drg_cow_rockettrail_normal', PATTACH_ABSORIGIN_FOLLOW) if not @GetIsMiniCritical()
+	CreateParticleSystem(@, 'drg_cow_rockettrail_charged', PATTACH_ABSORIGIN_FOLLOW) if @GetIsMiniCritical()
 
 return if CLIENT
 ENT.OnHit = (ent) =>
-    @SetBlowSound(@GetIsMiniCritical() and @BlowSound2 or @BlowSound1)
-    @SetBlowEffect(@GetIsMiniCritical() and @BlowEffect2 or @BlowEffect1)
+	@SetBlowSound(@GetIsMiniCritical() and @BlowSound2 or @BlowSound1)
+	@SetBlowEffect(@GetIsMiniCritical() and @BlowEffect2 or @BlowEffect1)
 
 ENT.OnHitAfter = (ent, dmg) =>
-    return if not @dtf2_GetIsMiniCritical
-    with ent\TF2Burn(@BurnTime)
-        \SetAttacker(dmg\GetAttacker())
-        \SetInflictor(dmg\GetInflictor())
+	return if not @dtf2_GetIsMiniCritical
+	with ent\TF2Burn(@BurnTime)
+		\SetAttacker(dmg\GetAttacker())
+		\SetInflictor(dmg\GetInflictor())

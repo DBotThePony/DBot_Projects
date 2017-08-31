@@ -26,24 +26,24 @@ ENT.Type = 'anim'
 ENT.RenderGroup = RENDERGROUP_OTHER
 
 ENT.Initialize = =>
-    @SetNotSolid(true)
-    @DrawShadow(false)
-    @SetTransmitWithParent(true)
-    @SetNoDraw(true)
-    @SetMoveType(MOVETYPE_NONE)
-    @AddEffects(EF_BONEMERGE)
+	@SetNotSolid(true)
+	@DrawShadow(false)
+	@SetTransmitWithParent(true)
+	@SetNoDraw(true)
+	@SetMoveType(MOVETYPE_NONE)
+	@AddEffects(EF_BONEMERGE)
 
 ENT.Think = =>
-    if CLIENT
-        @SetNotSolid(true)
-        @SetNoDraw(true)
+	if CLIENT
+		@SetNotSolid(true)
+		@SetNoDraw(true)
 
 ENT.DoSetup = (wep) =>
-    ply = wep\GetOwner()
-    viewmodel = ply\GetViewModel()
+	ply = wep\GetOwner()
+	viewmodel = ply\GetViewModel()
 	@SetParent(viewmodel)
 	@SetPos(viewmodel\GetPos())
 	@SetAngles(Angle(0, 0, 0))
-    wep\DeleteOnRemove(@)
-    ply\DeleteOnRemove(@)
-    viewmodel\DeleteOnRemove(@)
+	wep\DeleteOnRemove(@)
+	ply\DeleteOnRemove(@)
+	viewmodel\DeleteOnRemove(@)

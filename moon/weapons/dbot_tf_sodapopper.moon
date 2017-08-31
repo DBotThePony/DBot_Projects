@@ -38,56 +38,56 @@ SWEP.FireSoundsScript = 'Weapon_Soda_Popper.Single'
 SWEP.FireCritSoundsScript = 'Weapon_Soda_Popper.SingleCrit'
 
 SWEP.Primary = {
-    'Ammo': 'Buckshot'
-    'ClipSize': 2
-    'DefaultClip': 2
-    'Automatic': true
+	'Ammo': 'Buckshot'
+	'ClipSize': 2
+	'DefaultClip': 2
+	'Automatic': true
 }
 
 SWEP.SetupDataTables = =>
-    @BaseClass.SetupDataTables(@)
-    @NetworkVar('Int', 16, 'SodaDamageDealt')
-    @NetworkVar('Bool', 16, 'SodaActive')
+	@BaseClass.SetupDataTables(@)
+	@NetworkVar('Int', 16, 'SodaDamageDealt')
+	@NetworkVar('Bool', 16, 'SodaActive')
 
 SWEP.IsSodaReady = => @GetSodaDamageDealt() >= @SodaDamageRequired
 
 if SERVER
-    hook.Add 'EntityTakeDamage', 'DTF2.SodaPopper', (ent, dmg) ->
-        return unless ent\IsNPC() or ent\IsPlayer() or ent.Type == 'nextbot'
-        attacker = dmg\GetAttacker()
-        return if not IsValid(attacker)
-        return if not attacker\IsPlayer()
-        wep = attacker\GetWeapon('dbot_tf_sodapopper')
-        return if not IsValid(wep)
-        wep\SetSodaDamageDealt(math.min(wep\GetSodaDamageDealt() + math.max(dmg\GetDamage(), 0), wep.SodaDamageRequired))
-    
-    SWEP.OnRemove = => @miniCritBuffer\Remove() if IsValid(@miniCritBuffer)
+	hook.Add 'EntityTakeDamage', 'DTF2.SodaPopper', (ent, dmg) ->
+		return unless ent\IsNPC() or ent\IsPlayer() or ent.Type == 'nextbot'
+		attacker = dmg\GetAttacker()
+		return if not IsValid(attacker)
+		return if not attacker\IsPlayer()
+		wep = attacker\GetWeapon('dbot_tf_sodapopper')
+		return if not IsValid(wep)
+		wep\SetSodaDamageDealt(math.min(wep\GetSodaDamageDealt() + math.max(dmg\GetDamage(), 0), wep.SodaDamageRequired))
+	
+	SWEP.OnRemove = => @miniCritBuffer\Remove() if IsValid(@miniCritBuffer)
 
-    SWEP.Think = =>
-        @BaseClass.Think(@)
-        if @GetSodaActive()
-            @SetSodaDamageDealt(math.max(0, @SodaDamageRequired * (@sodaPopperEnd - CurTime()) / 10))
+	SWEP.Think = =>
+		@BaseClass.Think(@)
+		if @GetSodaActive()
+			@SetSodaDamageDealt(math.max(0, @SodaDamageRequired * (@sodaPopperEnd - CurTime()) / 10))
 
-    SWEP.SecondaryAttack = =>
-        return false if not @IsSodaReady()
-        return false if @GetSodaActive()
-        @SetSodaActive(true)
-        ply = @GetOwner()
-        @miniCritBuffer = ents.Create('dbot_tf_logic_minicrit')
-        with @miniCritBuffer
-            \SetPos(ply\GetPos())
-            \Spawn()
-            \Activate()
-            \SetParent(ply)
-            \SetOwner(ply)
-            \SetEnableBuff(true)
-        
-        @sodaPopperEnd = CurTime() + @SodaPopperDuration
-        timer.Create "DTF2.SodaPopper.#{@EntIndex()}", @SodaPopperDuration, 1, ->
-            @miniCritBuffer\Remove() if IsValid(@) and IsValid(@miniCritBuffer)
-            @SetSodaActive(false) if IsValid(@)
+	SWEP.SecondaryAttack = =>
+		return false if not @IsSodaReady()
+		return false if @GetSodaActive()
+		@SetSodaActive(true)
+		ply = @GetOwner()
+		@miniCritBuffer = ents.Create('dbot_tf_logic_minicrit')
+		with @miniCritBuffer
+			\SetPos(ply\GetPos())
+			\Spawn()
+			\Activate()
+			\SetParent(ply)
+			\SetOwner(ply)
+			\SetEnableBuff(true)
+		
+		@sodaPopperEnd = CurTime() + @SodaPopperDuration
+		timer.Create "DTF2.SodaPopper.#{@EntIndex()}", @SodaPopperDuration, 1, ->
+			@miniCritBuffer\Remove() if IsValid(@) and IsValid(@miniCritBuffer)
+			@SetSodaActive(false) if IsValid(@)
 
-        return true
+		return true
 else
-    SWEP.DrawHUD = =>
-        DTF2.DrawCenteredBar(@GetSodaDamageDealt() / @SodaDamageRequired, 'Soda')
+	SWEP.DrawHUD = =>
+		DTF2.DrawCenteredBar(@GetSodaDamageDealt() / @SodaDamageRequired, 'Soda')

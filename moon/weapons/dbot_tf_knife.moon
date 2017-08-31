@@ -62,11 +62,11 @@ SWEP.SelectAttackAnimation = => not @isOnBack and BaseClass.SelectAttackAnimatio
 SWEP.Deploy = => BaseClass.Deploy(@)
 
 SWEP.Initialize = =>
-    BaseClass.Initialize(@)
-    @isOnBack = false
-    @backstabAnimActive = false
-    @knifeEntityLookup = NULL
-    @ignoreKnifeAnim = 0
+	BaseClass.Initialize(@)
+	@isOnBack = false
+	@backstabAnimActive = false
+	@knifeEntityLookup = NULL
+	@ignoreKnifeAnim = 0
 
 DAMAGE_TYPES = {
 	DMG_GENERIC
@@ -87,56 +87,56 @@ DAMAGE_TYPES = {
 }
 
 SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
-    BaseClass.OnHit(@, hitEntity, tr, dmginfo)
+	BaseClass.OnHit(@, hitEntity, tr, dmginfo)
 
-    if IsValid(hitEntity) and SERVER and @isOnBack
-        for dmgtype in *DAMAGE_TYPES
-            newDMG = DamageInfo()
-            newDMG\SetAttacker(dmginfo\GetAttacker())
-            newDMG\SetInflictor(dmginfo\GetInflictor())
-            newDMG\SetDamage(dmginfo\GetDamage())
-            newDMG\SetMaxDamage(dmginfo\GetMaxDamage())
-            newDMG\SetReportedPosition(dmginfo\GetReportedPosition())
-            newDMG\SetDamagePosition(dmginfo\GetDamagePosition())
-            newDMG\SetDamageType(dmgtype)
-            hitEntity\TakeDamageInfo(newDMG)
+	if IsValid(hitEntity) and SERVER and @isOnBack
+		for dmgtype in *DAMAGE_TYPES
+			newDMG = DamageInfo()
+			newDMG\SetAttacker(dmginfo\GetAttacker())
+			newDMG\SetInflictor(dmginfo\GetInflictor())
+			newDMG\SetDamage(dmginfo\GetDamage())
+			newDMG\SetMaxDamage(dmginfo\GetMaxDamage())
+			newDMG\SetReportedPosition(dmginfo\GetReportedPosition())
+			newDMG\SetDamagePosition(dmginfo\GetDamagePosition())
+			newDMG\SetDamageType(dmgtype)
+			hitEntity\TakeDamageInfo(newDMG)
 
 SWEP.PreFireTrigger = =>
-    BaseClass.PreFireTrigger(@)
-    if @isOnBack
-        @BulletDamage = @knifeEntityLookup\Health() * 2
-        @incomingCrit = true
-        @backstabAnimActive = false
-        @ModifyWaitSequence(@IdleAnimation)
-        @ignoreKnifeAnim = CurTime() + @BackstabAnimationTime
-    else
-        @BulletDamage = @DefaultBulletDamage
+	BaseClass.PreFireTrigger(@)
+	if @isOnBack
+		@BulletDamage = @knifeEntityLookup\Health() * 2
+		@incomingCrit = true
+		@backstabAnimActive = false
+		@ModifyWaitSequence(@IdleAnimation)
+		@ignoreKnifeAnim = CurTime() + @BackstabAnimationTime
+	else
+		@BulletDamage = @DefaultBulletDamage
 
 SWEP.Think = =>
-    mins, maxs = @GetBulletHullVector()
-    tr = util.TraceHull({
-        start: @GetBulletOrigin()
-        endpos: @GetBulletOrigin() + @GetBulletDirection() * @GetBulletRange()
-        :mins, :maxs
-        filter: {@, @GetOwner()}
-    })
+	mins, maxs = @GetBulletHullVector()
+	tr = util.TraceHull({
+		start: @GetBulletOrigin()
+		endpos: @GetBulletOrigin() + @GetBulletDirection() * @GetBulletRange()
+		:mins, :maxs
+		filter: {@, @GetOwner()}
+	})
 
-    validTarget = IsValid(tr.Entity) and (tr.Entity\IsPlayer() or tr.Entity\IsNPC()) and @AttackingAtSpine(tr.Entity)
+	validTarget = IsValid(tr.Entity) and (tr.Entity\IsPlayer() or tr.Entity\IsNPC()) and @AttackingAtSpine(tr.Entity)
 
-    if validTarget
-        @knifeEntityLookup = tr.Entity
-        @isOnBack = true
-        if @ignoreKnifeAnim < CurTime() and not @backstabAnimActive
-            @backstabAnimActive = true
-            @SendWeaponSequence(@BackstabAnimationUp)
-            @WaitForSequence(@BackstabAnimationIdle, @BackstabAnimationUpTime)
-    else
-        @knifeEntityLookup = NULL
-        @isOnBack = false
-        if @ignoreKnifeAnim < CurTime() and @backstabAnimActive
-            @backstabAnimActive = false
-            @SendWeaponSequence(@BackstabAnimationDown)
-            @WaitForSequence(@IdleAnimation, @BackstabAnimationDownTime)
-    
-    BaseClass.Think(@)
-    return true
+	if validTarget
+		@knifeEntityLookup = tr.Entity
+		@isOnBack = true
+		if @ignoreKnifeAnim < CurTime() and not @backstabAnimActive
+			@backstabAnimActive = true
+			@SendWeaponSequence(@BackstabAnimationUp)
+			@WaitForSequence(@BackstabAnimationIdle, @BackstabAnimationUpTime)
+	else
+		@knifeEntityLookup = NULL
+		@isOnBack = false
+		if @ignoreKnifeAnim < CurTime() and @backstabAnimActive
+			@backstabAnimActive = false
+			@SendWeaponSequence(@BackstabAnimationDown)
+			@WaitForSequence(@IdleAnimation, @BackstabAnimationDownTime)
+	
+	BaseClass.Think(@)
+	return true

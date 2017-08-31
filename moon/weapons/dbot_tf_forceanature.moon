@@ -45,10 +45,10 @@ SWEP.FireCritSoundsScript = 'Weapon_Scatter_Gun_Double.SingleCrit'
 SWEP.EmptySoundsScript = 'Weapon_Scatter_Gun_Double.Empty'
 
 SWEP.Primary = {
-    'Ammo': 'Buckshot'
-    'ClipSize': 2
-    'DefaultClip': 2
-    'Automatic': true
+	'Ammo': 'Buckshot'
+	'ClipSize': 2
+	'DefaultClip': 2
+	'Automatic': true
 }
 
 SWEP.Think = => BaseClass.Think(@)
@@ -65,25 +65,25 @@ SWEP.SingleReloadAnimation = true
 SWEP.SetupDataTables = => BaseClass.SetupDataTables(@)
 
 SWEP.AfterFire = (bulletData) =>
-    BaseClass.AfterFire(bulletData)
-    Dir = bulletData.Dir
-    DTF2.ApplyVelocity(@GetOwner(), -Dir * 300) if not @GetOwner()\OnGround()
+	BaseClass.AfterFire(bulletData)
+	Dir = bulletData.Dir
+	DTF2.ApplyVelocity(@GetOwner(), -Dir * 300) if not @GetOwner()\OnGround()
 
 SWEP.OnHit = (ent, ...) =>
-    BaseClass.OnHit(@, ent, ...)
-    if SERVER and IsValid(ent)
-        pos = ent\GetPos()
-        lpos = @GetOwner()\GetPos()
-        dir = pos - lpos
-        dir\Normalize()
-        vel = dir * 200 + Vector(0, 0, 30)
-        vel *= 10000 / pos\DistToSqr(lpos)
-        DTF2.ApplyVelocity(ent, vel)
+	BaseClass.OnHit(@, ent, ...)
+	if SERVER and IsValid(ent)
+		pos = ent\GetPos()
+		lpos = @GetOwner()\GetPos()
+		dir = pos - lpos
+		dir\Normalize()
+		vel = dir * 200 + Vector(0, 0, 30)
+		vel *= 10000 / pos\DistToSqr(lpos)
+		DTF2.ApplyVelocity(ent, vel)
 
 SWEP.ReloadCall = =>
-    oldClip = @Clip1()
-    newClip = 2
-    if SERVER
-        @SetClip1(2)
-        @GetOwner()\RemoveAmmo(2, @Primary.Ammo) if @GetOwner()\IsPlayer()
-    return oldClip, newClip
+	oldClip = @Clip1()
+	newClip = 2
+	if SERVER
+		@SetClip1(2)
+		@GetOwner()\RemoveAmmo(2, @Primary.Ammo) if @GetOwner()\IsPlayer()
+	return oldClip, newClip

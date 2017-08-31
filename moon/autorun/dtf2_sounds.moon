@@ -18,17 +18,17 @@ export DTF2
 DTF2 = DTF2 or {}
 
 RequiredFiles = {
-    'dtf2_sounds'
-    'dtf2_sounds_mvm'
-    'dtf2_sounds_passtime'
-    'dtf2_sounds_physics'
-    'dtf2_sounds_player'
-    'dtf2_sounds_taunt_workshop'
-    'dtf2_sounds_weapons'
+	'dtf2_sounds'
+	'dtf2_sounds_mvm'
+	'dtf2_sounds_passtime'
+	'dtf2_sounds_physics'
+	'dtf2_sounds_player'
+	'dtf2_sounds_taunt_workshop'
+	'dtf2_sounds_weapons'
 }
 
 if SERVER
-    AddCSLuaFile("tf2scripts/#{fil}.lua") for fil in *RequiredFiles
+	AddCSLuaFile("tf2scripts/#{fil}.lua") for fil in *RequiredFiles
 file.CreateDir('dtf2sounds')
 
 return if DTF2.LOAD_SOUNDS

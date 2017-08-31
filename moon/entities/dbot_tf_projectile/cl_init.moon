@@ -16,17 +16,17 @@
 --
 
 ENT.Initialize = =>
-    @SetModel(@ProjectileModel)
-    @initialPosition = @GetPos()
-    @SetOwner(LocalPlayer())
+	@SetModel(@ProjectileModel)
+	@initialPosition = @GetPos()
+	@SetOwner(LocalPlayer())
 
 ENT.Draw = =>
-    @DrawModel()
-    return if @particlesSetup
-    @particlesSetup = true
-    for eff in *@DrawEffects
-        CreateParticleSystem(@, eff, PATTACH_ABSORIGIN_FOLLOW) if type(eff) == 'string'
-    
-    if @GetIsCritical() and @DisplayCriticalEffects
-        for eff in *@DrawEffects
-            CreateParticleSystem(@, eff, PATTACH_ABSORIGIN_FOLLOW) if type(eff) == 'string'
+	@DrawModel()
+	return if @particlesSetup
+	@particlesSetup = true
+	for eff in *@DrawEffects
+		CreateParticleSystem(@, eff, PATTACH_ABSORIGIN_FOLLOW) if type(eff) == 'string'
+	
+	if @GetIsCritical() and @DisplayCriticalEffects
+		for eff in *@DrawEffects
+			CreateParticleSystem(@, eff, PATTACH_ABSORIGIN_FOLLOW) if type(eff) == 'string'

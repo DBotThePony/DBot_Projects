@@ -71,17 +71,17 @@ SWEP.HANDLE_FIRE_SOUND = false
 SWEP.FireOffset = Vector(10, -10, -5)
 
 SWEP.Primary = {
-    'Ammo': 'ammo_tf_stickybomb'
-    'ClipSize': 8
-    'DefaultClip': 24
-    'Automatic': false
+	'Ammo': 'ammo_tf_stickybomb'
+	'ClipSize': 8
+	'DefaultClip': 24
+	'Automatic': false
 }
 
 SWEP.Secondary = {
-    'Ammo': 'none'
-    'ClipSize': -1
-    'DefaultClip': 0
-    'Automatic': false
+	'Ammo': 'none'
+	'ClipSize': -1
+	'DefaultClip': 0
+	'Automatic': false
 }
 
 SWEP.GetStickiesCount = => @GetOwner()\GetTFStickiesCount(@ProjectileClass)
@@ -90,22 +90,22 @@ SWEP.GetStickieBombCount = => @GetOwner()\GetTFStickiesCount(@ProjectileClass)
 SWEP.GetStickieBombsCount = => @GetOwner()\GetTFStickiesCount(@ProjectileClass)
 
 SWEP.Initialize = =>
-    BaseClass.Initialize(@)
-    @lastDetonationSound = 0
+	BaseClass.Initialize(@)
+	@lastDetonationSound = 0
 
 SWEP.Think = =>
-    status = BaseClass.Think(@)
-    if @GetIsCharging()
-        ply = @GetOwner()
-        if not IsValid(ply) or not ply\IsPlayer()
-            @incomingCrit = false
-            @incomingMiniCrit = false
-            @SetIsCharging(false)
-            @SetStickyChargeStart(0)
-            @incomingFire = false
-            @incomingFireTime = 0
-        elseif @IsCharged()
-            @FireTrigger()
-        elseif not ply\KeyDown(IN_ATTACK)
-            @FireTrigger()
-    return status
+	status = BaseClass.Think(@)
+	if @GetIsCharging()
+		ply = @GetOwner()
+		if not IsValid(ply) or not ply\IsPlayer()
+			@incomingCrit = false
+			@incomingMiniCrit = false
+			@SetIsCharging(false)
+			@SetStickyChargeStart(0)
+			@incomingFire = false
+			@incomingFireTime = 0
+		elseif @IsCharged()
+			@FireTrigger()
+		elseif not ply\KeyDown(IN_ATTACK)
+			@FireTrigger()
+	return status

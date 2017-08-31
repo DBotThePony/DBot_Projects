@@ -20,33 +20,33 @@ REBUILD_TRACKED_ENTS = -> TRACKED_ENTITIES = [ent for ent in *TRACKED_ENTITIES w
 hook.Add 'EntityRemoved', 'DTF2.OverhealRebuild', -> timer.Create 'DTF2.OverhealRebuild', 0, 1, REBUILD_TRACKED_ENTS
 
 net.Receive 'DTF2.TrackOverhealEffect', ->
-    self = net.ReadEntity()
-    status = net.ReadBool()
-    return if not IsValid(@)
-    if status
-        for ent in *TRACKED_ENTITIES
-            return if ent == @
-        table.insert(TRACKED_ENTITIES, @)
-    else
-        for i = 1, #TRACKED_ENTITIES
-            if TRACKED_ENTITIES[i] == @
-                table.remove(TRACKED_ENTITIES, i)
-                return
-        if IsValid(@DTF2_OverhealParticleSystem)
-            @DTF2_OverhealParticleSystem\StopEmission()
+	self = net.ReadEntity()
+	status = net.ReadBool()
+	return if not IsValid(@)
+	if status
+		for ent in *TRACKED_ENTITIES
+			return if ent == @
+		table.insert(TRACKED_ENTITIES, @)
+	else
+		for i = 1, #TRACKED_ENTITIES
+			if TRACKED_ENTITIES[i] == @
+				table.remove(TRACKED_ENTITIES, i)
+				return
+		if IsValid(@DTF2_OverhealParticleSystem)
+			@DTF2_OverhealParticleSystem\StopEmission()
 
 hook.Add 'Think', 'DTF2.OverhealThink', ->
-    hitUpdate = false
-    cTime = CurTime()
-    for self in *TRACKED_ENTITIES
-        return REBUILD_TRACKED_ENTS() if not @IsValid()
-        if @Health() > @GetMaxHealth()
-            if not IsValid(@DTF2_OverhealParticleSystem)
-                @DTF2_OverhealParticleSystem = CreateParticleSystem(@, 'overhealedplayer_red_pluses', PATTACH_ABSORIGIN_FOLLOW, 0)
-        else
-            if IsValid(@DTF2_OverhealParticleSystem)
-                @DTF2_OverhealParticleSystem\StopEmission()
-                @DTF2_OverhealParticleSystem = nil
-            hitUpdate = true
-        
-    REBUILD_TRACKED_ENTS() if hitUpdate
+	hitUpdate = false
+	cTime = CurTime()
+	for self in *TRACKED_ENTITIES
+		return REBUILD_TRACKED_ENTS() if not @IsValid()
+		if @Health() > @GetMaxHealth()
+			if not IsValid(@DTF2_OverhealParticleSystem)
+				@DTF2_OverhealParticleSystem = CreateParticleSystem(@, 'overhealedplayer_red_pluses', PATTACH_ABSORIGIN_FOLLOW, 0)
+		else
+			if IsValid(@DTF2_OverhealParticleSystem)
+				@DTF2_OverhealParticleSystem\StopEmission()
+				@DTF2_OverhealParticleSystem = nil
+			hitUpdate = true
+		
+	REBUILD_TRACKED_ENTS() if hitUpdate

@@ -58,25 +58,25 @@ ENT.ROCKETS_RELOAD = CreateConVar('tf_dbg_sentry_reloadr', '5', {FCVAR_ARCHIVE, 
 ENT.ROCKETS_RELOAD_ANIM = 2.75
 
 ENT.Gibs1 = {
-    'models/buildables/gibs/sentry1_gib1.mdl'
-    'models/buildables/gibs/sentry1_gib2.mdl'
-    'models/buildables/gibs/sentry1_gib3.mdl'
-    'models/buildables/gibs/sentry1_gib4.mdl'
+	'models/buildables/gibs/sentry1_gib1.mdl'
+	'models/buildables/gibs/sentry1_gib2.mdl'
+	'models/buildables/gibs/sentry1_gib3.mdl'
+	'models/buildables/gibs/sentry1_gib4.mdl'
 }
 
 ENT.Gibs2 = {
-    'models/buildables/gibs/sentry2_gib1.mdl'
-    'models/buildables/gibs/sentry2_gib2.mdl'
-    'models/buildables/gibs/sentry2_gib3.mdl'
-    'models/buildables/gibs/sentry2_gib4.mdl'
+	'models/buildables/gibs/sentry2_gib1.mdl'
+	'models/buildables/gibs/sentry2_gib2.mdl'
+	'models/buildables/gibs/sentry2_gib3.mdl'
+	'models/buildables/gibs/sentry2_gib4.mdl'
 }
 
 ENT.Gibs3 = {
-    'models/buildables/gibs/sentry2_gib1.mdl'
-    'models/buildables/gibs/sentry2_gib2.mdl'
-    'models/buildables/gibs/sentry2_gib3.mdl'
-    'models/buildables/gibs/sentry2_gib4.mdl'
-    'models/buildables/gibs/sentry3_gib1.mdl'
+	'models/buildables/gibs/sentry2_gib1.mdl'
+	'models/buildables/gibs/sentry2_gib2.mdl'
+	'models/buildables/gibs/sentry2_gib3.mdl'
+	'models/buildables/gibs/sentry2_gib4.mdl'
+	'models/buildables/gibs/sentry3_gib1.mdl'
 }
 
 ENT.GibsValue = CreateConVar('tf_sentry_gibs', '15', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Gibs value for sentry')
@@ -84,61 +84,61 @@ ENT.GibsValue = CreateConVar('tf_sentry_gibs', '15', {FCVAR_ARCHIVE, FCVAR_REPLI
 ENT.ExplosionSound = 'DTF2_Building_Sentry.Explode'
 
 ENT.Gibs = (level = @GetLevel()) =>
-    switch level
-        when 1
-            @Gibs1
-        when 2
-            @Gibs2
-        when 3
-            @Gibs3
+	switch level
+		when 1
+			@Gibs1
+		when 2
+			@Gibs2
+		when 3
+			@Gibs3
 
 ENT.GetReloadTime = (level = @GetLevel()) =>
-    switch level
-        when 1
-            DTF2.GrabFloat(@BULLET_RELOAD_1)
-        when 2
-            DTF2.GrabFloat(@BULLET_RELOAD_2)
-        when 3
-            DTF2.GrabFloat(@BULLET_RELOAD_3)
+	switch level
+		when 1
+			DTF2.GrabFloat(@BULLET_RELOAD_1)
+		when 2
+			DTF2.GrabFloat(@BULLET_RELOAD_2)
+		when 3
+			DTF2.GrabFloat(@BULLET_RELOAD_3)
 
 ENT.GetAmmoPercent = (level = @GetLevel()) => @GetAmmoAmount() / @GetMaxAmmo()
 ENT.GetRocketsPercent = => @GetRockets() / DTF2.GrabInt(@MAX_ROCKETS)
 ENT.GetMaxAmmo = (level = @GetLevel()) =>
-    switch level
-        when 1
-            DTF2.GrabInt(@MAX_AMMO_1)
-        when 2
-            DTF2.GrabInt(@MAX_AMMO_2)
-        when 3
-            DTF2.GrabInt(@MAX_AMMO_3)
+	switch level
+		when 1
+			DTF2.GrabInt(@MAX_AMMO_1)
+		when 2
+			DTF2.GrabInt(@MAX_AMMO_2)
+		when 3
+			DTF2.GrabInt(@MAX_AMMO_3)
 
 ENT.SetupDataTables = =>
-    @BaseClass.SetupDataTables(@)
-    @NetworkVar('Int', 2, 'AimPitch')
-    @NetworkVar('Int', 3, 'AimYaw')
-    @NetworkVar('Int', 4, 'AmmoAmount')
-    @NetworkVar('Int', 5, 'Rockets')
-    @NetworkVar('Int', 6, 'Kills')
-    @anglesUpdated = false
-    @SetKills(0)
+	@BaseClass.SetupDataTables(@)
+	@NetworkVar('Int', 2, 'AimPitch')
+	@NetworkVar('Int', 3, 'AimYaw')
+	@NetworkVar('Int', 4, 'AmmoAmount')
+	@NetworkVar('Int', 5, 'Rockets')
+	@NetworkVar('Int', 6, 'Kills')
+	@anglesUpdated = false
+	@SetKills(0)
 
 ENT.UpdateSequenceList = =>
-    @BaseClass.UpdateSequenceList(@)
-    @fireSequence = @LookupSequence('fire')
-    @muzzle = @LookupAttachment('muzzle')
-    @muzzle_l = @LookupAttachment('muzzle_l')
-    @muzzle_r = @LookupAttachment('muzzle_r')
+	@BaseClass.UpdateSequenceList(@)
+	@fireSequence = @LookupSequence('fire')
+	@muzzle = @LookupAttachment('muzzle')
+	@muzzle_l = @LookupAttachment('muzzle_l')
+	@muzzle_r = @LookupAttachment('muzzle_r')
 
 ENT.CustomRepair = (thersold = 200, simulate = CLIENT) =>
-    return 0 if thersold == 0
-    weight = 0
-    rockets = 0
-    ammo = 0
-    ammo = math.Clamp(math.min(@GetMaxAmmo() - @GetAmmoAmount(), DTF2.GrabInt(@AMMO_RESTORE_ON_HIT)), 0, thersold - weight)
-    rockets = math.Clamp(math.min(DTF2.GrabInt(@MAX_ROCKETS) - @GetRockets(), DTF2.GrabInt(@ROCKETS_RESTORE_ON_HIT)) * 2, 0, thersold - weight) if @GetLevel() == 3
-    rockets -= 1 if math.floor(rockets / 2) ~= rockets / 2
-    weight += ammo
-    weight += rockets
-    @SetAmmoAmount(@GetAmmoAmount() + ammo) if not simulate
-    @SetRockets(@GetRockets() + rockets / 2) if not simulate
-    return weight
+	return 0 if thersold == 0
+	weight = 0
+	rockets = 0
+	ammo = 0
+	ammo = math.Clamp(math.min(@GetMaxAmmo() - @GetAmmoAmount(), DTF2.GrabInt(@AMMO_RESTORE_ON_HIT)), 0, thersold - weight)
+	rockets = math.Clamp(math.min(DTF2.GrabInt(@MAX_ROCKETS) - @GetRockets(), DTF2.GrabInt(@ROCKETS_RESTORE_ON_HIT)) * 2, 0, thersold - weight) if @GetLevel() == 3
+	rockets -= 1 if math.floor(rockets / 2) ~= rockets / 2
+	weight += ammo
+	weight += rockets
+	@SetAmmoAmount(@GetAmmoAmount() + ammo) if not simulate
+	@SetRockets(@GetRockets() + rockets / 2) if not simulate
+	return weight

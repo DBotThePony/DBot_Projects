@@ -33,23 +33,23 @@ SWEP.AdminOnly = false
 SWEP.BulletDamage = 35 * .25
 
 SWEP.PreOnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
-    @BaseClass.PreOnHit(@, hitEntity, tr, dmginfo)
-    if IsValid(hitEntity) and hitEntity\IsMarkedForDeath()
-        @ThatWasCrit(hitEntity, dmginfo)
-    
-    return if CLIENT
-    if IsValid(hitEntity) and (hitEntity\IsNPC() or hitEntity\IsPlayer())
-        if IsValid(@deathMark)
-            if @deathMark\GetOwner() ~= hitEntity
-                hitEntity\EmitSound('weapons/samurai/tf_marked_for_death_indicator.wav', 75, 100)
-                @deathMark\SetupOwner(hitEntity)
-            @deathMark\UpdateDuration(15)
-            return
-        @deathMark = ents.Create('dbot_tf_logic_mcreciever')
-        with @deathMark
-            \SetPos(tr.HitPos)
-            \Spawn()
-            \Activate()
-            \SetupOwner(hitEntity)
-            \UpdateDuration(15)
-            \EmitSound('weapons/samurai/tf_marked_for_death_indicator.wav', 75, 100)
+	@BaseClass.PreOnHit(@, hitEntity, tr, dmginfo)
+	if IsValid(hitEntity) and hitEntity\IsMarkedForDeath()
+		@ThatWasCrit(hitEntity, dmginfo)
+	
+	return if CLIENT
+	if IsValid(hitEntity) and (hitEntity\IsNPC() or hitEntity\IsPlayer())
+		if IsValid(@deathMark)
+			if @deathMark\GetOwner() ~= hitEntity
+				hitEntity\EmitSound('weapons/samurai/tf_marked_for_death_indicator.wav', 75, 100)
+				@deathMark\SetupOwner(hitEntity)
+			@deathMark\UpdateDuration(15)
+			return
+		@deathMark = ents.Create('dbot_tf_logic_mcreciever')
+		with @deathMark
+			\SetPos(tr.HitPos)
+			\Spawn()
+			\Activate()
+			\SetupOwner(hitEntity)
+			\UpdateDuration(15)
+			\EmitSound('weapons/samurai/tf_marked_for_death_indicator.wav', 75, 100)

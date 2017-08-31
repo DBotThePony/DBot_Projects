@@ -53,43 +53,43 @@ SWEP.MELT_RESTORE = 15
 SWEP.MELT_IMMUNITY = 4
 
 SWEP.Initialize = =>
-    BaseClass.Initialize(@)
-    @meltImmunity = 0
+	BaseClass.Initialize(@)
+	@meltImmunity = 0
 
 SWEP.SetupDataTables = =>
-    BaseClass.SetupDataTables(@)
-    @NetworkVar('Float', 4, 'MeltTimer')
-    @SetMeltTimer(0)
+	BaseClass.SetupDataTables(@)
+	@NetworkVar('Float', 4, 'MeltTimer')
+	@SetMeltTimer(0)
 
 SWEP.PrimaryAttack = =>
-    return false if @GetMeltTimer() > CurTime()
-    return BaseClass.PrimaryAttack(@)
+	return false if @GetMeltTimer() > CurTime()
+	return BaseClass.PrimaryAttack(@)
 
 SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
-    if IsValid(hitEntity) and SERVER and @isOnBack
-        hitEntity\EmitSound(@ICE_SOUND)
-        if not hitEntity\IsPlayer()
-            hitEntity\SetMaterial('models/player/shared/ice_player')
-            with r = DTF2.CreateDeathRagdoll(hitEntity)
-                \SetMaterial('models/player/shared/ice_player')
-                DTF2.MakeStatue(r)
-    BaseClass.OnHit(@, hitEntity, tr, dmginfo)
+	if IsValid(hitEntity) and SERVER and @isOnBack
+		hitEntity\EmitSound(@ICE_SOUND)
+		if not hitEntity\IsPlayer()
+			hitEntity\SetMaterial('models/player/shared/ice_player')
+			with r = DTF2.CreateDeathRagdoll(hitEntity)
+				\SetMaterial('models/player/shared/ice_player')
+				DTF2.MakeStatue(r)
+	BaseClass.OnHit(@, hitEntity, tr, dmginfo)
 
 if SERVER
-    SWEP.MeltDown = =>
-        @SetMeltTimer(CurTime() + DTF2.GrabFloat(@MELT_RESTORE))
-        @meltImmunity = CurTime() + DTF2.GrabFloat(@MELT_IMMUNITY)
-        @SetHideVM(true)
-        timer.Simple DTF2.GrabFloat(@MELT_RESTORE), -> @SetHideVM(false) if @IsValid()
-        @EmitSound(@MELT_SOUND)
-    
-    hook.Add 'DTF2.BurnTarget', 'DTF2.Spycicle', =>
-        return if not @GetWeapon
-        wep = @GetWeapon('dbot_tf_icecicle')
-        return if not IsValid(wep)
-        return false if wep.meltImmunity > CurTime()
-        return if wep\GetMeltTimer() > CurTime()
-        wep\MeltDown()
-        return false
+	SWEP.MeltDown = =>
+		@SetMeltTimer(CurTime() + DTF2.GrabFloat(@MELT_RESTORE))
+		@meltImmunity = CurTime() + DTF2.GrabFloat(@MELT_IMMUNITY)
+		@SetHideVM(true)
+		timer.Simple DTF2.GrabFloat(@MELT_RESTORE), -> @SetHideVM(false) if @IsValid()
+		@EmitSound(@MELT_SOUND)
+	
+	hook.Add 'DTF2.BurnTarget', 'DTF2.Spycicle', =>
+		return if not @GetWeapon
+		wep = @GetWeapon('dbot_tf_icecicle')
+		return if not IsValid(wep)
+		return false if wep.meltImmunity > CurTime()
+		return if wep\GetMeltTimer() > CurTime()
+		wep\MeltDown()
+		return false
 else
-    SWEP.DrawHUD = => DTF2.DrawCenteredBar(math.Clamp(1 - (@GetMeltTimer() - CurTime()) / DTF2.GrabFloat(@MELT_RESTORE), 0, 1), 'Cicle')
+	SWEP.DrawHUD = => DTF2.DrawCenteredBar(math.Clamp(1 - (@GetMeltTimer() - CurTime()) / DTF2.GrabFloat(@MELT_RESTORE), 0, 1), 'Cicle')

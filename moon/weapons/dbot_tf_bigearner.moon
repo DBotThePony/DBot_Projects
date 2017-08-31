@@ -49,19 +49,19 @@ SWEP.BackstabAnimationDown = 'eternal_backstab_down'
 SWEP.BackstabAnimationIdle = 'eternal_backstab_idle'
 
 SWEP.Deploy = =>
-    BaseClass.Deploy(@)
-    return true if CLIENT
-    with @GetOwner()
-        if not .DTF2_BigEarnerHealthDecreased
-            .DTF2_BigEarnerHealthDecreased = true
-            \SetMaxHealth(\GetMaxHealth() * 0.8)
-            \SetHealth(\Health() * 0.8)
-    return true
+	BaseClass.Deploy(@)
+	return true if CLIENT
+	with @GetOwner()
+		if not .DTF2_BigEarnerHealthDecreased
+			.DTF2_BigEarnerHealthDecreased = true
+			\SetMaxHealth(\GetMaxHealth() * 0.8)
+			\SetHealth(\Health() * 0.8)
+	return true
 
 SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
-    if IsValid(hitEntity) and SERVER and @isOnBack
-        hook.Run 'DTF2.BigEarnerHit', @GetOwner(), @
-    BaseClass.OnHit(@, hitEntity, tr, dmginfo)
+	if IsValid(hitEntity) and SERVER and @isOnBack
+		hook.Run 'DTF2.BigEarnerHit', @GetOwner(), @
+	BaseClass.OnHit(@, hitEntity, tr, dmginfo)
 
 if SERVER
-    hook.Add 'PlayerSpawn', 'DTF2.BigEarner', => @DTF2_BigEarnerHealthDecreased = false
+	hook.Add 'PlayerSpawn', 'DTF2.BigEarner', => @DTF2_BigEarnerHealthDecreased = false

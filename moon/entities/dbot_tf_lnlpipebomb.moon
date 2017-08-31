@@ -27,14 +27,14 @@ ENT.ProjectileSpeed = 1500
 ENT.BlowRadius = 300
 
 if SERVER
-    ENT.OnHit = (entHit) =>
-        if not DTF2.IsValidTarget(entHit)
-            @Remove()
-            eff = EffectData()
-            eff\SetOrigin(@GetPos())
-            util.Effect('StunstickImpact', eff)
-            return false
-    
-    ENT.OnHitAfter = (attacker, ent, dmg) ->
-        if ent.IsTF2Building
-            dmg\ScaleDamage(1.25)
+	ENT.OnHit = (entHit) =>
+		if not DTF2.IsValidTarget(entHit)
+			@Remove()
+			eff = EffectData()
+			eff\SetOrigin(@GetPos())
+			util.Effect('StunstickImpact', eff)
+			return false
+	
+	ENT.OnHitAfter = (attacker, ent, dmg) ->
+		if ent.IsTF2Building
+			dmg\ScaleDamage(1.25)

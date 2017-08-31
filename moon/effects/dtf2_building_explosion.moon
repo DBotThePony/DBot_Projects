@@ -16,12 +16,12 @@
 --
 
 EFFECT.Init = (effData) =>
-    pos = effData\GetOrigin()
-    ang = effData\GetNormal()\Angle()
-    ParticleEffect('Explosion_CoreFlash', pos, ang)
-    ParticleEffect('Explosion_Dustup', pos, ang)
-    ParticleEffect('Explosion_Dustup_2', pos, ang)
-    ParticleEffect('Explosion_Flashup', pos, ang)
+	pos = effData\GetOrigin()
+	ang = effData\GetNormal()\Angle()
+	ParticleEffect('Explosion_CoreFlash', pos, ang)
+	ParticleEffect('Explosion_Dustup', pos, ang)
+	ParticleEffect('Explosion_Dustup_2', pos, ang)
+	ParticleEffect('Explosion_Flashup', pos, ang)
 
 EFFECT.Think = => false
 EFFECT.Render = =>

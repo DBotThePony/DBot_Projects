@@ -33,13 +33,13 @@ SWEP.AdminOnly = false
 SWEP.BulletDamage = 35 * .75
 
 SWEP.PreOnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
-    @BaseClass.PreOnHit(@, hitEntity, tr, dmginfo)
-    if IsValid(hitEntity) and hitEntity\IsTF2Burning()
-        @ThatWasCrit(hitEntity, dmginfo)
+	@BaseClass.PreOnHit(@, hitEntity, tr, dmginfo)
+	if IsValid(hitEntity) and hitEntity\IsTF2Burning()
+		@ThatWasCrit(hitEntity, dmginfo)
 
 if SERVER
-    hook.Add 'EntityTakeDamage', 'DTF2.SunOnAStick', (ent, dmg) ->
-        return unless ent\IsPlayer()
-        wep = ent\GetWeapon('dbot_tf_sunonstick')
-        return if not IsValid(wep)
-        dmg\ScaleDamage(.75)
+	hook.Add 'EntityTakeDamage', 'DTF2.SunOnAStick', (ent, dmg) ->
+		return unless ent\IsPlayer()
+		wep = ent\GetWeapon('dbot_tf_sunonstick')
+		return if not IsValid(wep)
+		dmg\ScaleDamage(.75)

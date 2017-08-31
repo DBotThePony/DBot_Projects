@@ -20,58 +20,58 @@ include 'shared.lua'
 DEFINE_BASECLASS('dbot_tf_launcher')
 
 SWEP.PrimaryAttack = =>
-    status = BaseClass.PrimaryAttack(@)
-    return status if status == false
-    @incomingFire = true
-    @incomingFireTime = CurTime() + DTF2.GrabFloat(@MAX_CHARGE_TIME)
-    @SetIsCharging(true)
-    @SetStickyChargeStart(CurTime())
-    if @chargeSound
-        @chargeSound\Stop()
-        @chargeSound = nil
-    @chargeSound = CreateSound(@, @CHARGE_UP_SOUND)
-    @chargeSound\Play()
-    --@SendWeaponSequence(@CHARGE_ANIMATION)
-    @SendWeaponSequence(@IdleAnimation)
-    if IsFirstTimePredicted()
-        @WaitForSequence(@IdleAnimation, DTF2.GrabFloat(@MAX_CHARGE_TIME))
-    return true
+	status = BaseClass.PrimaryAttack(@)
+	return status if status == false
+	@incomingFire = true
+	@incomingFireTime = CurTime() + DTF2.GrabFloat(@MAX_CHARGE_TIME)
+	@SetIsCharging(true)
+	@SetStickyChargeStart(CurTime())
+	if @chargeSound
+		@chargeSound\Stop()
+		@chargeSound = nil
+	@chargeSound = CreateSound(@, @CHARGE_UP_SOUND)
+	@chargeSound\Play()
+	--@SendWeaponSequence(@CHARGE_ANIMATION)
+	@SendWeaponSequence(@IdleAnimation)
+	if IsFirstTimePredicted()
+		@WaitForSequence(@IdleAnimation, DTF2.GrabFloat(@MAX_CHARGE_TIME))
+	return true
 
 SWEP.DrawHUD = => DTF2.DrawCenteredBar(@ChargePercent(), 'Charge - ' .. math.floor(@ChargePercent() * 100) .. '%; Stickies count: ' .. @GetStickiesCount())
 
 SWEP.Holster = =>
-    @incomingFire = false
-    @incomingFireTime = 0
-    status = BaseClass.Holster(@)
-    return status if status == false
-    @SetIsCharging(false)
-    @SetStickyChargeStart(0)
-    if @chargeSound
-        @chargeSound\Stop()
-        @chargeSound = nil
-    return true
+	@incomingFire = false
+	@incomingFireTime = 0
+	status = BaseClass.Holster(@)
+	return status if status == false
+	@SetIsCharging(false)
+	@SetStickyChargeStart(0)
+	if @chargeSound
+		@chargeSound\Stop()
+		@chargeSound = nil
+	return true
 
 SWEP.FireTrigger = =>
-    @SetIsCharging(false)
-    @SetStickyChargeStart(0)
-    @PlayFireSound()
-    @SendWeaponSequence(@AttackAnimation)
-    @WaitForSequence(@IdleAnimation, @CooldownTime)
-    @incomingFire = false
-    @incomingFireTime = 0
-    @incomingCrit = false
-    @incomingMiniCrit = false
-    @SetNextPrimaryFire(CurTime() + @CooldownTime)
-    @EmitMuzzleFlash()
-    if @chargeSound
-        @chargeSound\Stop()
-        @chargeSound = nil
+	@SetIsCharging(false)
+	@SetStickyChargeStart(0)
+	@PlayFireSound()
+	@SendWeaponSequence(@AttackAnimation)
+	@WaitForSequence(@IdleAnimation, @CooldownTime)
+	@incomingFire = false
+	@incomingFireTime = 0
+	@incomingCrit = false
+	@incomingMiniCrit = false
+	@SetNextPrimaryFire(CurTime() + @CooldownTime)
+	@EmitMuzzleFlash()
+	if @chargeSound
+		@chargeSound\Stop()
+		@chargeSound = nil
 
 SWEP.SecondaryAttack = =>
-    return if not IsFirstTimePredicted()
-    return if @lastDetonationSound > CurTime()
-    amount = @GetStickiesCount()
-    return false if amount < 1
-    @GetOwner()\EmitSound(@DETONATE_SOUND)
-    @lastDetonationSound = CurTime() + 0.6
-    return true
+	return if not IsFirstTimePredicted()
+	return if @lastDetonationSound > CurTime()
+	amount = @GetStickiesCount()
+	return false if amount < 1
+	@GetOwner()\EmitSound(@DETONATE_SOUND)
+	@lastDetonationSound = CurTime() + 0.6
+	return true

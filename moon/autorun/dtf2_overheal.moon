@@ -18,13 +18,13 @@
 entMeta = FindMetaTable('Entity')
 
 EntityClass =
-    GetTFOverheal: => math.max(@Health() - @GetMaxHealth(), 0)
-    GetTFIsOverhealed: => @GetNWBool('DTF2.AffectOverlealing') and @GetTFOverheal() ~= 0
+	GetTFOverheal: => math.max(@Health() - @GetMaxHealth(), 0)
+	GetTFIsOverhealed: => @GetNWBool('DTF2.AffectOverlealing') and @GetTFOverheal() ~= 0
 
-    GetTFIsOverhealed: (def = false) => @GetNWBool('DTF2.AffectOverlealing', def)
-    GetTFAffectAsOverheal: (def = false) => @GetNWBool('DTF2.AffectOverlealing', def)
-    GetTFAffectOverheal: (def = false) => @GetNWBool('DTF2.AffectOverlealing', def)
-    -- GetTFOverheal: (def = false) => @GetNWBool('DTF2.AffectOverlealing', def)
-    GetTFAffectedByOverheal: (def = false) => @GetNWBool('DTF2.AffectOverlealing', def)
+	GetTFIsOverhealed: (def = false) => @GetNWBool('DTF2.AffectOverlealing', def)
+	GetTFAffectAsOverheal: (def = false) => @GetNWBool('DTF2.AffectOverlealing', def)
+	GetTFAffectOverheal: (def = false) => @GetNWBool('DTF2.AffectOverlealing', def)
+	-- GetTFOverheal: (def = false) => @GetNWBool('DTF2.AffectOverlealing', def)
+	GetTFAffectedByOverheal: (def = false) => @GetNWBool('DTF2.AffectOverlealing', def)
 
 entMeta[k] = v for k, v in pairs EntityClass

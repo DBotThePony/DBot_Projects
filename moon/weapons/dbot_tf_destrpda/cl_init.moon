@@ -24,35 +24,35 @@ checkInputs = {KEY_1, KEY_2, KEY_3, KEY_4}
 SWEP.INVALID_INPUT_SOUND = 'weapons/medigun_no_target.wav'
 
 SWEP.DrawHUD = =>
-    DTF2.DestructionPDAHUD(@GetOwner())
-    DTF2.DrawMetalCounter()
-    DTF2.DrawBuildablesHUD()
+	DTF2.DestructionPDAHUD(@GetOwner())
+	DTF2.DrawMetalCounter()
+	DTF2.DrawBuildablesHUD()
 
 SWEP.TriggerPlayerInput = (key = KEY_1) =>
-    switch key
-        when KEY_1
-            reply = @TriggerDestructionRequest(@SLOT_SENTRY)
-            surface.PlaySound(@INVALID_INPUT_SOUND) if not reply
-        when KEY_2
-            reply = @TriggerDestructionRequest(@SLOT_DISPENSER)
-            surface.PlaySound(@INVALID_INPUT_SOUND) if not reply
-        when KEY_3
-            reply = @TriggerDestructionRequest(@SLOT_TELE_IN)
-            surface.PlaySound(@INVALID_INPUT_SOUND) if not reply
-        when KEY_4
-            reply = @TriggerDestructionRequest(@SLOT_TELE_OUT)
-            surface.PlaySound(@INVALID_INPUT_SOUND) if not reply
+	switch key
+		when KEY_1
+			reply = @TriggerDestructionRequest(@SLOT_SENTRY)
+			surface.PlaySound(@INVALID_INPUT_SOUND) if not reply
+		when KEY_2
+			reply = @TriggerDestructionRequest(@SLOT_DISPENSER)
+			surface.PlaySound(@INVALID_INPUT_SOUND) if not reply
+		when KEY_3
+			reply = @TriggerDestructionRequest(@SLOT_TELE_IN)
+			surface.PlaySound(@INVALID_INPUT_SOUND) if not reply
+		when KEY_4
+			reply = @TriggerDestructionRequest(@SLOT_TELE_OUT)
+			surface.PlaySound(@INVALID_INPUT_SOUND) if not reply
 
 hook.Add 'Think', 'DTF2.DestructionPDACapture', ->
-    ply = LocalPlayer()
-    wep = ply\GetActiveWeapon()
-    return if not IsValid(wep) or wep\GetClass() ~= 'dbot_tf_destrpda'
-    for key in *checkInputs
-        status1 = wep.__InputCache[key]
-        status2 = input.IsKeyDown(key)
+	ply = LocalPlayer()
+	wep = ply\GetActiveWeapon()
+	return if not IsValid(wep) or wep\GetClass() ~= 'dbot_tf_destrpda'
+	for key in *checkInputs
+		status1 = wep.__InputCache[key]
+		status2 = input.IsKeyDown(key)
 
-        if status1 and not status2
-            wep.__InputCache[key] = false
-        elseif status2 and not status1
-            wep.__InputCache[key] = true
-            wep\TriggerPlayerInput(key)
+		if status1 and not status2
+			wep.__InputCache[key] = false
+		elseif status2 and not status1
+			wep.__InputCache[key] = true
+			wep\TriggerPlayerInput(key)

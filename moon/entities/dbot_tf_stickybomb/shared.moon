@@ -34,12 +34,12 @@ ENT.ImpactFleshSound = 'DTF2_Weapon_Grenade_Pipebomb.BounceSound'
 ENT.ImpactWorldSound = 'DTF2_Weapon_Grenade_Pipebomb.BounceSound'
 
 ENT.GIBS = {
-    'models/weapons/w_models/w_stickybomb_gib1.mdl'
-    'models/weapons/w_models/w_stickybomb_gib2.mdl'
-    'models/weapons/w_models/w_stickybomb_gib3.mdl'
-    'models/weapons/w_models/w_stickybomb_gib4.mdl'
-    'models/weapons/w_models/w_stickybomb_gib5.mdl'
-    'models/weapons/w_models/w_stickybomb_gib6.mdl'
+	'models/weapons/w_models/w_stickybomb_gib1.mdl'
+	'models/weapons/w_models/w_stickybomb_gib2.mdl'
+	'models/weapons/w_models/w_stickybomb_gib3.mdl'
+	'models/weapons/w_models/w_stickybomb_gib4.mdl'
+	'models/weapons/w_models/w_stickybomb_gib5.mdl'
+	'models/weapons/w_models/w_stickybomb_gib6.mdl'
 }
 
 ENT.MIN_GIBS = 1
@@ -71,9 +71,9 @@ ENT.ZAddition = 0.18
 entMeta = FindMetaTable('Entity')
 
 EntityClass = 
-    GetTFStickiesCount: (mclass = 'dbot_tf_stickybomb', def = 0) => @GetNWInt('DTF2.Stickies.' .. mclass, def)
-    GetTFStickCount: (mclass = 'dbot_tf_stickybomb', def = 0) => @GetNWInt('DTF2.Stickies.' .. mclass, def)
-    GetTFStickyBombCount: (mclass = 'dbot_tf_stickybomb', def = 0) => @GetNWInt('DTF2.Stickies.' .. mclass, def)
-    GetTFStickyBombsCount: (mclass = 'dbot_tf_stickybomb', def = 0) => @GetNWInt('DTF2.Stickies.' .. mclass, def)
+	GetTFStickiesCount: (mclass = 'dbot_tf_stickybomb', def = 0) => @GetNWInt('DTF2.Stickies.' .. mclass, def)
+	GetTFStickCount: (mclass = 'dbot_tf_stickybomb', def = 0) => @GetNWInt('DTF2.Stickies.' .. mclass, def)
+	GetTFStickyBombCount: (mclass = 'dbot_tf_stickybomb', def = 0) => @GetNWInt('DTF2.Stickies.' .. mclass, def)
+	GetTFStickyBombsCount: (mclass = 'dbot_tf_stickybomb', def = 0) => @GetNWInt('DTF2.Stickies.' .. mclass, def)
 
 entMeta[k] = v for k, v in pairs EntityClass

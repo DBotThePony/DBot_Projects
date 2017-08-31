@@ -27,15 +27,15 @@ ENT.BlowSound = 'DTF2_Weapon_RPG_BlackBox.Explode'
 
 return if CLIENT
 ENT.OnHit = (ent) =>
-    attack = @GetAttacker()
-    attack.dtf2_blackbox_hit = false
+	attack = @GetAttacker()
+	attack.dtf2_blackbox_hit = false
 
 ENT.OnHitAfter = (ent) =>
-    return if @dtf2_blackbox_hit
-    return if @ == ent
-    return unless ent\IsValid() and (ent\IsNPC() or ent\IsPlayer())
-    @dtf2_blackbox_hit = true
-    hp = @Health()
-    mhp = @GetMaxHealth()
-    return if hp >= mhp
-    @SetHealth(math.Clamp(hp + 20, 0, mhp))
+	return if @dtf2_blackbox_hit
+	return if @ == ent
+	return unless ent\IsValid() and (ent\IsNPC() or ent\IsPlayer())
+	@dtf2_blackbox_hit = true
+	hp = @Health()
+	mhp = @GetMaxHealth()
+	return if hp >= mhp
+	@SetHealth(math.Clamp(hp + 20, 0, mhp))

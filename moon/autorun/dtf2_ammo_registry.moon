@@ -16,34 +16,34 @@
 --
 
 game.AddAmmoType({
-    name: 'ammo_tf_syringe'
-    dmgtype: DMG_POISON
-    tracer: TRACER_NONE
-    plydmg: 12
-    npcdmg: 12
-    force: 0
-    minsplash: 0
-    maxsplash: 0
+	name: 'ammo_tf_syringe'
+	dmgtype: DMG_POISON
+	tracer: TRACER_NONE
+	plydmg: 12
+	npcdmg: 12
+	force: 0
+	minsplash: 0
+	maxsplash: 0
 })
 
 game.AddAmmoType({
-    name: 'ammo_tf_flame'
-    dmgtype: DMG_BURN
-    tracer: TRACER_NONE
-    plydmg: 14
-    npcdmg: 14
-    force: 0
-    minsplash: 0
-    maxsplash: 0
+	name: 'ammo_tf_flame'
+	dmgtype: DMG_BURN
+	tracer: TRACER_NONE
+	plydmg: 14
+	npcdmg: 14
+	force: 0
+	minsplash: 0
+	maxsplash: 0
 })
 
 game.AddAmmoType({
-    name: 'ammo_tf_stickybomb'
-    dmgtype: DMG_BLAST
-    tracer: TRACER_NONE
-    plydmg: 80
-    npcdmg: 80
-    force: 150
-    minsplash: 0
-    maxsplash: 0
+	name: 'ammo_tf_stickybomb'
+	dmgtype: DMG_BLAST
+	tracer: TRACER_NONE
+	plydmg: 80
+	npcdmg: 80
+	force: 150
+	minsplash: 0
+	maxsplash: 0
 })

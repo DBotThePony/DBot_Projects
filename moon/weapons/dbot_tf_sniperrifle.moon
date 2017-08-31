@@ -51,106 +51,106 @@ SWEP.AttackAnimationCrit = 'fire'
 SWEP.MaxCharge = 100
 
 SWEP.Primary = {
-    'Ammo': 'XBowBolt'
-    'ClipSize': -1
-    'DefaultClip': 25
-    'Automatic': true
+	'Ammo': 'XBowBolt'
+	'ClipSize': -1
+	'DefaultClip': 25
+	'Automatic': true
 }
 
 SWEP.Secondary = {
-    'Ammo': 'none'
-    'ClipSize': -1
-    'DefaultClip': -1
-    'Automatic': false
+	'Ammo': 'none'
+	'ClipSize': -1
+	'DefaultClip': -1
+	'Automatic': false
 }
 
 SWEP.PreOnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
-    @BaseClass.PreOnHit(@, hitEntity, tr, dmginfo)
-    if tr.HitGroup == HITGROUP_HEAD and @GetIsCharging()
-        @ThatWasCrit()
-        dmginfo\ScaleDamage(0.5)
-        if CLIENT
-            @GetOwner()\EmitSound('DTF2_TFPlayer.CritHit')
-            @GetOwner()\EmitSound('DTF2_' .. @FireCritSoundsScript)
+	@BaseClass.PreOnHit(@, hitEntity, tr, dmginfo)
+	if tr.HitGroup == HITGROUP_HEAD and @GetIsCharging()
+		@ThatWasCrit()
+		dmginfo\ScaleDamage(0.5)
+		if CLIENT
+			@GetOwner()\EmitSound('DTF2_TFPlayer.CritHit')
+			@GetOwner()\EmitSound('DTF2_' .. @FireCritSoundsScript)
 
 SWEP.PostOnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
-    @BaseClass.PostOnHit(@, hitEntity, tr, dmginfo)
-    if @GetIsCharging()
-        @SetIsCharging(false)
-        @SetCharge(0)
-        @Callback 'zoom', @CooldownTime, -> @SetIsCharging(true)
+	@BaseClass.PostOnHit(@, hitEntity, tr, dmginfo)
+	if @GetIsCharging()
+		@SetIsCharging(false)
+		@SetCharge(0)
+		@Callback 'zoom', @CooldownTime, -> @SetIsCharging(true)
 
 SWEP.PreFireTrigger = =>
-    @BaseClass.PreFireTrigger(@)
-    if @GetIsCharging()
-        @BulletDamage = @DefaultBulletDamage + @GetCharge()
-    else
-        @BulletDamage = @DefaultBulletDamage
+	@BaseClass.PreFireTrigger(@)
+	if @GetIsCharging()
+		@BulletDamage = @DefaultBulletDamage + @GetCharge()
+	else
+		@BulletDamage = @DefaultBulletDamage
 
 SWEP.SetupDataTables = =>
-    @BaseClass.SetupDataTables(@)
-    @NetworkVar('Bool', 16, 'IsCharging')
-    @NetworkVar('Float', 16, 'Charge')
+	@BaseClass.SetupDataTables(@)
+	@NetworkVar('Bool', 16, 'IsCharging')
+	@NetworkVar('Float', 16, 'Charge')
 
 SWEP.Initialize = =>
-    @BaseClass.Initialize(@)
-    @currentZoom = 70
-    @targetZoom = 70
-    @lastChargeThink = CurTime()
+	@BaseClass.Initialize(@)
+	@currentZoom = 70
+	@targetZoom = 70
+	@lastChargeThink = CurTime()
 
 SWEP.Deploy = =>
-    status = @BaseClass.Deploy(@)
-    return status if status == false
-    @SetIsCharging(false)
-    return true
+	status = @BaseClass.Deploy(@)
+	return status if status == false
+	@SetIsCharging(false)
+	return true
 
 if SERVER
-    SWEP.Think = =>
-        @BaseClass.Think(@)
-        ctime = CurTime()
-        delta = ctime - @lastChargeThink
-        @lastChargeThink = ctime
-        if @GetIsCharging()
-            @SetCharge(math.min(@GetCharge() + delta * 25, @MaxCharge))
-        else
-            @SetCharge(0)
+	SWEP.Think = =>
+		@BaseClass.Think(@)
+		ctime = CurTime()
+		delta = ctime - @lastChargeThink
+		@lastChargeThink = ctime
+		if @GetIsCharging()
+			@SetCharge(math.min(@GetCharge() + delta * 25, @MaxCharge))
+		else
+			@SetCharge(0)
 else
-    --ScopeMaterial = Material('hud/scope_sniper_alt_ul')
-    --ScopeW = 512
-    --ScopeH = 372
-    SWEP.DrawHUD = =>
-        return if not @GetIsCharging()
-        --surface.SetMaterial(ScopeMaterial)
-        --w, h = ScrW(), ScrH()
-        --min = math.min(w, h)
-        --surface.SetDrawColor(0, 0, 0)
-        --surface.DrawRect(0, 0, w, h)
-        --surface.SetDrawColor(255, 255, 255)
-        --surface.DrawTexturedRectRotated(w / 2 - ScopeW / 2, h / 2 - ScopeH / 2, ScopeW, ScopeH, 0)
-        --surface.DrawTexturedRectRotated(w / 2 - ScopeH / 2 - 7, h / 2 + ScopeW / 2, ScopeW, ScopeH + 14, 90)
-        DTF2.DrawSmallCenteredBar(@GetCharge() / @MaxCharge, 'Charge')
-    SWEP.TranslateFOV = (fov) =>
-        @currentZoom = Lerp(FrameTime() * 4, @currentZoom, @targetZoom)
-        @targetZoom = @GetIsCharging() and 20 or fov
-        return @currentZoom
+	--ScopeMaterial = Material('hud/scope_sniper_alt_ul')
+	--ScopeW = 512
+	--ScopeH = 372
+	SWEP.DrawHUD = =>
+		return if not @GetIsCharging()
+		--surface.SetMaterial(ScopeMaterial)
+		--w, h = ScrW(), ScrH()
+		--min = math.min(w, h)
+		--surface.SetDrawColor(0, 0, 0)
+		--surface.DrawRect(0, 0, w, h)
+		--surface.SetDrawColor(255, 255, 255)
+		--surface.DrawTexturedRectRotated(w / 2 - ScopeW / 2, h / 2 - ScopeH / 2, ScopeW, ScopeH, 0)
+		--surface.DrawTexturedRectRotated(w / 2 - ScopeH / 2 - 7, h / 2 + ScopeW / 2, ScopeW, ScopeH + 14, 90)
+		DTF2.DrawSmallCenteredBar(@GetCharge() / @MaxCharge, 'Charge')
+	SWEP.TranslateFOV = (fov) =>
+		@currentZoom = Lerp(FrameTime() * 4, @currentZoom, @targetZoom)
+		@targetZoom = @GetIsCharging() and 20 or fov
+		return @currentZoom
 
 SWEP.ZoomCooldown = 0.5
 
 SWEP.SecondaryAttack = =>
-    return false if not IsFirstTimePredicted()
-    return false if @GetNextPrimaryFire() > CurTime()
-    return false if @GetNextSecondaryFire() > CurTime()
-    @SetNextSecondaryFire(CurTime() + @ZoomCooldown)
-    @SetIsCharging(not @GetIsCharging())
-    return true
+	return false if not IsFirstTimePredicted()
+	return false if @GetNextPrimaryFire() > CurTime()
+	return false if @GetNextSecondaryFire() > CurTime()
+	@SetNextSecondaryFire(CurTime() + @ZoomCooldown)
+	@SetIsCharging(not @GetIsCharging())
+	return true
 
 hook.Add 'SetupMove', 'DTF2.SniperRifle', (mv, cmd) =>
-    wep = @GetActiveWeapon()
-    return if not IsValid(wep) or not wep.IsTF2SniperRifle or not wep\GetIsCharging()
-    mv\SetMaxClientSpeed(70)
+	wep = @GetActiveWeapon()
+	return if not IsValid(wep) or not wep.IsTF2SniperRifle or not wep\GetIsCharging()
+	mv\SetMaxClientSpeed(70)
 
 if CLIENT
-    hook.Add 'AdjustMouseSensitivity', 'DTF2.SniperRifle', =>
-        wep = LocalPlayer()\GetActiveWeapon()
-        return if not IsValid(wep) or not wep.IsTF2SniperRifle or not wep\GetIsCharging()
-        return 0.15
+	hook.Add 'AdjustMouseSensitivity', 'DTF2.SniperRifle', =>
+		wep = LocalPlayer()\GetActiveWeapon()
+		return if not IsValid(wep) or not wep.IsTF2SniperRifle or not wep\GetIsCharging()
+		return 0.15

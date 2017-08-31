@@ -41,52 +41,52 @@ SWEP.DrawTimeAnimation = 0.9
 SWEP.BoxDrawTimeAnimation = 0.9
 
 SWEP.Initialize = =>
-    BaseClass.Initialize(@)
-    @__InputCache = {} if CLIENT
+	BaseClass.Initialize(@)
+	@__InputCache = {} if CLIENT
 
 SWEP.GetBuildAngle = =>
-    ply = @GetOwner()
-    ang = ply\EyeAngles()
-    angReturn = Angle(0, ang.y, 0)
-    angReturn.y += @GetBuildRotation() * 90
-    return angReturn
+	ply = @GetOwner()
+	ang = ply\EyeAngles()
+	angReturn = Angle(0, ang.y, 0)
+	angReturn.y += @GetBuildRotation() * 90
+	return angReturn
 
 SWEP.CheckBuildableAvaliability = (slot = @SLOT_SENTRY) =>
-    with @GetOwner()
-        switch slot
-            when @SLOT_SENTRY
-                return not IsValid(\GetBuildedSentry())
-            when @SLOT_DISPENSER
-                return not IsValid(\GetBuildedDispenser())
-            when @SLOT_TELE_IN
-                return not IsValid(\GetBuildedTeleporterIn())
-            when @SLOT_TELE_OUT
-                return not IsValid(\GetBuildedTeleporterOut())
+	with @GetOwner()
+		switch slot
+			when @SLOT_SENTRY
+				return not IsValid(\GetBuildedSentry())
+			when @SLOT_DISPENSER
+				return not IsValid(\GetBuildedDispenser())
+			when @SLOT_TELE_IN
+				return not IsValid(\GetBuildedTeleporterIn())
+			when @SLOT_TELE_OUT
+				return not IsValid(\GetBuildedTeleporterOut())
 
 SWEP.TriggerDestructionRequest = (requestType = @SLOT_SENTRY) =>
-    ply = @GetOwner()
-    return false if not IsValid(ply) or not ply\IsPlayer()
-    return false if @CheckBuildableAvaliability(requestType)
+	ply = @GetOwner()
+	return false if not IsValid(ply) or not ply\IsPlayer()
+	return false if @CheckBuildableAvaliability(requestType)
 
-    if CLIENT
-        net.Start('DTF2.DestroyRequest')
-        net.WriteUInt(requestType, 8)
-        net.WriteEntity(@)
-        net.SendToServer()
-        return true
+	if CLIENT
+		net.Start('DTF2.DestroyRequest')
+		net.WriteUInt(requestType, 8)
+		net.WriteEntity(@)
+		net.SendToServer()
+		return true
 
-    switch requestType
-        when @SLOT_SENTRY
-            ply\GetBuildedSentry()\TriggerDestruction()
-        when @SLOT_DISPENSER
-            ply\GetBuildedDispenser()\TriggerDestruction()
-        when @SLOT_TELE_IN
-            ply\GetBuildedTeleporterIn()\TriggerDestruction()
-        when @SLOT_TELE_OUT
-            ply\GetBuildedTeleporterOut()\TriggerDestruction()
+	switch requestType
+		when @SLOT_SENTRY
+			ply\GetBuildedSentry()\TriggerDestruction()
+		when @SLOT_DISPENSER
+			ply\GetBuildedDispenser()\TriggerDestruction()
+		when @SLOT_TELE_IN
+			ply\GetBuildedTeleporterIn()\TriggerDestruction()
+		when @SLOT_TELE_OUT
+			ply\GetBuildedTeleporterOut()\TriggerDestruction()
 
-    @SwitchToWrench()
-    return true
+	@SwitchToWrench()
+	return true
 
 SWEP.PrimaryAttack = => false
 SWEP.SecondaryAttack = => false

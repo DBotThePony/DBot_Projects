@@ -35,17 +35,17 @@ SWEP.SingleCrit = true
 SWEP.CritsCooldown = 1
 
 SWEP.Primary = {
-    'Ammo': 'none'
-    'ClipSize': -1
-    'DefaultClip': 0
-    'Automatic': true
+	'Ammo': 'none'
+	'ClipSize': -1
+	'DefaultClip': 0
+	'Automatic': true
 }
 
 SWEP.Secondary = {
-    'Ammo': 'none'
-    'ClipSize': -1
-    'DefaultClip': 0
-    'Automatic': true
+	'Ammo': 'none'
+	'ClipSize': -1
+	'DefaultClip': 0
+	'Automatic': true
 }
 
 SWEP.SetupDataTables = => BaseClass.SetupDataTables(@)
@@ -65,30 +65,30 @@ SWEP.BulletForce = 20
 SWEP.BulletHull = 8
 
 SWEP.PlayMissSound = =>
-    if not @incomingCrit
-        return @EmitSound('DTF2_' .. @MissSoundsScript) if @MissSoundsScript
-        playSound = table.Random(@MissSounds)
-        @EmitSound(playSound, 50, 100, 1, CHAN_WEAPON) if playSound
-    else
-        return @EmitSound('DTF2_' .. @MissCritSoundsScript) if @MissCritSoundsScript
-        playSound = table.Random(@MissSoundsCrit)
-        @EmitSound(playSound, 50, 100, 1, CHAN_WEAPON) if playSound
+	if not @incomingCrit
+		return @EmitSound('DTF2_' .. @MissSoundsScript) if @MissSoundsScript
+		playSound = table.Random(@MissSounds)
+		@EmitSound(playSound, 50, 100, 1, CHAN_WEAPON) if playSound
+	else
+		return @EmitSound('DTF2_' .. @MissCritSoundsScript) if @MissCritSoundsScript
+		playSound = table.Random(@MissSoundsCrit)
+		@EmitSound(playSound, 50, 100, 1, CHAN_WEAPON) if playSound
 
 SWEP.PlayHitSound = =>
-    return @EmitSound('DTF2_' .. @HitSoundsScript) if @HitSoundsScript
-    playSound = table.Random(@HitSounds)
-    @EmitSound(playSound, 50, 100, 1, CHAN_WEAPON) if playSound
+	return @EmitSound('DTF2_' .. @HitSoundsScript) if @HitSoundsScript
+	playSound = table.Random(@HitSounds)
+	@EmitSound(playSound, 50, 100, 1, CHAN_WEAPON) if playSound
 
 SWEP.PlayFleshHitSound = =>
-    return @EmitSound('DTF2_' .. @HitSoundsFleshScript) if @HitSoundsFleshScript
-    playSound = table.Random(@HitSoundsFlesh)
-    @EmitSound(playSound, 75, 100, 1, CHAN_WEAPON) if playSound
+	return @EmitSound('DTF2_' .. @HitSoundsFleshScript) if @HitSoundsFleshScript
+	playSound = table.Random(@HitSoundsFlesh)
+	@EmitSound(playSound, 75, 100, 1, CHAN_WEAPON) if playSound
 
 SWEP.OnMiss = =>
-    @PlayMissSound()
+	@PlayMissSound()
 
 SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
-    BaseClass.OnHit(@, hitEntity, tr, dmginfo)
-    @PlayHitSound() if not IsValid(hitEntity)
-    @PlayFleshHitSound() if IsValid(hitEntity) and (hitEntity\IsPlayer() or hitEntity\IsNPC())
-    dmginfo\SetDamageType(DMG_CLUB)
+	BaseClass.OnHit(@, hitEntity, tr, dmginfo)
+	@PlayHitSound() if not IsValid(hitEntity)
+	@PlayFleshHitSound() if IsValid(hitEntity) and (hitEntity\IsPlayer() or hitEntity\IsNPC())
+	dmginfo\SetDamageType(DMG_CLUB)

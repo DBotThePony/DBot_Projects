@@ -67,81 +67,81 @@ ENT.GibsValue = CreateConVar('tf_build_gibs', '15', {FCVAR_ARCHIVE, FCVAR_REPLIC
 -- ENT.ExplosionSound = 'DTF2_Building_Sentry.Explode'
 
 ENT.GetGibs = =>
-    switch type(@Gibs)
-        when 'function'
-            return @Gibs()
-        when 'table'
-            return @Gibs
-        when 'nil'
-            return {}
+	switch type(@Gibs)
+		when 'function'
+			return @Gibs()
+		when 'table'
+			return @Gibs
+		when 'nil'
+			return {}
 
 ENT.SetupDataTables = =>
-    @NetworkVar('Bool', 0, 'IsBuilding')
-    @NetworkVar('Bool', 2, 'IsUpgrading')
-    @NetworkVar('Bool', 1, 'BuildSpeedup')
-    @NetworkVar('Bool', 16, 'TeamType')
-    @NetworkVar('Bool', 17, 'IsMovable')
-    @NetworkVar('Int', 1, 'nwLevel')
-    @NetworkVar('Int', 16, 'UpgradeAmount')
-    @NetworkVar('Entity', 0, 'TFPlayer')
-    @NetworkVar('Float', 0, 'BuildFinishAt')
-    @SetIsMovable(false)
-    @SetBuildFinishAt(0)
+	@NetworkVar('Bool', 0, 'IsBuilding')
+	@NetworkVar('Bool', 2, 'IsUpgrading')
+	@NetworkVar('Bool', 1, 'BuildSpeedup')
+	@NetworkVar('Bool', 16, 'TeamType')
+	@NetworkVar('Bool', 17, 'IsMovable')
+	@NetworkVar('Int', 1, 'nwLevel')
+	@NetworkVar('Int', 16, 'UpgradeAmount')
+	@NetworkVar('Entity', 0, 'TFPlayer')
+	@NetworkVar('Float', 0, 'BuildFinishAt')
+	@SetIsMovable(false)
+	@SetBuildFinishAt(0)
 
 ENT.SelectAttacker = => IsValid(@GetTFPlayer()) and @GetTFPlayer() or @
 
 ENT.UpdateSequenceList = =>
-    @buildSequence = @LookupSequence('build')
-    @upgradeSequence = @LookupSequence('upgrade')
-    @idleSequence = @LookupSequence(@IDLE_ANIM)
+	@buildSequence = @LookupSequence('build')
+	@upgradeSequence = @LookupSequence('upgrade')
+	@idleSequence = @LookupSequence(@IDLE_ANIM)
 
 -- I use different priorities than original TF2 code
 -- hehehe
 
 ENT.GetMaxHP = (level = @GetLevel()) =>
-    switch @GetLevel()
-        when 1
-            DTF2.GrabInt(@HealthLevel1)
-        when 2
-            DTF2.GrabInt(@HealthLevel2)
-        when 3
-            DTF2.GrabInt(@HealthLevel3)
-        else
-            DTF2.GrabInt(@HealthLevel1)
+	switch @GetLevel()
+		when 1
+			DTF2.GrabInt(@HealthLevel1)
+		when 2
+			DTF2.GrabInt(@HealthLevel2)
+		when 3
+			DTF2.GrabInt(@HealthLevel3)
+		else
+			DTF2.GrabInt(@HealthLevel1)
 
 ENT.IsAvaliable = => not @GetIsBuilding() and not @GetIsUpgrading()
 ENT.IsAvaliableForRepair = => not @GetIsBuilding() and not @GetIsUpgrading()
 ENT.CustomRepair = (thersold = 200, simulate = CLIENT) =>
-    return 0 if thersold == 0
-    weight = 0
-    return weight
+	return 0 if thersold == 0
+	weight = 0
+	return weight
 
 ENT.GetBuildingStatus = =>
-    if @GetIsBuilding()
-        deltaBuild = math.Clamp(@GetBuildFinishAt() - CurTime(), 0, DTF2.GrabFloat(@BuildTime))
-        deltaBuildMult = math.Clamp(1 - deltaBuild / DTF2.GrabFloat(@BuildTime), 0, 1)
-        return true, deltaBuild, deltaBuildMult
-    else
-        return false, 0, 1
+	if @GetIsBuilding()
+		deltaBuild = math.Clamp(@GetBuildFinishAt() - CurTime(), 0, DTF2.GrabFloat(@BuildTime))
+		deltaBuildMult = math.Clamp(1 - deltaBuild / DTF2.GrabFloat(@BuildTime), 0, 1)
+		return true, deltaBuild, deltaBuildMult
+	else
+		return false, 0, 1
 
 ENT.SimulateUpgrade = (thersold = 200, simulate = CLIENT) =>
-    return 0 if thersold == 0
-    weight = 0
-    if @GetLevel() < 3 and @IsAvaliableForRepair()
-        upgradeAmount = math.Clamp(math.min(DTF2.GrabInt(@MAX_UPGRADE) - @GetUpgradeAmount(), DTF2.GrabInt(@UPGRADE_HIT)), 0, thersold - weight)
-        weight += upgradeAmount if upgradeAmount ~= 0
-        @SetUpgradeAmount(@GetUpgradeAmount() + upgradeAmount) if upgradeAmount ~= 0 and not simulate
-        @SetLevel(@GetLevel() + 1) if @GetUpgradeAmount() >= DTF2.GrabInt(@MAX_UPGRADE)
-    return weight
+	return 0 if thersold == 0
+	weight = 0
+	if @GetLevel() < 3 and @IsAvaliableForRepair()
+		upgradeAmount = math.Clamp(math.min(DTF2.GrabInt(@MAX_UPGRADE) - @GetUpgradeAmount(), DTF2.GrabInt(@UPGRADE_HIT)), 0, thersold - weight)
+		weight += upgradeAmount if upgradeAmount ~= 0
+		@SetUpgradeAmount(@GetUpgradeAmount() + upgradeAmount) if upgradeAmount ~= 0 and not simulate
+		@SetLevel(@GetLevel() + 1) if @GetUpgradeAmount() >= DTF2.GrabInt(@MAX_UPGRADE)
+	return weight
 
 ENT.SimulateRepair = (thersold = 200, simulate = CLIENT) =>
-    return 0 if thersold == 0
-    weight = 0
-    repairHP = 0
-    repairHP = math.Clamp(math.min(@GetMaxHealth() - @Health(), DTF2.GrabInt(@REPAIR_HEALTH)), 0, thersold - weight) if @IsAvaliableForRepair()
+	return 0 if thersold == 0
+	weight = 0
+	repairHP = 0
+	repairHP = math.Clamp(math.min(@GetMaxHealth() - @Health(), DTF2.GrabInt(@REPAIR_HEALTH)), 0, thersold - weight) if @IsAvaliableForRepair()
 
-    weight += repairHP if repairHP ~= 0 
-    @SetHealth(@Health() + repairHP) if repairHP ~= 0 and not simulate
-    weight += @CustomRepair(thersold - weight, simulate)
-    weight += @SimulateUpgrade(thersold - weight, simulate)
-    return weight
+	weight += repairHP if repairHP ~= 0 
+	@SetHealth(@Health() + repairHP) if repairHP ~= 0 and not simulate
+	weight += @CustomRepair(thersold - weight, simulate)
+	weight += @SimulateUpgrade(thersold - weight, simulate)
+	return weight

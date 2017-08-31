@@ -41,13 +41,13 @@ SWEP.ReloadLoop = 'reload_loop'
 SWEP.ReloadEnd = 'reload_end'
 
 SWEP.PreOnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
-    if IsValid(hitEntity) and (hitEntity\IsNPC() or hitEntity\IsPlayer()) and not hitEntity\OnGround() and not @GetIncomingCrit()
-        @SetSuppressEffects(false)
-        @ThatWasMinicrit() if SERVER
+	if IsValid(hitEntity) and (hitEntity\IsNPC() or hitEntity\IsPlayer()) and not hitEntity\OnGround() and not @GetIncomingCrit()
+		@SetSuppressEffects(false)
+		@ThatWasMinicrit() if SERVER
 
 SWEP.Primary = {
-    'Ammo': 'Buckshot'
-    'ClipSize': 4
-    'DefaultClip': 32
-    'Automatic': true
+	'Ammo': 'Buckshot'
+	'ClipSize': 4
+	'DefaultClip': 32
+	'Automatic': true
 }

@@ -33,18 +33,18 @@ SWEP.RandomCriticals = false
 SWEP.DefaultSpread = Vector(1, 1, 0) * 0.055
 
 SWEP.PreOnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
-    @BaseClass.PreOnHit(@, hitEntity, tr, dmginfo)
-    if hitEntity\IsValid() and hitEntity\GetPos()\Distance(@GetOwner()\GetPos()) < 500 and @AttackingAtSpine(hitEntity)
-        @ThatWasMinicrit(hitEntity, dmginfo)
+	@BaseClass.PreOnHit(@, hitEntity, tr, dmginfo)
+	if hitEntity\IsValid() and hitEntity\GetPos()\Distance(@GetOwner()\GetPos()) < 500 and @AttackingAtSpine(hitEntity)
+		@ThatWasMinicrit(hitEntity, dmginfo)
 
 SWEP.FireSoundsScript = 'Weapon_Back_Scatter.Single'
 SWEP.FireCritSoundsScript = 'Weapon_Back_Scatter.SingleCrit'
 SWEP.EmptySoundsScript = 'Weapon_Back_Scatter.Empty'
 
 SWEP.Primary = {
-    'Ammo': 'Buckshot'
-    'ClipSize': 4
-    'DefaultClip': 4
-    'Automatic': true
+	'Ammo': 'Buckshot'
+	'ClipSize': 4
+	'DefaultClip': 4
+	'Automatic': true
 }
 

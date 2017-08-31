@@ -44,10 +44,10 @@ SWEP.FireCritSoundsScript = 'Weapon_Short_Stop.SingleCrit'
 SWEP.EmptySoundsScript = 'Weapon_Short_Stop.Empty'
 
 SWEP.Primary = {
-    'Ammo': 'Buckshot'
-    'ClipSize': 4
-    'DefaultClip': 4
-    'Automatic': true
+	'Ammo': 'Buckshot'
+	'ClipSize': 4
+	'DefaultClip': 4
+	'Automatic': true
 }
 
 SWEP.CooldownTime = 0.35
@@ -60,16 +60,16 @@ SWEP.ReloadStart = 'ss_reload'
 SWEP.SingleReloadAnimation = true
 
 SWEP.SecondaryAttack = =>
-    trace = @GetOwner()\GetEyeTrace()
-    lpos = @GetOwner()\GetPos()
-    return if not IsValid(trace.Entity) or trace.Entity\GetPos()\Distance(lpos) > 130
-    if SERVER
-        ent = trace.Entity
-        dir = ent\GetPos() - lpos
-        dir\Normalize()
-        
-        vel = dir * 300 + Vector(0, 0, 200)
-        DTF2.ApplyVelocity(ent, vel)
-    @EmitSound('DTF2_Player.ScoutShove')
-    @SetNextSecondaryFire(CurTime() + 1)
-    return true
+	trace = @GetOwner()\GetEyeTrace()
+	lpos = @GetOwner()\GetPos()
+	return if not IsValid(trace.Entity) or trace.Entity\GetPos()\Distance(lpos) > 130
+	if SERVER
+		ent = trace.Entity
+		dir = ent\GetPos() - lpos
+		dir\Normalize()
+		
+		vel = dir * 300 + Vector(0, 0, 200)
+		DTF2.ApplyVelocity(ent, vel)
+	@EmitSound('DTF2_Player.ScoutShove')
+	@SetNextSecondaryFire(CurTime() + 1)
+	return true

@@ -48,65 +48,65 @@ SWEP.ReloadEnd = 'mangler_reload_finish'
 SWEP.ViewModelEffects = {'drg_cow_idle'}
 
 SWEP.Primary = {
-    'Ammo': 'none'
-    'ClipSize': 4
-    'DefaultClip': 4
-    'Automatic': true
+	'Ammo': 'none'
+	'ClipSize': 4
+	'DefaultClip': 4
+	'Automatic': true
 }
 
 AccessorFunc(SWEP, 'isCharging', 'IsCharging')
 
 SWEP.Initialize = =>
-    @BaseClass.Initialize(@)
-    @isCharging = false
+	@BaseClass.Initialize(@)
+	@isCharging = false
 
 SWEP.PrimaryAttack = =>
-    return false if @isCharging
-    return @BaseClass.PrimaryAttack(@)
+	return false if @isCharging
+	return @BaseClass.PrimaryAttack(@)
 
 SWEP.Holster = =>
-    return false if @isCharging
-    return @BaseClass.Holster(@)
+	return false if @isCharging
+	return @BaseClass.Holster(@)
 
 SWEP.SecondaryAttack = =>
-    return false if @isCharging
-    return false if @Clip1() ~= @GetMaxClip1()
-    @SetIsReloading(false)
-    @SetIsCharging(true)
-    @SendWeaponSequence(@AttackAnimationSuper)
-    @SetIncomingFire(true)
-    @SetIncomingFireTime(CurTime() + @ChargeTime)
-    @EmitSound(@ChargingSound)
-    @AddParticle('drg_cow_muzzleflash_charged') if CLIENT
-    return true
+	return false if @isCharging
+	return false if @Clip1() ~= @GetMaxClip1()
+	@SetIsReloading(false)
+	@SetIsCharging(true)
+	@SendWeaponSequence(@AttackAnimationSuper)
+	@SetIncomingFire(true)
+	@SetIncomingFireTime(CurTime() + @ChargeTime)
+	@EmitSound(@ChargingSound)
+	@AddParticle('drg_cow_muzzleflash_charged') if CLIENT
+	return true
 
 SWEP.ReloadCall = =>
-    SuppressHostEvents(@GetOwner()) if SERVER and @GetOwner()\IsPlayer()
-    @EmitSound(@ReloadSound)
-    SuppressHostEvents(NULL) if SERVER and @GetOwner()\IsPlayer()
-    return @BaseClass.ReloadCall(@)
+	SuppressHostEvents(@GetOwner()) if SERVER and @GetOwner()\IsPlayer()
+	@EmitSound(@ReloadSound)
+	SuppressHostEvents(NULL) if SERVER and @GetOwner()\IsPlayer()
+	return @BaseClass.ReloadCall(@)
 
 
 hook.Add 'SetupMove', 'DTF2.CowMangler', (mv, cmd) =>
-    wep = @GetWeapon('dbot_tf_cowmangler')
-    return if not IsValid(wep)
-    return if not wep.GetIsCharging or not wep\GetIsCharging()
-    mv\SetMaxClientSpeed(90)
+	wep = @GetWeapon('dbot_tf_cowmangler')
+	return if not IsValid(wep)
+	return if not wep.GetIsCharging or not wep\GetIsCharging()
+	mv\SetMaxClientSpeed(90)
 
 if CLIENT
-    SWEP.FireTrigger = =>
-        if @isCharging
-            @isCharging = false
-            @SetClip1(0)
-            @Reload()
-            @StopParticle('drg_cow_muzzleflash_charged')
-        @BaseClass.FireTrigger(@)
-    return
+	SWEP.FireTrigger = =>
+		if @isCharging
+			@isCharging = false
+			@SetClip1(0)
+			@Reload()
+			@StopParticle('drg_cow_muzzleflash_charged')
+		@BaseClass.FireTrigger(@)
+	return
 
 SWEP.OnFireTriggered = (projectile = NULL) =>
-    if @isCharging
-        @SetClip1(0)
-        @EmitSound(@SingleCharged)
-        projectile\SetIsMiniCritical(true)
-        @isCharging = false
-        @Reload()
+	if @isCharging
+		@SetClip1(0)
+		@EmitSound(@SingleCharged)
+		projectile\SetIsMiniCritical(true)
+		@isCharging = false
+		@Reload()

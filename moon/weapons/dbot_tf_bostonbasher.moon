@@ -36,15 +36,15 @@ SWEP.HitSoundsScript = 'BostonBasher.HitWorld'
 SWEP.HitSoundsFleshScript = 'BostonBasher.Impact'
 
 if SERVER
-    SWEP.OnMiss = =>
-        @BaseClass.OnMiss(@)
-        ent = @GetOwner()\TF2Bleed(5)
-        ent\SetAttacker(@GetOwner())
-        ent\SetInflictor(@)
+	SWEP.OnMiss = =>
+		@BaseClass.OnMiss(@)
+		ent = @GetOwner()\TF2Bleed(5)
+		ent\SetAttacker(@GetOwner())
+		ent\SetInflictor(@)
 
-    SWEP.OnHit = (hitEntity = NULL, ...) =>
-        @BaseClass.OnHit(@, hitEntity, ...)
-        if IsValid(hitEntity) and (hitEntity\IsNPC() or hitEntity\IsPlayer())
-            ent = hitEntity\TF2Bleed(5)
-            ent\SetAttacker(@GetOwner())
-            ent\SetInflictor(@)
+	SWEP.OnHit = (hitEntity = NULL, ...) =>
+		@BaseClass.OnHit(@, hitEntity, ...)
+		if IsValid(hitEntity) and (hitEntity\IsNPC() or hitEntity\IsPlayer())
+			ent = hitEntity\TF2Bleed(5)
+			ent\SetAttacker(@GetOwner())
+			ent\SetInflictor(@)

@@ -21,27 +21,27 @@ DTF2 = DTF2 or {}
 entMeta = FindMetaTable('Entity')
 
 EntityClass =
-    CritBoosted: => @GetNWBool('DTF2.CritBoosted')
-    IsCritBoosted: => @GetNWBool('DTF2.CritBoosted')
-    GetCritBoosted: => @GetNWBool('DTF2.CritBoosted')
-    SetCritBoosted: (val = @CritBoosted()) => @SetNWBool('DTF2.CritBoosted', val)
+	CritBoosted: => @GetNWBool('DTF2.CritBoosted')
+	IsCritBoosted: => @GetNWBool('DTF2.CritBoosted')
+	GetCritBoosted: => @GetNWBool('DTF2.CritBoosted')
+	SetCritBoosted: (val = @CritBoosted()) => @SetNWBool('DTF2.CritBoosted', val)
 
-    MiniCritBoosted: => @GetNWBool('DTF2.MiniCritBoosted')
-    IsMiniCritBoosted: => @GetNWBool('DTF2.MiniCritBoosted')
-    GetMiniCritBoosted: => @GetNWBool('DTF2.MiniCritBoosted')
-    SetMiniCritBoosted: (val = @MiniCritBoosted()) => @SetNWBool('DTF2.MiniCritBoosted', val)
+	MiniCritBoosted: => @GetNWBool('DTF2.MiniCritBoosted')
+	IsMiniCritBoosted: => @GetNWBool('DTF2.MiniCritBoosted')
+	GetMiniCritBoosted: => @GetNWBool('DTF2.MiniCritBoosted')
+	SetMiniCritBoosted: (val = @MiniCritBoosted()) => @SetNWBool('DTF2.MiniCritBoosted', val)
 
-    GetCritModifier: => @CritBoosted() and 3 or @MiniCritBoosted() and 1.3 or 1
+	GetCritModifier: => @CritBoosted() and 3 or @MiniCritBoosted() and 1.3 or 1
 
-    GetMiniCritBuffers: => @GetNWInt('DTF2.MiniCritBuffers')
-    SetMiniCritBuffers: (val = @GetMiniCritBuffers()) => @SetNWInt('DTF2.MiniCritBuffers', val)
-    AddMiniCritBuffer: => @SetNWInt('DTF2.MiniCritBuffers', @GetMiniCritBuffers() + 1)
-    RemoveMiniCritBuffer: => @SetNWInt('DTF2.MiniCritBuffers', @GetMiniCritBuffers() - 1)
-    UpdateMiniCritBuffers: => @SetMiniCritBoosted(@GetNWInt('DTF2.MiniCritBuffers') > 0)
+	GetMiniCritBuffers: => @GetNWInt('DTF2.MiniCritBuffers')
+	SetMiniCritBuffers: (val = @GetMiniCritBuffers()) => @SetNWInt('DTF2.MiniCritBuffers', val)
+	AddMiniCritBuffer: => @SetNWInt('DTF2.MiniCritBuffers', @GetMiniCritBuffers() + 1)
+	RemoveMiniCritBuffer: => @SetNWInt('DTF2.MiniCritBuffers', @GetMiniCritBuffers() - 1)
+	UpdateMiniCritBuffers: => @SetMiniCritBoosted(@GetNWInt('DTF2.MiniCritBuffers') > 0)
 
 entMeta[k] = v for k, v in pairs EntityClass
 
 if SERVER
-    hook.Add 'PlayerSpawn', 'DTF2.Crits', =>
-        @SetCritBoosted(false)
-        @SetMiniCritBoosted(false)
+	hook.Add 'PlayerSpawn', 'DTF2.Crits', =>
+		@SetCritBoosted(false)
+		@SetMiniCritBoosted(false)

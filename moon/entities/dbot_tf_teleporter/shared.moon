@@ -33,22 +33,22 @@ ENT.MIN_BREAD_TTL = CreateConVar('tf_teleport_minbread_ttl', '15', {FCVAR_ARCHIV
 ENT.MAX_BREAD_TTL = CreateConVar('tf_teleport_maxbread_ttl', '20', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Maximal bread time to live')
 
 ENT.Gibs = {
-    'models/buildables/gibs/teleporter_gib1.mdl'
-    'models/buildables/gibs/teleporter_gib2.mdl'
-    'models/buildables/gibs/teleporter_gib3.mdl'
-    'models/buildables/gibs/teleporter_gib4.mdl'
+	'models/buildables/gibs/teleporter_gib1.mdl'
+	'models/buildables/gibs/teleporter_gib2.mdl'
+	'models/buildables/gibs/teleporter_gib3.mdl'
+	'models/buildables/gibs/teleporter_gib4.mdl'
 }
 
 ENT.BREAD_MODELS = {
-    'models/weapons/c_models/c_bread/c_bread_baguette.mdl'
-    'models/weapons/c_models/c_bread/c_bread_burnt.mdl'
-    'models/weapons/c_models/c_bread/c_bread_cinnamon.mdl'
-    'models/weapons/c_models/c_bread/c_bread_cornbread.mdl'
-    'models/weapons/c_models/c_bread/c_bread_crumpet.mdl'
-    'models/weapons/c_models/c_bread/c_bread_plainloaf.mdl'
-    'models/weapons/c_models/c_bread/c_bread_pretzel.mdl'
-    'models/weapons/c_models/c_bread/c_bread_ration.mdl'
-    'models/weapons/c_models/c_bread/c_bread_russianblack.mdl'
+	'models/weapons/c_models/c_bread/c_bread_baguette.mdl'
+	'models/weapons/c_models/c_bread/c_bread_burnt.mdl'
+	'models/weapons/c_models/c_bread/c_bread_cinnamon.mdl'
+	'models/weapons/c_models/c_bread/c_bread_cornbread.mdl'
+	'models/weapons/c_models/c_bread/c_bread_crumpet.mdl'
+	'models/weapons/c_models/c_bread/c_bread_plainloaf.mdl'
+	'models/weapons/c_models/c_bread/c_bread_pretzel.mdl'
+	'models/weapons/c_models/c_bread/c_bread_ration.mdl'
+	'models/weapons/c_models/c_bread/c_bread_russianblack.mdl'
 }
 
 ENT.GibsValue = CreateConVar('tf_teleport_gibs', '15', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Gibs value for teleporter')
@@ -95,152 +95,152 @@ ENT.IsValidTeleporter = => @ValidEntrance() or @ValidExit()
 ENT.GetConnectedTeleporter = => @IsExit() and @GetEntrance() or @GetExit()
 ENT.ReadyToTeleport = => @IsValidTeleporter() and @GetConnectedTeleporter()\IsAvaliable()
 ENT.OtherSideIsReady = =>
-    side = @GetConnectedTeleporter()
-    return @IsValidTeleporter() and side.BaseClass.IsAvaliable(side)
+	side = @GetConnectedTeleporter()
+	return @IsValidTeleporter() and side.BaseClass.IsAvaliable(side)
 
 ENT.GetTeleAngles = =>
-    ang = @GetAngles()
-    ang.p = 0
-    ang.r = 0
-    return ang
+	ang = @GetAngles()
+	ang.p = 0
+	ang.r = 0
+	return ang
 
 ENT.GetChargedEffect = (level = @GetLevel()) =>
-    if @GetTeamType()
-        switch level
-            when 1
-                'teleporter_blue_charged_level1'
-            when 2
-                'teleporter_blue_charged_level2'
-            when 3
-                'teleporter_blue_charged_level3'
-    else
-        switch level
-            when 1
-                'teleporter_red_charged_level1'
-            when 2
-                'teleporter_red_charged_level2'
-            when 3
-                'teleporter_red_charged_level3'
+	if @GetTeamType()
+		switch level
+			when 1
+				'teleporter_blue_charged_level1'
+			when 2
+				'teleporter_blue_charged_level2'
+			when 3
+				'teleporter_blue_charged_level3'
+	else
+		switch level
+			when 1
+				'teleporter_red_charged_level1'
+			when 2
+				'teleporter_red_charged_level2'
+			when 3
+				'teleporter_red_charged_level3'
 
 ENT.GetAvaliableEffect = (level = @GetLevel()) =>
-    if @IsEntrance()
-        if @GetTeamType()
-            switch level
-                when 1
-                    'teleporter_blue_entrance_level1'
-                when 2
-                    'teleporter_blue_entrance_level2'
-                when 3
-                    'teleporter_blue_entrance_level3'
-        else
-            switch level
-                when 1
-                    'teleporter_red_entrance_level1'
-                when 2
-                    'teleporter_red_entrance_level2'
-                when 3
-                    'teleporter_red_entrance_level3'
-    else
-        if @GetTeamType()
-            switch level
-                when 1
-                    'teleporter_blue_exit_level1'
-                when 2
-                    'teleporter_blue_exit_level2'
-                when 3
-                    'teleporter_blue_exit_level3'
-        else
-            switch level
-                when 1
-                    'teleporter_red_exit_level1'
-                when 2
-                    'teleporter_red_exit_level2'
-                when 3
-                    'teleporter_red_exit_level3'
+	if @IsEntrance()
+		if @GetTeamType()
+			switch level
+				when 1
+					'teleporter_blue_entrance_level1'
+				when 2
+					'teleporter_blue_entrance_level2'
+				when 3
+					'teleporter_blue_entrance_level3'
+		else
+			switch level
+				when 1
+					'teleporter_red_entrance_level1'
+				when 2
+					'teleporter_red_entrance_level2'
+				when 3
+					'teleporter_red_entrance_level3'
+	else
+		if @GetTeamType()
+			switch level
+				when 1
+					'teleporter_blue_exit_level1'
+				when 2
+					'teleporter_blue_exit_level2'
+				when 3
+					'teleporter_blue_exit_level3'
+		else
+			switch level
+				when 1
+					'teleporter_red_exit_level1'
+				when 2
+					'teleporter_red_exit_level2'
+				when 3
+					'teleporter_red_exit_level3'
 
 ENT.GetReloadTime = (level = @GetLevel()) =>
-    switch level
-        when 1
-            DTF2.GrabFloat(@ReloadTime1)
-        when 2
-            DTF2.GrabFloat(@ReloadTime2)
-        when 3
-            DTF2.GrabFloat(@ReloadTime3)
+	switch level
+		when 1
+			DTF2.GrabFloat(@ReloadTime1)
+		when 2
+			DTF2.GrabFloat(@ReloadTime2)
+		when 3
+			DTF2.GrabFloat(@ReloadTime3)
 
 ENT.GetSpinSound = (level = @GetLevel()) =>
-    switch level
-        when 1
-            'DTF2_Building_Teleporter.SpinLevel1'
-        when 2
-            'DTF2_Building_Teleporter.SpinLevel2'
-        when 3
-            'DTF2_Building_Teleporter.SpinLevel3'
+	switch level
+		when 1
+			'DTF2_Building_Teleporter.SpinLevel1'
+		when 2
+			'DTF2_Building_Teleporter.SpinLevel2'
+		when 3
+			'DTF2_Building_Teleporter.SpinLevel3'
 
 ENT.SetupDataTables = =>
-    @BaseClass.SetupDataTables(@)
-    @NetworkVar('Bool', 8, 'IsExit')
-    @NetworkVar('Entity', 16, 'Exit')
-    @NetworkVar('Entity', 17, 'Entrance')
-    @NetworkVar('Float', 16, 'ResetAt')
-    @NetworkVar('Int', 17, 'Uses')
-    @SetResetAt(0)
+	@BaseClass.SetupDataTables(@)
+	@NetworkVar('Bool', 8, 'IsExit')
+	@NetworkVar('Entity', 16, 'Exit')
+	@NetworkVar('Entity', 17, 'Entrance')
+	@NetworkVar('Float', 16, 'ResetAt')
+	@NetworkVar('Int', 17, 'Uses')
+	@SetResetAt(0)
 
 ENT.ThinkPlaybackRate = =>
-    oldPlayback = @currentPlayback
-    if @BaseClass.IsAvaliable(@)
-        @currentPlayback = Lerp(0.05, @currentPlayback, @targetPlayback)
-    else
-        if @GetIsBuilding()
-            @currentPlayback = Lerp(0.05, @currentPlayback, 0.5)
-        else
-            @currentPlayback = Lerp(0.05, @currentPlayback, 1)
-    
-    if oldPlayback ~= @currentPlayback
-        @SetPlaybackRate(@currentPlayback)
+	oldPlayback = @currentPlayback
+	if @BaseClass.IsAvaliable(@)
+		@currentPlayback = Lerp(0.05, @currentPlayback, @targetPlayback)
+	else
+		if @GetIsBuilding()
+			@currentPlayback = Lerp(0.05, @currentPlayback, 0.5)
+		else
+			@currentPlayback = Lerp(0.05, @currentPlayback, 1)
+	
+	if oldPlayback ~= @currentPlayback
+		@SetPlaybackRate(@currentPlayback)
 
 ENT.CalculatePlaybackRate = (animTime = 1 - (@GetResetAt() - CurTime()) / @GetReloadTime()) =>
-    if animTime < 0.15
-        return 1 - animTime / 0.15
-    elseif animTime < 0.85
-        return 0.15
-    else
-        return 0.5
+	if animTime < 0.15
+		return 1 - animTime / 0.15
+	elseif animTime < 0.85
+		return 0.15
+	else
+		return 0.5
 
 ENT.Think = =>
-    @BaseClass.Think(@)
-    @ThinkPlaybackRate()
-    
-    if @BaseClass.IsAvaliable(@)
-        if @IsValidTeleporter()
-            if @GetResetAt() > CurTime()
-                @targetPlayback = @CalculatePlaybackRate()
-            else
-                @targetPlayback = 1
-        else
-            @targetPlayback = 0
+	@BaseClass.Think(@)
+	@ThinkPlaybackRate()
+	
+	if @BaseClass.IsAvaliable(@)
+		if @IsValidTeleporter()
+			if @GetResetAt() > CurTime()
+				@targetPlayback = @CalculatePlaybackRate()
+			else
+				@targetPlayback = 1
+		else
+			@targetPlayback = 0
 
-    @ClientTeleporterThink() if CLIENT
-    return true
+	@ClientTeleporterThink() if CLIENT
+	return true
 
 ENT.SimulateUpgrade = (thersold = 200, simulate = CLIENT) =>
-    if @isRepairedConnected
-        @BaseClass.SimulateUpgrade(@, @realThersold, simulate)
-        return 0
-    else
-        return @BaseClass.SimulateUpgrade(@, thersold, simulate)
+	if @isRepairedConnected
+		@BaseClass.SimulateUpgrade(@, @realThersold, simulate)
+		return 0
+	else
+		return @BaseClass.SimulateUpgrade(@, thersold, simulate)
 
 ENT.SimulateRepair = (thersold = 200, simulate = CLIENT, isConnected = false) =>
-    if not isConnected
-        tele2 = @GetConnectedTeleporter()
-        return 0 if IsValid(tele2) and not tele2\IsAvaliableForRepair()
-        weight = @BaseClass.SimulateRepair(@, thersold, simulate)
-        tele2 = @GetConnectedTeleporter()
-        if IsValid(tele2)
-            weight += tele2\SimulateRepair(thersold, simulate, true)
-        return weight
-    else
-        @isRepairedConnected = true
-        @realThersold = thersold
-        weight = @BaseClass.SimulateRepair(@, thersold, simulate)
-        @isRepairedConnected = false
-        return weight
+	if not isConnected
+		tele2 = @GetConnectedTeleporter()
+		return 0 if IsValid(tele2) and not tele2\IsAvaliableForRepair()
+		weight = @BaseClass.SimulateRepair(@, thersold, simulate)
+		tele2 = @GetConnectedTeleporter()
+		if IsValid(tele2)
+			weight += tele2\SimulateRepair(thersold, simulate, true)
+		return weight
+	else
+		@isRepairedConnected = true
+		@realThersold = thersold
+		weight = @BaseClass.SimulateRepair(@, thersold, simulate)
+		@isRepairedConnected = false
+		return weight

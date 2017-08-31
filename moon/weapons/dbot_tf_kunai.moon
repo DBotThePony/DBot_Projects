@@ -42,20 +42,20 @@ SWEP.BackstabAnimationDown = 'eternal_backstab_down'
 SWEP.BackstabAnimationIdle = 'eternal_backstab_idle'
 
 SWEP.Deploy = =>
-    BaseClass.Deploy(@)
-    return true if CLIENT
-    with @GetOwner()
-        if not .DTF2_KunaiHealthDecreased
-            .DTF2_KunaiHealthDecreased = true
-            \SetMaxHealth(\GetMaxHealth() * 0.56)
-            \SetHealth(\Health() * 0.56)
-    return true
+	BaseClass.Deploy(@)
+	return true if CLIENT
+	with @GetOwner()
+		if not .DTF2_KunaiHealthDecreased
+			.DTF2_KunaiHealthDecreased = true
+			\SetMaxHealth(\GetMaxHealth() * 0.56)
+			\SetHealth(\Health() * 0.56)
+	return true
 
 SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
-    if IsValid(hitEntity) and SERVER and @isOnBack
-        hp = hitEntity\Health()
-        @GetOwner()\AddTFOverheal(hp)
-    BaseClass.OnHit(@, hitEntity, tr, dmginfo)
+	if IsValid(hitEntity) and SERVER and @isOnBack
+		hp = hitEntity\Health()
+		@GetOwner()\AddTFOverheal(hp)
+	BaseClass.OnHit(@, hitEntity, tr, dmginfo)
 
 if SERVER
-    hook.Add 'PlayerSpawn', 'DTF2.Kunai', => @DTF2_KunaiHealthDecreased = false
+	hook.Add 'PlayerSpawn', 'DTF2.Kunai', => @DTF2_KunaiHealthDecreased = false

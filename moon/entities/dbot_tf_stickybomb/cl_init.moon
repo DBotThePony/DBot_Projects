@@ -19,6 +19,6 @@ DEFINE_BASECLASS('dbot_tf_projectile')
 include 'shared.lua'
 
 net.Receive 'DTF2.Event.StickyBombStick', ->
-    ent = net.ReadEntity()
-    return if not IsValid(ent)
-    ent\CreateParticleEffect('stickybomb_pulse_red', 0)
+	ent = net.ReadEntity()
+	return if not IsValid(ent)
+	ent\CreateParticleEffect('stickybomb_pulse_red', 0)

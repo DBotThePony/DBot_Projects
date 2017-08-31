@@ -45,8 +45,8 @@ SWEP.AttackAnimationCrit = 'f_swing_crit'
 SWEP.SelectAttackAnimation = => not @secondary and 'f_swing_left' or 'f_swing_right'
 
 SWEP.SecondaryAttack = =>
-    return false if @GetNextPrimaryFire() > CurTime()
-    @secondary = true
-    @PrimaryAttack()
-    @secondary = false
-    return true
+	return false if @GetNextPrimaryFire() > CurTime()
+	@secondary = true
+	@PrimaryAttack()
+	@secondary = false
+	return true

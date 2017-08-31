@@ -35,8 +35,8 @@ SWEP.FireSoundsScript = 'Weapon_RPG_BlackBox.Single'
 SWEP.FireCritSoundsScript = 'Weapon_RPG_BlackBox.SingleCrit'
 
 SWEP.Primary = {
-    'Ammo': 'RPG_Round'
-    'ClipSize': 3
-    'DefaultClip': 20
-    'Automatic': true
+	'Ammo': 'RPG_Round'
+	'ClipSize': 3
+	'DefaultClip': 20
+	'Automatic': true
 }

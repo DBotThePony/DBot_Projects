@@ -47,7 +47,7 @@ ENT.DrawEffectsCriticals = {'critical_grenade_red'}
 ENT.ZAddition = 0.14
 
 if SERVER
-    ENT.OnHit = (entHit) =>
-        if not IsValid(entHit)
-            @SetDamage(@DefaultDamageBounce)
-            @phys\SetVelocity(Vector())
+	ENT.OnHit = (entHit) =>
+		if not IsValid(entHit)
+			@SetDamage(@DefaultDamageBounce)
+			@phys\SetVelocity(Vector())

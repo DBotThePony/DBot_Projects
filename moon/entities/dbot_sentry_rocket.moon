@@ -31,31 +31,31 @@ AccessorFunc(ENT, 'm_Inflictor', 'Inflictor')
 AccessorFunc(ENT, 'm_FireDir', 'FireDirection')
 
 ENT.Initialize = =>
-    @SetModel('models/buildables/sentry3_rockets.mdl')
-    return if CLIENT
-    @SetInflictor(@) if not @GetInflictor()
-    @SetAttacker(@) if not @GetAttacker()
-    @PhysicsInitSphere(12)
-    @SetFireDirection(Vector(0, 0, 0)) if not @GetFireDirection()
-    with @phys = @GetPhysicsObject()
-        \EnableMotion(true)
-        \SetMass(5)
-        \EnableGravity(false)
-        \Wake()
+	@SetModel('models/buildables/sentry3_rockets.mdl')
+	return if CLIENT
+	@SetInflictor(@) if not @GetInflictor()
+	@SetAttacker(@) if not @GetAttacker()
+	@PhysicsInitSphere(12)
+	@SetFireDirection(Vector(0, 0, 0)) if not @GetFireDirection()
+	with @phys = @GetPhysicsObject()
+		\EnableMotion(true)
+		\SetMass(5)
+		\EnableGravity(false)
+		\Wake()
 
 ENT.Think = =>
-    return if CLIENT
-    return @Remove() if not @phys\IsValid()
-    @phys\SetVelocity(@GetFireDirection() * 1500)
+	return if CLIENT
+	return @Remove() if not @phys\IsValid()
+	@phys\SetVelocity(@GetFireDirection() * 1500)
 
 ENT.PhysicsCollide = (data = {}, colldier) =>
-    {:HitPos, :HitEntity, :HitNormal} = data
-    return false if HitEntity == @attacker
-    @SetSolid(SOLID_NONE)
-    util.BlastDamage(IsValid(@GetInflictor()) and @GetInflictor() or @, IsValid(@GetAttacker()) and @GetAttacker() or @, HitPos + HitNormal, 64, 128)
-    effData = EffectData()
-    effData\SetNormal(-HitNormal)
-    effData\SetOrigin(HitPos - HitNormal)
-    util.Effect('sentry_rocket_explosion', effData)
-    util.Decal('DTF2_SentryRocketExplosion', HitPos - HitNormal, HitPos + HitNormal)
-    @Remove()
+	{:HitPos, :HitEntity, :HitNormal} = data
+	return false if HitEntity == @attacker
+	@SetSolid(SOLID_NONE)
+	util.BlastDamage(IsValid(@GetInflictor()) and @GetInflictor() or @, IsValid(@GetAttacker()) and @GetAttacker() or @, HitPos + HitNormal, 64, 128)
+	effData = EffectData()
+	effData\SetNormal(-HitNormal)
+	effData\SetOrigin(HitPos - HitNormal)
+	util.Effect('sentry_rocket_explosion', effData)
+	util.Decal('DTF2_SentryRocketExplosion', HitPos - HitNormal, HitPos + HitNormal)
+	@Remove()

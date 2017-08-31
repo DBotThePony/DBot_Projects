@@ -67,11 +67,11 @@ ENT.CHARGE_TIME_2 = CreateConVar('tf_dbg_disp_charge2', '5', {FCVAR_ARCHIVE, FCV
 ENT.CHARGE_TIME_3 = CreateConVar('tf_dbg_disp_charge3', '5', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Dispenser metal charge timer on lvl 3')
 
 ENT.Gibs = {
-    'models/buildables/gibs/dispenser_gib1.mdl'
-    'models/buildables/gibs/dispenser_gib2.mdl'
-    'models/buildables/gibs/dispenser_gib3.mdl'
-    'models/buildables/gibs/dispenser_gib4.mdl'
-    'models/buildables/gibs/dispenser_gib5.mdl'
+	'models/buildables/gibs/dispenser_gib1.mdl'
+	'models/buildables/gibs/dispenser_gib2.mdl'
+	'models/buildables/gibs/dispenser_gib3.mdl'
+	'models/buildables/gibs/dispenser_gib4.mdl'
+	'models/buildables/gibs/dispenser_gib5.mdl'
 }
 
 ENT.GibsValue = CreateConVar('tf_dispenser_gibs', '15', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Gibs value for dispenser')
@@ -79,63 +79,63 @@ ENT.GibsValue = CreateConVar('tf_dispenser_gibs', '15', {FCVAR_ARCHIVE, FCVAR_RE
 ENT.ExplosionSound = 'DTF2_Building_Dispenser.Explode'
 
 ENT.GetRessuplyMultiplier = (level = @GetLevel()) =>
-    switch level
-        when 1
-            DTF2.GrabInt(@RESSUPLY_MULTIPLIER_1)
-        when 2
-            DTF2.GrabInt(@RESSUPLY_MULTIPLIER_2)
-        when 3
-            DTF2.GrabInt(@RESSUPLY_MULTIPLIER_3)
+	switch level
+		when 1
+			DTF2.GrabInt(@RESSUPLY_MULTIPLIER_1)
+		when 2
+			DTF2.GrabInt(@RESSUPLY_MULTIPLIER_2)
+		when 3
+			DTF2.GrabInt(@RESSUPLY_MULTIPLIER_3)
 
 ENT.GetMaxRessuply = (level = @GetLevel()) =>
-    switch level
-        when 1
-            DTF2.GrabInt(@MAS_RESSUPLY_1)
-        when 2
-            DTF2.GrabInt(@MAS_RESSUPLY_2)
-        when 3
-            DTF2.GrabInt(@MAS_RESSUPLY_3)
+	switch level
+		when 1
+			DTF2.GrabInt(@MAS_RESSUPLY_1)
+		when 2
+			DTF2.GrabInt(@MAS_RESSUPLY_2)
+		when 3
+			DTF2.GrabInt(@MAS_RESSUPLY_3)
 
 ENT.GetAmmoRessuply = (level = @GetLevel()) =>
-    switch level
-        when 1
-            DTF2.GrabInt(@AMMO_RESSUPLY_MAX_1)
-        when 2
-            DTF2.GrabInt(@AMMO_RESSUPLY_MAX_2)
-        when 3
-            DTF2.GrabInt(@AMMO_RESSUPLY_MAX_3)
+	switch level
+		when 1
+			DTF2.GrabInt(@AMMO_RESSUPLY_MAX_1)
+		when 2
+			DTF2.GrabInt(@AMMO_RESSUPLY_MAX_2)
+		when 3
+			DTF2.GrabInt(@AMMO_RESSUPLY_MAX_3)
 
 ENT.GetChargeTime = (level = @GetLevel()) =>
-    switch level
-        when 1
-            DTF2.GrabInt(@CHARGE_TIME_1)
-        when 2
-            DTF2.GrabInt(@CHARGE_TIME_2)
-        when 3
-            DTF2.GrabInt(@CHARGE_TIME_3)
+	switch level
+		when 1
+			DTF2.GrabInt(@CHARGE_TIME_1)
+		when 2
+			DTF2.GrabInt(@CHARGE_TIME_2)
+		when 3
+			DTF2.GrabInt(@CHARGE_TIME_3)
 
 ENT.GetChargeAmount = (level = @GetLevel()) =>
-    switch level
-        when 1
-            DTF2.GrabInt(@CHARGE_AMOUNT_1)
-        when 2
-            DTF2.GrabInt(@CHARGE_AMOUNT_2)
-        when 3
-            DTF2.GrabInt(@CHARGE_AMOUNT_3)
+	switch level
+		when 1
+			DTF2.GrabInt(@CHARGE_AMOUNT_1)
+		when 2
+			DTF2.GrabInt(@CHARGE_AMOUNT_2)
+		when 3
+			DTF2.GrabInt(@CHARGE_AMOUNT_3)
 
 ENT.GetAmmoToAmount = (level = @GetLevel()) =>
-    switch level
-        when 1
-            DTF2.GrabInt(@AMMO_AMOUNT_1)
-        when 2
-            DTF2.GrabInt(@AMMO_AMOUNT_2)
-        when 3
-            DTF2.GrabInt(@AMMO_AMOUNT_3)
+	switch level
+		when 1
+			DTF2.GrabInt(@AMMO_AMOUNT_1)
+		when 2
+			DTF2.GrabInt(@AMMO_AMOUNT_2)
+		when 3
+			DTF2.GrabInt(@AMMO_AMOUNT_3)
 
 ENT.GetAvaliableForAmmo = (level = @GetLevel()) => math.Clamp(@GetAmmoRessuply(), 0, math.min(@GetRessuplyAmount(), @GetAmmoToAmount(level)))
 ENT.GetAvaliablePercent = (level = @GetLevel()) => @GetRessuplyAmount() / @GetMaxRessuply()
 
 ENT.SetupDataTables = =>
-    @BaseClass.SetupDataTables(@)
-    @NetworkVar('Int', 2, 'RessuplyAmount')
+	@BaseClass.SetupDataTables(@)
+	@NetworkVar('Int', 2, 'RessuplyAmount')
 

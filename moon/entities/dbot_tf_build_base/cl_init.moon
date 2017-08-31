@@ -18,18 +18,18 @@
 include 'shared.lua'
 
 ENT.Initialize = =>
-    @DrawShadow(false)
-    -- @SetModel(@IdleModel1)
-    
-    @UpdateSequenceList()
-    @lastSeqModel = @IdleModel1
-    @lastAnimTick = CurTime()
+	@DrawShadow(false)
+	-- @SetModel(@IdleModel1)
+	
+	@UpdateSequenceList()
+	@lastSeqModel = @IdleModel1
+	@lastAnimTick = CurTime()
 
 ENT.Think = =>
 
 ENT.Draw = =>
-    @DrawShadow(false)
-    @DrawModel()
+	@DrawShadow(false)
+	@DrawModel()
 
 ENT.DrawHUD = => DTF2.DrawBuildingInfo(@)
 ENT.GetHUDText = => ''

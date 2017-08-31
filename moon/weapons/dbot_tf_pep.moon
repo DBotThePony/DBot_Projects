@@ -30,19 +30,19 @@ SWEP.AdminOnly = false
 SWEP.CooldownTime = 0.13 * 1.25
 
 if SERVER
-    hook.Add 'EntityTakeDamage', 'DTF2.PrettyBoyPistol', (ent, dmg) ->
-        attacker = dmg\GetAttacker()
-        if IsValid(attacker) and attacker\IsPlayer()
-            wep = attacker\GetWeapon('dbot_tf_pep')
-            if IsValid(wep)
-                with attacker
-                    hp = \Health()
-                    mhp = \GetMaxHealth()
-                    \SetHealth(math.Clamp(hp + 5, 0, mhp)) if hp < mhp
-        
-        if ent\IsPlayer() and IsValid(ent\GetWeapon('dbot_tf_pep'))
-            if dmg\IsFallDamage()
-                dmg\SetDamage(0)
-                dmg\SetMaxDamage(0)
-            else
-                dmg\ScaleDamage(1.2)
+	hook.Add 'EntityTakeDamage', 'DTF2.PrettyBoyPistol', (ent, dmg) ->
+		attacker = dmg\GetAttacker()
+		if IsValid(attacker) and attacker\IsPlayer()
+			wep = attacker\GetWeapon('dbot_tf_pep')
+			if IsValid(wep)
+				with attacker
+					hp = \Health()
+					mhp = \GetMaxHealth()
+					\SetHealth(math.Clamp(hp + 5, 0, mhp)) if hp < mhp
+		
+		if ent\IsPlayer() and IsValid(ent\GetWeapon('dbot_tf_pep'))
+			if dmg\IsFallDamage()
+				dmg\SetDamage(0)
+				dmg\SetMaxDamage(0)
+			else
+				dmg\ScaleDamage(1.2)

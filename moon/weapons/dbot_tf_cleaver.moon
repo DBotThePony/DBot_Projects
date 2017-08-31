@@ -44,70 +44,70 @@ SWEP.ProjectileIsReady = => @GetProjectileReady() >= @ProjectileRestoreTime
 SWEP.PreDrawViewModel = (vm) => @vmModel = vm
 
 SWEP.Primary = {
-    'Ammo': 'none'
-    'ClipSize': -1
-    'DefaultClip': 0
-    'Automatic': true
+	'Ammo': 'none'
+	'ClipSize': -1
+	'DefaultClip': 0
+	'Automatic': true
 }
 
 SWEP.Secondary = {
-    'Ammo': 'none'
-    'ClipSize': -1
-    'DefaultClip': 0
-    'Automatic': false
+	'Ammo': 'none'
+	'ClipSize': -1
+	'DefaultClip': 0
+	'Automatic': false
 }
 
 SWEP.SetupDataTables = =>
-    BaseClass.SetupDataTables(@)
-    @NetworkVar('Float', 16, 'ProjectileReady')
-    @NetworkVar('Float', 17, 'HideProjectile') -- fuck singleplayer
+	BaseClass.SetupDataTables(@)
+	@NetworkVar('Float', 16, 'ProjectileReady')
+	@NetworkVar('Float', 17, 'HideProjectile') -- fuck singleplayer
 
 SWEP.Initialize = =>
-    BaseClass.Initialize(@)
-    @SetProjectileReady(@ProjectileRestoreTime)
-    @lastProjectileThink = CurTime()
-    @lastProjectileStatus = true
-    @SetHideProjectile(0)
+	BaseClass.Initialize(@)
+	@SetProjectileReady(@ProjectileRestoreTime)
+	@lastProjectileThink = CurTime()
+	@lastProjectileStatus = true
+	@SetHideProjectile(0)
 
 SWEP.Think = =>
-    BaseClass.Think(@)
-    if SERVER
-        delta = CurTime() - @lastProjectileThink
-        @lastProjectileThink = CurTime()
-        if @GetProjectileReady() < @ProjectileRestoreTime
-            @SetProjectileReady(math.Clamp(@GetProjectileReady() + delta, 0, @ProjectileRestoreTime))
-    
-    old = @lastProjectileStatus
-    newStatus = @ProjectileIsReady()
-    doDraw = not newStatus and @GetHideProjectile() < CurTime()
-    @SetHideVM(doDraw)
-    @vmModel\SetNoDraw(doDraw) if IsValid(@vmModel)
+	BaseClass.Think(@)
+	if SERVER
+		delta = CurTime() - @lastProjectileThink
+		@lastProjectileThink = CurTime()
+		if @GetProjectileReady() < @ProjectileRestoreTime
+			@SetProjectileReady(math.Clamp(@GetProjectileReady() + delta, 0, @ProjectileRestoreTime))
+	
+	old = @lastProjectileStatus
+	newStatus = @ProjectileIsReady()
+	doDraw = not newStatus and @GetHideProjectile() < CurTime()
+	@SetHideVM(doDraw)
+	@vmModel\SetNoDraw(doDraw) if IsValid(@vmModel)
 
-    if old ~= newStatus
-        @lastProjectileStatus = newStatus
-        if newStatus
-            @SendWeaponSequence(@DrawAnimation)
-            @OnProjectileRestored() if @OnProjectileRestored
-            @WaitForSequence(@IdleAnimation, @AttackAnimationDuration)
+	if old ~= newStatus
+		@lastProjectileStatus = newStatus
+		if newStatus
+			@SendWeaponSequence(@DrawAnimation)
+			@OnProjectileRestored() if @OnProjectileRestored
+			@WaitForSequence(@IdleAnimation, @AttackAnimationDuration)
 
 SWEP.DrawHUD = => DTF2.DrawCenteredBar(@GetProjectileReady() / @ProjectileRestoreTime, 'Cleaver')
 SWEP.PrimaryAttack = =>
-    return false if not @ProjectileIsReady()
-    incomingCrit = @CheckNextCrit()
-    @SetProjectileReady(0)
-    @lastProjectileStatus = false
-    @SendWeaponSequence(@AttackAnimation)
-    @WaitForSequence(@IdleAnimation, @AttackAnimationDuration)
-    @SetHideProjectile(CurTime() + @AttackAnimationDuration)
-    return if CLIENT
-    timer.Simple 0, ->
-        return if not IsValid(@) or not IsValid(@GetOwner())
-        with ents.Create(@ProjectileClass)
-            \SetPos(@GetOwner()\EyePos())
-            \Spawn()
-            \Activate()
-            \SetIsCritical(incomingCrit)
-            \SetOwner(@GetOwner())
-            \SetAttacker(@GetOwner())
-            \SetInflictor(@)
-            \SetDirection(@GetOwner()\GetAimVector())
+	return false if not @ProjectileIsReady()
+	incomingCrit = @CheckNextCrit()
+	@SetProjectileReady(0)
+	@lastProjectileStatus = false
+	@SendWeaponSequence(@AttackAnimation)
+	@WaitForSequence(@IdleAnimation, @AttackAnimationDuration)
+	@SetHideProjectile(CurTime() + @AttackAnimationDuration)
+	return if CLIENT
+	timer.Simple 0, ->
+		return if not IsValid(@) or not IsValid(@GetOwner())
+		with ents.Create(@ProjectileClass)
+			\SetPos(@GetOwner()\EyePos())
+			\Spawn()
+			\Activate()
+			\SetIsCritical(incomingCrit)
+			\SetOwner(@GetOwner())
+			\SetAttacker(@GetOwner())
+			\SetInflictor(@)
+			\SetDirection(@GetOwner()\GetAimVector())

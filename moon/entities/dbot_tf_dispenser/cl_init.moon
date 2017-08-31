@@ -18,20 +18,20 @@
 include 'shared.lua'
 
 ENT.Initialize = =>
-    @BaseClass.Initialize(@)
-    @idleSound = CreateSound(@, 'weapons/dispenser_idle.wav')
-    @idleSound\ChangeVolume(0.75)
-    @idleSound\SetSoundLevel(75)
-    @idleSound\Play()
-    @lastArrowAngle = 0
+	@BaseClass.Initialize(@)
+	@idleSound = CreateSound(@, 'weapons/dispenser_idle.wav')
+	@idleSound\ChangeVolume(0.75)
+	@idleSound\SetSoundLevel(75)
+	@idleSound\Play()
+	@lastArrowAngle = 0
 
 ENT.OnRemove = =>
-    @idleSound\Stop() if @idleSound
+	@idleSound\Stop() if @idleSound
 
 ENT.Think = =>
-    @BaseClass.Think(@)
-    @idleSound\Stop() if not @IsAvaliable() and @idleSound\IsPlaying()
-    @idleSound\Play() if @IsAvaliable() and not @idleSound\IsPlaying()
+	@BaseClass.Think(@)
+	@idleSound\Stop() if not @IsAvaliable() and @idleSound\IsPlaying()
+	@idleSound\Play() if @IsAvaliable() and not @idleSound\IsPlaying()
 
 SCREEN_BG_RED = Material('vgui/dispenser_meter_bg_red')
 SCREEN_BG_BLUE = Material('vgui/dispenser_meter_bg_blue')
@@ -51,56 +51,56 @@ WIDTH_ARROW = 32 / 12
 HEIGHT_ARROW = 128 / 12
 
 ENT.Draw = =>
-    @BaseClass.Draw(@)
-    return if @GetIsBuilding()
-    screenMat = SCREEN_BG_BLUE if @GetTeamType()
-    screenMat = SCREEN_BG_RED if not @GetTeamType()
-    lpos = @GetPos()
-    ang = @GetAngles()
-    fwd = ang\Forward()
+	@BaseClass.Draw(@)
+	return if @GetIsBuilding()
+	screenMat = SCREEN_BG_BLUE if @GetTeamType()
+	screenMat = SCREEN_BG_RED if not @GetTeamType()
+	lpos = @GetPos()
+	ang = @GetAngles()
+	fwd = ang\Forward()
 
-    @lastArrowAngle = Lerp(0.1, @lastArrowAngle, @GetAvaliablePercent() * 180)
-    render.OverrideDepthEnable(true, true)
-    
-    do
-        pos = Vector(SCREEN_POS_1)
-        pos\Rotate(ang)
-        pos += lpos
-        render.SetMaterial(screenMat)
-        render.DrawQuadEasy(pos, fwd, WIDTH, HEIGHT, SCREEN_COLOR, 180)
-    
-    do
-        pos = Vector(ARROW_POS_1)
-        pos\Rotate(ang)
-        pos += lpos
-        rad = -math.rad(@lastArrowAngle)
-        sin, cos = math.sin(rad), math.cos(rad)
-        addVector = Vector(0, -cos * 4.5, -sin * 4.5)
-        addVector\Rotate(ang)
-        pos += addVector
+	@lastArrowAngle = Lerp(0.1, @lastArrowAngle, @GetAvaliablePercent() * 180)
+	render.OverrideDepthEnable(true, true)
+	
+	do
+		pos = Vector(SCREEN_POS_1)
+		pos\Rotate(ang)
+		pos += lpos
+		render.SetMaterial(screenMat)
+		render.DrawQuadEasy(pos, fwd, WIDTH, HEIGHT, SCREEN_COLOR, 180)
+	
+	do
+		pos = Vector(ARROW_POS_1)
+		pos\Rotate(ang)
+		pos += lpos
+		rad = -math.rad(@lastArrowAngle)
+		sin, cos = math.sin(rad), math.cos(rad)
+		addVector = Vector(0, -cos * 4.5, -sin * 4.5)
+		addVector\Rotate(ang)
+		pos += addVector
 
-        render.SetMaterial(SCREEN_BG_ARROW)
-        render.DrawQuadEasy(pos, fwd, WIDTH_ARROW, HEIGHT_ARROW, SCREEN_COLOR, -90 - @lastArrowAngle)
-    
-    do
-        pos = Vector(SCREEN_POS_2)
-        pos\Rotate(ang)
-        pos += lpos
-        render.SetMaterial(screenMat)
-        render.DrawQuadEasy(pos, -fwd, WIDTH, HEIGHT, SCREEN_COLOR, 180)
-    
-    do
-        pos = Vector(ARROW_POS_2)
-        pos\Rotate(ang)
-        pos += lpos
+		render.SetMaterial(SCREEN_BG_ARROW)
+		render.DrawQuadEasy(pos, fwd, WIDTH_ARROW, HEIGHT_ARROW, SCREEN_COLOR, -90 - @lastArrowAngle)
+	
+	do
+		pos = Vector(SCREEN_POS_2)
+		pos\Rotate(ang)
+		pos += lpos
+		render.SetMaterial(screenMat)
+		render.DrawQuadEasy(pos, -fwd, WIDTH, HEIGHT, SCREEN_COLOR, 180)
+	
+	do
+		pos = Vector(ARROW_POS_2)
+		pos\Rotate(ang)
+		pos += lpos
 
-        rad = -math.rad(@lastArrowAngle + 180)
-        sin, cos = math.sin(rad), math.cos(rad)
-        addVector = Vector(0, -cos * 4.5, sin * 4.5)
-        addVector\Rotate(ang)
-        pos += addVector
+		rad = -math.rad(@lastArrowAngle + 180)
+		sin, cos = math.sin(rad), math.cos(rad)
+		addVector = Vector(0, -cos * 4.5, sin * 4.5)
+		addVector\Rotate(ang)
+		pos += addVector
 
-        render.SetMaterial(SCREEN_BG_ARROW)
-        render.DrawQuadEasy(pos, -fwd, WIDTH_ARROW, HEIGHT_ARROW, SCREEN_COLOR, -90 - @lastArrowAngle)
+		render.SetMaterial(SCREEN_BG_ARROW)
+		render.DrawQuadEasy(pos, -fwd, WIDTH_ARROW, HEIGHT_ARROW, SCREEN_COLOR, -90 - @lastArrowAngle)
 
-    render.OverrideDepthEnable(false, true)
+	render.OverrideDepthEnable(false, true)

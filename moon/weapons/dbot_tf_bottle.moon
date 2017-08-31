@@ -42,7 +42,7 @@ SWEP.AttackAnimationTable = {'b_swing_a', 'b_swing_b'}
 SWEP.AttackAnimationCrit = 'b_swing_c'
 
 SWEP.OnHit = (...) =>
-    BaseClass.OnHit(@, ...)
-    if SERVER and not @_bottle_Broken and @incomingCrit
-        @_bottle_Broken = true
-        @GetTF2WeaponModel()\SetModel('models/weapons/c_models/c_bottle/c_bottle_broken.mdl')
+	BaseClass.OnHit(@, ...)
+	if SERVER and not @_bottle_Broken and @incomingCrit
+		@_bottle_Broken = true
+		@GetTF2WeaponModel()\SetModel('models/weapons/c_models/c_bottle/c_bottle_broken.mdl')
