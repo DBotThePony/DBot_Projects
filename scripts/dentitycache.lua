@@ -94,11 +94,22 @@ hook.Add('EntityRemoved', 'DEntityCache', function(ent2)
 		end
 	end
 	
+	for i, ent in ipairs(KnownPlayers) do
+		if ent == ent2 then
+			table.remove(KnownPlayers, i)
+			break
+		end
+	end
+	
 	timer.Create('DEntityCache.Update', 0, 1, update)
 end)
 
 hook.Add('OnEntityCreated', 'DEntityCache', function(ent2)
+	local getClass = GET_CLASS(ent2)
 	table.insert(KnownEntities, ent2)
-	table.insert(KnownEntitiesByClass, {ent2, GET_CLASS(ent2)})
+	table.insert(KnownEntitiesByClass, {ent2, getClass})
+	if getClass == 'player' then
+		table.insert(KnownPlayers, ent2)
+	end
 	timer.Create('DEntityCache.Update', 0, 1, update)
 end)
