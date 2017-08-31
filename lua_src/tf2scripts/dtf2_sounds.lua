@@ -1418,7 +1418,7 @@ return [==[// Channels
 		"channel"		"CHAN_STATIC"
 		"volume"		".6"
 		"pitch"		"100"
-    	"soundlevel"  	"SNDLVL_80dB"
+		"soundlevel"  	"SNDLVL_80dB"
 		"rndwave"
 		{
 			"wave"		"ambient_mp3\cp_harbor\furnace_1_shot_01.mp3"

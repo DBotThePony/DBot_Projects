@@ -1416,10 +1416,10 @@ return [==[// Channels
 
 "DTF2_Taunt.SoldierTaps"
 {
-            "channel"          "CHAN_STATIC"
-            "volume"           "1.0"
-            "soundlevel"      "SNDLVL_NORM"
-             "wave"              ")misc/taps_02.wav"
+			"channel"          "CHAN_STATIC"
+			"volume"           "1.0"
+			"soundlevel"      "SNDLVL_NORM"
+			 "wave"              ")misc/taps_02.wav"
 }
 
 "DTF2_Taunt.Soldier02GrenadeCatch"

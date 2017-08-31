@@ -57,53 +57,53 @@ SWEP.CRITEY_DURACTION = 8
 SWEP.CRITEY_REQUIRED = 100
 
 SWEP.Primary = {
-    ['Ammo'] = 'SMG1',
-    ['ClipSize'] = 25 * 0.8,
-    ['DefaultClip'] = 75,
-    ['Automatic'] = true
+	['Ammo'] = 'SMG1',
+	['ClipSize'] = 25 * 0.8,
+	['DefaultClip'] = 75,
+	['Automatic'] = true
 }
 
 function SWEP:SetupDataTables()
-    BaseClass.SetupDataTables(self)
-    self:NetworkVar('Int', 16, 'SMGDamageDealt')
-    self:NetworkVar('Bool', 16, 'SMGBonusActive')
-    self:SetSMGDamageDealt(0)
-    self:SetSMGBonusActive(false)
+	BaseClass.SetupDataTables(self)
+	self:NetworkVar('Int', 16, 'SMGDamageDealt')
+	self:NetworkVar('Bool', 16, 'SMGBonusActive')
+	self:SetSMGDamageDealt(0)
+	self:SetSMGBonusActive(false)
 end
 
 function SWEP:IsCriteyReady() return self:GetSMGDamageDealt() >= DTF2.GrabInt(self.CRITEY_REQUIRED) end
 
 if SERVER then
-    hook.Add('EntityTakeDamage', 'DTF2.CleanerCarabine', DTF2.HookStruct.AllExplicitDamage('dbot_tf_cleaner', true, true, false, function(self, weapon, ent, dmg)
-        if weapon:GetSMGBonusActive() then return end
-        weapon:SetSMGDamageDealt(math.Clamp(weapon:GetSMGDamageDealt() + dmg:GetDamage(), 0, DTF2.GrabInt(weapon.CRITEY_REQUIRED)))
-    end))
+	hook.Add('EntityTakeDamage', 'DTF2.CleanerCarabine', DTF2.HookStruct.AllExplicitDamage('dbot_tf_cleaner', true, true, false, function(self, weapon, ent, dmg)
+		if weapon:GetSMGBonusActive() then return end
+		weapon:SetSMGDamageDealt(math.Clamp(weapon:GetSMGDamageDealt() + dmg:GetDamage(), 0, DTF2.GrabInt(weapon.CRITEY_REQUIRED)))
+	end))
 
-    function SWEP:Think()
-        BaseClass.Think(self)
-        if self:GetSMGBonusActive() then
-            self:SetSMGDamageDealt(math.max(0, DTF2.GrabInt(self.CRITEY_REQUIRED) * (self.criteyEndsAt - CurTime()) / DTF2.GrabInt(self.CRITEY_DURACTION)))
-        end
-    end
+	function SWEP:Think()
+		BaseClass.Think(self)
+		if self:GetSMGBonusActive() then
+			self:SetSMGDamageDealt(math.max(0, DTF2.GrabInt(self.CRITEY_REQUIRED) * (self.criteyEndsAt - CurTime()) / DTF2.GrabInt(self.CRITEY_DURACTION)))
+		end
+	end
 
-    function SWEP:SecondaryAttack()
-        if not self:IsCriteyReady() then return false end
-         if self:GetSMGBonusActive() then return false end
-        self:SetMiniCritBoosted(true)
-        self:SetSMGBonusActive(true)
-        self.criteyEndsAt = CurTime() + DTF2.GrabInt(self.CRITEY_DURACTION)
+	function SWEP:SecondaryAttack()
+		if not self:IsCriteyReady() then return false end
+		 if self:GetSMGBonusActive() then return false end
+		self:SetMiniCritBoosted(true)
+		self:SetSMGBonusActive(true)
+		self.criteyEndsAt = CurTime() + DTF2.GrabInt(self.CRITEY_DURACTION)
 
-        timer.Create('DTF2.ProSMG.' .. self:EntIndex(), DTF2.GrabInt(self.CRITEY_DURACTION), 1, function()
-            if IsValid(self) then
-                self:SetMiniCritBoosted(false)
-                self:SetSMGBonusActive(false)
-            end
-        end)
+		timer.Create('DTF2.ProSMG.' .. self:EntIndex(), DTF2.GrabInt(self.CRITEY_DURACTION), 1, function()
+			if IsValid(self) then
+				self:SetMiniCritBoosted(false)
+				self:SetSMGBonusActive(false)
+			end
+		end)
 
-        return true
-    end
+		return true
+	end
 else
-    function SWEP:DrawHUD()
-        DTF2.DrawCenteredBar(self:GetSMGDamageDealt() / DTF2.GrabInt(self.CRITEY_REQUIRED), 'CRITEY')
-    end
+	function SWEP:DrawHUD()
+		DTF2.DrawCenteredBar(self:GetSMGDamageDealt() / DTF2.GrabInt(self.CRITEY_REQUIRED), 'CRITEY')
+	end
 end

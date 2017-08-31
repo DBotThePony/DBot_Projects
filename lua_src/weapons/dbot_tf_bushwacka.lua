@@ -31,17 +31,17 @@ SWEP.AdminOnly = false
 SWEP.RandomCriticals = false
 
 function SWEP:OnHit(ent, tr, dmginfo)
-    if self.incomingMiniCrit then
-        self:ThatWasCrit()
-    end
+	if self.incomingMiniCrit then
+		self:ThatWasCrit()
+	end
 
-    return BaseClass.OnHit(self, ent, tr, dmginfo)
+	return BaseClass.OnHit(self, ent, tr, dmginfo)
 end
 
 if SERVER then
-    hook.Add('EntityTakeDamage', 'DTF2.Bushwacka', function(self, dmg)
-        if self.GetActiveWeapon and self:GetActiveWeapon():IsValid() and self:GetActiveWeapon():GetClass() == 'dbot_tf_bushwacka' then
-            dmg:ScaleDamage(1.2)
-        end
-    end)
+	hook.Add('EntityTakeDamage', 'DTF2.Bushwacka', function(self, dmg)
+		if self.GetActiveWeapon and self:GetActiveWeapon():IsValid() and self:GetActiveWeapon():GetClass() == 'dbot_tf_bushwacka' then
+			dmg:ScaleDamage(1.2)
+		end
+	end)
 end

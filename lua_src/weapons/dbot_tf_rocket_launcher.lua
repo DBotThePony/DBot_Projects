@@ -44,8 +44,8 @@ SWEP.ReloadDeployTime = 0.7
 SWEP.ReloadTime = 1
 
 SWEP.Primary = {
-    ['Ammo'] = 'RPG_Round',
-    ['ClipSize'] = 4,
-    ['DefaultClip'] = 20,
-    ['Automatic'] = true
+	['Ammo'] = 'RPG_Round',
+	['ClipSize'] = 4,
+	['DefaultClip'] = 20,
+	['Automatic'] = true
 }

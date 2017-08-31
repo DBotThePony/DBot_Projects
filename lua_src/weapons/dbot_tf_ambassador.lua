@@ -51,16 +51,16 @@ SWEP.ReloadStart = 'reload'
 SWEP.ReloadDeployTime = 1.12
 
 SWEP.Primary = {
-    ['Ammo'] = '357',
-    ['ClipSize'] = 6,
-    ['DefaultClip'] = 24,
-    ['Automatic'] = true
+	['Ammo'] = '357',
+	['ClipSize'] = 6,
+	['DefaultClip'] = 24,
+	['Automatic'] = true
 }
 
 function SWEP:OnHit(hitEntity, tr, dmg)
-    if tr.HitGroup == HITGROUP_HEAD then
-        self:ThatWasCrit()
-    end
+	if tr.HitGroup == HITGROUP_HEAD then
+		self:ThatWasCrit()
+	end
 
-    return BaseClass.OnHit(self, hitEntity, tr, dmg)
+	return BaseClass.OnHit(self, hitEntity, tr, dmg)
 end

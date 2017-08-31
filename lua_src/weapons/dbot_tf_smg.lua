@@ -54,8 +54,8 @@ SWEP.ReloadStart = 'smg_reload'
 SWEP.ReloadDeployTime = 1.12
 
 SWEP.Primary = {
-    ['Ammo'] = 'SMG1',
-    ['ClipSize'] = 25,
-    ['DefaultClip'] = 75,
-    ['Automatic'] = true
+	['Ammo'] = 'SMG1',
+	['ClipSize'] = 25,
+	['DefaultClip'] = 75,
+	['Automatic'] = true
 }

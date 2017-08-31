@@ -35,10 +35,10 @@ SWEP.BulletDamage = 65 * 0.5
 BLEED_DURATION = CreateConVar('tf_shiv_bleed', '6', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'The Tribalmans Shiv bleed duration')
 
 if SERVER then
-    function SWEP:OnHit(ent, tr, dmginfo)
-        local bleed = ent:TF2Bleed(BLEED_DURATION:GetFloat())
-        bleed:SetAttacker(self:GetOwner())
-        bleed:SetInflictor(self)
-        return BaseClass.OnHit(self, ent, tr, dmginfo)
-    end
+	function SWEP:OnHit(ent, tr, dmginfo)
+		local bleed = ent:TF2Bleed(BLEED_DURATION:GetFloat())
+		bleed:SetAttacker(self:GetOwner())
+		bleed:SetInflictor(self)
+		return BaseClass.OnHit(self, ent, tr, dmginfo)
+	end
 end

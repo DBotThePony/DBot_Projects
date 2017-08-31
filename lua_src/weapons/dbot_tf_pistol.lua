@@ -50,13 +50,13 @@ SWEP.ReloadStart = 'pstl_reload'
 SWEP.ReloadDeployTime = 1.12
 
 SWEP.Primary = {
-    ['Ammo'] = 'Pistol',
-    ['ClipSize'] = 12,
-    ['DefaultClip'] = 12,
-    ['Automatic'] = true
+	['Ammo'] = 'Pistol',
+	['ClipSize'] = 12,
+	['DefaultClip'] = 12,
+	['Automatic'] = true
 }
 
 function SWEP:DrawHUD()
-    DTF2.DrawBuildablesHUD()
-    DTF2.DrawMetalCounter()
+	DTF2.DrawBuildablesHUD()
+	DTF2.DrawMetalCounter()
 end

@@ -34,8 +34,8 @@ SWEP.ReloadLoop = 'loch_reload_loop'
 SWEP.ReloadEnd = 'loch_reload_end'
 
 SWEP.Primary = {
-    ['Ammo'] = 'Grenade',
-    ['ClipSize'] = 3,
-    ['DefaultClip'] = 16,
-    ['Automatic'] = true
+	['Ammo'] = 'Grenade',
+	['ClipSize'] = 3,
+	['DefaultClip'] = 16,
+	['Automatic'] = true
 }

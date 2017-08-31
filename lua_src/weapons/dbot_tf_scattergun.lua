@@ -44,10 +44,10 @@ SWEP.FireCritSoundsScript = 'Weapon_Scatter_Gun.SingleCrit'
 SWEP.EmptySoundsScript = 'Weapon_Scatter_Gun.Empty'
 
 SWEP.Primary = {
-    ['Ammo'] = 'Buckshot',
-    ['ClipSize'] = 6,
-    ['DefaultClip'] = 6,
-    ['Automatic'] = true
+	['Ammo'] = 'Buckshot',
+	['ClipSize'] = 6,
+	['DefaultClip'] = 6,
+	['Automatic'] = true
 }
 
 SWEP.CooldownTime = 0.6

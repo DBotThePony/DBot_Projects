@@ -41,9 +41,9 @@ SWEP.AttackAnimationTable = {'m_swing_a', 'm_swing_b'}
 SWEP.AttackAnimationCrit = 'm_swing_c'
 
 function SWEP.OnHit(...)
-    return BaseClass.OnHit(...)
+	return BaseClass.OnHit(...)
 end
 
 function SWEP:Think()
-    return BaseClass.Think(self)
+	return BaseClass.Think(self)
 end

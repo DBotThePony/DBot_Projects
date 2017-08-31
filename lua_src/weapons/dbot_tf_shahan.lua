@@ -34,14 +34,14 @@ SWEP.DECREASED_DAMAGE = 65 * 0.75
 SWEP.INCREASED_DAMAGE = 65 * 1.25
 
 if SERVER then
-    function SWEP:Think()
-        local ply = self:GetOwner()
-        if ply:Health() > ply:GetMaxHealth() / 2 then
-            self.BulletDamage = self.DECREASED_DAMAGE
-        else
-            self.BulletDamage = self.INCREASED_DAMAGE
-        end
+	function SWEP:Think()
+		local ply = self:GetOwner()
+		if ply:Health() > ply:GetMaxHealth() / 2 then
+			self.BulletDamage = self.DECREASED_DAMAGE
+		else
+			self.BulletDamage = self.INCREASED_DAMAGE
+		end
 
-        return BaseClass.Think(self)
-    end
+		return BaseClass.Think(self)
+	end
 end
