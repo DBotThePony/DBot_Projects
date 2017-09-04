@@ -165,13 +165,13 @@ UpdateTargetList = ->
 		nClass = ENT_GETCLASS(ent)
 		isEnemyClass = DTF2.IS_ENEMY_CLASS(nClass)
 		isNPC = type(ent) == 'NPC'
-		if isEnemyClass or (isNPC and nClass ~= 'npc_bullseye' and NPC_GETNPCSTATE(ent) ~= NPC_STATE_DEAD)
+		if isEnemyClass or isNPC and nClass ~= 'npc_bullseye' and NPC_GETNPCSTATE(ent) ~= NPC_STATE_DEAD
 			center = ENT_OBBCENTER(ent)
 			VECTOR_ROTATE(center, ENT_GETANGLES(ent))
 			npcData = {ent, ENT_GETPOS(ent), ENT_OBBMINS(ent), ENT_OBBMAXS(ent), ENT_OBBCENTER(ent), center, DTF2_Pointer(ent)}
 			classify = isNPC and NPC_CLASSIFY(ent) or 0
 			if isEnemyClass
-				VALID_TARGETS[#VALID_TARGETS] = npcData
+				VALID_TARGETS[#VALID_TARGETS + 1] = npcData
 			elseif (classify == CLASS_PLAYER_ALLY or
 				classify == CLASS_PLAYER_ALLY_VITAL or
 				classify == CLASS_PLAYER_ALLY_VITAL or
@@ -181,7 +181,7 @@ UpdateTargetList = ->
 				classify == CLASS_EARTH_FAUNA or
 				classify == CLASS_VORTIGAUNT or
 				classify == CLASS_CITIZEN_REBEL) then
-				VALID_ALLIES[#VALID_ALLIES] = npcData
+				VALID_ALLIES[#VALID_ALLIES + 1] = npcData
 			elseif (classify == CLASS_COMBINE_HUNTER or
 				classify == CLASS_ALIEN_ARMY or
 				classify == CLASS_XEN_ANIMALS or
@@ -203,7 +203,7 @@ UpdateTargetList = ->
 				classify == CLASS_ANTLION or
 				classify == CLASS_NONE or
 				classify == CLASS_COMBINE) then
-				VALID_TARGETS[#VALID_TARGETS] = npcData
+				VALID_TARGETS[#VALID_TARGETS + 1] = npcData
 	
 	if ATTACK_PLAYERS\GetBool()
 		for ent in *player.GetAll()
