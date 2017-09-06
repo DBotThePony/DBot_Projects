@@ -15,6 +15,7 @@
 -- limitations under the License.
 --
 
+DEFINE_BASECLASS 'dbot_tf_build_base'
 include 'shared.lua'
 
 OLD_SENTRY_MUZZLEFLASH = CreateConVar('tf_sentry_muzzleflash', '1', {FCVAR_ARCHIVE}, 'Use old sentry muzzleflash')
@@ -28,7 +29,7 @@ MUZZLE_BONE_ID_3_R = 12
 MUZZLE_ANIM_TIME = 0.3
 
 ENT.Initialize = =>
-	@BaseClass.Initialize(@)
+	BaseClass.Initialize(@)
 	@SetAimPitch(0)
 	@SetAimYaw(0)
 	@lastPitch = 0
@@ -100,7 +101,7 @@ ENT.Draw = =>
 	@SetPoseParameter('aim_yaw', @aim_yaw)
 	
 	@InvalidateBoneCache()
-	@BaseClass.Draw(@)
+	BaseClass.Draw(@)
 
 net.Receive 'DTF2.SentryWing', ->
 	sentry = net.ReadEntity()

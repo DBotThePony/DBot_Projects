@@ -15,6 +15,7 @@
 -- limitations under the License.
 --
 
+DEFINE_BASECLASS 'dbot_tf_build_base'
 ENT.Base = 'dbot_tf_build_base'
 ENT.Type = 'nextbot'
 ENT.PrintName = 'Sentry gun'
@@ -113,7 +114,7 @@ ENT.GetMaxAmmo = (level = @GetLevel()) =>
 			DTF2.GrabInt(@MAX_AMMO_3)
 
 ENT.SetupDataTables = =>
-	@BaseClass.SetupDataTables(@)
+	BaseClass.SetupDataTables(@)
 	@NetworkVar('Int', 2, 'AimPitch')
 	@NetworkVar('Int', 3, 'AimYaw')
 	@NetworkVar('Int', 4, 'AmmoAmount')
@@ -123,7 +124,7 @@ ENT.SetupDataTables = =>
 	@SetKills(0)
 
 ENT.UpdateSequenceList = =>
-	@BaseClass.UpdateSequenceList(@)
+	BaseClass.UpdateSequenceList(@)
 	@fireSequence = @LookupSequence('fire')
 	@muzzle = @LookupAttachment('muzzle')
 	@muzzle_l = @LookupAttachment('muzzle_l')

@@ -28,7 +28,7 @@ ENT.CallDestroy = (attacker = NULL, inflictor = NULL, dmg) => hook.Run('TF2Sentr
 ENT.OnOtherKilled = (victim, dmg) => @SetKills(@GetKills() + 1) if dmg\GetAttacker() == @ or dmg\GetInflictor() == @ or IsValid(dmg\GetInflictor()) and dmg\GetInflictor().IsBuildingPart and dmg\GetInflictor().IsBuildingPart and dmg\GetInflictor()\GetBuildableOwner() == @
 
 ENT.Initialize = =>
-	@BaseClass.Initialize(@)
+	BaseClass.Initialize(@)
 	@targetAngle = Angle(0, 0, 0)
 	@currentAngle = Angle(0, 0, 0)
 	@moveSpeed = 2
@@ -78,7 +78,7 @@ ENT.BulletHit = (tr, dmg) =>
 
 ENT.SetLevel = (val = 1, playAnimation = true, force = false) =>
 	oldLevel = @GetLevel()
-	status = @BaseClass.SetLevel(@, val, playAnimation, force)
+	status = BaseClass.SetLevel(@, val, playAnimation, force)
 	return status if not status
 	switch val
 		when 1
@@ -231,7 +231,7 @@ ENT.Think = =>
 	return if @behavePause > cTime
 	delta = cTime - @lastSentryThink
 	@lastSentryThink = cTime
-	@BaseClass.Think(@)
+	BaseClass.Think(@)
 	if not @IsAvaliable()
 		@currentTarget = NULL
 		@SetBodygroup(2, 0)
