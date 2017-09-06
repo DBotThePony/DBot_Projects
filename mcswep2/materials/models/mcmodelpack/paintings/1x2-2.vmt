@@ -1,0 +1,5 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\paintings\1x2-2"
+    "$surfaceprop" "Mwood"
+    "$halflambert" "1"
+}

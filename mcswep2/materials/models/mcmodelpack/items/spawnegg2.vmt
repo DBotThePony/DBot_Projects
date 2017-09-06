@@ -1,0 +1,8 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\items\spawnegg"
+    "$halflambert" "1"
+    "$surfaceprop" "Mplastic"
+
+    "$blendtintbybasealpha" "1"
+    "$blendtintcoloroverbase" "0"
+}

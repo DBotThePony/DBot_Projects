@@ -1,0 +1,5 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\items\cake"
+    "$halflambert" "1"
+    "$surfaceprop" "Mcloth"
+}

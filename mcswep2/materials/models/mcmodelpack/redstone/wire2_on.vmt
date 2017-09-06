@@ -1,0 +1,9 @@
+"unlitgeneric" {
+    "$basetexture" "models\MCModelPack\redstone\wire2"
+    "$surfaceprop" "Msand"
+    "$color2" "{255 0 0}"
+    "$halflambert" "1"
+    "$alphatest"   "1"
+    "$nodecal"     "1"
+    "$nocull"      "1"
+}

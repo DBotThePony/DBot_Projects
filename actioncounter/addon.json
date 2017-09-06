@@ -1,0 +1,16 @@
+{
+	"title"		:	"ActionCounter",
+	"type"		:	"effects",
+	"tags"		:	["fun"],
+	"ignore"	:
+	[
+		"*.psd",
+		"*.vcproj",
+		"*.svn*",
+		"*.git*",
+		"moon*",
+		"build.sh",
+		"README.md",
+		"LICENSE"
+	]
+}

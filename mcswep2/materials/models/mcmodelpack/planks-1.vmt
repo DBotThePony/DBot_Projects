@@ -1,0 +1,6 @@
+"vertexlitgeneric" {
+    "$basetexture"  "models\MCModelPack\planks-1"
+    "$surfaceprop"  "Mwood"
+    "$halflambert"  "1"
+    "$reflectivity" "[0.675 0.675 0.675]"
+}

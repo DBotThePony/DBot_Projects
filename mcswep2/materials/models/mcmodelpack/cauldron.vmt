@@ -1,0 +1,8 @@
+"vertexlitgeneric" {
+    "$basetexture"  "models\MCModelPack\cauldron"
+    "$alphatest"    "1"
+    "$nocull"       "1"
+    "$halflambert"  "1"
+    "$surfaceprop"  "Mmetal"
+    "$reflectivity" "[0.675 0.675 0.675]"
+}

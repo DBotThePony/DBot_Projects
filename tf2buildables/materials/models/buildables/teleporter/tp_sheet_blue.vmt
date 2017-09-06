@@ -1,0 +1,14 @@
+"VertexLitGeneric"
+{
+	"$basetexture"	"models\buildables\teleporter\tp_sheet_blue"
+	"$bumpmap" "models\buildables\teleporter\tp_sheet_normal"
+
+                "$normalmapalphaenvmapmask" 1
+
+	"$phong" "1"
+	"$phongexponent" "40"
+	"$phongboost" "2"	
+	"$lightwarptexture" "models\buildables\sentry1\Sentry1_lightwarp"
+	"$phongfresnelranges"	"[.25 .5 1]"
+
+}

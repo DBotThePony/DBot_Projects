@@ -1,0 +1,8 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\map"
+    "$alphatest"   "1"
+    "$nocull"      "1"
+    "$nodecal"     "1"
+    "$halflambert" "1"
+    "%compilepassbullets" "1"
+}

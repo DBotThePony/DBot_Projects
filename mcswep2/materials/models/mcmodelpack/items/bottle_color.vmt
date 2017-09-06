@@ -1,0 +1,9 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\items\bottle"
+    "$halflambert" "1"
+    "$nocull"      "1"
+    "$surfaceprop" "Mglass"
+
+    "$blendtintbybasealpha"   "1"
+    "$blendtintcoloroverbase" "0"
+}

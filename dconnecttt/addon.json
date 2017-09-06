@@ -1,0 +1,14 @@
+{
+	"title"		:	"DConnecttt - Player Connect Notify",
+	"type"		:	"tool",
+	"tags"		:	[ "" ],
+	"ignore"	:
+	[
+		"*.psd",
+		"*.vcproj",
+		"*.svn*",
+		"*.git*",
+		"README.md",
+		"LICENSE"
+	]
+}

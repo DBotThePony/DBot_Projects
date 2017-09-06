@@ -1,0 +1,10 @@
+"vertexlitgeneric" {
+    "$basetexture"  "models\MCModelPack\grass-side-1_color"
+    "$surfaceprop"  "Mdirt"
+    "$halflambert"  "1"
+    "$model"        "1"
+    "$reflectivity" "[0.675 0.675 0.675]"
+
+    "$blendtintbybasealpha"   "1"
+    "$blendtintcoloroverbase" "0"
+}

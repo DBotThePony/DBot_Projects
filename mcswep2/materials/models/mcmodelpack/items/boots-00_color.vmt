@@ -1,0 +1,8 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\items\boots-00"
+    "$halflambert" "1"
+    "$surfaceprop" "Mwood"
+
+    "$blendtintbybasealpha" "1"
+    "$blendtintcoloroverbase" "0"
+}

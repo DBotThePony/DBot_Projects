@@ -1,0 +1,14 @@
+{
+	"title"		:	"Droppable Weapons Crate",
+	"type"		:	"tool",
+	"tags"		:	["roleplay"],
+	"ignore"	:
+	[
+		"*.psd",
+		"*.vcproj",
+		"*.svn*",
+		"*.git*",
+		"README.md",
+		"LICENSE"
+	]
+}

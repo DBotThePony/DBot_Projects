@@ -1,0 +1,8 @@
+# BONUS DUCKS!
+Adds more QUACK to GMod from End of the Line TF2 update
+
+Licensed under Apache License v2.0
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Workshop: http://steamcommunity.com/sharedfiles/filedetails/?id=690794994

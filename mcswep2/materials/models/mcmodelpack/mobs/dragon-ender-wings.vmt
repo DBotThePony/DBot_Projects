@@ -1,0 +1,7 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\mobs\dragon-ender-wings"
+    "$alphatest"   "1"
+    "$nocull"      "1"
+    "$halflambert" "1"
+    "$surfaceprop" "Mcloth"
+}
