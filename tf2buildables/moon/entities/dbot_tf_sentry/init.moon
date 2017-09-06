@@ -152,7 +152,7 @@ ENT.FireRocket = (force = false) =>
 	dir = (@currentTargetPosition - Pos)
 	dir\Normalize()
 	@EmitSound(@ROCKET_SOUND, 100)
-	rocket = ents.Create('dbot_sentry_rocket')
+	rocket = ents.Create(@ROCKET_CLASS)
 	rocket\SetPos(Pos)
 	rocket\SetBuildableOwner(@)
 	rocket\SetAttacker(@SelectAttacker())

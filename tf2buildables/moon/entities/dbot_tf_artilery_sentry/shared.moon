@@ -25,6 +25,7 @@ ENT.AdminSpawnable = true
 ENT.AdminOnly = false
 ENT.Author = 'DBot'
 ENT.Category = 'TF2'
+ENT.ROCKET_CLASS = 'dbot_asentry_rocket'
 
 ENT.BuildModel1 = 'models/buildables/artilery_sentry/sentry1_heavy.mdl'
 ENT.IdleModel1 = 'models/buildables/artilery_sentry/sentry1.mdl'

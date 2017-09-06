@@ -60,6 +60,7 @@ ENT.ROCKETS_RELOAD_ANIM = 2.75
 
 ENT.ATTACK_ANIM_1 = 0.35
 ENT.ATTACK_ANIM_2 = 0.3
+ENT.ROCKET_CLASS = 'dbot_sentry_rocket'
 
 ENT.GetBulletAnimTime = (level = @GetLevel()) =>
 	switch level

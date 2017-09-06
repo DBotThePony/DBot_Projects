@@ -24,6 +24,7 @@ ENT.Spawnable = false
 ENT.AdminSpawnable = false
 ENT.IsBuildingPart = true
 ENT.m_BuildableOwner = NULL
+ENT.ROCKETS_MODEL = 'models/buildables/sentry3_rockets.mdl'
 
 AccessorFunc(ENT, 'm_BuildableOwner', 'BuildableOwner')
 AccessorFunc(ENT, 'm_Attacker', 'Attacker')
@@ -31,7 +32,7 @@ AccessorFunc(ENT, 'm_Inflictor', 'Inflictor')
 AccessorFunc(ENT, 'm_FireDir', 'FireDirection')
 
 ENT.Initialize = =>
-	@SetModel('models/buildables/sentry3_rockets.mdl')
+	@SetModel(@ROCKETS_MODEL)
 	return if CLIENT
 	@SetInflictor(@) if not @GetInflictor()
 	@SetAttacker(@) if not @GetAttacker()
