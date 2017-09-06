@@ -20,8 +20,8 @@ DEFINE_BASECLASS('dbot_tf_sentry')
 ENT.Base = 'dbot_tf_sentry'
 ENT.Type = 'nextbot'
 ENT.PrintName = 'LED Sentry gun'
-ENT.Spawnable = true
-ENT.AdminSpawnable = true
+ENT.Spawnable = false
+ENT.AdminSpawnable = false
 ENT.AdminOnly = false
 ENT.Author = 'DBot'
 ENT.Category = 'TF2'
