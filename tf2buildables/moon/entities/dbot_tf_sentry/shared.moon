@@ -58,6 +58,16 @@ ENT.BULLET_RELOAD_3 = CreateConVar('tf_dbg_sentry_reload3', '0.1', {FCVAR_ARCHIV
 ENT.ROCKETS_RELOAD = CreateConVar('tf_dbg_sentry_reloadr', '5', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Sentry rockets reload time')
 ENT.ROCKETS_RELOAD_ANIM = 2.75
 
+ENT.ATTACK_ANIM_1 = 0.35
+ENT.ATTACK_ANIM_2 = 0.3
+
+ENT.GetBulletAnimTime = (level = @GetLevel()) =>
+	switch level
+		when 1
+			return @ATTACK_ANIM_1
+		when 2, 3
+			return @ATTACK_ANIM_2
+
 ENT.Gibs1 = {
 	'models/buildables/gibs/sentry1_gib1.mdl'
 	'models/buildables/gibs/sentry1_gib2.mdl'

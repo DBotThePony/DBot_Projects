@@ -15,6 +15,8 @@
 -- limitations under the License.
 --
 
+DEFINE_BASECLASS 'dbot_tf_build_base'
+
 include 'shared.lua'
 AddCSLuaFile 'shared.lua'
 
@@ -41,6 +43,7 @@ ENT.HealTarget = (ent = NULL, delta = 1, cTime = CurTime()) =>
 	@SetRessuplyAmount(@GetRessuplyAmount() - deltaGive)
 
 ENT.BehaveUpdate = (delta) =>
+	BaseClass.BehaveUpdate(@, delta)
 	return if not @IsAvaliable()
 	@UpdateRelationships()
 	

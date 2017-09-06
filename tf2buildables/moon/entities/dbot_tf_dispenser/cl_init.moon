@@ -15,6 +15,8 @@
 -- limitations under the License.
 --
 
+DEFINE_BASECLASS 'dbot_tf_build_base'
+
 include 'shared.lua'
 
 ENT.Initialize = =>

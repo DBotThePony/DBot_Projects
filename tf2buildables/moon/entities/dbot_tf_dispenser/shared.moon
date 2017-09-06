@@ -15,6 +15,8 @@
 -- limitations under the License.
 --
 
+DEFINE_BASECLASS 'dbot_tf_build_base'
+
 ENT.Base = 'dbot_tf_build_base'
 ENT.Type = 'nextbot'
 ENT.PrintName = 'Dispenser'

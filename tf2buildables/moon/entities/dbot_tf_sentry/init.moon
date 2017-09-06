@@ -130,7 +130,7 @@ ENT.FireBullet = (force = false) =>
 	}
 
 	@RestartGesture(ACT_RANGE_ATTACK1)
-	--@DelayGestureRemove(ACT_RANGE_ATTACK1, DTF2.GrabInt(@BULLET_RELOAD_1))
+	@DelayGestureRemove(ACT_RANGE_ATTACK1, @GetBulletAnimTime())
 
 	@FireBullets(bulletData)
 	net.Start('DTF2.SentryFire', true)
@@ -171,6 +171,7 @@ ENT.FireRocket = (force = false) =>
 ai_disabled = GetConVar('ai_disabled')
 
 ENT.BehaveUpdate = (delta) =>
+	BaseClass.BehaveUpdate(@, delta)
 	return if ai_disabled\GetBool()
 	cTime = CurTime()
 	return if @behavePause > cTime

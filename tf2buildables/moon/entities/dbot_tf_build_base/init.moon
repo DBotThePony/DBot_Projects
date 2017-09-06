@@ -34,9 +34,17 @@ ENT.MoveToPos = (pos, options) =>
 
 ENT.BehaveStart = =>
 ENT.BehaveUpdate = (delta) =>
+	cTime = CurTime()
+	for data in *@delayGestureRemove
+		if data[2] < cTime
+			@RemoveGesture(data[1])
+	@delayGestureRemove = [data for data in *@delayGestureRemove when data[2] > cTime]
+
 ENT.BodyUpdate = =>
 	@FrameAdvance()
+
 ENT.RunBehaviour = =>
+
 ENT.GetEnemy = => @currentTarget
 
 ENT.TriggerDestruction = (trigger = @GetTFPlayer()) =>
@@ -76,7 +84,12 @@ ENT.OnKilled = (dmg) =>
 	@CallDestroy(dmg\GetAttacker(), dmg\GetInflictor(), dmg)
 	@Explode()
 
-ENT.DelayGestureRemove = (gestID = ACT_INVALID, time = 0) => timer.Create "DTF2.RemoveGesture.#{@EntIndex()}.#{gestID}", time, 1, -> @RemoveGesture(gestID) if IsValid(@)
+ENT.DelayGestureRemove = (gestID = ACT_INVALID, time = 0) =>
+	table.insert(@delayGestureRemove, {gestID, CurTime() + time})
+
+ENT.DelayGestureRemoveOld = (gestID = ACT_INVALID, time = 0) =>
+	timer.Create "DTF2.RemoveGesture.#{@EntIndex()}.#{gestID}", time, 1, -> @RemoveGesture(gestID) if IsValid(@)
+
 ENT.DelaySound = (time = 0, soundName = '', ...) =>
 	vararg = {...}
 	timer.Create "DTF2.PlaySound.#{@EntIndex()}.#{soundName}", time, 1, -> @EmitSound(soundName, unpack(vararg)) if IsValid(@)
@@ -343,6 +356,7 @@ ENT.Initialize = =>
 	@SetHealth(@GetMaxHP())
 	@SetMaxHealth(@GetMaxHP())
 	@mLevel = 1
+	@delayGestureRemove = {}
 
 	@PhysicsInitBox(@BuildingMins, @BuildingMaxs)
 	@SetMoveType(MOVETYPE_NONE)
