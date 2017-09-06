@@ -18,9 +18,12 @@
 export DTF2
 DTF2 = DTF2 or {}
 
+ATTACK_PLAYERS = CreateConVar('tf_attack_players', '0', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Sentries attacks players')
+
 ENTMETA = FindMetaTable('Entity')
 NPCMETA = FindMetaTable('NPC')
 ENT_OBBCENTER = ENTMETA.OBBCenter
+ENT_GETCLASS = ENTMETA.GetClass
 NPC_CLASSIFY = NPCMETA.Classify
 
 DTF2.IS_ENEMY_CLASS = (entClass, def = false) ->
@@ -31,8 +34,9 @@ DTF2.IS_ENEMY_CLASS = (entClass, def = false) ->
 		else
 			return def
 
-DTF2.IsAlly = (ent, def = false) ->
-	return not ATTACK_PLAYERS\GetBool() if type(ent) == 'Player'
+DTF2.IsAlly = (ent, def = false, checkForPly = true) ->
+	return not ATTACK_PLAYERS\GetBool() if checkForPly and type(ent) == 'Player'
+	return true if not checkForPly and type(ent) == 'Player'
 	return IS_ENEMY_CLASS(ent, def) if type(ent) ~= 'NPC'
 	classify = NPC_CLASSIFY(ent)
 	return classify == CLASS_PLAYER_ALLY or
@@ -45,8 +49,9 @@ DTF2.IsAlly = (ent, def = false) ->
 			classify == CLASS_VORTIGAUNT or
 			classify == CLASS_CITIZEN_REBEL
 
-DTF2.IsEnemy = (ent, def = true) ->
-	return ATTACK_PLAYERS\GetBool() if type(ent) == 'Player'
+DTF2.IsEnemy = (ent, def = true, checkForPly = true) ->
+	return ATTACK_PLAYERS\GetBool() if checkForPly and type(ent) == 'Player'
+	return false if not checkForPly and type(ent) == 'Player'
 	return IS_ENEMY_CLASS(ent, def) if type(ent) ~= 'NPC'
 	classify = NPC_CLASSIFY(ent)
 	return classify == CLASS_COMBINE_HUNTER or
