@@ -43,10 +43,23 @@ ENT.Initialize = =>
 		\EnableGravity(false)
 		\Wake()
 
-ENT.Think = =>
-	return if CLIENT
-	return @Remove() if not @phys\IsValid()
-	@phys\SetVelocity(@GetFireDirection() * 1500)
+if CLIENT
+	ENT.Think = =>
+		@renderAng = @renderAng or @GetAngles()
+		@renderAng.r += FrameTime() * 400
+		@renderAng\Normalize()
+		@SetRenderAngles(@renderAng)
+else
+	ENT.Think = =>
+		with @phys
+			return @Remove() if not \IsValid()
+			\SetVelocity(@GetFireDirection() * 1500)
+			--ang = @GetAngles()
+			--up = ang\Up()
+			--right = ang\Right()
+			--\AddAngleVelocity((up + right) * 400)
+
+
 
 ENT.PhysicsCollide = (data = {}, colldier) =>
 	{:HitPos, :HitEntity, :HitNormal} = data
