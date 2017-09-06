@@ -37,7 +37,7 @@ SWEP.Think = =>
 		with @blueprintModel
 			switch build
 				when @BUILD_SENTRY, @MOVE_SENTRY
-					\SetModel(@SENTRY_BLUEPRINT) if \GetModel() ~= @SENTRY_BLUEPRINT
+					\SetModel(@GetBuildSentryBlueprint()) if \GetModel() ~= @GetBuildSentryBlueprint()
 				when @BUILD_DISPENSER, @MOVE_DISPENSER
 					\SetModel(@DISPENSER_BLUEPRINT) if \GetModel() ~= @DISPENSER_BLUEPRINT
 				when @BUILD_TELE_IN, @MOVE_TELE_IN

@@ -71,7 +71,7 @@ SWEP.TriggerBuild = =>
 	status = @GetBuildStatus()
 	switch status
 		when @BUILD_SENTRY
-			ent = ents.Create(@CLASS_SENTRY)
+			ent = ents.Create(@GetBuildSentryClass())
 			ply\SetBuildedSentry(ent)
 			ply\EmitSound(table.Random(@SENTRY_BUILDUP), 55, 100, 1)
 		when @BUILD_DISPENSER

@@ -41,6 +41,12 @@ SWEP.DISPENSER_BLUEPRINT = 'models/buildables/dispenser_blueprint.mdl'
 SWEP.TELE_IN_BLUEPRINT = 'models/buildables/teleporter_blueprint_enter.mdl'
 SWEP.TELE_OUT_BLUEPRINT = 'models/buildables/teleporter_blueprint_exit.mdl'
 
+SWEP.SENTRIES = {
+	{'dbot_tf_sentry', 'models/buildables/sentry1_blueprint.mdl'}
+	{'dbot_tf_artilery_sentry', 'models/buildables/sentry1_blueprint.mdl'}
+	-- {'dbot_tf_ledsentry', 'models/buildables/led_sentry/sentry1_blueprint.mdl'}
+}
+
 SWEP.BUILD_NONE = 0
 SWEP.BUILD_SENTRY = 1
 SWEP.BUILD_DISPENSER = 2
@@ -67,8 +73,14 @@ SWEP.SetupDataTables = =>
 	@NetworkVar('Int', 8, 'CurrentBuild')
 	@NetworkVar('Int', 9, 'BuildRotation')
 	@NetworkVar('Int', 10, 'BuildStatus')
+	@NetworkVar('Int', 11, 'BuildType')
 	@NetworkVar('Bool', 9, 'IsMoving')
 	@SetIsMoving(false)
+	@SetBuildType(1)
+
+SWEP.GetBuildSentry = => @SENTRIES[@GetBuildType()] or @SENTRIES[1]
+SWEP.GetBuildSentryClass = => @GetBuildSentry()[1]
+SWEP.GetBuildSentryBlueprint = => @GetBuildSentry()[2]
 
 SWEP.UpdateModel = =>
 	if @GetBuildStatus() ~= self.BUILD_NONE
@@ -169,6 +181,10 @@ SWEP.TriggerBuildRequest = (requestType = @BUILD_SENTRY) =>
 		net.WriteUInt(requestType, 8)
 		net.WriteEntity(@)
 		net.SendToServer()
+	else
+		switch requestType
+			when @BUILD_SENTRY
+				@SetBuildType(math.random(1, #@SENTRIES))
 	@SetBuildStatus(requestType)
 	@UpdateModel()
 	@SendWeaponSequence(@BoxDrawAnimation)
