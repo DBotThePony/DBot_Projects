@@ -1,0 +1,9 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\armor\cloth_1"
+    "$surfaceprop" "Mcloth"
+    "$halflambert" "1"
+    "$nocull"      "1"
+
+    "$blendtintbybasealpha" "1"
+    "$blendtintcoloroverbase" "0"
+}

@@ -1,0 +1,10 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\vines"
+    "$surfaceprop" "Mfoliage"
+    "$alphatest"   "1"
+    "$halflambert" "1"
+    "$nocull"      "1"
+
+    "$color2"      "{70 149 44}" // Jungle
+    //"$color2"      "{54 83 42}" // Swamp
+}

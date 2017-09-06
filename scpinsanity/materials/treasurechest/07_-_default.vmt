@@ -1,0 +1,8 @@
+"VertexLitGeneric"
+{
+
+	$basetexture "treasurechest/diff.vtf"
+	$envmapmask "treasurechest/spec.vtf"
+
+
+}

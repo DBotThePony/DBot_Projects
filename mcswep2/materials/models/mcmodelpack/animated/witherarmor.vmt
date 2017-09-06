@@ -1,0 +1,71 @@
+"UnlitGeneric"
+{
+   "$basetexture"  "models\MCModelPack\animated\witherarmor"
+   "$translucent"  "1"
+   "$alpha"        "0.5"
+   "$nocull"       "1"
+   "$nodecal"     "1"
+
+   "$angle1"       "45"
+   "$speed"        "0.4"
+   "$angle"        "130"
+
+   //  \/  My (failed) attempt of porting the animation
+   // "$offset"       "0"
+   // "$sine1"        "0"
+   // "$sine2"        "0"
+   // "$zero"         "0"
+   // "$one"          "1"
+   // "$mult"         "-1"
+   // "$div"          "4"
+
+   "Proxies"
+    {
+        // "EntityRandom"
+        // {
+			// "resultVar"  "$offset"
+        // }
+        // "Sine"
+        // {
+            // "resultVar"   "$sine1"
+            //"timeoffset"  "$offset"
+            // "sineperiod"  "5"
+            // "sinemin"     "-1"
+            // "sinemax"     "1"
+        // }
+        // "Multiply"
+        // {
+            // "srcVar1"  "$sine1"
+            // "srcVar2"  "$mult"
+            // "resultVar" "$sine2"
+        // }
+        // "LessOrEqual"
+        // {
+            // "srcVar1"  "$sine1"
+            // "srcVar2"  "$zero"
+            // "lessEqualVar"  "$sine2"
+            // "greaterVar"  "$sine1"
+            // "resultVar" "$speed"
+        // }
+        // "LessOrEqual"
+        // {
+            // "srcVar1"  "$sine1"
+            // "srcVar2"  "$zero"
+            // "lessEqualVar"  "$zero"
+            // "greaterVar"  "$one"
+            // "resultVar" "$angle"
+        // }
+        // "Divide"
+        // {
+            // "srcVar1"  "$speed"
+            // "srcVar2"  "$div"
+            // "resultVar" "$speed"
+        // }
+        "TextureScroll"
+        {
+            "textureScrollVar"    "$basetexturetransform"
+            "textureScrollRate"   "$speed" // should use sine between  0 and ~0.6
+            "textureScrollAngle"  "$angle" // should use sine between 45 and 135
+        }
+    }
+}

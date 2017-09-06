@@ -1,0 +1,8 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\leaves-4"
+    "$surfaceprop" "Mfoliage"
+    "$halflambert" "1"
+    "$alphatest"   "1"
+
+    //"$color2"      "{70 149 44}"
+}

@@ -1,0 +1,5 @@
+"unlitgeneric" {
+    "$basetexture"  "models\MCModelPack\glowstone"
+    "$surfaceprop"  "Mrock"
+    "$reflectivity" "[0.675 0.675 0.675]"
+}

@@ -1,0 +1,8 @@
+"UnlitGeneric"
+{
+	"$basetexture" "particles/minecraft/smoke4"
+	$no_fullbright 1
+	$translucent 1
+	$vertexcolor 1
+	$vertexalpha 1
+}

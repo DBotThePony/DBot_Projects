@@ -1,0 +1,15 @@
+"UnlitGeneric"
+{
+   "$basetexture" "models\MCModelPack\animated\witherarmor"
+   "$alphatest"   "1"
+   "$nocull"      "1"
+   "Proxies"
+   {
+        "TextureScroll"
+        {
+            "textureScrollVar" "$basetexturetransform"
+            "textureScrollRate" 0.50
+            "textureScrollAngle" 130
+        }
+   }
+}

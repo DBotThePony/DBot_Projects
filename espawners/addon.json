@@ -1,0 +1,14 @@
+{
+	"title"		:	"WSpawners - Universal Weapon Spawnpoints",
+	"type"		:	"tool",
+	"tags"		:	[ "fun" ],
+	"ignore"	:
+	[
+		"*.psd",
+		"*.vcproj",
+		"*.svn*",
+		"*.git*",
+		"README.md",
+		"LICENSE"
+	]
+}

@@ -1,0 +1,7 @@
+"unlitgeneric" {
+    "$basetexture"  "models\MCModelPack\brewing_stand1"
+    "$alphatest"    "1"
+    "$nocull"       "1"
+    "$halflambert"  "1"
+    "$surfaceprop"  "Mglass"
+}

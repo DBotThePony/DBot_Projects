@@ -1,0 +1,7 @@
+"vertexlitgeneric" {
+    "$basetexture"  "models\MCModelPack\torch-redstone-off"
+    "$surfaceprop"  "Mwood"
+    "$halflambert"  "1"
+    "$alphatest"    "1"
+    "$reflectivity" "[0.675 0.675 0.675]"
+}

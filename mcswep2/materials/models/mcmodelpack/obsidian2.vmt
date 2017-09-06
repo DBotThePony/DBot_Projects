@@ -1,0 +1,5 @@
+"unlitgeneric" {
+    "$basetexture"  "models\MCModelPack\obsidian2"
+    "$surfaceprop"  "Mrock"
+    "$reflectivity" "[0.675 0.675 0.675]"
+}

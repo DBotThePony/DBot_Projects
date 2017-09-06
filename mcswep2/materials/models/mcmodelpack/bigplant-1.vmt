@@ -1,0 +1,9 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\bigplant-1"
+    "$surfaceprop" "Mfoliage"
+    "$alphatest"   "1"
+    "$halflambert" "1"
+    "$nocull"      "1"
+
+    "$color2"      "{88 120 86}" // Plains
+}

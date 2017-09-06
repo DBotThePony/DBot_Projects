@@ -1,0 +1,14 @@
+{
+	"title"		:	"Chat URL checkout",
+	"type"		:	"tool",
+	"tags"		:	[ "" ],
+	"ignore"	:
+	[
+		"*.psd",
+		"*.vcproj",
+		"*.svn*",
+		"*.git*",
+		"README.md",
+		"LICENSE"
+	]
+}

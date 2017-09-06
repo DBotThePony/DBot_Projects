@@ -1,0 +1,7 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\clay\clay-color"
+    "$color2" "{185 132 35}"
+    "$surfaceprop" "Mrock"
+    "$halflambert"  "1"
+    "$reflectivity" "[0.675 0.675 0.675]"
+}
