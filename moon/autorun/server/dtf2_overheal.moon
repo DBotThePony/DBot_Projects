@@ -53,10 +53,22 @@ EntityClass =
 	SetTFOverheal: SwitchStatus
 	SetTFAffectedByOverheal: SwitchStatus
 	AddTFOverheal: (amount = 0) =>
+		@dtf2_lastOverhealCall = CurTime() + 0.2
 		return if amount <= 0
 		hp, mhp = @Health(), @GetMaxHealth()
 		@SetTFIsOverhealed(hp + amount > mhp)
 		@SetHealth(hp + amount)
+	SimulateTFOverheal: (amount = 0, maxOverheal = 1.5, simulate = false) =>
+		@dtf2_lastOverhealCall = CurTime() + 0.2
+		return 0 if amount <= 0
+		hp, mhp = @Health(), @GetMaxHealth()
+		return 0 if hp >= mhp * maxOverheal
+		newHP = math.min(hp + amount, mhp * maxOverheal)
+		amount = newHP - hp
+		if not simulate
+			@SetTFIsOverhealed(newHP > mhp)
+			@SetHealth(newHP)
+		return amount
 
 entMeta[k] = v for k, v in pairs EntityClass
 
@@ -68,7 +80,7 @@ hook.Add 'Think', 'DTF2.OverhealThink', ->
 		return REBUILD_TRACKED_ENTS() if not @IsValid()
 		hp, mhp = @Health(), @GetMaxHealth()
 		if hp > mhp
-			if @DTF2_Overheal_NextHealthDecay < cTime
+			if @DTF2_Overheal_NextHealthDecay < cTime and (not @dtf2_lastOverhealCall or @dtf2_lastOverhealCall < cTime)
 				@DTF2_Overheal_NextHealthDecay = cTime + decaySP
 				@SetHealth(math.max(hp - decayST, mhp))
 		else
