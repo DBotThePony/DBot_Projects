@@ -1,0 +1,14 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\weapons\v_toolbox\v_toolbox_red"
+	"$bumpmap" "models\weapons\v_toolbox\v_toolbox_normal"
+
+                "$normalmapalphaenvmapmask" 1
+
+	"$phong" "1"
+	"$phongexponent" "40"
+	"$phongboost" "2"	
+	"$lightwarptexture" "models\lightwarps\weapon_lightwarp"
+	"$phongfresnelranges"	"[.25 .5 1]"
+
+}
