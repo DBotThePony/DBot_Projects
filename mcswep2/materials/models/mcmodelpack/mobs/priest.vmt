@@ -1,0 +1,8 @@
+"vertexlitgeneric" {
+    "$basetexture"  "models\MCModelPack\mobs\priest"
+    "$surfaceprop"  "flesh"
+    "$alphatest"    "1"
+    "$nocull"       "1"
+    "$halflambert"  "1"
+    "$model"        "1"
+}

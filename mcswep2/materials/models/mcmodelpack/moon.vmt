@@ -1,0 +1,7 @@
+"unlitgeneric" {
+    "$basetexture" "models\MCModelPack\moon"
+    "$translucent" "1"
+    "$nofog"       "1"
+    "$nocull"      "1"
+}
+// "That's no moon!"

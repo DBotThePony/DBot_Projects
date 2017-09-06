@@ -1,0 +1,5 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\items\meat-1"
+    "$halflambert" "1"
+    "$surfaceprop" "Mflesh"
+}

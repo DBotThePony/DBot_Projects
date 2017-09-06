@@ -1,0 +1,17 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models\VN_mlp\Maximo_ponyprops\carpetround\carpet_round"
+
+	"$model" 					"1"
+	"$phong" 					"1"
+	"$basemapalphaphongmask" 	"1"
+	"$phongexponent" 			"6"
+	"$phongboost" 				"0.02"
+	"$phongalbedotint" 			"1"
+	"$phongtint" 				"[1 .95 .95]"
+	"$phongfresnelranges"		"[0.5 6 10]"
+
+	"$ambientocclusion" 		"1"
+
+	"$cloakPassEnabled" 		"1"
+}

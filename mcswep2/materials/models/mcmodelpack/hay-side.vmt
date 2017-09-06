@@ -1,0 +1,5 @@
+"vertexlitgeneric" {
+    "$basetexture"  "models\MCModelPack\hay-side"
+    "$surfaceprop"  "Mfoliage"
+    "$halflambert"  "1"
+}

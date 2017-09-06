@@ -1,0 +1,4 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\wood-dark-top"
+    "$surfaceprop" "Mwood"
+}

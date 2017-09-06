@@ -1,0 +1,13 @@
+"vertexlitgeneric"
+{
+    "$basetexture" "models\MCModelPack\mobs\char"
+    "$surfaceprop" "flesh"
+    "$alphatest"   "1"
+    "$halflambert" "1"
+    "$model"       "1"
+
+    //"$blendtintbybasealpha"   "1"
+    // "$blendtintcoloroverbase" "0"
+
+    // "$color2" "{0 220 220}" // Default shirt color
+}

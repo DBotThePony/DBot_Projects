@@ -1,0 +1,15 @@
+"UnlitGeneric"
+{
+   "$basetexture" "models\MCModelPack\animated\beam"
+   "$nocull"      "1"
+   "$nodecal"     "1"
+   "Proxies"
+   {
+        "TextureScroll"
+        {
+            "textureScrollVar"   "$basetexturetransform"
+            "textureScrollRate"  4.0
+            "textureScrollAngle" 90
+        }
+   }
+}

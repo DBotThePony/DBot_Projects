@@ -1,0 +1,7 @@
+"vertexlitgeneric" {
+    "$basetexture"  "models\MCModelPack\comparator2"
+    "$surfaceprop"  "Mrock"
+    "$halflambert"  "1"
+    "$selfillum"    "1"
+    "$reflectivity" "[0.675 0.675 0.675]"
+}

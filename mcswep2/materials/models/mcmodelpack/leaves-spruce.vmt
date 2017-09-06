@@ -1,0 +1,5 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\leaves-spruce"
+    "$surfaceprop" "Mfoliage"
+    "$alphatest"   "1"
+}

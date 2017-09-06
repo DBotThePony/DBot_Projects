@@ -1,0 +1,19 @@
+{
+	"title"		:	"SCP Insanity",
+	"type"		:	"npc",
+	"tags"		:	["fun"],
+	"ignore"	:
+	[
+		"*.psd",
+		"*.vcproj",
+		"*.svn*",
+		"*.git*",
+		".gitlab-ci.yml",
+		"moon*",
+		"build.sh",
+		"README.md",
+		"lint.txt",
+		"lint.sh",
+		"LICENSE"
+	]
+}

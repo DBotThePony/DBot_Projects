@@ -1,0 +1,9 @@
+"vertexlitgeneric" {
+    "$basetexture"  "models\MCModelPack\grass-1"
+    "$surfaceprop"  "Mgrass"
+    "$halflambert"  "1"
+    "$model"        "1"
+    "$reflectivity" "[0.675 0.675 0.675]"
+
+    "$color2" "{127 197 81}"
+}

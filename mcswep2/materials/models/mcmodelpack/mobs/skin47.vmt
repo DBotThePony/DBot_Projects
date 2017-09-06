@@ -1,0 +1,7 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\mobs\skin47"
+    "$surfaceprop" "flesh"
+    "$alphatest"   "1"
+    "$halflambert" "1"
+    "$model"       "1"
+}

@@ -1,0 +1,8 @@
+"vertexlitgeneric" {
+    "$basetexture"  "models\MCModelPack\ore-redstone"
+    //"$bumpmap"     "models\MCModelPack\ore_normal1"
+    "$surfaceprop"  "Mrock"
+    "$halflambert"  "1"
+    "$selfillum"    "1"
+    "$reflectivity" "[0.675 0.675 0.675]"
+}

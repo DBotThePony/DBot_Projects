@@ -1,0 +1,14 @@
+{
+	"title"		:	"DSit - Sit anywhere",
+	"type"		:	"tool",
+	"tags"		:	[ "fun", "scenic" ],
+	"ignore"	:
+	[
+		"*.psd",
+		"*.vcproj",
+		"*.svn*",
+		"*.git*",
+		"README.md",
+		"LICENSE"
+	]
+}

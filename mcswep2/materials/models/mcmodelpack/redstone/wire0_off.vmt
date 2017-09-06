@@ -1,0 +1,9 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\redstone\wire0"
+    "$surfaceprop" "Msand"
+    "$color2" "{55 0 0}"
+    "$halflambert" "1"
+    "$alphatest"   "1"
+    "$nodecal"     "1"
+    "$nocull"      "1"
+}

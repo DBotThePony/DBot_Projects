@@ -1,0 +1,4 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\items\spawnegg-spots"
+    "$surfaceprop" "Mplastic"
+}

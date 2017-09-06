@@ -1,0 +1,14 @@
+{
+	"title"		:	"MinecraftSWEP/2",
+	"type"		:	"weapon",
+	"tags"		:	[ "" ],
+	"ignore"	:
+	[
+		"*.psd",
+		"*.vcproj",
+		"*.svn*",
+		"*.git*",
+		"README.md",
+		"LICENSE"
+	]
+}

@@ -1,0 +1,8 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\mobs\slime2"
+    "$halflambert" "1"
+    "$model"       "1"
+    "$surfaceprop" "Mslime"
+
+    "$color2" "{125 204 106}"
+}

@@ -1,0 +1,7 @@
+"vertexlitgeneric" {
+    "$basetexture" "models\MCModelPack\items\bottle-liquid"
+    "$alphatest"   "1"
+    "$halflambert" "1"
+    //"$nocull"      "1"
+    "$surfaceprop" "Mglass"
+}
