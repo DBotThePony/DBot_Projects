@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$basetexture"	"models/buildables/LSENTRY1/LBLUEPRINT_BUILD"
+	"$surfaceprop"	"no_decal"
+}

@@ -1,0 +1,8 @@
+"UnlitGeneric"
+{
+	"$basetexture"	"models/buildables/LSENTRY1/LBLUEPRINT_MODEL"
+	"$surfaceprop"	"no_decal"
+	"$translucent"	1
+	"$model"		1
+	"$nocull"		1
+}
