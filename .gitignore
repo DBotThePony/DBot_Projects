@@ -1,2 +1,11 @@
 *.gma
 desktop.ini
+tf2buildables/lua_src/autorun/hudcommons.lua
+tf2buildables/lua_src/autorun/client/hudcommons/simple_draw.lua
+tf2buildables/lua_src/autorun/client/hudcommons/position.lua
+tf2buildables/lua_src/autorun/client/hudcommons/menu.lua
+tf2buildables/lua_src/autorun/client/hudcommons/matrix.lua
+tf2buildables/lua_src/autorun/client/hudcommons/advanced_draw.lua
+tf2buildables/lua_src/autorun/client/hudcommons/stripped.lua
+tf2buildables/lua_src/autorun/client/hudcommons/colors.lua
+tf2buildables/lua_src/autorun/client/hudcommons/functions.lua
