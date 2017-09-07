@@ -15,6 +15,8 @@
 -- limitations under the License.
 --
 
+AddCSLuaFile()
+
 ENT.PrintName = 'Loch-n-Load Projectile'
 ENT.Author = 'DBot'
 ENT.Category = 'TF2'

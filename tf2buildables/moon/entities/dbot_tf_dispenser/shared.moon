@@ -16,6 +16,7 @@
 --
 
 DEFINE_BASECLASS 'dbot_tf_build_base'
+AddCSLuaFile()
 
 ENT.Base = 'dbot_tf_build_base'
 ENT.Type = 'nextbot'

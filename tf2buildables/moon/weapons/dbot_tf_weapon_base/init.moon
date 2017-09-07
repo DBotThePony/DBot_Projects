@@ -17,6 +17,7 @@
 
 include 'shared.lua'
 AddCSLuaFile 'shared.lua'
+AddCSLuaFile 'cl_init.lua'
 
 util.AddNetworkString('DTF2.SendWeaponAnim')
 util.AddNetworkString('DTF2.SendWeaponSequence')

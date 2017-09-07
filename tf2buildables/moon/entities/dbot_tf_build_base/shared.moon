@@ -15,6 +15,8 @@
 -- limitations under the License.
 --
 
+AddCSLuaFile()
+
 ENT.Type = 'nextbot'
 ENT.Base = 'base_nextbot'
 ENT.IsTF2Building = true

@@ -18,6 +18,8 @@
 export DTF2
 DTF2 = DTF2 or {}
 
+resource.AddWorkshop('1129601162')
+
 AMMO_TO_GIVE = {
 	{
 		'name': 'Pistol'

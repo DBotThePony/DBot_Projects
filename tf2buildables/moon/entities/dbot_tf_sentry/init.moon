@@ -19,6 +19,7 @@ DEFINE_BASECLASS 'dbot_tf_build_base'
 
 include 'shared.lua'
 AddCSLuaFile 'shared.lua'
+AddCSLuaFile 'cl_init.lua'
 
 util.AddNetworkString('DTF2.SentryWing')
 util.AddNetworkString('DTF2.SentryFire')

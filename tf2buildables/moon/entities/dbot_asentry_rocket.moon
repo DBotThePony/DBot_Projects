@@ -15,6 +15,8 @@
 -- limitations under the License.
 --
 
+AddCSLuaFile()
+
 ENT.PrintName = 'Artilery Sentry Rockets'
 ENT.Author = 'DBot'
 ENT.Category = 'TF2'

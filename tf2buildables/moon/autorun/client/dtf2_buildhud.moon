@@ -18,6 +18,9 @@
 export DTF2
 DTF2 = DTF2 or {}
 
+if not _G.HUDCommons
+	include 'autorun/hudcommons.lua'
+
 DRAW_LIGHT = CreateConVar('tf_hud_draw_light', '1', {FCVAR_ARCHIVE}, 'Always draw status about builded buildables')
 
 eng_build_sentry_blueprint = Material('hud/eng_build_sentry_blueprint')

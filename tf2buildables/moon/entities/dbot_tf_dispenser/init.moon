@@ -19,6 +19,7 @@ DEFINE_BASECLASS 'dbot_tf_build_base'
 
 include 'shared.lua'
 AddCSLuaFile 'shared.lua'
+AddCSLuaFile 'cl_init.lua'
 
 ENT.CallDestroy = (attacker = NULL, inflictor = NULL, dmg) => hook.Run('TF2DispenserDestroyed', @, attacker, inflictor, dmg)
 

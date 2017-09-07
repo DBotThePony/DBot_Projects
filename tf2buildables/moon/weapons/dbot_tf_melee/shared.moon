@@ -16,6 +16,7 @@
 --
 
 DEFINE_BASECLASS('dbot_tf_weapon_base')
+AddCSLuaFile()
 
 SWEP.Base = 'dbot_tf_weapon_base'
 SWEP.Author = 'DBot'

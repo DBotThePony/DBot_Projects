@@ -16,6 +16,7 @@
 --
 
 DEFINE_BASECLASS('dbot_tf_clipbased')
+AddCSLuaFile()
 
 SWEP.Base = 'dbot_tf_clipbased'
 SWEP.Author = 'DBot'

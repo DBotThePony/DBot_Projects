@@ -15,6 +15,9 @@
 -- limitations under the License.
 --
 
+include 'shared.lua'
+AddCSLuaFile 'cl_init.lua'
+
 ATTACK_PLAYERS = CreateConVar('tf_attack_players', '0', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Sentries attacks players')
 FORGIVE = CreateConVar('tf_forgive', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Forgive attackers')
 FORGIVE_TIMER = CreateConVar('tf_forgive_timer', '30', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Forgivtion timer')

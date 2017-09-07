@@ -16,6 +16,8 @@
 -- limitations under the License.
 --
 
+AddCSLuaFile()
+
 ENT.Type = 'anim'
 ENT.PrintName = 'Burning Logic'
 ENT.Spawnable = false

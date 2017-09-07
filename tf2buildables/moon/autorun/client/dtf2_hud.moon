@@ -18,6 +18,9 @@
 export DTF2
 DTF2 = DTF2 or {}
 
+if not _G.HUDCommons
+	include 'autorun/hudcommons.lua'
+
 BACKGROUND_COLOR =          HUDCommons.CreateColor('tf_background', 'TF HUD Background', 0, 0, 0, 150)
 FONT_COLOR =                HUDCommons.CreateColor('tf_font', 'TF Font', 255, 255, 255)
 FONT_COLOR_GREEN =          HUDCommons.CreateColor('tf_font_positive', 'TF HUD positive text', 88, 183, 56)

@@ -17,6 +17,7 @@
 
 include 'shared.lua'
 AddCSLuaFile 'shared.lua'
+AddCSLuaFile 'cl_init.lua'
 
 util.AddNetworkString('DTF2.TeleportedEntity')
 util.AddNetworkString('DTF2.TeleportEntity')

@@ -15,6 +15,8 @@
 -- limitations under the License.
 --
 
+include 'shared.lua'
+
 ENT.Initialize = =>
 	@SetModel(@ProjectileModel)
 	@initialPosition = @GetPos()

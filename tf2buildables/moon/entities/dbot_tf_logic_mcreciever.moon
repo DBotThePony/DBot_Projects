@@ -16,6 +16,8 @@
 -- limitations under the License.
 --
 
+AddCSLuaFile()
+
 ENT.Type = 'anim'
 ENT.PrintName = 'Minicrit receiver'
 ENT.Spawnable = false

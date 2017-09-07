@@ -16,6 +16,7 @@
 --
 
 DEFINE_BASECLASS('dbot_tf_projectile')
+AddCSLuaFile()
 
 ENT.PrintName = 'Stickybomb Projectile'
 ENT.Author = 'DBot'

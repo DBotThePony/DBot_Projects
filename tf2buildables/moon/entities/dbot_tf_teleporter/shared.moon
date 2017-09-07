@@ -15,6 +15,8 @@
 -- limitations under the License.
 --
 
+AddCSLuaFile()
+
 ENT.Base = 'dbot_tf_build_base'
 ENT.Type = 'nextbot'
 ENT.PrintName = 'Teleporter'

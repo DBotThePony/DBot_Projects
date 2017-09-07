@@ -15,6 +15,10 @@
 -- limitations under the License.
 --
 
+AddCSLuaFile('cl_init.lua')
+AddCSLuaFile('shared.lua')
+include 'shared.lua'
+
 AccessorFunc(ENT, 'm_Attacker', 'Attacker')
 AccessorFunc(ENT, 'm_Inflictor', 'Inflictor')
 AccessorFunc(ENT, 'm_Weapon', 'Weapon')

@@ -15,6 +15,8 @@
 -- limitations under the License.
 --
 
+AddCSLuaFile()
+
 ENT.PrintName = 'Building derbis'
 ENT.Author = 'DBot'
 ENT.Category = 'TF2'
