@@ -95,7 +95,7 @@ hook.Add 'PostDrawOpaqueRenderables', 'DTF2.BuildPDABlueprint', (a, b) ->
 	diff = (pos - ply\GetPos())\Angle()
 	diff.p = 0
 	diff.r = 0
-	wep.__smoothRotation = LerpAngle(0.1, wep.__smoothRotation, Angle(0, wep\GetBuildRotation() * 90, 0))
+	wep.__smoothRotation = LerpAngle(0.1, wep.__smoothRotation or Angle(0, 0, 0), Angle(0, wep\GetBuildRotation() * 90, 0))
 	diff += wep.__smoothRotation
 	with wep.blueprintModel
 		\FrameAdvance()
