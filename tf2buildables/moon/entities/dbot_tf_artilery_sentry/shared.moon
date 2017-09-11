@@ -54,7 +54,7 @@ ENT.Gibs3Artilery = {
 	'models/buildables/artilery_sentry/gibs/sentry2_gib2.mdl'
 	'models/buildables/artilery_sentry/gibs/sentry2_gib3.mdl'
 	'models/buildables/artilery_sentry/gibs/sentry2_gib4.mdl'
-	'models/buildables/artilery_sentry/gibs/sentry3_gib1.mdl'
+	'models/buildables/gibs/sentry3_gib1.mdl'
 }
 
 ENT.Gibs = (level = @GetLevel()) =>
