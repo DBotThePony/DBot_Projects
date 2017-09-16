@@ -22,6 +22,7 @@ limitations under the License.
 local ENABLE = CreateConVar('ulx_autocomplete', '1', FCVAR_ARCHIVE, 'Enable chat autocomplete')
 
 local function RealSplit(str, ignore)
+	if not str then return {} end
 	local len = #str
 	local reply = {}
 	local TOKEN_LEVEL = 0
@@ -106,7 +107,7 @@ local function ChatTextChanged(str)
 		end
 		
 		local usage = v:getUsage(ply)
-		local usplit = RealSplit(usage, true)
+		local usplit = RealSplit(usage or '', true)
 		
 		for k, v in pairs(usplit) do
 			if v == '-' then break end
@@ -208,6 +209,7 @@ local function OnChatTab(str)
 	if not COMMAND_IS_VALID then return end
 	
 	local command = Drawn[2]
+	if not command then return end
 	local split1 = string.Explode(' ', str)
 	local split2 = RealSplit(command)
 	
