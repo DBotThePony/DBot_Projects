@@ -631,10 +631,15 @@ ENT.GetTargetsVisible = =>
 
 	return newOutput
 
-ENT.GetFirstVisible = =>
-	output = {}
+ENT.GetFirstVisible = (checkFor) =>
 	pos = @GetPos()
 	mx = DTF2.GrabInt(@MAX_DISTANCE) ^ 2
+
+	if IsValid(checkFor)
+		if checkFor\GetPos()\DistToSqr(pos) > mx
+			checkFor = nil
+	
+	output = {}
 	
 	for {target, tpos, mins, maxs, center, rotatedCenter} in *VALID_TARGETS
 		hit = false
@@ -642,6 +647,7 @@ ENT.GetFirstVisible = =>
 			if target2[1] == target
 				hit = true
 				break
+		
 		if not hit
 			dist = pos\DistToSqr(tpos)
 			if target\IsValid() and dist < mx
@@ -652,7 +658,13 @@ ENT.GetFirstVisible = =>
 		if target\IsValid() and dist < mx
 			table.insert(output, {target, tpos, dist, rotatedCenter})
 	
-	table.sort output, (a, b) -> a[3] < b[3]
+	table.sort output, (a, b) ->
+		if a == checkFor or b == checkFor
+			if b == checkFor
+				return false
+			if a == checkFor
+				return true
+		return a[3] < b[3]
 	trFilter = [eye[1] for eye in *@npc_bullseye]
 	table.insert(trFilter, @)
 
