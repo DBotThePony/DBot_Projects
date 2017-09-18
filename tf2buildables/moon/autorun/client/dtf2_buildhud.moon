@@ -163,24 +163,24 @@ DTF2.DrawSentryHUD = (sentry, x, y, centered = false, isHUD = false) ->
 				surface.SetDrawColor(AMMO_BAR())
 				surface.SetMaterial(hud_obj_status_ammo_64)
 				surface.DrawTexturedRect(x, y, 16, 16)
-				HUDCommons.SoftBarMult(x + 22, y, 130, 16, sentry\GetAmmoAmount() / sentry\GetMaxAmmo(), AMMO_BAR(), BAR_BACKGROUND(), 'tf_sentry_ammo')
+				HUDCommons.SoftBarMult(x + 22, y, 130, 16, math.Clamp(sentry\GetAmmoAmount() / sentry\GetMaxAmmo(), 0, 1), AMMO_BAR(), BAR_BACKGROUND(), 'tf_sentry_ammo')
 				
 				y += 24
 				surface.SetDrawColor(UPGRADE_BAR())
 				surface.SetMaterial(ico_metal_mask)
 				surface.DrawTexturedRect(x, y, 16, 16)
-				HUDCommons.SoftBarMult(x + 22, y, 130, 16, sentry\GetUpgradeAmount() / sentry\GetMaxUpgrade(), UPGRADE_BAR(), BAR_BACKGROUND(), 'tf_sentry_upgrade')
+				HUDCommons.SoftBarMult(x + 22, y, 130, 16, math.Clamp(sentry\GetUpgradeAmount() / sentry\GetMaxUpgrade(), 0, 1), UPGRADE_BAR(), BAR_BACKGROUND(), 'tf_sentry_upgrade')
 			when 3
 				surface.SetDrawColor(AMMO_BAR())
 				surface.SetMaterial(hud_obj_status_ammo_64)
 				surface.DrawTexturedRect(x, y, 16, 16)
-				HUDCommons.SoftBarMult(x + 22, y, 130, 16, sentry\GetAmmoAmount() / sentry\GetMaxAmmo(), AMMO_BAR(), BAR_BACKGROUND(), 'tf_sentry_ammo')
+				HUDCommons.SoftBarMult(x + 22, y, 130, 16, math.Clamp(sentry\GetAmmoAmount() / sentry\GetMaxAmmo(), 0, 1), AMMO_BAR(), BAR_BACKGROUND(), 'tf_sentry_ammo')
 				
 				y += 24
 				surface.SetDrawColor(ROCKETS_BAR())
 				surface.SetMaterial(hud_obj_status_rockets_64)
 				surface.DrawTexturedRect(x, y, 16, 16)
-				HUDCommons.SoftBarMult(x + 22, y, 130, 16, sentry\GetRocketsPercent(), ROCKETS_BAR(), BAR_BACKGROUND(), 'tf_sentry_rockets')
+				HUDCommons.SoftBarMult(x + 22, y, 130, 16, math.Clamp(sentry\GetRocketsPercent(), 0, 1), ROCKETS_BAR(), BAR_BACKGROUND(), 'tf_sentry_rockets')
 	else
 		y += 12
 		surface.SetDrawColor(UPGRADE_BAR())
@@ -228,18 +228,18 @@ DTF2.DrawDispenserHUD = (dispenser, x, y, centered = false, isHUD = false) ->
 				surface.SetDrawColor(DISPERNSER_AMMO_BAR())
 				surface.SetMaterial(hud_obj_status_ammo_64)
 				surface.DrawTexturedRect(x, y, 16, 16)
-				HUDCommons.SoftBarMult(x + 22, y, 130, 16, dispenser\GetRessuplyAmount() / dispenser\GetMaxRessuply(), DISPERNSER_AMMO_BAR(), BAR_BACKGROUND(), 'tf_dispenser_ammo')
+				HUDCommons.SoftBarMult(x + 22, y, 130, 16, math.Clamp(dispenser\GetRessuplyAmount() / dispenser\GetMaxRessuply(), 0, 1), DISPERNSER_AMMO_BAR(), BAR_BACKGROUND(), 'tf_dispenser_ammo')
 				
 				y += 24
 				surface.SetDrawColor(UPGRADE_BAR())
 				surface.SetMaterial(ico_metal_mask)
 				surface.DrawTexturedRect(x, y, 16, 16)
-				HUDCommons.SoftBarMult(x + 22, y, 130, 16, dispenser\GetUpgradeAmount() / dispenser\GetMaxUpgrade(), UPGRADE_BAR(), BAR_BACKGROUND(), 'tf_dispenser_upgrade')
+				HUDCommons.SoftBarMult(x + 22, y, 130, 16, math.Clamp(dispenser\GetUpgradeAmount() / dispenser\GetMaxUpgrade(), 0, 1), UPGRADE_BAR(), BAR_BACKGROUND(), 'tf_dispenser_upgrade')
 			when 3
 				surface.SetDrawColor(DISPERNSER_AMMO_BAR())
 				surface.SetMaterial(hud_obj_status_ammo_64)
 				surface.DrawTexturedRect(x, y + 10, 16, 16)
-				HUDCommons.SoftBarMult(x + 22, y + 10, 130, 16, dispenser\GetRessuplyAmount() / dispenser\GetMaxRessuply(), DISPERNSER_AMMO_BAR(), BAR_BACKGROUND(), 'tf_dispenser_ammo')
+				HUDCommons.SoftBarMult(x + 22, y + 10, 130, 16, math.Clamp(dispenser\GetRessuplyAmount() / dispenser\GetMaxRessuply(), 0, 1), DISPERNSER_AMMO_BAR(), BAR_BACKGROUND(), 'tf_dispenser_ammo')
 	else
 		y += 12
 		surface.SetDrawColor(UPGRADE_BAR())
@@ -287,7 +287,7 @@ DTF2.DrawTeleporterEntranceHUD = (teleporter, x, y, centered = false, isHUD = fa
 			surface.SetDrawColor(UPGRADE_BAR())
 			surface.SetMaterial(ico_metal_mask)
 			surface.DrawTexturedRect(x, y, 16, 16)
-			HUDCommons.SoftBarMult(x + 22, y, 130, 16, teleporter\GetUpgradeAmount() / teleporter\GetMaxUpgrade(), UPGRADE_BAR(), BAR_BACKGROUND(), 'tf_tele_upgrade')
+			HUDCommons.SoftBarMult(x + 22, y, 130, 16, math.Clamp(teleporter\GetUpgradeAmount() / teleporter\GetMaxUpgrade(), 0, 1), UPGRADE_BAR(), BAR_BACKGROUND(), 'tf_tele_upgrade')
 			y += 24
 		else
 			y += 9
@@ -351,7 +351,7 @@ DTF2.DrawTeleporterExitHUD = (teleporter, x, y, centered = false, isHUD = false)
 			surface.SetDrawColor(UPGRADE_BAR())
 			surface.SetMaterial(ico_metal_mask)
 			surface.DrawTexturedRect(x, y, 16, 16)
-			HUDCommons.SoftBarMult(x + 22, y, 130, 16, teleporter\GetUpgradeAmount() / teleporter\GetMaxUpgrade(), UPGRADE_BAR(), BAR_BACKGROUND(), 'tf_tele_upgrade')
+			HUDCommons.SoftBarMult(x + 22, y, 130, 16, math.Clamp(teleporter\GetUpgradeAmount() / teleporter\GetMaxUpgrade(), 0, 1), UPGRADE_BAR(), BAR_BACKGROUND(), 'tf_tele_upgrade')
 			y += 24
 		else
 			y += 9
