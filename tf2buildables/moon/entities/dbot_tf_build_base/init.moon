@@ -650,24 +650,20 @@ ENT.GetFirstVisible = (checkFor) =>
 		
 		if not hit
 			dist = pos\DistToSqr(tpos)
+			dist = 0 if target == checkFor
 			if target\IsValid() and dist < mx
 				table.insert(output, {target, tpos, dist, rotatedCenter})
 
 	for {target, tpos, mins, maxs, center, rotatedCenter} in *@markedTargets
 		dist = pos\DistToSqr(tpos)
+		dist = 0 if target == checkFor
 		if target\IsValid() and dist < mx
 			table.insert(output, {target, tpos, dist, rotatedCenter})
 	
-	table.sort output, (a, b) ->
-		if a == checkFor or b == checkFor
-			if b == checkFor
-				return false
-			if a == checkFor
-				return true
-		return a[3] < b[3]
+	table.sort output, (a, b) -> a[3] < b[3]
 	trFilter = [eye[1] for eye in *@npc_bullseye]
 	table.insert(trFilter, @)
-
+	
 	for {target, tpos, dist, center} in *output
 		trData = {
 			filter: trFilter
