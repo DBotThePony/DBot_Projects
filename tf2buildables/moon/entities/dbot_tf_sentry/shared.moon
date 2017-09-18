@@ -148,11 +148,11 @@ ENT.CustomRepair = (thersold = 200, simulate = CLIENT) =>
 	weight = 0
 	rockets = 0
 	ammo = 0
-	ammo = math.Clamp(math.min(@GetMaxAmmo() - @GetAmmoAmount(), DTF2.GrabInt(@AMMO_RESTORE_ON_HIT)), 0, thersold - weight)
+	ammo = math.Clamp(math.min((@GetMaxAmmo() - @GetAmmoAmount()) * 0.25, DTF2.GrabInt(@AMMO_RESTORE_ON_HIT) * 0.25), 0, thersold - weight)
 	rockets = math.Clamp(math.min(DTF2.GrabInt(@MAX_ROCKETS) - @GetRockets(), DTF2.GrabInt(@ROCKETS_RESTORE_ON_HIT)) * 2, 0, thersold - weight) if @GetLevel() == 3
 	rockets -= 1 if math.floor(rockets / 2) ~= rockets / 2
-	weight += ammo
+	weight += math.ceil(ammo)
 	weight += rockets
-	@SetAmmoAmount(@GetAmmoAmount() + ammo) if not simulate
+	@SetAmmoAmount(@GetAmmoAmount() + math.floor(ammo * 4)) if not simulate
 	@SetRockets(@GetRockets() + rockets / 2) if not simulate
 	return weight

@@ -140,10 +140,10 @@ ENT.SimulateRepair = (thersold = 200, simulate = CLIENT) =>
 	return 0 if thersold == 0
 	weight = 0
 	repairHP = 0
-	repairHP = math.Clamp(math.min(@GetMaxHealth() - @Health(), DTF2.GrabInt(@REPAIR_HEALTH)), 0, thersold - weight) if @IsAvaliableForRepair()
+	repairHP = math.Clamp(math.min((@GetMaxHealth() - @Health()) * 0.5, DTF2.GrabInt(@REPAIR_HEALTH) * 0.5), 0, thersold - weight) if @IsAvaliableForRepair()
 
-	weight += repairHP if repairHP ~= 0 
-	@SetHealth(@Health() + repairHP) if repairHP ~= 0 and not simulate
+	weight += math.ceil(repairHP) if repairHP ~= 0 
+	@SetHealth(@Health() + repairHP * 2) if repairHP ~= 0 and not simulate
 	weight += @CustomRepair(thersold - weight, simulate)
 	weight += @SimulateUpgrade(thersold - weight, simulate)
 	return weight
