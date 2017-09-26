@@ -192,6 +192,7 @@ end
 weaponrystats.iterateWeapon = iterateWeapon
 weaponrystats.iterateWeapons = iterateWeapons
 weaponrystats.savePlayer = savePlayer
+weaponrystats.networkWeapon = networkWeapon
 
 local saveToDatabase, loadFromDatabase
 

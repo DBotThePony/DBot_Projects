@@ -17,6 +17,7 @@ local weaponrystats = weaponrystats
 
 local function PlayerSwitchWeapon(self, oldWeapon, newWeapon)
 	weaponrystats.iterateWeapon(self, newWeapon)
+	weaponrystats.networkWeapon(newWeapon)
 end
 
 weaponrystats.PlayerSwitchWeapon = PlayerSwitchWeapon
@@ -69,7 +70,7 @@ concommand.Add('weaponrystats_resetall', function(ply, cmd, args)
 				weapon.weaponrystats = nil
 			end
 		end
-		
+
 		weaponrystats.PlayerInitialSpawn(ply)
 		weaponrystats.PlayerLoadout(ply)
 	end

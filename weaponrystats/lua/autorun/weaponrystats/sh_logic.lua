@@ -14,6 +14,7 @@
 -- limitations under the License.
 
 local weaponrystats = weaponrystats
+local weaponMeta = FindMetaTable('Weapon')
 
 local function EntityFireBullets(self, bulletData)
 	if type(self) ~= 'Weapon' and type(bulletData.Attacker) == 'Player' then return end
@@ -72,5 +73,36 @@ local function EntityFireBullets(self, bulletData)
 end
 
 weaponrystats.EntityFireBullets = EntityFireBullets
+
+weaponMeta.weaponrystats_SetNextPrimaryFire = weaponMeta.weaponrystats_SetNextPrimaryFire or weaponMeta.SetNextPrimaryFire
+weaponMeta.weaponrystats_SetNextSecondaryFire = weaponMeta.weaponrystats_SetNextSecondaryFire or weaponMeta.SetNextSecondaryFire
+
+function weaponMeta:SetNextPrimaryFire(time)
+	local delta = time - CurTime()
+
+	if delta > 0 then
+		local modif = self:GetWeaponModification()
+		
+		if modif and modif.speed then
+			time = CurTime() + delta / modif.speed
+		end
+	end
+
+	return weaponMeta.weaponrystats_SetNextPrimaryFire(self, time)
+end
+
+function weaponMeta:SetNextSecondaryFire(time)
+	local delta = time - CurTime()
+
+	if delta > 0 then
+		local modif = self:GetWeaponModification()
+
+		if modif and modif.speed then
+			time = CurTime() + delta / modif.speed
+		end
+	end
+
+	return weaponMeta.weaponrystats_SetNextSecondaryFire(self, time)
+end
 
 hook.Add('EntityFireBullets', 'WeaponryStats.EntityFireBullets', EntityFireBullets)
