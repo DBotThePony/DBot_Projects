@@ -110,6 +110,7 @@ end
 
 local function savePlayer(self)
 	if not checkupOwner(self) then return end
+	if self:IsBot() then return end
 	self.weaponrystats_markDirty = false
 	local steamid = SQLStr(self:SteamID())
 
@@ -211,14 +212,17 @@ end
 function loadFromDatabase(self)
 	self.weaponrystats_t = {}
 	self.weaponrystats_m = {}
-	local steamid = SQLStr(self:SteamID())
-	local data = sql.Query('SELECT weapon, weapontype, weaponmodification FROM weaponrystats WHERE steamid = ' .. steamid)
-	if not data then return end
 
-	for i, row in ipairs(data) do
-		local weapon, weapontype, weaponmodification = weaponrystats.numberToUID(row.weapon), weaponrystats.numberToUID(row.weapontype), weaponrystats.numberToUID(row.weaponmodification)
-		self.weaponrystats_t[weapon] = weapontype
-		self.weaponrystats_m[weapon] = weaponmodification
+	if not self:IsBot() then
+		local steamid = SQLStr(self:SteamID())
+		local data = sql.Query('SELECT weapon, weapontype, weaponmodification FROM weaponrystats WHERE steamid = ' .. steamid)
+		if not data then return end
+
+		for i, row in ipairs(data) do
+			local weapon, weapontype, weaponmodification = weaponrystats.numberToUID(row.weapon), weaponrystats.numberToUID(row.weapontype), weaponrystats.numberToUID(row.weaponmodification)
+			self.weaponrystats_t[weapon] = weapontype
+			self.weaponrystats_m[weapon] = weaponmodification
+		end
 	end
 
 	networkPlayer(self)
