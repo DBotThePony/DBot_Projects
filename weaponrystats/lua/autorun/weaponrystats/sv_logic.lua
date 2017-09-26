@@ -14,8 +14,10 @@
 -- limitations under the License.
 
 local weaponrystats = weaponrystats
+local IN_DAMAGE = false
 
 local function EntityTakeDamage(self, dmginfo)
+	if IN_DAMAGE then return end
 	local attacker, inflictor = dmginfo:GetAttacker(), dmginfo:GetInflictor()
 	if not IsValid(attacker) or not IsValid(inflictor) then return end
 	if type(attacker) ~= 'Player' or not (type(inflictor) == 'Weapon' or attacker == inflictor) then return end
@@ -36,7 +38,10 @@ local function EntityTakeDamage(self, dmginfo)
 			newDMG:SetReportedPosition(dmginfo:GetReportedPosition())
 			newDMG:SetDamagePosition(dmginfo:GetDamagePosition())
 			newDMG:SetDamageType(wtype.dmgtype)
+
+			IN_DAMAGE = true
 			self:TakeDamageInfo(newDMG)
+			IN_DAMAGE = false
 		else
 			dmginfo:SetDamage(dmginfo:GetDamage() * (wtype.damage or 1))
 			dmginfo:SetDamageType(wtype.dmgtype)
