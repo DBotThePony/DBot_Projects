@@ -15,8 +15,8 @@
 
 local weaponrystats = weaponrystats
 
-local function EntityTakeDamage(self, dmg)
-	local attacker, inflictor = dmg:GetAttacker(), dmg:GetInflictor()
+local function EntityTakeDamage(self, dmginfo)
+	local attacker, inflictor = dmginfo:GetAttacker(), dmginfo:GetInflictor()
 	if not IsValid(attacker) or not IsValid(inflictor) then return end
 	if type(attacker) ~= 'Player' or not (type(inflictor) == 'Weapon' or attacker == inflictor) then return end
 	local weapon = type(inflictor) == 'Weapon' and inflictor or attacker:GetActiveWeapon()
@@ -38,13 +38,13 @@ local function EntityTakeDamage(self, dmg)
 			newDMG:SetDamageType(wtype.dmgtype)
 			self:TakeDamageInfo(newDMG)
 		else
-			dmg:SetDamage(dmg:GetDamage() * (wtype.damage or 1))
-			dmg:SetDamageType(wtype.dmgtype)
+			dmginfo:SetDamage(dmginfo:GetDamage() * (wtype.damage or 1))
+			dmginfo:SetDamageType(wtype.dmgtype)
 		end
 	end
 
 	if modif then
-		dmg:SetDamage(dmg:GetDamage() * (modif.damage or 1))
+		dmginfo:SetDamage(dmginfo:GetDamage() * (modif.damage or 1))
 	end
 end
 
