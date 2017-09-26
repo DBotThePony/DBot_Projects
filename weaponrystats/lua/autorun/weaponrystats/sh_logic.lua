@@ -39,7 +39,7 @@ local function EntityFireBullets(self, bulletData)
 
 		if wtype.isAdditional then
 			function bulletData.Callback(attacker, tr, dmginfo, ...)
-				if IsValid(tr.Entity) then
+				if IsValid(tr.Entity) and SERVER then
 					local newDMG = DamageInfo()
 					newDMG:SetAttacker(dmginfo:GetAttacker())
 					newDMG:SetInflictor(dmginfo:GetInflictor())
@@ -81,11 +81,17 @@ function weaponMeta:SetNextPrimaryFire(time)
 	local delta = time - CurTime()
 
 	if delta > 0 then
-		local modif = self:GetWeaponModification()
+		local modif, wtype = self:GetWeaponModification(), self:GetWeaponType()
 		
 		if modif and modif.speed then
-			time = CurTime() + delta / modif.speed
+			delta = delta / modif.speed
 		end
+		
+		if wtype and wtype.speed then
+			delta = delta / wtype.speed
+		end
+
+		time = CurTime() + delta
 	end
 
 	return weaponMeta.weaponrystats_SetNextPrimaryFire(self, time)
@@ -95,11 +101,17 @@ function weaponMeta:SetNextSecondaryFire(time)
 	local delta = time - CurTime()
 
 	if delta > 0 then
-		local modif = self:GetWeaponModification()
-
+		local modif, wtype = self:GetWeaponModification(), self:GetWeaponType()
+		
 		if modif and modif.speed then
-			time = CurTime() + delta / modif.speed
+			delta = delta / modif.speed
 		end
+		
+		if wtype and wtype.speed then
+			delta = delta / wtype.speed
+		end
+
+		time = CurTime() + delta
 	end
 
 	return weaponMeta.weaponrystats_SetNextSecondaryFire(self, time)

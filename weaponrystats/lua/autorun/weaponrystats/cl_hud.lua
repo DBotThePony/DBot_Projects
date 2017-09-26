@@ -56,7 +56,7 @@ local function HUDPaint()
 	end
 
 	if wtype then
-		name = name .. ' (' .. wtype.name .. ')'
+		name = name .. ' of ' .. wtype.name
 		currentQuality = currentQuality + (wtype.quality or 0)
 	end
 
