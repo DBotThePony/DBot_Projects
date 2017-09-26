@@ -63,6 +63,13 @@ concommand.Add('weaponrystats_resetall', function(ply, cmd, args)
 	sql.Query('DELETE FROM weaponrystats')
 
 	for i, ply in ipairs(player.GetAll()) do
+		local weapons = ply:GetWeapons()
+		if weapons then
+			for i, weapon in ipairs(weapons) do
+				weapon.weaponrystats = nil
+			end
+		end
+		
 		weaponrystats.PlayerInitialSpawn(ply)
 		weaponrystats.PlayerLoadout(ply)
 	end

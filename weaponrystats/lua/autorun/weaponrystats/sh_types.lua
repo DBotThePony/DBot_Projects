@@ -20,7 +20,8 @@ return {
 		isAdditional = false,
 		damage = 1.1,
 		force = 1,
-		quality = 1
+		quality = 1,
+		order = 5
 	},
 
 	electric = {
@@ -29,6 +30,7 @@ return {
 		isAdditional = false,
 		damage = 1.25,
 		force = 0.4,
-		quality = 2
+		quality = 2,
+		order = 10
 	},
 }

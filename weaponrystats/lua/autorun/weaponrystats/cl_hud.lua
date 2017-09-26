@@ -25,7 +25,7 @@ local qualityColors = {
 	Color(141, 141, 141),
 	Color(255, 255, 255),
 	Color(41, 78, 200),
-	Color(79, 231, 118),
+	Color(35, 162, 68),
 	Color(254, 199, 134),
 	Color(239, 122, 122),
 	Color(246, 156, 241),

@@ -54,6 +54,14 @@ for key, value in pairs(weaponrystats.types) do
 	table.insert(weaponrystats.types_array, key)
 end
 
+table.sort(weaponrystats.types_array, function(a, b)
+	return weaponrystats.types[a].order < weaponrystats.types[b].order
+end)
+
+table.sort(weaponrystats.modifications_array, function(a, b)
+	return weaponrystats.modifications[a].order < weaponrystats.modifications[b].order
+end)
+
 if SERVER then
 	include('autorun/weaponrystats/sv_util.lua')
 	include('autorun/weaponrystats/sv_loadsave.lua')
