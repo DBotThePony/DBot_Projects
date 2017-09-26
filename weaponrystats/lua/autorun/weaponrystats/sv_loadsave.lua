@@ -61,7 +61,7 @@ function addWeaponModification(self)
 
 	local steamid = owner:SteamID()
 	local class = self:GetClass()
-	local rand = math.ceil(util.SharedRandom(steamid .. class .. '_modification', 1, #weaponrystats.modifications_array) - 0.5)
+	local rand = math.ceil(util.SharedRandom(steamid .. class .. '_modification', 1, #weaponrystats.modifications_array, os.time()) - 0.5)
 	local modificationKey = weaponrystats.modifications_array[rand] or weaponrystats.modifications_array[rand + 1] or weaponrystats.modifications_array[1]
 	self.weaponrystats.modification = weaponrystats.modifications[modificationKey]
 	owner.weaponrystats_m[weaponrystats.getWeaponUID(self)] = self.weaponrystats.modification.crc
@@ -81,7 +81,7 @@ function addWeaponType(self)
 
 	local steamid = owner:SteamID()
 	local class = self:GetClass()
-	local rand = math.floor(util.SharedRandom(steamid .. class .. '_type', 1, #weaponrystats.types_array) - 0.5)
+	local rand = math.floor(util.SharedRandom(steamid .. class .. '_type', 1, #weaponrystats.types_array, os.time()) - 0.5)
 	local modificationKey = weaponrystats.types_array[rand] or weaponrystats.types_array[rand + 1] or weaponrystats.types_array[1]
 	self.weaponrystats.type = weaponrystats.types[modificationKey]
 	owner.weaponrystats_t[uid] = self.weaponrystats.type.crc
