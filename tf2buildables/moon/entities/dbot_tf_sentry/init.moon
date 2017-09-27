@@ -79,6 +79,7 @@ ENT.BulletHit = (tr, dmg) =>
 	dmg\SetDamage(DTF2.GrabFloat(@BULLET_DAMAGE))
 	dmg\SetAttacker(@SelectAttacker())
 	dmg\SetInflictor(@)
+	dmg\SetDamageType(DMG_BULLET)
 
 ENT.SetLevel = (val = 1, playAnimation = true, force = false) =>
 	oldLevel = @GetLevel()
