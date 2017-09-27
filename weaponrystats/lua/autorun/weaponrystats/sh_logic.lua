@@ -39,7 +39,7 @@ local function EntityFireBullets(self, bulletData)
 
 		bulletData.Spread = ((bulletData.Spread or Vector(0, 0, 0)) + wtype.scatterAdd) * wtype.scatter
 		bulletData.Distance = math.ceil((bulletData.Distance or 56756) * wtype.dist)
-		bulletData.Num = math.ceil(((bulletData.Num or 1) + wtype.numAdd) * wtype.num)
+		bulletData.Num = math.max(math.ceil(((bulletData.Num or 1) + wtype.numAdd) * wtype.num), 1)
 
 		if wtype.isAdditional then
 			function bulletData.Callback(attacker, tr, dmginfo, ...)
