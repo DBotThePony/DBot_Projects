@@ -44,7 +44,7 @@ local function EntityTakeDamage(self, dmginfo)
 			IN_DAMAGE = false
 		else
 			dmginfo:SetDamage(dmginfo:GetDamage() * (wtype.damage or 1))
-			dmginfo:SetDamageType(wtype.dmgtype)
+			dmginfo:SetDamageType(bit.bor(dmginfo:GetDamageType(), wtype.dmgtype))
 		end
 	end
 
