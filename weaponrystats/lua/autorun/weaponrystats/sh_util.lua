@@ -22,13 +22,16 @@ function weaponMeta:ApplyClipModifications()
 	local modif, wtype = self:GetWeaponModification(), self:GetWeaponType()
 	if not modif or not wtype then return end
 	self.weaponrystats_clipApplied = true
+	local shouldBeAutomatic = modif.speed * wtype.speed >= 1.3
 	
 	if self.Primary and self.Primary.ClipSize then
 		self.Primary.ClipSize = math.ceil(self.Primary.ClipSize * modif.clip * wtype.clip)
+		self.Primary.Automatic = self.Primary.Automatic or shouldBeAutomatic
 	end
 	
 	if self.Secondary and self.Secondary.ClipSize then
 		self.Secondary.ClipSize = math.ceil(self.Secondary.ClipSize * modif.clip * wtype.clip)
+		self.Secondary.Automatic = self.Secondary.Automatic or shouldBeAutomatic
 	end
 end
 
