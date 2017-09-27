@@ -17,6 +17,36 @@ local weaponrystats = weaponrystats
 local uidCache = {}
 local weaponMeta = FindMetaTable('Weapon')
 
+function weaponMeta:ApplyClipModifications()
+	if self.weaponrystats_clipApplied then return end
+	self.weaponrystats_clipApplied = true
+	local modif, wtype = self:GetWeaponModification(), self:GetWeaponType()
+	
+	if self.Primary and self.Primary.ClipSize then
+		if modif then
+			self.Primary.ClipSize = self.Primary.ClipSize * modif.clip
+		end
+
+		if wtype then
+			self.Primary.ClipSize = self.Primary.ClipSize * wtype.clip
+		end
+
+		self.Primary.ClipSize = math.ceil(self.Primary.ClipSize)
+	end
+	
+	if self.Secondary and self.Secondary.ClipSize then
+		if modif then
+			self.Secondary.ClipSize = self.Secondary.ClipSize * modif.clip
+		end
+
+		if wtype then
+			self.Secondary.ClipSize = self.Secondary.ClipSize * wtype.clip
+		end
+
+		self.Secondary.ClipSize = math.ceil(self.Secondary.ClipSize)
+	end
+end
+
 function weaponMeta:GetWeaponModification()
 	if CLIENT then
 		return weaponrystats.modifications_hash[self:GetNWString('WPS.M')]

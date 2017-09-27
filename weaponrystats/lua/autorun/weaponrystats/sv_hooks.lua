@@ -18,6 +18,7 @@ local weaponrystats = weaponrystats
 local function PlayerSwitchWeapon(self, oldWeapon, newWeapon)
 	weaponrystats.iterateWeapon(self, newWeapon)
 	weaponrystats.networkWeapon(newWeapon)
+	newWeapon:ApplyClipModifications()
 end
 
 weaponrystats.PlayerSwitchWeapon = PlayerSwitchWeapon

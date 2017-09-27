@@ -37,6 +37,10 @@ local function EntityFireBullets(self, bulletData)
 	if wtype then
 		local oldCallback = bulletData.Callback
 
+		bulletData.Spread = ((bulletData.Spread or Vector(0, 0, 0)) + wtype.scatterAdd) * wtype.scatter
+		bulletData.Distance = math.ceil((bulletData.Distance or 56756) * wtype.dist)
+		bulletData.Num = math.ceil(((bulletData.Num or 1) + wtype.numAdd) * wtype.num)
+
 		if wtype.isAdditional then
 			function bulletData.Callback(attacker, tr, dmginfo, ...)
 				if IsValid(tr.Entity) and SERVER then

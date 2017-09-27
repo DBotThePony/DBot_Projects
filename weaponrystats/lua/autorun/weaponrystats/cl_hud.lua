@@ -75,6 +75,14 @@ local function HUDPaint()
 	local speed = 1
 	local force = 1
 	local damage = 1
+	local clip = 1
+	local scatter = 1
+	local scatterAdd = Vector(0, 0, 0)
+	local num = 1
+	local numAdd = 0
+	local dist = 1
+	local randomMin = 1
+	local randomMax = 1
 	local additional = false
 	local add = 0
 
@@ -88,6 +96,14 @@ local function HUDPaint()
 		speed = speed * modif.speed
 		force = force * modif.force
 		damage = damage * modif.damage
+		clip = clip * modif.clip
+		scatter = scatter * modif.scatter
+		num = num * modif.num
+		dist = dist * modif.dist
+		randomMin = randomMin * modif.randomMin
+		randomMax = randomMax * modif.randomMax
+		scatterAdd = scatterAdd + modif.scatterAdd
+		numAdd = numAdd + modif.numAdd
 	end
 
 	if wtype then
@@ -95,6 +111,14 @@ local function HUDPaint()
 		currentQuality = currentQuality + (wtype.quality or 0)
 		speed = speed * wtype.speed
 		force = damage * wtype.force
+		clip = clip * wtype.clip
+		scatter = scatter * wtype.scatter
+		num = num * wtype.num
+		dist = dist * wtype.dist
+		randomMin = randomMin * wtype.randomMin
+		randomMax = randomMax * wtype.randomMax
+		scatterAdd = scatterAdd + wtype.scatterAdd
+		numAdd = numAdd + wtype.numAdd
 
 		if wtype.isAdditional then
 			add = wtype.damage
@@ -128,7 +152,32 @@ local function HUDPaint()
 
 	doDrawText(string.format('%i%% attack speed', speed * 100), x, y, STATS_COLOR)
 	y = y + 15
+	
 	doDrawText(string.format('%i%% knockback', force * 100), x, y, STATS_COLOR)
+	y = y + 15
+
+	if clip ~= 1 then
+		doDrawText(string.format('%+i%% clip size', 100 - clip * 100), x, y, STATS_COLOR)
+		y = y + 15
+	end
+
+	if scatterAdd:Length() == 0 then
+		doDrawText(string.format('%i%% bullet scatter', scatter * 100), x, y, STATS_COLOR)
+		y = y + 15
+	else
+		doDrawText(string.format('%i%% bullet scatter (+%i extra)', scatter * 100, scatterAdd:Length() * 10), x, y, STATS_COLOR)
+		y = y + 15
+	end
+
+	if numAdd == 0 then
+		doDrawText(string.format('%i%% bullets amount', num * 100), x, y, STATS_COLOR)
+		y = y + 15
+	else
+		doDrawText(string.format('%i%% bullets amount (+%i extra bullets)', (num) * 100, numAdd), x, y, STATS_COLOR)
+		y = y + 15
+	end
+
+	doDrawText(string.format('%i%% bullet travel distance', dist * 100), x, y, STATS_COLOR)
 	y = y + 15
 end
 
