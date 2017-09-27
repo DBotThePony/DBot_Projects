@@ -95,82 +95,94 @@ local function ReadVector()
 	return Vector(net.ReadFloat(), net.ReadFloat(), net.ReadFloat())
 end
 
+local function readArray()
+	local reply = {}
+
+	for i = 1, net.ReadUInt(8) do
+		table.insert(reply, net.ReadUInt(8))
+	end
+
+	return reply
+end
+
 local function NetPlayer()
 	if not ENABLE:GetBool() then return end
 	local dmg = net.ReadFloat()
-	local type = net.ReadUInt(8)
+	local typeRead = readArray()
 	local pos = ReadVector()
 	local target = Entity(net.ReadUInt(8))
 	if target ~= DHUD2.SelectPlayer() then return end
-	local dtype = Types[type]
-	
-	DHUD2.DamageShift = true
-	DHUD2.DamageShiftData = {}
-	DisableAt = CurTime() + 0.2
-	
+	local scrambleAplifier = #typeRead * 4
 	dmg = math.floor(dmg * 100) / 100
-	
-	local ctime = CurTime()
-	local tolive = math.Clamp(dmg / 10, 3, 12)
-	local col = Damage.Colors[dtype] or color_white
-	local scale = math.Clamp(dmg / 10, 0.5, 2)
-	
-	local data = {
-		pos = pos,
-		dmg = dmg,
-		start = ctime,
-		finish = ctime + tolive,
-		fade = ctime + tolive - 1,
-		color = Color(col.r, col.g, col.b, col.a),
-		dtype = dtype,
-		cfade = 1,
-		scale = scale
-	}
-	
-	table.insert(Damage.PHistory, data)
+
+	for i, type in ipairs(typeRead) do
+		local dtype = Types[type]
+
+		DHUD2.DamageShift = true
+		DHUD2.DamageShiftData = {}
+		DisableAt = CurTime() + 0.2
+
+		local ctime = CurTime()
+		local tolive = math.Clamp(dmg / 10, 3, 12)
+		local col = Damage.Colors[dtype] or color_white
+		local scale = math.Clamp(dmg / 10, 0.5, 2)
+
+		local data = {
+			pos = pos + VectorRand() * scrambleAplifier,
+			dmg = dmg,
+			start = ctime,
+			finish = ctime + tolive,
+			fade = ctime + tolive - 1,
+			color = Color(col.r, col.g, col.b, col.a),
+			dtype = dtype,
+			cfade = 1,
+			scale = scale
+		}
+
+		table.insert(Damage.PHistory, data)
+	end
 end
 
 local function Net()
 	if not ENABLE:GetBool() then return end
-	local pos = Vector(net.ReadFloat(), net.ReadFloat(), net.ReadFloat())
+	local pos = ReadVector()
 	local dmg = net.ReadFloat()
-	local type = net.ReadUInt(8)
+	local typeRead = readArray()
 	local entityThatDamaged = net.ReadEntity()
-	local dtype = Types[type]
-	
+	local scrambleAplifier = #typeRead * 4
 	dmg = math.floor(dmg * 100) / 100
-	
-	local ctime = CurTime()
-	
-	local tolive = math.Clamp(dmg / 25, 3, 12)
-	
-	local col = Damage.Colors[dtype] or color_white
-	
-	local data = {
-		pos = pos,
-		dmg = dmg,
-		start = ctime,
-		finish = ctime + tolive,
-		shift = 0,
-		size = math.Clamp(dmg, 10, 175),
-		fade = ctime + tolive - 1,
-		color = Color(col.r, col.g, col.b, col.a),
-		dtype = dtype,
-		cfade = 1,
-		scale = math.Clamp(dmg / 10, 0.5, 2)
-	}
-	
-	data.ssize = data.size
-	
-	if IsValid(entityThatDamaged) and LocalPlayer():ShouldDrawLocalPlayer() then
-		local mins, maxs = entityThatDamaged:WorldSpaceAABB()
-		
-		if DHUD2.pointInsideBox(DHUD2.EyePos, mins, maxs) or DHUD2.EyePos:Distance(entityThatDamaged:GetPos()) < 10 then
-			table.insert(Damage.PHistory, table.Copy(data))
+
+	for i, type in ipairs(typeRead) do
+		local dtype = Types[type]
+		local ctime = CurTime()
+		local tolive = math.Clamp(dmg / 25, 3, 12)
+		local col = Damage.Colors[dtype] or color_white
+		local data = {
+			pos = pos + VectorRand() * scrambleAplifier,
+			dmg = dmg,
+			start = ctime,
+			finish = ctime + tolive,
+			shift = 0,
+			size = math.Clamp(dmg, 10, 175),
+			fade = ctime + tolive - 1,
+			color = Color(col.r, col.g, col.b, col.a),
+			dtype = dtype,
+			cfade = 1,
+			scale = math.Clamp(dmg / 10, 0.5, 2)
+		}
+
+		data.ssize = data.size
+
+		if IsValid(entityThatDamaged) and LocalPlayer():ShouldDrawLocalPlayer() then
+			local mins, maxs = entityThatDamaged:WorldSpaceAABB()
+
+			if DHUD2.pointInsideBox(DHUD2.EyePos, mins, maxs) or DHUD2.EyePos:Distance(entityThatDamaged:GetPos()) < 10 then
+				table.insert(Damage.PHistory, table.Copy(data))
+			end
 		end
+
+		table.insert(Damage.History, data)
 	end
-	
-	table.insert(Damage.History, data)
 end
 
 surface.CreateFont('DHUD2.DamageNumber', {
@@ -190,23 +202,23 @@ end
 local function PostDrawTranslucentRenderables(a, b)
 	if a or b then return end
 	if not ENABLE:GetBool() then return end
-	
+
 	local ply = DHUD2.SelectPlayer()
 	local lpos = EyePos()
 	local langle = EyeAngles()
-	
+
 	for k, data in pairs(Damage.History) do
 		local pos = data.pos
 		local dmg = data.dmg
-		
+
 		local delta = (lpos - pos)
 		local dang = delta:Angle()
 		dang:RotateAroundAxis(dang:Right(), -90)
 		dang:RotateAroundAxis(dang:Up(), 90)
-		
+
 		local add = Vector(-data.size / 2, data.shift + data.size, 0)
 		add:Rotate(dang)
-		
+
 		cam.Start3D2D(pos + add, dang, data.size / 100)
 		draw.DrawText('-' .. data.dmg, 'DHUD2.DamageNumber', 0, 0, data.color)
 		cam.End3D2D()
@@ -217,35 +229,35 @@ local function Draw()
 	local lpos = DHUD2.EyePos
 	local lyaw = DHUD2.EyeAngles.y
 	local srcw, scrh = ScrW(), ScrH()
-	
+
 	surface.SetDrawColor(255, 255, 255)
 	draw.NoTexture()
-	
+
 	for k, v in pairs(Damage.PHistory) do
 		local ang = (v.pos - lpos):Angle()
 		local yaw = ang.y + 90
 		local turn = math.rad(lyaw - yaw)
-		
+
 		local cos, sin = math.cos(turn), math.sin(turn)
-		
+
 		local x, y = srcw / 2 + cos * 200, scrh / 2 + sin * 200
-		
-		
+
+
 		local gen = {
 			{x = x + 7.5 * sin * v.scale, y = y - 7.5 * cos * v.scale},
 			{x = x + 50 * cos * v.scale, y = y + 50 * sin * v.scale},
 			{x = x - 7.5 * sin * v.scale, y = y + 7.5 * cos * v.scale},
 		}
-		
+
 		local selectFont = math.floor(v.scale * 2)
 		surface.SetFont('DHUD2.DamageNumber' .. selectFont)
-		
+
 		surface.SetTextColor(v.color.r, v.color.g, v.color.b, v.color.a)
 		surface.SetDrawColor(v.color.r, v.color.g, v.color.b, v.color.a)
 		surface.DrawPoly(gen)
-		
+
 		local w, h = surface.GetTextSize(v.dmg)
-		
+
 		surface.SetTextPos(x - (w / 2 + 4) * cos - w / 2 + 3, y - (h / 2) * sin - h / 2)
 		surface.DrawText(v.dmg)
 	end
@@ -254,31 +266,33 @@ end
 local function Tick()
 	if not ENABLE:GetBool() then return end
 	local ctime = CurTime()
-	
+
 	for k, data in pairs(Damage.History) do
 		if data.finish < ctime then
 			Damage.History[k] = nil
-			continue
+			goto CONTINUE
 		end
-		
+
 		data.size = math.max(data.size - FrameTime() * (50 + data.ssize / 5), 10)
-		
+
 		if data.size == 10 then
 			data.shift = data.shift + FrameTime() * 40
 		end
-		
+
 		data.cfade = math.Clamp(1 - (CurTime() - data.fade), 0, 1)
 		data.color.a = data.cfade * 255
+		::CONTINUE::
 	end
-	
+
 	for k, data in pairs(Damage.PHistory) do
 		if data.finish < ctime then
 			Damage.PHistory[k] = nil
-			continue
+			goto CONTINUE
 		end
-		
+
 		data.cfade = math.Clamp(1 - (CurTime() - data.fade), 0, 1)
 		data.color.a = data.cfade * 255
+		::CONTINUE::
 	end
 end
 
