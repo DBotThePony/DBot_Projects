@@ -162,23 +162,29 @@ local function HUDPaint()
 	end
 
 	if scatterAdd:Length() == 0 then
-		doDrawText(string.format('%i%% bullet scatter', scatter * 100), x, y, STATS_COLOR)
-		y = y + 15
+		if scatter ~= 1 then
+			doDrawText(string.format('%i%% bullet scatter', scatter * 100), x, y, STATS_COLOR)
+			y = y + 15
+		end
 	else
-		doDrawText(string.format('%i%% bullet scatter (+%i extra)', scatter * 100, scatterAdd:Length() * 10), x, y, STATS_COLOR)
+		doDrawText(string.format('%i%% bullet scatter (+%i extra)', scatter * 100, scatterAdd:Length() * 1000), x, y, STATS_COLOR)
 		y = y + 15
 	end
 
 	if numAdd == 0 then
-		doDrawText(string.format('%i%% bullets amount', num * 100), x, y, STATS_COLOR)
-		y = y + 15
+		if num ~= 1 then
+			doDrawText(string.format('%i%% bullets amount', num * 100), x, y, STATS_COLOR)
+			y = y + 15
+		end
 	else
-		doDrawText(string.format('%i%% bullets amount (+%i extra bullets)', (num) * 100, numAdd), x, y, STATS_COLOR)
+		doDrawText(string.format('%i%% bullets amount (+%i extra bullets)', num * 100, numAdd), x, y, STATS_COLOR)
 		y = y + 15
 	end
 
-	doDrawText(string.format('%i%% bullet travel distance', dist * 100), x, y, STATS_COLOR)
-	y = y + 15
+	if dist ~= 1 then
+		doDrawText(string.format('%i%% bullet travel distance', dist * 100), x, y, STATS_COLOR)
+		y = y + 15
+	end
 end
 
 weaponrystats.HUDPaint = HUDPaint
