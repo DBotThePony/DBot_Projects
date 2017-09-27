@@ -15,6 +15,8 @@
 
 local weaponrystats = weaponrystats
 
+local ALLOW_BLINK = CreateConVar('cl_weaponrystats_blinking', '1', {FCVAR_ARCHIVE}, 'Labels of current weapon are blinking')
+
 surface.CreateFont('WPS.DisplayName', {
 	font = 'Roboto',
 	size = 18,
@@ -53,8 +55,6 @@ local function doDrawText(text, x, y, color)
 	surface.DrawText(text)
 end
 
-local STATS_COLOR = Color(255, 255, 255)
-
 local function HUDPaint()
 	local weapon = LocalPlayer():GetActiveWeapon()
 	if not IsValid(weapon) then return end
@@ -63,6 +63,14 @@ local function HUDPaint()
 	local name = weapon:GetPrintName()
 	local x, y = ScrW() * 0.7, 15
 	local currentQuality = 0
+
+	local sin = 0
+	local STATS_COLOR = Color(255, 255, 255)
+
+	if ALLOW_BLINK:GetBool() then
+		sin = math.sin(RealTime() * 10) * 40
+		STATS_COLOR = Color(210 + sin, 210 + sin, 210 + sin)
+	end
 
 	local speed = 1
 	local force = 1
@@ -99,13 +107,15 @@ local function HUDPaint()
 	currentQuality = math.Clamp(currentQuality + 2, 1, #qualityColors)
 	surface.SetFont('WPS.DisplayName')
 
-	doDrawText(name, x, y, qualityColors[currentQuality])
+	local r, g, b = qualityColors[currentQuality].r, qualityColors[currentQuality].g, qualityColors[currentQuality].b
+	local colorQuality = Color(math.Clamp(r + sin, 0, 255), math.Clamp(g + sin, 0, 255), math.Clamp(b + sin, 0, 255))
+	doDrawText(name, x, y, colorQuality)
 
 	y = y + 17
 
 	surface.SetFont('WPS.DisplayStats')
 
-	doDrawText(string.format('Level %i weapon', currentQuality - 2), x, y, qualityColors[currentQuality])
+	doDrawText(string.format('Level %i weapon', currentQuality - 2), x, y, colorQuality)
 	y = y + 19
 
 	if additional then
