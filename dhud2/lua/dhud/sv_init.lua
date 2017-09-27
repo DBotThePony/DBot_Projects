@@ -55,10 +55,10 @@ end)
 
 concommand.Add('dhud_setvar', function(ply, cmd, args)
 	if IsValid(ply) and not ply:IsSuperAdmin() then return end
-	
+
 	if not args[1] then return end
 	if not args[2] then return end
-	
+
 	RunConsoleCommand('dhud_sv_' .. args[1], args[2])
 end)
 
@@ -104,8 +104,6 @@ for k, v in ipairs(Types) do
 	TypesR[v] = k
 end
 
-TypesR[4098] = 3 --Bullet
-
 local DisplayBlacklist = {
 	DMG_FALL,
 	DMG_DROWN,
@@ -119,14 +117,14 @@ local function GetObservedTo(ent)
 		if v:GetObserverTarget() == ent then
 			return v
 		end
-		
+
 		if v:InVehicle() then
 			local veh = v:GetVehicle()
-			
+
 			if veh:GetParent() == ent then
 				return v
 			end
-			
+
 			for k, v2 in pairs(veh:GetChildren()) do
 				if v2 == ent then
 					return v
@@ -136,8 +134,7 @@ local function GetObservedTo(ent)
 	end
 end
 
---Because sometimes WriteVector breaks, and i am lazy to report a bug
---(because i don't know WHY it breaks, so...)
+-- sometimes vector breaks
 local function WriteVector(vec)
 	net.WriteFloat(vec.x)
 	net.WriteFloat(vec.y)
@@ -147,54 +144,69 @@ end
 local function EntityTakeDamage(ent, dmg)
 	if not DHUD2.ServerConVar('damage') then return end
 	if not IsValid(ent) then return end
-	
+
 	if dmg:GetDamage() < .1 then return end
-	
+
 	local attacker = dmg:GetAttacker()
 	local inflictor = dmg:GetAttacker()
-	
+
 	local fattacker = IsValid(inflictor) and inflictor or attacker
-	
+
 	local report = dmg:GetReportedPosition()
-	
+
 	if report == zero then
 		report = ent:GetPos() + VectorRand() * math.random(5, 25)
 		report.z = report.z + (ent:OBBMaxs().z - ent:OBBMins().z)
 	end
-	
-	net.Start('DHUD2.Damage', true)
-	net.WriteFloat(report.x)
-	net.WriteFloat(report.y)
-	net.WriteFloat(report.z)
-	net.WriteFloat(dmg:GetDamage())
-	net.WriteUInt(TypesR[dmg:GetDamageType()] or 1, 8)
-	net.WriteEntity(ent)
-	net.Broadcast()
-	
-	if ent:IsPlayer() and IsValid(fattacker) and not table.HasValue(DisplayBlacklist, dmg:GetDamageType()) then
-		net.Start('DHUD2.DamagePlayer', true)
-		net.WriteFloat(dmg:GetDamage())
-		net.WriteUInt(TypesR[dmg:GetDamageType()] or 1, 8)
-		WriteVector(fattacker:GetPos())
-		net.WriteUInt(ent:EntIndex(), 8)
+
+	local myDamage = dmg:GetDamageType()
+	local damageTypesIn = {}
+
+	for i, dmgtype in ipairs(Types) do
+		if bit.band(myDamage, dmgtype) ~= 0 then
+			myDamage = myDamage - dmgtype
+			table.insert(damageTypesIn, dmgtype)
+			if myDamage == 0 then break end
+		end
+	end
+
+	local scrambleAplifier = #damageTypesIn * 4
+	local damageAplifier = 1 / #damageTypesIn
+	local incomingDamage = dmg:GetDamage() * damageAplifier
+
+	for i, dmgtype in ipairs(damageTypesIn) do
+		net.Start('DHUD2.Damage', true)
+		WriteVector(report + VectorRand() * scrambleAplifier)
+		net.WriteFloat(incomingDamage)
+		net.WriteUInt(TypesR[dmgtype] or 1, 8)
+		net.WriteEntity(ent)
 		net.Broadcast()
-	elseif ent:IsVehicle() and IsValid(ent:GetDriver()) and IsValid(fattacker) and ent:GetDriver():IsPlayer() then
-		net.Start('DHUD2.DamagePlayer', true)
-		net.WriteFloat(dmg:GetDamage())
-		net.WriteUInt(TypesR[dmg:GetDamageType()] or 1, 8)
-		WriteVector(fattacker:GetPos())
-		net.WriteUInt(ent:GetDriver():EntIndex(), 8)
-		net.Broadcast()
-	else
-		local ply = GetObservedTo(ent)
-		
-		if IsValid(ply) and IsValid(fattacker) then
+
+		if ent:IsPlayer() and IsValid(fattacker) and not table.HasValue(DisplayBlacklist, dmgtype) then
 			net.Start('DHUD2.DamagePlayer', true)
-			net.WriteFloat(dmg:GetDamage())
-			net.WriteUInt(TypesR[dmg:GetDamageType()] or 1, 8)
-			WriteVector(fattacker:GetPos())
-			net.WriteUInt(ply:EntIndex(), 8)
+			net.WriteFloat(incomingDamage)
+			net.WriteUInt(TypesR[dmgtype] or 1, 8)
+			WriteVector(fattacker:GetPos() + VectorRand() * scrambleAplifier)
+			net.WriteUInt(ent:EntIndex(), 8)
 			net.Broadcast()
+		elseif ent:IsVehicle() and IsValid(ent:GetDriver()) and IsValid(fattacker) and ent:GetDriver():IsPlayer() then
+			net.Start('DHUD2.DamagePlayer', true)
+			net.WriteFloat(incomingDamage)
+			net.WriteUInt(TypesR[dmgtype] or 1, 8)
+			WriteVector(fattacker:GetPos() + VectorRand() * scrambleAplifier)
+			net.WriteUInt(ent:GetDriver():EntIndex(), 8)
+			net.Broadcast()
+		else
+			local ply = GetObservedTo(ent)
+
+			if IsValid(ply) and IsValid(fattacker) then
+				net.Start('DHUD2.DamagePlayer', true)
+				net.WriteFloat(incomingDamage)
+				net.WriteUInt(TypesR[dmgtype] or 1, 8)
+				WriteVector(fattacker:GetPos() + VectorRand() * scrambleAplifier)
+				net.WriteUInt(ply:EntIndex(), 8)
+				net.Broadcast()
+			end
 		end
 	end
 end
