@@ -15,7 +15,7 @@
 
 return {
 	poison = {
-		name = 'Poision',
+		name = 'Poison',
 		dmgtype = DMG_POISON,
 		isAdditional = false,
 		damage = 1.1,
