@@ -143,18 +143,24 @@ local function HUDPaint()
 	y = y + 19
 
 	if additional then
-		doDrawText(string.format('%i%% damage (+%i%% additional damage)', damage * 100, add * 100), x, y, STATS_COLOR)
+		doDrawText(string.format('%+i%% damage (+%i%% additional damage)', damage * 100 - 100, add * 100), x, y, STATS_COLOR)
 		y = y + 15
 	else
-		doDrawText(string.format('%i%% damage', damage * 100), x, y, STATS_COLOR)
-		y = y + 15
+		if damage ~= 1 then
+			doDrawText(string.format('%+i%% damage', damage * 100 - 100), x, y, STATS_COLOR)
+			y = y + 15
+		end
 	end
 
-	doDrawText(string.format('%i%% attack speed', speed * 100), x, y, STATS_COLOR)
-	y = y + 15
+	if speed ~= 1 then
+		doDrawText(string.format('%+i%% attack speed', speed * 100 - 100), x, y, STATS_COLOR)
+		y = y + 15
+	end
 	
-	doDrawText(string.format('%i%% knockback', force * 100), x, y, STATS_COLOR)
-	y = y + 15
+	if force ~= 1 then
+		doDrawText(string.format('%+i%% knockback', force * 100 - 100), x, y, STATS_COLOR)
+		y = y + 15
+	end
 
 	if clip ~= 1 then
 		doDrawText(string.format('%+i%% clip size', clip * 100 - 100), x, y, STATS_COLOR)
@@ -163,26 +169,26 @@ local function HUDPaint()
 
 	if scatterAdd:Length() == 0 then
 		if scatter ~= 1 then
-			doDrawText(string.format('%i%% bullet scatter', scatter * 100), x, y, STATS_COLOR)
+			doDrawText(string.format('%+i%% bullet scatter', scatter * 100 - 100), x, y, STATS_COLOR)
 			y = y + 15
 		end
 	else
-		doDrawText(string.format('%i%% bullet scatter (+%i extra)', scatter * 100, scatterAdd:Length() * 1000), x, y, STATS_COLOR)
+		doDrawText(string.format('%+i%% bullet scatter (+%i extra)', scatter * 100 - 100, scatterAdd:Length() * 1000), x, y, STATS_COLOR)
 		y = y + 15
 	end
 
 	if numAdd == 0 then
 		if num ~= 1 then
-			doDrawText(string.format('%i%% bullets amount', num * 100), x, y, STATS_COLOR)
+			doDrawText(string.format('%+i%% bullets amount', num * 100 - 100), x, y, STATS_COLOR)
 			y = y + 15
 		end
 	else
-		doDrawText(string.format('%i%% bullets amount (+%i extra bullets)', num * 100, numAdd), x, y, STATS_COLOR)
+		doDrawText(string.format('%+i%% bullets amount (+%i extra bullets)', num * 100 - 100, numAdd), x, y, STATS_COLOR)
 		y = y + 15
 	end
 
 	if dist ~= 1 then
-		doDrawText(string.format('%i%% bullet travel distance', dist * 100), x, y, STATS_COLOR)
+		doDrawText(string.format('%+i%% bullet travel distance', dist * 100 - 100), x, y, STATS_COLOR)
 		y = y + 15
 	end
 end
