@@ -61,8 +61,8 @@ local function EntityFireBullets(self, bulletData)
 				if oldCallback then oldCallback(attacker, tr, dmginfo, ...) end
 			end
 		else
-			bulletData.Damage = bulletData.Damage * (wtype.damage or 1)
-			bulletData.Force = bulletData.Force * (wtype.force or 1)
+			bulletData.Damage = (bulletData.Damage or 1) * (wtype.damage or 1)
+			bulletData.Force = (bulletData.Force or 1) * (wtype.force or 1)
 
 			function bulletData.Callback(attacker, tr, dmginfo, ...)
 				dmginfo:SetDamageType(bit.bor(dmginfo:GetDamageType(), wtype.dmgtype))
