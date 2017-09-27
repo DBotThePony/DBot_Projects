@@ -62,7 +62,7 @@ Damage.Colors = {
 	[DMG_GENERIC] = color_white,
 	[DMG_CRUSH] = Color(255, 210, 60),
 	[DMG_CLUB] = Color(255, 210, 60),
-	[DMG_BULLET] = Color(230, 230, 230),
+	[DMG_BULLET] = Color(154, 199, 245),
 	[DMG_SLASH] = Color(255, 165, 165),
 	[DMG_BURN] = Color(255, 64, 64),
 	[DMG_SLOWBURN] = Color(255, 64, 64),
@@ -80,13 +80,14 @@ Damage.Colors = {
 	[DMG_RADIATION] = Color(0, 200, 50),
 	[DMG_AIRBOAT] = Color(192, 220, 216),
 	[DMG_BLAST_SURFACE] = Color(255, 170, 64),
-	[DMG_BUCKSHOT] = Color(230, 230, 230),
-	[DMG_DIRECT] = color_white,
+	[DMG_DIRECT] = Color(0, 0, 0),
 	[DMG_DISSOLVE] = Color(175, 36, 255),
 	[DMG_DROWNRECOVER] = Color(64, 128, 255),
 	[DMG_PHYSGUN] = Color(255, 210, 60),
 	[DMG_PLASMA] = Color(131, 155, 255),
 }
+
+Damage.Colors[DMG_BUCKSHOT] = Damage.Colors[DMG_BULLET]
 
 local DisableAt = 0
 
