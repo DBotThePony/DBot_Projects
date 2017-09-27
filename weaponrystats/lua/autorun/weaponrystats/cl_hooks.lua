@@ -22,6 +22,12 @@ local function PlayerSwitchWeapon(self, oldWeapon, newWeapon)
 	end)
 end
 
+local function checkCurrentWeapon()
+	local weapon = LocalPlayer():GetActiveWeapon()
+	if IsValid(weapon) then weapon:ApplyClipModifications() end
+end
+
 weaponrystats.PlayerSwitchWeapon = PlayerSwitchWeapon
 
 hook.Add('PlayerSwitchWeapon', 'WeaponryStats.Check', PlayerSwitchWeapon)
+timer.Create('WeaponryStats.CheckWeapon', 1, 0, checkCurrentWeapon)
