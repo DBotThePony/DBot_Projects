@@ -128,10 +128,10 @@ local function HUDPaint()
 		end
 	end
 
-	currentQuality = math.Clamp(currentQuality + 2, 1, #qualityColors)
+	local currentQualityColor = math.Clamp(currentQuality + 2, 1, #qualityColors)
 	surface.SetFont('WPS.DisplayName')
 
-	local r, g, b = qualityColors[currentQuality].r, qualityColors[currentQuality].g, qualityColors[currentQuality].b
+	local r, g, b = qualityColors[currentQualityColor].r, qualityColors[currentQualityColor].g, qualityColors[currentQualityColor].b
 	local colorQuality = Color(math.Clamp(r + sin, 0, 255), math.Clamp(g + sin, 0, 255), math.Clamp(b + sin, 0, 255))
 	doDrawText(name, x, y, colorQuality)
 
@@ -139,7 +139,7 @@ local function HUDPaint()
 
 	surface.SetFont('WPS.DisplayStats')
 
-	doDrawText(string.format('Level %i weapon', currentQuality - 2), x, y, colorQuality)
+	doDrawText(string.format('Level %i weapon', currentQuality), x, y, colorQuality)
 	y = y + 19
 
 	if additional then
