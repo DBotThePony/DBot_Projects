@@ -157,7 +157,7 @@ local function HUDPaint()
 	y = y + 15
 
 	if clip ~= 1 then
-		doDrawText(string.format('%+i%% clip size', 100 - clip * 100), x, y, STATS_COLOR)
+		doDrawText(string.format('%+i%% clip size', clip * 100 - 100), x, y, STATS_COLOR)
 		y = y + 15
 	end
 
