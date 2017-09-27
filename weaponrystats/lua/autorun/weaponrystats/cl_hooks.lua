@@ -16,7 +16,10 @@
 local weaponrystats = weaponrystats
 
 local function PlayerSwitchWeapon(self, oldWeapon, newWeapon)
-	newWeapon:ApplyClipModifications()
+	timer.Simple(1, function()
+		if not IsValid(newWeapon) then return end
+		newWeapon:ApplyClipModifications()
+	end)
 end
 
 weaponrystats.PlayerSwitchWeapon = PlayerSwitchWeapon
