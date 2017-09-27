@@ -68,8 +68,8 @@ local function HUDPaint()
 	local STATS_COLOR = Color(255, 255, 255)
 
 	if ALLOW_BLINK:GetBool() then
-		sin = math.sin(RealTime() * 10) * 40
-		STATS_COLOR = Color(210 + sin, 210 + sin, 210 + sin)
+		sin = math.sin(RealTime() * 10) * 20
+		STATS_COLOR = Color(230 + sin, 230 + sin, 230 + sin)
 	end
 
 	local speed = 1
