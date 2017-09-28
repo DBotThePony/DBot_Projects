@@ -225,6 +225,61 @@ local function PostDrawTranslucentRenderables(a, b)
 	end
 end
 
+local usedSlots = {}
+local slotUsagePriority = {
+	{0, 0},
+	{1, 0},
+	{-1, 0},
+	{0, 1},
+	{0, -1},
+	{-1, 1},
+	{1, 1},
+	{1, -1},
+	{-1, -1},
+}
+
+local startToSearchSlot = 1
+
+local function findNearest(x, y, size)
+	usedSlots[size] = usedSlots[size] or {}
+	local div = size * 24
+	local ctab = usedSlots[size]
+	local slotX, slotY = math.floor(x / div), math.floor(y / div)
+
+	if ctab[slotX] == nil then
+		ctab[slotX] = {}
+		ctab[slotX][slotY] = true
+		return x, y
+	else
+		local findFreeSlotX, findFreeSlotY = 0, 0
+
+		for radius = startToSearchSlot, startToSearchSlot + 10 do
+			local success = false
+
+			for i, priorityData in ipairs(slotUsagePriority) do
+				local sx, sy = priorityData[1] * radius + slotX, priorityData[2] * radius + slotY
+				
+				if not ctab[sx] or not ctab[sx][sy] then
+					findFreeSlotX, findFreeSlotY = sx, sy
+					success = true
+					break
+				end
+			end
+
+			if success then
+				break
+			else
+				startToSearchSlot = startToSearchSlot + 1
+			end
+		end
+
+		ctab[findFreeSlotX] = ctab[findFreeSlotX] or {}
+		ctab[findFreeSlotX][findFreeSlotY] = true
+
+		return findFreeSlotX * div, findFreeSlotY * div
+	end
+end
+
 local function Draw()
 	local lpos = DHUD2.EyePos
 	local lyaw = DHUD2.EyeAngles.y
@@ -232,6 +287,9 @@ local function Draw()
 
 	surface.SetDrawColor(255, 255, 255)
 	draw.NoTexture()
+
+	startToSearchSlot = 1
+	usedSlots = {}
 
 	for k, v in pairs(Damage.PHistory) do
 		local ang = (v.pos - lpos):Angle()
@@ -258,7 +316,8 @@ local function Draw()
 
 		local w, h = surface.GetTextSize(v.dmg)
 
-		surface.SetTextPos(x - (w / 2 + 4) * cos - w / 2 + 3, y - (h / 2) * sin - h / 2)
+		local x1, y1 = findNearest(x - (w / 2 + 4) * cos - w / 2 + 3, y - (h / 2) * sin - h / 2, selectFont)
+		surface.SetTextPos(x1, y1)
 		surface.DrawText(v.dmg)
 	end
 end
