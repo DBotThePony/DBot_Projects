@@ -16,10 +16,15 @@
 local weaponrystats = weaponrystats
 local weaponMeta = FindMetaTable('Weapon')
 local entMeta = FindMetaTable('Entity')
-local IN_CALL = false
+local IN_CALL, SKIP_NEXT = false, false
 
 local function EntityFireBullets(self, bulletData)
 	if IN_CALL then return end
+	if SKIP_NEXT then
+		SKIP_NEXT = false
+		return
+	end
+	
 	if type(self) ~= 'Weapon' and type(bulletData.Attacker) == 'Player' then return end
 
 	local findWeapon, findOwner
@@ -82,12 +87,13 @@ end
 entMeta.weaponrystats_FireBullets = entMeta.weaponrystats_FireBullets or entMeta.FireBullets
 
 function entMeta:FireBullets(bulletData, ...)
-	IN_CALL = true
+	-- IN_CALL = true
 	-- kill stupid gmod behaviour
-	local status = hook.Run('EntityFireBullets', self, bulletData)
-	IN_CALL = false
-	if status == false then return end
+	-- local status = hook.Run('EntityFireBullets', self, bulletData)
+	-- IN_CALL = false
+	-- if status == false then return end
 	EntityFireBullets(self, bulletData)
+	SKIP_NEXT = true
 	return entMeta.weaponrystats_FireBullets(self, bulletData, ...)
 end
 
