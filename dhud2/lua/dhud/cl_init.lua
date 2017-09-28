@@ -95,22 +95,22 @@ function DHUD2.AddConVar(name, help, obj)
 	}
 end
 
-DHUD2.SelectPlayer = HUDCommons.SelectPlayer
+DHUD2.SelectPlayer = DLib.HUDCommons.SelectPlayer
 
 function DHUD2.CreateColor(class, name, r, g, b, a)
-	return HUDCommons.CreateColor('dhud2_' .. class, 'DHUD2 ' .. name, r, g, b, a)
+	return DLib.HUDCommons.CreateColor('dhud2_' .. class, 'DHUD2 ' .. name, r, g, b, a)
 end
 
 function DHUD2.GetColor(class)
-	return HUDCommons.GetColor('dhud2_' .. class)
+	return DLib.HUDCommons.GetColor('dhud2_' .. class)
 end
 
 function DHUD2.DefinePosition(name, x, y)
-	return HUDCommons.DefinePosition('dhud2_' .. name, x, y)
+	return DLib.HUDCommons.DefinePosition('dhud2_' .. name, x, y)
 end
 
 function DHUD2.GetPosition(name)
-	return HUDCommons.GetPosition('dhud2_' .. name)
+	return DLib.HUDCommons.GetPosition('dhud2_' .. name)
 end
 
 function DHUD2.RegisterVar(name, value, updateFunc)
@@ -328,12 +328,12 @@ function DHUD2.SimpleUpdate(name, value, funcName, ...)
 	end)
 end
 
-DHUD2.DrawBox = HUDCommons.DrawBox
-DHUD2.SimpleText = HUDCommons.SimpleText
-DHUD2.SoftBar = HUDCommons.SoftBar
-DHUD2.SkyrimBar = HUDCommons.SkyrimBar
-DHUD2.SoftSkyrimBar = HUDCommons.SoftSkyrimBar
-DHUD2.WordBox = HUDCommons.WordBox
+DHUD2.DrawBox = DLib.HUDCommons.DrawBox
+DHUD2.SimpleText = DLib.HUDCommons.SimpleText
+DHUD2.SoftBar = DLib.HUDCommons.SoftBar
+DHUD2.SkyrimBar = DLib.HUDCommons.SkyrimBar
+DHUD2.SoftSkyrimBar = DLib.HUDCommons.SoftSkyrimBar
+DHUD2.WordBox = DLib.HUDCommons.WordBox
 
 DHUD2.CreateColor('bg', 'Background', 0, 0, 0, 150)
 DHUD2.CreateColor('empty_bar', 'Empty Bar', 200, 200, 200, 255)

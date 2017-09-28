@@ -15,6 +15,4 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
-include('dhud/hudcommons.lua')
-AddCSLuaFile('dhud/hudcommons.lua')
 include('dhud/sh_init.lua')

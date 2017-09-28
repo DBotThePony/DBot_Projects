@@ -118,7 +118,7 @@ local function Draw()
 	if not DHUD2.ServerConVar('radar') then return end
 	
 	local x, y = DHUD2.GetPosition('radar')
-	HUDCommons.DrawCustomMatrix(x, y)
+	DLib.HUDCommons.DrawCustomMatrix(x, y)
 	x, y = 0, 0
 	DHUD2.DrawBox(x - RADAR_WIDTH / 2 + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), RADAR_WIDTH, 10, DHUD2.GetColor('bg'))
 	Positions = {}
@@ -145,7 +145,7 @@ local function Draw()
 		end
 	end
 
-	HUDCommons.PopDrawMatrix()
+	DLib.HUDCommons.PopDrawMatrix()
 end
 
 DHUD2.DrawHook('default_radar', Draw)

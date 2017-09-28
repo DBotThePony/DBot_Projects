@@ -18,17 +18,14 @@
 export DTF2
 DTF2 = DTF2 or {}
 
-if not _G.HUDCommons
-	include 'autorun/hudcommons.lua'
-
-BACKGROUND_COLOR =          HUDCommons.CreateColor('tf_background', 'TF HUD Background', 0, 0, 0, 150)
-FONT_COLOR =                HUDCommons.CreateColor('tf_font', 'TF Font', 255, 255, 255)
-FONT_COLOR_GREEN =          HUDCommons.CreateColor('tf_font_positive', 'TF HUD positive text', 88, 183, 56)
-FONT_COLOR_RED =            HUDCommons.CreateColor('tf_font_negative', 'TF HUD negative text', 217, 101, 83)
-COLOR_HP_BAR_BACKGROUND =   HUDCommons.CreateColor('tf_hpbar_background', 'TF HUD HP Bar Background', 176, 176, 176)
-COLOR_HP_BAR =              HUDCommons.CreateColor('tf_hpbar', 'TF HUD HP Bar', 167, 197, 92)
-HUD_BAR_BACKGROUND =        HUDCommons.CreateColor('tf_bar_bg', 'TF HUD generic bar background', 168, 168, 168)
-HUD_BAR_COLOR =             HUDCommons.CreateColor('tf_bar', 'TF HUD generic bar', 235, 235, 235)
+BACKGROUND_COLOR =          DLib.HUDCommons.CreateColor('tf_background', 'TF HUD Background', 0, 0, 0, 150)
+FONT_COLOR =                DLib.HUDCommons.CreateColor('tf_font', 'TF Font', 255, 255, 255)
+FONT_COLOR_GREEN =          DLib.HUDCommons.CreateColor('tf_font_positive', 'TF HUD positive text', 88, 183, 56)
+FONT_COLOR_RED =            DLib.HUDCommons.CreateColor('tf_font_negative', 'TF HUD negative text', 217, 101, 83)
+COLOR_HP_BAR_BACKGROUND =   DLib.HUDCommons.CreateColor('tf_hpbar_background', 'TF HUD HP Bar Background', 176, 176, 176)
+COLOR_HP_BAR =              DLib.HUDCommons.CreateColor('tf_hpbar', 'TF HUD HP Bar', 167, 197, 92)
+HUD_BAR_BACKGROUND =        DLib.HUDCommons.CreateColor('tf_bar_bg', 'TF HUD generic bar background', 168, 168, 168)
+HUD_BAR_COLOR =             DLib.HUDCommons.CreateColor('tf_bar', 'TF HUD generic bar', 235, 235, 235)
 
 DTF2.BACKGROUND_COLOR = BACKGROUND_COLOR
 
@@ -76,32 +73,32 @@ hook.Add 'DTF2.MetalEffect', 'DTF2.MetalHistory', (event = true, amount = 0) ->
 	data.b = b
 	data.a = 255
 
-METAL_COUNTER_POS = HUDCommons.DefinePosition('tf_metal_counter', .8, .95)
+METAL_COUNTER_POS = DLib.HUDCommons.DefinePosition('tf_metal_counter', .8, .95)
 
 DTF2.DrawMetalCounter = ->
 	x, y = METAL_COUNTER_POS()
-	HUDCommons.WordBox("Avaliable Metal: #{LocalPlayer()\GetTF2Metal()}", FONT, x, y, FONT_COLOR(), BACKGROUND_COLOR())
+	DLib.HUDCommons.WordBox("Avaliable Metal: #{LocalPlayer()\GetTF2Metal()}", FONT, x, y, FONT_COLOR(), BACKGROUND_COLOR())
 	
 	x += 110
 	for data in *METAL_HISTORY
-		HUDCommons.WordBox(data.text, nil, x, y - data.slide, Color(data.r, data.g, data.b, data.a), Color(0, 0, 0, 150 * data.fade))
+		DLib.HUDCommons.WordBox(data.text, nil, x, y - data.slide, Color(data.r, data.g, data.b, data.a), Color(0, 0, 0, 150 * data.fade))
 
-CENTERED_BUILDABLES_POS = HUDCommons.DefinePosition('tf_centered_buildables', .5, .6)
-CENTERED_BAR_POS = HUDCommons.DefinePosition('tf_centered', .5, .65)
-CENTERED_BAR_SMALLER_POS = HUDCommons.DefinePosition('tf_smallcentered', .5, .73)
+CENTERED_BUILDABLES_POS = DLib.HUDCommons.DefinePosition('tf_centered_buildables', .5, .6)
+CENTERED_BAR_POS = DLib.HUDCommons.DefinePosition('tf_centered', .5, .65)
+CENTERED_BAR_SMALLER_POS = DLib.HUDCommons.DefinePosition('tf_smallcentered', .5, .73)
 
 DTF2.DrawCenteredBar = (mult = 0.5, text) ->
 	x, y = CENTERED_BAR_POS()
 
 	surface.SetTextColor(FONT_COLOR())
 	surface.SetFont(FONT)
-	HUDCommons.SoftBarWithText(x - 150, y, 300, 25, mult, BACKGROUND_COLOR(), HUD_BAR_BACKGROUND(), HUD_BAR_COLOR(), text, 'tf_centered')
+	DLib.HUDCommons.SoftBarWithText(x - 150, y, 300, 25, mult, BACKGROUND_COLOR(), HUD_BAR_BACKGROUND(), HUD_BAR_COLOR(), text, 'tf_centered')
 
 DTF2.DrawSmallCenteredBar = (mult = 0.5, text) ->
 	x, y = CENTERED_BAR_SMALLER_POS()
 	surface.SetTextColor(FONT_COLOR())
 	surface.SetFont(FONT)
-	HUDCommons.SoftBarWithText(x - 100, y, 200, 18, mult, BACKGROUND_COLOR(), HUD_BAR_BACKGROUND(), HUD_BAR_COLOR(), text, 'tf_smallcentered')
+	DLib.HUDCommons.SoftBarWithText(x - 100, y, 200, 18, mult, BACKGROUND_COLOR(), HUD_BAR_BACKGROUND(), HUD_BAR_COLOR(), text, 'tf_smallcentered')
 
 DTF2.DrawBuildingInfo = =>
 	x, y = CENTERED_BUILDABLES_POS()
@@ -114,7 +111,7 @@ DTF2.DrawBuildingInfo = =>
 	text ..= '\n'
 	text ..= @GetHUDText()
 
-	W, H = HUDCommons.AdvancedWordBox(text, FONT, x, y, FONT_COLOR(), BACKGROUND_COLOR(), true)
+	W, H = DLib.HUDCommons.AdvancedWordBox(text, FONT, x, y, FONT_COLOR(), BACKGROUND_COLOR(), true)
 
 	surface.SetDrawColor(COLOR_HP_BAR_BACKGROUND())
 	surface.DrawRect(x - W / 2, y + H - 12, W, 12)

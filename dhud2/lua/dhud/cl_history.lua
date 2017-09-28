@@ -172,29 +172,29 @@ function Hist.Draw()
 	surface.SetTextColor(DHUD2.GetColor('pickup'))
 	
 	for k, v in pairs(Hist.Weapons) do
-		HUDCommons.DrawCustomCenteredMatrix(x, y + ShiftY, WIDTH, -24)
+		DLib.HUDCommons.DrawCustomCenteredMatrix(x, y + ShiftY, WIDTH, -24)
 		
 		DHUD2.DrawBox(v.shift + DHUD2.GetDamageShift(), DHUD2.GetDamageShift(), WIDTH, 24, bg)
 		DHUD2.DrawBox(-24 + v.shift + DHUD2.GetDamageShift(), DHUD2.GetDamageShift(), 24, 24, weapon)
 		DHUD2.SimpleText(v.name, nil, 5 + v.shift + DHUD2.GetDamageShift(), 2 + DHUD2.GetDamageShift())
 		ShiftY = ShiftY + 24
 
-		HUDCommons.PopDrawMatrix()
+		DLib.HUDCommons.PopDrawMatrix()
 	end
 	
 	for k, v in pairs(Hist.Items) do
-		HUDCommons.DrawCustomCenteredMatrix(x, y + ShiftY, WIDTH, -24)
+		DLib.HUDCommons.DrawCustomCenteredMatrix(x, y + ShiftY, WIDTH, -24)
 
 		DHUD2.DrawBox(v.shift + DHUD2.GetDamageShift(), DHUD2.GetDamageShift(), WIDTH, 24, bg)
 		DHUD2.DrawBox(-24 + v.shift + DHUD2.GetDamageShift(), DHUD2.GetDamageShift(), 24, 24, item)
 		DHUD2.SimpleText('#' .. v.name, nil, 5 + v.shift + DHUD2.GetDamageShift(), 2 + DHUD2.GetDamageShift())
 		ShiftY = ShiftY + 24
 
-		HUDCommons.PopDrawMatrix()
+		DLib.HUDCommons.PopDrawMatrix()
 	end
 	
 	for k, v in pairs(Hist.Ammos) do
-		HUDCommons.DrawCustomCenteredMatrix(x, y + ShiftY, WIDTH, -24)
+		DLib.HUDCommons.DrawCustomCenteredMatrix(x, y + ShiftY, WIDTH, -24)
 
 		local name = '#' .. v.name .. '_Ammo'
 		local w, h = surface.GetTextSize(name)
@@ -207,7 +207,7 @@ function Hist.Draw()
 		
 		ShiftY = ShiftY + 24
 
-		HUDCommons.PopDrawMatrix()
+		DLib.HUDCommons.PopDrawMatrix()
 	end
 	
 	return true
