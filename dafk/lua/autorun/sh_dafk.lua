@@ -18,6 +18,8 @@ limitations under the License.
 DAFK_SHOWNOTIFICATIONS = CreateConVar('sv_dafk_chat', '1', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Display chat notifications')
 DAFK_MINTIMER = CreateConVar('sv_dafk_timer', '180', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Timer before mark player as AFK')
 DAFK_NOTIFYRADIUS = CreateConVar('sv_dafk_radius', '2048', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Radius of chat notify about player gone AFK or back')
+DAFK_USEANGLES = CreateConVar('sv_dafk_angles', '1', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Moving mouse causes player to be not longer marked as afk')
+
 local plyMeta = FindMetaTable('Player')
 
 function plyMeta:IsAFK()
