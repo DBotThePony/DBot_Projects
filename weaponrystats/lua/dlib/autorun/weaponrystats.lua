@@ -13,26 +13,36 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+local AddCSLuaFile_, include_ = AddCSLuaFile, include
+
+function AddCSLuaFile(fil)
+	AddCSLuaFile_('dlib/autorun/weaponrystats/' .. fil)
+end
+
+function include(fil)
+	include_('dlib/autorun/weaponrystats/' .. fil)
+end
+
 if SERVER then
-	AddCSLuaFile('autorun/weaponrystats/sh_modifications.lua')
-	AddCSLuaFile('autorun/weaponrystats/sh_types.lua')
-	AddCSLuaFile('autorun/weaponrystats/sh_util.lua')
-	AddCSLuaFile('autorun/weaponrystats/sh_logic.lua')
-	AddCSLuaFile('autorun/weaponrystats/cl_hud.lua')
-	AddCSLuaFile('autorun/weaponrystats/cl_util.lua')
-	AddCSLuaFile('autorun/weaponrystats/cl_hooks.lua')
+	AddCSLuaFile('sh_modifications.lua')
+	AddCSLuaFile('sh_types.lua')
+	AddCSLuaFile('sh_util.lua')
+	AddCSLuaFile('sh_logic.lua')
+	AddCSLuaFile('cl_hud.lua')
+	AddCSLuaFile('cl_util.lua')
+	AddCSLuaFile('cl_hooks.lua')
 end
 
 weaponrystats = {}
-weaponrystats.modifications = include('autorun/weaponrystats/sh_modifications.lua')
-weaponrystats.types = include('autorun/weaponrystats/sh_types.lua')
-include('autorun/weaponrystats/sh_util.lua')
-include('autorun/weaponrystats/sh_logic.lua')
+weaponrystats.modifications = include('sh_modifications.lua')
+weaponrystats.types = include('sh_types.lua')
+include('sh_util.lua')
+include('sh_logic.lua')
 
 if CLIENT then
-	include('autorun/weaponrystats/cl_util.lua')
-	include('autorun/weaponrystats/cl_hud.lua')
-	include('autorun/weaponrystats/cl_hooks.lua')
+	include('cl_util.lua')
+	include('cl_hud.lua')
+	include('cl_hooks.lua')
 end
 
 weaponrystats.modifications_hash = {}
@@ -80,10 +90,10 @@ table.sort(weaponrystats.modifications_array, function(a, b)
 end)
 
 if SERVER then
-	include('autorun/weaponrystats/sv_util.lua')
-	include('autorun/weaponrystats/sv_loadsave.lua')
-	include('autorun/weaponrystats/sv_hooks.lua')
-	include('autorun/weaponrystats/sv_logic.lua')
+	include('sv_util.lua')
+	include('sv_loadsave.lua')
+	include('sv_hooks.lua')
+	include('sv_logic.lua')
 end
 
 --weaponrystats = nil
