@@ -17,6 +17,8 @@ local weaponrystats = weaponrystats
 
 local ALLOW_BLINK = CreateConVar('cl_weaponrystats_blinking', '1', {FCVAR_ARCHIVE}, 'Labels of current weapon are blinking')
 
+local GET_POSITION = DLib.HUDCommons.DefinePosition('weaponrystats', 0.7, 15)
+
 surface.CreateFont('WPS.DisplayName', {
 	font = 'Roboto',
 	size = 18,
@@ -61,7 +63,7 @@ local function HUDPaint()
 	local modif, wtype = weapon:GetWeaponModification(), weapon:GetWeaponType()
 	if not modif and not wtype then return end
 	local name = weapon:GetPrintName()
-	local x, y = ScrW() * 0.7, 15
+	local x, y = GET_POSITION()
 	local currentQuality = 0
 
 	local sin = 0
