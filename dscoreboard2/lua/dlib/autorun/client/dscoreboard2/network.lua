@@ -25,9 +25,7 @@ net.Receive('DScoreBoard2.ServerTime', function()
     board.ServerTime = net.ReadUInt(32)
 end)
 
-net.Receive('DScoreBoard2.ChatPrint', function()
-    chat.AddText(unpack(net.ReadTable()))
-end)
+DLib.chat.registerWithMessages(board, 'DScoreBoard2')
 
 net.Receive('DScoreBoard2.Flags', function()
     local count = net.ReadUInt(12)

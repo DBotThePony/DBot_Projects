@@ -42,7 +42,7 @@ local TEXT_COLOR = Color(200, 200, 200)
 local chat = DLib.chat.generate('DConnecttt')
 
 local function ChatPrint(...)
-	chat.all(...)
+	chat.chatAll(...)
 end
 
 function DConn.Message(...)
