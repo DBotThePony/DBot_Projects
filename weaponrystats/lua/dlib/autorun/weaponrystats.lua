@@ -20,7 +20,7 @@ function AddCSLuaFile(fil)
 end
 
 function include(fil)
-	include_('dlib/autorun/weaponrystats/' .. fil)
+	return include_('dlib/autorun/weaponrystats/' .. fil)
 end
 
 if SERVER then
