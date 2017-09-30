@@ -137,13 +137,13 @@ function ENT:PhysicsCollide(info, collider)
 		self:UpdateRules()
 		local dmginfo = DamageInfo():Receive(self)
 
-		if IsValid(info.HitEntity) then
-			info.HitEntity:TakeDamageInfo(dmginfo)
-		end
-
 		if self.m_callback and self:GetAttacker() ~= self then
 			local tr = util.TraceLine(trData)
 			self.m_callback(self:GetAttacker(), tr, dmginfo)
+		end
+
+		if IsValid(info.HitEntity) then
+			info.HitEntity:TakeDamageInfo(dmginfo)
 		end
 
 		self.invalidBullet = true

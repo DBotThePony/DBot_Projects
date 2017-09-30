@@ -56,13 +56,9 @@ local function EntityFireBullets(self, bulletData)
 		if wtype.isAdditional then
 			function bulletData.Callback(attacker, tr, dmginfo, ...)
 				if IsValid(tr.Entity) and SERVER then
-					local newDMG = DamageInfo()
-					newDMG:SetAttacker(dmginfo:GetAttacker())
-					newDMG:SetInflictor(dmginfo:GetInflictor())
+					local newDMG = dmginfo:Copy()
 					newDMG:SetDamage(dmginfo:GetDamage() * (wtype.damage or 1))
 					newDMG:SetMaxDamage(dmginfo:GetMaxDamage() * (wtype.damage or 1))
-					newDMG:SetReportedPosition(dmginfo:GetReportedPosition())
-					newDMG:SetDamagePosition(dmginfo:GetDamagePosition())
 					newDMG:SetDamageType(wtype.dmgtype)
 					tr.Entity:TakeDamageInfo(newDMG)
 				end
