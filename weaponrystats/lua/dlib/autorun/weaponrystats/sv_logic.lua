@@ -18,10 +18,7 @@ local IN_DAMAGE = false
 
 local function EntityTakeDamage(self, dmginfo)
 	if IN_DAMAGE then return end
-	local attacker, inflictor = dmginfo:GetAttacker(), dmginfo:GetInflictor()
-	if not IsValid(attacker) or not IsValid(inflictor) then return end
-	if type(attacker) ~= 'Player' or not (type(inflictor) == 'Weapon' or attacker == inflictor) then return end
-	local weapon = type(inflictor) == 'Weapon' and inflictor or attacker:GetActiveWeapon()
+	local weapon = DLib.combat.findWeapon(dmginfo)
 	if not IsValid(weapon) then return end
 	if weapon.weaponrystats_bullets == CurTime() then return end
 	local modif, wtype = weapon:GetWeaponModification(), weapon:GetWeaponType()
