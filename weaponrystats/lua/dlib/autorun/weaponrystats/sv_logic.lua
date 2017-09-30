@@ -27,13 +27,9 @@ local function EntityTakeDamage(self, dmginfo)
 
 	if wtype then
 		if wtype.isAdditional then
-			local newDMG = DamageInfo()
-			newDMG:SetAttacker(dmginfo:GetAttacker())
-			newDMG:SetInflictor(dmginfo:GetInflictor())
+			local newDMG = dmginfo:Copy()
 			newDMG:SetDamage(dmginfo:GetDamage() * (wtype.damage or 1))
 			newDMG:SetMaxDamage(dmginfo:GetMaxDamage() * (wtype.damage or 1))
-			newDMG:SetReportedPosition(dmginfo:GetReportedPosition())
-			newDMG:SetDamagePosition(dmginfo:GetDamagePosition())
 			newDMG:SetDamageType(wtype.dmgtype)
 
 			IN_DAMAGE = true
