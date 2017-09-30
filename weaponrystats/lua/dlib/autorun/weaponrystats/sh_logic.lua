@@ -19,6 +19,11 @@ local entMeta = FindMetaTable('Entity')
 local IN_CALL = false
 local ENABLE_PHYSICAL_BULLETS = CreateConVar('sv_physbullets', '1', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Enable physical bullets')
 local PHYSICAL_SPREAD = CreateConVar('sv_physbullets_spread', '1', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Physical bullets spread multiplier')
+local DISABLE_TRACERS
+
+if CLIENT then
+	DISABLE_TRACERS = CreateConVar('sv_physbullets_tracers', '0', {FCVAR_ARCHIVE}, 'Enable default tracers for bullets')
+end
 
 weaponrystats.SKIP_NEXT = false
 
@@ -84,6 +89,7 @@ local function EntityFireBullets(self, bulletData)
 	bulletData.Distance = bulletData.Distance or 56756
 
 	if CLIENT or not ENABLE_PHYSICAL_BULLETS:GetBool() or bulletData.Distance < 1024 then
+		if CLIENT and not DISABLE_TRACERS:GetBool() and bulletData.Distance > 1024 then return false end
 		return true
 	else
 		bulletData.Num = bulletData.Num or 1
