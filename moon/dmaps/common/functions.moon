@@ -19,7 +19,7 @@ import DMaps, Color, tostring, color_white, type, table, team from _G
 import player from _G
 import insert from table
 
-DMaps.FormatMetre = (m = 0) -> "#{math.floor(m / DMaps.HU_IN_METRE * 10) / 10}m"
+DMaps.FormatMetre = (m = 0) -> DLib.string.fdistance(m)
 DMaps.DeltaColor = (first = Color(255, 255, 255), endColor = Color(0, 0, 0), delta = 0.5) -> DLib.LerpColor(delta, first, endColor)
 
 DLib.CMessage(DMaps, 'DMaps')
