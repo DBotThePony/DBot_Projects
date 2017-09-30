@@ -245,7 +245,6 @@ local function Draw()
 
 		local x, y = srcw / 2 + cos * 200, scrh / 2 + sin * 200
 
-
 		local gen = {
 			{x = x + 7.5 * sin * v.scale, y = y - 7.5 * cos * v.scale},
 			{x = x + 50 * cos * v.scale, y = y + 50 * sin * v.scale},
