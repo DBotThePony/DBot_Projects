@@ -122,7 +122,7 @@ local function PlayerAuthed(ply, steamid)
 		realnick = ply:SteamName()
 	end
 
-	DConn.Message(team.GetColor(ply:Team()), realnick, TEXT_COLOR, '<', steamid, '> is authed')
+	DConn.Message(team.GetColor(ply:Team()), realnick, TEXT_COLOR, '<' .. steamid .. '> is authed')
 
 	-- Give player time to initialize
 	timer.Simple(0, function()
@@ -199,7 +199,7 @@ local function CheckPassword(steamid64, ip, svpass, clpass, nick)
 	end
 
 	if PREVENT_CONNECTION_SPAM:GetBool() and IPBuffer[realip][1] > SPAM_TRIES:GetInt() then
-		DConn.Message(nick, '<', steamid, '> was kicked because of connection spam')
+		DConn.Message(nick, '<' .. steamid .. '> was kicked because of connection spam')
 		return false, '[DConnecttt] Connection Spam!'
 	end
 
@@ -241,7 +241,7 @@ local function player_disconnect(data)
 	local ply = player.GetBySteamID(steamid)
 
 	if not ply then
-		Message(name, '<', steamid, '> diconnected from server (' .. reason .. ')')
+		Message(name, '<' .. steamid .. '> diconnected from server (' .. reason .. ')')
 		return
 	end
 
@@ -254,7 +254,7 @@ local function player_disconnect(data)
 		name = name .. ' (' .. ply:SteamName() .. ')'
 	end
 
-	Message(team.GetColor(ply:Team()), name, TEXT_COLOR, '<', steamid, '> diconnected from server (' .. reason .. ')')
+	Message(team.GetColor(ply:Team()), name, TEXT_COLOR, '<' .. steamid .. '> diconnected from server (' .. reason .. ')')
 end
 
 local function Timer()
