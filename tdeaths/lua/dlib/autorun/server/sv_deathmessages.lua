@@ -330,7 +330,7 @@ local function GenericDeath(victim, attacker, guessWeapon, guessDamage, rawWeapo
 		if validWeaponRaw then
 			say(format(targetDict, GetName(victim)) .. string.format(' by %s\'s %s', GetName(attacker), GetName(rawWeapon)))
 		else
-			say(format(Dict.Suicide, GetName(victim)) .. string.format(' by %s', GetName(attacker)))
+			say(format(Dict.Suicide, GetName(victim)))
 		end
 
 		return
