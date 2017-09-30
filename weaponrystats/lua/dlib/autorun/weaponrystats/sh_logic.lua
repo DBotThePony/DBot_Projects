@@ -77,8 +77,8 @@ local function EntityFireBullets(self, bulletData)
 	end
 
 	if modif then
-		bulletData.Damage = bulletData.Damage * (modif.damage or 1)
-		bulletData.Force = bulletData.Force * (modif.force or 1)
+		bulletData.Damage = (bulletData.Damage or 1) * (modif.damage or 1)
+		bulletData.Force = (bulletData.Force or 1) * (modif.force or 1)
 	end
 
 	return true
