@@ -13,11 +13,14 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+AddCSLuaFile()
+
 ENT.PrintName = 'Physical Bullet'
 ENT.Author = 'DBot'
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 ENT.Type = 'anim'
+ENT.IS_BULLET = true
 
 function ENT:Initialize()
 	self:SetModel('models/ryu-gi/effect_props/incendiary/bullet_tracer.mdl')
@@ -38,7 +41,12 @@ function ENT:Initialize()
 	self.phys:EnableGravity(true)
 	self.setup = false
 	self.dissapearTime = CurTime() + 10
+	self:SetCustomCollisionCheck(true)
 end
+
+hook.Add('PhysgunPickup', 'WeaponryStats.Bullets', function(ply, ent)
+	if ent.IS_BULLET then return false end
+end)
 
 if CLIENT then return end
 
@@ -115,8 +123,8 @@ function ENT:PhysicsCollide(info, collider)
 
 	local trData = {
 		filter = self,
-		start = info.HitPos + normal,
-		endpos = info.HitPos - normal,
+		start = info.HitPos - normal,
+		endpos = info.HitPos + normal,
 	}
 
 	if false then
@@ -143,3 +151,8 @@ function ENT:PhysicsCollide(info, collider)
 		timer.Simple(0, function() self:Remove() end)
 	end
 end
+
+hook.Add('ShouldCollide', 'WeaponryStats.Bullets', function(ent1, ent2)
+	if ent1.IS_BULLET and ent2.IS_BULLET then return false end
+end)
+

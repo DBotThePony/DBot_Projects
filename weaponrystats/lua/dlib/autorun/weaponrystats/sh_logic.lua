@@ -94,7 +94,7 @@ local function EntityFireBullets(self, bulletData)
 		bulletData.Spread = bulletData.Spread or Vector(0, 0, 0)
 
 		for i = 1, bulletData.Num do
-			local spreadPos = DLib.util.randomVector(bulletData.Spread.x, bulletData.Spread.x, bulletData.Spread.y) * PHYSICAL_SPREAD:GetInt()
+			local spreadPos = DLib.util.randomVector(bulletData.Spread.x, bulletData.Spread.x, bulletData.Spread.y) * PHYSICAL_SPREAD:GetInt() * 0.65
 			
 			local trData = {
 				start = bulletData.Src,
@@ -108,9 +108,9 @@ local function EntityFireBullets(self, bulletData)
 			local ent = ents.Create(bulletType)
 			ent:SetBulletCallback(bulletData.Callback)
 			ent:SetInitialTrace(tr)
-			ent:SetPos(bulletData.Src + spreadPos)
+			ent:SetPos(bulletData.Src)
 			ent:SetAngles(bulletData.Dir:Angle())
-			ent:SetDirection(bulletData.Dir)
+			ent:SetDirection(bulletData.Dir + spreadPos)
 			ent:SetDistance(bulletData.Distance)
 			ent:SetForce(bulletData.Force or 1)
 			ent:SetAttacker(bulletData.Attacker or self)
