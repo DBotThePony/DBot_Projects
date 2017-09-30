@@ -413,7 +413,6 @@ local function Load()
 	Init = true
 	hook.Call('PreDHUD2Init')
 	LoadIfCan('dhud/cl_default.lua')
-	LoadIfCan('dhud/cl_highlight.lua')
 	LoadIfCan('dhud/cl_playerinfo.lua')
 	LoadIfCan('dhud/cl_radar.lua')
 	LoadIfCan('dhud/cl_playericon.lua')

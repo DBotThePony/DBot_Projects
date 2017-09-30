@@ -17,7 +17,6 @@ limitations under the License.
 
 AddCSLuaFile('dhud/cl_init.lua')
 AddCSLuaFile('dhud/cl_default.lua')
-AddCSLuaFile('dhud/cl_highlight.lua')
 AddCSLuaFile('dhud/cl_playerinfo.lua')
 AddCSLuaFile('dhud/cl_radar.lua')
 AddCSLuaFile('dhud/cl_playericon.lua')
