@@ -36,54 +36,9 @@ local ALLOW_ON_ENTITIES = CreateConVar('sv_dsit_entities', '1', {FCVAR_ARCHIVE, 
 local ALLOW_ON_ENTITIES_OWNER = CreateConVar('sv_dsit_entities_owner', '0', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Allow to sit on entities owned only by that player')
 local ALLOW_ON_ENTITIES_WORLD_ONLY = CreateConVar('sv_dsit_entities_world', '0', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Allow to sit on non-owned entities only')
 
---If you want to know:
---This code was written a long time ago by me, and for me it looks slightly shitty.
-
 DSit = DSit or {}
 
---Taken from DLib
-
-util.AddNetworkString('DSit.ChatMessage')
-
-function DSit.Copy(var)
-	if type(var) == 'table' then return table.Copy(var) end
-	if type(var) == 'Angle' then return Angle(var.p, var.y, var.r) end
-	if type(var) == 'Vector' then return Vector(var.x, var.y, var.z) end
-	return var
-end
-
-do
-	local EntMem = {}
-
-	local function DoSearch(ent)
-		if not IsValid(ent) then return end
-		if EntMem[ent] then return end
-		local all = constraint.GetTable(ent)
-		
-		EntMem[ent] = true
-		
-		for k = 1, #all do
-			local ent1, ent2 = all[k].Ent1, all[k].Ent2
-			
-			DoSearch(ent1)
-			DoSearch(ent2)
-		end
-	end
-
-	function DSit.GetAllConnectedEntities(ent)
-		EntMem = {}
-		
-		DoSearch(ent)
-		
-		local result = {}
-		
-		for k, v in pairs(EntMem) do
-			table.insert(result, k)
-		end
-		
-		return result
-	end
-end
+net.pool('DSit.ChatMessage')
 
 function DSit.AddPText(ply, ...)
 	net.Start 'DSit.ChatMessage'
@@ -211,7 +166,7 @@ local TRICK_MINS = Vector(-4, -4, 0)
 local TRICK_MAXS = Vector(4, 4, 0)
 
 function DSit.TrickPos(ply, pos, ang)
-	local FallAng = DSit.Copy(ang)
+	local FallAng = DLib.util.copy(ang)
 	FallAng.p = 0
 	FallAng.r = 0
 	FallAng.y = FallAng.y - 180
@@ -219,8 +174,8 @@ function DSit.TrickPos(ply, pos, ang)
 	local right = FallAng:Right()
 	local FallPos = pos - right * 40
 	
-	local NewPos = DSit.Copy(pos)
-	local NewAng = DSit.Copy(ang)
+	local NewPos = DLib.util.copy(pos)
+	local NewAng = DLib.util.copy(ang)
 	
 	if ply:GetPos():Distance(pos) > 30 then
 		local tr = util.TraceHull{
@@ -996,7 +951,7 @@ function RecalculateConstrained(ent, ply)
 	if true then return end --For now it is disabled
 	if not IsValid(ent) then return end
 	if ent._DSit_LastReaclc == CurTime() then return end
-	local result = DSit.GetAllConnectedEntities(ent)
+	local result = DLib.constraint.findAll(ent)
 	ent._DSit_LastReaclc = CurTime()
 
 	local hit = false
