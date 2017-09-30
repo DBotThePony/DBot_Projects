@@ -33,6 +33,7 @@ local function EntityFireBullets(self, bulletData)
 		weaponrystats.SKIP_NEXT = false
 		return
 	end
+	if self.IS_BULLET then return end
 
 	if type(self) ~= 'Weapon' and type(bulletData.Attacker) == 'Player' then return end
 
@@ -109,6 +110,7 @@ local function EntityFireBullets(self, bulletData)
 			local bulletType = wtype.bullet or 'dbot_physbullet'
 			local ent = ents.Create(bulletType)
 			ent:SetBulletCallback(bulletData.Callback)
+			ent:SetBulletData(bulletData)
 			ent:SetInitialTrace(tr)
 			ent:SetPos(bulletData.Src)
 			ent:SetAngles(bulletData.Dir:Angle())
