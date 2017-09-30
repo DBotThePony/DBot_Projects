@@ -24,12 +24,6 @@ DMaps.DeltaColor = (first = Color(255, 255, 255), endColor = Color(0, 0, 0), del
 
 DLib.CMessage(DMaps, 'DMaps')
 
-DMaps.Message = (...) ->
-	MsgC(PREFIX_COLOR, PREFIX_STRING, DEFAULT_COLOR, unpack(DMaps.Format(...)))
-	MsgC('\n')
-DMaps.MessageRaw = (tab) ->
-	MsgC(PREFIX_COLOR, PREFIX_STRING, DEFAULT_COLOR, unpack(tab))
-	MsgC('\n')
 DMaps.GetAdmins = ->
 	output = {}
 	for ply in *player.GetAll() do insert(output, ply) if ply\IsAdmin()
