@@ -90,6 +90,7 @@ function ENT:DoSetup()
 	self:SetAngles(ang)
 	self.phys:SetVelocity(self:GetDirection() * self:CalculateForce() * self:GetDistance() / 10000)
 	self.phys:SetAngles(ang)
+	self.phys:SetAngleDragCoefficient(0)
 end
 
 function ENT:Think()
@@ -162,13 +163,18 @@ function ENT:PhysicsCollide(info, collider)
 			cp.Src = self:GetPos()
 			cp.Dir = self:GetDirection()
 			cp.Damage = self:GetRicochetDamage()
-			cp.Callback = nil
+			local inflictor = self:GetInflictor()
+			cp.Callback = function(attacker, tr, dmginfo)
+				if IsValid(inf) then dmginfo:SetInflictor(inflictor) end
+			end
+
 			self:weaponrystats_FireBullets(cp)
 
 			self.ricochets = self.ricochets + 1
 			self.setup = false
 			self:SetDirection(ricochetDir)
 			self.nextpos = tr.HitPos + ricochetDir * 12
+			self:EmitSound('weapons/fx/rics/ric' .. math.random(1, 5) .. '.wav')
 
 			return
 		end
