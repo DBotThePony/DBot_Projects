@@ -123,8 +123,8 @@ function ENT:PhysicsCollide(info, collider)
 
 	local trData = {
 		filter = self,
-		start = info.HitPos - normal,
-		endpos = info.HitPos + normal,
+		start = info.HitPos - normal * 4,
+		endpos = info.HitPos + normal * 4,
 	}
 
 	if false then
