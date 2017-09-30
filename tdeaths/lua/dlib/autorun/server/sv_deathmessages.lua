@@ -309,19 +309,31 @@ local damagePriority = {
 	DMG_SLOWBURN
 }
 
-local function GenericDeath(victim, attacker, guessWeapon, guessDamage)
+local function GenericDeath(victim, attacker, guessWeapon, guessDamage, rawWeapon)
 	if not ENABLE:GetBool() then return end
 
 	local say2 = type(victim) == 'Player' and type(attacker) == 'Player' and SayPVP or
 		(type(victim) == 'NPC' or type(victim) == 'NextBot') and (type(attacker) == 'NPC' or type(attacker) == 'NextBot') and SayEVE or SayPVE
 
-	local valid, validWeapon = IsValid(attacker), IsValid(guessWeapon) and guessWeapon ~= attacker
+	local valid, validWeapon, validWeaponRaw = IsValid(attacker), IsValid(guessWeapon) and guessWeapon ~= attacker, IsValid(rawWeapon) and rawWeapon ~= attacker
 	local isProp = type(attacker) == 'Entity' and attacker:GetClass():find('prop_')
 	local attackerIsAlive = type(attacker) == 'Player' or type(attacker) == 'NPC' or type(attacker) == 'NextBot'
 	local pos = IsValid(victim) and victim:GetPos() or IsValid(attacker) and attacker:GetPos() or Vector(0, 0, 0)
 
 	local function say(...)
 		return say2(victim, attacker, guessWeapon, pos, ...)
+	end
+
+	if victim == attacker then
+		local targetDict = DamageSpecific[guessDamage] or DamageSpecific[DMG_GENERIC]
+
+		if validWeaponRaw then
+			say(format(targetDict, GetName(victim)) .. string.format(' by %s\'s %s', GetName(attacker), GetName(rawWeapon)))
+		else
+			say(format(Dict.Suicide, GetName(victim)) .. string.format(' by %s', GetName(attacker)))
+		end
+
+		return
 	end
 
 	if isProp then
@@ -349,12 +361,13 @@ end
 
 local function DoPlayerDeath(ply, attacker, dmginfo)
 	local weapon, attacker, inflictor = DLib.combat.findWeaponAlt(dmginfo)
-	GenericDeath(ply, attacker, weapon, table.sortedFind(dmginfo:TypesArray(), damagePriority, DMG_GENERIC))
+	GenericDeath(ply, attacker, weapon, table.sortedFind(dmginfo:TypesArray(), damagePriority, DMG_GENERIC), dmginfo:GetInflictor())
 end
 
 local function OnNPCKilled(npc, attacker, inflictor)
 	if not ENABLE_NPC:GetBool() then return end
 	if npc == attacker then return end
+	local inflictor2 = inflictor
 
 	inflictor = inflictor ~= attacker and
 		inflictor or
@@ -363,7 +376,7 @@ local function OnNPCKilled(npc, attacker, inflictor)
 		attacker:GetActiveWeapon() or
 		inflictor
 
-	GenericDeath(npc, attacker, inflictor, npc.TDeaths_LatestDamage and table.sortedFind(npc.TDeaths_LatestDamage, damagePriority, DMG_GENERIC) or DMG_GENERIC)
+	GenericDeath(npc, attacker, inflictor, npc.TDeaths_LatestDamage and table.sortedFind(npc.TDeaths_LatestDamage, damagePriority, DMG_GENERIC) or DMG_GENERIC, inflictor2)
 end
 
 local function EntityTakeDamage(self, dmginfo)
