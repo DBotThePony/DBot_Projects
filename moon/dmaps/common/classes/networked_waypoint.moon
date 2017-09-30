@@ -1,19 +1,19 @@
 
 --
 -- Copyright (C) 2017 DBot
--- 
+--
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
 -- You may obtain a copy of the License at
--- 
+--
 --     http://www.apache.org/licenses/LICENSE-2.0
--- 
+--
 -- Unless required by applicable law or agreed to in writing, software
 -- distributed under the License is distributed on an "AS IS" BASIS,
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
--- 
+--
 
 import DMaps, net, player, math, Color, hook, table from _G
 import SERVER, CLIENT, Vector from _G
@@ -29,16 +29,16 @@ class NetworkedWaypoint
 	@NETWORK_VAR_LENGTH = 8
 	@WAYPOINT_TYPE = DMapWaypoint
 	@__type = 'networked_waypoint'
-	
+
 	@PLAYER_FILTER_FUNC = (waypoint, ply) => true
 	@PLAYER_FILTER = (waypoint) =>
 		output = {}
 		for ply in *player.GetAll()
 			table.insert(output, ply) if @PLAYER_FILTER_FUNC(waypoint, ply)
 		return output
-	
+
 	@GetWaypoints = => [point for i, point in pairs @NETWORKED_WAYPOINTS]
-	
+
 	@NETWORKED_VALUES = {
 		{'x', ((val = 0) -> net.WriteInt(math.floor(val), 32)), (-> net.ReadInt(32)), 'SetX'}
 		{'y', ((val = 0) -> net.WriteInt(math.floor(val), 32)), (-> net.ReadInt(32)), 'SetY'}
@@ -47,7 +47,7 @@ class NetworkedWaypoint
 		{'name', ((val = '') -> net.WriteString(val)), net.ReadString, 'SetName'}
 		{'icon', ((val = '') -> net.WriteUInt(Icon\GetNetworkID(val), 16)), (-> Icon\GetIconName(net.ReadUInt(16))), 'SetIcon'}
 	}
-	
+
 	@GetNetworkID = (val = '') => @NETWORKED_VALUES_IDS[val]
 	-- Call in subclasses
 	@RECALC_NETWORK_TABLE = =>
@@ -55,7 +55,7 @@ class NetworkedWaypoint
 		for i = 1, #@NETWORKED_VALUES
 			@NETWORKED_VALUES[i].netid = i
 			@NETWORKED_VALUES_IDS[@NETWORKED_VALUES[i][1]] = i
-	
+
 	@RECALC_NETWORK_TABLE()
 	-- Clientside only
 	@NetworkedCreate = =>
@@ -65,15 +65,15 @@ class NetworkedWaypoint
 		if @NETWORKED_WAYPOINTS[id]
 			@NETWORKED_WAYPOINTS[id]\Remove()
 			hook.Run('NetworkedWaypointRemoved', @NETWORKED_WAYPOINTS[id])
-		
+
 		waypoint = NetworkedWaypoint("%WAYPOINT_NAME_#{id}%")
 		waypoint.INITIALIZE = true
 		waypoint.ID = id
 		@NETWORKED_WAYPOINTS[waypoint.ID] = waypoint
-		
+
 		waypoint\ReadData()
 		waypoint\CreateWaypoint()
-		
+
 		hook.Run('NetworkedWaypointCreated', waypoint)
 	@NetworkedChange = =>
 		return if SERVER
@@ -81,7 +81,7 @@ class NetworkedWaypoint
 		varid = net.ReadUInt(@NETWORK_VAR_LENGTH) + 1
 		return if not @NETWORKED_WAYPOINTS[id]
 		waypoint = @NETWORKED_WAYPOINTS[id]
-		
+
 		data = @NETWORKED_VALUES[varid]
 		error("Invalid network variable ID: #{varid}") if not data
 		func = waypoint.waypoint[data[4]]
@@ -89,7 +89,7 @@ class NetworkedWaypoint
 		func(waypoint.waypoint, read)
 		func(waypoint, read) for waypoint in *waypoint.clonedWaypoints
 		waypoint[data[1]] = read
-		
+
 		hook.Run('NetworkedWaypointChanges', waypoint)
 	@NetworkedRemove = =>
 		return if SERVER
@@ -98,8 +98,8 @@ class NetworkedWaypoint
 		return if not waypoint
 		waypoint\Remove()
 		hook.Run('NetworkedWaypointRemoved', waypoint)
-	
-	new: (name = "%WAYPOINT_NAME_#{@@NEXT_NETWORK_ID}%", x = 0, y = 0, z = 0, color = DMaps.RandomColor(), icon = DMaps.DefaultIconName) =>
+
+	new: (name = "%WAYPOINT_NAME_#{@@NEXT_NETWORK_ID}%", x = 0, y = 0, z = 0, color = DLib.RandomColor(), icon = DMaps.DefaultIconName) =>
 		-- Do not create clientside externally
 		if SERVER
 			@ID = @@NEXT_NETWORK_ID
@@ -114,19 +114,19 @@ class NetworkedWaypoint
 		@removed = false
 		@icon = icon
 		@clonedWaypoints = {} if CLIENT
-	
+
 	NetworkID: => @ID
 	GetNetworkID: => @ID
 	GetNetID: => @ID
 	NetID: => @ID
-	
+
 	-- INTERNAL
 	CreateWaypoint: =>
 		constructor = @@WAYPOINT_TYPE
 		@waypoint = constructor(@name, @x, @y, @z, @color, @icon)
 		return @waypoint
 	GetWaypoint: => @waypoint
-	
+
 	-- Feel free to use
 	CloneWaypoint: =>
 		constructor = @@WAYPOINT_TYPE
@@ -134,7 +134,7 @@ class NetworkedWaypoint
 		table.insert(@clonedWaypoints, waypoint)
 		return waypoint
 	Waypoint: => @CloneWaypoint()
-	
+
 	WriteVal: (id = 1) =>
 		return if CLIENT
 		error('Initialize point first') if not @INITIALIZE
@@ -146,7 +146,7 @@ class NetworkedWaypoint
 		data[2](@[data[1]])
 		net.Send(@networkedClients)
 	WriteValString: (str = '') => @WriteVal(@@GetNetworkID(str))
-	
+
 	NetworkVal: (id = 1) =>
 		return if CLIENT
 		error('Initialize point first') if not @INITIALIZE
@@ -159,7 +159,7 @@ class NetworkedWaypoint
 		data = @@NETWORKED_VALUES[id]
 		error("Invalid network variable ID: #{id}") if not data
 		@[data[1]] = data[3]()
-	
+
 	WriteData: =>
 		return if CLIENT
 		error('Initialize point first') if not @INITIALIZE
@@ -168,9 +168,9 @@ class NetworkedWaypoint
 		return if SERVER
 		error('Initialize point first') if not @INITIALIZE
 		@[data[1]] = data[3]() for data in *@@NETWORKED_VALUES
-	
+
 	OnDataChanges: =>
-	
+
 	SetX: (val = 0, networkNow = @INITIALIZE) =>
 		@x = math.floor(val)
 		@WriteValString('x') if networkNow
@@ -183,7 +183,7 @@ class NetworkedWaypoint
 		@z = math.floor(val)
 		@WriteValString('z') if networkNow
 		@OnDataChanges()
-	SetColor: (val = DMaps.RandomColor(), networkNow = @INITIALIZE) =>
+	SetColor: (val = DLib.RandomColor(), networkNow = @INITIALIZE) =>
 		@color = val
 		@WriteValString('color') if networkNow
 		@OnDataChanges()
@@ -207,7 +207,7 @@ class NetworkedWaypoint
 	GetPos: => Vector(@x, @y, @z)
 	GetName: => @name
 	GetIcon: => @icon
-	
+
 	Remove: =>
 		@removed = true
 		@@NETWORKED_WAYPOINTS[@ID] = nil
@@ -219,7 +219,7 @@ class NetworkedWaypoint
 			net.WriteUInt(@ID, @@NETWORK_ID_LENGTH)
 			net.Send(@networkedClients)
 	IsValid: => not @removed and @INITIALIZE
-	
+
 	NetworkToPlayer: (ply) =>
 		net.Start(@@NETWORK_STRING)
 		net.WriteUInt(@ID, @@NETWORK_ID_LENGTH)
@@ -246,7 +246,7 @@ class NetworkedWaypoint
 				table.remove(@networkedClients, i)
 				return true
 		return false
-	
+
 	Initialize: => @InitPoint()
 	Init: => @InitPoint()
 	Spawn: => @InitPoint()

@@ -1,33 +1,21 @@
 
 --
 -- Copyright (C) 2017 DBot
--- 
+--
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
 -- You may obtain a copy of the License at
--- 
+--
 --     http://www.apache.org/licenses/LICENSE-2.0
--- 
+--
 -- Unless required by applicable law or agreed to in writing, software
 -- distributed under the License is distributed on an "AS IS" BASIS,
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
--- 
+--
 
 resource.AddWorkshop('916067750')
-
-export NOTIFY_GENERIC
-export NOTIFY_ERROR
-export NOTIFY_UNDO
-export NOTIFY_HINT
-export NOTIFY_CLEANUP
-
-NOTIFY_GENERIC = 0
-NOTIFY_ERROR = 1
-NOTIFY_UNDO = 2
-NOTIFY_HINT = 3
-NOTIFY_CLEANUP = 4
 
 ClientsideFiles = {
 	'client/classes/class_map.lua'
@@ -46,7 +34,6 @@ ClientsideFiles = {
 	'client/classes/minimap_vehicles.lua'
 
 	'client/controls/progress_bar.lua'
-	'client/controls/dscoreboard2_avatar.lua'
 	'client/controls/control_compass.lua'
 	'client/controls/control_arrows.lua'
 	'client/controls/control_zoom.lua'
@@ -69,14 +56,14 @@ ClientsideFiles = {
 	'client/misc.lua'
 	'client/nav_controller.lua'
 	'client/sharing.lua'
-	
+
 	'common/functions.lua'
 	'common/icons.lua'
 	'common/classes/networked_waypoint.lua'
-	
+
 	'common/sh_cami.lua'
 	'common/access.lua'
-	
+
 	'cl_init.lua'
 	'sh_init.lua'
 }
@@ -88,20 +75,20 @@ ServersideFiles = {
 
 	'server/network.lua'
 	'server/cvars.lua'
-	
+
 	'common/classes/networked_waypoint.lua'
-	
+
 	'server/classes/a_star_searcher.lua'
 	'server/classes/waypoints_holder.lua'
 	'server/classes/waypoints_holder_team.lua'
 	'server/classes/waypoints_holder_usergroup.lua'
 	'server/classes/waypoints_holder_cami.lua'
-	
+
 	'server/classes/waypoint_basic.lua'
 	'server/classes/waypoint_team.lua'
 	'server/classes/waypoint_usergroup.lua'
 	'server/classes/waypoint_cami.lua'
-	
+
 	'server/functions.lua'
 	'server/commands.lua'
 	'server/hooks.lua'

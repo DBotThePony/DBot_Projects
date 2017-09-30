@@ -1,22 +1,22 @@
 
 --
 -- Copyright (C) 2017 DBot
--- 
+--
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
 -- You may obtain a copy of the License at
--- 
+--
 --     http://www.apache.org/licenses/LICENSE-2.0
--- 
+--
 -- Unless required by applicable law or agreed to in writing, software
 -- distributed under the License is distributed on an "AS IS" BASIS,
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
--- 
+--
 
 import DMaps, navmesh, net from _G
-import AStarTracer from DMaps
+import AStarTracer from DLib
 
 NAV_ENABLE = CreateConVar('sv_dmaps_nav_enable', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Enable navigation support (if map has nav file)')
 
@@ -30,11 +30,11 @@ net.Receive 'DMaps.Navigation.Require', (len, ply) ->
 		net.Start('DMaps.Navigation.NotInstalled')
 		net.Send(ply)
 		return
-	
+
 	hookID = "DMaps.NavigationCheck.#{ply\SteamID()}"
 
 	return if ply.__DMaps_AStarTracer and not ply.__DMaps_AStarTracer\HasFinished()
-	
+
 	pos = ply\GetPos()
 	endPos = Vector(net.ReadInt(32), net.ReadInt(32), net.ReadInt(32))
 	sendInfos = net.ReadBool()
@@ -79,5 +79,5 @@ net.Receive 'DMaps.Navigation.Require', (len, ply) ->
 			net.WriteInt(math.floor(y), 16)
 			net.WriteInt(math.floor(z), 16)
 		net.Send(ply)
-	
+
 	tracer\Start()
