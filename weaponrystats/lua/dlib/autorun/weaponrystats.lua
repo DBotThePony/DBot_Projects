@@ -61,6 +61,7 @@ local function checkValue(value)
 	value.numAdd = value.numAdd or 0
 	value.randomMin = value.randomMin or 1
 	value.randomMax = value.randomMax or 1
+	value.bullet = value.bullet or 'dbot_physbullet'
 end
 
 for key, value in pairs(weaponrystats.modifications) do

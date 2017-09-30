@@ -16,15 +16,19 @@
 local weaponrystats = weaponrystats
 local weaponMeta = FindMetaTable('Weapon')
 local entMeta = FindMetaTable('Entity')
-local IN_CALL, SKIP_NEXT = false, false
+local IN_CALL = false
+local ENABLE_PHYSICAL_BULLETS = CreateConVar('sv_physbullets', '1', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Enable physical bullets')
+local PHYSICAL_SPREAD = CreateConVar('sv_physbullets_spread', '1', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Physical bullets spread multiplier')
+
+weaponrystats.SKIP_NEXT = false
 
 local function EntityFireBullets(self, bulletData)
 	if IN_CALL then return end
-	if SKIP_NEXT then
-		SKIP_NEXT = false
+	if weaponrystats.SKIP_NEXT then
+		weaponrystats.SKIP_NEXT = false
 		return
 	end
-	
+
 	if type(self) ~= 'Weapon' and type(bulletData.Attacker) == 'Player' then return end
 
 	local findWeapon, findOwner
@@ -81,7 +85,50 @@ local function EntityFireBullets(self, bulletData)
 		bulletData.Force = (bulletData.Force or 1) * (modif.force or 1)
 	end
 
-	return true
+	bulletData.Distance = bulletData.Distance or 56756
+
+	if CLIENT or not ENABLE_PHYSICAL_BULLETS:GetBool() or bulletData.Distance < 1024 then
+		return true
+	else
+		bulletData.Num = bulletData.Num or 1
+		bulletData.Spread = bulletData.Spread or Vector(0, 0, 0)
+
+		for i = 1, bulletData.Num do
+			local spreadPos = DLib.util.randomVector(bulletData.Spread.x, bulletData.Spread.x, bulletData.Spread.y) * PHYSICAL_SPREAD:GetInt()
+			
+			local trData = {
+				start = bulletData.Src,
+				endpos = bulletData.Src + bulletData.Dir * bulletData.Distance,
+				filter = self
+			}
+
+			local tr = util.TraceLine(trData)
+
+			local bulletType = wtype.bullet or 'dbot_physbullet'
+			local ent = ents.Create(bulletType)
+			ent:SetBulletCallback(bulletData.Callback)
+			ent:SetInitialTrace(tr)
+			ent:SetPos(bulletData.Src + spreadPos)
+			ent:SetAngles(bulletData.Dir:Angle())
+			ent:SetDirection(bulletData.Dir)
+			ent:SetDistance(bulletData.Distance)
+			ent:SetForce(bulletData.Force or 1)
+			ent:SetAttacker(bulletData.Attacker or self)
+			ent:SetInflictor(self)
+			ent:SetDamage(bulletData.Damage or 1)
+			ent:SetMaxDamage(bulletData.Damage or 1)
+			ent:SetReportedPosition(bulletData.Src)
+			ent:SetDamagePosition(nil)
+			ent:SetDamageType(DMG_BULLET)
+			ent:SetOwner(self)
+			ent:Spawn()
+			ent:Activate()
+			ent:SetOwner(self)
+			ent:Think()
+		end
+
+		return false
+	end
 end
 
 entMeta.weaponrystats_FireBullets = entMeta.weaponrystats_FireBullets or entMeta.FireBullets
@@ -92,8 +139,8 @@ function entMeta:FireBullets(bulletData, ...)
 	-- local status = hook.Run('EntityFireBullets', self, bulletData)
 	-- IN_CALL = false
 	-- if status == false then return end
-	EntityFireBullets(self, bulletData)
-	SKIP_NEXT = true
+	if EntityFireBullets(self, bulletData) == false then return end
+	weaponrystats.SKIP_NEXT = true
 	return entMeta.weaponrystats_FireBullets(self, bulletData, ...)
 end
 
@@ -106,11 +153,11 @@ function weaponMeta:SetNextPrimaryFire(time)
 
 	if delta > 0 then
 		local modif, wtype = self:GetWeaponModification(), self:GetWeaponType()
-		
+
 		if modif and modif.speed then
 			delta = delta / modif.speed
 		end
-		
+
 		if wtype and wtype.speed then
 			delta = delta / wtype.speed
 		end
@@ -126,11 +173,11 @@ function weaponMeta:SetNextSecondaryFire(time)
 
 	if delta > 0 then
 		local modif, wtype = self:GetWeaponModification(), self:GetWeaponType()
-		
+
 		if modif and modif.speed then
 			delta = delta / modif.speed
 		end
-		
+
 		if wtype and wtype.speed then
 			delta = delta / wtype.speed
 		end
