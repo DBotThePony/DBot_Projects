@@ -52,6 +52,7 @@ function ENT:Initialize()
 	self:PhysicsInitSphere(1)
 	self.phys = self:GetPhysicsObject()
 	self.ricochets = 0
+	self.penetrations = 0
 	self.phys:EnableDrag(false)
 	self.phys:EnableMotion(true)
 	self.phys:EnableGravity(false)
@@ -90,7 +91,7 @@ AccessorFunc(ENT, 'm_damagePosition', 'DamagePosition')
 AccessorFunc(ENT, 'm_damageType', 'DamageType')
 
 function ENT:GetFinalDamage()
-	return self:GetDamage() - self:GetDamage() * math.min(4, self.ricochets) / 6
+	return math.max(self:GetDamage() - self:GetDamage() * math.min(4, self.ricochets) / 20 - self:GetDamage() * math.min(4, self.penetrations) / 10, self:GetDamage() / 8)
 end
 
 function ENT:GetRicochetDamage()
@@ -98,15 +99,36 @@ function ENT:GetRicochetDamage()
 end
 
 function ENT:GetPenetrationStrength()
-	return self:GetForce() * 100 * self:GetFinalDamage()
+	return self:CalculateForce() / 32
 end
 
 function ENT:CalculateForce()
-	return math.max((math.max(self:GetForce(), 3) + 5) * 15 + math.max(5, self:GetDamage()) * 10 - math.min(4, self.ricochets) * 130, 200)
+	return math.max((math.max(self:GetForce(), 3) + 5) * 15 + math.max(5, self:GetDamage()) * 10 - math.min(4, self.ricochets) * 40 - math.min(8, self.penetrations) * 80, 200)
 end
 
 function ENT:UpdatePhys()
-	self.phys:ApplyForceCenter(self:GetDirection() * self:CalculateForce() * self:GetDistance() / 10000)
+	if not self.wakeOnNext then
+		self.phys:AddAngleVelocity(-self.phys:GetAngleVelocity())
+		if self.phys:GetAngleVelocity():Length() > 1 then
+			self.phys:Sleep()
+			self.phys:EnableMotion(false)
+			self.wakeOnNext = true
+		end
+	else
+		self.phys:EnableMotion(true)
+		self.phys:Wake()
+		self.wakeOnNext = false
+		self.phys:AddAngleVelocity(-self.phys:GetAngleVelocity())
+	end
+
+	if not self.nPenetrationOfNPC then
+		self.phys:ApplyForceCenter(self:GetDirection() * self:CalculateForce() * self:GetDistance() / 10000)
+	else
+		self.phys:SetVelocity(self:GetDirection() * 10)
+		self.nGravityIgnore = true
+	end
+
+	self.nPenetrationOfNPC = false
 	self.phys:SetAngleDragCoefficient(0)
 end
 
@@ -133,7 +155,6 @@ function ENT:DoSetup()
 	local ang = self:GetDirection():Angle()
 	ang:RotateAroundAxis(ang:Right(), 90)
 	self:SetAngles(ang)
-	self.phys:AddAngleVelocity(-self.phys:GetAngleVelocity())
 	self:UpdatePhys()
 end
 
@@ -159,7 +180,8 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 	if self.invalidBullet then return end
 	local normalAngle = normal:Angle()
 
-	local delta = self:GetPos() - tr.HitPos
+	local spos = self:GetPos()
+	local delta = spos - tr.HitPos
 	delta:Normalize()
 	local dot = delta:Dot(tr.HitNormal)
 	local ang = math.deg(math.acos(dot))
@@ -167,6 +189,7 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 	tr.MatType = tr.MatType or MAT_FLESH
 	local surfaceType = tr.MatType
 	local mult = (ricochetSurfaces[surfaceType] or 1) / 0.65
+	local mult2 = (ricochetSurfaces[surfaceType] or 1) ^ 2
 	local ricochetCond = type(hitent) ~= 'NPC' and
 		type(hitent) ~= 'NextBot' and
 		type(hitent) ~= 'Player' and
@@ -187,7 +210,7 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 			local ricochetDir = ang2:Forward()
 
 			local cp = table.Copy(self:GetBulletData())
-			cp.Src = self:GetPos()
+			cp.Src = spos
 			cp.Dir = self:GetDirection()
 			cp.Damage = self:GetRicochetDamage()
 			local inflictor = self:GetInflictor()
@@ -212,6 +235,86 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 		end
 	end
 
+	local penetratePower = math.min(self:GetPenetrationStrength() * mult2, 200)
+
+	if penetratePower >= 20 then
+		local trPen
+		local penCondition2 = IsValidEntity(hitent) and (type(hitent) == 'Player' or type(hitent) == 'NPC' or type(hitent) == 'NextBot')
+		
+		if penCondition2 then
+			local filter = table.qcopy(VALID_BULLETS)
+			table.insert(filter, hitent)
+
+			trPen = {
+				start = hitpos - self:GetDirection() * 5,
+				endpos = hitpos + self:GetDirection() * penetratePower / 4,
+				filter = filter
+			}
+		elseif IsValidEntity(hitent) then
+			trPen = {
+				start = hitpos + self:GetDirection() * penetratePower / 2,
+				endpos = hitpos - self:GetDirection() * 5,
+				filter = VALID_BULLETS
+			}
+		else
+			trPen = {
+				start = hitpos + self:GetDirection() * penetratePower,
+				endpos = hitpos - self:GetDirection() * 5,
+				filter = VALID_BULLETS
+			}
+		end
+
+		local newTr = util.TraceLine(trPen)
+
+		if newTr.Fraction >= 0.05 and newTr.Fraction ~= 1 then
+			local cp = table.Copy(self:GetBulletData())
+			cp.Src = spos
+			cp.Dir = self:GetDirection()
+			cp.Damage = self:GetFinalDamage()
+			local inflictor = self:GetInflictor()
+			
+			cp.Callback = function(attacker, tr, dmginfo)
+				if IsValid(inf) then dmginfo:SetInflictor(inflictor) end
+				
+				if cp.PhysDamageType then
+					dmginfo:SetDamageType(cp.PhysDamageType)
+				end
+			end
+
+			local incomingPos = newTr.HitPos + self:GetDirection() * 10
+
+			if penCondition2 then
+				incomingPos = spos + self:GetDirection() * 3
+			end
+
+			if not IsValidEntity(newTr.Entity) then
+				local cp = table.Copy(self:GetBulletData())
+				cp.Src = incomingPos
+				cp.Dir = -self:GetDirection()
+				cp.Damage = 0
+				cp.Callback = function() end
+				self:weaponrystats_FireBullets(cp)
+			end
+
+			weaponrystats.SKIP_NEXT = true
+			self:GetFirer():weaponrystats_FireBullets(cp)
+
+			self.penetrations = self.penetrations + 1
+			self.setup = false
+
+			-- hack instead of penetration calculation loop
+			--if not IsValidEntity(newTr.Entity) then
+				self.nextpos = incomingPos
+			--else
+			--	self.nextpos = spos - self:GetDirection() * 32
+			--end
+
+			self.nPenetrationOfNPC = penCondition2
+
+			return
+		end
+	end
+
 	self:UpdateRules()
 	-- local dmginfo = DamageInfo():Receive(self)
 
@@ -226,6 +329,7 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 	local cp = table.Copy(self:GetBulletData())
 	cp.Src = self:GetPos()
 	cp.Dir = self:GetDirection()
+	cp.Damage = self:GetFinalDamage()
 	weaponrystats.SKIP_NEXT = true
 	self:GetFirer():weaponrystats_FireBullets(cp)
 
@@ -249,7 +353,11 @@ function ENT:Think()
 
 	self:UpdatePhys()
 
-	self.phys:ApplyForceCenter(GravityStrength)
+	if not self.nGravityIgnore then
+		self.phys:ApplyForceCenter(GravityStrength)
+	end
+
+	self.nGravityIgnore = false
 end
 
 function ENT:UpdateRules(damagePos)
