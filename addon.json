@@ -6,6 +6,7 @@
 	[
 		"*.psd",
 		"*.vcproj",
+		"*.vscode*",
 		"*.svn*",
 		"*.git*",
 		".gitlab-ci.yml",
