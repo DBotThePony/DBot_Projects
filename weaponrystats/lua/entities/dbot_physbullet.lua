@@ -90,6 +90,14 @@ AccessorFunc(ENT, 'm_reportedPosiotion', 'ReportedPosition')
 AccessorFunc(ENT, 'm_damagePosition', 'DamagePosition')
 AccessorFunc(ENT, 'm_damageType', 'DamageType')
 
+function ENT:CanRicochet()
+	return true
+end
+
+function ENT:CanPenetrate()
+	return true
+end
+
 function ENT:GetFinalDamage()
 	return math.max(self:GetDamage() - self:GetDamage() * math.min(4, self.ricochets) / 20 - self:GetDamage() * math.min(4, self.penetrations) / 10, self:GetDamage() / 8)
 end
@@ -100,6 +108,14 @@ end
 
 function ENT:GetPenetrationStrength()
 	return self:CalculateForce() / 32
+end
+
+function ENT:CalculateBulletForce()
+	return self:CalculateForce()
+end
+
+function ENT:CalculateRicochetForce()
+	return self:CalculateForce()
 end
 
 function ENT:CalculateForce()
@@ -122,7 +138,7 @@ function ENT:UpdatePhys()
 	end
 
 	if not self.nPenetrationOfNPC then
-		self.phys:ApplyForceCenter(self:GetDirection() * self:CalculateForce() * self:GetDistance() / 10000)
+		self.phys:ApplyForceCenter(self:GetDirection() * self:CalculateBulletForce() * self:GetDistance() / 10000)
 	else
 		self.phys:SetVelocity(self:GetDirection() * 10)
 		self.nGravityIgnore = true
@@ -201,7 +217,7 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 	if ricochetCond then
 		-- self.phys:SetVelocity(info.OurOldVelocity)
 
-		local mForce = self:CalculateForce()
+		local mForce = self:CalculateRicochetForce()
 		local canRicochet = ricochetSurfaces[surfaceType] and mForce / ricochetSurfaces[surfaceType] >= 500
 
 		if canRicochet then
