@@ -109,8 +109,8 @@ function ENT:TraceForward()
 	local dir = self:GetDirection()
 
 	local trData = {
-		start = pos - dir * 4,
-		endpos = pos + dir * 4,
+		start = pos,
+		endpos = pos + dir * 8,
 		filter = VALID_BULLETS
 	}
 
@@ -150,7 +150,7 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 	if self.invalidBullet then return end
 	local normalAngle = normal:Angle()
 
-	local delta = self:GetPos() - hitpos
+	local delta = tr.StartPos - tr.HitPos
 	delta:Normalize()
 	local dot = delta:Dot(tr.HitNormal)
 	local ang = math.deg(math.acos(dot))
@@ -163,6 +163,8 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 		type(hitent) ~= 'Player' and
 		(angDiff < -40 * mult or angDiff > 40 * mult) and
 		self.ricochets < 4
+
+	print(angDiff)
 
 	if ricochetCond then
 		-- self.phys:SetVelocity(info.OurOldVelocity)
