@@ -102,7 +102,7 @@ function ENT:GetPenetrationStrength()
 end
 
 function ENT:CalculateForce()
-	return math.max((math.max(self:GetForce(), 3) + 5) * 60 + math.min(100, self:GetDamage()) * 30 - math.min(4, self.ricochets) * 100, 200)
+	return math.max((math.max(self:GetForce(), 3) + 5) * 60 + math.min(100, self:GetDamage()) * 50 - math.min(4, self.ricochets) * 130, 200)
 end
 
 function ENT:UpdatePhys()
