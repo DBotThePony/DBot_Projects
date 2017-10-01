@@ -54,7 +54,7 @@ function ENT:Initialize()
 	self.ricochets = 0
 	self.phys:EnableDrag(false)
 	self.phys:EnableMotion(true)
-	self.phys:EnableGravity(true)
+	self.phys:EnableGravity(false)
 	self.setup = false
 	self.dissapearTime = CurTime() + 10
 	self:SetCustomCollisionCheck(true)
@@ -226,6 +226,8 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 	timer.Simple(0, function() self:Remove() end)
 end
 
+local GravityStrength = Vector(0, 0, -20)
+
 function ENT:Think()
 	if self.invalidBullet then return end
 
@@ -238,6 +240,8 @@ function ENT:Think()
 	end
 
 	--self:UpdatePhys()
+
+	self.phys:ApplyForceCenter(GravityStrength)
 end
 
 function ENT:UpdateRules(damagePos)
@@ -253,7 +257,7 @@ function ENT:PhysicsCollide(info, collider)
 	local hitpos = info.HitPos
 	local hitent = info.HitEntity
 	local tr = self:TraceForward()
-	
+
 	if IsValidEntity(hitent) then
 		hitent:SetVelocity(info.TheirOldVelocity)
 	end
