@@ -43,9 +43,9 @@ function ENT:Initialize()
 
 	if CLIENT then
 		self:SetOwner(LocalPlayer())
-		self:SetCollisionGroup(COLLISION_GROUP_WORLD)
-		self:PhysicsInitSphere(0)
-		self:SetSolid(SOLID_NONE)
+		--self:SetCollisionGroup(COLLISION_GROUP_WORLD)
+		--self:PhysicsInitSphere(0)
+		--self:SetSolid(SOLID_NONE)
 		return
 	end
 
@@ -61,6 +61,14 @@ function ENT:Initialize()
 end
 
 hook.Add('PhysgunPickup', 'WeaponryStats.Bullets', function(ply, ent)
+	if ent.IS_BULLET then return false end
+end)
+
+hook.Add('GravGunPickupAllowed', 'WeaponryStats.Bullets', function(ply, ent)
+	if ent.IS_BULLET then return false end
+end)
+
+hook.Add('GravGunPunt', 'WeaponryStats.Bullets', function(ply, ent)
 	if ent.IS_BULLET then return false end
 end)
 
