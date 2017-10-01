@@ -21,8 +21,24 @@ ENT.Spawnable = false
 ENT.AdminSpawnable = false
 ENT.Type = 'anim'
 ENT.IS_BULLET = true
+ENT.RenderGroup = RENDERGROUP_BOTH
+
+local VALID_BULLETS = {}
+local IsValidEntity = FindMetaTable('Entity').IsValid
+
+local function cleanup()
+	local old = VALID_BULLETS
+	VALID_BULLETS = {}
+
+	for i, ent in ipairs(old) do
+		if IsValidEntity(ent) then
+			VALID_BULLETS[#VALID_BULLETS + 1] = ent
+		end
+	end
+end
 
 function ENT:Initialize()
+	table.insert(VALID_BULLETS, self)
 	self:SetModel('models/ryu-gi/effect_props/incendiary/bullet_tracer.mdl')
 
 	if CLIENT then
@@ -52,6 +68,7 @@ if CLIENT then return end
 
 AccessorFunc(ENT, 'm_tr', 'InitialTrace')
 AccessorFunc(ENT, 'm_distance', 'Distance')
+AccessorFunc(ENT, 'm_initialEntity', 'InitialEntity')
 AccessorFunc(ENT, 'm_callback', 'BulletCallback')
 AccessorFunc(ENT, 'm_bulletData', 'BulletData')
 AccessorFunc(ENT, 'm_force', 'Force')
@@ -80,6 +97,26 @@ function ENT:CalculateForce()
 	return math.max((math.max(self:GetForce(), 5) + 10) * 80 - math.min(4, self.ricochets) * 60, 200)
 end
 
+function ENT:UpdatePhys()
+	self.phys:SetVelocity(self:GetDirection() * self:CalculateForce() * self:GetDistance() / 10000)
+	self.phys:SetAngleDragCoefficient(0)
+end
+
+function ENT:TraceForward()
+	cleanup()
+	
+	local pos = self:GetPos()
+	local dir = self:GetDirection()
+
+	local trData = {
+		start = pos - dir * 4,
+		endpos = pos + dir * 4,
+		filter = VALID_BULLETS
+	}
+
+	return util.TraceLine(trData)
+end
+
 function ENT:DoSetup()
 	if self.invalidBullet then return end
 	self.setup = true
@@ -88,28 +125,15 @@ function ENT:DoSetup()
 	local ang = self:GetDirection():Angle()
 	ang:RotateAroundAxis(ang:Right(), 90)
 	self:SetAngles(ang)
-	self.phys:SetVelocity(self:GetDirection() * self:CalculateForce() * self:GetDistance() / 10000)
-	self.phys:SetAngles(ang)
-	self.phys:SetAngleDragCoefficient(0)
+	self:UpdatePhys()
 end
 
-function ENT:Think()
-	if self.invalidBullet then return end
-	if self.dissapearTime < CurTime() then
-		return self:Remove()
-	end
-
-	if not self.setup then
-		self:DoSetup()
-	end
+local function isValid(ent)
+	return IsValidEntity(ent) and ent or nil
 end
 
-function ENT:UpdateRules(damagePos)
-	self:SetMaxDamage(self:GetMaxDamage() or self:GetDamage())
-	self:SetAttacker(self:GetAttacker():IsValid() and self:GetAttacker() or self)
-	self:SetInflictor(self:GetInflictor():IsValid() and self:GetInflictor() or self)
-	self:SetReportedPosition(self:GetPos())
-	self:SetDamagePosition(damagePos or self:GetPos())
+function ENT:GetFirer()
+	return isValid(self:GetInitialEntity()) or isValid(self:GetInflictor()) or isValid(self:GetAttacker()) or self
 end
 
 local ricochetSurfaces = {
@@ -122,35 +146,27 @@ local ricochetSurfaces = {
 	[MAT_TILE] = 1,
 }
 
-function ENT:PhysicsCollide(info, collider)
+function ENT:OnHitObject(hitpos, normal, tr, hitent)
 	if self.invalidBullet then return end
-	local normal = info.HitNormal
-	local hitpos = info.HitPos
 	local normalAngle = normal:Angle()
-
-	local trData = {
-		filter = self,
-		start = hitpos - normal * 4,
-		endpos = hitpos+ normal * 4,
-	}
 
 	local delta = self:GetPos() - hitpos
 	delta:Normalize()
-	local tr = util.TraceLine(trData)
 	local dot = delta:Dot(tr.HitNormal)
 	local ang = math.deg(math.acos(dot))
 	local angDiff = math.AngleDifference(0, ang)
 	tr.MatType = tr.MatType or MAT_FLESH
 	local surfaceType = tr.MatType
 	local mult = (ricochetSurfaces[surfaceType] or 1) / 0.65
-	local ricochetCond = type(info.HitEntity) ~= 'NPC' and
-		type(info.HitEntity) ~= 'NextBot' and
-		type(info.HitEntity) ~= 'Player' and
+	local ricochetCond = type(hitent) ~= 'NPC' and
+		type(hitent) ~= 'NextBot' and
+		type(hitent) ~= 'Player' and
 		(angDiff < -40 * mult or angDiff > 40 * mult) and
 		self.ricochets < 4
 
 	if ricochetCond then
-		self.phys:SetVelocity(info.OurOldVelocity)
+		-- self.phys:SetVelocity(info.OurOldVelocity)
+
 		local mForce = self:CalculateForce()
 		local canRicochet = ricochetSurfaces[surfaceType] and mForce / ricochetSurfaces[surfaceType] >= 500
 
@@ -166,9 +182,14 @@ function ENT:PhysicsCollide(info, collider)
 			local inflictor = self:GetInflictor()
 			cp.Callback = function(attacker, tr, dmginfo)
 				if IsValid(inf) then dmginfo:SetInflictor(inflictor) end
+				
+				if cp.PhysDamageType then
+					dmginfo:SetDamageType(cp.PhysDamageType)
+				end
 			end
 
-			self:weaponrystats_FireBullets(cp)
+			weaponrystats.SKIP_NEXT = true
+			self:GetFirer():weaponrystats_FireBullets(cp)
 
 			self.ricochets = self.ricochets + 1
 			self.setup = false
@@ -187,18 +208,49 @@ function ENT:PhysicsCollide(info, collider)
 	-- 	self.m_callback(self:GetAttacker(), tr, dmginfo)
 	-- end
 
-	-- if IsValid(info.HitEntity) then
-	-- 	info.HitEntity:TakeDamageInfo(dmginfo)
+	-- if IsValid(hitent) then
+	-- 	hitent:TakeDamageInfo(dmginfo)
 	-- end
 
 	local cp = table.Copy(self:GetBulletData())
 	cp.Src = self:GetPos()
 	cp.Dir = self:GetDirection()
-	self:weaponrystats_FireBullets(cp)
+	weaponrystats.SKIP_NEXT = true
+	self:GetFirer():weaponrystats_FireBullets(cp)
 
 	self.invalidBullet = true
 
 	timer.Simple(0, function() self:Remove() end)
+end
+
+function ENT:Think()
+	if self.invalidBullet then return end
+
+	if self.dissapearTime < CurTime() then
+		return self:Remove()
+	end
+
+	if not self.setup then
+		self:DoSetup()
+	end
+
+	--self:UpdatePhys()
+end
+
+function ENT:UpdateRules(damagePos)
+	self:SetMaxDamage(self:GetMaxDamage() or self:GetDamage())
+	self:SetAttacker(self:GetAttacker():IsValid() and self:GetAttacker() or self)
+	self:SetInflictor(self:GetInflictor():IsValid() and self:GetInflictor() or self)
+	self:SetReportedPosition(self:GetPos())
+	self:SetDamagePosition(damagePos or self:GetPos())
+end
+
+function ENT:PhysicsCollide(info, collider)
+	local normal = info.HitNormal
+	local hitpos = info.HitPos
+	local hitent = info.HitEntity
+	local tr = self:TraceForward()
+	self:OnHitObject(hitpos, normal, tr, hitent)
 end
 
 hook.Add('ShouldCollide', 'WeaponryStats.Bullets', function(ent1, ent2)

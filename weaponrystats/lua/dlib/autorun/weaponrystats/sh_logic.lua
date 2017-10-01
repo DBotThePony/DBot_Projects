@@ -27,12 +27,16 @@ end
 
 weaponrystats.SKIP_NEXT = false
 
+local HL2WEP_MAPPING = DLib.hl2wdata
+
 local function EntityFireBullets(self, bulletData)
 	if IN_CALL then return end
+
 	if weaponrystats.SKIP_NEXT then
 		weaponrystats.SKIP_NEXT = false
 		return
 	end
+
 	if self.IS_BULLET then return end
 
 	if type(self) ~= 'Weapon' and type(bulletData.Attacker) == 'Player' then return end
@@ -51,6 +55,12 @@ local function EntityFireBullets(self, bulletData)
 	local modif, wtype = findWeapon:GetWeaponModification(), findWeapon:GetWeaponType()
 	if not modif and not wtype then return end
 	findWeapon.weaponrystats_bullets = CurTime()
+
+	local hl2 = HL2WEP_MAPPING[findWeapon:GetClass()]
+	if hl2 then
+		bulletData.Damage = hl2.damage
+		bulletData.PhysDamageType = hl2.dtype
+	end
 
 	if wtype then
 		local oldCallback = bulletData.Callback
@@ -110,7 +120,9 @@ local function EntityFireBullets(self, bulletData)
 			local bulletType = wtype.bullet or 'dbot_physbullet'
 			local ent = ents.Create(bulletType)
 			ent:SetBulletCallback(bulletData.Callback)
-			ent:SetBulletData(bulletData)
+			local copied = table.Copy(bulletData)
+			copied.Num = 1
+			ent:SetBulletData(copied)
 			ent:SetInitialTrace(tr)
 			ent:SetPos(bulletData.Src)
 			ent:SetAngles(bulletData.Dir:Angle())
@@ -119,8 +131,9 @@ local function EntityFireBullets(self, bulletData)
 			ent:SetForce(bulletData.Force or 1)
 			ent:SetAttacker(bulletData.Attacker or self)
 			ent:SetInflictor(self)
-			ent:SetDamage(bulletData.Damage or 1)
-			ent:SetMaxDamage(bulletData.Damage or 1)
+			ent:SetInitialEntity(self)
+			ent:SetDamage(copied.Damage)
+			ent:SetMaxDamage(copied.Damage)
 			ent:SetReportedPosition(bulletData.Src)
 			ent:SetDamagePosition(nil)
 			ent:SetDamageType(DMG_BULLET)
