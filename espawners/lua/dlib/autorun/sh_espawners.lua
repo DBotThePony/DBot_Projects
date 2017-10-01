@@ -54,7 +54,7 @@ function DSpawnPoints_PopulateEntities()
 
 	local time = SysTime()
 	for k, v in pairs(scripted_ents.GetList()) do
-		if not v.t.IS_SPAWNER and not v.t.ClassName:find('spawner') and v.t.Spawnable then
+		if not v.t.IS_SPAWNER and not v.t.ClassName:find('spawner') and not v.t.ClassName:StartWith('dbot_es_') and v.t.Spawnable then
 			DSpawnPoints_CreateEntity(v.t.ClassName, v.t)
 		end
 	end
