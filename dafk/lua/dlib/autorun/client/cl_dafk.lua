@@ -100,7 +100,7 @@ local function Draw(ply)
 
 	local delta = (eyePos - lpos):Angle()
 	local ang = Angle(0, delta.y - 90, 90)
-	local text = 'AFK for: ' .. DAFK_NiceTime(time)
+	local text = 'AFK for: ' .. DLib.string.tformat(time)
 	local add = Vector(-surface.GetTextSize(text) * .05, 0, 0)
 	add:Rotate(ang)
 
@@ -266,7 +266,7 @@ local function PostDrawHUD()
 	end
 
 	local x, y = w / 2, 200
-	local str = DAFK_NiceTime(time)
+	local str = DLib.string.tformat(time)
 
 	local tX, tY = surface.GetTextSize('Away for')
 	local tX2, tY2 = surface.GetTextSize(str)
