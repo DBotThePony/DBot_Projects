@@ -118,6 +118,10 @@ function ENT:CalculateRicochetForce()
 	return self:CalculateForce()
 end
 
+function ENT:CalculateGravity()
+	return Vector(0, 0, -self:CalculateBulletForce() * 0.02)
+end
+
 function ENT:CalculateForce()
 	return math.max((math.max(self:GetForce(), 3) + 5) * 15 + math.max(5, self:GetDamage()) * 10 - math.min(4, self.ricochets) * 40 - math.min(8, self.penetrations) * 80, 200)
 end
@@ -206,7 +210,8 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 	local surfaceType = tr.MatType
 	local mult = (ricochetSurfaces[surfaceType] or 1) / 0.65
 	local mult2 = (ricochetSurfaces[surfaceType] or 1) ^ 2
-	local ricochetCond = type(hitent) ~= 'NPC' and
+	local ricochetCond = self:CanPenetrate() and
+		type(hitent) ~= 'NPC' and
 		type(hitent) ~= 'NextBot' and
 		type(hitent) ~= 'Player' and
 		(angDiff < -40 * mult or angDiff > 40 * mult) and
@@ -253,7 +258,7 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 
 	local penetratePower = math.min(self:GetPenetrationStrength() * mult2, 200)
 
-	if penetratePower >= 20 then
+	if self:CanPenetrate() and penetratePower >= 20 then
 		local trPen
 		local penCondition2 = IsValidEntity(hitent) and (type(hitent) == 'Player' or type(hitent) == 'NPC' or type(hitent) == 'NextBot')
 		
@@ -354,8 +359,6 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 	timer.Simple(0, function() self:Remove() end)
 end
 
-local GravityStrength = Vector(0, 0, -40)
-
 function ENT:Think()
 	if self.invalidBullet then return end
 
@@ -370,7 +373,7 @@ function ENT:Think()
 	self:UpdatePhys()
 
 	if not self.nGravityIgnore then
-		self.phys:ApplyForceCenter(GravityStrength)
+		self.phys:ApplyForceCenter(self:CalculateGravity())
 	end
 
 	self.nGravityIgnore = false
