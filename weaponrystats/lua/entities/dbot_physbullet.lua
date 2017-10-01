@@ -102,11 +102,11 @@ function ENT:GetPenetrationStrength()
 end
 
 function ENT:CalculateForce()
-	return math.max((math.max(self:GetForce(), 3) + 5) * 60 + math.min(100, self:GetDamage()) * 50 - math.min(4, self.ricochets) * 130, 200)
+	return math.max((math.max(self:GetForce(), 3) + 8) * 60 + math.max(5, self:GetDamage()) * 50 - math.min(4, self.ricochets) * 130, 200)
 end
 
 function ENT:UpdatePhys()
-	self.phys:SetVelocity(self:GetDirection() * self:CalculateForce() * self:GetDistance() / 10000)
+	self.phys:ApplyForceCenter(self:GetDirection() * self:CalculateForce() * self:GetDistance() / 10000)
 	self.phys:SetAngleDragCoefficient(0)
 end
 
@@ -234,7 +234,7 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 	timer.Simple(0, function() self:Remove() end)
 end
 
-local GravityStrength = Vector(0, 0, -20)
+local GravityStrength = Vector(0, 0, -70)
 
 function ENT:Think()
 	if self.invalidBullet then return end
@@ -247,7 +247,7 @@ function ENT:Think()
 		self:DoSetup()
 	end
 
-	--self:UpdatePhys()
+	self:UpdatePhys()
 
 	self.phys:ApplyForceCenter(GravityStrength)
 end
