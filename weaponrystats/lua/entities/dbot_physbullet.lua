@@ -110,7 +110,7 @@ function ENT:TraceForward()
 
 	local trData = {
 		start = pos,
-		endpos = pos + dir * 8,
+		endpos = pos + dir * 16,
 		filter = VALID_BULLETS
 	}
 
@@ -125,6 +125,7 @@ function ENT:DoSetup()
 	local ang = self:GetDirection():Angle()
 	ang:RotateAroundAxis(ang:Right(), 90)
 	self:SetAngles(ang)
+	self.phys:AddAngleVelocity(-self.phys:GetAngleVelocity())
 	self:UpdatePhys()
 end
 
@@ -150,7 +151,7 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 	if self.invalidBullet then return end
 	local normalAngle = normal:Angle()
 
-	local delta = tr.StartPos - tr.HitPos
+	local delta = self:GetPos() - tr.HitPos
 	delta:Normalize()
 	local dot = delta:Dot(tr.HitNormal)
 	local ang = math.deg(math.acos(dot))
@@ -164,7 +165,7 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 		(angDiff < -40 * mult or angDiff > 40 * mult) and
 		self.ricochets < 4
 
-	print(angDiff)
+	-- print(angDiff, delta, tr.HitNormal, tr.Entity, hitent)
 
 	if ricochetCond then
 		-- self.phys:SetVelocity(info.OurOldVelocity)
@@ -252,6 +253,11 @@ function ENT:PhysicsCollide(info, collider)
 	local hitpos = info.HitPos
 	local hitent = info.HitEntity
 	local tr = self:TraceForward()
+	
+	if IsValidEntity(hitent) then
+		hitent:SetVelocity(info.TheirOldVelocity)
+	end
+
 	self:OnHitObject(hitpos, normal, tr, hitent)
 end
 
