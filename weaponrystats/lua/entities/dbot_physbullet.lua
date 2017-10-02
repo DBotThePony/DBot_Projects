@@ -80,6 +80,17 @@ end)
 
 if CLIENT then return end
 
+function ENT:SetupBulletData(bulletData, firer)
+	self:SetPos(bulletData.Src)
+	self:SetAngles(bulletData.Dir:Angle())
+	self:SetDistance(bulletData.Distance)
+	self:SetForce(bulletData.Force or 1)
+	self:SetAttacker(bulletData.Attacker or firer)
+	self:SetDamage(bulletData.Damage)
+	self:SetMaxDamage(bulletData.Damage)
+	self:SetReportedPosition(bulletData.Src)
+end
+
 AccessorFunc(ENT, 'm_tr', 'InitialTrace')
 AccessorFunc(ENT, 'm_distance', 'Distance')
 AccessorFunc(ENT, 'm_initialEntity', 'InitialEntity')
@@ -133,7 +144,7 @@ function ENT:CalculateGravity()
 end
 
 function ENT:CalculateForce()
-	return math.max((math.max(self:GetForce(), 3) + 5) * 15 * self:GetSpeedModifier() + math.max(5, self:GetDamage()) * 10 * self:GetSpeedModifier() - math.min(4, self.ricochets) * 40 - math.min(8, self.penetrations) * 80, 200)
+	return math.max((math.max(self:GetForce(), 3) + 5) * 15 * self:GetSpeedModifier() + math.max(5, self:GetDamage()) * 10 * self:GetSpeedModifier() - math.min(4, self.ricochets) * 40 - math.min(8, self.penetrations) * 80, 400)
 end
 
 function ENT:UpdatePhys()

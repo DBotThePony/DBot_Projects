@@ -18,6 +18,7 @@ local weaponMeta = FindMetaTable('Weapon')
 local entMeta = FindMetaTable('Entity')
 local IN_CALL = false
 local ENABLE_PHYSICAL_BULLETS = CreateConVar('sv_physbullets', '1', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Enable physical bullets')
+local ENABLE_PHYSICAL_BULLETS_ALL = CreateConVar('sv_physbullets_all', '1', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Enable physical bullets for all entities')
 local PHYSICAL_SPREAD = CreateConVar('sv_physbullets_spread', '1', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Physical bullets spread multiplier')
 local DISABLE_TRACERS
 
@@ -51,9 +52,57 @@ local function EntityFireBullets(self, bulletData)
 		findOwner = self:GetOwner()
 	end
 
-	if not IsValid(findWeapon) or not IsValid(findOwner) then return end
-	local modif, wtype = findWeapon:GetWeaponModification(), findWeapon:GetWeaponType()
-	if not modif or not wtype then return end
+	bulletData.Attacker = IsValid(bulletData.Attacker) and bulletData.Attacker or self
+	bulletData.Spread = bulletData.Spread or Vector(0, 0, 0)
+	bulletData.Distance = bulletData.Distance or 56756
+	bulletData.Num = bulletData.Num or 1
+	bulletData.Force = bulletData.Force or 1
+	bulletData.Damage = bulletData.Damage or 1
+
+	local modif, wtype
+
+	if IsValid(findWeapon) and IsValid(findOwner) then
+		modif, wtype = findWeapon:GetWeaponModification(), findWeapon:GetWeaponType()
+	end
+
+	if not modif or not wtype then
+		if ENABLE_PHYSICAL_BULLETS:GetBool() and ENABLE_PHYSICAL_BULLETS_ALL:GetBool() and bulletData.Distance > 1024 then
+			for i = 1, bulletData.Num do
+				local spreadPos = DLib.util.randomVector(bulletData.Spread.x, bulletData.Spread.x, bulletData.Spread.y) * PHYSICAL_SPREAD:GetInt() * 0.65
+				
+				local trData = {
+					start = bulletData.Src,
+					endpos = bulletData.Src + (bulletData.Dir + spreadPos) * bulletData.Distance,
+					filter = self
+				}
+
+				local tr = util.TraceLine(trData)
+
+				local ent = ents.Create('dbot_physbullet')
+				ent:SetBulletCallback(bulletData.Callback)
+				local copied = table.Copy(bulletData)
+				copied.Num = 1
+				copied.Tracer = 0
+				ent:SetBulletData(copied)
+				ent:SetInitialTrace(tr)
+				ent:SetupBulletData(bulletData, self)
+				ent:SetDirection(bulletData.Dir + spreadPos)
+				ent:SetInflictor(self)
+				ent:SetInitialEntity(self)
+				ent:SetDamageType(DMG_BULLET)
+				ent:SetOwner(findOwner)
+				ent:Spawn()
+				ent:Activate()
+				ent:SetOwner(self)
+				ent:Think()
+			end
+
+			return false
+		end
+
+		return
+	end
+
 	findWeapon.weaponrystats_bullets = CurTime()
 
 	local hl2 = HL2WEP_MAPPING[findWeapon:GetClass()]
@@ -65,9 +114,9 @@ local function EntityFireBullets(self, bulletData)
 	do
 		local oldCallback = bulletData.Callback
 
-		bulletData.Spread = ((bulletData.Spread or Vector(0, 0, 0)) + wtype.scatterAdd) * wtype.scatter
-		bulletData.Distance = math.ceil((bulletData.Distance or 56756) * wtype.dist)
-		bulletData.Num = math.max(math.floor(((bulletData.Num or 1) + wtype.numAdd) * wtype.num), 1)
+		bulletData.Spread = (bulletData.Spread + wtype.scatterAdd) * wtype.scatter
+		bulletData.Distance = math.ceil(bulletData.Distance * wtype.dist)
+		bulletData.Num = math.max(math.floor((bulletData.Num + wtype.numAdd) * wtype.num), 1)
 
 		if wtype.isAdditional then
 			function bulletData.Callback(attacker, tr, dmginfo, ...)
@@ -82,8 +131,8 @@ local function EntityFireBullets(self, bulletData)
 				if oldCallback then oldCallback(attacker, tr, dmginfo, ...) end
 			end
 		else
-			bulletData.Damage = (bulletData.Damage or 1) * (wtype.damage or 1)
-			bulletData.Force = (bulletData.Force or 1) * (wtype.force or 1)
+			bulletData.Damage = bulletData.Damage * wtype.damage
+			bulletData.Force = bulletData.Force * wtype.force
 
 			function bulletData.Callback(attacker, tr, dmginfo, ...)
 				dmginfo:SetDamageType(bit.bor(dmginfo:GetDamageType(), wtype.dmgtype))
@@ -94,21 +143,17 @@ local function EntityFireBullets(self, bulletData)
 
 	bulletData.Damage = (bulletData.Damage or 1) * (modif.damage or 1)
 	bulletData.Force = (bulletData.Force or 1) * (modif.force or 1)
-	bulletData.Distance = bulletData.Distance or 56756
 
 	if CLIENT or not ENABLE_PHYSICAL_BULLETS:GetBool() or bulletData.Distance < 1024 then
 		if CLIENT and not DISABLE_TRACERS:GetBool() and bulletData.Distance > 1024 then return false end
 		return true
 	else
-		bulletData.Num = bulletData.Num or 1
-		bulletData.Spread = bulletData.Spread or Vector(0, 0, 0)
-
 		for i = 1, bulletData.Num do
 			local spreadPos = DLib.util.randomVector(bulletData.Spread.x, bulletData.Spread.x, bulletData.Spread.y) * PHYSICAL_SPREAD:GetInt() * 0.65
 			
 			local trData = {
 				start = bulletData.Src,
-				endpos = bulletData.Src + bulletData.Dir * bulletData.Distance,
+				endpos = bulletData.Src + (bulletData.Dir + spreadPos) * bulletData.Distance,
 				filter = self
 			}
 
@@ -125,16 +170,10 @@ local function EntityFireBullets(self, bulletData)
 			ent:SetSpeedModifier(modif.bulletSpeed * wtype.bulletSpeed)
 			ent:SetRicochetModifier(modif.bulletRicochet * wtype.bulletRicochet)
 			ent:SetPenetrationModifier(modif.bulletPenetration * wtype.bulletPenetration)
-			ent:SetPos(bulletData.Src)
-			ent:SetAngles(bulletData.Dir:Angle())
 			ent:SetDirection(bulletData.Dir + spreadPos)
-			ent:SetDistance(bulletData.Distance)
-			ent:SetForce(bulletData.Force or 1)
-			ent:SetAttacker(bulletData.Attacker or self)
+			ent:SetupBulletData(bulletData, self)
 			ent:SetInflictor(self)
 			ent:SetInitialEntity(self)
-			ent:SetDamage(copied.Damage)
-			ent:SetMaxDamage(copied.Damage)
 			ent:SetReportedPosition(bulletData.Src)
 			ent:SetDamagePosition(nil)
 			ent:SetDamageType(DMG_BULLET)
