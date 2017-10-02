@@ -53,7 +53,7 @@ local function EntityFireBullets(self, bulletData)
 
 	if not IsValid(findWeapon) or not IsValid(findOwner) then return end
 	local modif, wtype = findWeapon:GetWeaponModification(), findWeapon:GetWeaponType()
-	if not modif and not wtype then return end
+	if not modif or not wtype then return end
 	findWeapon.weaponrystats_bullets = CurTime()
 
 	local hl2 = HL2WEP_MAPPING[findWeapon:GetClass()]
@@ -62,7 +62,7 @@ local function EntityFireBullets(self, bulletData)
 		bulletData.PhysDamageType = hl2.dtype
 	end
 
-	if wtype then
+	do
 		local oldCallback = bulletData.Callback
 
 		bulletData.Spread = ((bulletData.Spread or Vector(0, 0, 0)) + wtype.scatterAdd) * wtype.scatter
@@ -92,11 +92,8 @@ local function EntityFireBullets(self, bulletData)
 		end
 	end
 
-	if modif then
-		bulletData.Damage = (bulletData.Damage or 1) * (modif.damage or 1)
-		bulletData.Force = (bulletData.Force or 1) * (modif.force or 1)
-	end
-
+	bulletData.Damage = (bulletData.Damage or 1) * (modif.damage or 1)
+	bulletData.Force = (bulletData.Force or 1) * (modif.force or 1)
 	bulletData.Distance = bulletData.Distance or 56756
 
 	if CLIENT or not ENABLE_PHYSICAL_BULLETS:GetBool() or bulletData.Distance < 1024 then
@@ -125,6 +122,9 @@ local function EntityFireBullets(self, bulletData)
 			copied.Tracer = 0
 			ent:SetBulletData(copied)
 			ent:SetInitialTrace(tr)
+			ent:SetSpeedModifier(modif.bulletSpeed * wtype.bulletSpeed)
+			ent:SetRicochetModifier(modif.bulletRicochet * wtype.bulletRicochet)
+			ent:SetPenetrationModifier(modif.bulletPenetration * wtype.bulletPenetration)
 			ent:SetPos(bulletData.Src)
 			ent:SetAngles(bulletData.Dir:Angle())
 			ent:SetDirection(bulletData.Dir + spreadPos)

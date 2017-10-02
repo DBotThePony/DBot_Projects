@@ -85,6 +85,9 @@ local function HUDPaint()
 	local dist = 1
 	local randomMin = 1
 	local randomMax = 1
+	local bulletSpeed = 1
+	local bulletRicochet = 1
+	local bulletPenetration = 1
 	local additional = false
 	local add = 0
 
@@ -102,6 +105,9 @@ local function HUDPaint()
 		scatter = scatter * modif.scatter
 		num = num * modif.num
 		dist = dist * modif.dist
+		bulletSpeed = bulletSpeed * modif.bulletSpeed
+		bulletRicochet = bulletRicochet * modif.bulletRicochet
+		bulletPenetration = bulletPenetration * modif.bulletPenetration
 		randomMin = randomMin * modif.randomMin
 		randomMax = randomMax * modif.randomMax
 		scatterAdd = scatterAdd + modif.scatterAdd
@@ -119,6 +125,9 @@ local function HUDPaint()
 		dist = dist * wtype.dist
 		randomMin = randomMin * wtype.randomMin
 		randomMax = randomMax * wtype.randomMax
+		bulletSpeed = bulletSpeed * wtype.bulletSpeed
+		bulletRicochet = bulletRicochet * wtype.bulletRicochet
+		bulletPenetration = bulletPenetration * wtype.bulletPenetration
 		scatterAdd = scatterAdd + wtype.scatterAdd
 		numAdd = numAdd + wtype.numAdd
 
@@ -191,6 +200,21 @@ local function HUDPaint()
 
 	if dist ~= 1 then
 		doDrawText(string.format('%+i%% bullet travel distance', dist * 100 - 100), x, y, STATS_COLOR)
+		y = y + 15
+	end
+
+	if bulletSpeed ~= 1 then
+		doDrawText(string.format('%+i%% bullet travel speed', bulletSpeed * 100 - 100), x, y, STATS_COLOR)
+		y = y + 15
+	end
+
+	if bulletRicochet ~= 1 then
+		doDrawText(string.format('%+i%% bullet ricochet force', bulletRicochet * 100 - 100), x, y, STATS_COLOR)
+		y = y + 15
+	end
+
+	if bulletPenetration ~= 1 then
+		doDrawText(string.format('%+i%% bullet penetration force', bulletPenetration * 100 - 100), x, y, STATS_COLOR)
 		y = y + 15
 	end
 end

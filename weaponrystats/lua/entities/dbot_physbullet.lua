@@ -60,6 +60,10 @@ function ENT:Initialize()
 	self.setup = false
 	self.dissapearTime = CurTime() + 10
 	self:SetCustomCollisionCheck(true)
+	self.m_modifSpeed = self.m_modifSpeed or 1
+	self.m_modifPenet = self.m_modifPenet or 1
+	self.m_modifRicoc = self.m_modifRicoc or 1
+	self.m_modifVelocity = self.m_modifVelocity or Vector(0, 0, 0)
 end
 
 hook.Add('PhysgunPickup', 'WeaponryStats.Bullets', function(ply, ent)
@@ -92,6 +96,8 @@ AccessorFunc(ENT, 'm_damagePosition', 'DamagePosition')
 AccessorFunc(ENT, 'm_damageType', 'DamageType')
 
 AccessorFunc(ENT, 'm_modifSpeed', 'SpeedModifier')
+AccessorFunc(ENT, 'm_modifPenet', 'PenetrationModifier')
+AccessorFunc(ENT, 'm_modifRicoc', 'RicochetModifier')
 AccessorFunc(ENT, 'm_modifVelocity', 'InitialVelocity')
 
 function ENT:CanRicochet()
@@ -111,7 +117,7 @@ function ENT:GetRicochetDamage()
 end
 
 function ENT:GetPenetrationStrength()
-	return self:CalculateForce() / 32
+	return self:GetPenetrationModifier() * self:CalculateForce() / 32
 end
 
 function ENT:CalculateBulletForce()
@@ -119,7 +125,7 @@ function ENT:CalculateBulletForce()
 end
 
 function ENT:CalculateRicochetForce()
-	return self:CalculateForce()
+	return self:CalculateForce() * self:GetRicochetModifier()
 end
 
 function ENT:CalculateGravity()
@@ -127,7 +133,7 @@ function ENT:CalculateGravity()
 end
 
 function ENT:CalculateForce()
-	return math.max((math.max(self:GetForce(), 3) + 5) * 15 + math.max(5, self:GetDamage()) * 10 - math.min(4, self.ricochets) * 40 - math.min(8, self.penetrations) * 80, 200)
+	return math.max((math.max(self:GetForce(), 3) + 5) * 15 * self:GetSpeedModifier() + math.max(5, self:GetDamage()) * 10 * self:GetSpeedModifier() - math.min(4, self.ricochets) * 40 - math.min(8, self.penetrations) * 80, 200)
 end
 
 function ENT:UpdatePhys()
@@ -158,7 +164,7 @@ end
 
 function ENT:TraceForward()
 	cleanup()
-	
+
 	local pos = self:GetPos()
 	local dir = self:GetDirection()
 
@@ -190,6 +196,14 @@ function ENT:GetFirer()
 	return isValid(self:GetInitialEntity()) or isValid(self:GetInflictor()) or isValid(self:GetAttacker()) or self
 end
 
+function ENT:GetRealAttacker()
+	return isValid(self:GetAttacker()) or isValid(self:GetInflictor()) or isValid(self:GetFirer()) or self
+end
+
+function ENT:DamageInfo()
+	return DamageInfo():Receive(self)
+end
+
 local ricochetSurfaces = {
 	[MAT_COMPUTER] = 1.5,
 	[MAT_CONCRETE] = 0.85,
@@ -212,6 +226,10 @@ local ricochetSurfaces = {
 	[MAT_FOLIAGE] = 5,
 	[MAT_WARPSHIELD] = 0.25,
 }
+
+function ENT:OnSurfaceHit(tr)
+
+end
 
 function ENT:OnHitObject(hitpos, normal, tr, hitent)
 	if self.invalidBullet then return end
@@ -250,7 +268,7 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 			local inflictor = self:GetInflictor()
 			cp.Callback = function(attacker, tr, dmginfo)
 				if IsValid(inf) then dmginfo:SetInflictor(inflictor) end
-				
+
 				if cp.PhysDamageType then
 					dmginfo:SetDamageType(cp.PhysDamageType)
 				end
@@ -258,6 +276,7 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 
 			weaponrystats.SKIP_NEXT = true
 			self:GetFirer():weaponrystats_FireBullets(cp)
+			self:OnSurfaceHit(tr)
 
 			self.ricochets = self.ricochets + 1
 			self.setup = false
@@ -274,7 +293,7 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 	if self:CanPenetrate() and penetratePower >= 40 then
 		local trPen
 		local penCondition2 = IsValidEntity(hitent) and (type(hitent) == 'Player' or type(hitent) == 'NPC' or type(hitent) == 'NextBot')
-		
+
 		if penCondition2 then
 			local filter = table.qcopy(VALID_BULLETS)
 			table.insert(filter, hitent)
@@ -319,10 +338,10 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 			cp.Dir = self:GetDirection()
 			cp.Damage = self:GetFinalDamage()
 			local inflictor = self:GetInflictor()
-			
+
 			cp.Callback = function(attacker, tr, dmginfo)
 				if IsValid(inf) then dmginfo:SetInflictor(inflictor) end
-				
+
 				if cp.PhysDamageType then
 					dmginfo:SetDamageType(cp.PhysDamageType)
 				end
@@ -343,18 +362,15 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 				self:weaponrystats_FireBullets(cp)
 			end
 
+			self:OnSurfaceHit(newTr)
+
 			weaponrystats.SKIP_NEXT = true
 			self:GetFirer():weaponrystats_FireBullets(cp)
 
 			self.penetrations = self.penetrations + 1
 			self.setup = false
 
-			-- hack instead of penetration calculation loop
-			--if not IsValidEntity(newTr.Entity) then
-				self.nextpos = incomingPos
-			--else
-			--	self.nextpos = spos - self:GetDirection() * 32
-			--end
+			self.nextpos = incomingPos
 
 			self.nPenetrationOfNPC = penCondition2
 
@@ -363,22 +379,15 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 	end
 
 	self:UpdateRules()
-	-- local dmginfo = DamageInfo():Receive(self)
-
-	-- if self.m_callback and self:GetAttacker() ~= self then
-	-- 	self.m_callback(self:GetAttacker(), tr, dmginfo)
-	-- end
-
-	-- if IsValid(hitent) then
-	-- 	hitent:TakeDamageInfo(dmginfo)
-	-- end
 
 	local cp = table.Copy(self:GetBulletData())
-	cp.Src = self:GetPos()
+	cp.Src = spos
 	cp.Dir = self:GetDirection()
 	cp.Damage = self:GetFinalDamage()
 	weaponrystats.SKIP_NEXT = true
 	self:GetFirer():weaponrystats_FireBullets(cp)
+
+	self:OnSurfaceHit(tr)
 
 	self.invalidBullet = true
 
