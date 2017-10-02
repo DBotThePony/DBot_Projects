@@ -43,7 +43,8 @@ return {
 		numAdd = 0,
 		quality = 2,
 		speed = 1,
-		order = 10
+		order = 10,
+		bullet = 'dbot_bullet_shock'
 	},
 
 	watts = {
@@ -59,7 +60,8 @@ return {
 		numAdd = 0,
 		quality = 5,
 		speed = 1.3,
-		order = 80
+		order = 80,
+		bullet = 'dbot_bullet_shock'
 	},
 
 	choke = {
@@ -620,5 +622,21 @@ return {
 		quality = 5,
 		speed = 1.3,
 		order = 60
+	},
+
+	velocity = {
+		name = 'Hight Velocity Bullets',
+		dmgtype = DMG_NEVERGIB + DMG_SLASH,
+		isAdditional = false,
+		damage = 1.8,
+		clip = 0.9,
+		scatter = 0.4,
+		num = 1,
+		numAdd = 0,
+		force = 8,
+		quality = 6,
+		speed = 1.1,
+		order = 60,
+		bullet = 'dbot_bullet_high'
 	},
 }

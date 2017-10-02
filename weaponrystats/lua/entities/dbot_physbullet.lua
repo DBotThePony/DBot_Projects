@@ -201,7 +201,11 @@ function ENT:GetRealAttacker()
 end
 
 function ENT:DamageInfo()
-	return DamageInfo():Receive(self)
+	self:UpdateRules()
+	local dmginfo = DamageInfo():Receive(self)
+	dmginfo:SetDamage(self:GetFinalDamage())
+	dmginfo:SetDamageType(DMG_BULLET)
+	return dmginfo
 end
 
 local ricochetSurfaces = {
@@ -227,7 +231,7 @@ local ricochetSurfaces = {
 	[MAT_WARPSHIELD] = 0.25,
 }
 
-function ENT:OnSurfaceHit(tr)
+function ENT:OnSurfaceHit(tr, guessPos)
 
 end
 
@@ -276,7 +280,7 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 
 			weaponrystats.SKIP_NEXT = true
 			self:GetFirer():weaponrystats_FireBullets(cp)
-			self:OnSurfaceHit(tr)
+			self:OnSurfaceHit(tr, tr.HitPos + ricochetDir * 12)
 
 			self.ricochets = self.ricochets + 1
 			self.setup = false
@@ -362,7 +366,7 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 				self:weaponrystats_FireBullets(cp)
 			end
 
-			self:OnSurfaceHit(newTr)
+			self:OnSurfaceHit(newTr, incomingPos)
 
 			weaponrystats.SKIP_NEXT = true
 			self:GetFirer():weaponrystats_FireBullets(cp)
@@ -387,7 +391,7 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 	weaponrystats.SKIP_NEXT = true
 	self:GetFirer():weaponrystats_FireBullets(cp)
 
-	self:OnSurfaceHit(tr)
+	self:OnSurfaceHit(tr, tr.HitPos + tr.HitNormal * 3)
 
 	self.invalidBullet = true
 
