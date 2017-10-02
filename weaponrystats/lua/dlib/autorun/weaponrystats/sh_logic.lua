@@ -40,7 +40,8 @@ local function EntityFireBullets(self, bulletData)
 
 	if self.IS_BULLET then return end
 
-	if type(self) ~= 'Weapon' and type(bulletData.Attacker) == 'Player' then return end
+	-- hl2 weapons fuckedup
+	--if type(self) ~= 'Weapon' and type(bulletData.Attacker) == 'Player' then return end
 
 	local findWeapon, findOwner
 
