@@ -40,6 +40,7 @@ end
 function ENT:Initialize()
 	table.insert(VALID_BULLETS, self)
 	self:SetModel('models/ryu-gi/effect_props/incendiary/bullet_tracer.mdl')
+	self:SetSkin(7)
 
 	if CLIENT then
 		self:SetOwner(LocalPlayer())
@@ -89,6 +90,9 @@ AccessorFunc(ENT, 'm_maxDamage', 'MaxDamage')
 AccessorFunc(ENT, 'm_reportedPosiotion', 'ReportedPosition')
 AccessorFunc(ENT, 'm_damagePosition', 'DamagePosition')
 AccessorFunc(ENT, 'm_damageType', 'DamageType')
+
+AccessorFunc(ENT, 'm_modifSpeed', 'SpeedModifier')
+AccessorFunc(ENT, 'm_modifVelocity', 'InitialVelocity')
 
 function ENT:CanRicochet()
 	return true
@@ -189,11 +193,24 @@ end
 local ricochetSurfaces = {
 	[MAT_COMPUTER] = 1.5,
 	[MAT_CONCRETE] = 0.85,
-	[MAT_GRATE] = 1,
+	[MAT_GRATE] = 2,
+	[MAT_EGGSHELL] = 1.5,
 	[MAT_METAL] = 0.5,
+	[MAT_CLIP] = 0.5,
+	[MAT_VENT] = 0.75,
 	[MAT_DIRT] = 2,
 	[MAT_SAND] = 1.75,
 	[MAT_TILE] = 1,
+	[MAT_DEFAULT] = 3,
+	[MAT_FLESH] = 3.5,
+	[MAT_BLOODYFLESH] = 3,
+	[MAT_ANTLION] = 4,
+	[MAT_ALIENFLESH] = 3.5,
+	[MAT_PLASTIC] = 3.5,
+	[MAT_SNOW] = 3.5,
+	[MAT_WOOD] = 3,
+	[MAT_FOLIAGE] = 5,
+	[MAT_WARPSHIELD] = 0.25,
 }
 
 function ENT:OnHitObject(hitpos, normal, tr, hitent)
@@ -210,20 +227,16 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 	local surfaceType = tr.MatType
 	local mult = (ricochetSurfaces[surfaceType] or 1) / 0.65
 	local mult2 = (ricochetSurfaces[surfaceType] or 1) ^ 2
-	local ricochetCond = self:CanPenetrate() and
+	local ricochetCond = self:CanRicochet() and
 		type(hitent) ~= 'NPC' and
 		type(hitent) ~= 'NextBot' and
 		type(hitent) ~= 'Player' and
 		(angDiff < -40 * mult or angDiff > 40 * mult) and
 		self.ricochets < 4
 
-	-- print(angDiff, delta, tr.HitNormal, tr.Entity, hitent)
-
 	if ricochetCond then
-		-- self.phys:SetVelocity(info.OurOldVelocity)
-
 		local mForce = self:CalculateRicochetForce()
-		local canRicochet = ricochetSurfaces[surfaceType] and mForce / ricochetSurfaces[surfaceType] >= 500
+		local canRicochet = ricochetSurfaces[surfaceType] and mForce / ricochetSurfaces[surfaceType] >= 350
 
 		if canRicochet then
 			local ang2 = delta:Angle()
@@ -256,9 +269,9 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 		end
 	end
 
-	local penetratePower = math.min(self:GetPenetrationStrength() * mult2, 200)
+	local penetratePower = math.min(self:GetPenetrationStrength() * mult2 * 3, 200)
 
-	if self:CanPenetrate() and penetratePower >= 20 then
+	if self:CanPenetrate() and penetratePower >= 40 then
 		local trPen
 		local penCondition2 = IsValidEntity(hitent) and (type(hitent) == 'Player' or type(hitent) == 'NPC' or type(hitent) == 'NextBot')
 		
@@ -286,6 +299,19 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 		end
 
 		local newTr = util.TraceLine(trPen)
+		local npcfix = false
+
+		-- nobody behind us
+		if penCondition2 and newTr.Fraction == 1 then
+			trPen = {
+				start = hitpos + self:GetDirection() * penetratePower / 2,
+				endpos = hitpos - self:GetDirection() * 5,
+				filter = VALID_BULLETS
+			}
+
+			newTr = util.TraceLine(trPen)
+			npcfix = true
+		end
 
 		if newTr.Fraction >= 0.05 and newTr.Fraction ~= 1 then
 			local cp = table.Copy(self:GetBulletData())
@@ -304,7 +330,7 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 
 			local incomingPos = newTr.HitPos + self:GetDirection() * 10
 
-			if penCondition2 then
+			if penCondition2 and not npcfix then
 				incomingPos = spos + self:GetDirection() * 3
 			end
 
