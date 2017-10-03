@@ -30,6 +30,13 @@ weaponrystats.SKIP_NEXT = false
 
 local HL2WEP_MAPPING = DLib.hl2wdata
 
+local perEntityBullets = {
+	weapon_357 = 'dbot_bullet_357',
+	weapon_ar2 = 'dbot_bullet_pulse',
+	npc_turret_floor = 'dbot_bullet_combined',
+	weapon_shotgun = 'dbot_bullet_capercaillie',
+}
+
 local function EntityFireBullets(self, bulletData)
 	if IN_CALL then return end
 
@@ -41,19 +48,39 @@ local function EntityFireBullets(self, bulletData)
 	if self.IS_BULLET then return end
 
 	-- hl2 weapons fuckedup
-	if (type(self) ~= 'Weapon' and type(self) ~= 'Player') and type(bulletData.Attacker) == 'Player' then return end
+	-- if (type(self) ~= 'Weapon' and type(self) ~= 'Player') and type(bulletData.Attacker) == 'Player' then return end
 
 	local findWeapon, findOwner
 
-	if type(self) == 'Player' then
+	bulletData.Attacker = IsValid(bulletData.Attacker) and bulletData.Attacker or self
+
+	if type(self) == 'Player' or type(self) == 'NPC' then
 		findOwner = self
 		findWeapon = self:GetActiveWeapon()
+
+		if not IsValid(findWeapon) then
+			findWeapon = findOwner
+		end
 	elseif type(self) == 'Weapon' then
 		findWeapon = self
 		findOwner = self:GetOwner()
+	elseif type(bulletData.Attacker) == 'Player' or type(bulletData.Attacker) == 'NPC' then
+		findOwner = bulletData.Attacker
+
+		if type(self) == 'Entity' or self == bulletData.Attacker then
+			findWeapon = self
+		else
+			findWeapon = bulletData.Attacker:GetActiveWeapon()
+
+			if not IsValid(findWeapon) then
+				findWeapon = findOwner
+			end
+		end
+	else
+		findWeapon = self
+		findOwner = self
 	end
 
-	bulletData.Attacker = IsValid(bulletData.Attacker) and bulletData.Attacker or self
 	bulletData.Spread = bulletData.Spread or Vector(0, 0, 0)
 	bulletData.Distance = bulletData.Distance or 56756
 	bulletData.Num = bulletData.Num or 1
@@ -62,12 +89,14 @@ local function EntityFireBullets(self, bulletData)
 
 	local modif, wtype
 
-	if IsValid(findWeapon) and IsValid(findOwner) then
+	if IsValid(findWeapon) and IsValid(findOwner) and type(findWeapon) == 'Weapon' then
 		modif, wtype = findWeapon:GetWeaponModification(), findWeapon:GetWeaponType()
 	end
 
 	if not modif or not wtype then
 		if ENABLE_PHYSICAL_BULLETS:GetBool() and ENABLE_PHYSICAL_BULLETS_ALL:GetBool() and bulletData.Distance > 1024 then
+			if CLIENT then return false end
+
 			for i = 1, bulletData.Num do
 				local spreadPos = DLib.util.randomVector(bulletData.Spread.x, bulletData.Spread.x, bulletData.Spread.y) * PHYSICAL_SPREAD:GetInt() * 0.65
 				
@@ -79,7 +108,7 @@ local function EntityFireBullets(self, bulletData)
 
 				local tr = util.TraceLine(trData)
 
-				local ent = ents.Create('dbot_physbullet')
+				local ent = ents.Create(perEntityBullets[findWeapon:GetClass()] or 'dbot_physbullet')
 				ent:SetBulletCallback(bulletData.Callback)
 				local copied = table.Copy(bulletData)
 				copied.Num = 1
@@ -161,6 +190,10 @@ local function EntityFireBullets(self, bulletData)
 			local tr = util.TraceLine(trData)
 
 			local bulletType = wtype.bullet or 'dbot_physbullet'
+			if bulletType == 'dbot_physbullet' then
+				bulletType = perEntityBullets[findWeapon:GetClass()] or 'dbot_physbullet'
+			end
+
 			local ent = ents.Create(bulletType)
 			ent:SetBulletCallback(bulletData.Callback)
 			local copied = table.Copy(bulletData)

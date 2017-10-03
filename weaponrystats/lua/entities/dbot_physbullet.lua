@@ -50,13 +50,14 @@ function ENT:Initialize()
 		return
 	end
 
-	self:PhysicsInitSphere(1)
+	self:PhysicsInitSphere(4)
 	self.phys = self:GetPhysicsObject()
 	self.ricochets = 0
 	self.penetrations = 0
 	self.phys:EnableDrag(false)
 	self.phys:EnableMotion(true)
 	self.phys:EnableGravity(false)
+	self.phys:SetMass(1)
 	self.setup = false
 	self.dissapearTime = CurTime() + 10
 	self:SetCustomCollisionCheck(true)
