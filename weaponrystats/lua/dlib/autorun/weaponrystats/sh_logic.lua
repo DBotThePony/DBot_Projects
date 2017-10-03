@@ -105,6 +105,13 @@ local function EntityFireBullets(self, bulletData)
 
 	if IsValid(findWeapon) and IsValid(findOwner) and type(findWeapon) == 'Weapon' then
 		modif, wtype = findWeapon:GetWeaponModification(), findWeapon:GetWeaponType()
+
+		local hl2 = HL2WEP_MAPPING[findWeapon:GetClass()]
+
+		if hl2 then
+			bulletData.Damage = hl2.damage
+			bulletData.PhysDamageType = hl2.dtype
+		end
 	end
 
 	if not modif or not wtype then
@@ -148,12 +155,6 @@ local function EntityFireBullets(self, bulletData)
 	end
 
 	findWeapon.weaponrystats_bullets = CurTime()
-
-	local hl2 = HL2WEP_MAPPING[findWeapon:GetClass()]
-	if hl2 then
-		bulletData.Damage = hl2.damage
-		bulletData.PhysDamageType = hl2.dtype
-	end
 
 	do
 		local oldCallback = bulletData.Callback
