@@ -376,6 +376,9 @@ local function OnNPCKilled(npc, attacker, inflictor)
 		attacker:GetActiveWeapon() or
 		inflictor
 
+	attacker = IsValid(attacker) and attacker or npc
+	inflictor = IsValid(inflictor) and inflictor or attacker
+
 	GenericDeath(npc, attacker, inflictor, npc.TDeaths_LatestDamage and table.sortedFind(npc.TDeaths_LatestDamage, damagePriority, DMG_GENERIC) or DMG_GENERIC, inflictor2)
 end
 
