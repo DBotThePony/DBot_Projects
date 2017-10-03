@@ -137,7 +137,7 @@ local function EntityFireBullets(self, bulletData)
 				ent:SetOwner(findOwner)
 				ent:Spawn()
 				ent:Activate()
-				ent:SetOwner(self)
+				ent:SetOwner(findOwner)
 				ent:Think()
 			end
 
@@ -228,7 +228,7 @@ local function EntityFireBullets(self, bulletData)
 			ent:SetOwner(findOwner)
 			ent:Spawn()
 			ent:Activate()
-			ent:SetOwner(self)
+			ent:SetOwner(findOwner)
 			ent:Think()
 		end
 
