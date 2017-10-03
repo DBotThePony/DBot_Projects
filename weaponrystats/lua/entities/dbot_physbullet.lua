@@ -149,6 +149,8 @@ function ENT:CalculateForce()
 end
 
 function ENT:UpdatePhys()
+	if not self.phys:IsValid() then return end
+
 	if not self.wakeOnNext then
 		self.phys:AddAngleVelocity(-self.phys:GetAngleVelocity())
 		if self.phys:GetAngleVelocity():Length() > 1 then
@@ -423,7 +425,7 @@ function ENT:Think()
 
 	self:UpdatePhys()
 
-	if not self.nGravityIgnore then
+	if not self.nGravityIgnore and self.phys:IsValid() then
 		self.phys:ApplyForceCenter(self:CalculateGravity())
 	end
 

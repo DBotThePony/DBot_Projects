@@ -15,7 +15,7 @@
 
 AddCSLuaFile()
 
-ENT.PrintName = 'Pule Rifle Bullet'
+ENT.PrintName = 'Pusle Rifle Bullet'
 ENT.Author = 'DBot'
 ENT.Spawnable = false
 ENT.AdminSpawnable = false

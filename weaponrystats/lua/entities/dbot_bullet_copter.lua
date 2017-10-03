@@ -15,7 +15,7 @@
 
 AddCSLuaFile()
 
-ENT.PrintName = 'High Velocity Bullet'
+ENT.PrintName = 'Hight Velocity Pulse Bullet'
 ENT.Author = 'DBot'
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
@@ -27,21 +27,14 @@ DEFINE_BASECLASS('dbot_physbullet')
 
 function ENT:Initialize()
 	BaseClass.Initialize(self)
-	self:SetSkin(0)
-end
-
-function ENT:CanRicochet()
-	return false
+	self:SetSkin(9)
+	if CLIENT then self:SetModelScale(3) end
 end
 
 function ENT:GetPenetrationStrength()
-	return self:CalculateForce() / 48
+	return self:CalculateForce() / 40
 end
 
 function ENT:CalculateForce()
-	return BaseClass.CalculateForce(self) * 3
-end
-
-function ENT:CalculateGravity()
-	return Vector(0, 0, 0)
+	return BaseClass.CalculateForce(self) * 1.8
 end

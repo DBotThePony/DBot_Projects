@@ -39,6 +39,9 @@ local perEntityBullets = {
 	weapon_ar2 = 'dbot_bullet_pulse',
 	npc_turret_floor = 'dbot_bullet_combined',
 	npc_turret_ceiling = 'dbot_bullet_combined',
+	npc_combinegunship = 'dbot_bullet_copter',
+	npc_helicopter = 'dbot_bullet_copter',
+	npc_strider = 'dbot_bullet_copter',
 	weapon_shotgun = 'dbot_bullet_capercaillie',
 }
 
@@ -88,7 +91,7 @@ local function EntityFireBullets(self, bulletData)
 
 	local sClass = findOwner:GetClass()
 
-	if NO_TURRET_SPREAD:GetBool() and (sClass == 'npc_turret_floor' or sClass == 'npc_turret_ceiling') then
+	if SERVER and NO_TURRET_SPREAD:GetBool() and (sClass == 'npc_turret_floor' or sClass == 'npc_turret_ceiling') then
 		bulletData.Spread = Vector(0, 0, 0)
 	end
 
