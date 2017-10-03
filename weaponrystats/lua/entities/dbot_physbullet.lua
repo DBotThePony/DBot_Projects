@@ -39,6 +39,20 @@ end
 
 function ENT:Initialize()
 	table.insert(VALID_BULLETS, self)
+
+	if #VALID_BULLETS >= 800 then
+		for i, ent in ipairs(VALID_BULLETS) do
+			if IsValidEntity(ent) then
+				ent:Remove()
+			end
+		end
+
+		VALID_BULLETS = {}
+
+		error('WARNING - >800 bullets were created; Possibly infinite recursion. Tell addon author(s) of weapon to fix this issue')
+		return
+	end
+
 	self:SetModel('models/ryu-gi/effect_props/incendiary/bullet_tracer.mdl')
 	self:SetSkin(7)
 
