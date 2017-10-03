@@ -20,10 +20,14 @@ local IN_CALL = false
 local ENABLE_PHYSICAL_BULLETS = CreateConVar('sv_physbullets', '1', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Enable physical bullets')
 local ENABLE_PHYSICAL_BULLETS_ALL = CreateConVar('sv_physbullets_all', '1', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Enable physical bullets for all entities')
 local PHYSICAL_SPREAD = CreateConVar('sv_physbullets_spread', '1', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Physical bullets spread multiplier')
-local DISABLE_TRACERS
+local DISABLE_TRACERS, NO_TURRET_SPREAD
 
 if CLIENT then
 	DISABLE_TRACERS = CreateConVar('sv_physbullets_tracers', '0', {FCVAR_ARCHIVE}, 'Enable default tracers for bullets')
+end
+
+if SERVER then
+	NO_TURRET_SPREAD = CreateConVar('sv_turret_nospread', '1', {FCVAR_ARCHIVE}, 'No spread of turret bullets')
 end
 
 weaponrystats.SKIP_NEXT = false
@@ -34,6 +38,7 @@ local perEntityBullets = {
 	weapon_357 = 'dbot_bullet_357',
 	weapon_ar2 = 'dbot_bullet_pulse',
 	npc_turret_floor = 'dbot_bullet_combined',
+	npc_turret_ceiling = 'dbot_bullet_combined',
 	weapon_shotgun = 'dbot_bullet_capercaillie',
 }
 
@@ -81,6 +86,12 @@ local function EntityFireBullets(self, bulletData)
 		findOwner = self
 	end
 
+	local sClass = findOwner:GetClass()
+
+	if NO_TURRET_SPREAD:GetBool() and (sClass == 'npc_turret_floor' or sClass == 'npc_turret_ceiling') then
+		bulletData.Spread = Vector(0, 0, 0)
+	end
+
 	bulletData.Spread = bulletData.Spread or Vector(0, 0, 0)
 	bulletData.Distance = bulletData.Distance or 56756
 	bulletData.Num = bulletData.Num or 1
@@ -99,7 +110,7 @@ local function EntityFireBullets(self, bulletData)
 
 			for i = 1, bulletData.Num do
 				local spreadPos = DLib.util.randomVector(bulletData.Spread.x, bulletData.Spread.x, bulletData.Spread.y) * PHYSICAL_SPREAD:GetInt() * 0.65
-				
+
 				local trData = {
 					start = bulletData.Src,
 					endpos = bulletData.Src + (bulletData.Dir + spreadPos) * bulletData.Distance,
@@ -180,7 +191,7 @@ local function EntityFireBullets(self, bulletData)
 	else
 		for i = 1, bulletData.Num do
 			local spreadPos = DLib.util.randomVector(bulletData.Spread.x, bulletData.Spread.x, bulletData.Spread.y) * PHYSICAL_SPREAD:GetInt() * 0.65
-			
+
 			local trData = {
 				start = bulletData.Src,
 				endpos = bulletData.Src + (bulletData.Dir + spreadPos) * bulletData.Distance,

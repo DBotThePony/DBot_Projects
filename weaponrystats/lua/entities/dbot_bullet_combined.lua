@@ -34,6 +34,10 @@ function ENT:GetPenetrationStrength()
 	return self:CalculateForce() / 24
 end
 
+function ENT:GetFinalDamage()
+	return BaseClass.GetFinalDamage(self) * 2
+end
+
 function ENT:CalculateForce()
 	return BaseClass.CalculateForce(self) * 1.5
 end
