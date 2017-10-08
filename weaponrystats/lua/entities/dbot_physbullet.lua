@@ -375,7 +375,7 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 
 		if newTr.Fraction >= 0.05 and newTr.Fraction ~= 1 then
 			local cp = table.Copy(self:GetBulletData())
-			cp.Src = spos
+			cp.Src = spos + self:GetDirection() * 3
 			cp.Dir = self:GetDirection()
 			cp.Damage = self:GetFinalDamage()
 			local inflictor = self:GetInflictor()
@@ -387,6 +387,8 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 					dmginfo:SetDamageType(cp.PhysDamageType)
 				end
 			end
+
+			table.insert(cp.IgnoreEntity, self)
 
 			local incomingPos = newTr.HitPos + self:GetDirection() * 10
 
@@ -423,10 +425,10 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 	self:UpdateRules()
 
 	local cp = table.Copy(self:GetBulletData())
-	cp.Src = spos
+	cp.Src = spos + self:GetDirection() * 2
 	cp.Dir = self:GetDirection()
 	cp.Damage = self:GetFinalDamage()
-	table.insert(cp.IgnoreEntity, self)
+	cp.IgnoreEntity = self
 	weaponrystats.SKIP_NEXT = true
 	self:GetFirer():weaponrystats_FireBullets(cp)
 

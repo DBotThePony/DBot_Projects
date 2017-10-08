@@ -46,7 +46,7 @@ local function EntityTakeDamage(self, dmginfo)
 	end
 
 	if type(attacker) == 'Player' then
-		weapon.wps_dps = weapon.wps_dps or DLib.Average(10, 5)
+		weapon.wps_dps = weapon.wps_dps or DLib.Collector(200, 1)
 		local avg = weapon.wps_dps
 		avg.lastSend = avg.lastSend or 0
 
@@ -57,7 +57,7 @@ local function EntityTakeDamage(self, dmginfo)
 		end
 
 		if avg.lastSend < CurTime() then
-			avg.lastSend = CurTime() + 1
+			avg.lastSend = CurTime() + 0.2
 		end
 
 		weapon:SetDLibVar('wps_dps', math.ceil(avg:calculate()))
