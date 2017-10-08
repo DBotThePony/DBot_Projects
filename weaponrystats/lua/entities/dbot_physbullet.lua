@@ -185,7 +185,7 @@ function ENT:UpdatePhys()
 	end
 
 	if not self.nPenetrationOfNPC then
-		self.phys:ApplyForceCenter(self:GetDirection() * self:CalculateBulletForce() * self:GetDistance() / 10000)
+		self.phys:ApplyForceCenter(self:GetDirection() * self:CalculateBulletForce() * self:GetDistance() / 10000 + self:GetInitialVelocity())
 	else
 		self.phys:SetVelocity(self:GetDirection() * 10)
 		self.nGravityIgnore = true
