@@ -15,7 +15,7 @@
 
 AddCSLuaFile()
 
-ENT.PrintName = 'Shocking Bullet'
+ENT.PrintName = 'Heated Bullet'
 ENT.Author = 'DBot'
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
@@ -27,23 +27,27 @@ DEFINE_BASECLASS('dbot_physbullet')
 
 function ENT:Initialize()
 	BaseClass.Initialize(self)
-	self:SetSkin(4)
-	self.m_shockRadius = self.m_shockRadius or 70
+	self:SetSkin(1)
+	self.m_damageRadius = self.m_damageRadius or 65
+end
+
+function ENT:CanRicochet()
+	return false
 end
 
 function ENT:GetPenetrationStrength()
-	return self:CalculateForce() / 54
+	return self:CalculateForce() / 20
 end
 
 function ENT:CalculateForce()
-	return BaseClass.CalculateForce(self) * 1.2
+	return BaseClass.CalculateForce(self) * 1.1
 end
 
-AccessorFunc(ENT, 'm_shockRadius', 'ShockRadius')
+AccessorFunc(ENT, 'm_damageRadius', 'DamageRadius')
 
 function ENT:OnSurfaceHit(tr, guessPos)
 	local dmginfo = self:DamageInfo()
-	dmginfo:SetDamageType(DMG_SHOCK)
-	dmginfo:ScaleDamage(0.4)
-	util.BlastDamageInfo(dmginfo, guessPos, self:GetShockRadius())
+	dmginfo:SetDamageType(DMG_PLASMA + DMG_BURN)
+	dmginfo:ScaleDamage(0.25)
+	util.BlastDamageInfo(dmginfo, guessPos, self:GetDamageRadius())
 end

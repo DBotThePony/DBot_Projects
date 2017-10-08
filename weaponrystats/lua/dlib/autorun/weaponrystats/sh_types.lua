@@ -125,7 +125,8 @@ return {
 		numAdd = 0,
 		quality = -2,
 		speed = 0.85,
-		order = 40
+		order = 40,
+		bullet = 'dbot_bullet_mushket'
 	},
 
 	laugh = {
@@ -157,7 +158,8 @@ return {
 		numAdd = 0,
 		quality = -7,
 		speed = 0.6,
-		order = 64
+		order = 64,
+		bullet = 'dbot_bullet_pneu'
 	},
 
 	h2 = {
@@ -187,9 +189,10 @@ return {
 		scatterAdd = Vector(0.000, 0.000, 0),
 		num = 0.8,
 		numAdd = 0,
-		quality = 3,
+		quality = 4,
 		speed = 0.9,
-		order = 20
+		order = 20,
+		bullet = 'dbot_bullet_heated'
 	},
 
 	dissolve = {
