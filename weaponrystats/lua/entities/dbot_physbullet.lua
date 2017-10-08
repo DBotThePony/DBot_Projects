@@ -164,7 +164,7 @@ function ENT:CalculateGravity()
 end
 
 function ENT:CalculateForce()
-	return math.max((math.max(self:GetForce(), 3) + 5) * 15 * self:GetSpeedModifier() + math.max(5, self:GetDamage()) * 10 * self:GetSpeedModifier() - math.min(4, self.ricochets) * 40 - math.min(8, self.penetrations) * 80, 400)
+	return math.max((math.max(self:GetForce(), 3) + 5) * 15 * self:GetSpeedModifier() + math.max(5, self:GetDamage()) * 10 * self:GetSpeedModifier() - math.min(4, self.ricochets) * 40 - math.min(8, self.penetrations) * 80, 800)
 end
 
 function ENT:UpdatePhys()
@@ -185,7 +185,9 @@ function ENT:UpdatePhys()
 	end
 
 	if not self.nPenetrationOfNPC then
-		self.phys:ApplyForceCenter(self:GetDirection() * self:CalculateBulletForce() * self:GetDistance() / 10000 + self:GetInitialVelocity())
+		local calcVel = self:GetDirection() * self:CalculateBulletForce() * self:GetDistance() / 10000
+		local addVel = self:GetInitialVelocity()
+		self.phys:ApplyForceCenter(calcVel + addVel * addVel:Length() / calcVel:Length())
 	else
 		self.phys:SetVelocity(self:GetDirection() * 10)
 		self.nGravityIgnore = true
