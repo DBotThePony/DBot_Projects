@@ -281,7 +281,7 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 	tr.MatType = tr.MatType or MAT_FLESH
 	local surfaceType = tr.MatType
 	local mult = (ricochetSurfaces[surfaceType] or 1) / 0.65
-	local mult2 = (ricochetSurfaces[surfaceType] or 1) ^ 2
+	local mult2 = (ricochetSurfaces[surfaceType] or 1) ^ 3
 	local ricochetCond = self:CanRicochet() and
 		type(hitent) ~= 'NPC' and
 		type(hitent) ~= 'NextBot' and
@@ -325,7 +325,7 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 		end
 	end
 
-	local penetratePower = math.min(self:GetPenetrationStrength() * mult2 * 3, 200)
+	local penetratePower = math.min(self:GetPenetrationStrength() * mult2 * 3, 125)
 
 	if self:CanPenetrate() and penetratePower >= 40 then
 		local trPen
@@ -348,7 +348,7 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 			}
 		else
 			trPen = {
-				start = hitpos + self:GetDirection() * penetratePower,
+				start = hitpos + self:GetDirection() * penetratePower / 3,
 				endpos = hitpos - self:GetDirection() * 5,
 				filter = VALID_BULLETS
 			}
