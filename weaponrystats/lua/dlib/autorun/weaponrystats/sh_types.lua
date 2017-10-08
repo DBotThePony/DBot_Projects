@@ -515,6 +515,23 @@ return {
 		order = 30
 	},
 
+	blast = {
+		name = 'Exploding',
+		dmgtype = DMG_BLAST,
+		isAdditional = false,
+		damage = 1.2,
+		force = 10,
+		clip = 1,
+		scatter = 1.3,
+		scatterAdd = Vector(0.002, 0.002, 0),
+		num = 1,
+		numAdd = 0,
+		quality = 4,
+		speed = 0.9,
+		order = 30,
+		bullet = 'dbot_bullet_explosive'
+	},
+
 	club = {
 		name = 'Slashing',
 		dmgtype = DMG_CLUB,
