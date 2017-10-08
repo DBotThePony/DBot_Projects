@@ -92,6 +92,7 @@ local function EntityFireBullets(self, bulletData)
 	end
 
 	local sClass = findOwner:GetClass()
+	local wclass
 
 	if SERVER and NO_TURRET_SPREAD:GetBool() and (sClass == 'npc_turret_floor' or sClass == 'npc_turret_ceiling') then
 		bulletData.Spread = Vector(0, 0, 0)
@@ -112,8 +113,9 @@ local function EntityFireBullets(self, bulletData)
 
 	if IsValid(findWeapon) and IsValid(findOwner) and type(findWeapon) == 'Weapon' then
 		modif, wtype = findWeapon:GetWeaponModification(), findWeapon:GetWeaponType()
+		wclass = findWeapon:GetClass()
 
-		local hl2 = HL2WEP_MAPPING[findWeapon:GetClass()]
+		local hl2 = HL2WEP_MAPPING[wclass]
 
 		if hl2 then
 			bulletData.Damage = hl2.damage
@@ -122,7 +124,7 @@ local function EntityFireBullets(self, bulletData)
 	end
 
 	if not modif or not wtype then
-		if ENABLE_PHYSICAL_BULLETS:GetBool() and ENABLE_PHYSICAL_BULLETS_ALL:GetBool() and bulletData.Distance > 1024 then
+		if ENABLE_PHYSICAL_BULLETS:GetBool() and ENABLE_PHYSICAL_BULLETS_ALL:GetBool() and bulletData.Distance > 1024 and not weaponrystats.blacklisted:has(wclass) then
 			if CLIENT then return false end
 
 			for i = 1, bulletData.Num do
@@ -197,7 +199,7 @@ local function EntityFireBullets(self, bulletData)
 	bulletData.Damage = (bulletData.Damage or 1) * (modif.damage or 1)
 	bulletData.Force = (bulletData.Force or 1) * (modif.force or 1)
 
-	if CLIENT or not ENABLE_PHYSICAL_BULLETS:GetBool() or bulletData.Distance < 1024 then
+	if CLIENT or not ENABLE_PHYSICAL_BULLETS:GetBool() or bulletData.Distance < 1024 or weaponrystats.blacklisted:has(wclass) then
 		if CLIENT and not DISABLE_TRACERS:GetBool() and bulletData.Distance > 1024 then return false end
 		return true
 	else

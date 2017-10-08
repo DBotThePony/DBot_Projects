@@ -36,6 +36,28 @@ end
 weaponrystats = {}
 weaponrystats.modifications = include('sh_modifications.lua')
 weaponrystats.types = include('sh_types.lua')
+
+weaponrystats.blacklisted = DLib.HashSet()
+local hashset = weaponrystats.blacklisted
+
+_G.PhysBullets = {
+	AddClassToBlacklist = function(val)
+		return hashset:add(val)
+	end,
+
+	RemoveClassFromBlacklist = function(val)
+		return hashset:remove(val)
+	end,
+
+	IsClassBlacklisted = function(val)
+		return hashset:has(val)
+	end,
+
+	GetClassBlacklistTable = function()
+		return hashset:copyHash()
+	end,
+}
+
 include('sh_util.lua')
 include('sh_logic.lua')
 
@@ -62,7 +84,7 @@ local function checkValue(value)
 	value.randomMin = value.randomMin or 1
 	value.randomMax = value.randomMax or 1
 	value.bullet = value.bullet or 'dbot_physbullet'
-	
+
 	value.bulletSpeed = value.bulletSpeed or 1
 	value.bulletRicochet = value.bulletRicochet or 1
 	value.bulletPenetration = value.bulletPenetration or 1
