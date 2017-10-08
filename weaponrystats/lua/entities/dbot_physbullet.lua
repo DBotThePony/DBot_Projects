@@ -311,6 +311,8 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 				end
 			end
 
+			table.insert(cp.IgnoreEntity, self)
+
 			weaponrystats.SKIP_NEXT = true
 			self:GetFirer():weaponrystats_FireBullets(cp)
 			self:OnSurfaceHit(tr, tr.HitPos + ricochetDir * 12)
@@ -396,6 +398,7 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 				cp.Dir = -self:GetDirection()
 				cp.Damage = 0
 				cp.Callback = function() end
+				table.insert(cp.IgnoreEntity, self)
 				self:weaponrystats_FireBullets(cp)
 			end
 
@@ -421,6 +424,7 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 	cp.Src = spos
 	cp.Dir = self:GetDirection()
 	cp.Damage = self:GetFinalDamage()
+	table.insert(cp.IgnoreEntity, self)
 	weaponrystats.SKIP_NEXT = true
 	self:GetFirer():weaponrystats_FireBullets(cp)
 

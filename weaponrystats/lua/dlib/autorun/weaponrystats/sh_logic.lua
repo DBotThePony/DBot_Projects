@@ -102,6 +102,11 @@ local function EntityFireBullets(self, bulletData)
 	bulletData.Num = bulletData.Num or 1
 	bulletData.Force = bulletData.Force or 1
 	bulletData.Damage = bulletData.Damage or 1
+	bulletData.IgnoreEntity = bulletData.IgnoreEntity or {}
+
+	if type(bulletData.IgnoreEntity) ~= 'table' then
+		bulletData.IgnoreEntity = {bulletData.IgnoreEntity}
+	end
 
 	local modif, wtype
 
