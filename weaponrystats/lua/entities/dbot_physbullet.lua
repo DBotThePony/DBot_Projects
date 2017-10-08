@@ -100,6 +100,15 @@ end)
 
 if CLIENT then return end
 
+local MINIMAL_VELOCITY = CreateConVar('sv_physbullets_minvel', '800', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Physical bullets minimal velocity')
+local PENETRATION_DIVIDER = CreateConVar('sv_physbullets_pendiv', '32', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Physical bullets penetration strength divider')
+local RICOCHET_DAMAGE = CreateConVar('sv_physbullets_ricochet', '0.2', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Ricochet damage modifier')
+local GRAVITY = CreateConVar('sv_physbullets_gravity', '0.02', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Gravity drop')
+local MAX_PENETRATION = CreateConVar('sv_physbullets_penetrationmax', '125', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Maximal penetration strength')
+local PENETRATION_NPC = CreateConVar('sv_physbullets_pen_npc', '4', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Penetration divider (NPC)')
+local PENETRATION_ENT = CreateConVar('sv_physbullets_pen_ent', '2', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Penetration divider (any entity)')
+local PENETRATION_WORLD = CreateConVar('sv_physbullets_pen', '3', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Penetration divider (world)')
+
 function ENT:SetupBulletData(bulletData, firer)
 	self:SetPos(bulletData.Src)
 	self:SetAngles(bulletData.Dir:Angle())
@@ -144,11 +153,11 @@ function ENT:GetFinalDamage()
 end
 
 function ENT:GetRicochetDamage()
-	return self:GetFinalDamage() * 0.2
+	return self:GetFinalDamage() * RICOCHET_DAMAGE:GetFloat()
 end
 
 function ENT:GetPenetrationStrength()
-	return self:GetPenetrationModifier() * self:CalculateForce() / 32
+	return self:GetPenetrationModifier() * self:CalculateForce() / PENETRATION_DIVIDER:GetFloat()
 end
 
 function ENT:CalculateBulletForce()
@@ -160,11 +169,11 @@ function ENT:CalculateRicochetForce()
 end
 
 function ENT:CalculateGravity()
-	return Vector(0, 0, -self:CalculateBulletForce() * 0.02)
+	return Vector(0, 0, -self:CalculateBulletForce() * GRAVITY:GetFloat())
 end
 
 function ENT:CalculateForce()
-	return math.max((math.max(self:GetForce(), 3) + 5) * 15 * self:GetSpeedModifier() + math.max(5, self:GetDamage()) * 10 * self:GetSpeedModifier() - math.min(4, self.ricochets) * 40 - math.min(8, self.penetrations) * 80, 800)
+	return math.max((math.max(self:GetForce(), 3) + 5) * 15 * self:GetSpeedModifier() + math.max(5, self:GetDamage()) * 10 * self:GetSpeedModifier() - math.min(4, self.ricochets) * 40 - math.min(8, self.penetrations) * 80, MINIMAL_VELOCITY:GetInt())
 end
 
 function ENT:UpdatePhys()
@@ -329,7 +338,7 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 		end
 	end
 
-	local penetratePower = math.min(self:GetPenetrationStrength() * mult2 * 3, 125)
+	local penetratePower = math.min(self:GetPenetrationStrength() * mult2 * 3, MAX_PENETRATION:GetFloat())
 
 	if self:CanPenetrate() and penetratePower >= 40 then
 		local trPen
@@ -341,18 +350,18 @@ function ENT:OnHitObject(hitpos, normal, tr, hitent)
 
 			trPen = {
 				start = hitpos - self:GetDirection() * 5,
-				endpos = hitpos + self:GetDirection() * penetratePower / 4,
+				endpos = hitpos + self:GetDirection() * penetratePower / PENETRATION_NPC:GetFloat(),
 				filter = filter
 			}
 		elseif IsValidEntity(hitent) then
 			trPen = {
-				start = hitpos + self:GetDirection() * penetratePower / 2,
+				start = hitpos + self:GetDirection() * penetratePower / PENETRATION_ENT:GetFloat(),
 				endpos = hitpos - self:GetDirection() * 5,
 				filter = VALID_BULLETS
 			}
 		else
 			trPen = {
-				start = hitpos + self:GetDirection() * penetratePower / 3,
+				start = hitpos + self:GetDirection() * penetratePower / PENETRATION_WORLD:GetFloat(),
 				endpos = hitpos - self:GetDirection() * 5,
 				filter = VALID_BULLETS
 			}
