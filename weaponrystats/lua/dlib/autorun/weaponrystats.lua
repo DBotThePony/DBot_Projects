@@ -15,11 +15,11 @@
 
 local AddCSLuaFile_, include_ = AddCSLuaFile, include
 
-function AddCSLuaFile(fil)
+local function AddCSLuaFile(fil)
 	AddCSLuaFile_('dlib/autorun/weaponrystats/' .. fil)
 end
 
-function include(fil)
+local function include(fil)
 	return include_('dlib/autorun/weaponrystats/' .. fil)
 end
 
