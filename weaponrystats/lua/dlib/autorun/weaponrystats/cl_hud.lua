@@ -90,6 +90,7 @@ local function HUDPaint()
 	local bulletPenetration = 1
 	local additional = false
 	local add = 0
+	local dps = weapon:DLibVar('wps_dps')
 
 	if string.sub(name, 1, 1) == '#' then
 		name = language.GetPhrase(string.sub(name, 2))
@@ -151,6 +152,9 @@ local function HUDPaint()
 	surface.SetFont('WPS.DisplayStats')
 
 	doDrawText(string.format('Level %i weapon', currentQuality), x, y, colorQuality)
+	y = y + 16
+
+	doDrawText(string.format('%i damage per second', dps), x, y, STATS_COLOR)
 	y = y + 19
 
 	if additional then
@@ -167,7 +171,7 @@ local function HUDPaint()
 		doDrawText(string.format('%+i%% attack speed', speed * 100 - 100), x, y, STATS_COLOR)
 		y = y + 15
 	end
-	
+
 	if force ~= 1 then
 		doDrawText(string.format('%+i%% knockback', force * 100 - 100), x, y, STATS_COLOR)
 		y = y + 15

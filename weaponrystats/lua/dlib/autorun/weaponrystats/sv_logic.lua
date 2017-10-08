@@ -18,7 +18,7 @@ local IN_DAMAGE = false
 
 local function EntityTakeDamage(self, dmginfo)
 	if IN_DAMAGE then return end
-	local weapon = DLib.combat.findWeapon(dmginfo)
+	local weapon, attacker = DLib.combat.findWeapon(dmginfo)
 	if not IsValid(weapon) then return end
 	if weapon.weaponrystats_bullets == CurTime() then return end
 	local modif, wtype = weapon:GetWeaponModification(), weapon:GetWeaponType()
@@ -43,6 +43,24 @@ local function EntityTakeDamage(self, dmginfo)
 
 	if modif then
 		dmginfo:SetDamage(dmginfo:GetDamage() * (modif.damage or 1))
+	end
+
+	if type(attacker) == 'Player' then
+		weapon.wps_dps = weapon.wps_dps or DLib.Average(10, 5)
+		local avg = weapon.wps_dps
+		avg.lastSend = avg.lastSend or 0
+
+		if wtype and wtype.isAdditional then
+			avg:add(dmginfo:GetDamage() + dmginfo:GetDamage() * (wtype.damage or 1))
+		else
+			avg:add(dmginfo:GetDamage())
+		end
+
+		if avg.lastSend < CurTime() then
+			avg.lastSend = CurTime() + 1
+		end
+
+		weapon:SetDLibVar('wps_dps', math.ceil(avg:calculate()))
 	end
 end
 
