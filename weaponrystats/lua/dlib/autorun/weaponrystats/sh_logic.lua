@@ -200,7 +200,7 @@ local function EntityFireBullets(self, bulletData)
 	bulletData.Force = (bulletData.Force or 1) * (modif.force or 1)
 
 	if CLIENT or not ENABLE_PHYSICAL_BULLETS:GetBool() or bulletData.Distance < 1024 or weaponrystats.blacklisted:has(wclass) then
-		if CLIENT and not DISABLE_TRACERS:GetBool() and bulletData.Distance > 1024 then return false end
+		if CLIENT and not ENABLE_PHYSICAL_BULLETS:GetBool() and bulletData.Distance > 1024 and ENABLE_PHYSICAL_BULLETS:GetBool() then return false end
 		return true
 	else
 		for i = 1, bulletData.Num do
