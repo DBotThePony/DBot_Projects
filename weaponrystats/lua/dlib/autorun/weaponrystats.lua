@@ -73,7 +73,7 @@ for i, fileData in ipairs(getTypes) do
 	local filename, types = fileData[1], fileData[2]
 
 	if type(types) == 'table' then
-		table.Merge(weaponrystats.modifications, types)
+		table.Merge(weaponrystats.types, types)
 	end
 end
 
