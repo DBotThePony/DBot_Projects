@@ -58,6 +58,25 @@ _G.PhysBullets = {
 	end,
 }
 
+local getModifiers = DLib.Loader.loadPureSHTop('dlib/autorun/weaponrystats_custom')
+local getTypes = DLib.Loader.loadPureSHTop('dlib/autorun/weaponrystats_custom/types')
+
+for i, fileData in ipairs(getModifiers) do
+	local filename, modifiers = fileData[1], fileData[2]
+
+	if type(modifiers) == 'table' then
+		table.Merge(weaponrystats.modifications, modifiers)
+	end
+end
+
+for i, fileData in ipairs(getTypes) do
+	local filename, types = fileData[1], fileData[2]
+
+	if type(types) == 'table' then
+		table.Merge(weaponrystats.modifications, types)
+	end
+end
+
 include('sh_util.lua')
 include('sh_logic.lua')
 
