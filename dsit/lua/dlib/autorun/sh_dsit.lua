@@ -41,6 +41,12 @@ local function PhysgunPickup(ply, ent)
 	if IsValid(ply:DLibVar('dsit_entity')) then
 		return false
 	end
+
+	ply.dsit_pickup = true
+end
+
+local function PhysgunDrop(ply, ent)
+	ply.dsit_pickup = nil
 end
 
 local function Think()
@@ -77,6 +83,7 @@ local function Think()
 end
 
 hook.Add('PhysgunPickup', 'DSit', PhysgunPickup)
+hook.Add('PhysgunDrop', 'DSit', PhysgunDrop)
 hook.Add('GravGunPickupAllowed', 'DSit', PhysgunPickup)
 hook.Add('GravGunPunt', 'DSit', PhysgunPickup)
 hook.Add('Think', 'DSit', Think)

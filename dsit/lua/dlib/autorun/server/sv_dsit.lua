@@ -77,6 +77,7 @@ local function request(ply)
 	if not DSitConVars:getBool('enable') then return end
 	if not IsValid(ply) then return end
 	if not ply:Alive() then return end
+	if ply.dsit_pickup then return end
 
 	local maxVelocity = DSitConVars:getFloat('speed_val')
 
