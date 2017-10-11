@@ -134,6 +134,13 @@ local function request(ply)
 			return
 		end
 
+		if maxVelocity > 0 then
+			if ent:GetVelocity():Length() >= maxVelocity then
+				messaging.chatPlayer(ply, 'Target is moving too fast!')
+				return
+			end
+		end
+
 		isPlayer = type(ent) == 'Player'
 		isEntity = true
 
