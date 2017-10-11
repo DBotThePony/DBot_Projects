@@ -29,11 +29,53 @@ end)
 local function PlayerBindPress(ply, bind, isPressed)
 	if not isPressed then return end
 	if bind ~= 'use' and bind ~= '+use' then return end
-	if not input.IsKeyDown(KEY_LSHIFT) then return end
+	if not input.IsKeyDown(KEY_LALT) then return end
 
 	RunConsoleCommand('dsit')
 
 	return true
 end
 
+local function Populate(Panel)
+	if not IsValid(Panel) then return end
+	Panel:Clear()
+
+	local lab = Label('DSit made by DBotThePony')
+	Panel:AddItem(lab)
+	lab:SetDark(true)
+
+	DSitConVars:checkboxes(Panel)
+
+	local button = Panel:Button('Discord')
+	button.DoClick = function()
+		gui.OpenURL('https://discord.gg/HG9eS79')
+	end
+end
+
+local function PopulateClient(Panel)
+	if not IsValid(Panel) then return end
+	Panel:Clear()
+
+	local lab = Label('DSit made by DBotThePony')
+	Panel:AddItem(lab)
+	lab:SetDark(true)
+
+	Panel:CheckBox('Allow to sit on me', 'cl_dsit_allow_on_me')
+	Panel:CheckBox('Allow only for friends', 'cl_dsit_friendsonly')
+	Panel:CheckBox('Check for "get off" message in chat', 'cl_dsit_message')
+	Panel:NumSlider('Max players on you', 'cl_dsit_maxonme', 0, 32, 0)
+	Panel:Button('Get off player on you', 'dsit_getoff')
+
+	local button = Panel:Button('Discord')
+	button.DoClick = function()
+		gui.OpenURL('https://discord.gg/HG9eS79')
+	end
+end
+
+local function PopulateToolMenu()
+	spawnmenu.AddToolMenuOption('Utilities', 'Admin', 'DSit.SVars', 'DSit', '', '', Populate)
+	spawnmenu.AddToolMenuOption('Utilities', 'User', 'DSit.CVars', 'DSit', '', '', PopulateClient)
+end
+
 hook.Add('PlayerBindPress', 'DSit', PlayerBindPress)
+hook.Add('PopulateToolMenu', 'DSit', PopulateToolMenu)

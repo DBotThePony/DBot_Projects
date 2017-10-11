@@ -346,7 +346,22 @@ local function request(ply)
 	ply:SetDLibVar('dsit_entity', vehicle)
 end
 
+local function dsit_getoff(ply)
+	if not IsValid(ply) then return end
+
+	for i, vehicle in DSIT_TRACKED_VEHICLES:ipairs() do
+		if IsValid(vehicle) then
+			local ent = vehicle:DLibVar('dsit_target')
+
+			if ent == ply then
+				vehicle:GetDriver():ExitVehicle()
+			end
+		end
+	end
+end
+
 concommand.Add('dsit', request)
+concommand.Add('dsit_getoff', dsit_getoff)
 
 _G.DSIT_REQUEST_DEBUG = request
 
