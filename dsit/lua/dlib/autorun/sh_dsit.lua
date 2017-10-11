@@ -52,8 +52,7 @@ local function Think()
 
 		local ent = vehicle:DLibVar('dsit_target')
 
-		-- ???
-		if not IsValid(ent) then
+		if not IsValid(ent) or not ent:Alive() then
 			if SERVER then vehicle:Remove() end
 			DSIT_TRACKED_VEHICLES:remove(i)
 			return
