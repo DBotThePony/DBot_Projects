@@ -59,9 +59,12 @@ local function Think()
 		local ent = vehicle:DLibVar('dsit_target')
 
 		if not IsValid(ent) or not ent:Alive() then
-			if SERVER then vehicle:Remove() end
-			DSIT_TRACKED_VEHICLES:remove(i)
-			return
+			if SERVER then 
+				vehicle:Remove()
+				DSIT_TRACKED_VEHICLES:remove(i)
+			end
+
+			goto CONTINUE
 		end
 
 		local ang = ent:EyeAngles()
@@ -79,6 +82,8 @@ local function Think()
 			vehicle:SetRenderOrigin(pos)
 			vehicle:SetRenderAngles(ang)
 		end
+
+		::CONTINUE::
 	end
 end
 
