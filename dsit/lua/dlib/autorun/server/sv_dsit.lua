@@ -77,7 +77,7 @@ local function request(ply)
 	if not DSitConVars:getBool('enable') then return end
 	if not IsValid(ply) then return end
 	if not ply:Alive() then return end
-	if ply.dsit_pickup then return end
+	-- if ply.dsit_pickup then return end
 
 	local maxVelocity = DSitConVars:getFloat('speed_val')
 
@@ -157,11 +157,24 @@ local function request(ply)
 		end
 
 		parent = not isPlayer and not isSitting
+
+		if ent.dsit_root_sitting_on == ply then
+			messaging.chatPlayer(ply, 'You cant sit on a person who sits on you')
+			return
+		end
 	end
 
 	local targetPos, targetAngles
 
-	if isPlayer then
+	if isSitting then
+		if not DSitConVars:getBool('players_legs') then
+			messaging.chatPlayer(ply, 'Sitting on players legs is disabled')
+			return
+		end
+
+		targetAngles = entSit:GetAngles()
+		targetPos = entSit:GetPos() + targetAngles:Forward() * 7 + targetAngles:Up() * 3
+	elseif isPlayer then
 		if not DSitConVars:getBool('players') then
 			messaging.chatPlayer(ply, 'Sitting on players is disabled')
 			return
@@ -188,14 +201,6 @@ local function request(ply)
 
 		targetAngles.p = 0
 		targetAngles.r = 0
-	elseif isSitting then
-		if not DSitConVars:getBool('players_legs') then
-			messaging.chatPlayer(ply, 'Sitting on players legs is disabled')
-			return
-		end
-
-		targetAngles = entSit:GetAngles()
-		targetPos = entSit:GetPos() + targetAngles:Forward() * 7 + targetAngles:Up() * 3
 	elseif isEntity then
 		if DSitConVars:getBool('entities_world') and IsValid(ent:CPPIGetOwner()) then
 			messaging.chatPlayer(ply, 'Sitting is allowed only on non owned entities')
