@@ -89,8 +89,9 @@ local function request(ply)
 	end
 
 	local mins, maxs = ply:GetHull()
+	maxs.z = maxs.z * 0.5
 	local eyes = ply:EyePos()
-	local ppos = ply:GetPos() + Vector(0, 0, 2)
+	local ppos = ply:GetPos() + ply:OBBCenter()
 	local fwd = ply:EyeAngles():Forward()
 	maxs.z = 0
 	mins.z = 0
@@ -174,7 +175,11 @@ local function request(ply)
 		end
 
 		targetAngles = entSit:GetAngles()
-		targetPos = entSit:GetPos() + targetAngles:Forward() * 7 + targetAngles:Up() * 3
+		local fwdAngles = entSit:GetAngles()
+		fwdAngles.p = 0
+		fwdAngles.r = 0
+		fwdAngles.y = fwdAngles.y + 90
+		targetPos = entSit:GetPos() + fwdAngles:Forward() * 12 + targetAngles:Up() * 8
 	elseif isPlayer then
 		if not DSitConVars:getBool('players') then
 			messaging.chatPlayer2(ply, 'Sitting on players is disabled')
