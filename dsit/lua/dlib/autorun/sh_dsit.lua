@@ -74,6 +74,7 @@ local function Think()
 		ang.r = 0
 		ang.y = math.floor(ang.y - 90)
 		pos.z = pos.z + 10
+		ang:Normalize()
 
 		if vehicle:GetPos() ~= pos then vehicle:SetPos(pos) end
 		if vehicle:GetAngles() ~= ang then vehicle:SetAngles(ang) end
@@ -87,8 +88,8 @@ local function Think()
 	end
 end
 
-hook.Add('PhysgunPickup', 'DSit', PhysgunPickup)
-hook.Add('PhysgunDrop', 'DSit', PhysgunDrop)
+-- hook.Add('PhysgunPickup', 'DSit', PhysgunPickup)
+-- hook.Add('PhysgunDrop', 'DSit', PhysgunDrop)
 hook.Add('GravGunPickupAllowed', 'DSit', PhysgunPickup)
 hook.Add('GravGunPunt', 'DSit', PhysgunPickup)
 hook.Add('Think', 'DSit', Think)

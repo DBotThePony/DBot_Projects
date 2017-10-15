@@ -151,18 +151,21 @@ local function request(ply)
 			if IsValid(entSit) then
 				isSitting = entSit:DLibVar('dsit_flag')
 			end
+
+			parent = false
 		else
 			isSitting = ent:DLibVar('dsit_flag')
 			entSit = ent
+			parent = not isSitting
 		end
-
-		parent = not isPlayer and not isSitting
 
 		if ent.dsit_root_sitting_on == ply then
 			messaging.chatPlayer(ply, 'You cant sit on a person who sits on you')
 			return
 		end
 	end
+
+	print(ply, isPlayer, ent, parent, isSitting)
 
 	local targetPos, targetAngles
 
@@ -340,6 +343,7 @@ local function request(ply)
 		vehicle:SetParent(ent)
 	elseif isSitting then
 		vehicle.dsit_player_root = ent.dsit_player_root
+		vehicle:SetParent(entSit)
 	elseif isPlayer then
 		vehicle:SetDLibVar('dsit_target', ent)
 		vehicle.dsit_player_root = ent
