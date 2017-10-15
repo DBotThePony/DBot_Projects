@@ -259,7 +259,7 @@ local function request(ply)
 
 			local unhit = true
 
-			targetPos = tr.HitPos
+			targetPos = tr.HitPos - tr.HitNormal * 5
 
 			if not trForward.Hit then
 				local newTr2 = util.TraceLine({
