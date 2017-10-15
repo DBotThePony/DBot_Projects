@@ -23,8 +23,11 @@ local function PlayerSwitchWeapon(self, oldWeapon, newWeapon)
 end
 
 local function checkCurrentWeapon()
+	if not IsValid(LocalPlayer()) then return end
 	local weapon = LocalPlayer():GetActiveWeapon()
-	if IsValid(weapon) then weapon:ApplyClipModifications() end
+	if IsValid(weapon) then
+		weapon:ApplyClipModifications()
+	end
 end
 
 weaponrystats.PlayerSwitchWeapon = PlayerSwitchWeapon
