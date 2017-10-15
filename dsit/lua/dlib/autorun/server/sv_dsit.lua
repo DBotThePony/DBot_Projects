@@ -179,7 +179,7 @@ local function request(ply)
 		fwdAngles.p = 0
 		fwdAngles.r = 0
 		fwdAngles.y = fwdAngles.y + 90
-		targetPos = entSit:GetPos() + fwdAngles:Forward() * 12 + targetAngles:Up() * 8
+		targetPos = entSit:GetPos() + fwdAngles:Forward() * 16 + targetAngles:Up() * 8
 	elseif isPlayer then
 		if not DSitConVars:getBool('players') then
 			messaging.chatPlayer2(ply, 'Sitting on players is disabled')
