@@ -79,6 +79,8 @@ local function request(ply)
 	if not ply:Alive() then return end
 	-- if ply.dsit_pickup then return end
 
+	if ply:InVehicle() then return end
+
 	local maxVelocity = DSitConVars:getFloat('speed_val')
 
 	if maxVelocity > 0 then
