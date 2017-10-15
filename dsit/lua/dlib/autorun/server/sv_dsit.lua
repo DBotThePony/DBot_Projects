@@ -61,12 +61,12 @@ local function checkNormal(ply, normal)
 	normalCheck.p = normalCheck.p - 270
 
 	if normalCheck.p > 20 or normalCheck.p < -20 then
-		messaging.chatPlayer(ply, 'Invalid sitting angle (pitch is ', normalCheck.p, ' when should <> +-20)')
+		messaging.chatPlayer2(ply, 'Invalid sitting angle (pitch is ', normalCheck.p, ' when should <> +-20)')
 		return false
 	end
 
 	if normalCheck.r > 20 or normalCheck.r < -20 then
-		messaging.chatPlayer(ply, 'Invalid sitting angle (roll is ', normalCheck.r, ' when should <> +-20)')
+		messaging.chatPlayer2(ply, 'Invalid sitting angle (roll is ', normalCheck.r, ' when should <> +-20)')
 		return false
 	end
 
@@ -83,7 +83,7 @@ local function request(ply)
 
 	if maxVelocity > 0 then
 		if ply:GetVelocity():Length() >= maxVelocity then
-			messaging.chatPlayer(ply, 'You are moving too fast!')
+			messaging.chatPlayer2(ply, 'You are moving too fast!')
 			return
 		end
 	end
@@ -117,7 +117,7 @@ local function request(ply)
 	end
 
 	if tr.Entity ~= trh.Entity then
-		messaging.chatPlayer(ply, 'Position is unreachable')
+		messaging.chatPlayer2(ply, 'Position is unreachable')
 		return
 	end
 
@@ -126,18 +126,18 @@ local function request(ply)
 
 	if IsValid(ent) then
 		if not DSitConVars:getBool('entities') then
-			messaging.chatPlayer(ply, 'Sitting on entities is disabled')
+			messaging.chatPlayer2(ply, 'Sitting on entities is disabled')
 			return
 		end
 
 		if type(ent) == 'NPC' or type(ent) == 'NextBot' then
-			messaging.chatPlayer(ply, 'You cant sit on NPCs')
+			messaging.chatPlayer2(ply, 'You cant sit on NPCs')
 			return
 		end
 
 		if maxVelocity > 0 then
 			if ent:GetVelocity():Length() >= maxVelocity then
-				messaging.chatPlayer(ply, 'Target is moving too fast!')
+				messaging.chatPlayer2(ply, 'Target is moving too fast!')
 				return
 			end
 		end
@@ -160,7 +160,7 @@ local function request(ply)
 		end
 
 		if ent.dsit_root_sitting_on == ply then
-			messaging.chatPlayer(ply, 'You cant sit on a person who sits on you')
+			messaging.chatPlayer2(ply, 'You cant sit on a person who sits on you')
 			return
 		end
 	end
@@ -169,7 +169,7 @@ local function request(ply)
 
 	if isSitting then
 		if not DSitConVars:getBool('players_legs') then
-			messaging.chatPlayer(ply, 'Sitting on players legs is disabled')
+			messaging.chatPlayer2(ply, 'Sitting on players legs is disabled')
 			return
 		end
 
@@ -177,12 +177,12 @@ local function request(ply)
 		targetPos = entSit:GetPos() + targetAngles:Forward() * 7 + targetAngles:Up() * 3
 	elseif isPlayer then
 		if not DSitConVars:getBool('players') then
-			messaging.chatPlayer(ply, 'Sitting on players is disabled')
+			messaging.chatPlayer2(ply, 'Sitting on players is disabled')
 			return
 		end
 
 		if not ent:GetInfoBool('cl_dsit_allow_on_me', true) then
-			messaging.chatPlayer(ply, 'Target player disallowed sitting on him')
+			messaging.chatPlayer2(ply, 'Target player disallowed sitting on him')
 			return
 		end
 
@@ -192,7 +192,7 @@ local function request(ply)
 			local isFriends = ply:IsFriend(ent) and ent:IsFriend(ply)
 
 			if (target or me) and not isFriends then
-				messaging.chatPlayer(ply, 'One or both of players has cl_dsit_friendsonly set to 1 and you are not friends')
+				messaging.chatPlayer2(ply, 'One or both of players has cl_dsit_friendsonly set to 1 and you are not friends')
 				return
 			end
 		end
@@ -204,12 +204,12 @@ local function request(ply)
 		targetAngles.r = 0
 	elseif isEntity then
 		if DSitConVars:getBool('entities_world') and IsValid(ent:CPPIGetOwner()) then
-			messaging.chatPlayer(ply, 'Sitting is allowed only on non owned entities')
+			messaging.chatPlayer2(ply, 'Sitting is allowed only on non owned entities')
 			return
 		end
 
 		if DSitConVars:getBool('entities_owner') and ent:CPPIGetOwner() ~= ply then
-			messaging.chatPlayer(ply, 'Sitting is allowed only on entities owned by you')
+			messaging.chatPlayer2(ply, 'Sitting is allowed only on entities owned by you')
 			return
 		end
 
@@ -286,7 +286,7 @@ local function request(ply)
 	-- ulx hack
 	-- will remove after i release DAdmin
 	if ply:GetMoveType() == MOVETYPE_NONE or ply:GetMoveType() == MOVETYPE_OBSERVER then
-		messaging.chatPlayer(ply, 'You can not sit right now')
+		messaging.chatPlayer2(ply, 'You can not sit right now')
 		return
 	end
 
@@ -303,16 +303,16 @@ local function request(ply)
 		local max = findRoot:GetInfoInt('cl_dsit_maxonme')
 
 		if max > 0 and max <= findRoot.dsit_root_sitting_on then
-			messaging.chatPlayer(ply, 'Target player restricted amount of sitting on him (', max, ' is max)')
+			messaging.chatPlayer2(ply, 'Target player restricted amount of sitting on him (', max, ' is max)')
 			return
 		end
 	end
 
 	local vehicle = makeVehicle(ply, targetPos, targetAngles)
-	local can = hook.Run('CanPlayerEnterVehicle', ply, vehicle) ~= false
+	local can = ply:IsBot() or hook.Run('CanPlayerEnterVehicle', ply, vehicle) ~= false
 
 	if not can then
-		messaging.chatPlayer(ply, 'You can not sit right now')
+		messaging.chatPlayer2(ply, 'You can not sit right now')
 		vehicle:Remove()
 		return
 	end
