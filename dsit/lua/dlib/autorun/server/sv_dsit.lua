@@ -160,7 +160,7 @@ local function request(ply)
 			parent = not isSitting
 		end
 
-		if ent.dsit_root_sitting_on == ply then
+		if ent.dsit_player_root == ply then
 			messaging.chatPlayer2(ply, 'You cant sit on a person who sits on you')
 			return
 		end
@@ -348,6 +348,7 @@ local function request(ply)
 		vehicle.dsit_player_root = ent.dsit_player_root
 		vehicle:SetParent(entSit)
 	elseif isPlayer then
+		ply.dsit_player_root = ent.dsit_player_root or ent
 		vehicle:SetDLibVar('dsit_target', ent)
 		vehicle.dsit_player_root = ent
 
@@ -431,6 +432,8 @@ local function PlayerLeaveVehicle(ply, vehicle)
 	else
 		if ply.dsit_old_eyes then ply:SetEyeAngles(ply.dsit_old_eyes) end
 	end
+
+	ply.dsit_player_root = nil
 
 	vehicle:Remove()
 
