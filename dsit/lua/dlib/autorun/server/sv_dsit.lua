@@ -165,8 +165,6 @@ local function request(ply)
 		end
 	end
 
-	print(ply, isPlayer, ent, parent, isSitting)
-
 	local targetPos, targetAngles
 
 	if isSitting then
