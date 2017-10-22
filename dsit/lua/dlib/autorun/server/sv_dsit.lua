@@ -119,9 +119,11 @@ local function request(ply)
 		return
 	end
 
-	if type(tr.Entity) ~= 'Player' and tr.Entity ~= trh.Entity then
-		messaging.chatPlayer2(ply, 'Position is unreachable')
-		return
+	if not (type(trh.Entity) == 'Player' and not IsValid(tr.Entity)) then
+		if type(tr.Entity) ~= 'Player' and tr.Entity ~= trh.Entity then
+			messaging.chatPlayer2(ply, 'Position is unreachable')
+			return
+		end
 	end
 
 	local isPlayer, isEntity, isSitting, entSit, parent = false, false, false, NULL, false
