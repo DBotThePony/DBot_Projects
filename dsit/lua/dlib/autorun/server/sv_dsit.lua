@@ -421,22 +421,19 @@ local function PostLeave(ply, vehPos, upsideDown)
 
 	local space = DLib.Freespace(vehPos + Vector(0, 0, 1), 25, 5)
 	local mins, maxs = ply:GetHull()
-	local h = maxs.z - mins.z
-	mins.z = 0
-	maxs.z = 0
-	space:setAABB(mins, maxs)
-	space:setSAABB(mins * 1.2, maxs * 1.2)
-	space:setStrict(true)
-	space:SetStrictHeight(h)
+	space:SetAABB(mins, maxs)
+	space:SetSAABB(mins, maxs)
+	space:SetStrict(true)
+	space:SetMaskReachable(MASK_VISIBLE_AND_NPCS)
 	space.filter:addArray(player.GetAll())
-	local position = space:search()
+	local position = space:Search()
 
 	if position then
 		ply:SetPos(position)
 	else
 		for i, shift in attemptToFind:ipairs() do
 			space:SetPos(vehPos + shift)
-			position = space:search()
+			position = space:Search()
 
 			if position then
 				ply:SetPos(position)
