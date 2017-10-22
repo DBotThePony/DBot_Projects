@@ -247,13 +247,13 @@ local function request(ply)
 		local normalAngle = tr.HitNormal:Angle()
 		normalAngle.p = normalAngle.p - 270
 
+		targetPos = tr.HitPos - tr.HitNormal * 5
+
 		if tr.HitPos:Distance(ply:GetPos()) < 30 then
 			targetAngles = ply:EyeAngles()
 			targetAngles.y = targetAngles.y
 			targetAngles.r = 0
 			targetAngles.p = 0
-
-			targetPos = tr.HitPos
 		else
 			local fwdang = ply:EyeAngles()
 			fwdang.p = 0
@@ -266,8 +266,6 @@ local function request(ply)
 			})
 
 			local unhit = true
-
-			targetPos = tr.HitPos - tr.HitNormal * 5
 
 			if not trForward.Hit then
 				local newTr2 = util.TraceLine({
