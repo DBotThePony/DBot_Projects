@@ -60,8 +60,8 @@ local function checkNormal(ply, normal)
 	local normalCheck = normal:Angle()
 	normalCheck.p = normalCheck.p - 270
 
-	if normalCheck.p > 20 or normalCheck.p < -20 then
-		messaging.chatPlayer2(ply, 'Invalid sitting angle (pitch is ', normalCheck.p, ' when should <> +-20)')
+	if (normalCheck.p > 20 or normalCheck.p < -20) and (not DSitConVars:getBool('allow_ceiling') or not (normalCheck.p > 170 or normalCheck.p < -170)) then
+		messaging.chatPlayer2(ply, 'Invalid sitting angle (pitch is ', normalCheck.p, ' when should <> +-20 or -180)')
 		return false
 	end
 
@@ -169,6 +169,7 @@ local function request(ply)
 	end
 
 	local targetPos, targetAngles
+	local upsideDown = false
 
 	if isSitting then
 		if not DSitConVars:getBool('players_legs') then
@@ -241,6 +242,9 @@ local function request(ply)
 			return
 		end
 
+		local normalAngle = tr.HitNormal:Angle()
+		normalAngle.p = normalAngle.p - 270
+
 		if tr.HitPos:Distance(ply:GetPos()) < 30 then
 			targetAngles = ply:EyeAngles()
 			targetAngles.y = targetAngles.y
@@ -288,6 +292,12 @@ local function request(ply)
 		end
 
 		targetAngles.y = targetAngles.y + 90
+
+		if normalAngle.p > 170 or normalAngle.p < -170 then
+			targetAngles.y = targetAngles.y - 180
+			targetAngles.p = targetAngles.p - 180
+			upsideDown = true
+		end
 	end
 
 	-- ulx hack
@@ -365,6 +375,8 @@ local function request(ply)
 		vehicle.dsit_player_root.dsit_root_sitting_on = vehicle.dsit_player_root.dsit_root_sitting_on + 1
 	end
 
+	vehicle.dsit_upsideDown = upsideDown
+
 	vehicle:SetDLibVar('dsit_entity', ply)
 	ply:SetDLibVar('dsit_entity', vehicle)
 end
@@ -396,7 +408,17 @@ for x = -1, 1 do
 	end
 end
 
-local function PostLeave(ply, vehPos)
+local function PostLeave(ply, vehPos, upsideDown)
+	if upsideDown then
+		local tr = util.TraceLine({
+			start = vehPos - Vector(0, 0, 5),
+			endpos = vehPos - Vector(0, 0, 400),
+			filter = ply
+		})
+
+		vehPos = tr.HitPos + tr.HitNormal * 2
+	end
+
 	local space = DLib.Freespace(vehPos + Vector(0, 0, 1), 25, 5)
 	local mins, maxs = ply:GetHull()
 	local h = maxs.z - mins.z
@@ -436,6 +458,7 @@ local function PlayerLeaveVehicle(ply, vehicle)
 	end
 
 	ply.dsit_player_root = nil
+	local upsideDown = vehicle.dsit_upsideDown
 
 	vehicle:Remove()
 
@@ -443,7 +466,7 @@ local function PlayerLeaveVehicle(ply, vehicle)
 
 	timer.Simple(0, function()
 		if not IsValid(ply) then return end
-		PostLeave(ply, vehPos)
+		PostLeave(ply, vehPos, upsideDown)
 	end)
 end
 
