@@ -119,7 +119,7 @@ local function request(ply)
 		return
 	end
 
-	if tr.Entity ~= trh.Entity then
+	if type(tr.Entity) ~= 'Player' and tr.Entity ~= trh.Entity then
 		messaging.chatPlayer2(ply, 'Position is unreachable')
 		return
 	end
