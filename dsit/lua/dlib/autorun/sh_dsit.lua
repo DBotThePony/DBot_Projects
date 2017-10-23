@@ -50,6 +50,17 @@ local function PhysgunDrop(ply, ent)
 end
 
 local function Think()
+	local lply, lang
+
+	if CLIENT then
+		lply = LocalPlayer()
+		lang = Angle(0, 0, 0)
+
+		if lply:InVehicle() then
+			lang = lply:GetVehicle():GetAngles()
+		end
+	end
+
 	for i, vehicle in DSIT_TRACKED_VEHICLES:ipairs() do
 		if not IsValid(vehicle) then
 			DSIT_TRACKED_VEHICLES:remove(i)
@@ -68,6 +79,11 @@ local function Think()
 		end
 
 		local ang = ent:EyeAngles()
+
+		if ent == lply then
+			ang = ang + lang
+		end
+
 		local pos = ent:EyePos()
 
 		ang.p = 0
