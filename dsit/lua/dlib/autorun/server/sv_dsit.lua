@@ -247,7 +247,7 @@ local function request(ply)
 		local normalAngle = tr.HitNormal:Angle()
 		normalAngle.p = normalAngle.p - 270
 
-		targetPos = tr.HitPos - tr.HitNormal * 5
+		targetPos = tr.HitPos - tr.HitNormal * 2
 
 		if tr.HitPos:Distance(ply:GetPos()) < 30 then
 			targetAngles = ply:EyeAngles()
