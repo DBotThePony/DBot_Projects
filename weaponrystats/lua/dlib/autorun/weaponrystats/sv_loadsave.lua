@@ -213,9 +213,11 @@ function loadFromDatabase(self)
 	self.weaponrystats_t = {}
 	self.weaponrystats_m = {}
 
+	local data
+
 	if not self:IsBot() then
 		local steamid = SQLStr(self:SteamID())
-		local data = sql.Query('SELECT weapon, weapontype, weaponmodification FROM weaponrystats WHERE steamid = ' .. steamid)
+		data = sql.Query('SELECT weapon, weapontype, weaponmodification FROM weaponrystats WHERE steamid = ' .. steamid)
 		if not data then return end
 
 		for i, row in ipairs(data) do
