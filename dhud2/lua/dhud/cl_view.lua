@@ -24,60 +24,22 @@ DHUD2.EyeAngles = Angle(0, 0, 0)
 DHUD2.PredictedEntity = NULL
 local oldPos, oldAng
 local lastCall = 0
-local lastResult
+local LocalPlayer = LocalPlayer
 
-local bypass = false
-
-local function CalcView(ply, pos, ang, fov, nearZ, farZ)
+local function CalcView(newData)
+	local ply = LocalPlayer()
 	if not ENABLE:GetBool() or not DHUD2.ServerConVar('smoothview') or not DHUD2.IsEnabled() then
-		DHUD2.EyePos = pos
-		DHUD2.EyeAngles = ang
+		DHUD2.EyePos = newData.origin
+		DHUD2.EyeAngles = newData.angles
 		DHUD2.PredictedEntity = DHUD2.SelectPlayer()
-		return
+		return newData
 	end
-
-	if bypass then return end
-
-	if lastCall == CurTime() then return lastResult end
-	lastCall = CurTime()
 
 	local inVehicle = ply:InVehicle()
 
 	-- Sharpeye already has it
-	if not (not sharpeye or sharpeye and sharpeye.IsEnabled and sharpeye.IsEnabled()) then return end
+	if not (not sharpeye or sharpeye and sharpeye.IsEnabled and sharpeye.IsEnabled()) then return newData end
 	local veh = ply:GetVehicle()
-
-	local newData
-
-	bypass = true
-	for k, v in pairs(hook.GetTable().CalcView) do
-		local Data = v(ply, pos, ang, fov, nearZ, farZ)
-
-		if Data ~= nil then
-			newData = Data
-			break
-		end
-	end
-	bypass = false
-
-	if not newData then
-		local gm = gmod.GetGamemode()
-
-		if gm and gm.CalcView then
-			newData = gm:CalcView(ply, pos, ang, fov, nearZ, farZ)
-		end
-
-		if not newData then
-			newData = {
-				origin = pos,
-				angles = ang,
-				fov = fov,
-				znear = nearZ,
-				zfar = farZ,
-				drawviewer = inVehicle and veh:GetThirdPersonMode(),
-			}
-		end
-	end
 
 	oldAng = oldAng or newData.angles
 	local newang = LerpAngle(math.min(0.4 * math.sqrt(DHUD2.Multipler or 1), 1), oldAng, newData.angles)
@@ -97,7 +59,7 @@ local function CalcView(ply, pos, ang, fov, nearZ, farZ)
 
 		for k = 1, #Ents do
 			local ent = Ents[k]
-			if ent:IsPlayer() or ent:GetSolid() == SOLID_NONE or ent:IsWeapon() or ent:GetOwner():IsValid() or ent:GetParent():IsValid() then continue end
+			if ent:IsPlayer() or ent:GetSolid() == SOLID_NONE or ent:IsWeapon() or ent:GetOwner():IsValid() or ent:GetParent():IsValid() then goto CNT end
 			local mins, maxs = ent:WorldSpaceAABB()
 
 			if mins and maxs then
@@ -114,6 +76,8 @@ local function CalcView(ply, pos, ang, fov, nearZ, farZ)
 					hit = true
 				end
 			end
+
+			::CNT::
 		end
 
 		if not hit then
@@ -123,8 +87,7 @@ local function CalcView(ply, pos, ang, fov, nearZ, farZ)
 		DHUD2.PredictedEntity = LocalPlayer()
 	end
 
-	lastResult = newData
 	return newData
 end
 
-hook.Add('CalcView', '.DHUD2.CalcView', CalcView, -1)
+hook.AddPostModifier('CalcView', 'DHUD2.CalcView', CalcView)
