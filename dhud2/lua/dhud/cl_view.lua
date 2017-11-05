@@ -51,23 +51,16 @@ local function CalcView(ply, pos, ang, fov, nearZ, farZ)
 
 	bypass = true
 	for k, v in pairs(hook.GetTable().CalcView) do
-		if type(k) ~= 'string' and IsValid(k) then
-			local Data = v(k, ply, pos, ang, fov, nearZ, farZ)
-			if Data ~= nil then
-				newData = Data
-				break
-			end
-		else
-			local Data = v(ply, pos, ang, fov, nearZ, farZ)
-			if Data ~= nil then
-				newData = Data
-				break
-			end
+		local Data = v(ply, pos, ang, fov, nearZ, farZ)
+
+		if Data ~= nil then
+			newData = Data
+			break
 		end
 	end
 	bypass = false
 
-	if not newData then 
+	if not newData then
 		local gm = gmod.GetGamemode()
 
 		if gm and gm.CalcView then
