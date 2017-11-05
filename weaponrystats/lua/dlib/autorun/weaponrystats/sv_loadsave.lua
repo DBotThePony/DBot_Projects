@@ -249,7 +249,6 @@ timer.Create('WeaponryStats.Save', 5, 0, function()
 	xpcall(saveToDatabase, onError)
 end)
 
-hook.Add('PlayerDisconnected', 'WeaponryStats.Save', PlayerDisconnected)
 hook.Add('PlayerInitialSpawn', 'WeaponryStats.Load', PlayerInitialSpawn)
 hook.Add('PlayerLoadout', 'WeaponryStats.Process', PlayerLoadout)
 
