@@ -210,8 +210,6 @@ concommand.Add('scpi_reset173', function(ply)
   end
 end)
 timer.Create('SCPInsanity.UpdateNPCs', 1, 0, UpdateNPCs)
-hook.Add('OnNPCKilled', 'DBot.SCPInsanity', OnNPCKilled)
-hook.Add('PlayerDeath', 'DBot.SCPInsanity', PlayerDeath)
 local _list_0 = ents.FindByClass('ai_relationship')
 for _index_0 = 1, #_list_0 do
   local ship = _list_0[_index_0]

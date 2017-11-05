@@ -118,8 +118,6 @@ concommand.Add 'scpi_reset173', (ply) ->
 	v.SCP_Killed = nil for v in *player.GetAll()
 
 timer.Create 'SCPInsanity.UpdateNPCs', 1, 0, UpdateNPCs
-hook.Add('OnNPCKilled', 'DBot.SCPInsanity', OnNPCKilled)
-hook.Add('PlayerDeath', 'DBot.SCPInsanity', PlayerDeath)
 
 for ship in *ents.FindByClass('ai_relationship')
  	ship\Remove() if ship.SCP_INSANITY
