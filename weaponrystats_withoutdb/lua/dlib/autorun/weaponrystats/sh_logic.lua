@@ -48,6 +48,7 @@ local perEntityBullets = {
 }
 
 local function EntityFireBullets(self, bulletData)
+	if not weaponrystats.ENABLED:GetBool() then return end
 	if IN_CALL then return end
 
 	if weaponrystats.SKIP_NEXT then

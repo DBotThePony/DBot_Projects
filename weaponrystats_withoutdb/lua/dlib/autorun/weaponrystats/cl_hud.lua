@@ -58,6 +58,7 @@ local function doDrawText(text, x, y, color)
 end
 
 local function HUDPaint()
+	if not weaponrystats.ENABLED:GetBool() then return end
 	local weapon = LocalPlayer():GetActiveWeapon()
 	if not IsValid(weapon) then return end
 	local modif, wtype = weapon:GetWeaponModification(), weapon:GetWeaponType()
