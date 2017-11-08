@@ -267,6 +267,7 @@ weaponMeta.weaponrystats_SetNextPrimaryFire = weaponMeta.weaponrystats_SetNextPr
 weaponMeta.weaponrystats_SetNextSecondaryFire = weaponMeta.weaponrystats_SetNextSecondaryFire or weaponMeta.SetNextSecondaryFire
 
 function weaponMeta:SetNextPrimaryFire(time)
+	if not weaponrystats.ENABLED:GetBool() then return weaponMeta.weaponrystats_SetNextPrimaryFire(self, time) end
 	local delta = time - CurTime()
 
 	if delta > 0 then
@@ -287,6 +288,7 @@ function weaponMeta:SetNextPrimaryFire(time)
 end
 
 function weaponMeta:SetNextSecondaryFire(time)
+	if not weaponrystats.ENABLED:GetBool() then return weaponMeta.weaponrystats_SetNextSecondaryFire(self, time) end
 	local delta = time - CurTime()
 
 	if delta > 0 then
