@@ -37,6 +37,8 @@ weaponrystats = {}
 weaponrystats.modifications = include('sh_modifications.lua')
 weaponrystats.types = include('sh_types.lua')
 
+weaponrystats.ENABLED = CreateConVar('sv_wpstats_enabled', '1', {FCVAR_REPLICATED}, 'Enable Weaponry Stats')
+
 weaponrystats.blacklisted = DLib.HashSet()
 local hashset = weaponrystats.blacklisted
 

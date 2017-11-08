@@ -17,6 +17,7 @@ local weaponrystats = weaponrystats
 local IN_DAMAGE = false
 
 local function EntityTakeDamage(self, dmginfo)
+	if not weaponrystats.ENABLED:GetBool() then return end
 	if IN_DAMAGE then return end
 	local weapon, attacker = DLib.combat.findWeapon(dmginfo)
 	if not IsValid(weapon) then return end
