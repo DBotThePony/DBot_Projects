@@ -1,0 +1,18 @@
+actioncounter:
+   script:
+     - cd actioncounter
+     - rm -rf lua
+     - mkdir lua
+     - moonc -t lua moon/*
+tf2buildables:
+   script:
+     - cd tf2buildables
+     - rm -rf lua
+     - mkdir lua
+     - moonc -t lua moon/*
+scpinsanity:
+   script:
+     - cd scpinsanity
+     - rm -rf lua
+     - mkdir lua
+     - moonc -t lua moon/*
