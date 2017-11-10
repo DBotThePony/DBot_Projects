@@ -10,3 +10,4 @@ tf2buildables/lua_src/autorun/client/hudcommons/stripped.lua
 tf2buildables/lua_src/autorun/client/hudcommons/colors.lua
 tf2buildables/lua_src/autorun/client/hudcommons/functions.lua
 scpinsanity/lua/
+actioncounter/lua/
