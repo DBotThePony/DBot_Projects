@@ -18,6 +18,22 @@ limitations under the License.
 local ENABLE = CreateConVar('dhud_numbers', '1', FCVAR_ARCHIVE, 'Draw hit numbers')
 DHUD2.AddConVar('dhud_numbers', 'Draw hit numbers', ENABLE)
 
+local net = net
+local table = table
+local pairs = pairs
+local ipairs = ipairs
+local LocalPlayer = LocalPlayer
+local IsValid = IsValid
+local Vector = Vector
+local draw = draw
+local surface = surface
+local EyePos = EyePos
+local EyeAngles = EyeAngles
+local DHUD2 = DHUD2
+local CurTime = CurTime
+local DLib = DLib
+local math = math
+
 DHUD2.Damage = DHUD2.Damage or {}
 local Damage = DHUD2.Damage
 Damage.History = Damage.History or {}
@@ -130,6 +146,7 @@ local function NetPlayer()
 		local data = {
 			pos = pos + VectorRand() * scrambleAplifier,
 			dmg = dmg,
+			dmgt = '-' .. dmg,
 			start = ctime,
 			finish = ctime + tolive,
 			fade = ctime + tolive - 1,
@@ -160,6 +177,7 @@ local function Net()
 		local data = {
 			pos = pos + VectorRand() * scrambleAplifier,
 			dmg = dmg,
+			dmgt = '-' .. dmg,
 			start = ctime,
 			finish = ctime + tolive,
 			shift = 0,
@@ -207,7 +225,10 @@ local function PostDrawTranslucentRenderables(a, b)
 	local lpos = EyePos()
 	local langle = EyeAngles()
 
-	for k, data in pairs(Damage.History) do
+	surface.SetFont('DHUD2.DamageNumber')
+	surface.SetTextPos(0, 0)
+
+	for k, data in ipairs(Damage.History) do
 		local pos = data.pos
 		local dmg = data.dmg
 
@@ -220,7 +241,9 @@ local function PostDrawTranslucentRenderables(a, b)
 		add:Rotate(dang)
 
 		cam.Start3D2D(pos + add, dang, data.size / 100)
-		draw.DrawText('-' .. data.dmg, 'DHUD2.DamageNumber', 0, 0, data.color)
+		surface.SetTextColor(data.color)
+		surface.SetTextPos(0, 0)
+		surface.DrawText(data.dmgt)
 		cam.End3D2D()
 	end
 end
@@ -236,7 +259,7 @@ local function Draw()
 	draw.NoTexture()
 	node.clear()
 
-	for k, v in pairs(Damage.PHistory) do
+	for k, v in ipairs(Damage.PHistory) do
 		local ang = (v.pos - lpos):Angle()
 		local yaw = ang.y + 90
 		local turn = math.rad(lyaw - yaw)
@@ -270,10 +293,9 @@ local function Tick()
 	if not ENABLE:GetBool() then return end
 	local ctime = CurTime()
 
-	for k, data in pairs(Damage.History) do
+	for k, data in ipairs(Damage.History) do
 		if data.finish < ctime then
-			Damage.History[k] = nil
-			goto CONTINUE
+			table.remove(Damage.History, k)
 		end
 
 		data.size = math.max(data.size - FrameTime() * (50 + data.ssize / 5), 10)
@@ -284,18 +306,15 @@ local function Tick()
 
 		data.cfade = math.Clamp(1 - (CurTime() - data.fade), 0, 1)
 		data.color.a = data.cfade * 255
-		::CONTINUE::
 	end
 
-	for k, data in pairs(Damage.PHistory) do
+	for k, data in ipairs(Damage.PHistory) do
 		if data.finish < ctime then
-			Damage.PHistory[k] = nil
-			goto CONTINUE
+			table.remove(Damage.PHistory, k)
 		end
 
 		data.cfade = math.Clamp(1 - (CurTime() - data.fade), 0, 1)
 		data.color.a = data.cfade * 255
-		::CONTINUE::
 	end
 end
 
