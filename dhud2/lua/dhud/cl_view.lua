@@ -41,6 +41,9 @@ local function CalcView(newData)
 	if not (not sharpeye or sharpeye and sharpeye.IsEnabled and sharpeye.IsEnabled()) then return newData end
 	local veh = ply:GetVehicle()
 
+	newData.origin = newData.origin or EyePos()	
+	newData.angles = newData.angles or EyeAngles()	
+
 	oldAng = oldAng or newData.angles
 	local newang = LerpAngle(math.min(0.4 * math.sqrt(DHUD2.Multipler or 1), 1), oldAng, newData.angles)
 	newData.angles = newang
