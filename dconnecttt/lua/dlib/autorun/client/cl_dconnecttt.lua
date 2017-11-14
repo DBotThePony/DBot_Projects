@@ -13,20 +13,12 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+local HUD_POSITION = DLib.HUDCommons.DefinePosition('dconnecttt', 0, 0)
+local COLOR_TO_USE = DLib.HUDCommons.CreateColor('dconnecttt_bg', 'DConnecttt Background', 0, 0, 0, 150)
+local COLOR_TO_USE_TEXT = DLib.HUDCommons.CreateColor('dconnecttt', 'DConnecttt Background', 255, 255, 255)
 
 local DRAW_NOT_RESPONDING = CreateConVar('cl_dconn_draw', '1', {FCVAR_ARCHIVE}, 'Draw visual effect when player loses connection')
 local DRAW_TIME = CreateConVar('cl_dconn_drawtime', '1', {FCVAR_ARCHIVE}, 'Draw time played on server')
-local COLOR_R = CreateConVar('cl_dconn_r', '255', {FCVAR_ARCHIVE}, 'Red Channel')
-local COLOR_G = CreateConVar('cl_dconn_g', '255', {FCVAR_ARCHIVE}, 'Green Channel')
-local COLOR_B = CreateConVar('cl_dconn_b', '255', {FCVAR_ARCHIVE}, 'Blue Channel')
-local COLOR_A = CreateConVar('cl_dconn_a', '255', {FCVAR_ARCHIVE}, 'Alpha Channel')
-local POS_X = CreateConVar('cl_dconn_x', '0', {FCVAR_ARCHIVE}, 'X Position')
-local POS_Y = CreateConVar('cl_dconn_y', '0', {FCVAR_ARCHIVE}, 'Y Position')
-
-local BG_R = CreateConVar('cl_dconn_bg_r', '0', {FCVAR_ARCHIVE}, 'Red Channel')
-local BG_G = CreateConVar('cl_dconn_bg_g', '0', {FCVAR_ARCHIVE}, 'Green Channel')
-local BG_B = CreateConVar('cl_dconn_bg_b', '0', {FCVAR_ARCHIVE}, 'Blue Channel')
-local BG_A = CreateConVar('cl_dconn_bg_a', '200', {FCVAR_ARCHIVE}, 'Alpha Channel')
 
 local DISPLAY_NICKS = CreateConVar('sv_dconn_hoverdisplay', '1', {FCVAR_NOTIFY, FCVAR_ARCHIVE, FCVAR_REPLICATED}, 'Display players nicks on hovering')
 
@@ -102,11 +94,12 @@ local function HUDPaint()
 	local text = 'Session time: ' .. DLib.string.tformat(stime) .. '\nTotal time: ' .. DLib.string.tformat(ttime) .. add
 	surface.SetFont('DConnecttt.HUD')
 	local w, h = surface.GetTextSize(text)
+	local x, y = HUD_POSITION()
 
-	surface.SetDrawColor(BG_R:GetInt(), BG_G:GetInt(), BG_B:GetInt(), BG_A:GetInt())
-	surface.DrawRect(POS_X:GetInt() - 4, POS_Y:GetInt() - 2, w + 8, h + 4)
+	surface.SetDrawColor(COLOR_TO_USE())
+	surface.DrawRect(x - 4, y - 2, w + 8, h + 4)
 
-	draw.DrawText(text, 'DConnecttt.HUD', POS_X:GetInt(), POS_Y:GetInt(), Color(COLOR_R:GetInt(), COLOR_G:GetInt(), COLOR_B:GetInt(), COLOR_A:GetInt()))
+	draw.DrawText(text, 'DConnecttt.HUD', x, y, COLOR_TO_USE_TEXT())
 end
 
 local function Populate(Panel)
