@@ -121,7 +121,7 @@ local function Flashlight(ply)
 	local toAdd = FrameTime()
 
 	if isOn then
-		toAdd = -toAdd * FLASHLIGHT_RATIO:GetFloat() / 50
+		toAdd = -toAdd * FLASHLIGHT_RATIO:GetFloat() / 50 * (1 + math.pow((100 - plyt.__Limited_Flashlight_Value) / 75, 2))
 
 		if plyt.__Limited_Flashlight_Value ~= 0 then
 			local can = hook.Run('CanDischargeFlashlight', ply, plyt.__Limited_Flashlight_Value, toAdd)
@@ -137,7 +137,7 @@ local function Flashlight(ply)
 
 		if plyt.__Limited_Flashlight_Value == 100 then return end
 		if plyt.__Limited_Flashlight_Wait > CurTime() then return end
-		toAdd = toAdd * FLASHLIGHT_RRATIO:GetFloat() / 50
+		toAdd = toAdd * FLASHLIGHT_RRATIO:GetFloat() / 200 * math.pow(plyt.__Limited_Flashlight_Value / 50 + 1, 2)
 
 		local can = hook.Run('CanChargeFlashlight', ply, plyt.__Limited_Flashlight_Value, toAdd)
 		if can == false then return end
