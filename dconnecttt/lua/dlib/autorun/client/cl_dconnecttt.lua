@@ -251,8 +251,9 @@ local function PostDrawTranslucentRenderables(a, b)
 	surface.SetFont('DConnecttt.Disconnect')
 
 	for k, v in pairs(player.GetAll()) do
-		if not v:GetNWBool('DConnecttt_Dead') then continue end
-		Draw(v)
+		if v:GetNWBool('DConnecttt_Dead') then
+			Draw(v)
+		end
 	end
 end
 
