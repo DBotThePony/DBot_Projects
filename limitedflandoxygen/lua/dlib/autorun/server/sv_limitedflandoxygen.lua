@@ -27,28 +27,35 @@ local WATER_CHOKE_DMG = CreateConVar('sv_limited_oxygen_choke_dmg', '4', {FCVAR_
 local WATER_RATIO = CreateConVar('sv_limited_oxygen_ratio', '100', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Ratio of draining oxygen from player')
 local WATER_RRATIO = CreateConVar('sv_limited_oxygen_restore_ratio', '500', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Ratio of restoring oxygen')
 
+local FLASHLIGHT = CreateConVar('sv_limited_flashlight', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Enable limited flashlight')
+local FLASHLIGHT_RATIO = CreateConVar('sv_limited_flashlight_ratio', '100', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Ratio of draining power from flashlight')
+local FLASHLIGHT_RRATIO = CreateConVar('sv_limited_flashlight_restore_ratio', '500', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Ratio of restoring power of flashlight')
+local FLASHLIGHT_PAUSE = CreateConVar('sv_limited_flashlight_pause', '4', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Seconds to wait before starting restoring power of flashlight')
+local FLASHLIGHT_EPAUSE = CreateConVar('sv_limited_flashlight_epause', '2', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Seconds to wait before granting player ability to enable his flashlight after starting power restoring')
+
 local function Water(ply)
+	local plyt = ply:GetTable()
 	local waterLevel = ply:InVehicle() and ply:GetVehicle():WaterLevel() or ply:WaterLevel()
 	local restoring = waterLevel <= 2
 
-	ply.__Limited_Oxygen_Value = math.Clamp(ply.__Limited_Oxygen_Value or 100, 0, 100)
-	ply.__Limited_Oxygen_Next = ply.__Limited_Oxygen_Next or 0
-	ply.__Limited_Oxygen_NextChoke = ply.__Limited_Oxygen_NextChoke or 0
-	ply.__Limited_Oxygen_Restore = ply.__Limited_Oxygen_Restore or 0
-	ply.__Limited_Oxygen_RestoreNext = ply.__Limited_Oxygen_RestoreNext or 0
+	plyt.__Limited_Oxygen_Value = math.Clamp(plyt.__Limited_Oxygen_Value or 100, 0, 100)
+	plyt.__Limited_Oxygen_Next = plyt.__Limited_Oxygen_Next or 0
+	plyt.__Limited_Oxygen_NextChoke = plyt.__Limited_Oxygen_NextChoke or 0
+	plyt.__Limited_Oxygen_Restore = plyt.__Limited_Oxygen_Restore or 0
+	plyt.__Limited_Oxygen_RestoreNext = plyt.__Limited_Oxygen_RestoreNext or 0
 
 	local toAdd = FrameTime()
 
 	if restoring then
-		if WATER_RESTORE:GetBool() and ply.__Limited_Oxygen_Restore > 0 then
-			if ply.__Limited_Oxygen_RestoreNext < CurTime() then
-				local can = hook.Run('CanRestoreOxygenHealth', ply, ply.__Limited_Oxygen_Restore)
+		if WATER_RESTORE:GetBool() and plyt.__Limited_Oxygen_Restore > 0 then
+			if plyt.__Limited_Oxygen_RestoreNext < CurTime() then
+				local can = hook.Run('CanRestoreOxygenHealth', ply, plyt.__Limited_Oxygen_Restore)
 				if can ~= false then
-					ply.__Limited_Oxygen_RestoreNext = CurTime() + 1
+					plyt.__Limited_Oxygen_RestoreNext = CurTime() + 1
 					local hp, mhp = ply:Health(), ply:GetMaxHealth()
 					local percent = hp / mhp
-					local toRestore = math.min(ply.__Limited_Oxygen_Restore, WATER_RESTORE_SPEED:GetFloat())
-					ply.__Limited_Oxygen_Restore = math.max(ply.__Limited_Oxygen_Restore - WATER_RESTORE_SPEED:GetFloat(), 0)
+					local toRestore = math.min(plyt.__Limited_Oxygen_Restore, WATER_RESTORE_SPEED:GetFloat())
+					plyt.__Limited_Oxygen_Restore = math.max(plyt.__Limited_Oxygen_Restore - WATER_RESTORE_SPEED:GetFloat(), 0)
 
 					if percent < 1 then
 						ply:SetHealth(math.min(hp + toRestore, mhp))
@@ -57,28 +64,28 @@ local function Water(ply)
 			end
 		end
 
-		if ply.__Limited_Oxygen_Value == 100 then return end
-		if ply.__Limited_Oxygen_Next > CurTime() then return end
+		if plyt.__Limited_Oxygen_Value == 100 then return end
+		if plyt.__Limited_Oxygen_Next > CurTime() then return end
 
 		toAdd = toAdd * WATER_RRATIO:GetFloat() / 25
-		local can = hook.Run('CanRestoreOxygen', ply, ply.__Limited_Oxygen_Value, toAdd)
+		local can = hook.Run('CanRestoreOxygen', ply, plyt.__Limited_Oxygen_Value, toAdd)
 		if can == false then return end
 	else
 		toAdd = -toAdd * WATER_RATIO:GetFloat() / 25
 
-		if ply.__Limited_Oxygen_Value ~= 0 then
-			local can = hook.Run('CanLooseOxygen', ply, ply.__Limited_Oxygen_Value, toAdd)
+		if plyt.__Limited_Oxygen_Value ~= 0 then
+			local can = hook.Run('CanLooseOxygen', ply, plyt.__Limited_Oxygen_Value, toAdd)
 			if can == false then return end
 		end
 
-		ply.__Limited_Oxygen_Next = CurTime() + WATER_PAUSE:GetFloat()
-		ply.__Limited_Oxygen_RestoreNext = ply.__Limited_Oxygen_Next + 1
+		plyt.__Limited_Oxygen_Next = CurTime() + WATER_PAUSE:GetFloat()
+		plyt.__Limited_Oxygen_RestoreNext = plyt.__Limited_Oxygen_Next + 1
 	end
 
-	ply.__Limited_Oxygen_Value = math.Clamp(ply.__Limited_Oxygen_Value + toAdd, 0, 100)
+	plyt.__Limited_Oxygen_Value = math.Clamp(plyt.__Limited_Oxygen_Value + toAdd, 0, 100)
 
-	if ply.__Limited_Oxygen_Value == 0 then
-		if ply.__Limited_Oxygen_NextChoke > CurTime() then return end
+	if plyt.__Limited_Oxygen_Value == 0 then
+		if plyt.__Limited_Oxygen_NextChoke > CurTime() then return end
 		local can = hook.Run('CanChoke', ply)
 		if can == false then return end
 
@@ -93,27 +100,22 @@ local function Water(ply)
 		local newhp = ply:Health()
 
 		if WATER_RESTORE:GetBool() then
-			ply.__Limited_Oxygen_Restore = ply.__Limited_Oxygen_Restore + math.max(0, oldhp - newhp) * WATER_RESTORE_RATIO:GetFloat()
+			plyt.__Limited_Oxygen_Restore = plyt.__Limited_Oxygen_Restore + math.max(0, oldhp - newhp) * WATER_RESTORE_RATIO:GetFloat()
 		end
 
 		ply:EmitSound('player/pl_drown' .. math.random(1, 3) .. '.wav', 55)
 
-		ply.__Limited_Oxygen_NextChoke = CurTime() + WATER_CHOKE_RATIO:GetFloat()
+		plyt.__Limited_Oxygen_NextChoke = CurTime() + WATER_CHOKE_RATIO:GetFloat()
 	end
 end
 
-local FLASHLIGHT = CreateConVar('sv_limited_flashlight', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Enable limited flashlight')
-local FLASHLIGHT_RATIO = CreateConVar('sv_limited_flashlight_ratio', '100', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Ratio of draining power from flashlight')
-local FLASHLIGHT_RRATIO = CreateConVar('sv_limited_flashlight_restore_ratio', '500', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Ratio of restoring power of flashlight')
-local FLASHLIGHT_PAUSE = CreateConVar('sv_limited_flashlight_pause', '4', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Seconds to wait before starting restoring power of flashlight')
-local FLASHLIGHT_EPAUSE = CreateConVar('sv_limited_flashlight_epause', '2', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Seconds to wait before granting player ability to enable his flashlight after starting power restoring')
-
 local function Flashlight(ply)
-	ply.__Limited_Flashlight_Value = math.Clamp(ply.__Limited_Flashlight_Value or 100, 0, 100)
-	ply.__Limited_Flashlight_Wait = ply.__Limited_Flashlight_Wait or 0
-	ply.__Limited_Flashlight_EWait = ply.__Limited_Flashlight_EWait or 0
+	local plyt = ply:GetTable()
+	plyt.__Limited_Flashlight_Value = math.Clamp(plyt.__Limited_Flashlight_Value or 100, 0, 100)
+	plyt.__Limited_Flashlight_Wait = plyt.__Limited_Flashlight_Wait or 0
+	plyt.__Limited_Flashlight_EWait = plyt.__Limited_Flashlight_EWait or 0
 
-	--ply:PrintMessage(HUD_PRINTCONSOLE, tostring(ply.__Limited_Flashlight_Value))
+	--ply:PrintMessage(HUD_PRINTCONSOLE, tostring(plyt.__Limited_Flashlight_Value))
 
 	local isOn = ply:FlashlightIsOn()
 	local toAdd = FrameTime()
@@ -121,33 +123,33 @@ local function Flashlight(ply)
 	if isOn then
 		toAdd = -toAdd * FLASHLIGHT_RATIO:GetFloat() / 50
 
-		if ply.__Limited_Flashlight_Value ~= 0 then
-			local can = hook.Run('CanDischargeFlashlight', ply, ply.__Limited_Flashlight_Value, toAdd)
+		if plyt.__Limited_Flashlight_Value ~= 0 then
+			local can = hook.Run('CanDischargeFlashlight', ply, plyt.__Limited_Flashlight_Value, toAdd)
 			if can == false then return end
 		end
 
-		ply.__Limited_Flashlight_Wait = CurTime() + FLASHLIGHT_PAUSE:GetFloat()
+		plyt.__Limited_Flashlight_Wait = CurTime() + FLASHLIGHT_PAUSE:GetFloat()
 	else
-		if ply.__Limited_Flashlight_DisabledByMe and ply.__Limited_Flashlight_EWait < CurTime() then
+		if plyt.__Limited_Flashlight_DisabledByMe and plyt.__Limited_Flashlight_EWait < CurTime() then
 			ply:AllowFlashlight(true)
-			ply.__Limited_Flashlight_DisabledByMe = nil
+			plyt.__Limited_Flashlight_DisabledByMe = nil
 		end
 
-		if ply.__Limited_Flashlight_Value == 100 then return end
-		if ply.__Limited_Flashlight_Wait > CurTime() then return end
+		if plyt.__Limited_Flashlight_Value == 100 then return end
+		if plyt.__Limited_Flashlight_Wait > CurTime() then return end
 		toAdd = toAdd * FLASHLIGHT_RRATIO:GetFloat() / 50
 
-		local can = hook.Run('CanChargeFlashlight', ply, ply.__Limited_Flashlight_Value, toAdd)
+		local can = hook.Run('CanChargeFlashlight', ply, plyt.__Limited_Flashlight_Value, toAdd)
 		if can == false then return end
 	end
 
-	ply.__Limited_Flashlight_Value = math.Clamp(ply.__Limited_Flashlight_Value + toAdd, 0, 100)
+	plyt.__Limited_Flashlight_Value = math.Clamp(plyt.__Limited_Flashlight_Value + toAdd, 0, 100)
 
-	if ply.__Limited_Flashlight_Value == 0 and ply:CanUseFlashlight() and not ply.__Limited_Flashlight_DisabledByMe then
+	if plyt.__Limited_Flashlight_Value == 0 and ply:CanUseFlashlight() and not plyt.__Limited_Flashlight_DisabledByMe then
 		ply:Flashlight(false)
 		ply:AllowFlashlight(false)
-		ply.__Limited_Flashlight_EWait = ply.__Limited_Flashlight_Wait + FLASHLIGHT_EPAUSE:GetFloat()
-		ply.__Limited_Flashlight_DisabledByMe = true
+		plyt.__Limited_Flashlight_EWait = plyt.__Limited_Flashlight_Wait + FLASHLIGHT_EPAUSE:GetFloat()
+		plyt.__Limited_Flashlight_DisabledByMe = true
 	end
 end
 
