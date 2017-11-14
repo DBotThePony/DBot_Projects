@@ -90,8 +90,8 @@ local function Water(ply)
 		if can == false then return end
 
 		local dmg = DamageInfo()
-		dmg:SetAttacker(ply)
-		dmg:SetInflictor(ply)
+		dmg:SetAttacker(Entity(0))
+		dmg:SetInflictor(Entity(0))
 		dmg:SetDamageType(DMG_DROWN)
 		dmg:SetDamage(WATER_CHOKE_DMG:GetFloat())
 
