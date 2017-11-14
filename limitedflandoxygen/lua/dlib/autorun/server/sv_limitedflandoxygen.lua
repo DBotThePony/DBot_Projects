@@ -169,15 +169,20 @@ local function PlayerSpawn(ply)
 end
 
 local function Tick()
-	for k, v in ipairs(player.GetAll()) do
-		if v:Alive() then
-			if WATER:GetBool() then Water(v) end
-			if FLASHLIGHT:GetBool() then Flashlight(v) end
+	for k, ply in ipairs(player.GetAll()) do
+		if ply:Alive() then
+			if WATER:GetBool() then Water(ply) end
+			if FLASHLIGHT:GetBool() then Flashlight(ply) end
 
-			net.Start('DBot_LimitedFlashlightAndOxygen')
-			net.WriteFloat(v.__Limited_Oxygen_Value or 100, 8)
-			net.WriteFloat(v.__Limited_Flashlight_Value or 100, 8)
-			net.Send(v)
+			if ply.__Limited_Oxygen_Value_Send ~= ply.__Limited_Oxygen_Value or ply.__Limited_Flashlight_Value_Send ~= ply.__Limited_Flashlight_Value then
+				net.Start('DBot_LimitedFlashlightAndOxygen', true)
+				net.WriteFloat(ply.__Limited_Oxygen_Value or 100, 8)
+				net.WriteFloat(ply.__Limited_Flashlight_Value or 100, 8)
+				net.Send(ply)
+
+				ply.__Limited_Oxygen_Value_Send = ply.__Limited_Oxygen_Value
+				ply.__Limited_Flashlight_Value_Send = ply.__Limited_Flashlight_Value
+			end
 		end
 	end
 end
