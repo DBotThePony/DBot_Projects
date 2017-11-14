@@ -39,35 +39,39 @@ end
 
 local OHeight, OWidth, FHeight, FWidth
 
-timer.Simple(0, function()
+local function dosizes()
 	surface.SetFont('DBot_LimitedFlashlightAndOxygen')
 	OHeight, OWidth = surface.GetTextSize('Oxygen')
 	FHeight, FWidth = surface.GetTextSize('Flashlight')
-end)
-
-local function FlashlightFunc()
-	local x, y = DEFINED_POSITION()
-
-	surface.SetDrawColor(0, 0, 0, 150)
-	surface.DrawRect(x - 100 + GetAddition(), y - 2 + GetAddition() + 25, 200, 20)
-
-	surface.SetDrawColor(200, 200, 0, 150)
-	surface.DrawRect(x - 95 + GetAddition(), y + GetAddition() + 25, 190 * Flashlight / 100, 16)
-
-	surface.SetTextPos(x - FWidth + GetAddition(), y + 2 + GetAddition() + 25)
-	surface.DrawText('Flashlight')
 end
 
-local function OxygenFunc()
+local function FlashlightFunc()
+	if not OHeight then dosizes() end
+
 	local x, y = DEFINED_POSITION()
 
 	surface.SetDrawColor(0, 0, 0, 150)
 	surface.DrawRect(x - 100 + GetAddition(), y - 2 + GetAddition(), 200, 20)
 
-	surface.SetDrawColor(0, 255, 255, 150)
-	surface.DrawRect(x - 95 + GetAddition(), y + GetAddition(), 190 * Oxygen / 100, 16)
+	surface.SetDrawColor(200, 200, 0, 150)
+	surface.DrawRect(x - 95 + GetAddition(), y + GetAddition(), 190 * Flashlight / 100, 16)
 
-	surface.SetTextPos(x - OWidth / 2 + GetAddition(), y + 2 + GetAddition())
+	surface.SetTextPos(x - 86 + GetAddition(), y + 1 + GetAddition())
+	surface.DrawText('Flashlight')
+end
+
+local function OxygenFunc()
+	if not OHeight then dosizes() end
+
+	local x, y = DEFINED_POSITION()
+
+	surface.SetDrawColor(0, 0, 0, 150)
+	surface.DrawRect(x - 100 + GetAddition(), y - 2 + GetAddition() + 25, 200, 20)
+
+	surface.SetDrawColor(0, 255, 255, 150)
+	surface.DrawRect(x - 95 + GetAddition(), y + GetAddition() + 25, 190 * Oxygen / 100, 16)
+
+	surface.SetTextPos(x + 60 - OWidth + GetAddition(), y + 1 + GetAddition() + 25)
 	surface.DrawText('Oxygen')
 end
 
