@@ -155,6 +155,7 @@ local function Draw(ply)
 	local eyes = ply:EyePos()
 	eyes.z = eyes.z + 20
 
+	local add = Vector(-25, 0, 0)
 	local delta = EyePos() - eyes
 	local ang = delta:Angle()
 
@@ -164,10 +165,12 @@ local function Draw(ply)
 	ang:RotateAroundAxis(ang:Right(), -90)
 	ang:RotateAroundAxis(ang:Up(), 90)
 
-	cam.Start3D2D(eyes, ang, 0.1)
+	add:Rotate(ang)
+	cam.Start3D2D(eyes + add, ang, 0.1)
 
 	surface.DrawTexturedRect(0, 16, 32, 32)
 	surface.DrawText('? Connection lost')
+	surface.SetTextPos(0, 0)
 
 	cam.End3D2D()
 end
