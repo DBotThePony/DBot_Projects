@@ -15,6 +15,10 @@
 
 local ENABLED = DLib.util.CreateSharedConvar('sv_touchme_enabled', '1', 'Enable Touch Me serverside')
 
+if CLIENT then
+	CreateConVar('cl_touchme_enabled', '1', {FCVAR_USERINFO, FCVAR_ARCHIVE}, 'Enable Touch Me')
+end
+
 DLib.friends.Register('touchme', 'Touch me~', true)
 
 local function PhysgunPickup(ply, ent)
