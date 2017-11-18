@@ -26,6 +26,7 @@ local ScrW = ScrW
 local ScrH = ScrH
 
 local ENABLE = CreateConVar('cl_freakman_hud', '1', {FCVAR_ARCHIVE}, 'Enable Gordon Freakman HUD')
+local ENABLE2 = CreateConVar('sv_freakman_hud', '1', {FCVAR_REPLICATED}, 'Enable Gordon Freakman HUD')
 
 local pattern = HUDCommons.Pattern(true, 'GordonFreakman_SANITY', 24, -1.5, 1.5)
 local pattern2 = HUDCommons.Pattern(true, 'GordonFreakman_ALT', 24, -1.5, 1.5)
@@ -107,6 +108,7 @@ local AMMO2_CHANGE = 0
 
 local function HUDPaint()
 	if not ENABLE:GetBool() then return end
+	if not ENABLE2:GetBool() then return end
 	if not FIRST_THINK then return end
 
 	pattern:Next()
@@ -257,6 +259,7 @@ end
 
 local function HUDShouldDraw(elem)
 	if not ENABLE:GetBool() then return end
+	if not ENABLE2:GetBool() then return end
 
 	local reply = elem == 'CHudHealth' or
 		elem == 'CHudSecondaryAmmo' or
