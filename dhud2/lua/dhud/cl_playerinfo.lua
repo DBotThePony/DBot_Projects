@@ -33,7 +33,7 @@ local function Percent(var1, var2)
 		if div ~= div then return 1 end --nan
 		return math.Clamp(div, 0, 1)
 	end
-end	
+end
 
 DHUD2.RegisterVar('drawplyinfo_closer', false)
 DHUD2.RegisterVar('plyname')
@@ -54,14 +54,14 @@ local function UpdateVars(self, ply, ent, isValid, isPly)
 		SVar('drawplyinfo_closer', false)
 		return false
 	end
-	
+
 	local dist = ply:GetPos():Distance(ent:GetPos())
-	
-	if dist > MAX_DIST then 
+
+	if dist > MAX_DIST then
 		SVar('drawplyinfo_closer', false)
-		return false 
+		return false
 	end
-	
+
 	SVar('plyname', ent:Nick())
 	SVar('plyarmor', ent:Armor())
 	SVar('plyhp', ent:Health())
@@ -69,15 +69,15 @@ local function UpdateVars(self, ply, ent, isValid, isPly)
 	SVar('plyteam', ent:Team())
 	SVar('plyent', ent)
 	SVar('drawplyinfo_closer', dist <= MAX_DIST_NEAR)
-	
+
 	local wep = ent:GetActiveWeapon()
-	
+
 	if not IsValid(wep) then
 		SVar('plyweapon', false)
 	else
 		SVar('plyweapon', wep:GetPrintName())
 	end
-	
+
 	return true
 end
 
@@ -89,23 +89,23 @@ DHUD2.CreateColor('plytext', 'Player name', 255, 255, 255, 255)
 local function Draw()
 	if not Var 'drawplyinfo' then return end
 	local x, y = DHUD2.GetPosition('playerinfo')
-	
+
 	surface.SetFont('DHUD2.Default')
-	
+
 	local fullnickname = Var 'plyname'
-	
+
 	local team = Var 'plyteam_name'
-	
+
 	if team ~= 'Unassigned' then
 		fullnickname = fullnickname .. ' ' .. team
 	end
-	
+
 	local w, h = surface.GetTextSize(fullnickname)
-	
+
 	x = x - w / 2
 	DHUD2.DrawBox(x - 5, y - 2, w + 10, h + 4, Col 'bg')
 	DHUD2.SimpleText(Var 'plyname', nil, x, y, Col 'plytext')
-	
+
 	if team ~= 'Unassigned' then
 		DHUD2.SimpleText(team, nil, x + 5 + surface.GetTextSize(Var 'plyname'), y, Var 'plyteam_color')
 	end
@@ -124,72 +124,76 @@ local function PostDrawTranslucentRenderables(a, b)
 	if a or b then return end
 	if not Var 'drawplyinfo_closer' then return end
 	if not IsValid(Var 'plyent') then return end
-	
+
 	if not DHUD2.IsHudDrawing then return end
-	
+
 	local ply = DHUD2.SelectPlayer()
 	local pos = ply:GetPos()
 	local eyes = ply:EyePos()
-	
+
 	local tply = Var 'plyent'
 	local tpos = tply:GetPos()
 	local EyePos = tply:EyePos()
-	
+
 	local head_attach = tply:LookupAttachment('head')
 	local eyes_attach = tply:LookupAttachment('eyes')
-	
+
 	if head_attach and head_attach ~= 0 then
 		EyePos = tply:GetAttachment(head_attach).Pos
 	elseif eyes_attach and eyes_attach ~= 0 then
 		EyePos = tply:GetAttachment(eyes_attach).Pos
 	end
-	
+
 	local delta = eyes - EyePos
 	local dang = delta:Angle()
-	
+
 	dang:RotateAroundAxis(dang:Right(), -90)
 	dang:RotateAroundAxis(dang:Up(), 90)
-	
+
 	local add = Vector(5, 2, 0)
 	add:Rotate(dang)
-	
+
 	cam.Start3D2D(EyePos + add, dang, 0.15)
-	
+
 	local x, y = 5, 18
-	
+
 	DHUD2.DrawBox(0, 0, 310, LastHeight, Col 'bg')
 	LastHeight = 65
 	DHUD2.DrawBox(x, y, 300, 15, Col 'empty_bar')
 	DHUD2.DrawBox(x, y, 300 * Var 'plyhppercent', 15, Col 'plyhpbar')
-	
+
 	local hptext = Var 'plyhp'
-	
+
 	surface.SetFont('DHUD2.Default')
 	DHUD2.SimpleText(hptext, nil, x + 300 - surface.GetTextSize(hptext), 2, Col 'plyhptext')
-	
+
 	local armor = Var 'plyarmor'
-	
+
 	if armor > 0 then
 		DHUD2.DrawBox(x, y + 9, 300 * Var 'plyarmorpercent', 6, Col 'plyarmorbar')
 		DHUD2.SimpleText(armor, nil, x, y + 15, Col 'plyarmortext')
 	end
-	
+
 	local wep = Var 'plyweapon'
-	
+
 	if wep then
 		DHUD2.SimpleText(wep, nil, x, y + 28, Col 'plytext')
 	end
-	
+
 	local hooks = hook.GetTable().DHUD2_PostDrawPlayerInfo
-	
+
 	if hooks then
 		for k, v in pairs(hooks) do
 			LastHeight = LastHeight + (v(LastHeight) or 0)
 		end
 	end
-	
+
 	cam.End3D2D()
 end
 
-hook.Add('HUDDrawTargetID', 'DHUD2.HUDDrawTargetID', function() return false end)
+hook.Add('HUDDrawTargetID', 'DHUD2.HUDDrawTargetID', function()
+	if not DHUD2.IsEnabled() then return end
+	return false
+end)
+
 hook.Add('PostDrawTranslucentRenderables', 'DHUD2.HUDDrawTargetID', PostDrawTranslucentRenderables)
