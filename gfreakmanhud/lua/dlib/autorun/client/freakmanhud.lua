@@ -89,6 +89,7 @@ local LAST_HEALTH_CHANGE = 0
 
 local ARMOR = 0
 local LAST_ARMOR_CHANGE = 0
+local AWEAPON
 
 local CLIP1 = 0
 local CLIP2 = 0
@@ -176,6 +177,8 @@ local function HUDPaint()
 		HUDCommons.SimpleText('AMMO', FONT, x + 20, y + 45, TEXT_COLOR)
 		patternAmmo1:SimpleText(CLIP1, FONT_NUMBERS, x + 90, y + 4, rainbowAmmo1:Next())
 		patternAmmo2:SimpleText(AMMO1, FONT_NUMBERSS_SMALL, x + 220, y + 34, rainbowAmmo2:Next())
+
+		HUDCommons.DrawWeaponAmmoIcon(AWEAPON, x + 20, y, TEXT_COLOR)
 	end
 end
 
@@ -199,6 +202,8 @@ local function Tick()
 
 	HEALTH = newhp
 	ARMOR = _ARMOR
+
+	AWEAPON = weapon
 
 	if IsValid(weapon) then
 		local _CLIP1 = weapon:Clip1()
