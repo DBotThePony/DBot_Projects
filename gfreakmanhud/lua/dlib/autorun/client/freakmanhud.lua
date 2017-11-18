@@ -177,8 +177,14 @@ local function HUDPaint()
 		draw.RoundedBox(8, x, y, AMMO_WIDTH, HEALTH_HEIGHT, BACKGROUND_COLOR)
 
 		HUDCommons.SimpleText('AMMO', FONT, x + 20, y + 45, TEXT_COLOR)
-		patternAmmo1:SimpleText(CLIP1, FONT_NUMBERS, x + 90, y + 4, rainbowAmmo1:Next())
-		patternAmmo2:SimpleText(AMMO1, FONT_NUMBERSS_SMALL, x + 220, y + 34, rainbowAmmo2:Next())
+
+		if CLIP1_MAX > 0 then
+			patternAmmo1:SimpleText(CLIP1, FONT_NUMBERS, x + 90, y + 4, rainbowAmmo1:Next())
+			patternAmmo2:SimpleText(AMMO1, FONT_NUMBERSS_SMALL, x + 220, y + 34, rainbowAmmo2:Next())
+		else
+			patternAmmo1:SimpleText(AMMO1, FONT_NUMBERS, x + 90, y + 4, rainbowAmmo1:Next())
+			patternAmmo2:SimpleText('-', FONT_NUMBERSS_SMALL, x + 220, y + 34, rainbowAmmo2:Next())
+		end
 
 		HUDCommons.DrawWeaponAmmoIcon(AWEAPON, x + 20, y, TEXT_COLOR)
 	end
