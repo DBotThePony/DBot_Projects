@@ -151,6 +151,11 @@ local function HUDPaint()
 		y = y - 45
 
 		patternArmor:SimpleText(ARMOR, FONT_NUMBERS, x, y, rainbowArmor:Next())
+
+		if LAST_ARMOR_CHANGE > time then
+			TEXT_COLOR_ALPHA.a = (LAST_ARMOR_CHANGE - time) / 2 * 255
+			pattern:SimpleText(ARMOR, FONT_NUMBERS_GLOWING, x, y, TEXT_COLOR_ALPHA)
+		end
 	end
 
 	x, y = ScrW() - 40, ScrH() - 30 - HEALTH_HEIGHT
@@ -166,6 +171,11 @@ local function HUDPaint()
 		HUDCommons.DrawWeaponSecondaryAmmoIcon(AWEAPON, x + 20, y, TEXT_COLOR)
 
 		pattern:SimpleText(touse, FONT_NUMBERS, x + 80, y + 4, rainbow2:Next())
+
+		if AMMO2_CHANGE > time then
+			TEXT_COLOR_ALPHA.a = (AMMO2_CHANGE - time) / 2 * 255
+			pattern:SimpleText(AMMO2, FONT_NUMBERS_GLOWING, x + 80, y + 4, TEXT_COLOR_ALPHA)
+		end
 
 		x = x - 40
 	end
@@ -183,9 +193,24 @@ local function HUDPaint()
 		if CLIP1_MAX > 0 then
 			patternAmmo1:SimpleText(CLIP1, FONT_NUMBERS, x + 90, y + 4, rainbowAmmo1:Next())
 			patternAmmo2:SimpleText(AMMO1, FONT_NUMBERSS_SMALL, x + 220, y + 34, rainbowAmmo2:Next())
+
+			if CLIP1_CHANGE > time then
+				TEXT_COLOR_ALPHA.a = (CLIP1_CHANGE - time) / 2 * 255
+				pattern:SimpleText(CLIP1, FONT_NUMBERS_GLOWING, x + 90, y + 4, TEXT_COLOR_ALPHA)
+			end
+
+			if AMMO1_CHANGE > time then
+				TEXT_COLOR_ALPHA.a = (AMMO1_CHANGE - time) / 2 * 255
+				pattern:SimpleText(AMMO1, FONT_NUMBERS_GLOWING_SMALL, x + 220, y + 34, TEXT_COLOR_ALPHA)
+			end
 		else
 			patternAmmo1:SimpleText(AMMO1, FONT_NUMBERS, x + 90, y + 4, rainbowAmmo1:Next())
 			patternAmmo2:SimpleText('-', FONT_NUMBERSS_SMALL, x + 220, y + 34, rainbowAmmo2:Next())
+
+			if AMMO1_CHANGE > time then
+				TEXT_COLOR_ALPHA.a = (AMMO1_CHANGE - time) / 2 * 255
+				pattern:SimpleText(AMMO1, FONT_NUMBERS_GLOWING, x + 90, y + 4, TEXT_COLOR_ALPHA)
+			end
 		end
 
 		HUDCommons.DrawWeaponAmmoIcon(AWEAPON, x + 20, y, TEXT_COLOR)
@@ -221,8 +246,8 @@ local function Tick()
 		local _CLIP1_MAX = weapon:GetMaxClip1()
 		local _CLIP2_MAX = weapon:GetMaxClip2()
 
-		AMMO1 = ply:GetAmmoCount(weapon:GetPrimaryAmmoType())
-		AMMO2 = ply:GetAmmoCount(weapon:GetSecondaryAmmoType())
+		local _AMMO1 = ply:GetAmmoCount(weapon:GetPrimaryAmmoType())
+		local _AMMO2 = ply:GetAmmoCount(weapon:GetSecondaryAmmoType())
 
 		if CLIP1 ~= _CLIP1 then
 			CLIP1_CHANGE = RealTime() + 2
@@ -240,10 +265,24 @@ local function Tick()
 			CLIP2_MAX_CHANGE = RealTime() + 2
 		end
 
+		if CLIP2_MAX ~= _CLIP2_MAX then
+			CLIP2_MAX_CHANGE = RealTime() + 2
+		end
+
+		if AMMO1 ~= _AMMO1 then
+			AMMO1_CHANGE = RealTime() + 2
+		end
+
+		if AMMO2 ~= _AMMO2 then
+			AMMO1_CHANGE = RealTime() + 2
+		end
+
 		CLIP1 = _CLIP1
 		CLIP2 = _CLIP2
 		CLIP1_MAX = _CLIP1_MAX
 		CLIP2_MAX = _CLIP2_MAX
+		AMMO1 = _AMMO1
+		AMMO2 = _AMMO2
 	else
 		CLIP1 = 0
 		CLIP2 = 0
