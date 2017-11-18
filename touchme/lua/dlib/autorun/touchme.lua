@@ -30,6 +30,7 @@ local engine = engine
 
 local ENABLED = DLib.util.CreateSharedConvar('sv_touchme_enabled', '1', 'Enable Touch Me serverside')
 local ENABLED_SANDBOX = DLib.util.CreateSharedConvar('sv_touchme_sandbox', '1', 'Sandbox has no restrictions')
+local MAX_RANGE = DLib.util.CreateSharedConvar('sv_touchme_range', '1024', 'Maximal range to pickup friends. Set to 0 to disable.')
 DLib.nw.poolBoolean('touchme_nono', false)
 
 local schat
@@ -60,6 +61,7 @@ local function PhysgunPickup(ply, ent)
 
 	local mv = ent:GetMoveType()
 	if mv ~= MOVETYPE_WALK and mv ~= MOVETYPE_NOCLIP then return end
+	if MAX_RANGE:GetInt() > 0 and ply:GetPos():Distance(ent:GetPos()) > MAX_RANGE:GetInt() then return end
 
 	if ply:GetInfoBool('cl_touchme_enabled', true) and ent:GetInfoBool('cl_touchme_enabled', true) and ent:CheckDLibFriendIn(ply, 'touchme') then
 		if SERVER then
