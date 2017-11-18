@@ -160,7 +160,9 @@ local function HUDPaint()
 		x = x - AMMO2_WIDTH
 
 		draw.RoundedBox(8, x, y, AMMO2_WIDTH, HEALTH_HEIGHT, BACKGROUND_COLOR)
-		HUDCommons.SimpleText('MUZZ', FONT, x + 20, y + 40, TEXT_COLOR)
+		HUDCommons.SimpleText('MUZZ', FONT, x + 20, y + 50, TEXT_COLOR)
+		HUDCommons.DrawWeaponSecondaryAmmoIcon(AWEAPON, x + 20, y, TEXT_COLOR)
+
 		pattern:SimpleText(touse, FONT_NUMBERS, x + 80, y + 4, rainbow2:Next())
 
 		x = x - 40
