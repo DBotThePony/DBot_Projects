@@ -467,6 +467,11 @@ local function PlayerLeaveVehicle(ply, vehicle)
 	end)
 end
 
+local function PlayerDeath(ply)
+	ply.dsit_player_root = nil
+	ply:SetDLibVar('dsit_flag', false)
+end
+
 local function PlayerSay(ply, text)
 	if ply:GetInfoBool('cl_dsit_message', true) and text:lower():find('get off') then
 		dsit_getoff(ply)
@@ -474,4 +479,5 @@ local function PlayerSay(ply, text)
 end
 
 hook.Add('PlayerLeaveVehicle', 'DSit', PlayerLeaveVehicle)
+hook.Add('PlayerDeath', 'DSit', PlayerDeath)
 hook.Add('PlayerSay', 'DSit', PlayerSay)
