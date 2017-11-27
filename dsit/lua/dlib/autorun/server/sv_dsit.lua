@@ -199,7 +199,7 @@ local function request(ply)
 		do
 			local target = ent:GetInfoBool('cl_dsit_friendsonly', false)
 			local me = ply:GetInfoBool('cl_dsit_friendsonly', false)
-			local isFriends = ply:IsFriend(ent) and ent:IsFriend(ply)
+			local isFriends = ply:CheckDLibFriendIn2('dsit', ent) and ent:CheckDLibFriendIn2('dsit', ply)
 
 			if (target or me) and not isFriends then
 				messaging.chatPlayer2(ply, 'One or both of players has cl_dsit_friendsonly set to 1 and you are not friends')
