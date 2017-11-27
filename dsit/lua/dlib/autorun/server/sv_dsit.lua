@@ -300,13 +300,6 @@ local function request(ply)
 		end
 	end
 
-	-- ulx hack
-	-- will remove after i release DAdmin
-	if ply:GetMoveType() == MOVETYPE_NONE or ply:GetMoveType() == MOVETYPE_OBSERVER then
-		messaging.chatPlayer2(ply, 'You can not sit right now')
-		return
-	end
-
 	if isPlayer or isSitting then
 		local findRoot
 
