@@ -64,16 +64,9 @@ local function checkNormal(ply, normal)
 	local normalCheck = normal:Angle()
 	normalCheck.p = normalCheck.p - 270
 
-	if not DSitConVars:getBool('allow_ceiling') then
-		if not inRange(normalCheck.p, -20, 20) then
-			messaging.chatPlayer2(ply, 'Invalid sitting angle (pitch is ', normalCheck.p, ' when should <> +-20 or -180)')
-			return false
-		end
-	else
-		if not inRange(normalCheck.p, -20, 20) and not inRange(normalCheck.p, -190, -170) and not inRange(normalCheck.p, 170, 190) then
-			messaging.chatPlayer2(ply, 'Invalid sitting angle (pitch is ', normalCheck.p, ' when should <> +-20 or -180)')
-			return false
-		end
+	if not inRange(normalCheck.p, -20, 20) and (not DSitConVars:getBool('allow_ceiling') or not inRange(normalCheck.p, -190, -170) and not inRange(normalCheck.p, 170, 190)) then
+		messaging.chatPlayer2(ply, 'Invalid sitting angle (pitch is ', normalCheck.p, ' when should <> +-20 or -180)')
+		return false
 	end
 
 	if normalCheck.r > 20 or normalCheck.r < -20 then
