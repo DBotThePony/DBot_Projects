@@ -24,11 +24,17 @@ local IsValid = IsValid
 local LocalPlayer = LocalPlayer
 local ScrW = ScrW
 local ScrH = ScrH
+local math = math
 
 local ENABLE = CreateConVar('cl_klife_hud', '1', {FCVAR_ARCHIVE}, 'Enable Kleiner Life HUD')
 local ENABLE2 = CreateConVar('sv_klife_hud', '1', {FCVAR_REPLICATED}, 'Enable Kleiner Life HUD')
 
-local BAR_FULL_FRONT = Color()
+local BAR_FULL_FRONT = Color(0, 216, 255)
+local BAR_FULL_BEHIND = Color(39, 161, 183)
+local BAR_EMPTY = Color(0, 0, 0, 150)
+
+local HPBARS = 20
+local CURRENT_HPBARS = 20
 
 local FIRST_THINK = false
 
@@ -53,17 +59,40 @@ local CLIP2_MAX_CHANGE = 0
 local AMMO1_CHANGE = 0
 local AMMO2_CHANGE = 0
 
+local BAR_WIDTH = 7
+local BAR_HEIGHT = ScrH() / 20
+local BAR_AMPLITUDE = ScrH() / 150
+local BAR_SPEED_MULTIPLIER = 4
+local BAR_SIN_SPACING = 2
+local BAR_SPACING = BAR_WIDTH * 3 + 4
+
 local function drawBarPiece(x, y, colFirst, colSecond)
+	surface.SetDrawColor(colFirst)
+	surface.DrawRect(x, y, BAR_WIDTH, BAR_HEIGHT)
+	surface.SetDrawColor(colFirst)
+	surface.DrawRect(x + BAR_WIDTH, y - 8, BAR_WIDTH, BAR_HEIGHT)
 	surface.SetDrawColor(colSecond)
-	surface.DrawRect(x, y, 10, 40)
+	surface.DrawRect(x + BAR_WIDTH * 2, y - 8, BAR_WIDTH * 0.75, BAR_HEIGHT)
 end
 
 local function HUDPaint()
 	if not ENABLE:GetBool() then return end
 	if not ENABLE2:GetBool() then return end
 	if not FIRST_THINK then return end
-	local x, y = 40, ScrH() - 200
-	
+	local x, y = 40, ScrH() - 120
+	local ctime = (RealTime() % (math.pi * 50)) * BAR_SPEED_MULTIPLIER
+
+	for i = 1, CURRENT_HPBARS do
+		local sin = math.sin(ctime + i / BAR_SIN_SPACING)
+		drawBarPiece(x, y + sin * BAR_AMPLITUDE, BAR_FULL_FRONT, BAR_FULL_BEHIND)
+		x = x + BAR_SPACING
+	end
+
+	for i = CURRENT_HPBARS + 1, HPBARS do
+		local sin = math.sin(ctime + i / BAR_SIN_SPACING)
+		drawBarPiece(x, y + sin * BAR_AMPLITUDE, BAR_EMPTY, BAR_EMPTY)
+		x = x + BAR_SPACING
+	end
 end
 
 local function Tick()
@@ -86,6 +115,8 @@ local function Tick()
 
 	HEALTH = newhp
 	ARMOR = _ARMOR
+
+	CURRENT_HPBARS = math.min(20, HEALTH / ply:GetMaxHealth() * HPBARS)
 
 	AWEAPON = weapon
 
