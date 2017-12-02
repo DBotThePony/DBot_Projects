@@ -274,7 +274,7 @@ local function Tick()
 		end
 
 		if AMMO2 ~= _AMMO2 then
-			AMMO1_CHANGE = RealTime() + 2
+			AMMO2_CHANGE = RealTime() + 2
 		end
 
 		CLIP1 = _CLIP1
