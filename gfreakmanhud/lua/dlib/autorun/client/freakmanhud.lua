@@ -140,14 +140,14 @@ local function HUDPaint()
 		y = ScrH() - 30 - HEALTH_HEIGHT
 		x = 80 + HEALTH_WIDTH
 
-		draw.RoundedBox(8, x, y, HEALTH_WIDTH, HEALTH_HEIGHT, BACKGROUND_COLOR)
+		draw.RoundedBox(8, x, y, HEALTH_WIDTH * 1.1, HEALTH_HEIGHT, BACKGROUND_COLOR)
 
 		x = x + 19
 		y = y + HEALTH_HEIGHT - 30
 
 		HUDCommons.SimpleText('HARDNESS', FONT, x, y, TEXT_COLOR)
 
-		x = x + 80
+		x = x + 100
 		y = y - 45
 
 		patternArmor:SimpleText(ARMOR, FONT_NUMBERS, x, y, rainbowArmor:Next())
