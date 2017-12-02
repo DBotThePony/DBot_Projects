@@ -38,6 +38,8 @@ local BAR_EMPTY = Color(0, 0, 0, 150)
 local AMMO_BACKGROUND = Color(0, 165, 195, 20)
 local TEXT_COLOR = Color(0, 165, 195)
 local TEXT_COLOR_SHADOW = Color(0, 70, 100)
+local ARMOR_BAR_COLOR1 = Color(22, 208, 131, 200)
+local ARMOR_BAR_COLOR2 = Color(127, 30, 237, 200)
 
 local TEXT_FONT_SMALL = 'KleinerLifeHUD_Small'
 local TEXT_FONT = 'KleinerLifeHUD'
@@ -97,6 +99,8 @@ surface.CreateFont(TEXT_FONT2_BLUR, {
 })
 
 local HPBARS = 20
+local ARMORBARS1 = 0
+local ARMORBARS2 = 0
 local CURRENT_HPBARS = 20
 
 local FIRST_THINK = false
@@ -163,6 +167,22 @@ local function HUDPaint()
 	for i = CURRENT_HPBARS + 1, HPBARS do
 		local sin = math.sin(ctime + i / BAR_SIN_SPACING)
 		drawBarPiece(x, y + sin * BAR_AMPLITUDE, BAR_EMPTY, BAR_EMPTY)
+		x = x + BAR_SPACING
+	end
+
+	x, y = 40, ScrH() - 120
+
+	for i = 1, ARMORBARS1 do
+		local sin = math.sin(ctime + i / BAR_SIN_SPACING)
+		drawBarPiece(x, y + sin * BAR_AMPLITUDE, ARMOR_BAR_COLOR1, ARMOR_BAR_COLOR1)
+		x = x + BAR_SPACING
+	end
+
+	x, y = 40, ScrH() - 120
+
+	for i = 1, ARMORBARS2 do
+		local sin = math.sin(ctime + i / BAR_SIN_SPACING)
+		drawBarPiece(x, y + sin * BAR_AMPLITUDE, ARMOR_BAR_COLOR1, ARMOR_BAR_COLOR2)
 		x = x + BAR_SPACING
 	end
 
@@ -249,6 +269,8 @@ local function Tick()
 	end
 
 	CURRENT_HPBARS = math.min(20, HEALTH / ply:GetMaxHealth() * HPBARS)
+	ARMORBARS1 = math.min(20, ARMOR / 100 * HPBARS)
+	ARMORBARS2 = math.max(math.min(40, ARMOR / 100 * HPBARS) - 20, 0)
 	AWEAPON = weapon
 
 	HEALTH = newhp
