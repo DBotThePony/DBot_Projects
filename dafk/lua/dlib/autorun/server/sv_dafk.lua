@@ -75,20 +75,9 @@ end
 local function StartCommand(self, cmd)
 	if not DAFK_USEANGLES:GetBool() then return end
 
-	local getAng = Angle(cmd:GetViewAngles())
-	getAng.p = math.floor(getAng.p)
-	getAng.y = math.floor(getAng.y)
-	getAng.r = math.floor(getAng.r)
-	self.dafk_viewangles = self.dafk_viewangles or getAng
-	local cond = getAng.p ~= self.dafk_viewangles.p or
-		getAng.y ~= self.dafk_viewangles.y or
-		getAng.r ~= self.dafk_viewangles.r
-
-	if cond then
+	if cmd:GetMouseX() ~= 0 or cmd:GetMouseY() ~= 0 then
 		Awake(self)
 	end
-
-	self.dafk_viewangles = getAng
 end
 
 net.Receive('DAFK.Heartbeat', Heartbeat)
