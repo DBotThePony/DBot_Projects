@@ -29,9 +29,38 @@ local math = math
 local ENABLE = CreateConVar('cl_klife_hud', '1', {FCVAR_ARCHIVE}, 'Enable Kleiner Life HUD')
 local ENABLE2 = CreateConVar('sv_klife_hud', '1', {FCVAR_REPLICATED}, 'Enable Kleiner Life HUD')
 
+local rainbowText = DLib.Rainbow(480, 0.02, math.pi / 4, false, 0.6)
+local pattern = HUDCommons.Pattern(true, 'KLEINER_LIFE_AMMO_COUNTER_SECONDARY', 24, -2, 2)
+
 local BAR_FULL_FRONT = Color(0, 216, 255)
 local BAR_FULL_BEHIND = Color(39, 161, 183)
 local BAR_EMPTY = Color(0, 0, 0, 150)
+local AMMO_BACKGROUND = Color(0, 165, 195, 20)
+local TEXT_COLOR = Color(0, 165, 195)
+local TEXT_COLOR_SHADOW = Color(0, 70, 100)
+
+local TEXT_FONT_SMALL = 'KleinerLifeHUD_Small'
+local TEXT_FONT = 'KleinerLifeHUD'
+local TEXT_FONT2 = 'KleinerLifeHUD2'
+
+surface.CreateFont(TEXT_FONT_SMALL, {
+	-- font = 'Somic Sans MS',
+	font = 'Comic Sans MS',
+	size = 24,
+	weight = 400
+})
+
+surface.CreateFont(TEXT_FONT, {
+	font = 'Perfect DOS VGA 437',
+	size = 46,
+	weight = 400
+})
+
+surface.CreateFont(TEXT_FONT2, {
+	font = 'Perfect DOS VGA 437',
+	size = 34,
+	weight = 400
+})
 
 local HPBARS = 20
 local CURRENT_HPBARS = 20
@@ -39,10 +68,8 @@ local CURRENT_HPBARS = 20
 local FIRST_THINK = false
 
 local HEALTH = 0
-local LAST_HEALTH_CHANGE = 0
 
 local ARMOR = 0
-local LAST_ARMOR_CHANGE = 0
 local AWEAPON
 
 local CLIP1 = 0
@@ -51,13 +78,6 @@ local CLIP1_MAX = 0
 local CLIP2_MAX = 0
 local AMMO1 = 0
 local AMMO2 = 0
-
-local CLIP1_CHANGE = 0
-local CLIP2_CHANGE = 0
-local CLIP1_MAX_CHANGE = 0
-local CLIP2_MAX_CHANGE = 0
-local AMMO1_CHANGE = 0
-local AMMO2_CHANGE = 0
 
 local BAR_WIDTH = 7
 local BAR_HEIGHT = ScrH() / 20
@@ -74,6 +94,9 @@ local function drawBarPiece(x, y, colFirst, colSecond)
 	surface.SetDrawColor(colSecond)
 	surface.DrawRect(x + BAR_WIDTH * 2, y - 8, BAR_WIDTH * 0.75, BAR_HEIGHT)
 end
+
+local AMMO1_WIDTH = 300
+local AMMO_HEIGHT = 100
 
 local function HUDPaint()
 	if not ENABLE:GetBool() then return end
@@ -93,6 +116,25 @@ local function HUDPaint()
 		drawBarPiece(x, y + sin * BAR_AMPLITUDE, BAR_EMPTY, BAR_EMPTY)
 		x = x + BAR_SPACING
 	end
+
+	x = ScrW() - 60
+	y = ScrH() - 40 - AMMO_HEIGHT
+
+	if CLIP1 > 0 or CLIP1_MAX > 0 or AMMO1 > 0 then
+		x = x - AMMO1_WIDTH
+
+		HUDCommons.DrawBox(x, y, AMMO1_WIDTH, AMMO_HEIGHT, AMMO_BACKGROUND)
+		HUDCommons.SimpleText('AMMO', TEXT_FONT_SMALL, x + 20, y + 60, TEXT_COLOR)
+		HUDCommons.DrawWeaponAmmoIcon(AWEAPON, x + 30, y + 20, TEXT_COLOR)
+
+		if CLIP1_MAX > 0 then
+			pattern:Next()
+			HUDCommons.SimpleText(CLIP1, TEXT_FONT, x + 110, y + 40, TEXT_COLOR_SHADOW)
+			HUDCommons.SimpleText(CLIP1, TEXT_FONT, x + 110 + math.sin(ctime / 2) * 10, y + 40 + math.cos(ctime / 2) * 10, rainbowText:Next())
+
+			pattern:SimpleText(AMMO1, TEXT_FONT2, x + 220, y + 55, TEXT_COLOR)
+		end
+	end
 end
 
 local function Tick()
@@ -103,76 +145,25 @@ local function Tick()
 
 	local newhp = ply:Health()
 	local weapon = ply:GetActiveWeapon()
-	local _ARMOR = ply:Armor()
-
-	if HEALTH ~= newhp then
-		LAST_HEALTH_CHANGE = RealTime() + 2
-	end
-
-	if ARMOR ~= _ARMOR then
-		LAST_ARMOR_CHANGE = RealTime() + 2
-	end
+	ARMOR = ply:Armor()
 
 	HEALTH = newhp
-	ARMOR = _ARMOR
-
 	CURRENT_HPBARS = math.min(20, HEALTH / ply:GetMaxHealth() * HPBARS)
-
 	AWEAPON = weapon
 
 	if IsValid(weapon) then
-		local _CLIP1 = weapon:Clip1()
-		local _CLIP2 = weapon:Clip2()
-		local _CLIP1_MAX = weapon:GetMaxClip1()
-		local _CLIP2_MAX = weapon:GetMaxClip2()
+		CLIP1 = weapon:Clip1()
+		CLIP2 = weapon:Clip2()
+		CLIP1_MAX = weapon:GetMaxClip1()
+		CLIP2_MAX = weapon:GetMaxClip2()
 
-		local _AMMO1 = ply:GetAmmoCount(weapon:GetPrimaryAmmoType())
-		local _AMMO2 = ply:GetAmmoCount(weapon:GetSecondaryAmmoType())
-
-		if CLIP1 ~= _CLIP1 then
-			CLIP1_CHANGE = RealTime() + 2
-		end
-
-		if CLIP2 ~= _CLIP2 then
-			CLIP2_CHANGE = RealTime() + 2
-		end
-
-		if CLIP1_MAX ~= _CLIP1_MAX then
-			CLIP1_MAX_CHANGE = RealTime() + 2
-		end
-
-		if CLIP2_MAX ~= _CLIP2_MAX then
-			CLIP2_MAX_CHANGE = RealTime() + 2
-		end
-
-		if CLIP2_MAX ~= _CLIP2_MAX then
-			CLIP2_MAX_CHANGE = RealTime() + 2
-		end
-
-		if AMMO1 ~= _AMMO1 then
-			AMMO1_CHANGE = RealTime() + 2
-		end
-
-		if AMMO2 ~= _AMMO2 then
-			AMMO1_CHANGE = RealTime() + 2
-		end
-
-		CLIP1 = _CLIP1
-		CLIP2 = _CLIP2
-		CLIP1_MAX = _CLIP1_MAX
-		CLIP2_MAX = _CLIP2_MAX
-		AMMO1 = _AMMO1
-		AMMO2 = _AMMO2
+		AMMO1 = ply:GetAmmoCount(weapon:GetPrimaryAmmoType())
+		AMMO2 = ply:GetAmmoCount(weapon:GetSecondaryAmmoType())
 	else
 		CLIP1 = 0
 		CLIP2 = 0
 		CLIP1_MAX = 0
 		CLIP2_MAX = 0
-
-		CLIP1_CHANGE = 0
-		CLIP2_CHANGE = 0
-		CLIP1_MAX_CHANGE = 0
-		CLIP2_MAX_CHANGE = 0
 	end
 end
 
