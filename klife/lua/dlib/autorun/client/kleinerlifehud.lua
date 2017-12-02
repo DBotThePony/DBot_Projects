@@ -41,7 +41,11 @@ local TEXT_COLOR_SHADOW = Color(0, 70, 100)
 
 local TEXT_FONT_SMALL = 'KleinerLifeHUD_Small'
 local TEXT_FONT = 'KleinerLifeHUD'
+local TEXT_FONT_BIG = 'KleinerLifeHUD_BIG'
+local TEXT_FONT_BLUR = 'KleinerLifeHUD_BLUR'
+local TEXT_FONT_BIG_BLUR = 'KleinerLifeHUD_BIG_BLUR'
 local TEXT_FONT2 = 'KleinerLifeHUD2'
+local TEXT_FONT2_BLUR = 'KleinerLifeHUD2_BLUR'
 
 surface.CreateFont(TEXT_FONT_SMALL, {
 	-- font = 'Somic Sans MS',
@@ -53,13 +57,43 @@ surface.CreateFont(TEXT_FONT_SMALL, {
 surface.CreateFont(TEXT_FONT, {
 	font = 'Perfect DOS VGA 437',
 	size = 46,
-	weight = 400
+	weight = 500
+})
+
+surface.CreateFont(TEXT_FONT_BIG, {
+	font = 'Perfect DOS VGA 437',
+	size = 60,
+	weight = 500
 })
 
 surface.CreateFont(TEXT_FONT2, {
 	font = 'Perfect DOS VGA 437',
 	size = 34,
-	weight = 400
+	weight = 500
+})
+
+surface.CreateFont(TEXT_FONT_BLUR, {
+	font = 'Perfect DOS VGA 437',
+	size = 46,
+	weight = 500,
+	scanlines = 4,
+	blursize = 8
+})
+
+surface.CreateFont(TEXT_FONT_BIG_BLUR, {
+	font = 'Perfect DOS VGA 437',
+	size = 60,
+	weight = 500,
+	scanlines = 4,
+	blursize = 24
+})
+
+surface.CreateFont(TEXT_FONT2_BLUR, {
+	font = 'Perfect DOS VGA 437',
+	size = 34,
+	weight = 500,
+	scanlines = 4,
+	blursize = 8
 })
 
 local HPBARS = 20
@@ -105,7 +139,12 @@ local function drawBarPiece(x, y, colFirst, colSecond)
 end
 
 local AMMO1_WIDTH = 300
+local AMMO2_WIDTH = 180
 local AMMO_HEIGHT = 100
+
+local function colDiff(colIn, diff)
+	return Color(colIn.r, colIn.g, colIn.b, 255 * (diff - RealTime()) / 2)
+end
 
 local function HUDPaint()
 	if not ENABLE:GetBool() then return end
@@ -113,6 +152,7 @@ local function HUDPaint()
 	if not FIRST_THINK then return end
 	local x, y = 40, ScrH() - 120
 	local ctime = (RealTime() % (math.pi * 50)) * BAR_SPEED_MULTIPLIER
+	local rtime = RealTime()
 
 	for i = 1, CURRENT_HPBARS do
 		local sin = math.sin(ctime + i / BAR_SIN_SPACING)
@@ -129,6 +169,28 @@ local function HUDPaint()
 	x = ScrW() - 60
 	y = ScrH() - 40 - AMMO_HEIGHT
 
+	if CLIP2_MAX > 0 or CLIP2 > 0 or AMMO2 > 0 then
+		local touse = math.max(CLIP2, AMMO2)
+
+		x = x - AMMO2_WIDTH
+
+		HUDCommons.DrawBox(x, y, AMMO2_WIDTH, AMMO_HEIGHT, AMMO_BACKGROUND)
+		HUDCommons.SimpleText('CLICKS', TEXT_FONT_SMALL, x + 20, y + 60, TEXT_COLOR)
+		HUDCommons.DrawWeaponSecondaryAmmoIcon(AWEAPON, x + 30, y + 10, TEXT_COLOR)
+
+		HUDCommons.SimpleText(touse, TEXT_FONT, x + 110, y + 40, TEXT_COLOR_SHADOW)
+		local rcolor = rainbowText:Next()
+		local X, Y = x + 110 + math.sin(ctime / 2) * 10, y + 40 + math.cos(ctime / 2) * 10
+		HUDCommons.SimpleText(touse, TEXT_FONT, X, Y, rcolor)
+
+		if AMMO2_CHANGE > rtime then
+			HUDCommons.SimpleText(touse, TEXT_FONT_BLUR, x + 110, y + 40, colDiff(TEXT_COLOR_SHADOW, AMMO2_CHANGE))
+			HUDCommons.SimpleText(touse, TEXT_FONT_BLUR, X, Y, colDiff(rcolor, AMMO2_CHANGE))
+		end
+
+		x = x - 40
+	end
+
 	if CLIP1 > 0 or CLIP1_MAX > 0 or AMMO1 > 0 then
 		x = x - AMMO1_WIDTH
 
@@ -138,10 +200,32 @@ local function HUDPaint()
 
 		if CLIP1_MAX > 0 then
 			pattern:Next()
+
 			HUDCommons.SimpleText(CLIP1, TEXT_FONT, x + 110, y + 40, TEXT_COLOR_SHADOW)
-			HUDCommons.SimpleText(CLIP1, TEXT_FONT, x + 110 + math.sin(ctime / 2) * 10, y + 40 + math.cos(ctime / 2) * 10, rainbowText:Next())
+			local rcolor = rainbowText:Next()
+			local X, Y = x + 110 + math.sin(ctime / 2) * 10, y + 40 + math.cos(ctime / 2) * 10
+			HUDCommons.SimpleText(CLIP1, TEXT_FONT, X, Y, rcolor)
+
+			if CLIP1_CHANGE > rtime then
+				HUDCommons.SimpleText(CLIP1, TEXT_FONT_BLUR, x + 110, y + 40, colDiff(TEXT_COLOR_SHADOW, CLIP1_CHANGE))
+				HUDCommons.SimpleText(CLIP1, TEXT_FONT_BLUR, X, Y, colDiff(rcolor, CLIP1_CHANGE))
+			end
 
 			pattern:SimpleText(AMMO1, TEXT_FONT2, x + 220, y + 55, TEXT_COLOR)
+
+			if AMMO1_CHANGE > rtime then
+				pattern:SimpleText(AMMO1, TEXT_FONT2_BLUR, x + 220, y + 55, colDiff(TEXT_COLOR, AMMO1_CHANGE))
+			end
+		else
+			HUDCommons.SimpleText(AMMO1, TEXT_FONT_BIG, x + 140, y + 20, TEXT_COLOR_SHADOW)
+			local rcolor = rainbowText:Next()
+			local X, Y = x + 140 + math.sin(ctime / 2) * 10, y + 20 + math.cos(ctime / 2) * 10
+			HUDCommons.SimpleText(AMMO1, TEXT_FONT_BIG, X, Y, rcolor)
+
+			if AMMO1_CHANGE > rtime then
+				HUDCommons.SimpleText(AMMO1, TEXT_FONT_BIG_BLUR, x + 110, y + 40, colDiff(TEXT_COLOR_SHADOW, CLIP1_CHANGE))
+				HUDCommons.SimpleText(AMMO1, TEXT_FONT_BIG_BLUR, X, Y, colDiff(rcolor, CLIP1_CHANGE))
+			end
 		end
 	end
 end
@@ -204,7 +288,7 @@ local function Tick()
 		end
 
 		if AMMO2 ~= _AMMO2 then
-			AMMO1_CHANGE = RealTime() + 2
+			AMMO2_CHANGE = RealTime() + 2
 		end
 
 		CLIP1 = _CLIP1
