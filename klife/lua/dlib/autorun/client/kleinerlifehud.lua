@@ -68,8 +68,10 @@ local CURRENT_HPBARS = 20
 local FIRST_THINK = false
 
 local HEALTH = 0
+local LAST_HEALTH_CHANGE = 0
 
 local ARMOR = 0
+local LAST_ARMOR_CHANGE = 0
 local AWEAPON
 
 local CLIP1 = 0
@@ -78,6 +80,13 @@ local CLIP1_MAX = 0
 local CLIP2_MAX = 0
 local AMMO1 = 0
 local AMMO2 = 0
+
+local CLIP1_CHANGE = 0
+local CLIP2_CHANGE = 0
+local CLIP1_MAX_CHANGE = 0
+local CLIP2_MAX_CHANGE = 0
+local AMMO1_CHANGE = 0
+local AMMO2_CHANGE = 0
 
 local BAR_WIDTH = 7
 local BAR_HEIGHT = ScrH() / 20
@@ -145,25 +154,75 @@ local function Tick()
 
 	local newhp = ply:Health()
 	local weapon = ply:GetActiveWeapon()
-	ARMOR = ply:Armor()
+	local _ARMOR = ply:Armor()
 
-	HEALTH = newhp
+	if HEALTH ~= newhp then
+		LAST_HEALTH_CHANGE = RealTime() + 2
+	end
+
+	if ARMOR ~= _ARMOR then
+		LAST_ARMOR_CHANGE = RealTime() + 2
+	end
+
 	CURRENT_HPBARS = math.min(20, HEALTH / ply:GetMaxHealth() * HPBARS)
 	AWEAPON = weapon
 
-	if IsValid(weapon) then
-		CLIP1 = weapon:Clip1()
-		CLIP2 = weapon:Clip2()
-		CLIP1_MAX = weapon:GetMaxClip1()
-		CLIP2_MAX = weapon:GetMaxClip2()
+	HEALTH = newhp
+	ARMOR = _ARMOR
 
-		AMMO1 = ply:GetAmmoCount(weapon:GetPrimaryAmmoType())
-		AMMO2 = ply:GetAmmoCount(weapon:GetSecondaryAmmoType())
+	if IsValid(weapon) then
+		local _CLIP1 = weapon:Clip1()
+		local _CLIP2 = weapon:Clip2()
+		local _CLIP1_MAX = weapon:GetMaxClip1()
+		local _CLIP2_MAX = weapon:GetMaxClip2()
+
+		local _AMMO1 = ply:GetAmmoCount(weapon:GetPrimaryAmmoType())
+		local _AMMO2 = ply:GetAmmoCount(weapon:GetSecondaryAmmoType())
+
+		if CLIP1 ~= _CLIP1 then
+			CLIP1_CHANGE = RealTime() + 2
+		end
+
+		if CLIP2 ~= _CLIP2 then
+			CLIP2_CHANGE = RealTime() + 2
+		end
+
+		if CLIP1_MAX ~= _CLIP1_MAX then
+			CLIP1_MAX_CHANGE = RealTime() + 2
+		end
+
+		if CLIP2_MAX ~= _CLIP2_MAX then
+			CLIP2_MAX_CHANGE = RealTime() + 2
+		end
+
+		if CLIP2_MAX ~= _CLIP2_MAX then
+			CLIP2_MAX_CHANGE = RealTime() + 2
+		end
+
+		if AMMO1 ~= _AMMO1 then
+			AMMO1_CHANGE = RealTime() + 2
+		end
+
+		if AMMO2 ~= _AMMO2 then
+			AMMO1_CHANGE = RealTime() + 2
+		end
+
+		CLIP1 = _CLIP1
+		CLIP2 = _CLIP2
+		CLIP1_MAX = _CLIP1_MAX
+		CLIP2_MAX = _CLIP2_MAX
+		AMMO1 = _AMMO1
+		AMMO2 = _AMMO2
 	else
 		CLIP1 = 0
 		CLIP2 = 0
 		CLIP1_MAX = 0
 		CLIP2_MAX = 0
+
+		CLIP1_CHANGE = 0
+		CLIP2_CHANGE = 0
+		CLIP1_MAX_CHANGE = 0
+		CLIP2_MAX_CHANGE = 0
 	end
 end
 
