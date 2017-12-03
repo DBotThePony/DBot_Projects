@@ -178,8 +178,8 @@ local function Tick()
 
 			if ply.__Limited_Oxygen_Value_Send ~= ply.__Limited_Oxygen_Value or ply.__Limited_Flashlight_Value_Send ~= ply.__Limited_Flashlight_Value then
 				net.Start('DBot_LimitedFlashlightAndOxygen', true)
-				net.WriteFloat(ply.__Limited_Oxygen_Value or 100, 8)
-				net.WriteFloat(ply.__Limited_Flashlight_Value or 100, 8)
+				net.WriteFloat(ply.__Limited_Oxygen_Value or 100)
+				net.WriteFloat(ply.__Limited_Flashlight_Value or 100)
 				net.Send(ply)
 
 				ply.__Limited_Oxygen_Value_Send = ply.__Limited_Oxygen_Value
