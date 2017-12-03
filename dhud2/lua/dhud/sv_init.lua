@@ -176,6 +176,10 @@ local function EntityTakeDamage(ent, dmg)
 		end
 	end
 
+	if #damageTypesIn == 0 then
+		table.insert(damageTypesIn, DMG_GENERIC)
+	end
+
 	local scrambleAplifier = #damageTypesIn * 4
 	local damageAplifier = 1 / #damageTypesIn
 	local incomingDamage = dmg:GetDamage() * damageAplifier
