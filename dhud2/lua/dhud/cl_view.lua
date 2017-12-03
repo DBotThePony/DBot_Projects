@@ -29,8 +29,14 @@ local LocalPlayer = LocalPlayer
 local function CalcView(newData)
 	local ply = LocalPlayer()
 	if not ENABLE:GetBool() or not DHUD2.ServerConVar('smoothview') or not DHUD2.IsEnabled() then
-		DHUD2.EyePos = newData.origin
-		DHUD2.EyeAngles = newData.angles
+		if newData then
+			DHUD2.EyePos = newData.origin
+			DHUD2.EyeAngles = newData.angles
+		else
+			DHUD2.EyePos = EyePos()
+			DHUD2.EyeAngles = EyeAngles()
+		end
+
 		DHUD2.PredictedEntity = DHUD2.SelectPlayer()
 		return newData
 	end
