@@ -30,29 +30,23 @@ SWEP.DrawHUD = =>
 
 SWEP.TriggerPlayerInput = (key = KEY_1) =>
 	switch key
-		when KEY_1
+		when KEY_1, 'slot1'
 			reply = @TriggerDestructionRequest(@SLOT_SENTRY)
 			surface.PlaySound(@INVALID_INPUT_SOUND) if not reply
-		when KEY_2
+		when KEY_2, 'slot2'
 			reply = @TriggerDestructionRequest(@SLOT_DISPENSER)
 			surface.PlaySound(@INVALID_INPUT_SOUND) if not reply
-		when KEY_3
+		when KEY_3, 'slot3'
 			reply = @TriggerDestructionRequest(@SLOT_TELE_IN)
 			surface.PlaySound(@INVALID_INPUT_SOUND) if not reply
-		when KEY_4
+		when KEY_4, 'slot4'
 			reply = @TriggerDestructionRequest(@SLOT_TELE_OUT)
 			surface.PlaySound(@INVALID_INPUT_SOUND) if not reply
 
-hook.Add 'Think', 'DTF2.DestructionPDACapture', ->
-	ply = LocalPlayer()
-	wep = ply\GetActiveWeapon()
-	return if not IsValid(wep) or wep\GetClass() ~= 'dbot_tf_destrpda'
-	for key in *checkInputs
-		status1 = wep.__InputCache[key]
-		status2 = input.IsKeyDown(key)
-
-		if status1 and not status2
-			wep.__InputCache[key] = false
-		elseif status2 and not status1
-			wep.__InputCache[key] = true
-			wep\TriggerPlayerInput(key)
+hook.Add 'PlayerBindPress', 'DTF2.DestructionPDACapture', (bind, isPressed) =>
+	return if not isPressed
+	if bind == 'slot1' or bind == 'slot2' or bind == 'slot3' or bind == 'slot4'
+		wep = @GetActiveWeapon()
+		return if not IsValid(wep) or wep\GetClass() ~= 'dbot_tf_destrpda'
+		wep\TriggerPlayerInput(bind)
+		return true
