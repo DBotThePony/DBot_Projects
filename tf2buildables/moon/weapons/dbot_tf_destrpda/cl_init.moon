@@ -33,20 +33,23 @@ SWEP.TriggerPlayerInput = (key = KEY_1) =>
 		when KEY_1, 'slot1'
 			reply = @TriggerDestructionRequest(@SLOT_SENTRY)
 			surface.PlaySound(@INVALID_INPUT_SOUND) if not reply
+			return reply
 		when KEY_2, 'slot2'
 			reply = @TriggerDestructionRequest(@SLOT_DISPENSER)
 			surface.PlaySound(@INVALID_INPUT_SOUND) if not reply
+			return reply
 		when KEY_3, 'slot3'
 			reply = @TriggerDestructionRequest(@SLOT_TELE_IN)
 			surface.PlaySound(@INVALID_INPUT_SOUND) if not reply
+			return reply
 		when KEY_4, 'slot4'
 			reply = @TriggerDestructionRequest(@SLOT_TELE_OUT)
 			surface.PlaySound(@INVALID_INPUT_SOUND) if not reply
+			return reply
 
 hook.Add 'PlayerBindPress', 'DTF2.DestructionPDACapture', (bind, isPressed) =>
 	return if not isPressed
 	if bind == 'slot1' or bind == 'slot2' or bind == 'slot3' or bind == 'slot4'
 		wep = @GetActiveWeapon()
 		return if not IsValid(wep) or wep\GetClass() ~= 'dbot_tf_destrpda'
-		wep\TriggerPlayerInput(bind)
-		return true
+		return true if wep\TriggerPlayerInput(bind)
