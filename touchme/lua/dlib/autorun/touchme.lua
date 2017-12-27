@@ -69,6 +69,7 @@ local function PhysgunPickup(ply, ent)
 			ent.__TouchMePickuper = ply
 			ent:SetMoveType(MOVETYPE_NONE)
 			ent.__TouchMeLastPos = nil
+			ent.__TouchMeLastPositions = nil
 
 			table.insert(trackedPlayers, ent)
 		end
@@ -120,27 +121,52 @@ if SERVER then
 			end
 
 			if not Watchdog:HasPermission(pickuper, 'touchme_nochecks') then
-				local pos = ply:GetPos()
-				ply2.__TouchMeLastPos = ply2.__TouchMeLastPos or pos
+				local pos = ply:GetPos() + ply:OBBCenter()
+				ply2.__TouchMeLastPositions = ply2.__TouchMeLastPositions or {}
+				local positions = ply2.__TouchMeLastPositions
+				table.insert(positions, pos)
+				
+				if #positions > 5 then
+					table.remove(positions, 1)
+				end
 
-				local tr = util.TraceLine({
-					start = ply2.__TouchMeLastPos,
-					endpos = pos,
-					filter = {ply, pickuper}
-				})
+				local hit = false
 
-				if tr.Hit then
-					schat.chatPlayer(pickuper, 'No no and no! Bad pone!')
-					ply:SetPos(ply2.__TouchMeLastPos)
-					pickuper:SetDLibVar('touchme_nono', true)
+				for i, oldpos in ipairs(positions) do
+					for i, oldpos2 in ipairs(positions) do
+						if oldpos2 ~= oldpos1 then
+							local tr = util.TraceLine({
+								start = oldpos,
+								endpos = pos,
+								filter = {ply, pickuper}
+							})
 
-					timer.Create('DLib.touchmeno.' .. pickuper:SteamID(), 2, 1, function()
-						if IsValid(pickuper) then
-							pickuper:SetDLibVar('touchme_nono', false)
+							if tr.Hit then
+								schat.chatPlayer(pickuper, 'No no and no! Bad pone!')
+								ply:SetPos(positions[1])
+								pickuper:SetDLibVar('touchme_nono', true)
+
+								timer.Create('DLib.touchmeno.' .. pickuper:SteamID(), 2, 1, function()
+									if IsValid(pickuper) then
+										pickuper:SetDLibVar('touchme_nono', false)
+									end
+								end)
+
+								ply2.__TouchMeLastPositions = {}
+								hit = true
+
+								break
+							end
 						end
-					end)
-				else
-					ply2.__TouchMeLastPos = pos
+
+						if hit then
+							break
+						end
+					end
+
+					if hit then
+						break
+					end
 				end
 			end
 		end
