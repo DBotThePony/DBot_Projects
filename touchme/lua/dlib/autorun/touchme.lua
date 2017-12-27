@@ -70,6 +70,7 @@ local function PhysgunPickup(ply, ent)
 			ent:SetMoveType(MOVETYPE_NONE)
 			ent.__TouchMeLastPos = nil
 			ent.__TouchMeLastPositions = nil
+			ply.__TouchMeTarget = ent
 
 			table.insert(trackedPlayers, ent)
 		end
@@ -79,8 +80,19 @@ local function PhysgunPickup(ply, ent)
 end
 
 local function StartCommand(ply, cmd)
-	if ply:DLibVar('touchme_nono') and ply:GetActiveWeaponClass() == 'weapon_physgun' and cmd:KeyDown(IN_ATTACK) then
-		cmd:RemoveKey(IN_ATTACK)
+	if ply:GetActiveWeaponClass() == 'weapon_physgun' and cmd:KeyDown(IN_ATTACK) then
+		if ply:DLibVar('touchme_nono') then
+			cmd:RemoveKey(IN_ATTACK)
+			return
+		end
+
+		local target = ply.__TouchMeTarget
+
+		if IsValid(target) and MAX_RANGE:GetInt() <= target:GetPos():Distance(ply:GetPos()) then
+			cmd:RemoveKey(IN_ATTACK)
+			target:SetPos(ply:EyeAngles():Forward() * MAX_RANGE:GetInt() * 1.1 + ply:EyePos())
+			return
+		end
 	end
 end
 
@@ -93,6 +105,7 @@ if SERVER then
 		if not ent.__TouchMeStatus then return end
 		ent.__TouchMeStatus = false
 		ent:SetMoveType(MOVETYPE_WALK)
+		ply.__TouchMeTarget = nil
 
 		for i, ply2 in ipairs(trackedPlayers) do
 			if ply2 == ent then
