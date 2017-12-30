@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -38,11 +38,11 @@ ADOF.Critical = ADOF.Max * 0.5
 local function IsCurrVehicle(ent)
 	local ply = LocalPlayer()
 
-	return IsValid(ent) and 
-		ent:IsVehicle() and 
-		ply:InVehicle() and 
-		IsValid(ply:GetVehicle()) and 
-		(ply:GetVehicle() == ent or 
+	return IsValid(ent) and
+		ent:IsVehicle() and
+		ply:InVehicle() and
+		IsValid(ply:GetVehicle()) and
+		(ply:GetVehicle() == ent or
 		ply:GetVehicle():GetParent() == ent)
 end
 
@@ -302,7 +302,7 @@ local function Think()
 
 	local dist = tr.HitPos:Distance(ply:GetPos())
 
-	if IsValid(tr.Entity) then 
+	if IsValid(tr.Entity) then
 		if tr.Entity:IsPlayer() and langles.p > 20 and tr.Entity:GetPos().z - LocalPlayer():GetPos().z < -30 then --We are looking at player when standing on him
 			dist = dist*4
 		elseif langles.p > 25 then --Small thing

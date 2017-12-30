@@ -1,6 +1,6 @@
 
 --
--- Copyright (C) 2016-2017 DBot
+-- Copyright (C) 2016-2018 DBot
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@
 local board = DScoreBoard2
 
 local function Create(force)
-    if force and IsValid(board.Board) then board.Board:Remove() end 
+    if force and IsValid(board.Board) then board.Board:Remove() end
     if IsValid(board.Board) then return end
-    
+
     local status, board2 = pcall(vgui.Create, 'DScoreBoard2')
     if status then
         board.Board = board2
@@ -64,13 +64,13 @@ timer.Simple(0, function()
     net.SendToServer()
 end)
 
-concommand.Add('dscoreboard_rebuild', function() 
+concommand.Add('dscoreboard_rebuild', function()
     Create(true)
     board.Board:DoShow()
     board.Board:Focus()
 end)
 
-concommand.Add('dscoreboard_rebuildplys', function() 
+concommand.Add('dscoreboard_rebuildplys', function()
     Create()
     board.Board.list:BuildPlayerList()
 end)

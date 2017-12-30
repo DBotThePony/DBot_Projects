@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ self.RestoreLastFrameSysTime = 0
 
 function self.SetRestoreSpeed(speed)
 	self.RestoreSpeed = math.Clamp(speed, 0.1, 1)
-	
+
 	if CLIENT then return end
 	net.Start('DFlashback.RestoreSpeed')
 	net.WriteFloat(speed)
@@ -70,13 +70,13 @@ function self.rungc()
 	for i = 1, #self.Frames - 3000 do
 		self.Frames[i] = nil
 	end
-	
+
 	table.remove(self.Frames, 0) -- Remove gaps
-	
+
 	for id, frame in ipairs(self.Frames) do
 		frame.index = id
 		frame.ID = id
-		
+
 		for key, data in pairs(frame.Data) do
 			data.ID = id
 			data.index = id
@@ -90,15 +90,15 @@ function self.Begin()
 	self.Frames = {}
 	self.IsRecording = true
 	self.Message('Record Started')
-	
+
 	if SERVER then
 		net.Start('DFlashback.RecordStatusChanges')
 		net.WriteBool(true)
 		net.Broadcast()
-		
+
 		timer.Stop('DFlashback.Commant.RecordTimer')
 	end
-	
+
 	hook.Run('FlashbackStartsRecord')
 end
 
@@ -106,15 +106,15 @@ function self.End()
 	if not self.IsRecording then return end
 	self.IsRecording = false
 	self.Message('Record Stopped')
-	
+
 	if SERVER then
 		net.Start('DFlashback.RecordStatusChanges')
 		net.WriteBool(false)
 		net.Broadcast()
-		
+
 		timer.Stop('DFlashback.Commant.RecordTimer')
 	end
-	
+
 	hook.Run('FlashbackEndRecord')
 end
 
@@ -123,15 +123,15 @@ function self.BeginRestore()
 	if self.IsRecording then self.End() end
 	self.IsRestoring = true
 	self.Message('Replay Started')
-	
+
 	if SERVER then
 		net.Start('DFlashback.ReplayStatusChanges')
 		net.WriteBool(true)
 		net.Broadcast()
-		
+
 		timer.Stop('DFlashback.Commant.RecordTimer')
 	end
-	
+
 	hook.Run('FlashbackStartsRestore')
 end
 
@@ -141,17 +141,17 @@ function self.EndRestore()
 	self.IsRestoring = false
 	self.Frames = {}
 	self.Message('Replay Ended')
-	
+
 	if SERVER then
 		net.Start('DFlashback.ReplayStatusChanges')
 		net.WriteBool(false)
 		net.Broadcast()
-		
+
 		timer.Stop('DFlashback.Commant.RecordTimer')
 	else
 		RunConsoleCommand('stopsound')
 	end
-	
+
 	hook.Run('FlashbackEndsRestore')
 end
 
@@ -174,19 +174,19 @@ end
 function self.RecordFrame()
 	local time = SysTime()
 	local frame = self.GetCurrentFrame()
-	
+
 	self.RestoreLastFrameCurTime = frame.CurTime
 	self.RestoreLastFrameRealTime = frame.RealTime
 	self.RestoreLastFrameSysTime = frame.SysTime
-	
+
 	local tab = hook.GetTable().FlashbackRecordFrame
 	if not tab then return end
-	
+
 	for k, func in pairs(tab) do
 		xpcall(func, Err, self.GetCurrentData(k), k)
 	end
 	local delta = (SysTime() - time) * 1000
-	
+
 	if delta > 30 then
 		self.Message('Recording this frame took ' .. math.floor(delta * 100) / 100 .. 'ms!')
 	end
@@ -196,29 +196,29 @@ function self.RestoreFrame()
 	local time = SysTime()
 	local frame = table.remove(self.Frames)
 	if not frame then self.EndRestore() return end
-	
+
 	self.CurrentFrame = frame
 	self.LastFrame = frame.CurTime
-	
+
 	local tab = hook.GetTable().FlashbackRestoreFrame
-	
+
 	if not tab then
 		self.RestoreLastFrameCurTime = frame.CurTime
 		self.RestoreLastFrameRealTime = frame.RealTime
 		self.RestoreLastFrameSysTime = frame.SysTime
 		return
 	end
-	
+
 	for k, func in pairs(tab) do
 		xpcall(func, Err, self.GetCurrentData(k) or {}, k)
 	end
-	
+
 	self.RestoreLastFrameCurTime = frame.CurTime
 	self.RestoreLastFrameRealTime = frame.RealTime
 	self.RestoreLastFrameSysTime = frame.SysTime
-	
+
 	local delta = (SysTime() - time) * 1000
-	
+
 	if delta > 30 then
 		self.Message('Restoring this frame took ' .. math.floor(delta * 100) / 100 .. 'ms!')
 	end
@@ -261,7 +261,7 @@ function self.OnThink()
 	if self.DISABLED then return end
 
 	if not self.IgnoreNextThink and self.NextThink > RealTime() then return end
-	
+
 	if CLIENT then
 		if self.IsRestoring then
 			self.NextThink = RealTime() + self.ServerFPSTime * (1 / self.RestoreSpeed)
@@ -275,17 +275,17 @@ function self.OnThink()
 			self.NextThink = RealTime()
 		end
 	end
-	
+
 	if self.SkipCurrentFrame then
 		self.GetCurrentFrame()
 		self.SkipCurrentFrame = false
 	end
-	
+
 	if self.LastGC < RealTime() then
 		self.rungc()
 		self.LastGC = RealTime() + 20
 	end
-	
+
 	if #self.Frames > 10000 then
 		self.Message('FLASHBACK PANIC! Disabling DFlashBack')
 		self.Message(debug.traceback())
@@ -293,22 +293,22 @@ function self.OnThink()
 		self.DISABLED = true
 		return
 	end
-	
+
 	if #self.Frames > 6000 then
 		self.rungc()
 	end
-	
+
 	if self.IsRecording then
 		self.RecordFrame()
 	elseif self.IsRestoring then
 		self.RestoreFrame()
 	end
-	
+
 	if SERVER then
 		net.Start('DFlashback.SyncFrameAmount')
 		net.WriteUInt(#self.Frames, 16)
 		net.Broadcast()
-		
+
 		net.Start('DFlashback.SyncServerFPS')
 		net.WriteUInt(math.floor(1 / FrameTime()), 16)
 		net.Broadcast()
@@ -317,29 +317,29 @@ end
 
 function self.WriteDelta(str, key, val)
 	local get = self.FindDelta(str, key, 'DFLASBACK_NO_DELTA_RESULT')
-	
+
 	if get == val then return end
-	
+
 	self.GetCurrentData(str)[key] = val
 end
 
 function self.FindDelta(str, key, ifNothing)
 	local lookingAt = #self.Frames
-	
+
 	for i = lookingAt, lookingAt - 400, -1 do -- Limit to 400 frames
 		local frame = self.Frames[i]
 		if not frame then break end
-		
+
 		local data = frame.Data[str]
 		if not data then break end
-		
+
 		local get = data[key]
-		
+
 		if get ~= nil then
 			return get
 		end
 	end
-	
+
 	return ifNothing
 end
 
@@ -351,29 +351,29 @@ function self.GetCurrentFrame()
 	if (self.IsRestoring or self.LastFrame == CurTime()) and not self.SkipCurrentFrame then
 		return self.CurrentFrame
 	end
-	
+
 	if (self.CurrentFrame and self.CurrentFrame.CurTime == CurTime()) and not self.SkipCurrentFrame then
 		return self.CurrentFrame
 	end
-	
+
 	local newFrame = {}
 	local index = table.insert(self.Frames, newFrame)
-	
+
 	newFrame.ID = index
 	newFrame.index = index
 	newFrame.CurTime = CurTime()
 	newFrame.RealTime = RealTime()
 	newFrame.SysTime = SysTime()
-	
+
 	newFrame.Data = {}
 	newFrame.Data.default = {}
 	newFrame.Data.default.index = index
 	newFrame.Data.default.ID = index
-	
+
 	self.LastFrame = CurTime()
-	
+
 	self.CurrentFrame = newFrame
-	
+
 	return newFrame
 end
 

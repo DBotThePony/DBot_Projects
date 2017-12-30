@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -56,11 +56,11 @@ end
 
 function ENT:DuplicatorFunc()
 	self.NOT_INITALIZED = true
-	
+
 	--Duplicator Support
 	timer.Simple(0, function()
 		if not IsValid(self) then return end
-		
+
 		if self.NOT_INITALIZED then
 			if self:GetBlockID() then
 				self:InitializeBlockID(self:GetBlockID())
@@ -73,24 +73,24 @@ end
 
 function ENT:Initialize()
 	self:DrawShadow(false)
-	
+
 	if CLIENT then return end
-	
+
 	if not self:GetBlockID() then
 		self:InitializeBlockID(2)
 	end
-	
+
 	self:DuplicatorFunc()
-	
+
 	self.rotatedir = MCSWEP2.ROTATE_SOUTH
-	
+
 	self.REDSTONE_INPUT_BLOCKS = {}
 	self.FirstThink = true
-	
+
 	if self:CanChoke() then
 		self:ChokeEntity()
 	end
-	
+
 	self:SetTrigger(true)
 	self:CreateWireOutputs()
 end
@@ -126,22 +126,22 @@ end
 function ENT:BlockUpdate()
 	if self.CAN_NOT_BE_UPATED then return end
 	self:Hook('BlockUpdate')
-	
+
 	if CLIENT then return end
-	
+
 	net.Start('MCSWEP2.BlockUpdate')
 	net.WriteEntity(self)
 	net.Broadcast()
-	
+
 	if not self:CanFloat() then
 		local block = self:GetBlockAtSide(mc.SIDE_DOWN)
-		
+
 		if not IsValid(block) or not block:IsSolid() then
 			self:OnDestruct()
 			return
 		end
 	end
-	
+
 	if self:IsRedstoneActivated() then
 		self:RedstoneUpdate()
 	end
@@ -185,7 +185,7 @@ function ENT:DownIsFree()
 			return true
 		end,
 	}
-	
+
 	return not tr.Hit
 end
 
@@ -245,27 +245,27 @@ end
 
 function ENT:RedstoneUpdate()
 	self.REDSTONE_INPUT_BLOCKS = self.REDSTONE_INPUT_BLOCKS or {}
-	
+
 	local count = table.Count(self.REDSTONE_INPUT_BLOCKS)
-	
+
 	local lpos = self:GetPos()
-	
+
 	for k, v in pairs(self.REDSTONE_INPUT_BLOCKS) do
 		if not IsValid(v) or v == self then --???
 			self.REDSTONE_INPUT_BLOCKS[k] = nil
 			continue
 		end
-		
+
 		local dist = v:GetPos():Distance(lpos)
-		
+
 		if dist > mc.STEP * 1.3 then
 			self.REDSTONE_INPUT_BLOCKS[k] = nil
 			continue
 		end
 	end
-	
+
 	local newcount = table.Count(self.REDSTONE_INPUT_BLOCKS)
-	
+
 	if newcount == 0 and count ~= 0 then
 		self:RedstoneInputChanged(false)
 	end
@@ -274,22 +274,22 @@ end
 --Dun't override pleaz
 function ENT:RedstoneInput(block, status)
 	self.REDSTONE_INPUT_BLOCKS = self.REDSTONE_INPUT_BLOCKS or {}
-	
+
 	self:RedstoneUpdate()
-	
+
 	local count = table.Count(self.REDSTONE_INPUT_BLOCKS)
-	
+
 	if status then
 		self:RedstoneInputStart(block)
 		self.REDSTONE_INPUT_BLOCKS[block] = block
-		
+
 		if count == 0 then
 			self:RedstoneInputChanged(true)
 		end
 	else
 		self:RedstoneInputEnd(block)
 		self.REDSTONE_INPUT_BLOCKS[block] = nil
-		
+
 		if count == 1 then
 			self:RedstoneInputChanged(false)
 		end
@@ -298,7 +298,7 @@ end
 
 function ENT:SetProvidesRedstoneSignal(status)
 	self.PROVIDES_RESDTSONE_SIGNAL = status
-	
+
 	self:TriggerUpdate()
 	self:BlockUpdate()
 end
@@ -307,24 +307,24 @@ function ENT:ProvidesRedstoneSignal()
 	if self.PROVIDES_RESDTSONE_SIGNAL ~= nil then
 		return self.PROVIDES_RESDTSONE_SIGNAL
 	end
-	
+
 	return self:GetData().redstone
 end
 
 function ENT:MakeItFall()
 	if self:GetIsFalling() then return end
 	self:SetIsFalling(true)
-	
+
 	local lpos = self:GetPos()
 	local tr = self:TraceDown()
-	
+
 	self:SetFallStartZ(lpos.z)
 	self:SetFallEndZ(tr.HitPos.z)
-	
+
 	self:SetFallDivider((lpos.z - tr.HitPos.z) / self:FallSpeedMultipler())
 	self:SetFallStart(CurTime())
 	self:SetFallEnd(CurTime() + self:GetFallDivider())
-	
+
 	self:SetCollisionGroup(COLLISION_GROUP_WORLD)
 end
 
@@ -354,13 +354,13 @@ ENT.DefaultWireOutputs = {
 
 function ENT:CreateWireOutputs()
 	local toCreate = table.Copy(self.DefaultWireOutputs)
-	
+
 	if self.CustomWireOutputs then
 		for k, v in ipairs(self.CustomWireOutputs) do
 			table.insert(toCreate, v)
 		end
 	end
-	
+
 	self.Outputs = mc.SafeWireOutputs(self, toCreate)
 end
 
@@ -368,33 +368,33 @@ local DefaultAngle = Angle()
 
 function ENT:StopFall()
 	self:SetIsFalling(false)
-	
+
 	if self:DownIsFree() then
 		local startz = self:GetFallStartZ()
 		local div = self:GetFallDivider()
 		local start = self:GetFallStart()
-		
+
 		self:MakeItFall()
-		
+
 		self:SetFallDivider(self:GetFallDivider() + div)
 		self:SetFallStartZ(startz)
 		self:SetFallStart(start)
 		self:SetFallEnd(start + self:GetFallDivider())
-		
+
 		self:FixedMove()
-		
+
 		return false
 	end
-	
+
 	self:SetCollisionGroup(COLLISION_GROUP_NONE)
 	self.phys:EnableMotion(false)
 	self:SetAngles(DefaultAngle)
 	self:FixedMove()
-	
+
 	self:PreformRotate()
-	
+
 	self:TriggerUpdate()
-	
+
 	return true
 end
 
@@ -406,9 +406,9 @@ function ENT:GetFallPosition()
 	local lpos = self:GetPos()
 	local ctime = CurTime()
 	local lerp = math.Clamp((self:GetFallEnd() - ctime) / self:GetFallDivider(), 0, 1)
-	
+
 	lpos.z = self:GetFallStartZ() - (self:GetFallStartZ() - self:GetFallEndZ()) * (1 - lerp)
-	
+
 	return lpos, lerp
 end
 
@@ -427,14 +427,14 @@ function ENT:InitializeBlockID(id, keephp, noupdate)
 	self:SetBlockID(id)
 	self:UpdateData(keephp)
 	self.DUPE_BLOCK_ID = id
-	
+
 	--Dun't save this var
 	self.NOT_INITALIZED = nil
 	if not noupdate then
 		self:TriggerUpdate()
 		self:BlockUpdate()
 	end
-	
+
 	self:SetupWireConstants()
 end
 
@@ -444,7 +444,7 @@ end
 
 function ENT:CanBeRemoved(ply)
 	if not self:HaveOwner() then return true end
-	
+
 	if not self.CPPICanTool then
 		return self:GetNWOwner() == ply
 	else
@@ -459,12 +459,12 @@ end
 
 function ENT:SetupOwner(ply)
 	if not IsValid(ply) then return end
-	
+
 	self:SetNWOwner(ply)
 	if self.CPPISetOwner then
 		self:CPPISetOwner(ply)
 	end
-	
+
 	if ply.AddCleanup then
 		ply:AddCleanup('mcswep2blocks', self)
 	end
@@ -519,7 +519,7 @@ function ENT:PreformFlip()
 	local flip = self:GetFlip()
 	local ang = self:GetAngles()
 	local pos = self:GetPos()
-	
+
 	if flip then
 		ang.p = -180
 		ang.y = -180 + ang.y
@@ -527,7 +527,7 @@ function ENT:PreformFlip()
 	else
 		ang.p = 0
 	end
-	
+
 	self:SetAngles(ang)
 	self:SetPos(pos)
 	self:FixedMove()
@@ -535,28 +535,28 @@ end
 
 if SERVER then
 	local MaxDistThink = (mc.STEP * 1.3) ^ 2
-	
+
 	local ENTS = {}
 	local LastUpdate = 0
-	
+
 	timer.Create('MCSWEP2.ChokeEnts', 0.25, 0, function()
 		if LastUpdate + 1 < CurTime() then
 			ENTS = ents.GetAll()
 			LastUpdate = CurTime()
 		end
-		
+
 		local mcblocks = {}
-		
+
 		for k = 1, #ENTS do
 			local v = ENTS[k]
 			if not v then continue end
-			
+
 			if v.IsMCBlock and v:CanChoke() then
 				table.insert(mcblocks, {v, v:GetPos()})
 				ENTS[k] = nil
 				continue
 			end
-			
+
 			if not v.GetSolid or not (v:GetSolid() ~= SOLID_NONE and (v:IsPlayer() or v:IsNPC() or v:GetClass() == 'prop_physics')) then
 				ENTS[k] = nil
 				continue
@@ -564,17 +564,17 @@ if SERVER then
 				ENTS[k] = {v, v:GetPos()}
 			end
 		end
-		
+
 		for id, block in ipairs(mcblocks) do
 			local hit = false
-			
+
 			for k, ent in pairs(ENTS) do
 				if block[2]:DistToSqr(ent[2]) < MaxDistThink then
 					hit = true
 					break
 				end
 			end
-			
+
 			block[1].CHOKE_ENABLED = hit
 		end
 	end)
@@ -591,26 +591,26 @@ end
 function ENT:Think()
 	if not self.GetBlockID then return end
 	self:Hook('Think')
-	
+
 	if SERVER then
 		if self.FirstThink then
 			self.FirstThink = nil
-			
+
 			if not self:HaveOwner() and self.CPPIGetOwner then
 				self:SetupOwner(self:CPPIGetOwner())
 			end
 		end
-		
+
 		if self:CanFall() then
 			if self:DownIsFree() then
 				self:MakeItFall()
 			end
 		end
-		
+
 		if self:GetIsFalling() then
 			self:FallThink()
 		end
-		
+
 		if self:CanChoke() and self.CHOKE_ENABLED then
 			local tr = util.TraceHull{
 				mins = self:OBBMins() * .4,
@@ -624,7 +624,7 @@ function ENT:Think()
 					return false
 				end
 			}
-			
+
 			if IsValid(tr.Entity) then
 				local ent = tr.Entity
 				if ent:GetMoveType() ~= MOVETYPE_NOCLIP then
@@ -639,7 +639,7 @@ function ENT:UpdatePhysics()
 	self:PhysicsInit(SOLID_VPHYSICS)
 	self:SetSolid(SOLID_VPHYSICS)
 	self:SetMoveType(MOVETYPE_VPHYSICS)
-	
+
 	self.phys = self:GetPhysicsObject()
 	self.phys:Sleep()
 	self.phys:EnableMotion(false)
@@ -659,14 +659,14 @@ end
 
 function ENT:OnTakeDamage(dmg)
 	self:Hook('OnTakeDamage', dmg)
-	
+
 	self:PlaySound()
-	
+
 	if self.godmode then return end
-	
+
 	local hp = self:GetHP()
 	self:SetHP(self:GetHP() - dmg:GetDamage())
-	
+
 	if self:GetHP() <= 0 then
 		dmg:SetDamage(dmg:GetDamage() - hp)
 		self:OnDestruct(dmg)
@@ -676,7 +676,7 @@ end
 function ENT:OnDestruct(dmg)
 	self:Hook('OnDestruct', dmg)
 	self:Sparkles()
-	
+
 	self:Remove()
 end
 
@@ -689,7 +689,7 @@ local BlockMins, BlockMaxs = Vector(- mc.STEP / 2, - mc.STEP / 2, 0), Vector(mc.
 function ENT:DrawLines()
 	local pos = self:GetPos()
 	local ang = self:GetAngles()
-		
+
 	mc.DrawLines(pos, ang, BlockMins, BlockMaxs)
 end
 
@@ -700,9 +700,9 @@ end
 function ENT:UpdateData(keephp)
 	self:UpdateModel()
 	self:UpdatePhysics()
-	
+
 	self.godmode = not self:GetData().destructable
-	
+
 	if not keephp then
 		self:SetMaxHP(self:GetData().health)
 		self:SetHP(self:GetMaxHP())
@@ -730,10 +730,10 @@ local BlockMins, BlockMaxs = -Vector(mc.STEP, mc.STEP, 0) * .4, Vector(mc.STEP, 
 function ENT:GetBlockAtSideByVector(vec)
 	local lpos = self:GetPos()
 	local add = vec
-	
+
 	local start = lpos + add * mc.STEP * .5
 	start.z = start.z + 2
-	
+
 	local tr = util.TraceHull{
 		start = start,
 		endpos = start + Vector(0, 0, mc.STEP - 2.5),
@@ -745,7 +745,7 @@ function ENT:GetBlockAtSideByVector(vec)
 			return false
 		end
 	}
-	
+
 	return tr.Entity
 end
 
@@ -756,22 +756,22 @@ end
 
 function ENT:GetConnectedBlocks()
 	local t = {}
-	
+
 	for k, side in ipairs(mc.SIDES) do
 		t[side] = self:GetBlockAtSide(side)
 	end
-	
+
 	return t
 end
 
 function ENT:GetNearBlocks()
 	local t = {}
-	
+
 	t[mc.SIDE_LEFT] = self:GetBlockAtSide(mc.SIDE_LEFT)
 	t[mc.SIDE_RIGHT] = self:GetBlockAtSide(mc.SIDE_RIGHT)
 	t[mc.SIDE_FORWARD] = self:GetBlockAtSide(mc.SIDE_FORWARD)
 	t[mc.SIDE_BACKWARD] = self:GetBlockAtSide(mc.SIDE_BACKWARD)
-	
+
 	return t
 end
 
@@ -780,11 +780,11 @@ MCSWEP2.REPLACE_FOOTSOUND = CreateConVar('sv_mc_footsound', '1', {FCVAR_REPLICAT
 local function EntityEmitSound(data)
 	if not IsValid(data.Entity) then return end
 	if not data.Entity.IsMCBlock then return end
-	
+
 	if not string.find(data.SoundName, 'impact') then return end
 	if not MCSWEP2.HaveImpactSound(data.Entity:GetMatType()) then return end
 	data.SoundName = MCSWEP2.GetImpactSound(data.Entity:GetMatType())
-	
+
 	return true
 end
 
@@ -823,18 +823,18 @@ ENT.Suffix = {
 
 function ENT:Initialize()
 	self:DrawShadow(false)
-	
+
 	if CLIENT then return end
-	
+
 	self.BaseModel = 'models/mcmodelpack/fences/fence-'
-	
+
 	self:DuplicatorFunc()
-	
+
 	self.FirstThink = true
 	self:SetTrigger(true)
-	
+
 	self:SetModel(self.BaseModel .. 'post.mdl')
-	
+
 	self:CreateWireOutputs()
 end
 
@@ -847,14 +847,14 @@ function ENT:InitializeBlockID(id, hp, noupdate)
 	self:UpdateData(keephp)
 	self.DUPE_BLOCK_ID = id
 	self.NOT_INITALIZED = nil
-	
+
 	self.BaseModel = mc.GetFenceModel(id)
-	
+
 	if not noupdate then
 		self:TriggerUpdate()
 		self:BlockUpdate()
 	end
-	
+
 	self:SetupWireConstants()
 end
 
@@ -887,25 +887,25 @@ local Cases = {
 
 function ENT:BlockUpdate()
 	self.BaseClass.BlockUpdate(self)
-	
+
 	if CLIENT then return end
-	
+
 	if self.CAN_NOT_BE_UPATED then return end
 	local id = self:GetBlockID()
-	
+
 	local blocks = self:GetConnectedBlocks()
-	
+
 	local valid = {}
-	
+
 	for k, v in pairs(blocks) do
 		if k == mc.SIDE_TOP or k == mc.SIDE_DOWN then continue end
 		if IsValid(v) and (v:IsOpaque() or v.IsMCFence) then
 			table.insert(valid, {v, k})
 		end
 	end
-	
+
 	local count = #valid
-	
+
 	--Making cases checks
 	if count ~= 0 then
 		if count == 1 then
@@ -915,7 +915,7 @@ function ENT:BlockUpdate()
 			local t1, t2 = valid[1], valid[2]
 			local case1 = t1[2] .. ' ' .. t2[2]
 			local case = Cases[case1]
-			
+
 			if case then
 				self:SetModel(self.BaseModel .. 'corner.mdl')
 				self:SetRotate(case)
@@ -924,20 +924,20 @@ function ENT:BlockUpdate()
 				self:SetAngles(mc.GetSideAngle(valid[1][2]) + Angle(0, 90, 0))
 				self:SetModelNum(count)
 			end
-			
+
 		elseif count == 3 then
 			local t1, t2, t3 = valid[1], valid[2], valid[3]
 			local case1 = t1[2] .. ' ' .. t2[2] .. ' ' .. t3[2]
-			
+
 			local case = Cases[case1]
-			
+
 			if case then
 				self:SetRotate(case)
 				self:PreformRotate()
 			else
 				self:SetAngles(mc.GetSideAngle(valid[1][2]) + Angle(0, -90, 0))
 			end
-			
+
 			self:SetModelNum(count)
 		else
 			self:SetModelNum(count)
@@ -996,16 +996,16 @@ function ENT:Initialize()
 	self:SetIsOpen(false)
 	self:SetOpenDirection(mc.SIDE_FORWARD)
 	self:SetUseType(SIMPLE_USE)
-	
+
 	self.RealPos = self:GetPos()
-	
+
 	self.Inputs = mc.SafeWireInputs(self, {'Open', 'Close'})
 	mc.SafeTriggerOutput(self, 'IsOpen', 0)
 end
 
 function ENT:TriggerInput(id, val)
 	if not tobool(val) then return end
-	
+
 	if id == 'Open' and not self:GetIsOpen() then
 		self:OpenSwitch(self:GetOpenDirection())
 	elseif id == 'Close' and self:GetIsOpen() then
@@ -1017,7 +1017,7 @@ function ENT:OpenSwitch(dir)
 	self:SetOpenDirection(dir)
 	self:PreformRotate()
 	self:SetIsOpen(not self:GetIsOpen())
-	
+
 	if self:GetIsOpen() then
 		self:SetCollisionGroup(COLLISION_GROUP_NONE)
 		self:EmitSound('minecraft/door_close.ogg')
@@ -1025,7 +1025,7 @@ function ENT:OpenSwitch(dir)
 		self:SetCollisionGroup(COLLISION_GROUP_WORLD)
 		self:EmitSound('minecraft/door_open.ogg')
 	end
-	
+
 	mc.SafeTriggerOutput(self, 'IsOpen', self:GetIsOpen() and 1 or 0)
 end
 
@@ -1039,23 +1039,23 @@ function ENT:RotateOpen()
 	local ang = self:GetAngles()
 	local lpos = self.RealPos
 	local dir = self:GetOpenDirection()
-	
+
 	if dir == mc.SIDE_FORWARD then
 		ang.y = ang.y + 90
 	else
 		ang.y = ang.y - 90
 	end
-	
+
 	local add = Vector(mc.STEP / 2, 0, 0)
 	add:Rotate(ang)
-	
+
 	self:SetAngles(ang)
 	self:SetPos(lpos + add)
 end
 
 function ENT:PreformRotate(noopen)
 	self.BaseClass.PreformRotate(self)
-	
+
 	if not noopen then
 		if self:GetIsOpen() then
 			self:RotateOpen()
@@ -1073,7 +1073,7 @@ function ENT:Use(ply)
 	local lpos = self:GetPos()
 	local delta = (ply:GetPos() - lpos)
 	local ang = delta:Angle()
-	
+
 	if ang.y > 0 and ang.y <= 180 then
 		self:OpenSwitch(mc.SIDE_FORWARD)
 	else
@@ -1123,10 +1123,10 @@ end
 
 function ENT:BlockUpdate()
 	self.BaseClass.BlockUpdate(self)
-	
+
 	if CLIENT then return end
 	local block = self:GetBlockAtSide(mc.SIDE_DOWN)
-	
+
 	if IsValid(block) then
 		if not (block:GetMatType() == mc.MAT_DIRT or block:GetMatType() == mc.MAT_GRASS) then
 			self:OnDestruct()
@@ -1149,11 +1149,11 @@ end
 function ENT:Grow()
 	self.MC_IGNORE = true
 	local func = mc.TreeTypes[self:GetBlockID()].spawn
-	
+
 	if func then
 		func(self)
 	end
-	
+
 	self:Hook('OnGrow')
 	self:Remove()
 end
@@ -1161,7 +1161,7 @@ end
 function ENT:Think()
 	self.BaseClass.Think(self)
 	if CLIENT then return end
-	
+
 	if self.GrowAt < CurTime() then
 		self:Grow()
 	end
@@ -1214,24 +1214,24 @@ ENT.CustomWireOutputs = {'IsOpen'}
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
 	if CLIENT then return end
-	
+
 	self:SetOpenSide(false)
 	self:SetIsOpen(false)
 	self:SetUseType(SIMPLE_USE)
-	
+
 	self.BaseModel = 'models/mcmodelpack/fences/fence-gate'
-	
+
 	timer.Simple(0, function()
 		if IsValid(self) then self:TriggerUpdate() end
 	end)
-	
+
 	self.Inputs = mc.SafeWireInputs(self, {'Open', 'Close'})
 	mc.SafeTriggerOutput(self, 'IsOpen', 0)
 end
 
 function ENT:TriggerInput(id, val)
 	if not tobool(val) then return end
-	
+
 	if id == 'Open' and not self:GetIsOpen() then
 		self:OpenSwitch(self:GetOpenSide())
 	elseif id == 'Close' and self:GetIsOpen() then
@@ -1247,7 +1247,7 @@ end
 function ENT:OpenSwitch(dir)
 	self:SetIsOpen(not self:GetIsOpen())
 	self:SetOpenSide(dir)
-	
+
 	if self:GetIsOpen() then
 		self:SetModel(self.BaseModel .. '-open.mdl')
 		self:SetCollisionGroup(COLLISION_GROUP_WORLD)
@@ -1257,26 +1257,26 @@ function ENT:OpenSwitch(dir)
 		self:SetCollisionGroup(COLLISION_GROUP_NONE)
 		self:EmitSound('minecraft/door_close.ogg')
 	end
-	
+
 	mc.SafeTriggerOutput(self, 'IsOpen', self:GetIsOpen() and 1 or 0)
-	
+
 	self:PreformRotate()
 	self:TriggerUpdate()
 end
 
 function ENT:PreformRotate()
 	self.BaseClass.PreformRotate(self)
-	
+
 	local ang = self:GetAngles()
-	
+
 	ang.y = ang.y - 90
-	
+
 	if self:GetOpenSide() then
 		ang.y = ang.y - 90
 	else
 		ang.y = ang.y + 90
 	end
-	
+
 	self:SetAngles(ang)
 end
 
@@ -1284,9 +1284,9 @@ function ENT:Use(ply)
 	local lpos = self:GetPos()
 	local delta = (ply:GetPos() - lpos)
 	local ang = delta:Angle()
-	
+
 	ang.y = ang.y + 90
-	
+
 	if ang.y > 0 and ang.y <= 180 then
 		self:OpenSwitch(true)
 	else
@@ -1309,16 +1309,16 @@ ENT.PrintName = 'Decoration'
 
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
-	
+
 	self:SetCollisionGroup(COLLISION_GROUP_WORLD)
 end
 
 function ENT:BlockUpdate()
 	self.BaseClass.BlockUpdate(self)
-	
+
 	if CLIENT then return end
 	local block = self:GetBlockAtSide(mc.SIDE_DOWN)
-	
+
 	if IsValid(block) then
 		if not (block:GetMatType() == mc.MAT_DIRT or block:GetMatType() == mc.MAT_GRASS) then
 			self:OnDestruct()
@@ -1348,11 +1348,11 @@ end
 
 function ENT:FixedMove()
 	self.BaseClass.FixedMove(self)
-	
+
 	local pos = self:GetPos()
 	local rand = VectorRand() * mc.STEP * .25
 	rand.z = 0
-	
+
 	self:SetPos(pos + rand)
 end
 
@@ -1362,7 +1362,7 @@ ENT.PhysMaxs = Vector(5, 5, 15)
 function ENT:UpdatePhysics()
 	self:PhysicsInitBox(self.PhysMins, self.PhysMaxs)
 	self:SetMoveType(MOVETYPE_VPHYSICS)
-	
+
 	self.phys = self:GetPhysicsObject()
 	self.phys:Sleep()
 	self.phys:EnableMotion(false)

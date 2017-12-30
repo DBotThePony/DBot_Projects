@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ local SparkleGravity = Vector(0, 0, -30)
 
 function self.Sparkles(pos)
 	local emmiter = ParticleEmitter(pos)
-	
+
 	for i = 1, math.random(8, 30) do
 		local p = emmiter:Add('particle/fire', pos + Vector(math.random(-MCSWEP2.STEP / 2, MCSWEP2.STEP / 2), math.random(-MCSWEP2.STEP / 2, MCSWEP2.STEP / 2), math.random(0, MCSWEP2.STEP)))
 		p:SetColor(200, 200, 200)
@@ -72,7 +72,7 @@ function self.Sparkles(pos)
 		p:SetGravity(SparkleGravity)
 		p:SetVelocity(VectorRand() * math.random(1, 25))
 	end
-	
+
 	emmiter:Finish()
 end
 
@@ -80,7 +80,7 @@ local ExplosionGravity = Vector(0, 0, -5)
 
 function self.Explosion(pos)
 	local emmiter = ParticleEmitter(pos)
-	
+
 	--White
 	for i = 1, math.random(80, 200) do
 		local p = emmiter:Add('particles/minecraft/smoke' .. math.random(1, 5), pos)
@@ -91,7 +91,7 @@ function self.Explosion(pos)
 		p:SetGravity(ExplosionGravity)
 		p:SetVelocity(VectorRand() * math.random(170, 230))
 	end
-	
+
 	--Gray
 	for i = 1, math.random(80, 200) do
 		local p = emmiter:Add('particles/minecraft/smoke' .. math.random(1, 5), pos)
@@ -102,7 +102,7 @@ function self.Explosion(pos)
 		p:SetGravity(ExplosionGravity)
 		p:SetVelocity(VectorRand() * math.random(80, 120))
 	end
-	
+
 	emmiter:Finish()
 end
 
@@ -118,13 +118,13 @@ function self.DrawLines(pos, ang, mins, maxs)
 	render.DrawLine(pos + RotatedVector(maxs.x, mins.y, mins.z, ang), pos + RotatedVector(maxs.x, maxs.y, mins.z, ang), color_black, false)
 	render.DrawLine(pos + RotatedVector(mins.x, mins.y, mins.z, ang), pos + RotatedVector(mins.x, maxs.y, mins.z, ang), color_black, false)
 	render.DrawLine(pos + RotatedVector(mins.x, maxs.y, mins.z, ang), pos + RotatedVector(maxs.x, maxs.y, mins.z, ang), color_black, false)
-	
+
 	--Top
 	render.DrawLine(pos + RotatedVector(mins.x, mins.y, maxs.z, ang), pos + RotatedVector(maxs.x, mins.y, maxs.z, ang), color_black, false)
 	render.DrawLine(pos + RotatedVector(maxs.x, mins.y, maxs.z, ang), pos + RotatedVector(maxs.x, maxs.y, maxs.z, ang), color_black, false)
 	render.DrawLine(pos + RotatedVector(mins.x, mins.y, maxs.z, ang), pos + RotatedVector(mins.x, maxs.y, maxs.z, ang), color_black, false)
 	render.DrawLine(pos + RotatedVector(mins.x, maxs.y, maxs.z, ang), pos + RotatedVector(maxs.x, maxs.y, maxs.z, ang), color_black, false)
-	
+
 	--Walls
 	render.DrawLine(pos + RotatedVector(mins.x, mins.y, mins.z, ang), pos + RotatedVector(mins.x, mins.y, maxs.z, ang), color_black, false)
 	render.DrawLine(pos + RotatedVector(maxs.x, mins.y, mins.z, ang), pos + RotatedVector(maxs.x, mins.y, maxs.z, ang), color_black, false)

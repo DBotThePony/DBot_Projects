@@ -2,7 +2,7 @@
 --Default module
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ local function Percent(var1, var2)
 		if div ~= div then return 1 end --nan
 		return math.Clamp(div, 0, 1)
 	end
-end	
+end
 
 SimpleUpdate('hp', 0, 'Health')
 SimpleUpdate('mhp', 1, 'GetMaxHealth')
@@ -62,11 +62,11 @@ DHUD2.CreateWarning('armor', 'armor', 'maxarmor', 'Armor level', 0.4, 0.2)
 DHUD2.RegisterVar('lplayerteamname', nil, function(self, ply)
 	local name = team.GetName(Var 'lplayerteam')
 	local job = Var('job')
-	
+
 	if job and job ~= name then
 		name = name .. ' (' .. job .. ')'
 	end
-	
+
 	return name
 end)
 
@@ -95,11 +95,11 @@ DHUD2.EntityVar('entityname', false, function(self, ply, ent, isValid, isPlayer,
 	if isPlayer then return false end
 	if ent:IsNPC() then return false end
 	if dist > 300 then return false end
-	
+
 	local class = ent:GetClass()
 	if EntityExcludes[class] then return false end
 	if ent.PrintName == '' then return false end
-	
+
 	return ent.PrintName or class
 end)
 
@@ -112,14 +112,14 @@ DHUD2.EntityVar('drawentityhealth', false, function(self, ply, ent, isValid, isP
 	if isPlayer then return false end
 	if ent:IsNPC() then return false end
 	if dist > 300 then return false end
-	
+
 	local hp, mhp = ent:Health(), ent:GetMaxHealth()
-	
+
 	if mhp == 0 or hp == 0 then return false end
-	
+
 	SVar('entityhealth', hp)
 	SVar('entityhealthmax', mhp)
-	
+
 	return true
 end)
 
@@ -145,23 +145,23 @@ function Default.DrawBars(x, y, RX, RY)
 	local HColor = Col 'hpbar'
 	local HLColor = Col 'hpbarlost'
 	local AColor = Col 'armorbar'
-	
+
 	y = y + DEFAULT_HEIGHT - 40
 	x = x + 20
-	
+
 	DHUD2.DrawBox(x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), Default.HPBAR_WIDTH, Default.HPBAR_HEIGHT, EBar)
-	
+
 	x = x + Default.HPBAR_WIDTH / 2
-	
+
 	DHUD2.SoftSkyrimBar(x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), Default.HPBAR_WIDTH * Var 'hppercent', Default.HPBAR_HEIGHT, HLColor, 'hplost', .05)
 	DHUD2.SoftSkyrimBar(x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), Default.HPBAR_WIDTH * Var 'hppercent', Default.HPBAR_HEIGHT, HColor, 'hp', .2)
 	DHUD2.SoftSkyrimBar(x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift() + 10, Default.HPBAR_WIDTH * Var 'armorpercent', Default.ARMORBAR_HEIGHT, AColor, 'armor')
-	
+
 	local hp = Var 'hp'
 	if hp > ReallyBig then hp = '> 2^30' end --Heh
-	
+
 	DHUD2.SimpleText(hp, nil, x + Default.HPBAR_WIDTH / 2 - surface.GetTextSize(hp) + DHUD2.GetDamageShift(), y - 20 + DHUD2.GetDamageShift(), Col 'hptext')
-	
+
 	if Var 'armor' > 0 then
 		DHUD2.SimpleText(Var 'armor', nil, x - Default.HPBAR_WIDTH / 2 + DHUD2.GetDamageShift(), y + Default.HPBAR_HEIGHT + 2 + DHUD2.GetDamageShift(), Col 'armortext')
 	end
@@ -170,25 +170,25 @@ end
 function Default.DrawAmmo(x, y, RX, RY)
 	y = y + 20
 	x = x + DEFAULT_WIDTH - 20
-	
+
 	local AmmoString2 = ''
-	
+
 	local clip2 = Var 'clip2'
 	local mclip2 = Var 'maxclip2'
 	local totalammo2 = Var 'totalammo2'
-	
+
 	if clip2 ~= -1 or mclip2 ~= -1 then
 		AmmoString2 = string.format('%s/%s (%s)', Var 'clip2', Var 'maxclip2', Var 'totalammo2')
 	end
-	
+
 	if totalammo2 ~= -1 then
 		AmmoString2 = AmmoString2 .. ' (' .. totalammo2 .. ')'
 	end
-	
+
 	local DrawText = string.format('%s/%s (%s) | %s', Var 'clip1', Var 'maxclip1', Var 'totalammo1', AmmoString2)
-	
+
 	x = x - surface.GetTextSize(DrawText)
-	
+
 	DHUD2.SimpleText(DrawText, nil, x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), Col 'ammotext')
 end
 
@@ -199,14 +199,14 @@ end
 function Default.PlayerInfo(x, y)
 	y = y + 5
 	x = x + 20
-	
+
 	local name = Var 'lplayername'
-	
+
 	DHUD2.SimpleText(name, nil, x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), Col 'playerinfo')
 	x = x + surface.GetTextSize(name) + 5
-	
+
 	local tm = Var 'lplayerteamname'
-	
+
 	if tm ~= 'Unassigned' then
 		DHUD2.SimpleText(tm, nil, x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), Var 'lteamcolor')
 		x = x + surface.GetTextSize(tm) + 5
@@ -219,7 +219,7 @@ function Default.EntityDisplay()
 	local w, h = surface.GetTextSize(t)
 
 	DLib.HUDCommons.DrawCustomCenteredMatrix(x - 3 - w / 2 + DHUD2.GetDamageShift(), y - 2 + DHUD2.GetDamageShift(), w, h)
-	
+
 	DHUD2.DrawBox(0, 0, w + 6, h + 4, Col 'bg')
 	DHUD2.SimpleText(t, nil, 3 + DHUD2.GetDamageShift(), DHUD2.GetDamageShift(), Col 'entitytext')
 
@@ -246,14 +246,14 @@ function Default.NPCBars()
 	x = x - 5 - (w + 10 + Default.NPC_HPBAR_WIDTH) / 2
 	DLib.HUDCommons.DrawCustomCenteredMatrix(x, y, w + 10 + Default.NPC_HPBAR_WIDTH, h)
 	x, y = 0, 0
-	
+
 	DHUD2.DrawBox(x, y - 2, w + 10 + Default.NPC_HPBAR_WIDTH, h + 4, Col 'bg')
 	DHUD2.SimpleText(name, nil, x + 3 + DHUD2.GetDamageShift(), y - 1 + DHUD2.GetDamageShift(), Col 'npctext')
-	
+
 	x = x + w + 10
 	DHUD2.DrawBox(x + DHUD2.GetDamageShift(), y + 1 + DHUD2.GetDamageShift(), Default.NPC_HPBAR_WIDTH - 5, h - 2, Col 'empty_bar')
 	DHUD2.DrawBox(x + DHUD2.GetDamageShift(), y + 1 + DHUD2.GetDamageShift(), Default.NPC_HPBAR_WIDTH * percent - 5, h - 2, Col 'npchpbar')
-	
+
 	local t = string.format('%s/%s (%s%%)', hp, mhp, math.floor(percent * 100))
 	local w2, h2 = surface.GetTextSize(t)
 	x = x + Default.NPC_HPBAR_WIDTH / 2 - w2
@@ -272,11 +272,11 @@ function Default.EntityHealth()
 	x = x - Default.ENTITYHP_WIDTH / 2
 	DLib.HUDCommons.DrawCustomCenteredMatrix(x, y, Default.ENTITYHP_WIDTH, Default.ENTITYHP_HEIGHT)
 	x, y = 0, 0
-	
+
 	DHUD2.DrawBox(x - 5 + DHUD2.GetDamageShift(), y - 2 + DHUD2.GetDamageShift(), Default.ENTITYHP_WIDTH + 10, Default.ENTITYHP_HEIGHT + 4, Col 'bg')
 	DHUD2.DrawBox(x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), Default.ENTITYHP_WIDTH, Default.ENTITYHP_HEIGHT, Col 'empty_bar')
 	DHUD2.DrawBox(x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), Default.ENTITYHP_WIDTH * perc, Default.ENTITYHP_HEIGHT, Col 'entityhealth')
-	
+
 	DHUD2.SimpleText(string.format('%s/%s (%s%%)', hp, mhp, math.floor(perc * 100)), nil, x + 5 + DHUD2.GetDamageShift(), y - 1 + DHUD2.GetDamageShift(), Col 'entitytext')
 	DLib.HUDCommons.PopDrawMatrix()
 end
@@ -284,19 +284,19 @@ end
 local function DRAW(self, ply)
 	local x, y = DHUD2.GetPosition('default')
 	local RX, RY = x, y
-	
+
 	x = x - DEFAULT_WIDTH / 2
 	DLib.HUDCommons.DrawCustomCenteredMatrix(x, y, DEFAULT_WIDTH, DEFAULT_HEIGHT)
 	x, y = 0, 0
-	
+
 	local Back = Col 'bg'
-	
+
 	surface.SetFont('DHUD2.Default')
-	
+
 	DHUD2.DrawBox(x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), DEFAULT_WIDTH, DEFAULT_HEIGHT, Back)
-	
+
 	x = x + 30
-	
+
 	surface.SetDrawColor(Col 'line1')
 	surface.DrawPoly{
 		{x = x + 140, y = y},
@@ -304,7 +304,7 @@ local function DRAW(self, ply)
 		{x = x + 160, y = y + DEFAULT_HEIGHT},
 		{x = x + 40, y = y + DEFAULT_HEIGHT},
 	}
-	
+
 	surface.SetDrawColor(Col 'line2')
 	surface.DrawPoly{
 		{x = x + 260, y = y},
@@ -312,7 +312,7 @@ local function DRAW(self, ply)
 		{x = x + 200, y = y + DEFAULT_HEIGHT},
 		{x = x + 160, y = y + DEFAULT_HEIGHT},
 	}
-	
+
 	surface.SetDrawColor(Col 'line1')
 	surface.DrawPoly{
 		{x = x + 300, y = y},
@@ -320,16 +320,16 @@ local function DRAW(self, ply)
 		{x = x + 320, y = y + DEFAULT_HEIGHT},
 		{x = x + 200, y = y + DEFAULT_HEIGHT},
 	}
-	
+
 	x = x - 30
-	
+
 	Default.DrawBars(x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift(), RX, RY)
 	Default.PlayerInfo(x + DHUD2.GetDamageShift(), y + DHUD2.GetDamageShift())
-	
+
 	if Var 'drawammo' then
 		Default.DrawAmmo(x, y, RX, RY)
 	end
-	
+
 	if Var 'weaponname' ~= '???' then
 		Default.DrawWeaponName(x, y)
 	end
@@ -339,15 +339,15 @@ local function DRAW(self, ply)
 	end
 
 	DLib.HUDCommons.PopDrawMatrix()
-	
+
 	if Var 'entityname' then
 		Default.EntityDisplay()
 	end
-	
+
 	if Var 'drawnhpbar' then
 		Default.NPCBars()
 	end
-	
+
 	if Var 'drawentityhealth' then
 		Default.EntityHealth()
 	end
@@ -377,7 +377,7 @@ end)
 
 function Default.UpdateAmmo(self, ply)
 	local weapon = ply:GetActiveWeapon()
-	
+
 	if not IsValid(weapon) then
 		SVar('drawammo', false)
 		LastHaveAmmo = false
@@ -385,32 +385,32 @@ function Default.UpdateAmmo(self, ply)
 		SVar('weaponname', '???')
 		return
 	end
-	
+
 	local name = weapon:GetPrintName()
 	SVar('weaponname', name)
-	
+
 	local c1 = weapon:Clip1()
 	local c2 = weapon:Clip2()
 	local cm1 = weapon:GetMaxClip1()
 	local cm2 = weapon:GetMaxClip2()
 	local AmmoID1 = weapon:GetPrimaryAmmoType()
 	local AmmoID2 = weapon:GetSecondaryAmmoType()
-	
+
 	local totalAmmo1 = ply:GetAmmoCount(AmmoID1)
 	local totalAmmo2 = ply:GetAmmoCount(AmmoID2)
-	
+
 	SVar('clip1', c1)
 	SVar('clip2', c2)
 	SVar('maxclip1', cm1)
 	SVar('maxclip2', cm2)
 	SVar('totalammo1', totalAmmo1)
 	SVar('totalammo2', totalAmmo2)
-	
+
 	if AmmoID1 == -1 then
 		HaveAmmo = false
 		LastHaveAmmo = false
 	end
-	
+
 	if c1 > 0 or c2 > 0 or cm1 > 0 or cm2 > 0 or totalAmmo1 > 0 or totalAmmo2 > 0 or weapon.DrawAmmo then
 		SVar('drawammo', true)
 		LastHaveAmmo = HaveAmmo
@@ -427,30 +427,30 @@ function Default.UpdateNPCBar(self, ply, ent, isValid, isPlayer, Distance)
 		SVar('drawnhpbar', false)
 		return
 	end
-	
+
 	if isPlayer then
 		SVar('drawnhpbar', false)
 		return
 	end
-	
+
 	if not ent:IsNPC() then
 		SVar('drawnhpbar', false)
 		return
 	end
-	
+
 	if Distance > 200 then
 		SVar('drawnhpbar', false)
 		return
 	end
-	
+
 	local hp = ent:Health()
 	local mhp = ent:GetMaxHealth()
 	local npcname = ent.PrintName or ent:GetClass()
-	
+
 	SVar('npchp', hp)
 	SVar('npcmhp', mhp)
 	SVar('npcname', npcname)
-	
+
 	SVar('drawnhpbar', true)
 end
 

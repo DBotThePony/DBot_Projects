@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,12 +20,12 @@ limitations under the License.
 local function sayCmdCheck(ply, strText, bTeam)
 	if string.sub(strText, 1, 1) ~= '/' then return end
 	strText = '!' .. string.sub(strText, 2)
-	
+
 	local match
-	
+
 	for str, data in pairs(ULib.sayCmds) do
 		local str2 = str
-		
+
 		if strText:len() < str:len() then
 			str2 = string.Trim(str)
 		end
@@ -38,7 +38,7 @@ local function sayCmdCheck(ply, strText, bTeam)
 	end
 
 	if not match then return end
-	
+
 	local data = ULib.sayCmds[match]
 
 	local args = string.Trim(strText:sub(match:len() + 1))

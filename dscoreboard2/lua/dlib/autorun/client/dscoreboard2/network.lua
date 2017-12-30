@@ -1,6 +1,6 @@
 
 --
--- Copyright (C) 2016-2017 DBot
+-- Copyright (C) 2016-2018 DBot
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ DLib.chat.registerWithMessages(board, 'DScoreBoard2')
 
 net.Receive('DScoreBoard2.Flags', function()
     local count = net.ReadUInt(12)
-    
+
     for i = 1, count do
         local ply = net.ReadEntity()
         if not IsValid(ply) then continue end
@@ -40,16 +40,16 @@ end)
 net.Receive('DScoreBoard2.Connect', function()
     local steamid = net.ReadString()
     local nick = net.ReadString()
-    
+
     hook.Run('DScoreBoard2_PlayerConnect', steamid, nick)
-    
+
     board.Connecting[steamid] = {
         nick = nick,
         timestamp = CurTime()
     }
-    
+
     board.Disconnected[steamid] = nil
-    
+
     board.RefreshDCache()
 end)
 
@@ -57,16 +57,16 @@ net.Receive('DScoreBoard2.Disconnect', function()
     local steamid = net.ReadString()
     local nick = net.ReadString()
     local country = net.ReadString()
-    
+
     hook.Run('DScoreBoard2_PlayerDisconnect', steamid, nick, country)
-    
+
     board.Disconnected[steamid] = {
         nick = nick,
         country = country,
         timestamp = CurTime()
     }
-    
+
     board.Connecting[steamid] = nil
-    
+
     board.RefreshDCache()
 end)

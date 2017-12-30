@@ -1,12 +1,12 @@
 
--- Copyright (C) 2015-2017 DBot
+-- Copyright (C) 2015-2018 DBot
 
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
 -- the Free Software Foundation, either version 3 of the License, or
 -- (at your option) any later version.
 
--- This program is distributed in the hope that it will be useful, 
+-- This program is distributed in the hope that it will be useful,
 -- but WITHOUT ANY WARRANTY; without even the implied warranty of
 -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 -- GNU General Public License for more details.
@@ -28,12 +28,12 @@ function BloodMoon.Start()
 	net.Broadcast()
 end
 
-concommand.Add("bloodmoon", function(ply) 
+concommand.Add("bloodmoon", function(ply)
 	if IsValid(ply) and not ply:IsAdmin() then return end
 	if not GetGlobalBool("DBot.BloodMoon") then BloodMoon.Start() else BloodMoon.End() end
 end, nil, "Starts/Ends bloodmoon")
 
-concommand.Add("eclipse", function(ply) 
+concommand.Add("eclipse", function(ply)
 	if IsValid(ply) and not ply:IsAdmin() then return end
 	if not GetGlobalBool("DBot.Eclipse") then BloodMoon.StartEclipse() else BloodMoon.EndEclipse() end
 end, nil, "Starts/Ends Eclipse")
@@ -77,12 +77,12 @@ end
 
 timer.Create("BloodMoon", 5, 0, function()
 	if not GetGlobalBool("BloodMoon") then return end
-	
+
 	local zombies = 0
 	for _, t in pairs(ztypes) do
 		zombies = zombies + #ents.FindByClass(t)
 	end
-	
+
 	if zombies < 200 then
 		for _, ply in pairs(player.GetAll()) do
 			local ent = ents.Create(table.Random(ztypes))
@@ -104,12 +104,12 @@ end
 
 timer.Create("Eclipse", 3, 0, function()
 	if not GetGlobalBool("Eclipse") then return end
-	
+
 	local zombies = 0
 	for _, t in pairs(ztypes) do
 		zombies = zombies + #ents.FindByClass(t)
 	end
-	
+
 	if zombies < 200 then
 		for _, ply in pairs(player.GetAll()) do
 			local ent = ents.Create(table.Random(ztypes))
@@ -128,7 +128,7 @@ end)
 hook.Add("PlayerDeath", "BloodMoon", function(ply)
 	BloodMoon.Death = BloodMoon.Death + 1
 
-	if BloodMoon.Death > 5 then 
+	if BloodMoon.Death > 5 then
 		if math.random(1, HandleMoonChance() - BloodMoon.Death * 200) == 1 then
 			BloodMoon.Start()
 

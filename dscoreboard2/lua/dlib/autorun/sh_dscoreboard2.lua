@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -118,7 +118,7 @@ end
 
 if CLIENT then
     DScoreBoard2Ratings.IconsCache = {}
-    
+
     for k, v in pairs(DScoreBoard2Ratings.Icons) do
         DScoreBoard2Ratings.IconsCache[k] = Material(v)
     end
@@ -129,7 +129,7 @@ function DScoreBoard2Ratings.Register(strid, name, help, icon)
     DScoreBoard2Ratings.Help[id] = help
     DScoreBoard2Ratings.Names[id] = name
     DScoreBoard2Ratings.Icons[id] = icon
-    
+
     if CLIENT then
         DScoreBoard2Ratings.IconsCache[id] = Material(icon)
     end

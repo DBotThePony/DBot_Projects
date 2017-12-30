@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -44,47 +44,47 @@ self.Commands = {
 			SayFunc(ply, 'Not an admin!')
 			return
 		end
-		
+
 		if self.IsRestoring then
 			SayFunc(ply, 'Unable to record: Currently we are replaying!')
 			return
 		end
-		
+
 		if self.IsRecording then
 			self.End()
 			SayFunc(ply, 'Recording stopped')
 			return
 		end
-		
+
 		local time = tonumber(args[1])
-		
+
 		if time then
 			self.Begin()
 			SayFunc(ply, 'Recording started for ' .. time .. ' seconds')
-			
+
 			timer.Create('DFlashback.Commant.RecordTimer', time, 1, self.End)
 		else
 			self.Begin()
 			SayFunc(ply, 'Recording started')
 		end
 	end,
-	
+
 	replay = function(ply, cmd, args)
 		if IsValid(ply) and not ply:IsAdmin() then
 			SayFunc(ply, 'Not an admin!')
 			return
 		end
-		
+
 		if self.IsRecording then
 			self.End()
 		end
-		
+
 		if self.IsRestoring then
 			self.EndRestore()
 			SayFunc(ply, 'Replay stopped')
 			return
 		end
-		
+
 		self.BeginRestore()
 		SayFunc(ply, 'Replay started')
 	end,

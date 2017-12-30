@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ local ChatPrint = chat.chatPlayer
 
 local function SavePly(ply)
     local steamid = ply:SteamID64()
-    
+
     for k, v in ipairs(ply.DSCOREBOARD_RATE) do
         LINK:Query(string.format('REPLACE INTO dscoreboard2_rate (ply, rate, val) VALUES (%q, %q, %q)', steamid, k, v))
     end
@@ -64,21 +64,21 @@ end
 
 local function PlayerInitialSpawn(ply)
     local steamid64 = ply:SteamID64()
-    
+
     ply.DSCOREBOARD_RATE = {}
-    
+
     LINK:Query(string.format('SELECT rate, val FROM dscoreboard2_rate WHERE ply = %q', steamid64), function(data)
         for k, row in ipairs(data) do
             ply.DSCOREBOARD_RATE[tonumber(row.rate)] = tonumber(row.val)
         end
-        
+
         for i = 1, #DScoreBoard2Ratings.Ratings do
             if not ply.DSCOREBOARD_RATE[i] then
                 ply.DSCOREBOARD_RATE[i] = 0
                 LINK:Query(string.format('INSERT INTO dscoreboard2_rate (ply, rate, val) VALUES (%q, %q, %q)', steamid64, i, 0))
             end
         end
-        
+
         for k, v in ipairs(ply.DSCOREBOARD_RATE) do
             ply:SetNWInt('DScoreBoard2.Rating' .. k, v)
         end
@@ -94,16 +94,16 @@ end)
 local function BroadcastFlags()
     local plys = player.GetAll()
     local count = #plys
-    
+
     net.Start('DScoreBoard2.Flags', true)
-    
+
     net.WriteUInt(count, 12)
-    
+
     for k, v in ipairs(plys) do
         net.WriteEntity(v)
         net.WriteString(v.DSCOREBOARD_FLAG or 'Unknown')
     end
-    
+
     net.Broadcast()
 end
 
@@ -125,34 +125,34 @@ local function RatePlayer(ply, cmd, args)
     if not target then return end
     target = Player(target)
     if not IsValid(target) then return end
-    
+
     local rating = tonumber(args[2])
     if not rating then return end
     if not DScoreBoard2Ratings.Ratings[rating] then return end
-    
+
     if target == ply then
         ChatPrint(ply, ChatColor, 'You can not rate yourself.')
         return
     end
-    
+
     if not target.DSCOREBOARD_RATE then PlayerInitialSpawn(target) return end
-    
+
     local i1 = target:UserID()
-    
+
     ply.DSCOREBOARD_RATE_COOLDOWN = ply.DSCOREBOARD_RATE_COOLDOWN or {}
     ply.DSCOREBOARD_RATE_COOLDOWN[i1] = ply.DSCOREBOARD_RATE_COOLDOWN[i1] or 0
-    
+
     local ctime = CurTime()
     if ply.DSCOREBOARD_RATE_COOLDOWN[i1] > ctime then
         ChatPrint(ply, ChatColor, 'You must wait ' .. math.floor(ply.DSCOREBOARD_RATE_COOLDOWN[i1] - ctime) .. ' seconds before rating this player again.')
         return
     end
-    
+
     ply.DSCOREBOARD_RATE_COOLDOWN[i1] = ctime + COOLDOWN:GetInt()
-    
+
     ChatPrint(ply, team.GetColor(ply:Team()), 'You', ChatColor,' gave rating ' .. DScoreBoard2Ratings.Names[rating] .. ' to ', team.GetColor(target:Team()), target:Nick())
     ChatPrint(target, team.GetColor(ply:Team()), ply:Nick(), ChatColor,' gave rating ' .. DScoreBoard2Ratings.Names[rating] .. ' to ', team.GetColor(target:Team()), 'You')
-    
+
     AddRate(target, rating)
     SavePly(target)
 end
@@ -164,7 +164,7 @@ local Connect
 local function PlayerConnect(nick, ip)
     if not Connect then return end
     if Connect.frame ~= CurTime() then Connect = nil return end
-    
+
     net.Start('DScoreBoard2.Connect')
     net.WriteString(Connect.steamid)
     net.WriteString(Connect.nick)
@@ -177,9 +177,9 @@ local function player_disconnect(data)
     local userid = tonumber(data.userid)
     local isBot = data.bot
     local reason = data.reason
-    
+
     local ply = player.GetBySteamID(steamid)
-    
+
     if not ply then
         net.Start('DScoreBoard2.Disconnect', true)
         net.WriteString(steamid)
@@ -198,7 +198,7 @@ end
 local function CheckPassword(steamid64, ip, svpass, clpass, nick)
     local realip = string.Explode(':', ip)[1]
     local steamid = util.SteamIDFrom64(steamid64)
-    
+
     Connect = {
         ip = ip,
         steamid64 = steamid64,

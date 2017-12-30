@@ -1,5 +1,5 @@
 
--- Copyright (C) 2017 DBot
+-- Copyright (C) 2017-2018 DBot
 
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ function addWeaponModification(self)
 	if not checkup(self) then return false end
 	local owner = self:GetOwner()
 	local uid = weaponrystats.getWeaponUID(self)
-	
+
 	if owner.weaponrystats_m[uid] then
 		self.weaponrystats.modification = weaponrystats.modifications_hash[owner.weaponrystats_m[uid]]
 		networkWeapon(self)
@@ -146,7 +146,7 @@ local function iterateWeapon(ply, weapon)
 
 	local markDirtyNetwork = false
 	local self = weapon.weaponrystats
-			
+
 	if not self.modification then
 		if addWeaponModification(weapon) then
 			ply.weaponrystats_markDirty = true
@@ -154,7 +154,7 @@ local function iterateWeapon(ply, weapon)
 
 		markDirtyNetwork = true
 	end
-	
+
 	if not self.type then
 		if addWeaponType(weapon) then
 			ply.weaponrystats_markDirty = true

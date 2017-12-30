@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -27,14 +27,14 @@ local Property = {
 	Filter = function(self, ent, ply)
 		return ent:IsPlayer()
 	end,
-	
+
 	MenuOpen = function(self, menu, ent, tr)
 		local ply = LocalPlayer()
 		local hit = false
-		
+
 		local sub = menu:AddSubMenu()
 		local nick = ent:Nick()
-		
+
 		for k, v in pairs(ULXPP.Properties) do
 			local access = ULib.ucl.query(ply, 'ulx ' .. k)
 			if not access then continue end
@@ -42,24 +42,24 @@ local Property = {
 			local menu2 = sub:AddOption(k, function()
 				RunConsoleCommand('ulx', k, nick)
 			end)
-			
+
 			if v.obj then
 				menu2:SetTooltip(v.obj:getUsage(ply))
 			end
-			
+
 			menu2.command = k
 			menu2.nick = nick
-			
+
 			if v.menuopen then
 				v.menuopen(self, menu2, ent, tr)
 			end
 		end
-		
+
 		if not hit then
 			menu:Remove()
 		end
 	end,
-	
+
 	Action = function() end,
 }
 
@@ -68,7 +68,7 @@ properties.Add('ulxpp', Property)
 local function CreateLoop(start, End, step, format)
 	return function(self, menu2, ent, tr)
 		local sub = menu2:AddSubMenu()
-		
+
 		for i = start, End, step do
 			sub:AddOption(string.format(format, i), function()
 				RunConsoleCommand('ulx', menu2.command, menu2.nick, i)

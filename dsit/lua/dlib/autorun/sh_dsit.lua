@@ -1,5 +1,5 @@
 
--- Copyright (C) 2017 DBot
+-- Copyright (C) 2017-2018 DBot
 
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ local function Think()
 		local ent = vehicle:DLibVar('dsit_target')
 
 		if not IsValid(ent) or not ent:Alive() then
-			if SERVER then 
+			if SERVER then
 				vehicle:Remove()
 				DSIT_TRACKED_VEHICLES:remove(i)
 			end

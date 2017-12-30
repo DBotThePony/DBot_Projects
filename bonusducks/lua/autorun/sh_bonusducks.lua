@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,32 +21,32 @@ local DockOMetrValue_Server = 0
 if SERVER then
 	util.AddNetworkString('DBot_DuckOMeter')
 	sql.Query('CREATE TABLE IF NOT EXISTS dbot_duckometr_sv (steamid varchar(32) not null primary key, cval integer not null)')
-	
+
 	hook.Add('PlayerInitialSpawn', 'DBot_DuckOMeter', function(ply)
 		local data = sql.Query('SELECT cval FROM dbot_duckometr_sv WHERE steamid = "' .. ply:SteamID() .. '"') or {}
-		
+
 		ply.CurrentDucksCollected = data[1] and data[1].cval or 0
 	end)
-	
+
 	concommand.Add('sv_duck_reset', function(ply, cmd, args)
 		ply.CurrentDucksCollected = 0
 		sql.Query('DELETE FROM dbot_duckometr_sv WHERE steamid = "' .. ply:SteamID() .. '"')
 		print('Duck count reseted serverside for you!')
 	end)
-	
+
 	concommand.Add('sv_duck_reset_all', function(ply, cmd, args)
 		if IsValid(ply) and not ply:IsSuperAdmin() then
 			ply:ChatPrint('Merasmus not trusting you ducks! Must be a superadmin!')
 			return
 		end
-		
+
 		for i, ply2 in ipairs(player.GetAll()) do
 			ply2.CurrentDucksCollected = 0
 		end
-		
+
 		sql.Query('DELETE FROM dbot_duckometr_sv')
 		print('Duck count reseted serverside for EVERYONE! Merasmus cries!')
-		
+
 		if IsValid(ply) then
 			ply:ChatPrint('Duck count reseted serverside for EVERYONE! Merasmus cries!')
 		end
@@ -55,7 +55,7 @@ else
 	sql.Query('CREATE TABLE IF NOT EXISTS dbot_duckometr (cval integer not null)')
 	local select = sql.Query('SELECT * FROM dbot_duckometr')
 	DockOMetrValue = select and select[1] and select[1].cval or 0
-	
+
 	concommand.Add('cl_duck_reset', function(ply, cmd, args)
 		DockOMetrValue = 0
 		sql.Query('DELETE FROM dbot_duckometr')
@@ -101,11 +101,11 @@ local Mins, Maxs = Vector(-5, -5, 0), Vector(5, 5, 5)
 
 function ENT:Initialize()
 	self:SetModel('models/workshop/player/items/pyro/eotl_ducky/eotl_bonus_duck.mdl')
-	
+
 	self.CreatedAt = CurTime()
 	self.Expires = CurTime() + DISSAPEAR:GetInt()
 	self.Fade = CurTime() + DISSAPEAR:GetInt() - 4
-	
+
 	if CLIENT then
 		self.NextFadeState = 0
 		self:SetSolid(SOLID_NONE)
@@ -113,30 +113,30 @@ function ENT:Initialize()
 		self.ClientsideModel:SetNoDraw(true)
 		self.ClientsideModel:SetModelScale(0.6)
 		self.ClientsideModel:SetSkin(math.random(0, 19))
-		
+
 		self.CAngle = Angle()
-		return 
+		return
 	end
-	
+
 	self:PhysicsInitBox(Mins, Maxs)
 	self:SetSolid(SOLID_BBOX)
 	self:SetMoveType(MOVETYPE_VPHYSICS)
 	self:SetCollisionGroup(COLLISION_GROUP_WORLD)
-	
+
 	local phys = self:GetPhysicsObject()
-	
+
 	if IsValid(phys) then
 		phys:Wake()
 		self.Phys = phys
 	end
-	
+
 	table.insert(DBOT_ACTIVE_DUCKS, self)
 end
 
 function ENT:Push()
 	if not self.Phys then return end
 	local Ang = Angle(math.random(45, 90), math.random(-180, 180), math.random(45, 90))
-	
+
 	if not CRAZY_PHYS:GetBool() then
 		self.Phys:SetVelocity(Ang:Forward() * math.random(50, 200) + Vector(0, 0, 300))
 	else
@@ -148,18 +148,18 @@ end
 
 function ENT:Collect(ply)
 	hook.Run('PreCollectDuck', self, ply)
-	
+
 	self:EmitSound(table.Random(DUCK_TOUCH_SOUND), 75)
 	self:Remove()
-	
+
 	ply.CurrentDucksCollected = (ply.CurrentDucksCollected or 0) + 1
-	
+
 	net.Start('DBot_DuckOMeter')
 	net.WriteUInt(ply.CurrentDucksCollected, 16)
 	net.Send(ply)
-	
+
 	sql.Query(string.format('REPLACE INTO dbot_duckometr_sv (steamid, cval) VALUES (%q, %q)', ply:SteamID(), ply.CurrentDucksCollected))
-	
+
 	hook.Run('PostCollectDuck', self, ply)
 end
 
@@ -167,7 +167,7 @@ function ENT:PhysicsCollide(data)
 	if self.SLEEPING then return end
 	if not self.Phys then return end
 	local ent = data.HitEntity
-	
+
 	if IsValid(ent) then return end
 
 	self.Phys:EnableMotion(false)
@@ -182,24 +182,24 @@ end
 function ENT:Draw()
 	if not IsValid(self.ClientsideModel) then return end
 	self.CAngle.y = self.CAngle.y + (FrameTime() * 66)
-	
+
 	if self.Fade < CurTime() then
 		local ctime = CurTime()
 		local left = self.Expires
 		local percent = (left - ctime) / 4
-		
+
 		if self.NextFadeState < ctime then
 			self.CurrentState = not self.CurrentState
 			self.NextFadeState = ctime + percent * .5
 		end
-		
+
 		render.SetBlend(self.CurrentState and 0.2 or 1)
 	end
-	
+
 	self.ClientsideModel:SetPos(self:GetPos())
 	self.ClientsideModel:SetAngles(self.CAngle)
 	self.ClientsideModel:DrawModel()
-	
+
 	if self.Fade < CurTime() then
 		render.SetBlend(1)
 	end
@@ -231,41 +231,41 @@ ENT.PrintName = 'Mann Bear'
 
 function ENT:Initialize()
 	self:SetModel('models/props_watergate/bottle_pickup.mdl')
-	
+
 	self.CreatedAt = CurTime()
 	self.Expires = CurTime() + BEER_DISSAPEAR:GetInt()
 	self.Fade = CurTime() + BEER_DISSAPEAR:GetInt() - 4
-	
-	if CLIENT then 
+
+	if CLIENT then
 		self:SetSolid(SOLID_NONE)
 		self.ClientsideModel = ClientsideModel('models/props_watergate/bottle_pickup.mdl')
 		self.ClientsideModel:SetNoDraw(true)
-		
+
 		self.CAngle = Angle()
-		return 
+		return
 	end
-	
+
 	self:PhysicsInitBox(Mins, Maxs)
 	self:SetSolid(SOLID_BBOX)
 	self:SetMoveType(MOVETYPE_VPHYSICS)
 	self:SetCollisionGroup(COLLISION_GROUP_WORLD)
-	
+
 	local phys = self:GetPhysicsObject()
-	
+
 	if IsValid(phys) then
 		phys:Wake()
 		self.Phys = phys
 	end
-	
+
 	table.insert(DBOT_ACTIVE_BEER, self)
 end
 
 function ENT:Collect(ply)
 	hook.Run('PreCollectBeer', self, ply)
-	
+
 	self:EmitSound('vo/watergate/pickup_beer.mp3', 75)
 	self:Remove()
-	
+
 	hook.Run('PostCollectBeer', self, ply)
 end
 
@@ -284,16 +284,16 @@ if CLIENT then
 		size = 18,
 		weight = 500,
 	})
-	
+
 	local DuckDisplayTimer = 0
-	
+
 	hook.Add('HUDPaint', 'DBot_DuckOMeter', function()
 		if DuckDisplayTimer < CurTime() then return end
 		local fade = (DuckDisplayTimer - CurTime()) / 4
 		local x, y = ScrW() - 200, ScrH() / 2 + 100
 		draw.DrawText('Ducks collected: ' .. DockOMetrValue .. '\nOn this server: ' .. DockOMetrValue_Server, 'DBot_DuckOMeter', x, y, Color(255, 255, 255, fade * 255))
 	end)
-	
+
 	net.Receive('DBot_DuckOMeter', function()
 		DockOMetrValue = DockOMetrValue + 1
 		DockOMetrValue_Server = net.ReadUInt(16)
@@ -301,7 +301,7 @@ if CLIENT then
 		sql.Query('INSERT INTO dbot_duckometr (cval) VALUES (' .. DockOMetrValue .. ')')
 		DuckDisplayTimer = CurTime() + 4
 	end)
-	
+
 	return
 end
 
@@ -310,11 +310,11 @@ resource.AddWorkshop('690794994')
 local function DoAction(ply)
 	if not ENABLE:GetBool() then return end
 	if math.random(1, CHANCE:GetInt()) ~= 1 then return end
-	
+
 	local epos = ply:EyePos()
 	local count = math.random(MIN:GetInt(), MAX:GetInt())
 	ply:EmitSound(table.Random(DUCK_SOUND), 75)
-	
+
 	for i = 1, count do
 		local ent = ents.Create('dbot_duck')
 		ent:SetPos(epos)
@@ -327,11 +327,11 @@ end
 local function DoActionBeer(ply)
 	if not BEER_ENABLE:GetBool() then return end
 	if math.random(1, BEER_CHANCE:GetInt()) ~= 1 then return end
-	
+
 	local epos = ply:EyePos()
 	local count = math.random(BEER_MIN:GetInt(), BEER_MAX:GetInt())
 	ply:EmitSound('vo/watergate/drop_beer.mp3', 75)
-	
+
 	for i = 1, count do
 		local ent = ents.Create('dbot_mannbeer')
 		ent:SetPos(epos)
@@ -343,69 +343,69 @@ end
 
 local function Think()
 	local plys = player.GetAll()
-	
+
 	local positions = {}
-	
+
 	for k, v in pairs(plys) do
 		if not v:Alive() then continue end
 		positions[v] = v:GetPos()
 	end
-	
+
 	for k, self in pairs(DBOT_ACTIVE_DUCKS) do
 		if not IsValid(self) then
 			DBOT_ACTIVE_DUCKS[k] = nil
 			continue
 		end
-		
+
 		local lpos = self:GetPos()
-	
+
 		if self.CreatedAt + 0.4 > CurTime() then continue end
-		
+
 		local hit = false
-		
+
 		for ply, pos in pairs(positions) do
 			if pos:Distance(lpos) > 70 then continue end
-			
+
 			local can = hook.Run('CanCollectDuck', ply, self, pos, lpos)
 			if can == false then continue end
-			
+
 			self:Collect(ply)
 			hit = true
 			break
 		end
-		
+
 		if hit then continue end
-		
+
 		if self.Expires < CurTime() then
 			self:Remove()
 		end
 	end
-	
+
 	for k, self in pairs(DBOT_ACTIVE_BEER) do
 		if not IsValid(self) then
 			DBOT_ACTIVE_BEER[k] = nil
 			continue
 		end
-		
+
 		local lpos = self:GetPos()
-	
+
 		if self.CreatedAt + 0.4 > CurTime() then continue end
-		
+
 		local hit = false
-		
+
 		for ply, pos in pairs(positions) do
 			if pos:Distance(lpos) > 70 then continue end
-			
+
 			local can = hook.Run('CanCollectBeer', ply, self, pos, lpos)
 			if can == false then continue end
-			
+
 			self:Collect(ply)
 			hit = true
 			break
 		end
-		
+
 		if hit then continue end
-		
+
 		if self.Expires < CurTime() then
 			self:Remove()
 		end
@@ -414,7 +414,7 @@ end
 
 hook.Add('Think', 'DBot_BONUS_DUCKS', Think)
 
-hook.Add('DoPlayerDeath', 'DBot_BONUS_DUCKS', function(ply) 
+hook.Add('DoPlayerDeath', 'DBot_BONUS_DUCKS', function(ply)
 	if BEER_ENABLE_PLAYER:GetBool() then DoActionBeer(ply)  end
 	if ENABLE_PLAYER:GetBool() then DoAction(ply)  end
 end)

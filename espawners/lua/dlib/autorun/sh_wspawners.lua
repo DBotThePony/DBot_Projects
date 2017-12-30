@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ local _, message = DLib.CMessage({}, 'WeaponSpawnpoints')
 
 function DSpawnPoints_Populate()
 	message.Message('Generating weapon spawnpoints...')
-	
+
 	local time = SysTime()
 	for k, v in pairs(weapons.GetList()) do
 		if v.ClassName and v.Spawnable then

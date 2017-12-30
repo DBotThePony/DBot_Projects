@@ -2,7 +2,7 @@
 --m_Blink_SWEP
 --Modern Blink SWEP
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

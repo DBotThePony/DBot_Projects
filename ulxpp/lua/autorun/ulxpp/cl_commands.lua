@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@ limitations under the License.
 
 net.Receive('ULXPP.sin', function()
 	local status = net.ReadBool()
-	
+
 	if status then
 		local Pos = net.ReadVector()
-		
+
 		hook.Add('Move', 'ULXPP_SIN', function(ply, mv)
 			mv:SetOrigin(Pos + Vector(0, 0, math.sin(CurTime()) * 50))
 			return true
@@ -32,7 +32,7 @@ end)
 
 net.Receive('ULXPP.confuse', function()
 	local status = net.ReadBool()
-	
+
 	if status then
 		hook.Add('Move', 'ULXPP_CONFUSE', function(ply, mv)
 			mv:SetSideSpeed(-mv:GetSideSpeed())
@@ -61,18 +61,18 @@ net.Receive('ULXPP.Profile', function()
 end)
 
 hook.Add('PostDrawHUD', '!ULXPP.Banish', function()
-	if ULXPP.BANISHED then 
+	if ULXPP.BANISHED then
 		surface.SetDrawColor(color_black)
 		surface.DrawRect(0, 0, ScrW(), ScrH())
-		return true 
+		return true
 	end
 end, -1)
 
 hook.Add('HUDPaint', '!ULXPP.Banish', function()
-	if ULXPP.BANISHED then 
+	if ULXPP.BANISHED then
 		surface.SetDrawColor(color_black)
 		surface.DrawRect(0, 0, ScrW(), ScrH())
-		return true 
+		return true
 	end
 end, -1)
 
@@ -82,6 +82,6 @@ hook.Add('HUDShouldDraw', 'ULXPP.Banish', function(str)
 	if str == 'CHudChat' then return end
 	if str == 'NetGraph' then return end
 	if str == 'CHudGMod' then return end
-	
+
 	return false
 end)

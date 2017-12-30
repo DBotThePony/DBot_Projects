@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -42,14 +42,14 @@ function DHUD2.GetDamageShift(level)
 	if not DHUD2.DamageShift then
 		return 0
 	end
-	
+
 	local data = debug.getinfo(level or 2, 'Sln')
 	local name = data.short_src .. data.currentline
-	
+
 	if DHUD2.DamageShiftData[name] == nil then
 		DHUD2.DamageShiftData[name] = math.random(-30, 30) / 5
 	end
-	
+
 	return DHUD2.DamageShiftData[name]
 end
 
@@ -120,7 +120,7 @@ function DHUD2.RegisterVar(name, value, updateFunc)
 		func = updateFunc,
 		self = {}
 	}
-	
+
 	return DHUD2.Vars[name].self
 end
 
@@ -130,7 +130,7 @@ function DHUD2.EntityVar(name, value, updateFunc)
 		func = updateFunc,
 		self = {}
 	}
-	
+
 	return DHUD2.EVars[name].self
 end
 
@@ -152,60 +152,60 @@ DHUD2.IsHudDrawing = false
 
 local function Tick()
 	local ply = DHUD2.SelectPlayer()
-	
+
 	if not IsValid(ply) then return end
-	
+
 	DHUD2.Multipler = FrameTime() * 66
-	
+
 	local ent = ply:GetEyeTrace().Entity
 	local isValid = IsValid(ent)
 	local isPlayer = isValid and ent:IsPlayer()
 	local dist = isValid and ent:GetPos():Distance(ply:GetPos()) or -1
-	
+
 	for k, v in pairs(DHUD2.Vars) do
 		if not v.func then continue end
 		local newVal = v.func(v.self, ply)
-		
+
 		if newVal ~= nil then
 			v.value = newVal
 		end
 	end
-	
+
 	for k, v in pairs(DHUD2.EVars) do
 		if not v.func then continue end
 		local newVal = v.func(v.self, ply, ent, isValid, isPlayer, dist)
-		
+
 		if newVal ~= nil then
 			v.value = newVal
 		end
 	end
-	
+
 	for k, v in pairs(DHUD2.VarHooks) do
 		v.func(v.self, ply, ent, isValid, isPlayer, dist)
 	end
-	
+
 	for k, v in pairs(DHUD2.WarningTracks) do
 		local islow, iscrit
-		
+
 		if v.check then
 			if not v.check(ply) then continue end
 		end
-		
+
 		if not v.iscustom then
 			local current = DHUD2.GetVar(v.name1)
 			if not isnumber(current) then continue end
 			local max = DHUD2.GetVar(v.name2)
 			if not isnumber(max) then continue end
-			
+
 			local div
 			if max ~= 0 then
 				div = current / max
 			else
 				div = 1
 			end
-			
+
 			local perc = math.Clamp(div, 0, 1)
-			
+
 			islow = v.low and perc <= v.low
 			iscrit = v.critical and perc <= v.critical
 		else
@@ -213,7 +213,7 @@ local function Tick()
 			islow = v.low and var <= v.low
 			iscrit = v.critical and var <= v.critical
 		end
-		
+
 		if iscrit then
 			if not v.iscrit then
 				v.draw = CurTime() + 4
@@ -244,10 +244,10 @@ end
 
 local function HUDPaint()
 	local ply = DHUD2.SelectPlayer()
-	
+
 	if DHUD2.IsEnabled() then
 		DHUD2.IsHudDrawing = true
-		
+
 		for k, v in pairs(DHUD2.DrawHooks) do
 			local can = hook.Run('CanDrawDHUD2', k)
 			if can == false then continue end
@@ -256,20 +256,20 @@ local function HUDPaint()
 	else
 		DHUD2.IsHudDrawing = false
 	end
-	
+
 	local c = CurTime()
-	
+
 	local x, y = DHUD2.GetPosition('warning')
 	local col = DHUD2.GetColor('warning')
 	local bg = DHUD2.GetColor('bg')
-	
+
 	local next = 0
 	surface.SetFont('DHUD2.Default')
-	
+
 	if DHUD2.IsEnabled() then
 		for k, v in pairs(DHUD2.WarningTracks) do
 			if v.draw < c then continue end
-			
+
 			if v.iscrit then
 				local str
 				if not istable(v.help) then
@@ -277,11 +277,11 @@ local function HUDPaint()
 				else
 					str = v.help[2]
 				end
-				
+
 				local w, h = surface.GetTextSize(str)
 				DHUD2.DrawBox(x - 4 - w / 2, y - 2 + next, w + 8, h + 4, bg)
 				DHUD2.SimpleText(str, nil, x - w / 2, y + next, col)
-				
+
 				next = next + h + 5
 			elseif v.islow then
 				local str
@@ -290,11 +290,11 @@ local function HUDPaint()
 				else
 					str = v.help[1]
 				end
-				
+
 				local w, h = surface.GetTextSize(str)
 				DHUD2.DrawBox(x - 4 - w / 2, y - 2 + next, w + 8, h + 4, bg)
 				DHUD2.SimpleText(str, nil, x - w / 2, y + next, col)
-				
+
 				next = next + h + 5
 			end
 		end
@@ -322,7 +322,7 @@ end)
 
 function DHUD2.SimpleUpdate(name, value, funcName, ...)
 	local Args = {...}
-	
+
 	DHUD2.RegisterVar(name, value, function(self, ply)
 		return ply[funcName](ply, unpack(Args))
 	end)
@@ -357,17 +357,17 @@ DHUD2.CreateColor('generic', 'Generic', 255, 255, 255, 255)
 local function Populate(Panel)
 	if not IsValid(Panel) then return end --spawnmenu_reload
 	Panel:Clear()
-	
+
 	local lab = Label('DHUD/2 - Resurrection of DHUD Legacy', Panel)
 	lab:SetDark(true)
 	Panel:AddItem(lab)
-	
+
 	local button = Panel:Button('Questions or ideas? Join Discord!')
-	
+
 	function button:DoClick()
 		gui.OpenURL('https://discord.gg/HG9eS79')
 	end
-	
+
 	for k, v in pairs(DHUD2.CVars) do
 		local checkbox = Panel:CheckBox(v.help, k)
 		checkbox:SetTooltip(v.help)
@@ -376,15 +376,15 @@ end
 
 local function PopulateServer(Panel)
 	if not IsValid(Panel) then return end --spawnmenu_reload
-	
+
 	for k, v in pairs(DHUD2.Config) do
 		local checkbox = Panel:CheckBox(v.help)
 		checkbox:SetTooltip(v.help)
-		
+
 		checkbox.Button.DoClick = function()
 			RunConsoleCommand('dhud_setvar', k, checkbox.Button:GetChecked() and '0' or '1')
 		end
-		
+
 		checkbox.Button.Think = function()
 			checkbox.Button:SetChecked(DHUD2.ServerConVar(k))
 		end
@@ -399,13 +399,13 @@ local Init = false
 local function LoadIfCan(fil)
 	local can = hook.Run('DHUD2CanLoad', fil)
 	if can == false then return end
-	
+
 	local can = hook.Run('DHUD2CanLoad', string.Explode('/', fil)[2])
 	if can == false then return end
-	
+
 	local can = hook.Run('DHUD2CanLoad', string.Explode('.', string.Explode('/', fil)[2])[1])
 	if can == false then return end
-	
+
 	include(fil)
 end
 
@@ -425,11 +425,11 @@ local function Load()
 	LoadIfCan('dhud/cl_speedmeter.lua')
 	LoadIfCan('dhud/cl_damage.lua')
 	LoadIfCan('dhud/cl_voice.lua')
-	
+
 	if DarkRP then
 		LoadIfCan('dhud/cl_darkrp.lua')
 	end
-	
+
 	hook.Call('PostDHUD2Init')
 end
 

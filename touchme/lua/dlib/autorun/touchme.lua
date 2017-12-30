@@ -1,5 +1,5 @@
 
--- Copyright (C) 2017 DBot
+-- Copyright (C) 2017-2018 DBot
 
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
@@ -138,7 +138,7 @@ if SERVER then
 				ply2.__TouchMeLastPositions = ply2.__TouchMeLastPositions or {}
 				local positions = ply2.__TouchMeLastPositions
 				table.insert(positions, pos)
-				
+
 				if #positions > 5 then
 					table.remove(positions, 1)
 				end

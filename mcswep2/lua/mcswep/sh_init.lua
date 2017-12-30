@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -181,7 +181,7 @@ end
 
 function self.IsPosFreeFromBlock(pos, ignorenonopaque)
 	pos = Vector(pos.x, pos.y, pos.z + 7)
-	
+
 	for k, v in ipairs(ents.FindInSphere(pos, 5)) do
 		if v.MC_IGNORE then continue end
 		if v.IsMCBlock then
@@ -189,13 +189,13 @@ function self.IsPosFreeFromBlock(pos, ignorenonopaque)
 			return false
 		end
 	end
-	
+
 	return true
 end
 
 function self.ClearPositionFromBlocks(pos)
 	pos = Vector(pos.x, pos.y, pos.z + 7)
-	
+
 	for k, v in ipairs(ents.FindInSphere(pos, 5)) do
 		if v.IsMCBlock then
 			v:Remove()
@@ -205,11 +205,11 @@ end
 
 local function Format(start, endpos, str)
 	local t = {}
-	
+
 	for i = start, endpos do
 		table.insert(t, string.format(str, i))
 	end
-	
+
 	return t
 end
 
@@ -247,7 +247,7 @@ self.ImpactSounds = table.Copy(self.MatSounds)
 function self.GetPlaceSound(mat)
 	mat = mat or self.MAT_STONE
 	local t = self.PlaceSounds[mat]
-	
+
 	if t then
 		return t[math.random(1, #t)]
 	else
@@ -338,7 +338,7 @@ local DefaultData = {
 
 function self.tonumber(val)
 	local t = type(val)
-	
+
 	if t == 'number' then
 		return val
 	elseif t == 'boolean' then
@@ -376,23 +376,23 @@ function self.RegisterBlock(id, model, data, name)
 		name = data
 		data = nil
 	end
-	
+
 	data = data or {}
-	
+
 	data.name = name or 'undefined'
-	
+
 	if data.glowcolor then
 		data.glowr = data.glowcolor.r
 		data.glowg = data.glowcolor.g
 		data.glowb = data.glowcolor.b
 	end
-	
+
 	local newdata = table.Copy(DefaultData)
 	table.Merge(newdata, data)
 	newdata.model = model
-	
+
 	self.RegisteredBlocks[id] = newdata
-	
+
 	return newdata
 end
 
@@ -402,7 +402,7 @@ function self.GetBlockByName(name)
 			return id, data
 		end
 	end
-	
+
 	return false
 end
 
@@ -437,9 +437,9 @@ end
 function self.BlockEvent(id, event, ...)
 	if not self.BlockHooks[id] then return end
 	if not self.BlockHooks[id][event] then return end
-	
+
 	self.BlockHooks[id][event].shared(...)
-	
+
 	if CLIENT then
 		self.BlockHooks[id][event].client(...)
 	else
@@ -451,14 +451,14 @@ function self.RegisterEventHook(id, event, funcClient, funcServer, funcShared)
 	funcClient = funcClient or EMPTY_FUNC
 	funcServer = funcServer or EMPTY_FUNC
 	funcShared = funcShared or EMPTY_FUNC
-	
+
 	self.BlockHooks[id] = self.BlockHooks[id] or {}
 	self.BlockHooks[id][event] = {
 		server = funcServer,
 		client = funcClient,
 		shared = funcShared,
 	}
-	
+
 	return self.BlockHooks[id][event]
 end
 
@@ -477,17 +477,17 @@ function self.EventCreate(idToCreate)
 		ent:SetAngles(self:GetAngles())
 		ent:Spawn()
 		ent:Activate()
-		
+
 		ent:InitializeBlockID(idToCreate)
 		if self:HaveOwner() then
 			ent:SetupOwner(self:GetNWOwner())
-			
+
 			undo.Create('MCBlock')
 			undo.AddEntity(ent)
 			undo.SetPlayer(self:GetNWOwner())
 			undo.Finish()
 		end
-		
+
 		if dmg then
 			ent:TakeDamageInfo(dmg)
 		end
@@ -496,28 +496,28 @@ end
 
 function self.SimpleSkins(start, endpos)
 	local t = {}
-	
+
 	for i = start, endpos do
 		table.insert(t, i)
 	end
-	
+
 	return t
 end
 
 function self.CheckSpaceDirection(pos, side, filter)
 	filter = filter or {}
-	
+
 	if type(filter) ~= 'table' then
 		filter = {filter}
 	end
-	
+
 	side = side or self.SIDE_FORWARD
-	
+
 	local start = self.SharpVector(pos)
 	start.z = start.z + self.STEP / 2
-	
+
 	local add = self.GetSideVector(side)
-	
+
 	local tr = util.TraceLine{
 		start = start,
 		endpos = start + add * (self.STEP + 2),
@@ -527,28 +527,28 @@ function self.CheckSpaceDirection(pos, side, filter)
 			return false
 		end
 	}
-	
+
 	return tr.Entity
 end
 
 function self.CheckSpaceNear(pos, filter)
 	local t = {}
-	
+
 	for k, side in ipairs(self.SIDES) do
 		t[side] = self.CheckSpaceDirection(pos, side, filter)
 	end
-	
+
 	return t
 end
 
 function self.CheckNearBlocks(pos, filter)
 	local t = {}
-	
+
 	t[self.SIDE_LEFT] = self.CheckSpaceDirection(pos, self.SIDE_LEFT, filter)
 	t[self.SIDE_RIGHT] = self.CheckSpaceDirection(pos, self.SIDE_RIGHT, filter)
 	t[self.SIDE_FORWARD] = self.CheckSpaceDirection(pos, self.SIDE_FORWARD, filter)
 	t[self.SIDE_BACKWARD] = self.CheckSpaceDirection(pos, self.SIDE_BACKWARD, filter)
-	
+
 	return t
 end
 
@@ -556,35 +556,35 @@ self.VALID_ENTITIES = {}
 
 function self.GetActiveBlocks()
 	local toRemove = {}
-	
+
 	for k, ent in ipairs(self.VALID_ENTITIES) do
 		if not IsValid(ent) then
 			table.insert(toRemove, k)
 		end
 	end
-	
+
 	for i = #toRemove, 1, -1 do
 		table.remove(self.VALID_ENTITIES, toRemove[i])
 	end
-	
+
 	return self.VALID_ENTITIES
 end
 
 function self.GetActiveBlocksByPlayer(ply)
 	local reply = {}
-	
+
 	for k, ent in ipairs(self.GetActiveBlocks()) do
 		if ent:GetNWOwner() == ply then
 			table.insert(reply, ent)
 		end
 	end
-	
+
 	return reply
 end
 
 local function Timer()
 	self.VALID_ENTITIES = {}
-	
+
 	for k, ent in ipairs(ents.GetAll()) do
 		if ent.IsMCBlock then
 			table.insert(self.VALID_ENTITIES, ent)

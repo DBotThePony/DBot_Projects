@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ if SERVER then
 	AddCSLuaFile('autorun/ulxpp/sh_commands.lua')
 	AddCSLuaFile('autorun/ulxpp/cl_commands.lua')
 	AddCSLuaFile('autorun/ulxpp/cl_chat.lua')
-	
+
 	util.AddNetworkString('ULXPP.Chat')
 end
 
@@ -35,7 +35,7 @@ end
 
 function ULXPP.GetCommand(class)
 	if ULXPP.COMMANDS[class] then return ULXPP.COMMANDS[class].obj end
-	
+
 	for k, data in pairs(ulx.cmdsByCategory) do
 		for i, obj in pairs(data) do
 			if ULXPP.UnpackCommand(obj.cmd) == class then return obj end
@@ -50,21 +50,21 @@ end
 function ULXPP.StorePreviousFuncsState(ply, class, array)
 	ply.ULXPP_STATE = ply.ULXPP_STATE or {}
 	ply.ULXPP_STATE[class] = {}
-	
+
 	for k, v in pairs(array) do
 		table.insert(ply.ULXPP_STATE[class], {
 			func = v.func,
 			gfunc = v.gfunc,
 			value = ply[v.gfunc](ply),
 		})
-		
+
 		ply[v.func](ply, v.newval)
 	end
 end
 
 function ULXPP.RestorePreviousFuncsState(ply, class)
 	ply.ULXPP_STATE = ply.ULXPP_STATE or {}
-	
+
 	for k, v in pairs(ply.ULXPP_STATE[class]) do
 		ply[v.func](ply, v.value)
 	end
@@ -73,21 +73,21 @@ end
 function ULXPP.CreateCommand(class, data)
 	data.params = data.params or {}
 	ULXPP.COMMANDS[class] = data
-	
+
 	local obj = ulx.command(data.category or 'ULXPP', 'ulx ' .. class, data.callback or ULXPP.EMPTY_FUNCTION, '!' .. class)
 	obj:defaultAccess(data.access or ULib.ACCESS_ADMIN)
 	obj:help(data.help or 'Undefined')
-	
+
 	if data.player then
 		ULXPP.PlayerArg(obj)
 	end
-	
+
 	for k, v in pairs(data.params) do
 		obj:addParam(v)
 	end
-	
+
 	ULXPP.COMMANDS[class].obj = obj
-	
+
 	return obj
 end
 
@@ -105,7 +105,7 @@ if SERVER then
 		net.WriteTable({...})
 		net.Send(ply)
 	end
-	
+
 	include('autorun/ulxpp/sv_chat.lua')
 else
 	include('autorun/ulxpp/cl_commands.lua')

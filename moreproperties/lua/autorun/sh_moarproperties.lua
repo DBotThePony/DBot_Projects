@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,11 +21,11 @@ local UNBREAKABLE_ADMIN = CreateConVar('sv_property_unbreakable_admin', '0', {FC
 
 local function Can(ply)
 	local wp = ply:GetWeapons()
-	
+
 	for k, v in pairs(wp) do
 		if IsValid(v) and v:GetClass() == 'gmod_tool' then return true end
 	end
-	
+
 	return false
 end
 
@@ -33,10 +33,10 @@ local function DefaultFilter(self, ent, ply, tr)
 	if not Can(ply) then return false end
 	if ent:IsPlayer() then return false end
 	if not hook.Run('CanProperty', ply, self.index, ent) then return end
-	
+
 	if CLIENT then
 		local name, Var = debug.getlocal(2, 2)
-		
+
 		if name == 'tr' and istable(Var) then
 			if not hook.Run('CanTool', ply, Var, self.index) then return false end
 		end
@@ -44,7 +44,7 @@ local function DefaultFilter(self, ent, ply, tr)
 		if not hook.Run('CanTool', ply, tr, self.index) then return false end
 		if tr.HitPos:Distance(ply:GetPos()) > 512 then return false end
 	end
-	
+
 	return true
 end
 
@@ -71,18 +71,18 @@ self.lamp = {
 	Order = 1702,
 	index = 'lamp',
 	MenuIcon = 'icon16/lightbulb.png',
-	
+
 	Receive = function(self, len, ply)
 		self.CPly = ply
 		local ent = net.ReadEntity()
 		local tr = net.ReadTable()
 		tr.Entity = ent
-		
+
 		if not tr.Entity then return end
 		if not tr.HitPos then return end
 		if not self:Filter(tr.Entity, ply, tr) then return end
 		if not MakeLamp then return end
-		
+
 		--Copypaste
 		local r = math.Clamp(self:GetClientNumber("r"), 0, 255)
 		local g = math.Clamp(self:GetClientNumber("g"), 0, 255)
@@ -94,9 +94,9 @@ self.lamp = {
 		local distance = self:GetClientNumber("distance")
 		local bright = self:GetClientNumber("brightness")
 		local toggle = self:GetClientNumber("toggle") ~= 1
-		
+
 		local trace = tr
-		
+
 		if IsValid(trace.Entity) && trace.Entity:GetClass() == "gmod_lamp" && trace.Entity:GetPlayer() == ply then
 			trace.Entity:SetColor(Color(r, g, b, 255))
 			trace.Entity:SetFlashlightTexture(texture)
@@ -124,23 +124,23 @@ self.lamp = {
 
 			return true
 		end
-		
+
 		if not ply:CheckLimit('lamps') then return end
-		
+
 		local lamp = MakeLamp(ply, r, g, b, key, toggle, texture, mdl, fov, distance, bright, not toggle, {Pos = tr.HitPos, Angle = Angle(0, 0, 0)})
-		
+
 		local phys = lamp:GetPhysicsObject()
-		
+
 		if IsValid(phys) then
 			phys:EnableMotion(false)
 		end
-		
+
 		if lamp.CPPIGetOwner then
 			if lamp:CPPIGetOwner() ~= ply then
 				lamp:CPPISetOwner(ply)
 			end
 		end
-		
+
 		undo.Create("Lamp")
 		undo.AddEntity(lamp)
 		undo.SetPlayer(ply)
@@ -153,22 +153,22 @@ self.light = {
 	Order = 1703,
 	index = 'light',
 	MenuIcon = 'icon16/lightbulb.png',
-	
+
 	Receive = function(self, len, ply)
 		self.CPly = ply
 		local ent = net.ReadEntity()
 		local tr = net.ReadTable()
 		tr.Entity = ent
-		
+
 		if not tr.Entity then return end
 		if not tr.HitPos then return end
 		if not tr.HitNormal then return end
 		if not self:Filter(tr.Entity, ply, tr) then return end
 		if not MakeLight then return end
-		
+
 		--Copypaste
 		local trace = tr
-		
+
 		local r = math.Clamp(self:GetClientNumber("r"), 0, 255)
 		local g = math.Clamp(self:GetClientNumber("g"), 0, 255)
 		local b = math.Clamp(self:GetClientNumber("b"), 0, 255)
@@ -176,7 +176,7 @@ self.light = {
 		local size = self:GetClientNumber("size")
 		local toggle = self:GetClientNumber("toggle") ~= 1
 		local key = self:GetClientNumber("key")
-		
+
 		if IsValid(trace.Entity) && trace.Entity:GetClass() == "gmod_light" && trace.Entity:GetPlayer() == ply then
 			trace.Entity:SetColor(Color(r, g, b, 255))
 			trace.Entity.r = r
@@ -184,51 +184,51 @@ self.light = {
 			trace.Entity.b = b
 			trace.Entity.Brightness = brght
 			trace.Entity.Size = size
-			
+
 			trace.Entity:SetBrightness(brght)
 			trace.Entity:SetLightSize(size)
 			trace.Entity:SetToggle(!toggle)
-			
+
 			trace.Entity.KeyDown = key
-			
+
 			numpad.Remove(trace.Entity.NumDown)
 			numpad.Remove(trace.Entity.NumUp)
 
 			trace.Entity.NumDown = numpad.OnDown(ply, key, "LightToggle", trace.Entity, 1)
 			trace.Entity.NumUp = numpad.OnUp(ply, key, "LightToggle", trace.Entity, 0)
-			
+
 			return true
 		end
-		
+
 		if not ply:CheckLimit('lights') then return end
-		
+
 		local lamp = MakeLight(ply, r, g, b, brght, size, toggle, not toggle, key, {Pos = tr.HitPos + tr.HitNormal * 4, Angle = tr.HitNormal:Angle()})
-		
+
 		local phys = lamp:GetPhysicsObject()
-		
+
 		if IsValid(phys) then
 			phys:EnableMotion(false)
 		end
-		
+
 		if lamp.CPPIGetOwner then
 			if lamp:CPPIGetOwner() ~= ply then
 				lamp:CPPISetOwner(ply)
 			end
 		end
-		
+
 		local length = math.Clamp(self:GetClientNumber("ropelength"), 4, 1024)
 		local material = self:GetClientInfo("ropematerial")
-		
+
 		local LPos1 = Vector( 0, 0, 5 )
 		local LPos2 = trace.Entity:WorldToLocal( trace.HitPos )
-		
+
 		if IsValid(trace.Entity) then
 			local phys = trace.Entity:GetPhysicsObjectNum(trace.PhysicsBone)
 			if IsValid(phys)  then
 				LPos2 = phys:WorldToLocal(trace.HitPos)
 			end
 		end
-		
+
 		local constraint, rope = constraint.Rope(lamp, trace.Entity, 0, trace.PhysicsBone, LPos1, LPos2, 0, length, 0, 1, material)
 
 		undo.Create("Light")
@@ -245,26 +245,26 @@ self.hoverball = {
 	Order = 1704,
 	index = 'hoverball',
 	MenuIcon = 'icon16/sport_8ball.png',
-	
+
 	Receive = function(self, len, ply)
 		self.CPly = ply
 		local ent = net.ReadEntity()
 		local tr = net.ReadTable()
 		tr.Entity = ent
-		
+
 		if not tr.Entity then return end
 		if not tr.HitPos then return end
 		if not tr.HitNormal then return end
 		if not self:Filter(tr.Entity, ply, tr) then return end
 		if not MakeHoverBall then return end
-		
+
 		local model = self:GetClientInfo("model")
 		local key_d = self:GetClientNumber("keydn")
 		local key_u = self:GetClientNumber("keyup")
 		local speed = self:GetClientNumber("speed")
 		local strength = math.Clamp(self:GetClientNumber("strength"), 0.1, 20)
 		local resistance = math.Clamp(self:GetClientNumber("resistance"), 0, 20)
-		
+
 		--Update
 		if IsValid(tr.Entity) and tr.Entity:GetClass() == "gmod_hoverball" and tr.Entity.pl == ply then
 			tr.Entity:SetSpeed(speed)
@@ -290,20 +290,20 @@ self.hoverball = {
 
 			return
 		end
-		
+
 		if not ply:CheckLimit('hoverballs') then return end
 
 		if not util.IsValidModel(model) then return false end
 		if not util.IsValidProp(model) then return false end
-		
+
 		local ball = MakeHoverBall(ply, tr.HitPos, key_d, key_u, speed, resistance, strength, model)
-		
+
 		if ball.CPPIGetOwner then
 			if ball:CPPIGetOwner() ~= ply then
 				ball:CPPISetOwner(ply)
 			end
 		end
-		
+
 		local CurPos = ball:GetPos()
 		local NearestPoint = ball:NearestPoint(CurPos - tr.HitNormal * 512)
 		local Offset = CurPos - NearestPoint
@@ -343,14 +343,14 @@ self.thruster = {
 		local ent = net.ReadEntity()
 		local tr = net.ReadTable()
 		tr.Entity = ent
-		
+
 		if not tr.Entity then return end
 		if not tr.HitPos then return end
 		if not tr.HitNormal then return end
 		if not self:Filter(tr.Entity, ply, tr) then return end
 		if not MakeThruster then return end
 		local trace = tr
-		
+
 		local force = math.Clamp(self:GetClientNumber("force"), 0, 1E35)
 		local model = self:GetClientInfo("model")
 		local key = self:GetClientNumber("keygroup")
@@ -360,7 +360,7 @@ self.thruster = {
 		local effect = self:GetClientInfo("effect")
 		local damageable = self:GetClientNumber("damageable")
 		local soundname = self:GetClientInfo("soundname")
-		
+
 		if IsValid(trace.Entity) and trace.Entity:GetClass() == "gmod_thruster" and trace.Entity.pl == ply then
 			trace.Entity:SetForce(force)
 			trace.Entity:SetEffect(effect)
@@ -406,7 +406,7 @@ self.thruster = {
 		-- Don't weld to world
 		if IsValid(trace.Entity) then
 			const = constraint.Weld(thruster, trace.Entity, 0, trace.PhysicsBone, 0, collision == 0, true)
-			
+
 			-- Don't disable collision if it's not attached to anything
 			if collision == 0 then
 				thruster:GetPhysicsObject():EnableCollisions(false)
@@ -429,23 +429,23 @@ self.freeze = {
 	MenuLabel = 'Freeze',
 	Order = 1601,
 	MenuIcon = 'icon16/link.png',
-	
+
 	Filter = function(self, ent, ply)
 		if ent:IsPlayer() then return false end
 		if SERVER and not IsValid(ent:GetPhysicsObject()) then return false end
 		if SERVER and not ent:GetPhysicsObject():IsMotionEnabled() then return false end
 		if CLIENT and ent:GetNWBool('ExtraProperties.Frozen') then return false end
 		if not hook.Run('CanProperty', ply, 'freeze', ent) then return false end
-		
+
 		return true
 	end,
-	
+
 	Action = function(self, ent, tr)
 		self:MsgStart()
 		net.WriteEntity(ent)
 		self:MsgEnd()
 	end,
-	
+
 	Receive = function(self, len, ply)
 		local ent = net.ReadEntity()
 		if not self:Filter(ent, ply) then return end
@@ -458,23 +458,23 @@ self.unfreeze = {
 	MenuLabel = 'Unfreeze',
 	Order = 1602,
 	MenuIcon = 'icon16/link_break.png',
-	
+
 	Filter = function(self, ent, ply)
 		if ent:IsPlayer() then return false end
 		if SERVER and not IsValid(ent:GetPhysicsObject()) then return false end
 		if SERVER and ent:GetPhysicsObject():IsMotionEnabled() then return false end
 		if CLIENT and not ent:GetNWBool('ExtraProperties.Frozen') then return false end
 		if not hook.Run('CanProperty', ply, 'unfreeze', ent) then return false end
-		
+
 		return true
 	end,
-	
+
 	Action = function(self, ent, tr)
 		self:MsgStart()
 		net.WriteEntity(ent)
 		self:MsgEnd()
 	end,
-	
+
 	Receive = function(self, len, ply)
 		local ent = net.ReadEntity()
 		if not self:Filter(ent, ply) then return end
@@ -487,25 +487,25 @@ self.unbreakable = {
 	MenuLabel = 'Make unbreakable',
 	Order = 1603,
 	MenuIcon = 'icon16/shield.png',
-	
+
 	Filter = function(self, ent, ply)
 		if UNBREAKABLE_ADMIN:GetBool() and not ply:IsAdmin() then return false end
 		if ent:GetClass() ~= 'prop_physics' then return end
 		if not hook.Run('CanProperty', ply, 'unbreakable', ent) then return false end
-		
+
 		return true
 	end,
-	
+
 	Action = function(self, ent, tr)
 		self:MsgStart()
 		net.WriteEntity(ent)
 		self:MsgEnd()
 	end,
-	
+
 	Receive = function(self, len, ply)
 		local ent = net.ReadEntity()
 		if not self:Filter(ent, ply) then return end
-		
+
 		--Don't know anything better
 		local id = 'zUnbreakable_' .. ent:EntIndex()
 		hook.Add('EntityTakeDamage', id, function(ent1, dmg)
@@ -513,7 +513,7 @@ self.unbreakable = {
 				hook.Remove('EntityTakeDamage', id)
 				return
 			end
-			
+
 			if ent1 ~= ent then return end
 			dmg:SetDamage(0)
 		end, 2)
@@ -524,50 +524,50 @@ self.sethealth = {
 	MenuLabel = 'Set health',
 	Order = 1604,
 	MenuIcon = 'icon16/heart.png',
-	
+
 	Filter = function(self, ent, ply)
 		if HEALTH_ADMIN:GetBool() and not ply:IsAdmin() then return false end
 		if ent:IsPlayer() then return false end
 		if not hook.Run('CanProperty', ply, 'sethealth', ent) then return false end
-		
+
 		return true
 	end,
-	
+
 	MenuOpen = function(self, menu, ent, tr)
 		local SubMenu = menu:AddSubMenu()
 		local ply = LocalPlayer()
-		
+
 		for i = 50, 400, 50 do
 			local Pnl = SubMenu:AddOption(i .. ' health', function()
 				self:MsgStart()
 				net.WriteEntity(ent)
 				net.WriteUInt(i, 32)
-				self:MsgEnd() 
+				self:MsgEnd()
 			end)
-			
+
 			Pnl:SetIcon('icon16/heart.png')
 		end
 	end,
-	
+
 	Action = function(self, ent, tr)
 		local pnl = Derma_StringRequest(
 			'Set Health',
 			'Set the health of entity ' .. tostring(ent) .. ' to...\nCurrent: ' .. ent:Health(),
 			tostring(ent:Health()),
-			function(text) 
+			function(text)
 				self:MsgStart()
 				net.WriteEntity(ent)
 				net.WriteUInt(tonumber(text), 32)
-				self:MsgEnd() 
+				self:MsgEnd()
 			end,
 			function() end
 		)
 	end,
-	
+
 	Receive = function(self, len, ply)
 		local ent = net.ReadEntity()
 		if not self:Filter(ent, ply) then return end
-		
+
 		local hp = net.ReadUInt(32)
 		if not hp then return end
 		ent:SetHealth(hp)
@@ -578,50 +578,50 @@ self.setmaxhealth = {
 	MenuLabel = 'Set max health',
 	Order = 1605,
 	MenuIcon = 'icon16/heart_add.png',
-	
+
 	Filter = function(self, ent, ply)
 		if HEALTH_ADMIN:GetBool() and not ply:IsAdmin() then return end
 		if ent:IsPlayer() then return false end
 		if not hook.Run('CanProperty', ply, 'setmaxhealth', ent) then return false end
-		
+
 		return true
 	end,
-	
+
 	MenuOpen = function(self, menu, ent, tr)
 		local SubMenu = menu:AddSubMenu()
 		local ply = LocalPlayer()
-		
+
 		for i = 50, 400, 50 do
 			local Pnl = SubMenu:AddOption(i .. ' health', function()
 				self:MsgStart()
 				net.WriteEntity(ent)
 				net.WriteUInt(i, 32)
-				self:MsgEnd() 
+				self:MsgEnd()
 			end)
-			
+
 			Pnl:SetIcon('icon16/heart_add.png')
 		end
 	end,
-	
+
 	Action = function(self, ent, tr)
 		Derma_StringRequest(
 			'Set Max Health',
 			'Set the max health of entity ' .. tostring(ent) .. ' to...\nCurrent: ' .. ent:Health(),
 			tostring(ent:GetMaxHealth()),
-			function(text) 
+			function(text)
 				self:MsgStart()
 				net.WriteEntity(ent)
 				net.WriteUInt(tonumber(text), 32)
-				self:MsgEnd() 
+				self:MsgEnd()
 			end,
 			function() end
 		)
 	end,
-	
+
 	Receive = function(self, len, ply)
 		local ent = net.ReadEntity()
 		if not self:Filter(ent, ply) then return end
-		
+
 		local hp = net.ReadUInt(32)
 		if not hp then return end
 		ent:SetMaxHealth(hp)

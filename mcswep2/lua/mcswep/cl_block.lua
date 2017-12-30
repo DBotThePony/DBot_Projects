@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -33,26 +33,26 @@ local GlowHalf = Vector(0, 0, 1) * MCSWEP2.STEP / 2
 
 function ENT:RealDraw()
 	if not self.GetIsFalling then return end
-	
+
 	if self:CanFall() then
 		if self:GetIsFalling() then
 			self:SetRenderOrigin(self:GetFallPosition())
 		end
-		
+
 		self:DrawModel()
-		
+
 		self:SetRenderOrigin()
 	else
 		self:DrawModel()
 	end
-	
+
 	if self:CanGlow() then
 		local dlight = DynamicLight(self:EntIndex())
 
 		if dlight then
 			local r, g, b = self:GetGlowColor()
 			local mult = self:GetGlowMultipler()
-			
+
 			dlight.Pos = self:GetPos() + GlowHalf
 			dlight.r = r
 			dlight.g = g
@@ -71,9 +71,9 @@ function ENT:Draw()
 		render.PushFilterMag(TEXFILTER.POINT)
 		render.PushFilterMin(TEXFILTER.POINT)
 	end
-	
+
 	self:RealDraw()
-	
+
 	if MCSWEP2.DRAW_FILTER:GetBool() then
 		render.PopFilterMag()
 		render.PopFilterMin()
@@ -90,7 +90,7 @@ local REPLACE_FOOTSOUND = MCSWEP2.REPLACE_FOOTSOUND
 local function PlayerFootstep(ply, pos, foot, sound, volume)
 	if not REPLACE_FOOTSOUND:GetInt() then return end
 	volume = volume or 1
-	
+
 	local tr = util.TraceHull{
 		start = pos,
 		endpos = pos + Vector(0, 0, -5),
@@ -98,20 +98,20 @@ local function PlayerFootstep(ply, pos, foot, sound, volume)
 		mins = ply:OBBMins() * 0.7,
 		maxs = ply:OBBMaxs() * 0.7,
 	}
-	
+
 	if not tr.Hit then return end
 	if not IsValid(tr.Entity) then return end
 	if not tr.Entity.IsMCBlock then return end
-	
+
 	if not MCSWEP2.HaveWalkSound(tr.Entity:GetMatType()) then return end
 	local snd = MCSWEP2.GetWalkSound(tr.Entity:GetMatType())
-	
+
 	if ply == LocalPlayer() then
 		ply:EmitSound(snd, 55, 100, math.min(0.3, volume))
 	else
 		ply:EmitSound(snd, 65, 100, volume)
 	end
-	
+
 	return true
 end
 
@@ -120,15 +120,15 @@ local maxdist = 256 ^ 2
 local function PostDrawTranslucentRenderables(a, b)
 	if a or b then return end
 	if not DRAW_LINES:GetBool() then return end
-	
+
 	local ply = LocalPlayer()
 	local tr = ply:GetEyeTrace()
 	local ent = tr.Entity
 	if not IsValid(ent) then return end
 	if not ent.IsMCBlock then return end
-	
+
 	local pos = ent:GetPos()
-	
+
 	if pos:DistToSqr(ply:GetPos()) > maxdist then return end
 	ent:DrawLines()
 end

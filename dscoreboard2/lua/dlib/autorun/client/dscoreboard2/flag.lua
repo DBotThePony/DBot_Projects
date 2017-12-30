@@ -1,6 +1,6 @@
 
 --
--- Copyright (C) 2016-2017 DBot
+-- Copyright (C) 2016-2018 DBot
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
@@ -26,31 +26,31 @@ function PANEL:Init()
     self:SetSize(23, 11)
     self:SetMouseInputEnabled(false)
     self:SetKeyboardInputEnabled(false)
-    
+
     self.CurrentImage = ''
     self.FlagSetup = true
 end
 
 function PANEL:SetupFlag(code)
     local country = code or board.GetPlayerCountry(self.ply)
-    
+
     if country == 'Unknown' then return end
-    
+
     self.FlagSetup = true
-    
+
     if board.MAT_CACHE[country] == nil then
         local path = string.lower(country)
-        
+
         if not file.Exists('materials/flags16/' .. path .. '.png', 'GAME') then
             board.MAT_CACHE[country] = false
             return
         end
-        
+
         board.MAT_CACHE[country] = Material('flags16/' .. path .. '.png')
     end
-    
+
     if not board.MAT_CACHE[country] then return end
-    
+
     self.Mat = board.MAT_CACHE[country]
 end
 
@@ -63,13 +63,13 @@ end
 function PANEL:SetPlayer(ply)
     self.FlagSetup = false
     self.ply = ply
-    
+
     self:SetupFlag()
 end
 
 function PANEL:SetFlagCode(code)
     self.FlagSetup = false
-    
+
     self:SetupFlag(code)
 end
 

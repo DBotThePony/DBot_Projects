@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ local function DUpdateUserLabels(self, ply)
     if not DarkRP then return end
     self.pnls.team:SetText('Job: ' .. team.GetName(ply:Team()))
     self.pnls.job:SetText('Job Title: ' .. (ply:getDarkRPVar('job') or team.GetName(ply:Team())))
-    
+
     if LocalPlayer():IsAdmin() then
         self.pnls.money:SetText('Money: ' .. DarkRP.formatMoney(ply:getDarkRPVar('money') or 0))
         self.pnls.salary:SetText('Salary: ' .. DarkRP.formatMoney(ply:getDarkRPVar('salary') or 0))
@@ -30,7 +30,7 @@ end
 local function DPopulateUserLabels(self)
     if not DarkRP then return end
     self:CreateInfoLabel('job', 'Job:')
-    
+
     if LocalPlayer():IsAdmin() then
         self:CreateInfoLabel('money', 'Wallet:')
         self:CreateInfoLabel('salary', 'Salary:')
@@ -50,10 +50,10 @@ local function Row(self, ply)
     wanted:SetTextColor(color_white)
     wanted:SetText('Wanted!')
     wanted:SetFont('DScoreBoard2.Button')
-    
+
     wanted.Think = function()
         if not IsValid(ply) then return end
-        
+
         if not ply.isWanted or not ply:isWanted() then
             wanted:SetText('')
         else

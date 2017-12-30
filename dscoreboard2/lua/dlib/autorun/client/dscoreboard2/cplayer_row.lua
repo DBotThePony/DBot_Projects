@@ -1,6 +1,6 @@
 
 --
--- Copyright (C) 2016-2017 DBot
+-- Copyright (C) 2016-2018 DBot
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
@@ -25,23 +25,23 @@ function PANEL:Init()
     avatar:Dock(LEFT)
     avatar:SetSize(16, 16)
     self:SetHeight(16)
-    
+
     self.stamp = 0
-    
+
     self.nick = self:Add('DScoreBoard2_SpecialLabel')
     self.nick:SetFont(DScoreBoard2.FONT_PLAYERINFO)
     self.nick:SetText('nick')
     self.nick:Dock(LEFT)
     self.nick:DockMargin(4, 0, 4, 0)
     self.nick:SetWidth(200)
-    
+
     self.ping = self:Add('DScoreBoard2_SpecialLabel')
     self.ping:SetFont(DScoreBoard2.FONT_PLAYERINFO)
     self.ping:SetText('0:00')
     self.ping:Dock(RIGHT)
     self.ping:DockMargin(4, 0, 4, 0)
     self.ping:SetWidth(50)
-    
+
     local lab = self:Add('DScoreBoard2_SpecialLabel')
     lab:SetFont(DScoreBoard2.FONT_PLAYERINFO)
     lab:SetText('Connecting')
@@ -53,13 +53,13 @@ end
 
 function PANEL:Think()
     if not self.steamid then return end
-    
+
     local delta = math.floor(CurTime() - self.stamp)
-    
+
     local seconds = delta % 60
     delta = delta - seconds
     local minutes = math.floor(delta / 60)
-    
+
     if seconds < 10 then
         self.ping:SetText(minutes .. ':0' .. seconds)
     else

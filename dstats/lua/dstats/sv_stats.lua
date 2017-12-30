@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -57,37 +57,37 @@ function self.Load(ply, steamid)
 	ply.DStats.stats.total = {}
 	ply.DStats.stats.daily = {}
 	ply.DStats.stats.session = {}
-	
+
 	ply.DStats.stats.cache = {}
 	ply.DStats.stats.cache.total = {}
 	ply.DStats.stats.cache.daily = {}
 	ply.DStats.stats.cache.session = {}
-	
+
 	ply.DStats.stats.stamp = os.time()
 	ply.DStats.stats.savein = CurTime() + 60
-	
+
 	self.Query('SELECT stat, svalue FROM dstats__default WHERE ply = ' .. SQLStr(steamid), function(data)
 		ply.DStats.stats.LOADED = true
-		
+
 		for k, v in ipairs(self.STATS) do
 			ply.DStats.stats.total[v[1]] = v[2]
 		end
-		
+
 		for k, row in ipairs(data) do
 			ply.DStats.stats.total[self.StatNameFromID(tonumber(row.stat))] = tonumber(row.svalue)
 		end
 	end)
-	
+
 	self.Query('SELECT stat, svalue FROM dstats__default_daily WHERE day = ' .. SQLStr(self.ForatToday()) .. ' AND ply = ' .. SQLStr(steamid), function(data)
 		for k, v in ipairs(self.STATS) do
 			ply.DStats.stats.daily[v[1]] = v[2]
 		end
-		
+
 		for k, row in ipairs(data) do
 			ply.DStats.stats.daily[self.StatNameFromID(tonumber(row.stat))] = tonumber(row.svalue)
 		end
 	end)
-	
+
 	for k, v in ipairs(self.STATS) do
 		ply.DStats.stats.session[v[1]] = v[2]
 	end
@@ -96,15 +96,15 @@ end
 function self.Save(ply)
 	if not ply.DStats.INIT then return end
 	self.Link:Begin()
-	
+
 	local steamid = ID(ply)
 	local format = {}
 	local Reply = N(ply).cache
-	
+
 	for stat, value in pairs(Reply.total) do
 		table.insert(format, {steamid, self.StatID(stat), math.ceil(value)})
 	end
-	
+
 	if self.Link.IsMySQL then
 		self.Link:Add(DMySQL3.Replace('dstats__default', {'ply', 'stat', 'svalue'}, unpack(format)))
 	else --GMod SQLite is broken
@@ -112,15 +112,15 @@ function self.Save(ply)
 			self.Link:Add(DMySQL3.ReplaceEasy('dstats__default', {ply = v[1], stat = v[2], svalue = v[3]}))
 		end
 	end
-	
+
 	if ENABLE_DAILY:GetBool() then
 		format = {}
 		local day = self.ForatToday()
-		
+
 		for stat, value in pairs(Reply.daily) do
 			table.insert(format, {steamid, self.StatID(stat), math.ceil(value), day})
 		end
-		
+
 		if self.Link.IsMySQL then
 			self.Link:Add(DMySQL3.Replace('dstats__default_daily', {'ply', 'stat', 'svalue', 'day'}, unpack(format)))
 		else --GMod SQLite is broken
@@ -129,15 +129,15 @@ function self.Save(ply)
 			end
 		end
 	end
-	
+
 	if ENABLE_SESSION:GetBool() then
 		local s = N(ply).stamp
 		format = {}
-		
+
 		for stat, value in pairs(Reply.session) do
 			table.insert(format, {steamid, self.StatID(stat), math.ceil(value), s})
 		end
-		
+
 		if self.Link.IsMySQL then
 			self.Link:Add(DMySQL3.Replace('dstats__default_daily', {'ply', 'stat', 'svalue', 'stamp'}, unpack(format)))
 		else --GMod SQLite is broken
@@ -146,15 +146,15 @@ function self.Save(ply)
 			end
 		end
 	end
-	
+
 	self.Link:Commit()
-	
+
 	N(ply).cache = {
 		total = {},
 		daily = {},
 		session = {},
 	}
-	
+
 	N(ply).savein = CurTime() + 60
 end
 
@@ -166,7 +166,7 @@ end
 
 function self.SaveTimer()
 	local ctime = CurTime()
-	
+
 	for k, v in ipairs(player.GetAll()) do
 		if not v.DStats then continue end
 		if not N(v) then continue end
@@ -258,7 +258,7 @@ function self.AddStat(ply, id, val)
 	i.total[id] = i.total[id] + val
 	i.daily[id] = i.daily[id] + val
 	i.session[id] = i.session[id] + val
-	
+
 	i.cache.total[id] = i.total[id]
 	i.cache.daily[id] = i.daily[id]
 	i.cache.session[id] = i.session[id]
@@ -268,9 +268,9 @@ function self.RegisterStat(id, default)
 	for k, v in ipairs(self.STATS) do
 		if v[1] == id then return end
 	end
-	
+
 	table.insert(self.STATS, {id, default})
-	
+
 	for k, v in ipairs(player.GetAll()) do
 		if not v.DStats then continue end
 		local i = N(v)
@@ -285,19 +285,19 @@ function self.Init()
 		for k, row in ipairs(data) do
 			self.STATS_IDS[row.stat] = tonumber(row.id)
 		end
-		
+
 		self.Link:Begin()
-		
+
 		for k, row in ipairs(self.STATS) do
 			if self.STATS_IDS[row[1]] then continue end
-			
+
 			self.Link:Add('INSERT INTO dstats__default_ids (`stat`) VALUES (' .. SQLStr(row[1]) .. ')', function(data)
 				self.Query('SELECT id FROM dstats__default_ids WHERE stat = ' .. SQLStr(row[1]), function(data)
 					self.STATS_IDS[row[1]] = tonumber(data[1].id)
 				end)
 			end)
 		end
-		
+
 		self.Link:Commit()
 	end)
 end

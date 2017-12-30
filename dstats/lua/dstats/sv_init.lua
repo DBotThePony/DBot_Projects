@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ function self.Hooks(id, tab)
 	self.InitHook(id, tab.Init)
 	self.LoadHook(id, tab.Load)
 	self.SaveHook(id, tab.Save)
-	
+
 	if tab.Tables then
 		for k, v in ipairs(tab.Tables) do
 			table.insert(self.Tables, v)
@@ -76,7 +76,7 @@ function self.Load(ply, steamid)
 	ply.DStats = {}
 	ply.DStats.PlyID = 0
 	ply.DStats.INIT = false
-	
+
 	self.Query('SELECT ply FROM dstats__playerinfo WHERE steamid = ' .. SQLStr(steamid), function(data)
 		if not data[1] then
 			--Gud SQLite is so Gud
@@ -114,15 +114,15 @@ end
 
 function self.Init()
 	local AUTO = self.IsMySQL() and 'AUTO_INCREMENT' or 'AUTOINCREMENT'
-	
+
 	for k, v in ipairs(self.Tables) do
 		self.Query(string.format(v, AUTO))
 	end
-	
+
 	for k, v in pairs(self.InitHooks) do
 		v()
 	end
-	
+
 	for k, v in ipairs(player.GetAll()) do
 		self.Load(v, v:SteamID())
 	end

@@ -1,6 +1,6 @@
 
 --
--- Copyright (C) 2016-2017 DBot
+-- Copyright (C) 2016-2018 DBot
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
@@ -37,11 +37,11 @@ function PANEL:Paint(w, h)
     else
         self.Neon = math.Clamp(self.Neon - 350 * FrameTime(), 0, 150)
     end
-    
+
     if self:IsDown() then
         self.Neon = 200
     end
-    
+
     surface.SetDrawColor(DScoreBoard2.Colors.bg.r + self.Neon, DScoreBoard2.Colors.bg.g + self.Neon, DScoreBoard2.Colors.bg.b + self.Neon, DScoreBoard2.Colors.bg.a)
     draw.NoTexture()
     surface.DrawRect(0, 0, w, h)
@@ -113,13 +113,13 @@ end
 
 function PANEL:Think()
     local name = GetHostName()
-    
+
     if self._Text ~= name then
         self:SetText(name)
         self:SizeToContents()
         self:DockMargin(15, 0, 0, 0)
     end
-    
+
     self.BaseClass.Think(self)
 end
 

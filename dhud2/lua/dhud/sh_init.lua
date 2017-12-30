@@ -2,7 +2,7 @@
 --DHUD2 v2.0
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -25,21 +25,21 @@ DHUD2.CONVAR_UNSETUP = 'DHUD2.CONVAR_UNSETUP'
 
 DHUD2.Config = DHUD2.Config or {}
 
-if SERVER then 
+if SERVER then
 	include('sv_init.lua')
 end
 
 function DHUD2.CreateVar(name, data)
 	data.help = data.help or ''
-	
+
 	data.bool = data.type == 'bool'
 	data.int = data.type == 'int'
 	data.float = data.type == 'float'
-	
+
 	DHUD2.Config[name] = data
-	
+
 	local obj = CreateConVar('dhud_sv_' .. name, data.value, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, data.help)
-	
+
 	if SERVER then
 		DHUD2.SVars[name] = obj
 		SetGlobalString('dhud_sv_' .. name, obj:GetString())
@@ -49,17 +49,17 @@ end
 
 function DHUD2.ServerConVar(name)
 	local t = DHUD2.Config[name]
-	
+
 	local var
-	
+
 	if CLIENT then
 		var = GetGlobalBool('dhud_sv_' .. name, t.value)
 	else
 		var = DHUD2.SVars[name]:GetString()
 	end
-	
+
 	local num = tonumber(var) or t.value
-	
+
 	if t.bool then
 		return tobool(var)
 	elseif t.int then
@@ -67,7 +67,7 @@ function DHUD2.ServerConVar(name)
 	elseif t.float then
 		return num
 	end
-	
+
 	return var
 end
 
@@ -79,7 +79,7 @@ function DHUD2.pointInsideBox(point, mins, maxs)
 end
 
 
-if SERVER then 
+if SERVER then
 	AddCSLuaFile()
 else
 	include('cl_init.lua')

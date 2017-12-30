@@ -2,7 +2,7 @@
 --Better View
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -47,8 +47,8 @@ local function CalcView(newData)
 	if not (not sharpeye or sharpeye and sharpeye.IsEnabled and sharpeye.IsEnabled()) then return newData end
 	local veh = ply:GetVehicle()
 
-	newData.origin = newData.origin or EyePos()	
-	newData.angles = newData.angles or EyeAngles()	
+	newData.origin = newData.origin or EyePos()
+	newData.angles = newData.angles or EyeAngles()
 
 	oldAng = oldAng or newData.angles
 	local newang = LerpAngle(math.min(0.4 * math.sqrt(DHUD2.Multipler or 1), 1), oldAng, newData.angles)

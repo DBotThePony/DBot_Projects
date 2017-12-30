@@ -1,6 +1,6 @@
 
 --
--- Copyright (C) 2016-2017 DBot
+-- Copyright (C) 2016-2018 DBot
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
@@ -40,11 +40,11 @@ for k, v in pairs(DScoreBoard2.Colors) do
     local g = CreateConVar('cl_dboard_color_' .. k .. '_g', v.g, FCVAR_ARCHIVE, 'Sets ' .. k .. ' color green channel')
     local b = CreateConVar('cl_dboard_color_' .. k .. '_b', v.b, FCVAR_ARCHIVE, 'Sets ' .. k .. ' color blue channel')
     local a = CreateConVar('cl_dboard_color_' .. k .. '_a', v.a, FCVAR_ARCHIVE, 'Sets ' .. k .. ' color alpha channel')
-    
+
     local function update()
         DScoreBoard2.Colors[k] = Color(r:GetInt(), g:GetInt(), b:GetInt(), a:GetInt())
     end
-    
+
     cvars.AddChangeCallback('cl_dboard_color_' .. k .. '_r', update, 'DScoreBoard2')
     cvars.AddChangeCallback('cl_dboard_color_' .. k .. '_g', update, 'DScoreBoard2')
     cvars.AddChangeCallback('cl_dboard_color_' .. k .. '_b', update, 'DScoreBoard2')
@@ -62,7 +62,7 @@ function board.RefreshDCache()
             board.Connecting[k] = nil
         end
     end
-    
+
     for k, v in pairs(board.Disconnected) do
         if v.timestamp + 180 < CurTime() or
             player.GetBySteamID(k)

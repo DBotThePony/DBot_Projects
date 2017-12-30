@@ -1,5 +1,5 @@
 
--- Copyright (C) 2017 DBot
+-- Copyright (C) 2017-2018 DBot
 
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ concommand.Add('weaponrystats_reset', function(ply, cmd, args)
 	if IsValid(ply) and not ply:IsSuperAdmin() then return weaponrystats.NotifyConsole(ply, 'No access!') end
 	local plyFind = findPlayer(table.concat(args or {}, ' '))
 	if not plyFind then return weaponrystats.NotifyConsole(ply, 'Invalid UniqueID/Nickname') end
-	
+
 	local steamid = SQLStr(plyFind:SteamID())
 	sql.Query('DELETE FROM weaponrystats WHERE steamid = ' .. steamid)
 	weaponrystats.iterateWeapons(plyFind)
@@ -61,7 +61,7 @@ end)
 
 concommand.Add('weaponrystats_resetall', function(ply, cmd, args)
 	if IsValid(ply) and not ply:IsSuperAdmin() then return weaponrystats.NotifyConsole(ply, 'No access!') end
-	
+
 	sql.Query('DELETE FROM weaponrystats')
 
 	for i, ply in ipairs(player.GetAll()) do

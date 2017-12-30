@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ local LIST = {}
 function DSpawnPoints_CreateEntity(class, ENT2)
 	if not class then return end
 	local ENT = {}
-	
+
 	ENT.Base = 'dlib_espawner'
 	ENT.Author = ENT2.Author or 'DBot'
 	ENT.Category = ENT2.Category or 'Entity Spawners'
@@ -29,11 +29,11 @@ function DSpawnPoints_CreateEntity(class, ENT2)
 	ENT.AdminOnly = ENT2.AdminOnly
 	ENT.CLASS = class
 	ENT.TABLE = ENT2
-	
+
 	ENT.PrintName = (ENT2.PrintName or class) .. ' Spawner'
-	
+
 	scripted_ents.Register(ENT, 'dbot_es_' .. class)
-	
+
 	if ENT.Spawnable then
 		local data = {}
 		data.Author = ENT.Author
@@ -42,7 +42,7 @@ function DSpawnPoints_CreateEntity(class, ENT2)
 		data.PrintName = ENT2.PrintName or class
 		data.EClass = class
 		data.AdminOnly = ENT.AdminOnly
-		
+
 		LIST['dbot_es_' .. class] = data
 	end
 end
@@ -134,7 +134,7 @@ if CLIENT then
 
 			node.DoPopulate = function(self)
 				if self.PropPanel then return end
-				
+
 				self.PropPanel = vgui.Create('ContentContainer', canvas)
 				self.PropPanel:SetVisible(false)
 				self.PropPanel:SetTriggerSpawnlistChange(false)
@@ -148,7 +148,7 @@ if CLIENT then
 					})
 				end
 			end
-			
+
 			node.DoClick = function(self)
 				self:DoPopulate()
 				canvas:SwitchPanel(self.PropPanel)
@@ -160,7 +160,7 @@ if CLIENT then
 			FirstNode:InternalDoClick()
 		end
 	end
-	
+
 	hook.Add('PopulateEntitySpawnpoints', 'PopulateEntitySpawnpoints', PopulateMenu)
 	spawnmenu.AddCreationTab('Entity Spawnpoints', CreateMenu, 'icon16/bricks.png', 40)
 end

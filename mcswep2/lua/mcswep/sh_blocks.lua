@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -45,14 +45,14 @@ end
 function ENT:Initialize()
 	self:DrawShadow(false)
 	if CLIENT then return end
-	
+
 	self:SetModel('models/mcmodelpack/other_blocks/cake.mdl')
 	self:UpdatePhysics()
-	
+
 	self:SetBlockID(800)
 	self:UpdateData()
 	self.DUPE_BLOCK_ID = 800
-	
+
 	self:SetNomLeft(4)
 	self:SetUseType(SIMPLE_USE)
 end
@@ -72,11 +72,11 @@ local Models = {
 function ENT:TakeSlice()
 	self:SetNomLeft(self:GetNomLeft() - 1)
 	self.DUPE_SLICES = self:GetNomLeft()
-	
+
 	if Models[self:GetNomLeft()] then
 		self:SetModel(Models[self:GetNomLeft()])
 	end
-	
+
 	if self:GetNomLeft() <= 0 then
 		self:Remove()
 	end
@@ -85,7 +85,7 @@ end
 function ENT:DrawLines()
 	local pos = self:GetPos()
 	local ang = self:GetAngles()
-		
+
 	mc.DrawLines(pos, ang, self:OBBMins(), self:OBBMaxs())
 end
 
@@ -93,7 +93,7 @@ function ENT:Use(ply)
 	local hp = ply:Health()
 	local mhp = ply:GetMaxHealth()
 	local delta = mhp - hp
-	
+
 	if delta <= 0 then return end
 	ply:SetHealth(math.Clamp(hp + 25, 0, mhp))
 	self:TakeSlice()
@@ -133,16 +133,16 @@ end
 function ENT:Initialize()
 	self:DrawShadow(false)
 	if CLIENT then return end
-	
+
 	self:SetBlockID(self.BlockID)
 	self:UpdateData()
 	self:UpdatePhysics()
 	self.DUPE_BLOCK_ID = self.BlockID
-	
+
 	self:SetUseType(SIMPLE_USE)
-	
+
 	self:PostInitialize()
-	
+
 	self.Inputs = mc.SafeWireInputs(self, {'Ignite', 'UnIgnite'})
 	mc.SafeTriggerOutput(self, 'Ignited', 0)
 end
@@ -162,7 +162,7 @@ end
 function ENT:MakeIgnite()
 	if self:GetIsIgnited() then return end
 	mc.SafeTriggerOutput(self, 'Ignited', 1)
-	
+
 	self:SetIsIgnited(true)
 	self.phys:EnableMotion(true)
 	self.phys:Wake()
@@ -174,18 +174,18 @@ end
 function ENT:MakeUnignite()
 	if not self:GetIsIgnited() then return end
 	mc.SafeTriggerOutput(self, 'Ignited', 0)
-	
+
 	self:SetIsIgnited(false)
 	self:EmitSound('minecraft/fizz.ogg')
 end
 
 function ENT:Explode()
 	self.REMOVED = true
-	
-	util.BlastDamage(self, self:HaveOwner() and self:GetNWOwner() or self, self:GetPos() + Vector(0, 0, 5), self.BlastRadius, math.random(self.MinDamage, self.MaxDamage)) 
+
+	util.BlastDamage(self, self:HaveOwner() and self:GetNWOwner() or self, self:GetPos() + Vector(0, 0, 5), self.BlastRadius, math.random(self.MinDamage, self.MaxDamage))
 	self:EmitSound('minecraft/explode.ogg', 150)
 	mc.Explosion(self:GetPos() + Vector(0, 0, 20))
-	
+
 	self:Remove()
 end
 
@@ -195,37 +195,37 @@ function ENT:RealDraw()
 	if self:GetIsIgnited() then
 		local div = CurTime() % 1
 		local ceil = div >= 0.5 and 1 or 0
-		
+
 		if ceil == 0 then
 			render.SuppressEngineLighting(true)
 			render.ModelMaterialOverride(debugwtite)
 			render.ResetModelLighting(1, 1, 1)
 		end
-		
+
 		local left = self:GetExplodeAt() - CurTime()
-		
+
 		if left <= 0.2 then
 			local mult = (0.2 - left) * 3 + 1
 			self:SetModelScale(mult)
-			
+
 			self:SetRenderOrigin()
 			local pos = self:GetPos()
 			self:SetRenderOrigin(pos + Vector(0, 0, -mult * 1.3))
 		end
-		
+
 		self:DrawModel()
-		
+
 		render.SuppressEngineLighting(false)
 	else
 		self:DrawModel()
 	end
-	
+
 	render.ModelMaterialOverride()
 end
 
 function ENT:Think()
 	self.BaseClass.Think(self)
-	
+
 	if self.ExplodeAt then
 		if self.ExplodeAt <= CurTime() then
 			self:Explode()
@@ -264,7 +264,7 @@ end
 
 function ENT:UpdateSkin()
 	local percent = self:HealthPercent()
-	
+
 	if percent < .4 then
 		self:SetSkin(2)
 	elseif percent > .4 and percent < .7 then
@@ -277,21 +277,21 @@ end
 function ENT:StopFall()
 	local stop = self.BaseClass.StopFall(self)
 	if not stop then return end
-	
+
 	self:EmitSound('minecraft/anvil_land.ogg')
-	
+
 	local delta = self:GetFallStartZ() - self:GetFallEndZ()
-	
+
 	local dmg = delta / 10
-	
+
 	for k, ent in ipairs(ents.FindInSphere(self:GetPos(), mc.STEP)) do
 		if ent == self then continue end
 		ent:TakeDamage(dmg, self, self)
 	end
-	
+
 	local world = Entity(0)
 	self:TakeDamage(dmg, world, world)
-	
+
 	self:UpdateSkin()
 end
 

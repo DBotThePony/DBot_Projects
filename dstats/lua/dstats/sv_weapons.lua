@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -36,9 +36,9 @@ function self.CheckClass(class)
 	if not self.INIT then return end
 	if self.IDS[class] then return end
 	if self.CHECKING[class] then return end --Prevent duplicates
-	
+
 	self.CHECKING[class] = true
-	
+
 	self.Query('INSERT INTO dstats__weapons_id (class) VALUES (' .. SQLStr(class) .. ')', function(data)
 		self.Query('SELECT id FROM dstats__weapons_id WHERE class = ' .. SQLStr(class), function(data)
 			self.CHECKING[class] = nil
@@ -77,20 +77,20 @@ function self.Load(ply)
 	i.ClassesBuffer = {}
 	i.ClassesBuffer.NPC = {}
 	i.ClassesBuffer.PLY = {}
-	
+
 	self.Query('SELECT * FROM dstats__weapons_ply WHERE ply = ' .. ID(ply), function(data)
 		for k, row in ipairs(data) do
 			i.Classes.PLY[self.ClassFromID(tonumber(row.class))] = tonumber(row.svalue)
 		end
-		
+
 		i.INIT = true
 	end)
-	
+
 	self.Query('SELECT * FROM dstats__weapons_ply_npc WHERE ply = ' .. ID(ply), function(data)
 		for k, row in ipairs(data) do
 			i.Classes.NPC[self.ClassFromID(tonumber(row.class))] = tonumber(row.svalue)
 		end
-		
+
 		i.INIT = true
 	end)
 end
@@ -98,17 +98,17 @@ end
 function self.Save(ply)
 	if not N(ply) then return end
 	local Reply = N(ply).ClassesBuffer
-	
+
 	self.Link:Begin()
-	
+
 	local id = ID(ply)
-	
+
 	local format = {}
-	
+
 	for class, svalue in pairs(Reply.PLY) do
 		table.insert(format, {id, self.ClassID(class), svalue})
 	end
-	
+
 	if self.Link.IsMySQL then
 		self.Link:Add(DMySQL3.Replace('dstats__npc_ply', {'ply', 'class', 'svalue'}, unpack(format)))
 	else --GMod SQLite is broken
@@ -116,13 +116,13 @@ function self.Save(ply)
 			self.Link:Add(DMySQL3.ReplaceEasy('dstats__npc_ply', {ply = v[1], class = v[2], svalue = v[3]}))
 		end
 	end
-	
+
 	format = {}
-	
+
 	for class, svalue in pairs(Reply.NPC) do
 		table.insert(format, {id, self.ClassID(class), svalue})
 	end
-	
+
 	if self.Link.IsMySQL then
 		self.Link:Add(DMySQL3.Replace('dstats__weapons_ply_npc', {'ply', 'class', 'svalue'}, unpack(format)))
 	else --GMod SQLite is broken
@@ -132,20 +132,20 @@ function self.Save(ply)
 	end
 
 	self.Link:Commit()
-	
+
 	Reply.NPC = {}
 	Reply.PLY = {}
 end
 
 function self.SaveWeapons()
 	self.Link:Begin()
-	
+
 	local format = {}
-	
+
 	for class, data in pairs(self.KILLS_BUFFER) do
 		table.insert(format, {self.ClassID(class), data.svalue, data.pkills, data.nkills})
 	end
-	
+
 	if self.Link.IsMySQL then
 		self.Link:Add(DMySQL3.Replace('dstats__weapons', {'class', 'svalue', 'pkills', 'nkills'}, unpack(format)))
 	else --GMod SQLite is broken
@@ -153,7 +153,7 @@ function self.SaveWeapons()
 			self.Link:Add(DMySQL3.ReplaceEasy('dstats__weapons', {class = v[1], svalue = v[2], pkills = v[3], nkills = v[4]}))
 		end
 	end
-	
+
 	self.Link:Commit()
 	self.KILLS_BUFFER = {}
 end
@@ -162,7 +162,7 @@ function self.SaveAll()
 	for k, v in ipairs(player.GetAll()) do
 		self.Save(v)
 	end
-	
+
 	self.SaveWeapons()
 end
 
@@ -173,26 +173,26 @@ function self.SaveTimer()
 		if not N(v).INIT then continue end
 		self.Save(v)
 	end
-	
+
 	self.SaveWeapons()
 end
 
 function self.Init()
 	self.INIT = false
-	
+
 	self.Query('SELECT * FROM dstats__weapons_id', function(data)
 		self.INIT = true
-		
+
 		for k, row in ipairs(data) do
 			self.IDS[row.class] = tonumber(row.id)
 		end
-		
+
 		hook.Run('DStats_WeaponsLoaded')
-		
+
 		self.Query('SELECT * FROM dstats__weapons', function(data)
 			for k, row in ipairs(data) do
 				local class = self.ClassFromID(tonumber(row.class))
-				
+
 				self.KILLS[class] = {}
 				self.KILLS[class].svalue = tonumber(row.svalue)
 				self.KILLS[class].pkills = tonumber(row.pkills)
@@ -207,22 +207,22 @@ function self.TriggerKill(attacker, weapon, victim)
 		local get = attacker:GetActiveWeapon()
 		weapon = IsValid(get) and get or weapon
 	end
-	
+
 	if attacker == weapon then return end
 	if not IsValid(weapon) then return end
-	
+
 	local class = weapon:GetClass()
 	self.CheckClass(class)
-	
+
 	local npcKill = IsValid(victim) and victim:IsNPC()
 	local plyKill = IsValid(victim) and victim:IsPlayer()
-	
+
 	if IsValid(attacker) and attacker:IsPlayer() then
 		local ply = attacker
 		local i = N(ply)
 		local Def = i.Classes
 		local Buffer = i.ClassesBuffer
-		
+
 		if npcKill then
 			Def.NPC[class] = (Def.NPC[class] or 0) + 1
 			Buffer.NPC[class] = Def.NPC[class]
@@ -231,22 +231,22 @@ function self.TriggerKill(attacker, weapon, victim)
 			Buffer.PLY[class] = Def.PLY[class]
 		end
 	end
-	
+
 	self.KILLS[class] = self.KILLS[class] or {}
 	self.KILLS[class].svalue = self.KILLS[class].svalue or 0
 	self.KILLS[class].pkills = self.KILLS[class].pkills or 0
 	self.KILLS[class].nkills = self.KILLS[class].nkills or 0
-	
+
 	self.KILLS[class].svalue = self.KILLS[class].svalue + 1
-	
+
 	if npcKill then
 		self.KILLS[class].nkills = self.KILLS[class].nkills + 1
 	end
-	
+
 	if plyKill then
 		self.KILLS[class].pkills = self.KILLS[class].pkills + 1
 	end
-	
+
 	self.KILLS_BUFFER[class] = self.KILLS[class]
 end
 

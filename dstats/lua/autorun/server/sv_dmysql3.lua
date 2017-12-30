@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -58,23 +58,23 @@ end
 
 function DMySQL3.Connect(config)
 	config = config or 'default'
-	
+
 	if DMySQL3.LINKS[config] then
 		DMySQL3.LINKS[config]:Disconnect()
 		DMySQL3.LINKS[config]:ReloadConfig()
 		DMySQL3.LINKS[config]:Connect()
 		return DMySQL3.LINKS[config]
 	end
-	
+
 	local self = setmetatable({}, obj)
 	self.config = config
-	
+
 	self:ReloadConfig()
-	
+
 	DMySQL3.LINKS[config] = self
-	
+
 	self:Connect()
-	
+
 	return self
 end
 
@@ -91,33 +91,33 @@ end
 
 local function concatNames(tab)
 	local str = ''
-	
+
 	for k, v in ipairs(tab) do
 		str = str .. ', `' .. v .. '`'
 	end
-	
+
 	return str:sub(3)
 end
 
 local function concatValues(tab)
 	local str = ''
-	
+
 	for k, v in ipairs(tab) do
 		local new = DMySQL3.ToString(v)
-		
+
 		str = str .. ', ' .. SQLStr(new)
 	end
-	
+
 	return str:sub(3)
 end
 
 local function GetValues(tab2)
 	local tab = {}
-	
+
 	for k, v in pairs(tab2) do
 		table.insert(tab, DMySQL3.ToString(v))
 	end
-	
+
 	return tab
 end
 
@@ -134,9 +134,9 @@ end
 function DMySQL3.Insert(tab, keys, ...)
 	local add = ''
 	local args = {...}
-	
+
 	local f = true
-	
+
 	for k, v in ipairs(args) do
 		if f then
 			add = '(' .. concatValues(v) .. ')'
@@ -145,16 +145,16 @@ function DMySQL3.Insert(tab, keys, ...)
 			add = add .. ', (' .. concatValues(v) .. ')'
 		end
 	end
-	
+
 	return 'INSERT INTO `' .. tab .. '` (' .. concatNames(keys) .. ') VALUES ' .. add .. ';'
 end
 
 function DMySQL3.Replace(tab, keys, ...)
 	local add = ''
 	local args = {...}
-	
+
 	local f = true
-	
+
 	for k, v in ipairs(args) do
 		if f then
 			add = '(' .. concatValues(v) .. ')'
@@ -163,7 +163,7 @@ function DMySQL3.Replace(tab, keys, ...)
 			add = add .. ', (' .. concatValues(v) .. ')'
 		end
 	end
-	
+
 	return 'REPLACE INTO `' .. tab .. '` (' .. concatNames(keys) .. ') VALUES ' .. add .. ';'
 end
 
@@ -171,7 +171,7 @@ function DMySQL3.Update(tab, what, where)
 	where = where or {}
 	local wstr = ''
 	local f = true
-	
+
 	for k, v in pairs(what) do
 		if f then
 			wstr = k .. ' = ' .. SQLStr(v)
@@ -180,10 +180,10 @@ function DMySQL3.Update(tab, what, where)
 			wstr = wstr .. ', ' .. k .. ' = ' .. SQLStr(v)
 		end
 	end
-	
+
 	local whstr = ''
 	local f = true
-	
+
 	for k, v in pairs(where) do
 		if f then
 			whstr = ' WHERE ' .. k .. ' = ' .. SQLStr(v)
@@ -192,7 +192,7 @@ function DMySQL3.Update(tab, what, where)
 			whstr = whstr .. ' AND ' .. k .. ' = ' .. SQLStr(v)
 		end
 	end
-	
+
 	return 'UPDATE `' .. tab .. '` SET ' .. wstr .. whstr
 end
 
@@ -230,12 +230,12 @@ obj.Port = 3306
 local tmsql, moo = file.Exists("bin/gmsv_tmysql4_*", "LUA"), file.Exists("bin/gmsv_mysqloo_*", "LUA")
 
 function obj:Connect()
-	if not self.UseMySQL then 
+	if not self.UseMySQL then
 		DMySQL3.Message(self.config, ': Using SQLite')
 		self.IsMySQL = false
 		return
 	end
-	
+
 	if not tmsql and not moo then
 		DMySQL3.Message(self.config, ': No TMySQL4 module installed!\nGet latest at https://facepunch.com/showthread.php?t=1442438')
 		DMySQL3.Message(self.config, ': Using SQLite')
@@ -245,14 +245,14 @@ function obj:Connect()
 
 	if tmsql then
 		local hit = false
-		
+
 		xpcall(function()
 			require("tmysql4")
-			
+
 			DMySQL3.Message(self.config, ': Trying to connect to ' .. self.Host .. ' using driver TMySQL4')
-			
+
 			local Link, Error = tmysql.initialize(self.Host, self.User, self.Password, self.Database, self.Port)
-			
+
 			if not Link then
 				DMySQL3.Message(self.config, ': connection failed: \nInvalid username or password, wrong hostname or port, database does not exists, or given user can\'t access it.\n' .. Error .. '')
 				self.IsMySQL = false
@@ -267,24 +267,24 @@ function obj:Connect()
 			DMySQL3.Message(self.config, ': connection failed:\nCannot intialize a binary TMySQL4 module (internal error). Are you sure that your installed module for your OS? (linux/windows)\n' .. err .. '')
 			self.IsMySQL = false
 		end)
-		
+
 		if hit then return end
 	end
-	
+
 	if moo then
 		DMySQL3.Message('DMySQL3 recommends to use TMySQL4!')
-		
+
 		xpcall(function()
 			require("mysqloo")
-			
+
 			DMySQL3.Message(self.config, ': Trying to connect to ' .. self.Host .. ' using driver MySQLoo')
 			local Link = mysqloo.connect(self.Host, self.User, self.Password, self.Database, self.Port)
-			
+
 			Link:connect()
 			Link:wait()
-			
+
 			local Status = Link:status()
-			
+
 			if Status == mysqloo.DATABASE_CONNECTED then
 				DMySQL3.Message(self.config, ': Success')
 				self.IsMySQL = true
@@ -307,37 +307,37 @@ function obj:Disconnect()
 		self.LINK:Disconnect()
 		return
 	end
-	
+
 	--Put MySQLoo disconnect function here
 end
 
 function obj:ReloadConfig()
 	local config = self.config
-	
+
 	if not file.Exists('dmysql3/' .. config .. '.txt', 'DATA') then
 		file.Write('dmysql3/' .. config .. '.txt', DefaultConfigString)
 		DMySQL3.Message('Creating default config for "' .. config .. '"')
 	end
-	
+
 	local confStr = file.Read('dmysql3/' .. config .. '.txt', 'DATA')
-	
+
 	if not confStr or confStr == '' then
 		confStr = DefaultConfigString
 		DMySQL3.Message(config, ': ATTENTION: Config corrupted!')
 	end
-	
+
 	local config = util.JSONToTable(confStr)
-	
+
 	if not config then
 		config = table.Copy(DefaultOptions)
 		DMySQL3.Message(config, ': ATTENTION: Config corrupted!')
 	end
-	
+
 	if config.Host == 'localhost' and not system.IsWindows() then
 		config.Host = '127.0.0.1'
 		DMySQL3.Message(config, ':Warning: Forcing to use 127.0.0.1 instead of localhost. https://github.com/roboderpy/dpp/issues/6')
 	end
-	
+
 	self.UseMySQL = config.UseMySQL
 	self.Host = config.Host
 	self.Database = config.Database
@@ -351,58 +351,58 @@ local EMPTY = function() end
 function obj:Query(str, success, failed)
 	success = success or EMPTY
 	failed = failed or EMPTY
-	
+
 	if not self.IsMySQL then
 		local data = sql.Query(str)
-		
+
 		if data == false then
 			xpcall(failed, debug.traceback, sql.LastError())
 		else
 			xpcall(success, debug.traceback, data or {})
 		end
-		
+
 		return
 	end
-	
+
 	if self.UseTMySQL4 then
 		if not self.LINK then
 			Connect()
 		end
-		
+
 		if not self.LINK then
 			DMySQL3.Message(self.config, ': Connection to database lost while executing query!')
 			return
 		end
-		
+
 		self.LINK:Query(str, function(data)
 			local data = data[1]
-			
+
 			if not data.status then
 				xpcall(failed, debug.traceback, data.error)
 			else
 				xpcall(success, debug.traceback, data.data or {})
 			end
 		end)
-		
+
 		return
 	end
-	
+
 	local obj = self.LINK:query(str)
-	
+
 	function obj.onSuccess(q, data)
 		xpcall(success, debug.traceback, data or {})
 	end
-	
+
 	function obj.onError(q, err)
 		if self.LINK:status() == mysqloo.DATABASE_NOT_CONNECTED then
 			Connect()
 			DMySQL3.Message(self.config, ': Connection to database lost while executing query!')
 			return
 		end
-		
+
 		xpcall(failed, debug.traceback, err)
 	end
-	
+
 	obj:start()
 end
 
@@ -411,14 +411,14 @@ obj.TRX = {}
 function obj:Add(str, success, failed)
 	success = success or EMPTY
 	failed = failed or EMPTY
-	
+
 	table.insert(self.TRX, {str, success, failed})
 end
 
 function obj:Begin(nobegin)
 	self.TRX = {}
 	self.TRXNoCommit = nobegin
-	
+
 	if not nobegin then
 		self:Add('BEGIN')
 	end
@@ -426,33 +426,33 @@ end
 
 function obj:Commit(finish)
 	finish = finish or EMPTY
-	
+
 	if not self.TRXNoCommit then
 		self:Add('COMMIT')
 	end
-	
+
 	local TRX = self.TRX
 	self.TRX = {}
-	
+
 	local current = 1
 	local total = #TRX
-	
+
 	local success, err
-	
+
 	function success(data)
 		xpcall(TRX[current][2], debug.traceback, data)
 		current = current + 1
 		if current >= total then xpcall(finish, debug.traceback) return end
 		self:Query(TRX[current][1], success, err)
 	end
-	
+
 	function err(data)
 		xpcall(TRX[current][3], debug.traceback, data)
 		current = current + 1
 		if current >= total then xpcall(finish, debug.traceback) return end
 		self:Query(TRX[current][1], success, err)
 	end
-	
+
 	self:Query(TRX[current][1], success, err)
 end
 

@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ local function HasValue(arr, val)
 	for k, v in ipairs(arr) do
 		if v == val then return true end
 	end
-	
+
 	return false
 end
 
@@ -47,7 +47,7 @@ local function RemoveIfExists(arr, val)
 			return true
 		end
 	end
-	
+
 	return false
 end
 

@@ -1,5 +1,5 @@
 
--- Copyright (C) 2017 DBot
+-- Copyright (C) 2017-2018 DBot
 
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
@@ -88,7 +88,7 @@ local function iterateWeapon(ply, weapon)
 
 	local markDirtyNetwork = false
 	local self = weapon.weaponrystats
-			
+
 	if not self.modification then
 		if addWeaponModification(weapon) then
 			ply.weaponrystats_markDirty = true
@@ -96,7 +96,7 @@ local function iterateWeapon(ply, weapon)
 
 		markDirtyNetwork = true
 	end
-	
+
 	if not self.type then
 		if addWeaponType(weapon) then
 			ply.weaponrystats_markDirty = true

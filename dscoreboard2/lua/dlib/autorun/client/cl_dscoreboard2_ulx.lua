@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -39,15 +39,15 @@ end
 local function CreateCommand(startstr, start, max, step, endtext)
     return function(self)
         local menu = DermaMenu()
-        
+
         if startstr then
             menu:AddOption(startstr, function() CommandClick(self) end)
         end
-        
+
         for i = start, max, step do
             menu:AddOption(i .. ' ' .. endtext, function() CommandClick(self, i) end)
         end
-        
+
         menu:Open()
     end
 end
@@ -56,7 +56,7 @@ local CustomCommands = {
     {'psay', function(self)
         Derma_StringRequest('PSay', 'Text to send to ' .. self.target:Nick(), '', function(text) RunConsoleCommand('ulx', 'psay', self.target:Nick(), text) end, nil, 'Send')
     end},
-    
+
     {'jail', CreateCommand('Infinity', 10, 120, 10, 'seconds')},
     {'unjail', CommandClick},
     {'jailtp', CreateCommand('Infinity', 10, 120, 10, 'seconds')},
@@ -70,11 +70,11 @@ local CustomCommands = {
     {'teleport', CommandClick},
     {'send', function(self)
         local menu = DermaMenu()
-        
+
         for k, ply in ipairs(player.GetAll()) do
             menu:AddOption('Send to ' .. ply:Nick(), function() CommandClick(self, ply) end)
         end
-        
+
         menu:Open()
     end},
 }
@@ -92,49 +92,49 @@ local function CreateButton(parent, command, ply)
     button.DoClick = CommandClick
     button:SetText(command[1]:upper() .. command:sub(2))
     button:SetWide(80)
-    
+
     return button
 end
 
 local function Populate(canvas, self, ply)
     if not ulx then return end
-    
+
     local top = canvas:Add('EditablePanel')
     top:DockMargin(0, 4, 0, 0)
     top.Paint = TopPaint
     top:Dock(TOP)
-    
+
     local grid = self:CreateGrid()
-    
+
     local lply = LocalPlayer()
-    
+
     for k, v in ipairs(CustomCommands) do
         if not ULib.ucl.query(lply, 'ulx ' .. v[1]) then continue end
         local can = hook.Run(ULib.HOOK_PLAYER_TARGET, lply, v[1], ply)
         if can == false then continue end
-        
+
         local button = CreateButton(canvas, v[1], ply)
         grid:AddItem(button)
         button.DoClick = v[2]
     end
-    
+
     for k, v in ipairs(SimpleCommands) do
         if not ULib.ucl.query(lply, 'ulx ' .. v) then continue end
         local can = hook.Run(ULib.HOOK_PLAYER_TARGET, lply, v, ply)
         if can == false then continue end
-        
+
         local button = CreateButton(canvas, v, ply)
         grid:AddItem(button)
     end
-    
+
     grid:SetHeight(500)
 end
 
 local function Row(self, ply)
     if not ulx then return end
-    
+
     local lply = LocalPlayer()
-    
+
     if lply ~= ply and ULib.ucl.query(lply, 'ulx goto') then
         local can = hook.Run(ULib.HOOK_PLAYER_TARGET, lply, 'goto', ply)
         if can ~= false then
@@ -145,7 +145,7 @@ local function Row(self, ply)
             button:SizeToContents()
         end
     end
-    
+
     if ULib.ucl.query(lply, 'ulx teleport') then
         local can = hook.Run(ULib.HOOK_PLAYER_TARGET, lply, 'teleport', ply)
         if can ~= false then
@@ -156,7 +156,7 @@ local function Row(self, ply)
             button:SizeToContents()
         end
     end
-    
+
     if lply ~= ply and ULib.ucl.query(lply, 'ulx bring') then
         local can = hook.Run(ULib.HOOK_PLAYER_TARGET, lply, 'bring', ply)
         if can ~= false then

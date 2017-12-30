@@ -1,6 +1,6 @@
 
 --
--- Copyright (C) 2016-2017 DBot
+-- Copyright (C) 2016-2018 DBot
 --
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
@@ -30,20 +30,20 @@ PANEL.DefaultFunctions.steamid64 = 'SteamID64'
 function PANEL:UpdateVars()
     DScoreBoard2.PLAYEROW_PANEL.UpdateVars(self)
     local vars = self.vars
-    
+
     if self.ply == LocalPlayer() then
         vars.friend = 'It is you'
     else
         vars.friend = 'Is your Friend: ' .. (self.ply:GetFriendStatus() == 'friend' and 'Yes' or 'No')
     end
-    
+
     vars.usergroup = 'Usergroup: ' .. self.ply:GetUserGroup()
 end
 
 function PANEL:UpdatePanels()
     if not IsValid(self.ply) then return end
     DScoreBoard2.PLAYEROW_PANEL.UpdatePanels(self)
-    
+
     if not self.CountrySetup then
         self.country:SetText('Country: ' .. board.GetPlayerCountry(self.ply))
         self.CountrySetup = true
@@ -52,17 +52,17 @@ end
 
 function PANEL:Init()
     self.vars = table.Copy(self.DefaultVars)
-    
+
     local top = self:Add('EditablePanel')
     top.Paint = self.Paint
     top:Dock(TOP)
     top:SetHeight(64)
-    
+
     local avatar = top:Add('AvatarImage')
     self.avatar = avatar
     avatar:Dock(LEFT)
     avatar:SetWidth(64)
-    
+
     local lab = top:Add('DLabel')
     self.nick = lab
     lab:SetTextColor(color_white)
@@ -71,7 +71,7 @@ function PANEL:Init()
     lab:SetText('nick')
     lab:DockMargin(4, 0, 0, 0)
     lab:SetHeight(14)
-    
+
     local lab = top:Add('DLabel')
     self.teamname = lab
     lab:SetTextColor(color_white)
@@ -80,7 +80,7 @@ function PANEL:Init()
     lab:SetText('team')
     lab:DockMargin(4, 0, 0, 0)
     lab:SetHeight(14)
-    
+
     local lab = top:Add('DLabel')
     self.steamid = lab
     lab:SetTextColor(color_white)
@@ -89,7 +89,7 @@ function PANEL:Init()
     lab:SetText('steamid')
     lab:DockMargin(4, 0, 0, 0)
     lab:SetHeight(14)
-    
+
     local lab = top:Add('DLabel')
     self.country = lab
     lab:SetTextColor(color_white)
@@ -98,18 +98,18 @@ function PANEL:Init()
     lab:SetText('country')
     lab:DockMargin(4, 0, 0, 0)
     lab:SetHeight(14)
-    
+
     local countryflag = lab:Add('DScoreBoard2_CountryFlag')
     self.countryflag = countryflag
     countryflag:Dock(RIGHT)
     countryflag:DockMargin(0, 0, 4, 0)
-    
+
     self.CountrySetup = false
-    
+
     local padding = self:Add('EditablePanel')
     padding:Dock(FILL)
     padding:DockMargin(6, 6, 6, 6)
-    
+
     self.health = self:CreateLabel(padding, 'Health')
     self.maxhealth = self:CreateLabel(padding, 'Max Health')
     self.kills = self:CreateLabel(padding, 'Kills')
@@ -117,7 +117,7 @@ function PANEL:Init()
     self.steamid64 = self:CreateLabel(padding, 'SteamID64')
     self.friend = self:CreateLabel(padding)
     self.usergroup = self:CreateLabel(padding)
-    
+
     self:SetSize(400, 180)
 end
 
@@ -135,14 +135,14 @@ do
         lab.OSetText = lab.SetText
         lab.SetText = SetText
         lab.name = name
-        
+
         lab:SetTextColor(color_white)
         lab:Dock(TOP)
         lab:SetFont(DScoreBoard2.FONT_PLAYERINFO)
         lab:SetText(name or '')
         lab:DockMargin(4, 0, 0, 0)
         lab:SetHeight(14)
-        
+
         return lab
     end
 end
@@ -180,15 +180,15 @@ function PANEL:Think()
         self:Remove()
         return
     end
-    
+
     if not self.ROW:IsVisible() then
         self:DoHide()
         return
     end
-    
+
     local x, y = gui.MousePos()
     self:SetPos(x + 20, y + 10)
-    
+
     self:UpdateVars()
     self:UpdatePanels()
 end

@@ -2,7 +2,7 @@
 --Crossharirs!
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -27,28 +27,28 @@ Crasshairs.Funcs = {
 	default = function(ply, hitpos, tr, x, y)
 		surface.DrawLine(x, y - 15, x, y - 5)
 		surface.DrawLine(x, y + 5, x, y + 15)
-		
+
 		surface.DrawLine(x - 15, y, x - 5, y)
 		surface.DrawLine(x + 5, y, x + 15, y)
 	end,
-	
+
 	weapon_crossbow = function(ply, hitpos, tr, x, y)
 		surface.DrawLine(x, y - 15, x, y - 5)
 		surface.DrawLine(x, y + 5, x, y + 15)
-		
+
 		surface.DrawLine(x - 15, y, x - 5, y)
 		surface.DrawLine(x + 5, y, x + 15, y)
-		
+
 		surface.DrawLine(x - 1, y, x + 1, y) --Point
 	end,
-	
+
 	weapon_physgun = function(ply, hitpos, tr, x, y)
 		surface.DrawLine(x + 10, y - 10, x - 10, y - 10)
 		surface.DrawLine(x + 10, y + 10, x - 10, y + 10)
 		surface.DrawLine(x + 10, y + 10, x + 10, y - 10)
 		surface.DrawLine(x - 10, y + 10, x - 10, y - 10)
 	end,
-	
+
 	weapon_crowbar = function(ply, hitpos, tr, x, y)
 		surface.DrawLine(x, y - 7, x, y + 7)
 		surface.DrawLine(x - 15, y, x + 15, y)
@@ -68,30 +68,30 @@ local function Draw()
 	if not ENABLE:GetBool() then return end
 	if not DHUD2.IsEnabled() then return end
 	if not DHUD2.ServerConVar('crosshairs') then return end
-	
+
 	local ply = DHUD2.SelectPlayer()
 	local wep = ply:GetActiveWeapon()
 	if not IsValid(wep) then return end
-	
+
 	bypass = true
 	local can = hook.Run('HUDShouldDraw', 'CHudCrosshair')
 	bypass = false
-	
+
 	if can == false then return end
-	
+
 	local tr = ply:GetEyeTrace()
-	
+
 	local color = DHUD2.GetColor('crosshair')
-	
+
 	if IsValid(tr.Entity) and tr.Entity:IsPlayer() then
 		color = team.GetColor(tr.Entity:Team())
 	end
-	
+
 	surface.SetDrawColor(color)
-	
+
 	local d = tr.HitPos:ToScreen()
 	local x, y = math.ceil(d.x / 1.1) * 1.1, math.ceil(d.y / 1.1) * 1.1 --Prevent shaking
-	
+
 	if not Crasshairs.Funcs[wep:GetClass()] then
 		Crasshairs.Funcs.default(ply, tr.HitPos, tr, x, y)
 	else

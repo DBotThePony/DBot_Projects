@@ -1,6 +1,6 @@
 
 --[[
-Copyright (C) 2016-2017 DBot
+Copyright (C) 2016-2018 DBot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -52,10 +52,10 @@ local function Enabled(ply)
 	if not DHUD2.IsEnabled() then return false end
 	if not ENABLE:GetBool() then return false end
 	if not DHUD2.ServerConVar('speedmeter') then return false end
-	
+
 	if not ply:InVehicle() then return false end
 	if not IsValid(ply:GetVehicle()) then return false end
-	
+
 	return true
 end
 
@@ -65,11 +65,11 @@ local LastFrame = 0
 
 local function Think(self, ply)
 	if not Enabled(ply) then return end
-	
+
 	if CurrSpeed ~= CurrSpeed then CurrSpeed = 0 end --NaN
-	
+
 	local pos = ply:GetVehicle():GetPos()
-	
+
 	local dist = pos:Distance(LastPos) / (CurTime() - LastFrame) --Hu per second i think
 	if dist ~= dist then dist = 0 end --Divided by zero
 	CurrSpeed = Lerp(0.1 * FrameTime() * 10, CurrSpeed, dist)
@@ -79,13 +79,13 @@ end
 
 local function Draw(self, ply)
 	if not Enabled(ply) then return end
-	
+
 	local x, y = DHUD2.GetPosition('speedmeter')
 	local speed = CurrSpeed
 	local KMH = (speed / HU_IN_METER) * 3600 / 1000
-	
+
 	DHUD2.SimpleText('KMH: ' .. math.floor(KMH), 'DHUD2.Default', x, y, DHUD2.GetColor('speedmeter_text'))
-	
+
 	local colors = 0
 	y = y + 25
 	for k, v in pairs(BarsColor) do
@@ -96,7 +96,7 @@ local function Draw(self, ply)
 		DHUD2.DrawBox(x, y, w, 5, v)
 		y = y + 5
 	end
-	
+
 	if colors >= ColorCount - 1 then
 		DHUD2.SimpleText('DANGER', nil, x, y, DHUD2.GetColor('speedmeter_text'))
 	end
