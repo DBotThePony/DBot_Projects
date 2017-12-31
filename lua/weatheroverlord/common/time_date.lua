@@ -129,6 +129,26 @@ function meta:GetSecond()
 	return math.floor(self.stamp % WOverlord.timeTypes.minute)
 end
 
+function meta:FormatCurrentHour()
+	return WOverlord.FormatHours(self.stamp)
+end
+
+function meta:FormatHour()
+	return WOverlord.FormatHours(self.stamp)
+end
+
+function meta:FormatCurrentTime()
+	return WOverlord.FormatTime(self.stamp)
+end
+
+function meta:FormatTime()
+	return WOverlord.FormatTime(self.stamp)
+end
+
+function meta:Format()
+	return string.format('%.2i %s %.4i %s', self:GetDayInMonth(), self:GetMonthString(), self:GetYear(), self:FormatTime())
+end
+
 local function bridge(funcName, funcAs)
 	meta[funcAs or funcName] = function(self, ...)
 		return self.dayObject[funcName](self.dayObject, ...)
@@ -142,4 +162,5 @@ bridge('GetSunrise')
 bridge('GetDayStart')
 bridge('GetDayEnd')
 bridge('GetMonthString')
+bridge('GetDayInMonth')
 bridge('Format', 'FormatDate')
