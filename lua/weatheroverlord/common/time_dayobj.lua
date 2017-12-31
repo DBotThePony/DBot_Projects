@@ -50,10 +50,10 @@ function meta:SetStamp(stamp)
 	if self.month == 0 then
 		self.monthTime = self.yearStamp
 	else
-		self.monthTime = self.yearStamp - WOverlord.MonthLengthAbsolute(WOverlord.NormalizeMonth(self.month - 1))
+		self.monthTime = self.yearStamp - WOverlord.MonthLengthAbsolute(WOverlord.NormalizeMonth(self.month - 1)) - WOverlord.timeTypes.day
 	end
 
-	self.monthDay = math.floor(self.monthTime / WOverlord.timeTypes.day)
+	self.monthDay = math.floor(self.monthTime / WOverlord.timeTypes.day) + 1
 	self.monthProgress = math.floor((self.monthDay / WOverlord.months[self.month]) * 10) / 10
 
 	if self.monthProgress < 0.5 then

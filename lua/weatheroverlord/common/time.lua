@@ -78,6 +78,11 @@ self.months = {
 	december = 31,
 }
 
+-- normalize so they start count from zero day
+for month, days in pairs(self.months) do
+	self.months[month] = days - 1
+end
+
 self.monthNames = {}
 
 for monthName, days in pairs(self.months) do
