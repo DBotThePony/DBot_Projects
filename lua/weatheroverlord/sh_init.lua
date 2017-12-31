@@ -65,12 +65,21 @@ local function sinclude(file)
 	return include(file)
 end
 
+local function svinclude(file)
+	if CLIENT then return end
+	return include(file)
+end
+
+local function clinclude(file)
+	if SERVER then return AddCSLuaFile(file) end
+	return include(file)
+end
+
 sinclude('common/time.lua')
 sinclude('common/time_funcs.lua')
 sinclude('common/time_getters.lua')
 sinclude('common/time_dayobj.lua')
 sinclude('common/time_date.lua')
 
-if SERVER then
-	include('server/time.lua')
-end
+svinclude('server/time.lua')
+clinclude('client/time.lua')

@@ -22,26 +22,25 @@ local self = WOverlord
 local math = math
 local net = net
 
-net.pool('weatheroverlord.replicatetime')
-
-local timeSinceLastTick = 0
-
-self.TIME_CVAR = CreateConVar('sv_woverlord_time', '0', {FCVAR_ARCHIVE}, 'Current time in seconds. 0 is first second of the first year (january 1 of 1 year)')
-self.TIME = self.TIME_CVAR:GetInt()
-self.DATE_OBJECT = self.Date(self.TIME)
+self.INITIALIZE = false
+self.BOUND_TIME = 0
+self.BOUND_TIME_TO = 0
+local lastThink = 0
+self.DATE_OBJECT = self.Date(0)
 
 function self.GetAccurateTime()
-	return self.TIME + (CurTime() - timeSinceLastTick) * self.TIME_MULTIPLIER:GetInt()
+	return self.BOUND_TIME + (CurTime() - self.BOUND_TIME_TO) * self.TIME_MULTIPLIER:GetInt()
 end
 
-local function UpdateTime()
-	local add = self.TIME_MULTIPLIER:GetInt()
+local function Think()
+	if not self.INITIALIZE then return end
+	if math.floor(lastThink) == math.floor(CurTime()) then return end
+	lastThink = CurTime()
+
 	local old = self.TIME
-	self.TIME = self.TIME + add
+	self.TIME = math.floor(self.GetAccurateTime())
 	local new = self.TIME
-	self.TIME_CVAR:SetInt(self.TIME)
 	self.DATE_OBJECT:SetStamp(self.TIME)
-	timeSinceLastTick = CurTime()
 
 	if math.floor(old) < math.floor(new) then
 		hook.Run('WOverlord_NewSecond')
@@ -76,13 +75,14 @@ local function UpdateTime()
 	end
 end
 
-local function ReplicateTime()
-	net.Start('weatheroverlord.replicatetime')
-	net.WriteUInt(self.TIME, 64)
-	net.WriteDouble(timeSinceLastTick)
-	net.Broadcast()
-end
+net.receive('weatheroverlord.replicatetime', function()
+	self.INITIALIZE = true
+	local time = net.ReadUInt(64)
+	local validAt = net.ReadDouble()
 
-timer.Create('WOverlord.UpdateTime', 1, 0, UpdateTime)
-timer.Create('WOverlord.ReplicateTime', 10, 0, ReplicateTime)
-ReplicateTime()
+	self.BOUND_TIME = time
+	self.BOUND_TIME_TO = validAt
+	lastThink = validAt
+end)
+
+hook.Add('Think', 'WeatherOverlord_UpdateTime', Think)
