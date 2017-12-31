@@ -20,10 +20,21 @@ local self = WOverlord
 local ipairs = ipairs
 local string = string
 local math = math
+local SharedRandom = util.SharedRandom
 
 DLib.MessageMaker(self, 'WeatherOverlord')
 
 self.SEED = DLib.util.CreateSharedConvar('sv_woverlord_seed', math.random(1, 100000), 'Seed of Weather Overlord. Two same seeds on different servers will produce same weather, rain, snow, wind strength, temperature on same time!')
+
+function self.random(min, max, name, additional)
+	additional = additional or 0
+	name = name or 'random'
+	return SharedRandom('WOverlord_' .. name, min, max, self.SEED:GetInt() + additional)
+end
+
+function self.frandom(...)
+	return math.floor(self.random(...))
+end
 
 function self.Seed()
 	return self.SEED:GetInt()

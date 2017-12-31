@@ -71,8 +71,8 @@ function meta:SetStamp(stamp)
 		self.nightMultiplier = Lerp(self.monthProgress - 0.5, WOverlord.monthsNighttimeMultiplier[old], WOverlord.monthsNighttimeMultiplier[new])
 	end
 
-	self.dayStart = math.floor(WOverlord.middayTime - WOverlord.dayDiffPre * self.dayMultiplier)
-	self.dayEnd = math.floor(WOverlord.dayDiffPost * self.dayMultiplier + WOverlord.middayTime)
+	self.dayStart = math.floor(WOverlord.middayTime - WOverlord.dayDiffPre * self.dayMultiplier) + WOverlord.frandom(-480, 480, 'sunrise', self.absoluteDay)
+	self.dayEnd = math.floor(WOverlord.dayDiffPost * self.dayMultiplier + WOverlord.middayTime) + WOverlord.frandom(-480, 480, 'sunset', self.absoluteDay)
 	self.dayLength = self.dayEnd - self.dayStart
 end
 
