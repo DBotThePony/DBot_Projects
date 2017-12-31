@@ -16,18 +16,18 @@
 local DLib = DLib
 local WOverlord = WOverlord
 
-local function bridge(funcName)
-	WOverlord[funcName] = function(...)
+local function bridge(funcName, bridgeName)
+	WOverlord[bridgeName or funcName] = function(...)
 		local targetFunction = WOverlord.DATE_OBJECT[funcName]
 		return targetFunction(WOverlord.DATE_OBJECT, ...)
 	end
 
-	WOverlord['Accurate' .. funcName] = function(...)
+	WOverlord['Accurate' .. (bridgeName or funcName)] = function(...)
 		local targetFunction = WOverlord.DATE_OBJECT_ACCURATE[funcName]
 		return targetFunction(WOverlord.DATE_OBJECT_ACCURATE, ...)
 	end
 
-	WOverlord[funcName .. 'Accurate'] = function(...)
+	WOverlord[(bridgeName or funcName) .. 'Accurate'] = function(...)
 		local targetFunction = WOverlord.DATE_OBJECT_ACCURATE[funcName]
 		return targetFunction(WOverlord.DATE_OBJECT_ACCURATE, ...)
 	end
@@ -51,3 +51,4 @@ bridge('GetAbsoluteSecond')
 bridge('GetSecond')
 bridge('FormatCurrentHour')
 bridge('FormatCurrentTime')
+bridge('Format', 'FormatDate')
