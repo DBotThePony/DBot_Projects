@@ -21,6 +21,16 @@ local function bridge(funcName)
 		local targetFunction = WOverlord.DATE_OBJECT[funcName]
 		return targetFunction(WOverlord.DATE_OBJECT, ...)
 	end
+
+	WOverlord['Accurate' .. funcName] = function(...)
+		local targetFunction = WOverlord.DATE_OBJECT_ACCURATE[funcName]
+		return targetFunction(WOverlord.DATE_OBJECT_ACCURATE, ...)
+	end
+
+	WOverlord[funcName .. 'Accurate'] = function(...)
+		local targetFunction = WOverlord.DATE_OBJECT_ACCURATE[funcName]
+		return targetFunction(WOverlord.DATE_OBJECT_ACCURATE, ...)
+	end
 end
 
 bridge('GetAge')

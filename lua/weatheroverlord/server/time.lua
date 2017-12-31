@@ -29,9 +29,14 @@ local timeSinceLastTick = 0
 self.TIME_CVAR = CreateConVar('sv_woverlord_time', '0', {FCVAR_ARCHIVE}, 'Current time in seconds. 0 is first second of the first year (january 1 of 1 year)')
 self.TIME = self.TIME_CVAR:GetInt()
 self.DATE_OBJECT = self.Date(self.TIME)
+self.DATE_OBJECT_ACCURATE = self.Date(self.TIME)
 
 function self.GetAccurateTime()
 	return self.TIME + (CurTime() - timeSinceLastTick) * self.TIME_MULTIPLIER:GetInt()
+end
+
+local function Think()
+	self.DATE_OBJECT_ACCURATE:SetStamp(self.GetAccurateTime())
 end
 
 local function UpdateTime()
@@ -86,3 +91,4 @@ end
 timer.Create('WOverlord.UpdateTime', 1, 0, UpdateTime)
 timer.Create('WOverlord.ReplicateTime', 10, 0, ReplicateTime)
 ReplicateTime()
+hook.Add('Think', 'WeatherOverlord_UpdateTime', Think)

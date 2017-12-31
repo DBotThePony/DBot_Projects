@@ -27,6 +27,7 @@ self.BOUND_TIME = 0
 self.BOUND_TIME_TO = 0
 local lastThink = 0
 self.DATE_OBJECT = self.Date(0)
+self.DATE_OBJECT_ACCURATE = self.Date(self.TIME)
 
 function self.GetAccurateTime()
 	return self.BOUND_TIME + (CurTime() - self.BOUND_TIME_TO) * self.TIME_MULTIPLIER:GetInt()
@@ -34,6 +35,8 @@ end
 
 local function Think()
 	if not self.INITIALIZE then return end
+	self.DATE_OBJECT_ACCURATE:SetStamp(self.GetAccurateTime())
+
 	if math.floor(lastThink) == math.floor(CurTime()) then return end
 	lastThink = CurTime()
 
