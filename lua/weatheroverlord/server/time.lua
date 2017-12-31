@@ -25,12 +25,14 @@ local timeSinceLastTick = 0
 
 self.TIME_CVAR = CreateConVar('sv_woverlord_time', '0', {FCVAR_ARCHIVE}, 'Current time in seconds. 0 is first second of the first year (january 1 of 1 year)')
 self.TIME = self.TIME_CVAR:GetInt()
+self.DATE_OBJECT = self.Date(self.TIME)
 
 function self.UpdateTime()
 	local add = self.TIME_MULTIPLIER:GetInt()
 	local old = self.TIME
 	self.TIME = self.TIME + add
 	self.TIME_CVAR:SetInt(self.TIME)
+	self.DATE_OBJECT:SetStamp(self.TIME)
 	timeSinceLastTick = CurTime()
 
 	if math.floor(old) < math.floor(new) then

@@ -37,7 +37,7 @@ self.timeTypes.hour = self.timeTypes.minute * 60
 self.timeTypes.midday = self.timeTypes.hour * 12
 self.timeTypes.day = self.timeTypes.hour * 24
 self.timeTypes.week = self.timeTypes.day * 7
-self.timeTypes.year = self.timeTypes.week * 365
+self.timeTypes.year = self.timeTypes.day * 365
 self.timeTypes.age = self.timeTypes.year * 100
 
 local mids = {

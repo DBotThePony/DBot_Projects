@@ -58,6 +58,7 @@ sinclude('common/time.lua')
 sinclude('common/time_funcs.lua')
 sinclude('common/time_getters.lua')
 sinclude('common/time_dayobj.lua')
+sinclude('common/time_date.lua')
 
 if SERVER then
 	include('server/time.lua')
