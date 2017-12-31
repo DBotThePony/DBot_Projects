@@ -63,3 +63,7 @@ function self.FormatHours(stamp)
 
 	return string.format('%.2i:%.2i', hours, minutes)
 end
+
+function self.NewDate()
+	return self.Date(self.GetAccurateTime())
+end
