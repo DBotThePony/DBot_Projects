@@ -149,6 +149,10 @@ function meta:Format()
 	return string.format('%.2i %s %.4i %s', self:GetDayInMonth(), self:GetMonthString(), self:GetYear(), self:FormatTime())
 end
 
+function meta:FormatDateYear()
+	return string.format('%s %.4i', self:FormatDate(), self:GetYear())
+end
+
 local function bridge(funcName, funcAs)
 	meta[funcAs or funcName] = function(self, ...)
 		return self.dayObject[funcName](self.dayObject, ...)

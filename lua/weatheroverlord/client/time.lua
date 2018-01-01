@@ -78,6 +78,77 @@ local function Think()
 	end
 end
 
+local surface = surface
+local ScrW, ScrH = ScrW, ScrH
+
+local ALWAYS_DISPLAY_TIME = CreateConVar('cl_woverlord_display', '1', {FCVAR_ARCHIVE}, 'Always display server time')
+
+surface.CreateFont('WOverlord_TopTimeTip', {
+	font = 'Roboto Mono Medium',
+	weight = 500,
+	size = 34
+})
+
+surface.CreateFont('WOverlord_TopTime', {
+	font = 'Hack',
+	weight = 500,
+	size = 34
+})
+
+surface.CreateFont('WOverlord_BottomTime', {
+	font = 'Source Sans Pro',
+	weight = 500,
+	size = 46
+})
+
+surface.CreateFont('WOverlord_RegularTime', {
+	font = 'Roboto Mono Medium',
+	weight = 500,
+	size = 14
+})
+
+self.DISPLAY_FULL_TIME = false
+
+local GET_FULL_POSITION = DLib.HUDCommons.DefinePosition('woverlord_timefull', 0.5, 0.07)
+local GET_REGULAR_POSITION = DLib.HUDCommons.DefinePosition('woverlord_time', 0.99, 0.99)
+
+local function HUDPaintFULL()
+	if not self.DISPLAY_FULL_TIME then return end
+	local x, y = GET_FULL_POSITION()
+	surface.SetTextColor(255, 255, 255)
+	surface.SetFont('WOverlord_TopTimeTip')
+
+	local text = 'HH:MM:SS'
+	local w2, h2 = surface.GetTextSize(text)
+	surface.SetTextPos(x - w2 / 2, y)
+	surface.DrawText(text)
+
+	surface.SetFont('WOverlord_TopTime')
+
+	text = self.DATE_OBJECT_ACCURATE:FormatTime()
+	local w, h = surface.GetTextSize(text)
+	surface.SetTextPos(x - w / 2, y + h2)
+	surface.DrawText(text)
+
+	surface.SetFont('WOverlord_BottomTime')
+	text = self.DATE_OBJECT_ACCURATE:FormatDateYear()
+	w = surface.GetTextSize(text)
+	surface.SetTextPos(x - w / 2, y + h + 4 + h2)
+	surface.DrawText(text)
+end
+
+local function HUDPaint()
+	if self.DISPLAY_FULL_TIME or not ALWAYS_DISPLAY_TIME:GetBool() then return end
+
+	local x, y = GET_REGULAR_POSITION()
+	surface.SetTextColor(255, 255, 255)
+	surface.SetFont('WOverlord_RegularTime')
+	local text = self.DATE_OBJECT_ACCURATE:Format()
+	local w, h = surface.GetTextSize(text)
+	surface.SetTextPos(x - w, y - h)
+	surface.DrawText(text)
+end
+
 net.receive('weatheroverlord.replicatetime', function()
 	self.INITIALIZE = true
 	local time = net.ReadUInt(64)
@@ -89,3 +160,5 @@ net.receive('weatheroverlord.replicatetime', function()
 end)
 
 hook.Add('Think', 'WeatherOverlord_UpdateTime', Think)
+hook.Add('HUDPaint', 'WeatherOverlord_DisplayTimeFull', HUDPaintFULL)
+hook.Add('HUDPaint', 'WeatherOverlord_DisplayTime', HUDPaint)
