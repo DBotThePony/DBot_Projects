@@ -30,6 +30,10 @@ WOverlord.Date = meta.Create
 
 function meta:Initialize(stamp)
 	self:SetStamp(stamp)
+end
+
+function meta:SetStamp(stamp)
+	self.stamp = stamp
 
 	if not self.dayObject or self.dayObject:GetAbsoluteDay() ~= self:GetAbsoluteDay() then
 		if not self.dayObject then
@@ -38,10 +42,6 @@ function meta:Initialize(stamp)
 			self.dayObject:SetStamp(stamp)
 		end
 	end
-end
-
-function meta:SetStamp(stamp)
-	self.stamp = stamp
 end
 
 function meta:GetDayObject()
