@@ -142,16 +142,17 @@ do
 end
 
 self.dayStart = self.timeTypes.hour * 6
+self.dayStartLighting = self.timeTypes.hour * 5.5
 self.dayEnd = self.timeTypes.hour * 21
-
-self.nightStart = self.timeTypes.hour * 23
-self.nightEnd = self.timeTypes.hour * 5
+self.dayEndLighting = self.timeTypes.hour * 22
 
 self.daylength = self.dayEnd - self.dayStart
 self.middayTime = self.timeTypes.hour * 12
 
 self.dayDiffPre = self.middayTime - self.dayStart
+self.dayDiffPreLighting = self.middayTime - self.dayStartLighting
 self.dayDiffPost = self.dayEnd - self.middayTime
+self.dayDiffPostLighting = self.dayEndLighting - self.middayTime
 
 numerize(self.months)
 numerize(self.monthsDaytimeMultiplier)

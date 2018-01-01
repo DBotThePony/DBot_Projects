@@ -107,6 +107,12 @@ surface.CreateFont('WOverlord_SunsetSunrise', {
 	size = 28
 })
 
+surface.CreateFont('WOverlord_Night', {
+	font = 'Exo 2',
+	weight = 400,
+	size = 20
+})
+
 surface.CreateFont('WOverlord_RegularTime', {
 	font = 'Roboto Mono Medium',
 	weight = 500,
@@ -158,6 +164,15 @@ local function HUDPaintFULL()
 
 	surface.SetFont('WOverlord_SunsetSunrise')
 	text = 'Sunrise: ' .. self.DATE_OBJECT_ACCURATE:FormatSunrise() .. '   Sunset: ' .. self.DATE_OBJECT_ACCURATE:FormatSunset()
+	local w, h = surface.GetTextSize(text)
+
+	surface.SetTextPos(x - w / 2, y)
+	surface.DrawText(text)
+
+	y = y + h
+
+	surface.SetFont('WOverlord_Night')
+	text = 'Night end: ' .. self.DATE_OBJECT_ACCURATE:FormatNightEnd() .. '   Night start: ' .. self.DATE_OBJECT_ACCURATE:FormatNightStart()
 	local w, h = surface.GetTextSize(text)
 
 	surface.SetTextPos(x - w / 2, y)

@@ -72,8 +72,11 @@ function meta:SetStamp(stamp)
 	end
 
 	self.dayStart = math.floor(WOverlord.middayTime - WOverlord.dayDiffPre * self.dayMultiplier) + WOverlord.frandom(-480, 480, 'sunrise', self.absoluteDay)
+	self.dayStartLighting = math.floor(WOverlord.middayTime - WOverlord.dayDiffPreLighting * self.dayMultiplier) + WOverlord.frandom(-480, 480, 'sunrise_lighting', self.absoluteDay)
 	self.dayEnd = math.floor(WOverlord.dayDiffPost * self.dayMultiplier + WOverlord.middayTime) + WOverlord.frandom(-480, 480, 'sunset', self.absoluteDay)
+	self.dayEndLighting = math.floor(WOverlord.dayDiffPostLighting * self.dayMultiplier + WOverlord.middayTime) + WOverlord.frandom(-480, 480, 'sunset_lighting', self.absoluteDay)
 	self.dayLength = self.dayEnd - self.dayStart
+	self.dayLengthLighting = self.dayEndLighting - self.dayStartLighting
 end
 
 function meta:GetYear()
@@ -112,6 +115,30 @@ function meta:GetSunset()
 	return self.dayEnd
 end
 
+function meta:GetDayStartLighting()
+	return self.dayStartLighting
+end
+
+function meta:GetDayEndLighting()
+	return self.dayEndLighting
+end
+
+function meta:GetSunriseLighting()
+	return self.dayStartLighting
+end
+
+function meta:GetSunsetLighting()
+	return self.dayEndLighting
+end
+
+function meta:GetNightEnd()
+	return self.dayStartLighting
+end
+
+function meta:GetNightStart()
+	return self.dayEndLighting
+end
+
 function meta:GetDayInYear()
 	return self.yearDay
 end
@@ -126,6 +153,22 @@ end
 
 function meta:FormatSunset()
 	return WOverlord.FormatHours(self.dayEnd)
+end
+
+function meta:FormatSunriseLighting()
+	return WOverlord.FormatHours(self.dayStartLighting)
+end
+
+function meta:FormatSunsetLighting()
+	return WOverlord.FormatHours(self.dayEndLighting)
+end
+
+function meta:FormatNightEnd()
+	return WOverlord.FormatHours(self.dayStartLighting)
+end
+
+function meta:FormatNightStart()
+	return WOverlord.FormatHours(self.dayEndLighting)
 end
 
 function meta:GetMonthString()
