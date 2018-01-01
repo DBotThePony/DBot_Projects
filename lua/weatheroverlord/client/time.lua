@@ -101,6 +101,12 @@ surface.CreateFont('WOverlord_BottomTime', {
 	size = 46
 })
 
+surface.CreateFont('WOverlord_SunsetSunrise', {
+	font = 'Exo 2',
+	weight = 400,
+	size = 28
+})
+
 surface.CreateFont('WOverlord_RegularTime', {
 	font = 'Roboto Mono Medium',
 	weight = 500,
@@ -114,6 +120,7 @@ local GET_REGULAR_POSITION = DLib.HUDCommons.DefinePosition('woverlord_time', 0.
 
 local function HUDPaintFULL()
 	if not self.DISPLAY_FULL_TIME then return end
+
 	local x, y = GET_FULL_POSITION()
 	surface.SetTextColor(255, 255, 255)
 	surface.SetFont('WOverlord_TopTimeTip')
@@ -132,8 +139,20 @@ local function HUDPaintFULL()
 
 	surface.SetFont('WOverlord_BottomTime')
 	text = self.DATE_OBJECT_ACCURATE:FormatDateYear()
-	w = surface.GetTextSize(text)
-	surface.SetTextPos(x - w / 2, y + h + 4 + h2)
+	local w, h3 = surface.GetTextSize(text)
+
+	y = y + h + 4 + h2
+	surface.SetTextPos(x - w / 2, y)
+	surface.DrawText(text)
+	y = y + h3
+
+	if not self.DISPLAY_SUNRISE then return end
+
+	surface.SetFont('WOverlord_SunsetSunrise')
+	text = 'Sunrise: ' .. self.DATE_OBJECT_ACCURATE:FormatSunrise() .. '   Sunset: ' .. self.DATE_OBJECT_ACCURATE:FormatSunset()
+	local w, h = surface.GetTextSize(text)
+
+	surface.SetTextPos(x - w / 2, y)
 	surface.DrawText(text)
 end
 
