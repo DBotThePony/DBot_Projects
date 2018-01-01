@@ -116,12 +116,20 @@ surface.CreateFont('WOverlord_RegularTime', {
 self.DISPLAY_FULL_TIME = false
 
 local GET_FULL_POSITION = DLib.HUDCommons.DefinePosition('woverlord_timefull', 0.5, 0.07)
+local GET_FULL_POSITION_SCOREBOARD = DLib.HUDCommons.DefinePosition('woverlord_timefull', 0.5, 0.4)
 local GET_REGULAR_POSITION = DLib.HUDCommons.DefinePosition('woverlord_time', 0.99, 0.99)
 
 local function HUDPaintFULL()
-	if not self.DISPLAY_FULL_TIME then return end
+	if not self.DISPLAY_FULL_TIME and not self.SCOREBOARD_IS_SHOWN then return end
 
-	local x, y = GET_FULL_POSITION()
+	local x, y
+
+	if self.SCOREBOARD_IS_SHOWN then
+		x, y = GET_FULL_POSITION_SCOREBOARD()
+	else
+		x, y = GET_FULL_POSITION()
+	end
+
 	surface.SetTextColor(255, 255, 255)
 	surface.SetFont('WOverlord_TopTimeTip')
 
@@ -146,7 +154,7 @@ local function HUDPaintFULL()
 	surface.DrawText(text)
 	y = y + h3
 
-	if not self.DISPLAY_SUNRISE then return end
+	if not self.DISPLAY_SUNRISE and not self.SCOREBOARD_IS_SHOWN then return end
 
 	surface.SetFont('WOverlord_SunsetSunrise')
 	text = 'Sunrise: ' .. self.DATE_OBJECT_ACCURATE:FormatSunrise() .. '   Sunset: ' .. self.DATE_OBJECT_ACCURATE:FormatSunset()
@@ -157,7 +165,7 @@ local function HUDPaintFULL()
 end
 
 local function HUDPaint()
-	if self.DISPLAY_FULL_TIME or not ALWAYS_DISPLAY_TIME:GetBool() then return end
+	if self.DISPLAY_FULL_TIME or not ALWAYS_DISPLAY_TIME:GetBool() or self.SCOREBOARD_IS_SHOWN then return end
 
 	local x, y = GET_REGULAR_POSITION()
 	surface.SetTextColor(255, 255, 255)
@@ -166,6 +174,14 @@ local function HUDPaint()
 	local w, h = surface.GetTextSize(text)
 	surface.SetTextPos(x - w, y - h)
 	surface.DrawText(text)
+end
+
+local function ScoreboardShow()
+	self.SCOREBOARD_IS_SHOWN = true
+end
+
+local function ScoreboardHide()
+	self.SCOREBOARD_IS_SHOWN = false
 end
 
 net.receive('weatheroverlord.replicatetime', function()
@@ -180,4 +196,6 @@ end)
 
 hook.Add('Think', 'WeatherOverlord_UpdateTime', Think)
 hook.Add('HUDPaint', 'WeatherOverlord_DisplayTimeFull', HUDPaintFULL)
+hook.Add('ScoreboardShow', 'WeatherOverlord_DisplayTimeFull', ScoreboardShow, -10)
+hook.Add('ScoreboardHide', 'WeatherOverlord_DisplayTimeFull', ScoreboardHide, -10)
 hook.Add('HUDPaint', 'WeatherOverlord_DisplayTime', HUDPaint)
