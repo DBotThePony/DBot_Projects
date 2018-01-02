@@ -77,6 +77,9 @@ function meta:SetStamp(stamp)
 	self.dayEndLighting = math.floor(WOverlord.dayDiffPostLighting * self.dayMultiplier + WOverlord.middayTime) + WOverlord.frandom(-480, 480, 'sunset_lighting', self.absoluteDay)
 	self.dayLength = self.dayEnd - self.dayStart
 	self.dayLengthLighting = self.dayEndLighting - self.dayStartLighting
+
+	self.dayLightDiffPre = self.dayStart - self.dayStartLighting
+	self.dayLightDiffPost = self.dayEndLighting - self.dayEnd
 end
 
 function meta:GetYear()

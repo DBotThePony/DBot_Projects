@@ -96,5 +96,6 @@ svinclude('server/time.lua')
 clinclude('client/time.lua')
 
 svinclude('server/sun_modifier.lua')
+svinclude('server/skypaint.lua')
 
 hook.Run('WOverlord_SeedChanges', self.SEED_VALID, self.SEED_VALID)

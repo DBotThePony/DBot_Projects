@@ -145,6 +145,34 @@ function meta:GetDayProgression()
 	end
 end
 
+function meta:GetLightProgression()
+	local seconds = self:GetDaySecond()
+
+	if self.dayObject.dayStartLighting > seconds then
+		return 0
+	elseif self.dayObject.dayEndLighting < seconds then
+		return 1
+	else
+		return (seconds - self.dayObject.dayStartLighting) / self.dayObject.dayLengthLighting
+	end
+end
+
+function meta:GetNightMultiplier()
+	local progressionDay = self:GetDayProgression()
+
+	if progressionDay ~= 1 and progressionDay ~= 0 then return 0 end
+
+	local progressionLight = self:GetLightProgression()
+	if progressionLight == 1 or progressionLight == 0 then return 1 end
+	local seconds = self:GetDaySecond()
+
+	if progressionLight < 0.5 then
+		return 1 - (self.dayObject.dayStart - seconds) / self.dayObject.dayLightDiffPre
+	else
+		return (seconds - self.dayObject.dayEnd) / self.dayObject.dayLightDiffPost
+	end
+end
+
 function meta:GetSecond()
 	return math.floor(self.stamp % WOverlord.timeTypes.minute)
 end
@@ -198,4 +226,5 @@ bridge('FormatSunriseLighting')
 bridge('FormatSunsetLighting')
 bridge('FormatNightEnd')
 bridge('FormatNightStart')
+bridge('GetDayLengthMultiplier')
 bridge('Format', 'FormatDate')
