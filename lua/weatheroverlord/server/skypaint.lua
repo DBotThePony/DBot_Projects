@@ -187,5 +187,6 @@ local function WOverlord_NewSecond()
 end
 
 hook.Add('InitPostEntity', 'WeatherOverlord_InitializeSkypaint', initializeEntity)
+hook.Add('PostCleanupMap', 'WeatherOverlord_InitializeSkypaint', initializeEntity)
 hook.Remove('WOverlord_NewSecond', 'WeatherOverlord_Skypaint', WOverlord_NewSecond)
 hook.Add('Think', 'WeatherOverlord_Skypaint', WOverlord_NewSecond)

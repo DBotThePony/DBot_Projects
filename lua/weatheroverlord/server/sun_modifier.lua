@@ -85,6 +85,7 @@ local function WOverlord_InitializeTimeStatement()
 end
 
 hook.Add('InitPostEntity', 'WeatherOverlord_InitializeSun', initializeEntity)
+hook.Add('PostCleanupMap', 'WeatherOverlord_InitializeSun', initializeEntity)
 hook.Add('WOverlord_NewMinute', 'WeatherOverlord_Sun', WOverlord_NewMinute)
 hook.Add('WOverlord_Sunrise', 'WeatherOverlord_Sun', WOverlord_Sunrise)
 hook.Add('WOverlord_Sunset', 'WeatherOverlord_Sun', WOverlord_Sunset)

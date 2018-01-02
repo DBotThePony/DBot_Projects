@@ -151,3 +151,4 @@ end
 
 hook.Add('WOverlord_NewMinute', 'WeatherOverlord_LightstyleModifier', WOverlord_NewMinute)
 hook.Add('InitPostEntity', 'WeatherOverlord_Lightstyle', initializeEntity)
+hook.Add('PostCleanupMap', 'WeatherOverlord_Lightstyle', initializeEntity)
