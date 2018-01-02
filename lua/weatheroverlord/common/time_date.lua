@@ -185,6 +185,10 @@ function meta:GetSecond()
 	return math.floor(self.stamp % WOverlord.timeTypes.minute)
 end
 
+function meta:GetSecondInHour()
+	return math.floor(self.stamp % WOverlord.timeTypes.hour)
+end
+
 function meta:FormatCurrentHour()
 	return WOverlord.FormatHours(self.stamp)
 end
@@ -235,4 +239,5 @@ bridge('FormatSunsetLighting')
 bridge('FormatNightEnd')
 bridge('FormatNightStart')
 bridge('GetDayLengthMultiplier')
+bridge('CalculateMonthsFraction')
 bridge('Format', 'FormatDate')

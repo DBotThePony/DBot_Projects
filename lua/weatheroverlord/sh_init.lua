@@ -71,6 +71,21 @@ end
 
 cvars.AddChangeCallback('sv_woverlord_seed', seedChanges, 'WeatherOverlord')
 
+self.indexedMonths = {
+	[0] = 'january',
+	[1] = 'feburary',
+	[2] = 'march',
+	[3] = 'april',
+	[4] = 'may',
+	[5] = 'june',
+	[6] = 'july',
+	[7] = 'august',
+	[8] = 'september',
+	[9] = 'october',
+	[10] = 'november',
+	[11] = 'december',
+}
+
 local function sinclude(file)
 	if SERVER then AddCSLuaFile(file) end
 	return include(file)
@@ -99,5 +114,10 @@ svinclude('server/sun_modifier.lua')
 svinclude('server/skypaint.lua')
 svinclude('server/lightstyle.lua')
 clinclude('client/lightstyle.lua')
+
+sinclude('common/temperature.lua')
+sinclude('common/temperature_date.lua')
+
+clinclude('client/hud.lua')
 
 hook.Run('WOverlord_SeedChanges', self.SEED_VALID, self.SEED_VALID)

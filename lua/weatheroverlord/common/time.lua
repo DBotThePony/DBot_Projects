@@ -48,25 +48,8 @@ self.timeTypes.week = self.timeTypes.day * 7
 self.timeTypes.year = self.timeTypes.day * 365
 self.timeTypes.age = self.timeTypes.year * 100
 
-local mids = {
-	[0] = 'january',
-	[1] = 'feburary',
-	[2] = 'march',
-	[3] = 'april',
-	[4] = 'may',
-	[5] = 'june',
-	[6] = 'july',
-	[7] = 'august',
-	[8] = 'september',
-	[9] = 'october',
-	[10] = 'november',
-	[11] = 'december',
-}
-
-self.indexedMonths = mids
-
 local function numerize(tabIn)
-	for index, month in pairs(mids) do
+	for index, month in pairs(self.indexedMonths) do
 		tabIn[index] = tabIn[month]
 	end
 end
@@ -134,7 +117,7 @@ self.monthLength = {}
 do
 	local lastTime = 0
 
-	for i, value in pairs(mids) do
+	for i, value in pairs(self.indexedMonths) do
 		local k = value
 		local v = self.months[value]
 		self.monthsTimeInYear[k] = lastTime + v * self.timeTypes.day
@@ -144,7 +127,7 @@ do
 
 	local i = 0
 
-	for index, month in pairs(mids) do
+	for index, month in pairs(self.indexedMonths) do
 		self.monthsTimeInYearNumeric[index] = self.monthsTimeInYear[month]
 	end
 end

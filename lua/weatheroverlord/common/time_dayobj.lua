@@ -82,6 +82,20 @@ function meta:SetStamp(stamp)
 	self.dayLightDiffPost = self.dayEndLighting - self.dayEnd
 end
 
+function meta:CalculateMonthsFraction(tableIn)
+	if self.monthProgress < 0.5 then
+		local old = WOverlord.NormalizeMonth(self.month - 1)
+		local new = self.month
+		return Lerp(self.monthProgress + 0.5, tableIn[old], tableIn[new])
+	elseif self.monthProgress == 0.5 then
+		return tableIn[self.month]
+	else
+		local new = WOverlord.NormalizeMonth(self.month + 1)
+		local old = self.month
+		return Lerp(self.monthProgress - 0.5, tableIn[old], tableIn[new])
+	end
+end
+
 function meta:GetYear()
 	return self.year
 end
