@@ -33,6 +33,8 @@ function self.GetAccurateTime()
 	return self.BOUND_TIME + (CurTime() - self.BOUND_TIME_TO) * self.TIME_MULTIPLIER:GetInt()
 end
 
+local sunset, sunrise = true, true
+
 local function Think()
 	if not self.INITIALIZE then return end
 	self.DATE_OBJECT_ACCURATE:SetStamp(self.GetAccurateTime())
@@ -75,6 +77,29 @@ local function Think()
 
 	if math.floor(old / self.timeTypes.age) < math.floor(new / self.timeTypes.age) then
 		hook.Run('WOverlord_NewAge')
+	end
+
+	local progression = self.DATE_OBJECT:GetDayProgression()
+
+	if progression == 0 then
+		if sunrise then
+			hook.Run('WOverlord_InitializeTimeStatement')
+		end
+
+		sunrise = false
+		sunset = false
+	elseif progression > 0 then
+		if not sunrise then
+			sunset = false
+			sunrise = true
+			hook.Run('WOverlord_Sunrise')
+		end
+	elseif progression == 1 then
+		if not sunset then
+			sunset = true
+			sunrise = false
+			hook.Run('WOverlord_Sunset')
+		end
 	end
 end
 
@@ -208,6 +233,29 @@ net.receive('weatheroverlord.replicatetime', function()
 	self.BOUND_TIME_TO = validAt
 	lastThink = validAt
 end)
+
+net.receive('weatheroverlord.forcetimechange', function()
+	sunset = false
+	sunrise = false
+	hook.Run('WOverlord_ForceRecalculateTime')
+end)
+
+if IsValid(LocalPlayer()) then
+	net.Start('weatheroverlord.replicatetime')
+	net.SendToServer()
+else
+	local frame = 0
+	hook.Add('Think', 'WeatherOverlord_RequestTime', function()
+		if not IsValid(LocalPlayer()) then return end
+
+		frame = frame + 1
+		if frame < 200 then return end
+
+		hook.Remove('Think', 'WeatherOverlord_RequestTime')
+		net.Start('weatheroverlord.replicatetime')
+		net.SendToServer()
+	end)
+end
 
 hook.Add('Think', 'WeatherOverlord_UpdateTime', Think)
 hook.Add('HUDPaint', 'WeatherOverlord_DisplayTimeFull', HUDPaintFULL)

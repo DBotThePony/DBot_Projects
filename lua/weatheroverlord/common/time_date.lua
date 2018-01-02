@@ -125,6 +125,26 @@ function meta:GetAbsoluteSecond()
 	return math.floor(self.stamp)
 end
 
+function meta:GetDayProgression()
+	return (self.stamp % WOverlord.timeTypes.day) / WOverlord.timeTypes.day
+end
+
+function meta:GetDaySecond()
+	return self.stamp % WOverlord.timeTypes.day
+end
+
+function meta:GetDayProgression()
+	local seconds = self:GetDaySecond()
+
+	if self.dayObject.dayStart > seconds then
+		return 0
+	elseif self.dayObject.dayEnd < seconds then
+		return 1
+	else
+		return (seconds - self.dayObject.dayStart) / self.dayObject.dayLength
+	end
+end
+
 function meta:GetSecond()
 	return math.floor(self.stamp % WOverlord.timeTypes.minute)
 end

@@ -13,12 +13,26 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-include('weatheroverlord/sh_init.lua')
+local WOverlord = WOverlord
+local DLib = DLib
+local net = net
+local hook = hook
+local IsValid = IsValid
 
-if SERVER then
-	AddCSLuaFile('weatheroverlord/sh_init.lua')
-	AddCSLuaFile('weatheroverlord/cl_init.lua')
-	include('weatheroverlord/sv_init.lua')
-else
-	include('weatheroverlord/cl_init.lua')
+net.pool('weatheroverlord.replicateseed')
+
+local function WOverlord_SeedChanges()
+	net.Start('weatheroverlord.replicateseed')
+	net.WriteUInt(WOverlord.SEED_VALID, 64)
+	net.Broadcast()
 end
+
+net.receive('weatheroverlord.replicateseed', function(len, ply)
+	if not IsValid(ply) then return end
+
+	net.Start('weatheroverlord.replicateseed')
+	net.WriteUInt(WOverlord.SEED_VALID, 64)
+	net.Send(ply)
+end)
+
+hook.Add('WOverlord_SeedChanges', 'WeatherOverlord_ReplicateSeed', WOverlord_SeedChanges)

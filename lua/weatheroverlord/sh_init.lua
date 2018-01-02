@@ -26,10 +26,14 @@ DLib.MessageMaker(self, 'WeatherOverlord')
 
 self.SEED = DLib.util.CreateSharedConvar('sv_woverlord_seed', math.random(1, 100000), 'Seed of Weather Overlord. Two same seeds on different servers will produce same weather, rain, snow, wind strength, temperature on same time!')
 
+if CLIENT and not self.SEED_VALID then
+	self.SEED_VALID = self.SEED:GetInt()
+end
+
 function self.random(min, max, name, additional)
 	additional = additional or 0
 	name = name or 'random'
-	return SharedRandom('WOverlord_' .. name, min, max, self.SEED:GetInt() + additional)
+	return SharedRandom('WOverlord_' .. name, min, max, self.SEED_VALID + additional)
 end
 
 function self.frandom(...)
@@ -37,11 +41,11 @@ function self.frandom(...)
 end
 
 function self.Seed()
-	return self.SEED:GetInt()
+	return self.SEED_VALID
 end
 
 function self.GetSeed()
-	return self.SEED:GetInt()
+	return self.SEED_VALID
 end
 
 local function seedChanges(cvar, oldValue, newValue)
@@ -55,7 +59,14 @@ local function seedChanges(cvar, oldValue, newValue)
 		newSeed = newSeed % math.pow(2, 31)
 		self.Message('String conversion to seed for ', newValue, ' is ', newSeed)
 		self.SEED:SetInt(newSeed)
+		hook.Run('WOverlord_SeedChanges', oldValue, newSeed)
+
+		self.SEED_VALID = newSeed
+		return
 	end
+
+	self.SEED_VALID = self.SEED:GetInt()
+	hook.Run('WOverlord_SeedChanges', oldValue, newValue)
 end
 
 cvars.AddChangeCallback('sv_woverlord_seed', seedChanges, 'WeatherOverlord')
@@ -83,3 +94,7 @@ sinclude('common/time_date.lua')
 
 svinclude('server/time.lua')
 clinclude('client/time.lua')
+
+svinclude('server/sun_modifier.lua')
+
+hook.Run('WOverlord_SeedChanges', self.SEED_VALID, self.SEED_VALID)

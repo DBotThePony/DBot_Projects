@@ -23,6 +23,7 @@ local math = math
 local net = net
 
 net.pool('weatheroverlord.replicatetime')
+net.pool('weatheroverlord.forcetimechange')
 
 local timeSinceLastTick = 0
 
@@ -38,6 +39,8 @@ end
 local function Think()
 	self.DATE_OBJECT_ACCURATE:SetStamp(self.GetAccurateTime())
 end
+
+local sunset, sunrise = false, false
 
 local function UpdateTime()
 	local add = self.TIME_MULTIPLIER:GetInt()
@@ -79,6 +82,29 @@ local function UpdateTime()
 	if math.floor(old / self.timeTypes.age) < math.floor(new / self.timeTypes.age) then
 		hook.Run('WOverlord_NewAge')
 	end
+
+	local progression = self.DATE_OBJECT:GetDayProgression()
+
+	if progression == 0 then
+		if sunrise then
+			hook.Run('WOverlord_InitializeTimeStatement')
+		end
+
+		sunrise = false
+		sunset = false
+	elseif progression > 0 and progression ~= 1 then
+		if not sunrise then
+			sunset = false
+			sunrise = true
+			hook.Run('WOverlord_Sunrise')
+		end
+	elseif progression == 1 then
+		if not sunset then
+			sunset = true
+			sunrise = false
+			hook.Run('WOverlord_Sunset')
+		end
+	end
 end
 
 local function ReplicateTime()
@@ -87,6 +113,28 @@ local function ReplicateTime()
 	net.WriteDouble(timeSinceLastTick)
 	net.Broadcast()
 end
+
+function self.SetTime(stampnew)
+	local add = self.TIME_MULTIPLIER:GetInt()
+	stampnew = math.max(stampnew, add * 2)
+	self.TIME = stampnew - add * 2
+	UpdateTime()
+	ReplicateTime()
+	net.Start('weatheroverlord.forcetimechange')
+	net.Broadcast()
+	hook.Run('WOverlord_ForceRecalculateTime')
+
+	sunrise = false
+	sunset = false
+end
+
+net.Receive('weatheroverlord.replicatetime', function(len, ply)
+	if not IsValid(ply) then return end
+	net.Start('weatheroverlord.replicatetime')
+	net.WriteUInt(self.TIME, 64)
+	net.WriteDouble(timeSinceLastTick)
+	net.Send(ply)
+end)
 
 timer.Create('WOverlord.UpdateTime', 1, 0, UpdateTime)
 timer.Create('WOverlord.ReplicateTime', 10, 0, ReplicateTime)

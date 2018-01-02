@@ -28,6 +28,14 @@ function self.GetTime()
 	return self.TIME
 end
 
+function self.GetCurrentDate()
+	return self.DATE_OBJECT
+end
+
+function self.GetCurrentDateAccurate()
+	return self.DATE_OBJECT_ACCURATE
+end
+
 self.WEEKS_IN_YEAR = 52
 
 self.timeTypes = {}
