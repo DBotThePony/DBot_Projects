@@ -44,10 +44,12 @@ function meta:GetTemperature()
 	if progression > 0.15 and progression < 0.85 then
 		mult = 0
 	elseif progression ~= 0 and progression ~= 1 then
-		if progression > 0.15 then
-			mult = 1 - (0.15 - progression) * 6.6
+		if progression < 0.3 then
+			mult = (0.3 - progression) * 3.3
+		elseif progression > 0.7 then
+			mult = (progression - 0.85) * 3.3
 		else
-			mult = (progression - 0.85) * 6.6
+			mult = 0
 		end
 	else
 		mult = 1
