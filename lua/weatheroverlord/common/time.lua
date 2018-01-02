@@ -149,9 +149,9 @@ do
 	end
 end
 
-self.dayStart = self.timeTypes.hour * 6
-self.dayStartLighting = self.timeTypes.hour * 5.5
-self.dayEnd = self.timeTypes.hour * 21
+self.dayStart = self.timeTypes.hour * 7
+self.dayStartLighting = self.timeTypes.hour * 6
+self.dayEnd = self.timeTypes.hour * 20
 self.dayEndLighting = self.timeTypes.hour * 22
 
 self.daylength = self.dayEnd - self.dayStart
