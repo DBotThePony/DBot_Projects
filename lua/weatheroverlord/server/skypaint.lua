@@ -80,54 +80,109 @@ local function WOverlord_NewSecond()
 	local noNight = progression ~= 0 and progression ~= 1
 	local nightProgression = self:GetNightMultiplier()
 	local almostNightStart = progression > 0.9
+	local isSunrise = self:IsBeforeMidday()
 
-	env_skypaint:SetStarFade(0.78 * nightProgression)
+	if not isSunrise then
+		env_skypaint:SetStarFade(0.78 * nightProgression)
 
-	if noNight then
-		env_skypaint:SetSunSize(1.5 * self:GetDayLengthMultiplier())
+		if noNight then
+			env_skypaint:SetSunSize(1.5 * self:GetDayLengthMultiplier())
 
-		if not almostNightStart then
+			if not almostNightStart then
+				env_skypaint:SetDuskIntensity(0)
+				env_skypaint:SetDuskScale(0)
+				env_skypaint:SetFadeBias(1)
+			else
+				local dusken = (progression - 0.9) * 10
+				env_skypaint:SetDuskIntensity(dusken * 2)
+				env_skypaint:SetDuskScale(dusken)
+				env_skypaint:SetFadeBias(1 - dusken * 0.5)
+			end
+
+			if env_skypaint:GetTopColor() ~= topDefault then
+				env_skypaint:SetTopColor(topDefault)
+			end
+
+			if env_skypaint:GetBottomColor() ~= bottomDefault then
+				env_skypaint:SetBottomColor(bottomDefault)
+			end
+		elseif semiNight then
+			env_skypaint:SetDuskScale(1 - nightProgression * 0.5)
+			env_skypaint:SetFadeBias(1 - math.Clamp(nightProgression * 3, 0.5, 1))
+			env_skypaint:SetSunSize(math.max(1.5 * self:GetDayLengthMultiplier() * (1 - nightProgression * 1.5), 0))
+
+			if nightProgression > 0.5 then
+				env_skypaint:SetDuskIntensity(4 * (1 - nightProgression))
+
+				local multSkyColor = 1 - (nightProgression - 0.5) * 2
+
+				local topColor = Color(51, 127, 255) * (multSkyColor ^ 2)
+				local bottomColor = Color(204, 255, 255) * multSkyColor * 1.1
+
+				env_skypaint:SetTopColor(topColor:ToVector())
+				env_skypaint:SetBottomColor(bottomColor:ToVector())
+			end
+		elseif fullNight then
+			env_skypaint:SetFadeBias(0)
 			env_skypaint:SetDuskIntensity(0)
 			env_skypaint:SetDuskScale(0)
-			env_skypaint:SetFadeBias(1)
-		else
-			local dusken = (progression - 0.9) * 10
-			env_skypaint:SetDuskIntensity(dusken * 2)
-			env_skypaint:SetDuskScale(dusken)
-			env_skypaint:SetFadeBias(1 - dusken * 0.5)
-		end
+			env_skypaint:SetSunSize(0)
 
-		if env_skypaint:GetTopColor() ~= topDefault then
-			env_skypaint:SetTopColor(topDefault)
+			env_skypaint:SetTopColor(emptyVector)
+			env_skypaint:SetBottomColor(emptyVector)
 		end
+	else
+		env_skypaint:SetStarFade(0.78 * nightProgression)
 
-		if env_skypaint:GetBottomColor() ~= bottomDefault then
-			env_skypaint:SetBottomColor(bottomDefault)
-		end
-	elseif semiNight then
-		env_skypaint:SetDuskScale(1 - nightProgression * 0.5)
-		env_skypaint:SetFadeBias(1 - math.Clamp(nightProgression * 3, 0.5, 1))
-		env_skypaint:SetSunSize(math.max(1.5 * self:GetDayLengthMultiplier() * (1 - nightProgression * 1.5), 0))
+		local dusken = progression * 10
 
 		if nightProgression > 0.5 then
-			env_skypaint:SetDuskIntensity(4 * (1 - nightProgression))
+			env_skypaint:SetDuskIntensity((1 - nightProgression) * 2)
+			env_skypaint:SetDuskScale(1 - nightProgression)
+		elseif nightProgression < 0.5 and nightProgression > 0 then
+			env_skypaint:SetDuskIntensity(1.5)
+			env_skypaint:SetDuskScale(1)
+		elseif nightProgression == 0 and dusken < 1 then
+			env_skypaint:SetDuskScale(1 - dusken)
+			env_skypaint:SetDuskIntensity(1.5 * (1 - dusken))
+		else
+			env_skypaint:SetDuskScale(0)
+			env_skypaint:SetDuskIntensity(0)
+		end
 
-			local multSkyColor = 1 - (nightProgression - 0.5) * 2
+		if nightProgression == 1 then
+			env_skypaint:SetSunSize(0)
+		elseif nightProgression > 0 then
+			env_skypaint:SetSunSize(1.5 * self:GetDayLengthMultiplier() * (0.5 - nightProgression * 0.5))
+		elseif dusken < 1 then
+			env_skypaint:SetSunSize(1.5 * self:GetDayLengthMultiplier() * (0.5 + dusken * 0.5))
+		else
+			env_skypaint:SetSunSize(1.5 * self:GetDayLengthMultiplier())
+		end
 
+		local multSkyColor
+
+		if nightProgression > 0 then
+			multSkyColor = (1 - nightProgression) * 0.5
+		elseif dusken < 1 then
+			multSkyColor = 0.5 + dusken * 0.5
+		end
+
+		if multSkyColor then
 			local topColor = Color(51, 127, 255) * (multSkyColor ^ 2)
 			local bottomColor = Color(204, 255, 255) * multSkyColor * 1.1
 
 			env_skypaint:SetTopColor(topColor:ToVector())
 			env_skypaint:SetBottomColor(bottomColor:ToVector())
-		end
-	elseif fullNight then
-		env_skypaint:SetFadeBias(0)
-		env_skypaint:SetDuskIntensity(0)
-		env_skypaint:SetDuskScale(0)
-		env_skypaint:SetSunSize(0)
+		else
+			if env_skypaint:GetTopColor() ~= topDefault then
+				env_skypaint:SetTopColor(topDefault)
+			end
 
-		env_skypaint:SetTopColor(emptyVector)
-		env_skypaint:SetBottomColor(emptyVector)
+			if env_skypaint:GetBottomColor() ~= bottomDefault then
+				env_skypaint:SetBottomColor(bottomDefault)
+			end
+		end
 	end
 end
 

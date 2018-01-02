@@ -167,10 +167,18 @@ function meta:GetNightMultiplier()
 	local seconds = self:GetDaySecond()
 
 	if progressionLight < 0.5 then
-		return 1 - (self.dayObject.dayStart - seconds) / self.dayObject.dayLightDiffPre
+		return (self.dayObject.dayStart - seconds) / self.dayObject.dayLightDiffPre
 	else
 		return (seconds - self.dayObject.dayEnd) / self.dayObject.dayLightDiffPost
 	end
+end
+
+function meta:IsBeforeMidday()
+	return self:GetDaySecond() < WOverlord.middayTime
+end
+
+function meta:IsAfterMidday()
+	return self:GetDaySecond() > WOverlord.middayTime
 end
 
 function meta:GetSecond()

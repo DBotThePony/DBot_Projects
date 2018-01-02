@@ -63,9 +63,7 @@ local function WOverlord_NewMinute()
 	local self = WOverlord.GetCurrentDate()
 	local progression = self:GetDayProgression()
 
-	if progression ~= 0 and progression ~= 1 then
-		env_sun:SetKeyValue('sun_dir', tostring(self:GetSunAngles():Forward()))
-	end
+	env_sun:SetKeyValue('sun_dir', tostring(self:GetSunAngles():Forward()))
 end
 
 local function WOverlord_Sunrise()
