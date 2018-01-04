@@ -30,6 +30,12 @@ local function bezierVector(lerp, one, two, three)
 	return Vector(bezier(lerp, one.x, two.x, three.x), bezier(lerp, one.y, two.y, three.y), 0)
 end
 
+local CACHE = {}
+
+local function reset()
+	CACHE = {}
+end
+
 local hourAmount = 4
 local hourPiece = 24 / hourAmount
 
@@ -50,6 +56,25 @@ local function upscale(str, seed)
 	end
 
 	return currentStep
+end
+
+function meta:GetAverageWindDirection()
+	local day = self:GetAbsoluteDay()
+
+	if CACHE[day] then
+		return CACHE[day]
+	end
+
+	local average = Vector(0, 0, 0)
+
+	for hour = 1, 23 do
+		local date = WOverlord.Date(day * WOverlord.timeTypes.day + hour * WOverlord.timeTypes.hour)
+		average = average + date:GetWindDirection()
+	end
+
+	CACHE[day] = average / 24
+
+	return CACHE[day]
 end
 
 function meta:GetWindDirection()
