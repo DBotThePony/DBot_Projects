@@ -26,7 +26,7 @@ DLib.MessageMaker(self, 'WeatherOverlord')
 
 self.SEED = DLib.util.CreateSharedConvar('sv_woverlord_seed', math.random(1, 100000), 'Seed of Weather Overlord. Two same seeds on different servers will produce same weather, rain, snow, wind strength, temperature on same time!')
 
-if CLIENT and not self.SEED_VALID then
+if SERVER or not self.SEED_VALID then
 	self.SEED_VALID = self.SEED:GetInt()
 end
 
@@ -117,6 +117,7 @@ clinclude('client/lightstyle.lua')
 
 sinclude('common/temperature.lua')
 sinclude('common/temperature_date.lua')
+sinclude('common/wind.lua')
 
 clinclude('client/hud.lua')
 

@@ -23,6 +23,8 @@ local pairs = pairs
 local table = table
 local Lerp = Lerp
 local string = string
+local assert = assert
+local type = type
 
 local meta = DLib.CreateLuaObject('WODate', false)
 
@@ -33,6 +35,7 @@ function meta:Initialize(stamp)
 end
 
 function meta:SetStamp(stamp)
+	assert(type(stamp) == 'number' and stamp >= 0, 'Invalid stamp')
 	self.stamp = stamp
 
 	if not self.dayObject or self.dayObject:GetAbsoluteDay() ~= self:GetAbsoluteDay() then
@@ -173,6 +176,10 @@ function meta:GetNightMultiplier()
 	end
 end
 
+function meta:GetStamp()
+	return self.stamp
+end
+
 function meta:IsBeforeMidday()
 	return self:GetDaySecond() < WOverlord.middayTime
 end
@@ -187,6 +194,10 @@ end
 
 function meta:GetSecondInHour()
 	return math.floor(self.stamp % WOverlord.timeTypes.hour)
+end
+
+function meta:GetSecondInDay()
+	return math.floor(self.stamp % WOverlord.timeTypes.day)
 end
 
 function meta:FormatCurrentHour()

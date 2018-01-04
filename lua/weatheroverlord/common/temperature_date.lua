@@ -19,10 +19,34 @@ local WOverlord = WOverlord
 
 local meta = DLib.FindMetaTable('WODate')
 
+local TEMPERATURE_CACHE = {}
+
+local function reset()
+	TEMPERATURE_CACHE = {}
+end
+
 local function formula(day, hour)
 	if hour == 0 then hour = -1 end -- special case :^)
 	if day == 0 then day = 15.52 end -- special case :^)
 	return ((day % 3) ^ 4 / hour - math.cos(day * 3) * 4 + math.abs(math.sin(hour * 2)) * 5 - hour + (hour % 15) * 4 + math.cos(hour / (math.max(day % hour, 0.5))) * 5 - 1.1 ^ hour) / 10
+end
+
+function meta:GetAverageTemperature()
+	local day = self:GetDay()
+
+	if not TEMPERATURE_CACHE[day] then
+		local date = WOverlord.Date(day * WOverlord.timeTypes.day)
+		local total = date:GetTemperature()
+
+		for hour = 1, 23 do
+			date:SetStamp(day * WOverlord.timeTypes.day + hour * WOverlord.timeTypes.hour)
+			total = total + date:GetTemperature()
+		end
+
+		TEMPERATURE_CACHE[day] = total / 24
+	end
+
+	return TEMPERATURE_CACHE[day]
 end
 
 function meta:GetTemperature()
@@ -64,3 +88,5 @@ function meta:GetTemperature()
 
 	return usualTemperature + lerp - math.abs(usualTemperature) * rnd
 end
+
+hook.Add('WOverlord_SeedChanges', 'WeatherOverlord_ClearTemperature', reset)
