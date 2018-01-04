@@ -73,6 +73,14 @@ function meta:GetMonth()
 	end
 end
 
+function meta:ClosestHour()
+	if self:GetMinute() >= 30 then
+		return math.min(self:GetHour() + 1, 23)
+	else
+		return self:GetHour()
+	end
+end
+
 function meta:GetMonthTime()
 	local time = self.stamp % WOverlord.timeTypes.year
 	local month = self:GetMonth()
