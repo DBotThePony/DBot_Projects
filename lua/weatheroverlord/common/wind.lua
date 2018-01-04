@@ -58,23 +58,45 @@ local function upscale(str, seed)
 	return currentStep
 end
 
-function meta:GetAverageWindDirection()
+local function calculate(self)
 	local day = self:GetAbsoluteDay()
-
-	if CACHE[day] then
-		return CACHE[day]
-	end
+	CACHE[day] = {}
+	CACHE[day].perHour = {}
 
 	local average = Vector(0, 0, 0)
 
 	for hour = 1, 23 do
 		local date = WOverlord.Date(day * WOverlord.timeTypes.day + hour * WOverlord.timeTypes.hour)
-		average = average + date:GetWindDirection()
+		local wind = date:GetWindDirection()
+		average = average + wind
+		CACHE[day].perHour[hour] = wind
 	end
 
-	CACHE[day] = average / 24
+	CACHE[day].average = average / 24
+end
 
-	return CACHE[day]
+function meta:GetWindTable()
+	local day = self:GetAbsoluteDay()
+
+	if CACHE[day] then
+		return CACHE[day].perHour
+	end
+
+	calculate(self)
+
+	return CACHE[day].perHour
+end
+
+function meta:GetAverageWindDirection()
+	local day = self:GetAbsoluteDay()
+
+	if CACHE[day] then
+		return CACHE[day].average
+	end
+
+	calculate(self)
+
+	return CACHE[day].average
 end
 
 function meta:GetWindDirection()
