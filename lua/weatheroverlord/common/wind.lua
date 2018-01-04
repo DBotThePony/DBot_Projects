@@ -33,6 +33,25 @@ end
 local hourAmount = 4
 local hourPiece = 24 / hourAmount
 
+local upsaleChance = 75
+
+local function upscale(str, seed)
+	local currentChance = upsaleChance
+	local currentStep = 0
+	local concat = 'wind_direction_upscale_' .. str
+
+	for i = 1, 100 do
+		if WOverlord.random(0, 100, concat, seed % 600 - 15 * i + seed / 100) <= currentChance then
+			currentChance = currentChance * 0.75
+			currentStep = currentStep + math.pow(2, i)
+		else
+			break
+		end
+	end
+
+	return currentStep
+end
+
 function meta:GetWindDirection()
 	local day = self:GetAbsoluteDay()
 	local hour = self:GetHour()
@@ -47,12 +66,14 @@ function meta:GetWindDirection()
 	local dayPost = post:GetAbsoluteDay()
 	local hourPost = post:GetHour()
 	local partPost = math.floor(hourPost / 4)
+	local seed = day * hourAmount + part
 
-	local windSelfX = WOverlord.random(-18, 18, 'wind_direction_x', day * hourAmount + part)
-	local windSelfY = WOverlord.random(-18, 18, 'wind_direction_y', day * hourAmount + part)
+	local windSelfX = WOverlord.random(-upscale('x_minus', seed), upscale('x_plus', seed), 'wind_direction_x', seed)
+	local windSelfY = WOverlord.random(-upscale('y_minus', seed), upscale('y_plus', seed), 'wind_direction_y', seed)
 
-	local windPostX = WOverlord.random(-18, 18, 'wind_direction_x', dayPost * hourAmount + partPost)
-	local windPostY = WOverlord.random(-18, 18, 'wind_direction_y', dayPost * hourAmount + partPost)
+	seed = dayPost * hourAmount + partPost
+	local windPostX = WOverlord.random(-upscale('x_minus', seed), upscale('x_plus', seed), 'wind_direction_x', seed)
+	local windPostY = WOverlord.random(-upscale('y_minus', seed), upscale('y_plus', seed), 'wind_direction_y', seed)
 
 	if self:GetStamp() - hourAmount * WOverlord.timeTypes.hour >= 0 then
 		local pre = WOverlord.Date(self:GetStamp() - hourAmount * WOverlord.timeTypes.hour)
@@ -60,8 +81,9 @@ function meta:GetWindDirection()
 		local hourPre = pre:GetHour()
 		local partPre = math.floor(hourPre / 4)
 
-		local windPreX = WOverlord.random(-18, 18, 'wind_direction_x', dayPre * hourAmount + partPre)
-		local windPreY = WOverlord.random(-18, 18, 'wind_direction_y', dayPre * hourAmount + partPre)
+		seed = dayPre * hourAmount + partPre
+		local windPreX = WOverlord.random(-upscale('x_minus', seed), upscale('x_plus', seed), 'wind_direction_x', seed)
+		local windPreY = WOverlord.random(-upscale('y_minus', seed), upscale('y_plus', seed), 'wind_direction_y', seed)
 
 		vec1 = Vector(windPreX, windPreY, 0)
 	end
