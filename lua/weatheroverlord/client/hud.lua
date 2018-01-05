@@ -52,8 +52,14 @@ surface.CreateFont('WOverlord_Night', {
 })
 
 surface.CreateFont('WOverlord_Temperature', {
+	font = 'Exo 2 Thin',
+	weight = 500,
+	size = 20
+})
+
+surface.CreateFont('WOverlord_WindSpeed', {
 	font = 'Exo 2',
-	weight = 300,
+	weight = 500,
 	size = 20
 })
 
@@ -126,6 +132,17 @@ local function HUDPaintFULL()
 
 	surface.SetFont('WOverlord_Temperature')
 	text = string.format('Temperature: %.1f°C', self.DATE_OBJECT_ACCURATE:GetTemperature())
+	w, h = surface.GetTextSize(text)
+
+	surface.SetTextPos(x - w / 2, y)
+	surface.DrawText(text)
+
+	if not self.SCOREBOARD_IS_SHOWN then return end
+
+	y = y + h + 2
+
+	surface.SetFont('WOverlord_WindSpeed')
+	text = string.format('Wind speed: %.2f m/s; Beaufort Score: %i (%s)', self.DATE_OBJECT_ACCURATE:GetWindSpeedCI():GetMetres(), self.DATE_OBJECT_ACCURATE:GetBeaufortScore(), self.DATE_OBJECT_ACCURATE:GetBeaufortName())
 	w, h = surface.GetTextSize(text)
 
 	surface.SetTextPos(x - w / 2, y)

@@ -18,6 +18,34 @@ local Lerp = Lerp
 local WOverlord = WOverlord
 local math = math
 local Vector = Vector
+local pairs = pairs
+local ipairs = ipairs
+
+WOverlord.beaufort = {
+	stille = 		{0, 0.3},
+	sillent = 		{1, 1.5},
+	light = 		{2, 3.3},
+	weak = 			{3, 5.4},
+	moderate = 		{4, 7.9},
+	fresh = 		{5, 10.7},
+	strong = 		{6, 13.8},
+	robust = 		{7, 17.1},
+	very_robust = 	{8, 20.7},
+	storm = 		{9, 24.4},
+	strong_storm = 	{10, 28.4},
+	violent_storm = {11, 32.6},
+	hurricane = 	{12, 999},
+}
+
+WOverlord.beaufortLocalized = {}
+WOverlord.beaufortNumered = {}
+
+for id, data in pairs(WOverlord.beaufort) do
+	WOverlord.beaufortLocalized[data[1]] = id
+	data[3] = id
+	data[4] = id:sub(1, 1):upper() .. id:sub(2)
+	WOverlord.beaufortNumered[data[1] + 1] = data
+end
 
 local meta = DLib.FindMetaTable('WODate')
 
@@ -139,6 +167,32 @@ function meta:GetWindDirection()
 	local vec3 = Vector(windPostX, windPostY, 0)
 
 	return bezierVector(t, vec1, vec2, vec3)
+end
+
+function meta:GetWindSpeed()
+	return self:GetWindDirection():Length()
+end
+
+function meta:GetWindSpeedCI()
+	return DLib.MeasurmentNoCache(self:GetWindSpeed())
+end
+
+function meta:GetBeaufortScore()
+	local metresPerSecond = self:GetWindSpeedCI():GetMetres()
+
+	for i, data in ipairs(WOverlord.beaufortNumered) do
+		if data[2] >= metresPerSecond then
+			return data[1]
+		end
+	end
+end
+
+function meta:GetBeaufortName()
+	return WOverlord.beaufortNumered[self:GetBeaufortScore() + 1][4]
+end
+
+function meta:GetBeaufortID()
+	return WOverlord.beaufortNumered[self:GetBeaufortScore() + 1][3]
 end
 
 hook.Add('WOverlord_SeedChanges', 'WeatherOverlord_ClearWind', reset)
