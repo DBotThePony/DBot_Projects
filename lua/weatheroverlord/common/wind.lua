@@ -77,7 +77,7 @@ local function upscale(str, seed)
 	for i = 1, 100 do
 		if WOverlord.random(0, 100, concat, seed % 600 - 15 * i + seed / 100) <= currentChance then
 			currentChance = currentChance * 0.75
-			currentStep = currentStep + math.pow(2, i)
+			currentStep = currentStep + math.pow(3, i)
 		else
 			break
 		end
