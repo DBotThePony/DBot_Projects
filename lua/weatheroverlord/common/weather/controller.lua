@@ -32,13 +32,18 @@ local function Think()
 	if delta == 0 then return end
 
 	for i, value in ipairs(WOverlord.WEATHER_STATUS_ARRAY) do
-		local weather = value:GetMeta()
-		weather.Update(WOverlord.DATE_OBJECT, value, delta)
+		if value:IsValid() then
+			local weather = value:GetMeta()
+			weather.Update(WOverlord.DATE_OBJECT, value, delta)
 
-		if SERVER then
-			weather.UpdateServer(WOverlord.DATE_OBJECT, value, delta)
+			if SERVER then
+				weather.UpdateServer(WOverlord.DATE_OBJECT, value, delta)
+			else
+				weather.UpdateClient(WOverlord.DATE_OBJECT, value, delta)
+			end
 		else
-			weather.UpdateClient(WOverlord.DATE_OBJECT, value, delta)
+			WOverlord.RemoveWeather(value)
+			break
 		end
 	end
 end
@@ -54,15 +59,18 @@ local function generate(updaterate)
 		if delta == 0 then return end
 
 		for i, value in ipairs(WOverlord.WEATHER_STATUS_ARRAY) do
-			local weather = value:GetMeta()
+			-- do not remove if weather state is invalid, let think hook remove it
+			if value:IsValid() then
+				local weather = value:GetMeta()
 
-			if weather.UPDATE_RATE == updaterate then
-				weather.Think(WOverlord.DATE_OBJECT, value, delta)
+				if weather.UPDATE_RATE == updaterate then
+					weather.Think(WOverlord.DATE_OBJECT, value, delta)
 
-				if SERVER then
-					weather.ThinkServer(WOverlord.DATE_OBJECT, value, delta)
-				else
-					weather.ThinkClient(WOverlord.DATE_OBJECT, value, delta)
+					if SERVER then
+						weather.ThinkServer(WOverlord.DATE_OBJECT, value, delta)
+					else
+						weather.ThinkClient(WOverlord.DATE_OBJECT, value, delta)
+					end
 				end
 			end
 		end

@@ -65,6 +65,24 @@ function WOverlord.AddWeather(iWeatherState)
 	return true
 end
 
+function WOverlord.RemoveWeather(id)
+	if type(id) == 'string' then
+		id = id:GetID()
+	end
+
+	assert(type(id) == 'string', 'Input is not a string!')
+
+	for i, value in ipairs(WOverlord.WEATHER_STATUS_ARRAY) do
+		if value:GetID() == id then
+			table.remove(WOverlord.WEATHER_STATUS_ARRAY, i)
+			WOverlord.WEATHER_STATUS[id] = nil
+			return true
+		end
+	end
+
+	return false
+end
+
 function WOverlord.IsWeatherActive(id)
 	return WOverlord.WEATHER_STATUS[id] ~= nil
 end
