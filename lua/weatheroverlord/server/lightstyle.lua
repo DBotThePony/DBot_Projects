@@ -61,6 +61,7 @@ local dirty = false
 
 local function modifyAll(pattern)
 	if lastStyleOverall == pattern then return end
+	if not light_environment then return end
 	lastStyleOverall = pattern
 	dirty = true
 	engine.LightStyle(STYLE_OVERALL, pattern)
@@ -72,7 +73,7 @@ local function modifyOutside(pattern)
 	dirty = true
 
 	if not light_environment then
-		engine.LightStyle(STYLE_OVERALL, pattern)
+		engine.LightStyle(STYLE_OVERALL, string.char(math.max(MINIMAL + 1, string.byte(pattern))))
 	else
 		light_environment:Fire('fadetopattern', pattern)
 	end
