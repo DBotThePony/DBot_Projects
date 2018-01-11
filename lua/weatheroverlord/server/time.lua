@@ -53,6 +53,10 @@ local function UpdateTime()
 
 	if math.floor(old) < math.floor(new) then
 		hook.Run('WOverlord_NewSecond')
+
+		for i = math.floor(old), math.floor(new) do
+			hook.Run('WOverlord_RealTimeSecond')
+		end
 	end
 
 	if math.floor(old / self.timeTypes.minute) < math.floor(new / self.timeTypes.minute) then
@@ -61,6 +65,14 @@ local function UpdateTime()
 
 	if math.floor(old / self.timeTypes.hour) < math.floor(new / self.timeTypes.hour) then
 		hook.Run('WOverlord_NewHour')
+	end
+
+	if math.floor(old / self.timeTypes.hour / 2) < math.floor(new / self.timeTypes.hour / 2) then
+		hook.Run('WOverlord_NewTwoHours')
+	end
+
+	if math.floor(old / self.timeTypes.hour / 4) < math.floor(new / self.timeTypes.hour / 4) then
+		hook.Run('WOverlord_NewQuater')
 	end
 
 	if math.floor(old / self.timeTypes.midday) < math.floor(new / self.timeTypes.midday) then
