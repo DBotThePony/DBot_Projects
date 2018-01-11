@@ -119,11 +119,11 @@ sinclude('common/temperature.lua')
 sinclude('common/temperature_date.lua')
 sinclude('common/wind.lua')
 
-clinclude('client/hud.lua')
-
 sinclude('common/weather/weather.lua')
 sinclude('common/weather/iweatherstate.lua')
 sinclude('common/weather/status.lua')
 sinclude('common/weather/controller.lua')
+
+clinclude('client/hud.lua')
 
 hook.Run('WOverlord_SeedChanges', self.SEED_VALID, self.SEED_VALID)
