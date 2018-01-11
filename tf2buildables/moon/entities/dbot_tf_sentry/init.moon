@@ -234,6 +234,7 @@ ENT.Think = =>
 		@anglesUpdated = true
 		@currentAngle = @GetAngles()
 		@targetAngle = @currentAngle
+		
 	return if @behavePause > cTime
 	delta = cTime - @lastSentryThink
 	@lastSentryThink = cTime

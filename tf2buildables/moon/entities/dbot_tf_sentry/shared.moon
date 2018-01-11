@@ -38,7 +38,7 @@ ENT.ROCKET_SOUND = 'weapons/sentry_rocket.wav'
 
 ENT.BuildTime = CreateConVar('tf_sentry_build', '10', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Sentry buildup time')
 
-ENT.SENTRY_ANGLE_CHANGE_MULT = CreateConVar('tf_dbg_sentry_angle', '50', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Sentry angle change multiplier')
+ENT.SENTRY_ANGLE_CHANGE_MULT = CreateConVar('tf_dbg_sentry_angle', '66', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Sentry angle change multiplier')
 ENT.SENTRY_SCAN_YAW_MULT = CreateConVar('tf_dbg_sentry_scan_m', '50', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Sentry scan multiplier')
 ENT.SENTRY_SCAN_YAW_CONST = CreateConVar('tf_dbg_sentry_scan_c', '45', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Sentry scan constant')
 
