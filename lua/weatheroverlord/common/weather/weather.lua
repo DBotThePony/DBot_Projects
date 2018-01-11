@@ -78,6 +78,13 @@ function WOverlord.RegisterWeather(id, name, checkFrequency)
 		end
 	end
 
+	if not weatherMeta.Initialize then
+		-- self -> IWeatherState
+		function weatherMeta:Initialize()
+
+		end
+	end
+
 	weatherMeta.UPDATE_RATE = checkFrequency
 
 	-- Think - each checkFrequency

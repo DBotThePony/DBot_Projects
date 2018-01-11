@@ -29,6 +29,8 @@ function meta:Initialize(id, length, startFrom)
 	self.dateStart = WOverlord.Date(startFrom)
 	self.dateEnd = WOverlord.Date(startFrom + length)
 	self.meta = WOverlord.METADATA[id]
+
+	self.meta.Initialize(self)
 end
 
 function meta:GetLength()
