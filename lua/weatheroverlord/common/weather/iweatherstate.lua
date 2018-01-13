@@ -23,14 +23,14 @@ local meta = DLib.CreateLuaObject('WOIWeatherState', false)
 
 WOverlord.IWeatherState = meta
 
-function meta:Initialize(id, length, startFrom)
+function meta:Initialize(id, length, startFrom, dryRun)
 	self.id = id
 	self.length = length
 	self.dateStart = WOverlord.Date(startFrom)
 	self.dateEnd = WOverlord.Date(startFrom + length)
 	self.meta = WOverlord.METADATA[id]
 
-	self.meta.Initialize(self)
+	self.meta.Initialize(self, dryRun)
 end
 
 function meta:GetLength()

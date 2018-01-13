@@ -19,6 +19,7 @@ local assert = assert
 local type = type
 local WOverlord = WOverlord
 local pairs = pairs
+local hook = hook
 
 WOverlord.METADATA = WOverlord.METADATA or {}
 WOverlord.METADATA_REG = WOverlord.METADATA_REG or {}
@@ -80,7 +81,7 @@ function WOverlord.RegisterWeather(id, name, checkFrequency)
 
 	if not weatherMeta.Initialize then
 		-- self -> IWeatherState
-		function weatherMeta:Initialize()
+		function weatherMeta:Initialize(dryRun)
 
 		end
 	end
@@ -91,37 +92,55 @@ function WOverlord.RegisterWeather(id, name, checkFrequency)
 	-- Update - each frame
 
 	if not weatherMeta.Think then
+		local hookID = 'WeatherThink' .. id:formatname()
+
 		function weatherMeta:Think(iWeatherState, lastThinkDelta)
+			hook.Run(hookID, self, iWeatherState, lastThinkDelta)
 			return true
 		end
 	end
 
 	if not weatherMeta.ThinkServer then
+		local hookID = 'WeatherThinkServer' .. id:formatname()
+
 		function weatherMeta:ThinkServer(iWeatherState, lastThinkDelta)
+			hook.Run(hookID, self, iWeatherState, lastThinkDelta)
 			return true
 		end
 	end
 
 	if not weatherMeta.ThinkClient then
+		local hookID = 'WeatherThinkClient' .. id:formatname()
+
 		function weatherMeta:ThinkClient(iWeatherState, lastThinkDelta)
+			hook.Run(hookID, self, iWeatherState, lastThinkDelta)
 			return true
 		end
 	end
 
 	if not weatherMeta.Update then
+		local hookID = 'WeatherUpdate' .. id:formatname()
+
 		function weatherMeta:Update(iWeatherState, lastThinkDelta)
+			hook.Run(hookID, self, iWeatherState, lastThinkDelta)
 			return true
 		end
 	end
 
 	if not weatherMeta.UpdateServer then
+		local hookID = 'WeatherUpdateServer' .. id:formatname()
+
 		function weatherMeta:UpdateServer(iWeatherState, lastThinkDelta)
+			hook.Run(hookID, self, iWeatherState, lastThinkDelta)
 			return true
 		end
 	end
 
 	if not weatherMeta.UpdateClient then
+		local hookID = 'WeatherUpdateClient' .. id:formatname()
+
 		function weatherMeta:UpdateClient(iWeatherState, lastThinkDelta)
+			hook.Run(hookID, self, iWeatherState, lastThinkDelta)
 			return true
 		end
 	end
@@ -146,4 +165,44 @@ function WOverlord.GetWeather(id)
 	assert(type(id) == 'string', 'ID Should be string')
 	assert(id == id:lower(), 'ID Should be lowercased')
 	return WOverlord.METADATA[id]
+end
+
+local include = include
+local SERVER = SERVER
+local AddCSLuaFile = AddCSLuaFile
+local ipairs = ipairs
+
+function WOverlord.LoadWeatherFiles()
+	local _, folders = file.Find('weatheroverlord/common/weather/classes/*', 'LUA')
+
+	for i, folder in ipairs(folders) do
+		local files = file.Find('weatheroverlord/common/weather/classes/' .. folder .. '/*.lua', 'LUA')
+		local cl = DLib.Loader.filterClient(files)
+		local sv = DLib.Loader.filterServer(files)
+		local sh = DLib.Loader.filterShared(files)
+
+		-- local class = file:sub(1, #file - 4)
+		-- local classFile = WOverlord.RegisterWeather(class, name, checkFrequency)
+
+		for i, file in ipairs(sh) do
+			include('weatheroverlord/common/weather/classes/' .. folder .. '/' .. file)
+			if SERVER then AddCSLuaFile('weatheroverlord/common/weather/classes/' .. folder .. '/' .. file) end
+		end
+
+		if SERVER then
+			for i, file in ipairs(sv) do
+				include('weatheroverlord/common/weather/classes/' .. folder .. '/' .. file)
+			end
+		end
+
+		if SERVER then
+			for i, file in ipairs(cl) do
+				AddCSLuaFile('weatheroverlord/common/weather/classes/' .. folder .. '/' .. file)
+			end
+		else
+			for i, file in ipairs(cl) do
+				include('weatheroverlord/common/weather/classes/' .. folder .. '/' .. file)
+			end
+		end
+	end
 end

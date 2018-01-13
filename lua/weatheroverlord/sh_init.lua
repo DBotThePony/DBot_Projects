@@ -126,4 +126,6 @@ sinclude('common/weather/controller.lua')
 
 clinclude('client/hud.lua')
 
+WOverlord.LoadWeatherFiles()
+
 hook.Run('WOverlord_SeedChanges', self.SEED_VALID, self.SEED_VALID)
