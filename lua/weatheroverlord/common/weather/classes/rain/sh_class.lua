@@ -29,5 +29,4 @@ end
 
 function meta:Initialize(dryRun)
 	if dryRun then return end
-	WOverlord.AddWeatherParticles('env_rain_512')
 end
