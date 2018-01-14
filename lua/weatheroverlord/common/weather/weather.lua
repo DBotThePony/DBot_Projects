@@ -88,73 +88,86 @@ function WOverlord.RegisterWeather(id, name, checkFrequency)
 
 	weatherMeta.UPDATE_RATE = checkFrequency
 
-	-- Think - each checkFrequency
-	-- Update - each frame
+	-- Update - each checkFrequency
+	-- Think - each frame
 
 	if not weatherMeta.Think then
 		local hookID = 'WeatherThink' .. id:formatname()
+		weatherMeta.ThinkHookID = hookID
 
-		function weatherMeta:Think(iWeatherState, lastThinkDelta)
-			hook.Run(hookID, self, iWeatherState, lastThinkDelta)
+		function weatherMeta:Think(date, lastThinkDelta)
+			hook.Run(hookID, self, date, lastThinkDelta)
 			return true
 		end
 	end
 
 	if not weatherMeta.ThinkServer then
 		local hookID = 'WeatherThinkServer' .. id:formatname()
+		weatherMeta.ThinkServerHookID = hookID
 
-		function weatherMeta:ThinkServer(iWeatherState, lastThinkDelta)
-			hook.Run(hookID, self, iWeatherState, lastThinkDelta)
+		function weatherMeta:ThinkServer(date, lastThinkDelta)
+			hook.Run(hookID, self, date, lastThinkDelta)
 			return true
 		end
 	end
 
 	if not weatherMeta.ThinkClient then
 		local hookID = 'WeatherThinkClient' .. id:formatname()
+		weatherMeta.ThinkClientHookID = hookID
 
-		function weatherMeta:ThinkClient(iWeatherState, lastThinkDelta)
-			hook.Run(hookID, self, iWeatherState, lastThinkDelta)
+		function weatherMeta:ThinkClient(date, lastThinkDelta)
+			hook.Run(hookID, self, date, lastThinkDelta)
 			return true
 		end
 	end
 
 	if not weatherMeta.Update then
 		local hookID = 'WeatherUpdate' .. id:formatname()
+		weatherMeta.UpdateHookID = hookID
 
-		function weatherMeta:Update(iWeatherState, lastThinkDelta)
-			hook.Run(hookID, self, iWeatherState, lastThinkDelta)
+		function weatherMeta:Update(date, lastThinkDelta)
+			hook.Run(hookID, self, date, lastThinkDelta)
 			return true
 		end
 	end
 
 	if not weatherMeta.UpdateServer then
 		local hookID = 'WeatherUpdateServer' .. id:formatname()
+		weatherMeta.UpdateServerHookID = hookID
 
-		function weatherMeta:UpdateServer(iWeatherState, lastThinkDelta)
-			hook.Run(hookID, self, iWeatherState, lastThinkDelta)
+		function weatherMeta:UpdateServer(date, lastThinkDelta)
+			hook.Run(hookID, self, date, lastThinkDelta)
 			return true
 		end
 	end
 
 	if not weatherMeta.UpdateClient then
 		local hookID = 'WeatherUpdateClient' .. id:formatname()
+		weatherMeta.UpdateClientHookID = hookID
 
-		function weatherMeta:UpdateClient(iWeatherState, lastThinkDelta)
-			hook.Run(hookID, self, iWeatherState, lastThinkDelta)
+		function weatherMeta:UpdateClient(date, lastThinkDelta)
+			hook.Run(hookID, self, date, lastThinkDelta)
 			return true
 		end
 	end
 
 	if not weatherMeta.DisplayName then
 		local grab = transformWord(id)
-		weatherMeta.DisplayName = function(self, iWeatherState)
+		weatherMeta.DisplayName = function(self, date)
 			return grab
 		end
 	end
 
 	if not weatherMeta.DisplayNamePriority then
-		weatherMeta.DisplayNamePriority = function(self, iWeatherState)
+		weatherMeta.DisplayNamePriority = function(self, date)
 			return 0
+		end
+	end
+
+	if not weatherMeta.Stop then
+		-- Stop(self -> IWeatherState)
+		function weatherMeta:Stop()
+			return true
 		end
 	end
 
@@ -166,6 +179,9 @@ function WOverlord.GetWeather(id)
 	assert(id == id:lower(), 'ID Should be lowercased')
 	return WOverlord.METADATA[id]
 end
+
+WOverlord.GetWeatherMeta = WOverlord.GetWeather
+WOverlord.FindWeatherMeta = WOverlord.GetWeather
 
 local include = include
 local SERVER = SERVER

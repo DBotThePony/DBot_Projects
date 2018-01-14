@@ -30,8 +30,13 @@ function meta:Initialize(id, length, startFrom, dryRun)
 	self.dateStart = WOverlord.Date(startFrom)
 	self.dateEnd = WOverlord.Date(startFrom + length)
 	self.meta = WOverlord.METADATA[id]
+	self.dryRun = dryRun
 
 	self.meta.Initialize(self, dryRun)
+end
+
+function meta:IsDryRun()
+	return self.dryRun
 end
 
 function meta:GetLength()

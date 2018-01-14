@@ -34,12 +34,12 @@ local function Think()
 	for i, value in ipairs(WOverlord.WEATHER_STATUS_ARRAY) do
 		if value:IsValid() then
 			local weather = value:GetMeta()
-			weather.Update(WOverlord.DATE_OBJECT, value, delta)
+			weather.Think(value, WOverlord.DATE_OBJECT, delta)
 
 			if SERVER then
-				weather.UpdateServer(WOverlord.DATE_OBJECT, value, delta)
+				weather.ThinkServer(value, WOverlord.DATE_OBJECT, delta)
 			else
-				weather.UpdateClient(WOverlord.DATE_OBJECT, value, delta)
+				weather.ThinkClient(value, WOverlord.DATE_OBJECT, delta)
 			end
 		else
 			WOverlord.RemoveWeather(value)
@@ -64,12 +64,12 @@ local function generate(updaterate)
 				local weather = value:GetMeta()
 
 				if weather.UPDATE_RATE == updaterate then
-					weather.Think(WOverlord.DATE_OBJECT, value, delta)
+					weather.Update(value, WOverlord.DATE_OBJECT, delta)
 
 					if SERVER then
-						weather.ThinkServer(WOverlord.DATE_OBJECT, value, delta)
+						weather.UpdateServer(value, WOverlord.DATE_OBJECT, delta)
 					else
-						weather.ThinkClient(WOverlord.DATE_OBJECT, value, delta)
+						weather.UpdateClient(value, WOverlord.DATE_OBJECT, delta)
 					end
 				end
 			end

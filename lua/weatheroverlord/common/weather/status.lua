@@ -62,6 +62,7 @@ function WOverlord.AddWeather(iWeatherState)
 
 	table.insert(WOverlord.WEATHER_STATUS_ARRAY, iWeatherState)
 	WOverlord.WEATHER_STATUS[iWeatherState:GetID()] = iWeatherState
+	hook.Run('WeatherStarts', iWeatherState)
 	return true
 end
 
@@ -74,6 +75,8 @@ function WOverlord.RemoveWeather(id)
 
 	for i, value in ipairs(WOverlord.WEATHER_STATUS_ARRAY) do
 		if value:GetID() == id then
+			hook.Run('WeatherEnds', value)
+			value:GetMeta().Stop(value)
 			table.remove(WOverlord.WEATHER_STATUS_ARRAY, i)
 			WOverlord.WEATHER_STATUS[id] = nil
 			return true
