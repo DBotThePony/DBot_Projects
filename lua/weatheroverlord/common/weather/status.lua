@@ -66,11 +66,11 @@ function WOverlord.AddWeather(iWeatherState)
 end
 
 function WOverlord.RemoveWeather(id)
-	if type(id) == 'string' then
+	if type(id) == 'table' then
 		id = id:GetID()
 	end
 
-	assert(type(id) == 'string', 'Input is not a string!')
+	assert(type(id) == 'string', 'Input is not a string! ' .. type(id))
 
 	for i, value in ipairs(WOverlord.WEATHER_STATUS_ARRAY) do
 		if value:GetID() == id then
@@ -87,6 +87,10 @@ function WOverlord.IsWeatherActive(id)
 	return WOverlord.WEATHER_STATUS[id] ~= nil
 end
 
+function WOverlord.GetWeatherState(id)
+	return WOverlord.WEATHER_STATUS[id] or false
+end
+
 local function generate(updaterate)
 	local date = WOverlord.DATE_OBJECT
 
@@ -98,8 +102,8 @@ local function generate(updaterate)
 				local trigger = meta.CanBeTriggeredNow(date)
 
 				if trigger then
-					local length = assert(meta.GetLength(date) > 0, 'Weather::GetLength(date) <= 0!!! ' .. id .. ' has invalid implentation of length calculation')
-					local state = WOverlord.IWeatherState(id, length, date:GetStamp())
+					local length = assert(meta.GetLength(date) > 0 and meta.GetLength(date), 'Weather::GetLength(date) <= 0!!! ' .. id .. ' has invalid implentation of length calculation')
+					local state = WOverlord.IWeatherStateCreate(id, length, date:GetStamp(), false)
 					WOverlord.AddWeather(state)
 				end
 			end

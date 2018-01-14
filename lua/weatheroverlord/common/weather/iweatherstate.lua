@@ -22,6 +22,7 @@ local WOverlord = WOverlord
 local meta = DLib.CreateLuaObject('WOIWeatherState', false)
 
 WOverlord.IWeatherState = meta
+WOverlord.IWeatherStateCreate = meta.Create
 
 function meta:Initialize(id, length, startFrom, dryRun)
 	self.id = id

@@ -20,11 +20,32 @@ local WOverlord = WOverlord
 local meta = WOverlord.RegisterWeather('rain', 'Rain', WOverlord.CHECK_FREQUENCY_MINUTE)
 
 function meta:CanBeTriggeredNow()
+	local wind = self:GetWindDirection()
+	local progression = self:GetDayProgression()
+	local temperature = self:GetTemperature()
 
+	local hotPoint1 = progression:progression(0.3, 0.6, 0.5)
+	local hotPoint2 = progression:progression(0.8, 1, 0.95)
+	local tempMult = temperature:progression(-30, 40, 30)
+	local windMultiply1 = (wind:Length() / 53):progression(0, 9)
+	local windMultiply2 = (wind:Length() / 53):progression(9, 12)
+
+	local chance = 1 + hotPoint1 * 0.8 + hotPoint2 * 1.2 + tempMult * 3 + windMultiply1 - windMultiply2 * 2
+	return WOverlord.random(1, 100, 'weather_rain', self:GetAbsoluteDay()) <= chance
 end
 
 function meta:GetLength()
+	local wind = self:GetWindDirection()
+	local progression = self:GetDayProgression()
+	local temperature = self:GetTemperature()
 
+	local hotPoint1 = progression:progression(0.3, 0.6, 0.5)
+	local hotPoint2 = progression:progression(0.8, 1, 0.95)
+	local tempMult = temperature:progression(-30, 40, 30)
+	local windMultiply1 = (wind:Length() / 53):progression(0, 9)
+	local windMultiply2 = (wind:Length() / 53):progression(9, 12)
+
+	return 24000 + hotPoint1 * 4000 + hotPoint2 * 10000 + tempMult * 12000 + windMultiply1 * 5000 - windMultiply2 * 13000
 end
 
 function meta:Initialize(dryRun)

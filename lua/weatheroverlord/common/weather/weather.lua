@@ -177,9 +177,7 @@ function WOverlord.LoadWeatherFiles()
 
 	for i, folder in ipairs(folders) do
 		local files = file.Find('weatheroverlord/common/weather/classes/' .. folder .. '/*.lua', 'LUA')
-		local cl = DLib.Loader.filterClient(files)
-		local sv = DLib.Loader.filterServer(files)
-		local sh = DLib.Loader.filterShared(files)
+		local sh, cl, sv = DLib.Loader.filter(files)
 
 		-- local class = file:sub(1, #file - 4)
 		-- local classFile = WOverlord.RegisterWeather(class, name, checkFrequency)
