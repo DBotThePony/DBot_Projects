@@ -22,6 +22,10 @@ DHUD2.VoicePanels = DHUD2.VoicePanels or {}
 local VoicePanel = DHUD2.VoicePanel
 local VoicePanels = DHUD2.VoicePanels
 
+if IsValid(VoicePanel) then
+	VoicePanel:Remove()
+end
+
 DHUD2.PlayerStartVoice = DHUD2.PlayerStartVoice or GAMEMODE.PlayerStartVoice
 DHUD2.PlayerEndVoice = DHUD2.PlayerEndVoice or GAMEMODE.PlayerEndVoice
 
@@ -60,6 +64,8 @@ function PANEL:Init()
 
 	self:Dock(BOTTOM)
 	self:SetHeight(40)
+	self:SetMouseInputEnabled(false)
+	self:SetKeyboardInputEnabled(false)
 end
 
 function PANEL:SetPlayer(ply)
@@ -137,6 +143,9 @@ local function BuildVoicePanel()
 	DHUD2.VoicePanel = VoicePanel
 	VoicePanel:KillFocus()
 	VoicePanel:SetRenderInScreenshots(false)
+	VoicePanel:SetMouseInputEnabled(false)
+	VoicePanel:SetKeyboardInputEnabled(false)
+	VoicePanel:ParentToHUD()
 	VoicePanel:SetPos(DHUD2.GetPosition('voice'))
 	VoicePanel:SetSize(250, ScrH() - 350)
 	VoicePanel.Think = function() VoicePanel:SetPos(DHUD2.GetPosition('voice')) end
