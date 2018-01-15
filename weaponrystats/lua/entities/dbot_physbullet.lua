@@ -169,7 +169,7 @@ function ENT:CalculateRicochetForce()
 end
 
 function ENT:CalculateGravity()
-	return Vector(0, 0, -self:CalculateBulletForce() * GRAVITY:GetFloat())
+	return Vector(0, 0, math.max(-math.sqrt(self:CalculateBulletForce()) * GRAVITY:GetFloat(), -2.5))
 end
 
 function ENT:CalculateForce()
