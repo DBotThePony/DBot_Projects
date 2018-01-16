@@ -31,7 +31,9 @@ function meta:CanBeTriggeredNow()
 	local windMultiply2 = (wind:Length() / 53):progression(9, 12)
 
 	local chance = 1 + hotPoint1 * 0.8 + hotPoint2 * 1.2 + tempMult * 3 + windMultiply1 - windMultiply2 * 2
-	return WOverlord.random(1, 100, 'weather_rain', self:GetAbsoluteDay()) <= chance
+	--chance = chance * 0.2
+	--return WOverlord.random(1, 100, 'weather_rain', self:GetAbsoluteDay()) <= chance
+	return true
 end
 
 function meta:GetLength()

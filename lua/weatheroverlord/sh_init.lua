@@ -101,6 +101,7 @@ local function clinclude(file)
 	return include(file)
 end
 
+sinclude('common/functions.lua')
 sinclude('common/time.lua')
 sinclude('common/time_funcs.lua')
 sinclude('common/time_getters.lua')
