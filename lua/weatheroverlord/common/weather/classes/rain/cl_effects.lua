@@ -188,8 +188,7 @@ end
 function meta:ThinkClient(date, delta)
 	if self:IsDryRun() then return end
 	isWorking = true
-	--isSnowing = date:GetTemperature() < 0.1
-	isSnowing = false
+	isSnowing = date:GetTemperature() < 0.1
 	windSpeed = date:GetWindSpeedCI():GetMetres()
 
 	if isSnowing then
