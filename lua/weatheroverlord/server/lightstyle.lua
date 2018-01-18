@@ -24,6 +24,8 @@ local light_environment
 
 net.pool('weatheroverlord.lightstyle')
 
+local lastStyleOverall, lastStyleOutside
+
 local function initializeEntity()
 	local find = ents.FindByClass('light_environment')
 
@@ -36,13 +38,13 @@ local function initializeEntity()
 	end
 
 	light_environment = find[1]
+	lastStyleOverall = nil
+	lastStyleOutside = nil
 end
 
 if AreEntitiesAvaliable() then
 	initializeEntity()
 end
-
-local lastStyleOverall, lastStyleOutside
 
 local STYLE_OVERALL = 0
 local STYLE_OUTSIDE = 33
