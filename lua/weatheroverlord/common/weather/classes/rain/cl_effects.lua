@@ -28,6 +28,13 @@ local meta = WOverlord.GetWeatherMeta('rain')
 local isSnowing = false
 local isWorking = false
 local ScrW, ScrH = ScrW, ScrH
+local IsValid = IsValid
+local ParticleEmitter = ParticleEmitter
+
+if IsValid(WOverlord.RAIN_EMITTER) then
+	WOverlord.RAIN_EMITTER:Finish()
+	WOverlord.RAIN_EMITTER = nil
+end
 
 local snowParticle = 'particle/snow'
 local rainParticle = 'particle/water_drop'
@@ -187,6 +194,13 @@ end
 
 function meta:ThinkClient(date, delta)
 	if self:IsDryRun() then return end
+
+	if not IsValid(WOverlord.RAIN_EMITTER) then
+		WOverlord.RAIN_EMITTER = ParticleEmitter(LocalPlayer():GetPos())
+	end
+
+	WOverlord.RAIN_EMITTER:SetPos(LocalPlayer():GetPos())
+
 	isWorking = true
 	isSnowing = date:GetTemperature() < 0.1
 	windSpeed = date:GetWindSpeedCI():GetMetres()
