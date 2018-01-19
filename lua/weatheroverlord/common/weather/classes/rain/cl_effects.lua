@@ -29,6 +29,7 @@ local isSnowing = false
 local isWorking = false
 local ScrW, ScrH = ScrW, ScrH
 local IsValid = IsValid
+local Angle = Angle
 local ParticleEmitter = ParticleEmitter
 
 if IsValid(WOverlord.RAIN_EMITTER) then
@@ -47,6 +48,7 @@ local snowParticles = {}
 local rainParticles = {}
 
 local windSpeed = 0
+local windDirection = Vector(0, 0, 0)
 
 local function HUDSnow()
 	local ply = LocalPlayer()
@@ -135,7 +137,7 @@ local function ThinkSnow(state, date, delta)
 	local pos = ply:GetPos()
 	if not WOverlord.CheckOutdoorPoint(pos) then return end
 
-	snowScore = snowScore - FrameTime() * mult * 6 * (windSpeed + 1)
+	snowScore = snowScore - delta * mult * 6 * (windSpeed + 1)
 
 	if snowScore < 1 then return end
 	local score = math.floor(snowScore)
@@ -171,7 +173,7 @@ local function ThinkRain(state, date, delta)
 	local pos = ply:GetPos()
 	if not WOverlord.CheckOutdoorPoint(pos) then return end
 
-	rainScore = rainScore - FrameTime() * mult * 12 * (windSpeed + 1)
+	rainScore = rainScore - delta * mult * 12 * (windSpeed + 1)
 	if rainScore < 1 then return end
 	local score = math.floor(rainScore)
 	rainScore = rainScore % 1
@@ -192,23 +194,80 @@ local function ThinkRain(state, date, delta)
 	end
 end
 
+local lastSkyPosition = Vector(0, 0, 0)
+local rainAngle = Angle(0, 0, -90)
+
+local function RainDropCollide(self, hitPos, hitNormal)
+	self:SetDieTime(0)
+end
+
+local function EffectsRain(state, date, delta)
+	local scoreMin = math.max(1, delta * 66 * 10):floor()
+	local scoreMax = math.max(2, delta * 66 * 40):floor()
+	local rnd = math.random(scoreMin, scoreMax)
+
+	for i = 1, rnd do
+		local pos = lastSkyPosition + Vector((math.random() - 0.5) * 1000, (math.random() - 0.5) * 1000, 0)
+		local particle = WOverlord.RAIN_EMITTER:Add(rainParticle, pos)
+
+		particle:SetCollide(true)
+		particle:SetDieTime(5)
+		particle:SetAngles(rainAngle)
+		particle:SetStartAlpha(200)
+
+		particle:SetVelocity(windDirection * 3 + Vector(0, 0, -1000))
+
+		particle:SetStartSize(4)
+		particle:SetEndSize(4)
+		particle:SetCollideCallback(RainDropCollide)
+		particle:SetColor(255, 255, 255)
+	end
+end
+
+local function EffectsSnow(state, date, delta)
+end
+
 function meta:ThinkClient(date, delta)
 	if self:IsDryRun() then return end
 
+	windDirection = date:GetWindDirection()
+
+	local ply = LocalPlayer()
+	local pos = ply:GetPos()
+
 	if not IsValid(WOverlord.RAIN_EMITTER) then
-		WOverlord.RAIN_EMITTER = ParticleEmitter(LocalPlayer():GetPos())
+		WOverlord.RAIN_EMITTER = ParticleEmitter(pos, true)
 	end
 
-	WOverlord.RAIN_EMITTER:SetPos(LocalPlayer():GetPos())
+	WOverlord.RAIN_EMITTER:SetPos(pos)
+
+	local sky = WOverlord.GetSkyPositionHalf(pos)
+
+	if sky then
+		lastSkyPosition = sky
+	end
+
+	local dist = pos:Distance(sky) < 3000
+
+	rainAngle = windDirection:Angle()
+	rainAngle.r = -90
 
 	isWorking = true
 	isSnowing = date:GetTemperature() < 0.1
-	windSpeed = date:GetWindSpeedCI():GetMetres()
+	windSpeed = date:GetWindSpeedSI():GetMetres()
 
 	if isSnowing then
 		ThinkSnow(self, date, delta)
+
+		if dist then
+			EffectsSnow(self, date, delta)
+		end
 	else
 		ThinkRain(self, date, delta)
+
+		if dist then
+			EffectsRain(self, date, delta)
+		end
 	end
 
 	hook.Run(meta.UpdateClientHookID, self, date, delta)

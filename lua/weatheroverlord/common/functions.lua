@@ -60,10 +60,10 @@ function WOverlord.GetSkyPosition(posIn)
 	local tr = WOverlord.TraceSky(posIn)
 	if tr.Hit and not tr.HitSky then return false end
 
-	if tr.Fraction <= 0.125 then
+	if tr.Fraction <= 0.1 then
 		return tr.HitPos + Vector(0, 0, -5)
 	else
-		return posIn + Vector(0, 0, 2000)
+		return posIn + Vector(0, 0, 1000)
 	end
 end
 
@@ -71,9 +71,9 @@ function WOverlord.GetSkyPositionHalf(posIn)
 	local tr = WOverlord.TraceSkyHalf(posIn)
 	if tr.Hit and not tr.HitSky then return false end
 
-	if tr.Fraction <= 0.25 then
+	if tr.Fraction <= 0.1 then
 		return tr.HitPos + Vector(0, 0, -5)
 	else
-		return posIn + Vector(0, 0, 2000)
+		return posIn + Vector(0, 0, 1000)
 	end
 end
