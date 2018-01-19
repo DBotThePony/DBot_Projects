@@ -233,6 +233,8 @@ local function EffectsRain(state, date, delta)
 	end
 end
 
+local snowSizeMult = 3
+
 local function EffectsSnow(state, date, delta)
 	local scoreMin = math.max(1, delta * 66 * 10):floor()
 	local scoreMax = math.max(2, delta * 66 * 40):floor()
@@ -249,7 +251,7 @@ local function EffectsSnow(state, date, delta)
 
 		particle:SetVelocity(windDirection + Vector(0, 0, -200))
 
-		particle:SetStartSize(1)
+		particle:SetStartSize(math.random() * snowSizeMult)
 		particle:SetEndSize(1)
 		particle:SetCollideCallback(SnowDropCollide)
 		particle:SetColor(255, 255, 255)
@@ -287,7 +289,9 @@ function meta:ThinkClient(date, delta)
 	rainAngle.r = -90
 
 	isWorking = true
-	isSnowing = date:GetTemperature() < 0.1
+	local temperature = date:GetTemperature()
+	snowSizeMult = temperature * -0.1 + 1
+	isSnowing = temperature < 0.1
 	windSpeed = date:GetWindSpeedSI():GetMetres()
 
 	if isSnowing then
