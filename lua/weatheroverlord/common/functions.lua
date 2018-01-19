@@ -56,6 +56,14 @@ function WOverlord.TraceSkyHalf(posIn)
 	})
 end
 
+function WOverlord.TraceSkyNear(posIn)
+	return util.TraceLine({
+		start = posIn + Vector(0, 0, 10),
+		endpos = posIn + Vector(0, 0, 4000),
+		mask = MASK_BLOCKLOS
+	})
+end
+
 function WOverlord.GetSkyPosition(posIn)
 	local tr = WOverlord.TraceSky(posIn)
 	if tr.Hit and not tr.HitSky then return false end
@@ -75,5 +83,16 @@ function WOverlord.GetSkyPositionHalf(posIn)
 		return tr.HitPos + Vector(0, 0, -5)
 	else
 		return posIn + Vector(0, 0, 1000)
+	end
+end
+
+function WOverlord.GetSkyPositionNear(posIn)
+	if not WOverlord.TraceSkyHalf(posIn) then return false end
+	local tr = WOverlord.TraceSkyNear(posIn)
+
+	if tr.Fraction <= 0.125 then
+		return tr.HitPos + Vector(0, 0, -5)
+	else
+		return posIn + Vector(0, 0, 500)
 	end
 end
