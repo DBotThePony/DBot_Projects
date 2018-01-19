@@ -14,7 +14,10 @@
 -- limitations under the License.
 
 local render = render
+local timer = timer
 
 net.receive('weatheroverlord.lightstyle', function()
-	render.RedownloadAllLightmaps()
+	timer.Create('WO_DelayLightmapUpdate', 1, 1, function()
+		render.RedownloadAllLightmaps()
+	end)
 end)

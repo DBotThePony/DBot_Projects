@@ -121,6 +121,7 @@ net.receive('weatheroverlord.replicatetime', function()
 	local validAt = net.ReadDouble()
 
 	self.BOUND_TIME = time
+	self.TIME = time
 	self.BOUND_TIME_TO = validAt
 	lastThink = validAt
 end)

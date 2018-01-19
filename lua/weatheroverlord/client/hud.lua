@@ -142,7 +142,7 @@ local function HUDPaintFULL()
 	y = y + h + 2
 
 	surface.SetFont('WOverlord_WindSpeed')
-	text = string.format('Wind speed: %.2f m/s; Beaufort Score: %i (%s)', self.DATE_OBJECT_ACCURATE:GetWindSpeedCI():GetMetres(), self.DATE_OBJECT_ACCURATE:GetBeaufortScore(), self.DATE_OBJECT_ACCURATE:GetBeaufortName())
+	text = string.format('Wind speed: %.2f m/s; Beaufort Score: %i (%s)', self.DATE_OBJECT_ACCURATE:GetWindSpeedSI():GetMetres(), self.DATE_OBJECT_ACCURATE:GetBeaufortScore(), self.DATE_OBJECT_ACCURATE:GetBeaufortName())
 	w, h = surface.GetTextSize(text)
 
 	surface.SetTextPos(x - w / 2, y)

@@ -21,7 +21,10 @@ local hook = hook
 net.receive('weatheroverlord.replicateseed', function()
 	local old = WOverlord.SEED_VALID
 	WOverlord.SEED_VALID = net.ReadUInt(64)
-	hook.Run('WOverlord_SeedChanges', old, WOverlord.SEED_VALID)
+
+	if old ~= WOverlord.SEED_VALID then
+		hook.Run('WOverlord_SeedChanges', old, WOverlord.SEED_VALID)
+	end
 end)
 
 if IsValid(LocalPlayer()) then

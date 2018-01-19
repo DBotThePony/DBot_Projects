@@ -173,12 +173,12 @@ function meta:GetWindSpeed()
 	return self:GetWindDirection():Length()
 end
 
-function meta:GetWindSpeedCI()
+function meta:GetWindSpeedSI()
 	return DLib.MeasurmentNoCache(self:GetWindSpeed())
 end
 
 function meta:GetBeaufortScore()
-	local metresPerSecond = self:GetWindSpeedCI():GetMetres()
+	local metresPerSecond = self:GetWindSpeedSI():GetMetres()
 
 	for i, data in ipairs(WOverlord.beaufortNumered) do
 		if data[2] >= metresPerSecond then
