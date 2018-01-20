@@ -234,6 +234,7 @@ local function EffectsRain(state, date, delta)
 end
 
 local snowSizeMult = 3
+local localVelocity = Vector()
 
 local function EffectsSnow(state, date, delta)
 	local scoreMin = math.max(1, delta * 66 * 10):floor()
@@ -241,7 +242,7 @@ local function EffectsSnow(state, date, delta)
 	local rnd = math.random(scoreMin, scoreMax)
 
 	for i = 1, rnd do
-		local pos = lastSkyPosition + Vector((math.random() - 0.5) * 1000, (math.random() - 0.5) * 1000, 0) - windDirection * 3
+		local pos = lastSkyPosition + Vector((math.random() - 0.5) * 1000, (math.random() - 0.5) * 1000, 0) - windDirection * 3 + localVelocity
 		local particle = WOverlord.SNOW_EMITTER:Add(snowParticle, pos)
 
 		particle:SetCollide(true)
@@ -257,6 +258,8 @@ local function EffectsSnow(state, date, delta)
 		particle:SetColor(255, 255, 255)
 	end
 end
+
+-- local lastLocalPos
 
 function meta:ThinkClient(date, delta)
 	if self:IsDryRun() then return end
@@ -276,6 +279,13 @@ function meta:ThinkClient(date, delta)
 
 	WOverlord.RAIN_EMITTER:SetPos(pos)
 	WOverlord.SNOW_EMITTER:SetPos(pos)
+
+	-- lastLocalPos = lastLocalPos or pos
+	-- local diff = pos - lastLocalPos
+	-- localVelocity = diff * 6
+	-- lastLocalPos = pos
+
+	localVelocity = ply:GetVelocity()
 
 	local sky = WOverlord.GetSkyPositionNear(pos)
 
