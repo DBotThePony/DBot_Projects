@@ -87,7 +87,7 @@ function WOverlord.GetSkyPositionHalf(posIn)
 end
 
 function WOverlord.GetSkyPositionNear(posIn)
-	if not WOverlord.TraceSkyHalf(posIn) then return false end
+	if not WOverlord.CheckOutdoorPointHalf(posIn) then return false end
 	local tr = WOverlord.TraceSkyNear(posIn)
 
 	if tr.Fraction <= 0.125 then

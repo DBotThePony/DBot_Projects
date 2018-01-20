@@ -203,11 +203,17 @@ local lastSkyPosition = Vector(0, 0, 0)
 local rainAngle = Angle(0, 0, -90)
 
 local function RainDropCollide(self, hitPos, hitNormal)
-	self:SetDieTime(0)
+	self:SetDieTime(0.1)
+	self:SetLifeTime(0)
+	self:SetStartSize(0)
+	self:SetEndSize(0)
 end
 
 local function SnowDropCollide(self, hitPos, hitNormal)
-	self:SetDieTime(0)
+	self:SetDieTime(0.1)
+	self:SetLifeTime(0)
+	self:SetStartSize(0)
+	self:SetEndSize(0)
 end
 
 local function EffectsRain(state, date, delta)
@@ -293,7 +299,7 @@ function meta:ThinkClient(date, delta)
 		lastSkyPosition = sky
 	end
 
-	local dist = pos:Distance(sky) < 3000
+	local dist = pos:Distance(lastSkyPosition) < 3000
 
 	rainAngle = windDirection:Angle()
 	rainAngle.r = -90
