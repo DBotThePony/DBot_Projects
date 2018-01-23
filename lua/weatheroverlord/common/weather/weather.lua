@@ -45,6 +45,24 @@ local function transformWord(wordIn)
 	return wordIn .. 'y'
 end
 
+local standartMeta = {}
+
+function standartMeta:AddFlag(flagName, default)
+	if type(default) ~= 'function' then
+		local d = default
+		default = function() return d end
+	end
+
+	self.flags[flagName] = default
+end
+
+function standartMeta:RemoveFlag(flagName)
+	if not self.flags[flagName] then return false end
+	local value = self.flags[flagName]
+	self.flags[flagName] = nil
+	return value
+end
+
 function WOverlord.RegisterWeather(id, name, checkFrequency)
 	assert(type(id) == 'string', 'At least ID should be specified!')
 	assert(id == id:lower(), 'ID Should be lowercased')
@@ -58,6 +76,8 @@ function WOverlord.RegisterWeather(id, name, checkFrequency)
 	local weatherMeta = WOverlord.METADATA[id] or {}
 	WOverlord.METADATA[id] = weatherMeta
 	weatherMeta.ID = id
+
+	weatherMeta.flags = weatherMeta.flags or {}
 
 	if hit then
 		table.insert(WOverlord.METADATA_REG, weatherMeta)

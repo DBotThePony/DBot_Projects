@@ -19,6 +19,8 @@ local WOverlord = WOverlord
 
 local meta = WOverlord.RegisterWeather('rain', 'Rain', WOverlord.CHECK_FREQUENCY_MINUTE)
 
+meta:AddFlag('storm', false)
+
 function meta:CanBeTriggeredNow()
 	local wind = self:GetWindDirection()
 	local progression = self:GetDayProgression()

@@ -24,7 +24,8 @@ local meta = DLib.CreateLuaObject('WOIWeatherState', false)
 WOverlord.IWeatherState = meta
 WOverlord.IWeatherStateCreate = meta.Create
 
-function meta:Initialize(id, length, startFrom, dryRun)
+function meta:Initialize(id, length, startFrom, dryRun, ...)
+	self.flags = {}
 	self.id = id
 	self.length = length
 	self.dateStart = WOverlord.Date(startFrom)
@@ -32,7 +33,11 @@ function meta:Initialize(id, length, startFrom, dryRun)
 	self.meta = WOverlord.METADATA[id]
 	self.dryRun = dryRun
 
-	self.meta.Initialize(self, dryRun)
+	for key, flag in pairs(self.meta.flags) do
+		self.flags[key] = flag(self, length, startFrom, dryRun, ...)
+	end
+
+	self.meta.Initialize(self, dryRun, ...)
 end
 
 function meta:IsDryRun()
