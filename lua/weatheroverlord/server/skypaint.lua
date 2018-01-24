@@ -123,7 +123,7 @@ local function WOverlord_NewSecond()
 		proxiedCall('SetStarFade', 'StarFade', 0.78 * nightProgression)
 		proxiedCall('SetStarTexture', 'StarTexture', stars)
 	else
-		proxiedCall('SetStarSpeed', 'StarSpeed', windSpeed / 10)
+		proxiedCall('SetStarSpeed', 'StarSpeed', windSpeed / 100)
 		proxiedCall('SetStarFade', 'StarFade', 0.4)
 		proxiedCall('SetStarTexture', 'StarTexture', clouds)
 	end
