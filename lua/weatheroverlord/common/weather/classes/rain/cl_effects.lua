@@ -339,4 +339,4 @@ hook.Add('HUDPaint', 'WeatherOverlord_RainOverlay', function()
 	else
 		HUDRain()
 	end
-end)
+end, -3)

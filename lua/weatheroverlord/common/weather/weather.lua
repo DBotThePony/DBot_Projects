@@ -83,6 +83,10 @@ function WOverlord.RegisterWeather(id, name, checkFrequency)
 		table.insert(WOverlord.METADATA_REG, weatherMeta)
 	end
 
+	for k, v in pairs(standartMeta) do
+		weatherMeta[k] = v
+	end
+
 	-- self argument is always current date
 
 	if not weatherMeta.CanBeTriggeredNow then

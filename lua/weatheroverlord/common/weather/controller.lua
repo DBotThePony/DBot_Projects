@@ -77,6 +77,24 @@ local function generate(updaterate)
 	end
 end
 
+function WOverlord.CallWeatherModifier(modifIn, valueIn)
+	local tpin = type(valueIn)
+
+	for i, state in ipairs(WOverlord.WEATHER_STATUS_ARRAY) do
+		local meta = state:GetMeta()
+
+		if meta[modifIn] then
+			local getValue = math[modifIn](state, valueIn)
+
+			if type(getValue) == tpin then
+				valueIn = getValue
+			end
+		end
+	end
+
+	return valueIn
+end
+
 local HOOK_ID = 'WeatherOverlord_ThinkWeather'
 
 hook.Add('Think', 'WeatherOverlord_UpdateWeather', Think)
