@@ -40,6 +40,18 @@ function meta:Initialize(id, length, startFrom, dryRun, ...)
 	self.meta.Initialize(self, dryRun, ...)
 end
 
+function meta:SetFlag(flagID, flagIn)
+	self.flags[flagID] = flagIn
+end
+
+function meta:GetFlag(flagID, flagIn)
+	return self.flags[flagID]
+end
+
+function meta:RemoveFlag(flagID, flagIn)
+	self.flags[flagID] = nil
+end
+
 function meta:IsDryRun()
 	return self.dryRun
 end

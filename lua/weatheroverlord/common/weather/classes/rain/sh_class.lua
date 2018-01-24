@@ -54,4 +54,14 @@ end
 
 function meta:Initialize(dryRun)
 	if dryRun then return end
+
+	local start = self.dateStart
+	local enddate = self.dateEnd
+
+	local wind1 = start:GetWindDirection()
+	local wind2 = enddate:GetWindDirection()
+
+	local speed = math.max(wind1:Length(), wind2:Length())
+
+	self:SetFlag('storm', WOverlord.random(1, 100, 'rain_storming', start:GetAbsoluteDay()) < speed / 10)
 end
