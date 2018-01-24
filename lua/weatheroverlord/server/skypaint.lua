@@ -28,6 +28,7 @@ local LerpVector = LerpVector
 local env_skypaint
 
 local stars = 'skybox/starfield'
+local clouds = 'skybox/clouds'
 
 local topDefault = Vector(0.2, 0.5, 1.0)
 local bottomDefault = Vector(0.8, 1.0, 1.0)
@@ -114,11 +115,20 @@ local function WOverlord_NewSecond()
 	local almostNightStart = progression > 0.9
 	local isSunrise = self:IsBeforeMidday()
 
-	if not isSunrise then
-		proxiedCall('SetStarSpeed', 'StarFade', 0.01)
+	local wind = self:GetWindDirection()
+	local windSpeed = wind:Length()
+
+	if nightProgression ~= 0 then
+		proxiedCall('SetStarSpeed', 'StarSpeed', 0.01)
 		proxiedCall('SetStarFade', 'StarFade', 0.78 * nightProgression)
 		proxiedCall('SetStarTexture', 'StarTexture', stars)
+	else
+		proxiedCall('SetStarSpeed', 'StarSpeed', windSpeed / 10)
+		proxiedCall('SetStarFade', 'StarFade', 0.4)
+		proxiedCall('SetStarTexture', 'StarTexture', clouds)
+	end
 
+	if not isSunrise then
 		if noNight then
 			proxiedCall('SetSunSize', 'SunSize', 1.5 * self:GetDayLengthMultiplier())
 
@@ -166,8 +176,6 @@ local function WOverlord_NewSecond()
 			env_skypaint:SetBottomColor(emptyVector)
 		end
 	else
-		env_skypaint:SetStarFade(0.78 * nightProgression)
-
 		local dusken = progression * 10
 
 		if nightProgression > 0.5 then
