@@ -86,6 +86,10 @@ function WOverlord.RemoveWeather(id)
 	return false
 end
 
+while #WOverlord.WEATHER_STATUS_ARRAY > 0 do
+	WOverlord.RemoveWeather(WOverlord.WEATHER_STATUS_ARRAY[1])
+end
+
 function WOverlord.IsWeatherActive(id)
 	return WOverlord.WEATHER_STATUS[id] ~= nil
 end
