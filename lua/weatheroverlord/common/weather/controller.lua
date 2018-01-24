@@ -84,7 +84,7 @@ function WOverlord.CallWeatherModifier(modifIn, valueIn)
 		local meta = state:GetMeta()
 
 		if meta[modifIn] then
-			local getValue = math[modifIn](state, valueIn)
+			local getValue = meta[modifIn](state, valueIn, WOverlord.DATE_OBJECT)
 
 			if type(getValue) == tpin then
 				valueIn = getValue

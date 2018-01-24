@@ -122,10 +122,12 @@ local function WOverlord_NewSecond()
 		proxiedCall('SetStarSpeed', 'StarSpeed', 0.01)
 		proxiedCall('SetStarFade', 'StarFade', 0.78 * nightProgression)
 		proxiedCall('SetStarTexture', 'StarTexture', stars)
+		proxiedCall('SetStarScale', 'StarScale', 1.28)
 	else
-		proxiedCall('SetStarSpeed', 'StarSpeed', windSpeed / 100)
+		proxiedCall('SetStarSpeed', 'StarSpeed', windSpeed / 400)
 		proxiedCall('SetStarFade', 'StarFade', 0.4)
 		proxiedCall('SetStarTexture', 'StarTexture', clouds)
+		proxiedCall('SetStarScale', 'StarScale', 1.6)
 	end
 
 	if not isSunrise then
