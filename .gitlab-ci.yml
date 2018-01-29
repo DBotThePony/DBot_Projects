@@ -1,18 +1,28 @@
 actioncounter:
-   script:
-     - cd actioncounter
-     - rm -rf lua
-     - mkdir lua
-     - moonc -t lua moon/*
+  stage: build
+  script:
+    - cd actioncounter
+    - rm -rf lua
+    - mkdir lua
+    - moonc -t lua moon/*
 tf2buildables:
-   script:
-     - cd tf2buildables
-     - rm -rf lua
-     - mkdir lua
-     - moonc -t lua moon/*
+  stage: build
+  script:
+    - cd tf2buildables
+    - rm -rf lua
+    - mkdir lua
+    - moonc -t lua moon/*
 scpinsanity:
-   script:
-     - cd scpinsanity
-     - rm -rf lua
-     - mkdir lua
-     - moonc -t lua moon/*
+  stage: build
+  script:
+    - cd scpinsanity
+    - rm -rf lua
+    - mkdir lua
+    - moonc -t lua moon/*
+dmaps:
+  stage: build
+  script:
+    - cd dmaps
+    - rm -rf lua
+    - mkdir lua
+    - moonc -t lua moon/*
