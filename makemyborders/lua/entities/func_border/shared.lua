@@ -13,10 +13,11 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-ENT.Type = 'point'
+ENT.Type = 'anim'
 ENT.PrintName = 'World Border/Player Clip'
 ENT.Author = 'DBotThePony'
 ENT.IS_FUNC_BORDER = true
+ENT.RenderGroup = RENDERGROUP_TRANSLUCENT
 
 local TRANSMIT_ALWAYS = TRANSMIT_ALWAYS
 local CLIENT = CLIENT
@@ -28,15 +29,21 @@ local IsValid = IsValid
 local Entity = Entity
 local NULL = NULL
 local Vector = Vector
+local GetTable = FindMetaTable('Entity').GetTable
 
 function ENT:Initialize()
+	--self:SetCustomCollisionCheck(true)
+	self:DrawShadow(false)
+
 	if CLIENT then
 		self:CInitialize()
 	else
 		self:SInitialize()
 	end
+end
 
-	self:SetCustomCollisionCheck(true)
+function ENT:PhysgunPickup()
+	return false
 end
 
 function ENT:UpdateTransmitState()
@@ -59,15 +66,16 @@ function ENT:SetupDataTables()
 
 	self:NetworkVar('Vector', 0, 'CollisionMins')
 	self:NetworkVar('Vector', 1, 'CollisionMaxs')
+	self:NetworkVar('Angle', 0, 'RealAngle')
 
 	self:SetShowVisuals(true)
-	self:SetVisualBorder(true)
+	self:SetShowVisualBorder(true)
 	self:SetShowVisualVignette(true)
 	self:SetPlaySound(true)
 	self:SetAllowNoclip(false)
 
-	self:SetCollisionMins(Vector(-5, -1, -5))
-	self:SetCollisionMaxs(Vector(5, 1, 5))
+	self:SetCollisionMins(Vector(-50, -1, -50))
+	self:SetCollisionMaxs(Vector(50, 1, 50))
 
 	for i, map in ipairs(mappings) do
 		self[map] = self['Get' .. map]
@@ -111,7 +119,7 @@ function ENT:AllowObjectPass(objectIn, ifNothing)
 		end
 
 		if self:AllowNoclip() then
-			return self:AllowNoclip() and objectIn:GetMoveType() == MOVETYPE_NOCLIP
+			return objectIn:GetMoveType() == MOVETYPE_NOCLIP
 		end
 
 		return false
@@ -119,3 +127,21 @@ function ENT:AllowObjectPass(objectIn, ifNothing)
 
 	return typeIn ~= 'Vehicle' and typeIn ~= 'NPC' and (typeIn ~= 'Entity' or not objectIn:GetClass():startsWith('prop_'))
 end
+
+function ENT:ShouldCollide(target)
+	return not self:AllowObjectPass(target, false)
+end
+
+hook.Add('ShouldCollide', 'func_border', function(ent1, ent2)
+	local tab1 = GetTable(ent1)
+
+	if tab1 and tab1.IS_FUNC_BORDER then
+		return ent1:ShouldCollide(ent2)
+	end
+
+	tab1 = GetTable(ent2)
+
+	if tab1 and tab1.IS_FUNC_BORDER then
+		return ent2:ShouldCollide(ent1)
+	end
+end, -1)

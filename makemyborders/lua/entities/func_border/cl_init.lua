@@ -16,11 +16,14 @@
 include('shared.lua')
 
 local ipairs = ipairs
+local render = render
 
 function ENT:CInitialize()
 	self.borderPatternColor1 = Color(100, 200, 100)
 	self.borderPatternColor2 = Color(255, 255, 255)
 	self.blending = 100
+	self:MarkShadowAsDirty()
+	self:DestroyShadow()
 end
 
 function ENT:RegisterNWWatcher(varName, callback)
@@ -36,4 +39,17 @@ function ENT:Think()
 			data[2] = new
 		end
 	end
+end
+
+local white = Material('models/debug/debugwhite')
+
+function ENT:Draw()
+	local pos = self:GetRenderOrigin() or self:GetPos()
+	local ang = self:GetRenderAngles() or self:GetRealAngle() or self:GetAngles()
+
+	local mins = self:GetCollisionMins()
+	local maxs = self:GetCollisionMaxs()
+
+	render.SetMaterial(white)
+	render.DrawQuadEasy(pos, ang:Right(), maxs.x - mins.x, maxs.z - mins.z, Color(255, 255, 255), 0)
 end

@@ -21,10 +21,24 @@ local error = error
 local Vector = Vector
 local MOVETYPE_NONE = MOVETYPE_NONE
 local Entity = Entity
-local GetTable = FindMetaTable('Entity').GetTable
+local Angle = Angle
+local SOLID_VPHYSICS = SOLID_VPHYSICS
+local COLLISION_GROUP_NONE = COLLISION_GROUP_NONE
+
+function ENT:PhysicsInitBox2(mins, maxs)
+	mins, maxs = Vector(mins), Vector(maxs)
+	local ang = self:GetAngles()
+	self:SetRealAngle(ang)
+	mins:Rotate(ang)
+	maxs:Rotate(ang)
+
+	self:PhysicsInitBox(mins, maxs)
+	self:SetAngles(Angle(0, 0, 0))
+	return mins, maxs, ang
+end
 
 function ENT:SInitialize()
-	self:PhysicsInitBox(self:GetCollisionMins(), self:GetCollisionMaxs())
+	self:PhysicsInitBox2(self:GetCollisionMins(), self:GetCollisionMaxs())
 	self:UpdatePhysicsModel()
 end
 
@@ -32,9 +46,9 @@ function ENT:UpdateCollisionRules(name, old, new)
 	if old == new then return end
 
 	if name == 'CollisionMins' then
-		self:PhysicsInitBox(new, self:GetCollisionMaxs())
+		self:PhysicsInitBox2(new, self:GetCollisionMaxs())
 	else
-		self:PhysicsInitBox(self:GetCollisionMins(), new)
+		self:PhysicsInitBox2(self:GetCollisionMins(), new)
 	end
 
 	self:UpdatePhysicsModel()
@@ -50,29 +64,17 @@ function ENT:UpdatePhysicsModel()
 		error('func_border:UpdatePhysicsModel() - Physics object is INVALID?!')
 	end
 
+	phys:EnableCollisions(true)
 	phys:EnableMotion(false)
 	phys:Sleep()
 	phys:SetMass(1)
 	phys:SetVelocity(Vector(0, 0, 0))
 	phys:EnableGravity(false)
 
-	self:SetMoveType(MOVETYPE_NONE)
+	-- SOLID_CUSTOM ?
+	self:SetSolid(SOLID_BBOX)
+	self:SetMoveType(MOVETYPE_PUSH)
+	self:SetCollisionGroup(COLLISION_GROUP_NONE)
+
+	phys:SetAngles(self:GetAngles())
 end
-
-function ENT:ShouldCollide(target)
-	return self:AllowObjectPass(target, false)
-end
-
-hook.Add('ShouldCollide', 'func_border', function(ent1, ent2)
-	local tab1 = GetTable(ent1)
-
-	if tab1 and tab1.IS_FUNC_BORDER then
-		return ent1:ShouldCollide(ent2)
-	end
-
-	tab1 = GetTable(ent2)
-
-	if tab1 and tab1.IS_FUNC_BORDER then
-		return ent2:ShouldCollide(ent1)
-	end
-end, -1)
