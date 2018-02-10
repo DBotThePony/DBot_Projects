@@ -19,6 +19,13 @@ local ipairs = ipairs
 local render = render
 local LocalPlayer = LocalPlayer
 local Vector = Vector
+local math = math
+local color_white = color_white
+
+local STENCIL_REPLACE = STENCIL_REPLACE
+local STENCIL_KEEP = STENCIL_KEEP
+local STENCIL_NOTEQUAL = STENCIL_NOTEQUAL
+local STENCIL_EQUAL = STENCIL_EQUAL
 
 function ENT:SetupRenderVariables()
 	self.blend = 100
@@ -52,7 +59,11 @@ function ENT:Think()
 	self.colorIfInactive.a = self.blend
 end
 
-local white = Material('models/debug/debugwhite')
+local white = CreateMaterial('func_border_stencil3', 'UnlitGeneric', {
+	['$basetexture'] = 'models/debug/debugwhite',
+	['$color'] = '1 1 1',
+	['$alpha'] = '0.001'
+})
 
 function ENT:FindPassEntity()
 	return LocalPlayer()
@@ -80,7 +91,44 @@ function ENT:Draw()
 	FUNC_BORDER_TEXTURE:SetVector('$color', color:ToVector())
 	FUNC_BORDER_TEXTURE:SetFloat('$alpha', color.a / 255)
 
+	render.SetMaterial(white)
+
+	local W = maxs.x - mins.x
+	local H = maxs.z - mins.z
+
+	local widths = math.max(math.floor(W / 256), 1)
+	local heights = math.max(math.floor(H / 256), 1)
+
+	render.SetStencilEnable(true)
+	render.ClearStencil()
+
+	render.SetStencilReferenceValue(1)
+	render.SetStencilWriteMask(1)
+	render.SetStencilTestMask(1)
+
+	render.SetStencilPassOperation(STENCIL_INCRSAT)
+	render.SetStencilFailOperation(STENCIL_KEEP)
+	render.SetStencilZFailOperation(STENCIL_KEEP)
+
+	render.SetStencilCompareFunction(STENCIL_NOTEQUAL)
+
+	render.DrawQuadEasy(pos, ang:Right(), W, H, color_white, 0)
+	render.DrawQuadEasy(pos, ang:Right() * -1, W, H, color_white, 0)
+
+	render.SetStencilCompareFunction(STENCIL_EQUAL)
+
 	render.SetMaterial(FUNC_BORDER_TEXTURE)
-	render.DrawQuadEasy(pos, ang:Right(), maxs.x - mins.x, maxs.z - mins.z, color, 180)
-	render.DrawQuadEasy(pos, ang:Right() * -1, maxs.x - mins.x, maxs.z - mins.z, color, 0)
+
+	for i = -1, widths + 1 do
+		for i2 = -1, heights do
+			local add = Vector(i * 256, 0, i2 * 256)
+			add:Rotate(ang)
+
+			render.DrawQuadEasy(pos + add, ang:Right(), 256, 256, color, 180)
+			render.DrawQuadEasy(pos + add, ang:Right() * -1, 256, 256, color, 0)
+		end
+	end
+
+	render.ClearStencil()
+	render.SetStencilEnable(false)
 end

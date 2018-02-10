@@ -42,7 +42,7 @@ end
 
 local borderAnimShift = 0
 local lastThink
-local borderGapSize = 40
+local borderGapSize = 51.17
 local borderUnshift = 20 * borderGapSize
 local borderRepeatValue = 0.2 * borderGapSize
 
@@ -64,7 +64,7 @@ local function RenderScene()
 	draw.NoTexture()
 	surface.SetDrawColor(255, 255, 255)
 
-	for i = -4, 6 do
+	for i = -5, 7 do
 		local start = i * borderGapSize * 2 + xShift
 
 		if start >= 512 then
@@ -74,8 +74,8 @@ local function RenderScene()
 		local shape = {
 			{x = start, y = 0},
 			{x = start + borderGapSize, y = 0},
-			{x = start + borderGapSize * 8, y = 512},
 			{x = start + borderGapSize * 7, y = 512},
+			{x = start + borderGapSize * 6, y = 512},
 		}
 
 		surface.DrawPoly(shape)
