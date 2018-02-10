@@ -38,10 +38,11 @@ function ENT:CInitialize()
 	self:SetupRenderVariables()
 	self:MarkShadowAsDirty()
 	self:DestroyShadow()
+	self.setupRenderBounds = false
 end
 
 function ENT:RegisterNWWatcher(varName, callback)
-	table.insert(self.collisionRules, {varName, self[varName](self), self['Get' .. varName], callback})
+	table.insert(self.collisionRules, {varName, self['Get' .. varName](self), self['Get' .. varName], callback})
 end
 
 function ENT:Think()
@@ -57,6 +58,22 @@ function ENT:Think()
 	self.colorIfBlock.a = self.blend
 	self.colorIfPass.a = self.blend
 	self.colorIfInactive.a = self.blend
+
+	if not self.setupRenderBounds then
+		self:UpdateBounds()
+	end
+end
+
+function ENT:UpdateBounds()
+	self.setupRenderBounds = true
+	local mins = Vector(self:GetCollisionMins())
+	local maxs = Vector(self:GetCollisionMaxs())
+	local pos = self:GetPos()
+
+	local X = math.max(mins.x, maxs.x, maxs.x - mins.x) + pos.x
+	local Y = math.max(mins.y, maxs.y, maxs.y - mins.y) + pos.y
+	local Z = math.max(mins.z, maxs.z, maxs.z - mins.z) + pos.z
+	self:SetRenderBoundsWS(Vector(-X, -Y, -Z), Vector(X, Y, Z))
 end
 
 local white = CreateMaterial('func_border_stencil3', 'UnlitGeneric', {
@@ -119,13 +136,13 @@ function ENT:Draw()
 
 	render.SetMaterial(FUNC_BORDER_TEXTURE)
 
-	for i = -1, widths + 1 do
-		for i2 = -1, heights do
-			local add = Vector(i * 256, 0, i2 * 256)
+	for i = -widths - 1, widths do
+		for i2 = -heights - 1, heights do
+			local add = Vector(i * 128, 0, i2 * 128)
 			add:Rotate(ang)
 
-			render.DrawQuadEasy(pos + add, ang:Right(), 256, 256, color, 180)
-			render.DrawQuadEasy(pos + add, ang:Right() * -1, 256, 256, color, 0)
+			render.DrawQuadEasy(pos + add, ang:Right(), 128, 128, color, 180)
+			render.DrawQuadEasy(pos + add, ang:Right() * -1, 128, 128, color, 0)
 		end
 	end
 

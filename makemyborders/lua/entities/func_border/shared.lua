@@ -92,6 +92,9 @@ function ENT:SetupDataTables()
 	else
 		self.collisionRules = {}
 		self:RegisterNWWatcher('AllowNoclip', self.CollisionRulesChanges)
+
+		self:RegisterNWWatcher('CollisionMins', self.UpdateBounds)
+		self:RegisterNWWatcher('CollisionMaxs', self.UpdateBounds)
 	end
 end
 

@@ -65,8 +65,8 @@ function ENT:SetCollisionsTall(tall)
 	local vector1 = Vector(self:GetCollisionMins())
 	local vector2 = Vector(self:GetCollisionMaxs())
 
-	vector1.z = tall * -0.5
-	vector2.z = tall * 0.5
+	vector1.z = 0
+	vector2.z = tall
 
 	self:SetCollisionMins(vector1)
 	self:SetCollisionMaxs(vector2)
