@@ -80,5 +80,3 @@ DMaps.Notify = (message, Type, time = 5) ->
 		DMaps.Message(message)
 		notification.AddLegacy(message, Type, time)
 
-vehMeta = FindMetaTable('Vehicle')
-vehMeta.GetDriver = => @GetNWEntity('DMaps.Driver')
