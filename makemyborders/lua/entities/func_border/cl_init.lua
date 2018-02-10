@@ -24,6 +24,9 @@ local color_white = color_white
 local cam = cam
 local type = type
 local EyePos = EyePos
+local ents = ents
+local IsValid = IsValid
+local table = table
 
 local STENCIL_REPLACE = STENCIL_REPLACE
 local STENCIL_KEEP = STENCIL_KEEP
@@ -93,7 +96,15 @@ function ENT:FindPassEntity()
 end
 
 function ENT:FindEntities()
-	return {LocalPlayer()}
+	local ply = LocalPlayer()
+	local output = {ply}
+	local veh = ply:GetVehicle()
+
+	if IsValid(veh) then
+		table.insert(output, veh)
+	end
+
+	return output
 end
 
 local function actuallyDraw(self, pos, widths, heights, normal, rotate, entsFound, W, H, ang)
