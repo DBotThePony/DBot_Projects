@@ -22,6 +22,8 @@ local Vector = Vector
 local math = math
 local color_white = color_white
 local cam = cam
+local type = type
+local EyePos = EyePos
 
 local STENCIL_REPLACE = STENCIL_REPLACE
 local STENCIL_KEEP = STENCIL_KEEP
@@ -121,7 +123,19 @@ local function actuallyDraw(self, pos, widths, heights, normal, rotate, entsFoun
 	render.CullMode(1)
 
 	for i, ent in ipairs(entsFound) do
-		render.DrawSphere(ent:EyePos(), self.sphereCheckSize * 0.75, 50, 50, color_white)
+		if type(ent) == 'Player' then
+			render.DrawSphere(ent:EyePos(), self.sphereCheckSize * 0.75, 50, 50, color_white)
+		elseif type(ent) == 'Vehicle' then
+			if type(ent:GetDriver()) == 'Player' then
+				render.DrawSphere(ent:EyePos(), self.sphereCheckSize * 0.9, 50, 50, color_white)
+			else
+				render.DrawSphere(ent:EyePos(), self.sphereCheckSize * 0.4, 50, 50, color_white)
+			end
+		elseif type(ent) == 'Entity' then
+			render.DrawSphere(ent:EyePos(), self.sphereCheckSize * 0.3, 50, 50, color_white)
+		else
+			render.DrawSphere(ent:EyePos(), self.sphereCheckSize * 0.15, 50, 50, color_white)
+		end
 	end
 
 	render.CullMode(0)
@@ -147,6 +161,7 @@ end
 
 function ENT:Draw()
 	local pos = self:GetRenderOrigin() or self:GetPos()
+	if EyePos():Distance(pos) > self.sphereCheckSize * 1.5 then return end
 	local ang = self:GetRenderAngles() or self:GetRealAngle() or self:GetAngles()
 
 	local mins = self:GetCollisionMins()
