@@ -97,12 +97,28 @@ function ENT:CollisionRulesChanges(var, old, new)
 	self:CollisionRulesChanged()
 end
 
-function ENT:AllowObjectPass(objectIn, ifNothing)
+function ENT:AllowObjectPassFallback(objectIn, ifNothing)
 	local typeIn = type(objectIn)
 
 	if typeIn == 'string' then
 		return ifNothing
 	end
+
+	if typeIn == NULL then
+		return ifNothing
+	end
+
+	return nil
+end
+
+function ENT:AllowObjectPass(objectIn, ifNothing)
+	local fallback = self:AllowObjectPassFallback(objectIn, ifNothing)
+
+	if fallback ~= nil then
+		return fallback
+	end
+
+	local typeIn = type(objectIn)
 
 	if typeIn == 'number' then
 		objectIn = Entity(objectIn)

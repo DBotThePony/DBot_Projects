@@ -19,9 +19,9 @@ local ipairs = ipairs
 local render = render
 
 function ENT:CInitialize()
-	self.borderPatternColor1 = Color(100, 200, 100)
-	self.borderPatternColor2 = Color(255, 255, 255)
-	self.blending = 100
+	-- self.borderPatternColor1 = Color(100, 200, 100)
+	-- self.borderPatternColor2 = Color(255, 255, 255)
+	-- self.blending = 100
 	self:MarkShadowAsDirty()
 	self:DestroyShadow()
 end
@@ -50,6 +50,6 @@ function ENT:Draw()
 	local mins = self:GetCollisionMins()
 	local maxs = self:GetCollisionMaxs()
 
-	render.SetMaterial(white)
-	render.DrawQuadEasy(pos, ang:Right(), maxs.x - mins.x, maxs.z - mins.z, Color(255, 255, 255), 0)
+	render.SetMaterial(FUNC_BORDER_TEXTURE)
+	render.DrawQuadEasy(pos, ang:Right(), maxs.x - mins.x, maxs.z - mins.z, Color(255, 255, 255), 180)
 end
