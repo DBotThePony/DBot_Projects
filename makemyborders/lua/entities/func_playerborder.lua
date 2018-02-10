@@ -37,7 +37,7 @@ function ENT:AllowObjectPass(objectIn, ifNothing)
 		typeIn = type(objectIn)
 	end
 
-	if typeIn == NULL then
+	if objectIn == NULL then
 		return true
 	end
 

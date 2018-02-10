@@ -92,7 +92,14 @@ local white = CreateMaterial('func_border_stencil4', 'UnlitGeneric', {
 })
 
 function ENT:FindPassEntity()
-	return LocalPlayer()
+	local ply = LocalPlayer()
+	local veh = ply:GetVehicle()
+
+	if IsValid(veh) then
+		return veh
+	end
+
+	return ply
 end
 
 function ENT:FindEntities()
@@ -138,7 +145,7 @@ local function actuallyDraw(self, pos, widths, heights, normal, rotate, entsFoun
 			render.DrawSphere(ent:EyePos(), self.sphereCheckSize * 0.75, 50, 50, color_white)
 		elseif type(ent) == 'Vehicle' then
 			if type(ent:GetDriver()) == 'Player' then
-				render.DrawSphere(ent:EyePos(), self.sphereCheckSize * 0.9, 50, 50, color_white)
+				render.DrawSphere(ent:EyePos(), self.sphereCheckSize * 1.4, 50, 50, color_white)
 			else
 				render.DrawSphere(ent:EyePos(), self.sphereCheckSize * 0.4, 50, 50, color_white)
 			end
@@ -184,7 +191,7 @@ function ENT:Draw()
 
 	if self:IsEnabled() then
 		local toPass = self:FindPassEntity()
-		local allowedToPass = self:AllowObjectPass(toPass, true)
+		local allowedToPass = self:AllowObjectPass(toPass, false)
 		color = allowedToPass and self.colorIfPass or self.colorIfBlock
 	else
 		color = self.colorIfInactive

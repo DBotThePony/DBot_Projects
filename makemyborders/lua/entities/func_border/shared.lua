@@ -32,7 +32,7 @@ local Vector = Vector
 local GetTable = FindMetaTable('Entity').GetTable
 
 function ENT:Initialize()
-	--self:SetCustomCollisionCheck(true)
+	self:SetCustomCollisionCheck(true)
 	self:DrawShadow(false)
 
 	if CLIENT then
@@ -110,7 +110,7 @@ function ENT:AllowObjectPassFallback(objectIn, ifNothing)
 		return ifNothing
 	end
 
-	if typeIn == NULL then
+	if objectIn == NULL then
 		return ifNothing
 	end
 
