@@ -21,11 +21,15 @@ local LocalPlayer = LocalPlayer
 local Vector = Vector
 local math = math
 local color_white = color_white
+local cam = cam
 
 local STENCIL_REPLACE = STENCIL_REPLACE
 local STENCIL_KEEP = STENCIL_KEEP
 local STENCIL_NOTEQUAL = STENCIL_NOTEQUAL
 local STENCIL_EQUAL = STENCIL_EQUAL
+local STENCIL_INCR = STENCIL_INCR
+local STENCIL_INCRSAT = STENCIL_INCRSAT
+local STENCIL_LESSEQUAL = STENCIL_LESSEQUAL
 
 function ENT:SetupRenderVariables()
 	self.blend = 100
@@ -68,22 +72,77 @@ function ENT:UpdateBounds()
 	self.setupRenderBounds = true
 	local mins = Vector(self:GetCollisionMins())
 	local maxs = Vector(self:GetCollisionMaxs())
-	local pos = self:GetPos()
 
-	local X = math.max(mins.x, maxs.x, maxs.x - mins.x) + pos.x
-	local Y = math.max(mins.y, maxs.y, maxs.y - mins.y) + pos.y
-	local Z = math.max(mins.z, maxs.z, maxs.z - mins.z) + pos.z
-	self:SetRenderBoundsWS(Vector(-X, -Y, -Z), Vector(X, Y, Z))
+	local X = math.max(mins.x, maxs.x, maxs.x - mins.x)
+	local Y = math.max(mins.y, maxs.y, maxs.y - mins.y)
+	local Z = math.max(mins.z, maxs.z, maxs.z - mins.z)
+	self:SetRenderBounds(Vector(-X, -Y, -Z), Vector(X, Y, Z))
+	self.sphereCheckSize = math.max(X, Y, Z)
 end
 
-local white = CreateMaterial('func_border_stencil3', 'UnlitGeneric', {
+local white = CreateMaterial('func_border_stencil4', 'UnlitGeneric', {
 	['$basetexture'] = 'models/debug/debugwhite',
 	['$color'] = '1 1 1',
-	['$alpha'] = '0.001'
+	['$alpha'] = '0'
 })
 
 function ENT:FindPassEntity()
 	return LocalPlayer()
+end
+
+function ENT:FindEntities()
+	return {LocalPlayer()}
+end
+
+local function actuallyDraw(self, pos, widths, heights, normal, rotate, entsFound, W, H, ang)
+	render.SetMaterial(white)
+	render.SetStencilEnable(true)
+	render.ClearStencil()
+
+	render.SetStencilReferenceValue(1)
+	render.SetStencilWriteMask(1)
+	render.SetStencilTestMask(1)
+
+	render.SetStencilPassOperation(STENCIL_INCRSAT)
+	render.SetStencilFailOperation(STENCIL_KEEP)
+	render.SetStencilZFailOperation(STENCIL_KEEP)
+
+	render.SetStencilCompareFunction(STENCIL_NOTEQUAL)
+
+	render.DrawQuadEasy(pos, normal, W, H, color_white, 0)
+
+	render.SetStencilCompareFunction(STENCIL_LESSEQUAL)
+
+	cam.IgnoreZ(true)
+	local clipState = render.EnableClipping(true)
+	local dist = normal:Dot(pos)
+
+	render.PushCustomClipPlane(normal, dist)
+	render.CullMode(1)
+
+	for i, ent in ipairs(entsFound) do
+		render.DrawSphere(ent:EyePos(), self.sphereCheckSize * 0.75, 50, 50, color_white)
+	end
+
+	render.CullMode(0)
+	render.PopCustomClipPlane()
+	render.EnableClipping(clipState)
+	cam.IgnoreZ(false)
+
+	render.SetStencilCompareFunction(STENCIL_EQUAL)
+	render.SetMaterial(FUNC_BORDER_TEXTURE)
+
+	for i = -widths - 1, widths do
+		for i2 = -heights - 1, heights do
+			local add = Vector(i * 128, 0, i2 * 128)
+			add:Rotate(ang)
+
+			render.DrawQuadEasy(pos + add, normal, 128, 128, color, rotate)
+		end
+	end
+
+	render.ClearStencil()
+	render.SetStencilEnable(false)
 end
 
 function ENT:Draw()
@@ -108,44 +167,14 @@ function ENT:Draw()
 	FUNC_BORDER_TEXTURE:SetVector('$color', color:ToVector())
 	FUNC_BORDER_TEXTURE:SetFloat('$alpha', color.a / 255)
 
-	render.SetMaterial(white)
-
 	local W = maxs.x - mins.x
 	local H = maxs.z - mins.z
 
 	local widths = math.max(math.floor(W / 256), 1)
 	local heights = math.max(math.floor(H / 256), 1)
 
-	render.SetStencilEnable(true)
-	render.ClearStencil()
+	local entsFound = self:FindEntities()
 
-	render.SetStencilReferenceValue(1)
-	render.SetStencilWriteMask(1)
-	render.SetStencilTestMask(1)
-
-	render.SetStencilPassOperation(STENCIL_INCRSAT)
-	render.SetStencilFailOperation(STENCIL_KEEP)
-	render.SetStencilZFailOperation(STENCIL_KEEP)
-
-	render.SetStencilCompareFunction(STENCIL_NOTEQUAL)
-
-	render.DrawQuadEasy(pos, ang:Right(), W, H, color_white, 0)
-	render.DrawQuadEasy(pos, ang:Right() * -1, W, H, color_white, 0)
-
-	render.SetStencilCompareFunction(STENCIL_EQUAL)
-
-	render.SetMaterial(FUNC_BORDER_TEXTURE)
-
-	for i = -widths - 1, widths do
-		for i2 = -heights - 1, heights do
-			local add = Vector(i * 128, 0, i2 * 128)
-			add:Rotate(ang)
-
-			render.DrawQuadEasy(pos + add, ang:Right(), 128, 128, color, 180)
-			render.DrawQuadEasy(pos + add, ang:Right() * -1, 128, 128, color, 0)
-		end
-	end
-
-	render.ClearStencil()
-	render.SetStencilEnable(false)
+	actuallyDraw(self, pos, widths, heights, ang:Right() * -1, 180, entsFound, W, H, ang)
+	actuallyDraw(self, pos, widths, heights, ang:Right(), 0, entsFound, W, H, ang)
 end
