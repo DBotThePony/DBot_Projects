@@ -28,6 +28,9 @@ local ents = ents
 local IsValid = IsValid
 local table = table
 
+local ENABLE_VISUAL_SPHERE = CreateConVar('cl_border_sphere', '1', {FCVAR_ARCHIVE}, 'Enable border "sphere" visuals')
+local ENABLE_VISUALS = CreateConVar('cl_border_show', '1', {FCVAR_ARCHIVE}, 'Show borders')
+
 local STENCIL_REPLACE = STENCIL_REPLACE
 local STENCIL_KEEP = STENCIL_KEEP
 local STENCIL_NOTEQUAL = STENCIL_NOTEQUAL
@@ -131,35 +134,37 @@ local function actuallyDraw(self, pos, widths, heights, normal, rotate, entsFoun
 
 	render.DrawQuadEasy(pos, normal, W, H, color_white, 0)
 
-	render.SetStencilCompareFunction(STENCIL_LESSEQUAL)
+	if ENABLE_VISUAL_SPHERE:GetBool() then
+		render.SetStencilCompareFunction(STENCIL_LESSEQUAL)
 
-	cam.IgnoreZ(true)
-	local clipState = render.EnableClipping(true)
-	local dist = normal:Dot(pos)
+		cam.IgnoreZ(true)
+		local clipState = render.EnableClipping(true)
+		local dist = normal:Dot(pos)
 
-	render.PushCustomClipPlane(normal, dist)
-	render.CullMode(1)
+		render.PushCustomClipPlane(normal, dist)
+		render.CullMode(1)
 
-	for i, ent in ipairs(entsFound) do
-		if type(ent) == 'Player' then
-			render.DrawSphere(ent:EyePos(), self.sphereCheckSize * 0.75, 50, 50, color_white)
-		elseif type(ent) == 'Vehicle' then
-			if type(ent:GetDriver()) == 'Player' then
-				render.DrawSphere(ent:EyePos(), self.sphereCheckSize * 1.4, 50, 50, color_white)
+		for i, ent in ipairs(entsFound) do
+			if type(ent) == 'Player' then
+				render.DrawSphere(ent:EyePos(), self.sphereCheckSize * 0.75, 50, 50, color_white)
+			elseif type(ent) == 'Vehicle' then
+				if type(ent:GetDriver()) == 'Player' then
+					render.DrawSphere(ent:EyePos(), self.sphereCheckSize * 1.4, 50, 50, color_white)
+				else
+					render.DrawSphere(ent:EyePos(), self.sphereCheckSize * 0.4, 50, 50, color_white)
+				end
+			elseif type(ent) == 'Entity' then
+				render.DrawSphere(ent:EyePos(), self.sphereCheckSize * 0.3, 50, 50, color_white)
 			else
-				render.DrawSphere(ent:EyePos(), self.sphereCheckSize * 0.4, 50, 50, color_white)
+				render.DrawSphere(ent:EyePos(), self.sphereCheckSize * 0.15, 50, 50, color_white)
 			end
-		elseif type(ent) == 'Entity' then
-			render.DrawSphere(ent:EyePos(), self.sphereCheckSize * 0.3, 50, 50, color_white)
-		else
-			render.DrawSphere(ent:EyePos(), self.sphereCheckSize * 0.15, 50, 50, color_white)
 		end
-	end
 
-	render.CullMode(0)
-	render.PopCustomClipPlane()
-	render.EnableClipping(clipState)
-	cam.IgnoreZ(false)
+		render.CullMode(0)
+		render.PopCustomClipPlane()
+		render.EnableClipping(clipState)
+		cam.IgnoreZ(false)
+	end
 
 	render.SetStencilCompareFunction(STENCIL_EQUAL)
 	render.SetMaterial(FUNC_BORDER_TEXTURE)
@@ -178,6 +183,8 @@ local function actuallyDraw(self, pos, widths, heights, normal, rotate, entsFoun
 end
 
 function ENT:Draw()
+	if not self:ShowVisuals() or not self:ShowVisualBorder() then return end
+	if not ENABLE_VISUALS:GetBool() then return end
 	local pos = self:GetRenderOrigin() or self:GetPos()
 	if EyePos():Distance(pos) > self.sphereCheckSize * 1.5 then return end
 	local ang = self:GetRenderAngles() or self:GetRealAngle() or self:GetAngles()

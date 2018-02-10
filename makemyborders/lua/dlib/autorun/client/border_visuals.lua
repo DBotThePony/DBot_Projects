@@ -21,6 +21,8 @@ local render = render
 local RealTime = RealTime
 local draw = draw
 
+local ENABLE_VISUALS = CreateConVar('cl_border_animation', '1', {FCVAR_ARCHIVE}, 'Animate the border')
+
 local renderTarget
 
 local workingMaterial = CreateMaterial('func_border_visual_mat2', 'UnlitGeneric', {
@@ -45,10 +47,12 @@ local lastThink
 local borderGapSize = 51.17
 local borderUnshift = 20 * borderGapSize
 local borderRepeatValue = 0.2 * borderGapSize
+local ready = false
 
 local function RenderScene()
 	if not system.IsLinux() and not system.HasFocus() then return end
 	init()
+	if ready and not ENABLE_VISUALS:GetBool() then return end
 
 	local ctime = RealTime()
 	lastThink = lastThink or ctime
@@ -83,6 +87,7 @@ local function RenderScene()
 
 	cam.End2D()
 	render.PopRenderTarget()
+	ready = true
 end
 
 hook.Add('RenderScene', 'func_border_visuals', RenderScene, -10)
