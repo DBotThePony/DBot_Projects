@@ -22,6 +22,7 @@ local Vector = Vector
 local MOVETYPE_NONE = MOVETYPE_NONE
 local Entity = Entity
 local Angle = Angle
+local assert = assert
 local SOLID_VPHYSICS = SOLID_VPHYSICS
 local COLLISION_GROUP_NONE = COLLISION_GROUP_NONE
 
@@ -38,11 +39,43 @@ function ENT:PhysicsInitBox2(mins, maxs)
 end
 
 function ENT:SInitialize()
+	self.physinit = true
 	self:PhysicsInitBox2(self:GetCollisionMins(), self:GetCollisionMaxs())
 	self:UpdatePhysicsModel()
 end
 
+function ENT:SetCollisionsWide(wide)
+	assert(wide > 0, 'Border Width is lower or equal to zero!')
+
+	local vector1 = Vector(self:GetCollisionMins())
+	local vector2 = Vector(self:GetCollisionMaxs())
+
+	vector1.x = wide * -0.5
+	vector2.x = wide * 0.5
+
+	self:SetCollisionMins(vector1)
+	self:SetCollisionMaxs(vector2)
+
+	return self
+end
+
+function ENT:SetCollisionsTall(tall)
+	assert(tall > 0, 'Border Height is lower or equal to zero!')
+
+	local vector1 = Vector(self:GetCollisionMins())
+	local vector2 = Vector(self:GetCollisionMaxs())
+
+	vector1.z = tall * -0.5
+	vector2.z = tall * 0.5
+
+	self:SetCollisionMins(vector1)
+	self:SetCollisionMaxs(vector2)
+
+	return self
+end
+
 function ENT:UpdateCollisionRules(name, old, new)
+	if not self.physinit then return end
 	if old == new then return end
 
 	if name == 'CollisionMins' then

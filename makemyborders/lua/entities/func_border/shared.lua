@@ -74,8 +74,8 @@ function ENT:SetupDataTables()
 	self:SetPlaySound(true)
 	self:SetAllowNoclip(false)
 
-	self:SetCollisionMins(Vector(-50, -1, -50))
-	self:SetCollisionMaxs(Vector(50, 1, 50))
+	self:SetCollisionMins(Vector(-50, -1, 0))
+	self:SetCollisionMaxs(Vector(50, 1, 100))
 
 	for i, map in ipairs(mappings) do
 		self[map] = self['Get' .. map]

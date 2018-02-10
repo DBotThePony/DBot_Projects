@@ -50,6 +50,9 @@ function ENT:Draw()
 	local mins = self:GetCollisionMins()
 	local maxs = self:GetCollisionMaxs()
 
+	pos.z = pos.z + maxs.z * 0.5
+
 	render.SetMaterial(FUNC_BORDER_TEXTURE)
 	render.DrawQuadEasy(pos, ang:Right(), maxs.x - mins.x, maxs.z - mins.z, Color(255, 255, 255), 180)
+	render.DrawQuadEasy(pos, ang:Right() * -1, maxs.x - mins.x, maxs.z - mins.z, Color(255, 255, 255), 0)
 end
