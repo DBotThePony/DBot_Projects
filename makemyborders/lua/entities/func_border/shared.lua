@@ -55,6 +55,7 @@ local mappings = {
 	'ShowVisualBorder',
 	'ShowVisualVignette',
 	'AllowNoclip',
+	'IsEnabled',
 }
 
 function ENT:SetupDataTables()
@@ -63,6 +64,7 @@ function ENT:SetupDataTables()
 	self:NetworkVar('Bool', 2, 'ShowVisualVignette')
 	self:NetworkVar('Bool', 3, 'PlaySound')
 	self:NetworkVar('Bool', 4, 'AllowNoclip')
+	self:NetworkVar('Bool', 5, 'IsEnabled')
 
 	self:NetworkVar('Vector', 0, 'CollisionMins')
 	self:NetworkVar('Vector', 1, 'CollisionMaxs')
@@ -72,7 +74,8 @@ function ENT:SetupDataTables()
 	self:SetShowVisualBorder(true)
 	self:SetShowVisualVignette(true)
 	self:SetPlaySound(true)
-	self:SetAllowNoclip(false)
+	self:SetAllowNoclip(true)
+	self:SetIsEnabled(true)
 
 	self:SetCollisionMins(Vector(-50, -1, 0))
 	self:SetCollisionMaxs(Vector(50, 1, 100))

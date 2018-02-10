@@ -17,11 +17,18 @@ include('shared.lua')
 
 local ipairs = ipairs
 local render = render
+local LocalPlayer = LocalPlayer
+local Vector = Vector
+
+function ENT:SetupRenderVariables()
+	self.blend = 100
+	self.colorIfPass = Color(66, 217, 87)
+	self.colorIfBlock = Color(218, 127, 127)
+	self.colorIfInactive = Color(138, 169, 128)
+end
 
 function ENT:CInitialize()
-	-- self.borderPatternColor1 = Color(100, 200, 100)
-	-- self.borderPatternColor2 = Color(255, 255, 255)
-	-- self.blending = 100
+	self:SetupRenderVariables()
 	self:MarkShadowAsDirty()
 	self:DestroyShadow()
 end
@@ -39,9 +46,17 @@ function ENT:Think()
 			data[2] = new
 		end
 	end
+
+	self.colorIfBlock.a = self.blend
+	self.colorIfPass.a = self.blend
+	self.colorIfInactive.a = self.blend
 end
 
 local white = Material('models/debug/debugwhite')
+
+function ENT:FindPassEntity()
+	return LocalPlayer()
+end
 
 function ENT:Draw()
 	local pos = self:GetRenderOrigin() or self:GetPos()
@@ -52,7 +67,20 @@ function ENT:Draw()
 
 	pos.z = pos.z + maxs.z * 0.5
 
+	local color
+
+	if self:IsEnabled() then
+		local toPass = self:FindPassEntity()
+		local allowedToPass = self:AllowObjectPass(toPass, true)
+		color = allowedToPass and self.colorIfPass or self.colorIfBlock
+	else
+		color = self.colorIfInactive
+	end
+
+	FUNC_BORDER_TEXTURE:SetVector('$color', color:ToVector())
+	FUNC_BORDER_TEXTURE:SetFloat('$alpha', color.a / 255)
+
 	render.SetMaterial(FUNC_BORDER_TEXTURE)
-	render.DrawQuadEasy(pos, ang:Right(), maxs.x - mins.x, maxs.z - mins.z, Color(255, 255, 255), 180)
-	render.DrawQuadEasy(pos, ang:Right() * -1, maxs.x - mins.x, maxs.z - mins.z, Color(255, 255, 255), 0)
+	render.DrawQuadEasy(pos, ang:Right(), maxs.x - mins.x, maxs.z - mins.z, color, 180)
+	render.DrawQuadEasy(pos, ang:Right() * -1, maxs.x - mins.x, maxs.z - mins.z, color, 0)
 end
