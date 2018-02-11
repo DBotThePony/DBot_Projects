@@ -34,7 +34,6 @@ function ENT:Draw()
 	if not self.ENABLE_VISUALS:GetBool() then return end
 	local pos = self:GetRenderOrigin() or self:GetPos()
 	if EyePos():Distance(pos) > self.sphereCheckSize * 1.5 then return end
-	local ang = Angle(0, 0, 0)
 
 	local mins = self:GetCollisionMins()
 	local maxs = self:GetCollisionMaxs()
@@ -45,21 +44,6 @@ function ENT:Draw()
 
 	local entsFound = self:FindEntities()
 
-	-- X Positive
-	-- do
-	-- 	local W = maxs.x - mins.x
-	-- 	local H = maxs.z - mins.z
-
-	-- 	local widths = math.max(math.floor(W / 256), 1)
-	-- 	local heights = math.max(math.floor(H / 256), 1)
-
-	-- 	local fPos = pos + Vector(maxs.x, 0, 0)
-	-- 	local normal = Vector(1, 0, 0)
-
-	-- 	self:actuallyDraw(pos, widths, heights, normal * -1, 180, entsFound, W, H, ang)
-	-- 	self:actuallyDraw(pos, widths, heights, normal, 0, entsFound, W, H, ang)
-	-- end
-
 	local faces = DLib.vector.ExtractFacesAndCentre(mins, maxs)
 	local Centre = DLib.vector.Centre(mins, maxs)
 
@@ -67,7 +51,7 @@ function ENT:Draw()
 		local W, H = DLib.vector.FindQuadSize(faceData[1], faceData[2], faceData[3], faceData[4])
 		local widths = math.max(math.floor(W / 256), 1)
 		local heights = math.max(math.floor(H / 256), 1)
-		--print(faceData[6])
+		local ang = faceData[5]:Angle()
 
 		self:actuallyDraw(pos + faceData[6], widths, heights, faceData[5], 0, entsFound, W, H, ang)
 		self:actuallyDraw(pos + faceData[6], widths, heights, faceData[5] * -1, 180, entsFound, W, H, ang)
