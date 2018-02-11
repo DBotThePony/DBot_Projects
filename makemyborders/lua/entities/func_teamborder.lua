@@ -34,6 +34,8 @@ function ENT:SetupDataTables()
 
 	if SERVER then
 		self:SetTeam(1000)
+		self:SetDrawInner(false)
+		self:SetDrawIfCanPass(false)
 	end
 
 	self.Team = self.GetTeam
