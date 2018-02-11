@@ -60,7 +60,7 @@ function ENT:RegisterNWWatcher(varName, callback)
 	table.insert(self.collisionRules, {varName, self['Get' .. varName](self), self['Get' .. varName], callback})
 end
 
-function ENT:Think()
+function ENT:CThink()
 	for i, data in ipairs(self.collisionRules) do
 		local new = data[3](self)
 

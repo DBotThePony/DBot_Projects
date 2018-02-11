@@ -114,3 +114,7 @@ function ENT:UpdatePhysicsModel()
 
 	phys:SetAngles(self:GetAngles())
 end
+
+function ENT:SThink()
+
+end

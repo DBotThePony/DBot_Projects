@@ -109,6 +109,23 @@ function ENT:CollisionRulesChanges(var, old, new)
 	self:CollisionRulesChanged()
 end
 
+function ENT:MarkDirty()
+	self.isDirty = true
+end
+
+function ENT:Think()
+	if CLIENT then
+		self:CThink()
+	else
+		self:SThink()
+	end
+
+	if self.isDirty then
+		self:CollisionRulesChanged()
+		self.isDirty = false
+	end
+end
+
 function ENT:AllowObjectPassFallback(objectIn, ifNothing)
 	local typeIn = type(objectIn)
 
@@ -160,16 +177,37 @@ function ENT:ShouldCollide(target)
 	return not self:AllowObjectPass(target, false)
 end
 
+local IsValid = FindMetaTable('Entity').IsValid
+
 hook.Add('ShouldCollide', 'func_border', function(ent1, ent2)
 	local tab1 = GetTable(ent1)
+	local tab2
+	local status
 
 	if tab1 and tab1.IS_FUNC_BORDER then
-		return ent1:ShouldCollide(ent2)
+		status = ent1:ShouldCollide(ent2)
 	end
 
-	tab1 = GetTable(ent2)
+	if status == nil then
+		tab2 = GetTable(ent2)
 
-	if tab1 and tab1.IS_FUNC_BORDER then
-		return ent2:ShouldCollide(ent1)
+		if tab2 and tab2.IS_FUNC_BORDER then
+			status = ent2:ShouldCollide(ent1)
+		end
 	end
+
+	if status ~= nil and IsValid(ent1) and IsValid(ent2) then
+		local entity = tab1 and tab1.IS_FUNC_BORDER and tab2 or tab1
+		local border = tab1 and tab1.IS_FUNC_BORDER and ent1 or ent2
+		local oldStatus = entity[border]
+
+		-- oshit
+		if oldStatus ~= nil and oldStatus ~= status then
+			border:MarkDirty()
+			entity[border] = status
+			return oldStatus
+		end
+	end
+
+	return status
 end, -1)
