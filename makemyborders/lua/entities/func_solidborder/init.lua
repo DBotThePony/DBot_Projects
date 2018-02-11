@@ -42,4 +42,10 @@ function ENT:SetCollisionsLength(length)
 	return self
 end
 
+function ENT:SetCollisionsBox(boxVector)
+	self:SetCollisionMins(Vector(boxVector.x * -0.5, boxVector.y * -0.5, 0))
+	self:SetCollisionMaxs(Vector(boxVector.x * 0.5, boxVector.y * 0.5, boxVector.z))
+	return self
+end
+
 ENT.SetCollisionsDepth = ENT.SetCollisionsLength

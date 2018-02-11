@@ -177,7 +177,7 @@ function ENT:actuallyDraw(pos, widths, heights, normal, rotate, entsFound, W, H,
 
 	for i = -widths - 1, widths do
 		for i2 = -heights - 1, heights do
-			local add = Vector(i * 128, 0, i2 * 128)
+			local add = Vector(0, i * 128, i2 * 128)
 			add:Rotate(ang)
 
 			render.DrawQuadEasy(pos + add, normal, 128, 128, color, rotate)

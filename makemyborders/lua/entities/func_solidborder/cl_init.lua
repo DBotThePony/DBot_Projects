@@ -54,6 +54,9 @@ function ENT:Draw()
 		local ang = faceData[5]:Angle()
 
 		self:actuallyDraw(pos + faceData[6], widths, heights, faceData[5], 0, entsFound, W, H, ang)
-		self:actuallyDraw(pos + faceData[6], widths, heights, faceData[5] * -1, 180, entsFound, W, H, ang)
+
+		if self:DrawInner() then
+			self:actuallyDraw(pos + faceData[6], widths, heights, faceData[5] * -1, 180, entsFound, W, H, ang)
+		end
 	end
 end
