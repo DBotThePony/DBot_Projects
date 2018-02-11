@@ -35,6 +35,7 @@ local GetTable = FindMetaTable('Entity').GetTable
 function ENT:Initialize()
 	self:SetCustomCollisionCheck(true)
 	self:DrawShadow(false)
+	self.dirtyStatus = {}
 
 	if CLIENT then
 		self:CInitialize()
@@ -107,6 +108,7 @@ end
 function ENT:CollisionRulesChanges(var, old, new)
 	if old == new then return end
 	self:CollisionRulesChanged()
+	self.dirtyStatus = {}
 end
 
 function ENT:MarkDirty()
@@ -123,6 +125,7 @@ function ENT:Think()
 	if self.isDirty then
 		self:CollisionRulesChanged()
 		self.isDirty = false
+		self.dirtyStatus = {}
 	end
 end
 
@@ -174,6 +177,7 @@ function ENT:AllowObjectPass(objectIn, ifNothing)
 end
 
 function ENT:ShouldCollide(target)
+	if self.dirtyStatus[target] ~= nil then return self.dirtyStatus[target] end
 	return not self:AllowObjectPass(target, false)
 end
 
@@ -186,6 +190,10 @@ hook.Add('ShouldCollide', 'func_border', function(ent1, ent2)
 
 	if tab1 and tab1.IS_FUNC_BORDER then
 		status = ent1:ShouldCollide(ent2)
+
+		if tab1.isDirty then
+			return status
+		end
 	end
 
 	if status == nil then
@@ -193,17 +201,23 @@ hook.Add('ShouldCollide', 'func_border', function(ent1, ent2)
 
 		if tab2 and tab2.IS_FUNC_BORDER then
 			status = ent2:ShouldCollide(ent1)
+
+			if tab2.isDirty then
+				return status
+			end
 		end
 	end
 
 	if status ~= nil and IsValid(ent1) and IsValid(ent2) then
 		local entity = tab1 and tab1.IS_FUNC_BORDER and tab2 or tab1
+		local entityE = tab1 and tab1.IS_FUNC_BORDER and ent2 or ent1
 		local border = tab1 and tab1.IS_FUNC_BORDER and ent1 or ent2
 		local oldStatus = entity[border]
 
 		-- oshit
 		if oldStatus ~= nil and oldStatus ~= status then
 			border:MarkDirty()
+			border.dirtyStatus[entityE] = oldStatus
 			entity[border] = status
 			return oldStatus
 		end
