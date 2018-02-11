@@ -74,6 +74,9 @@ function ENT:SetCollisionsTall(tall)
 	return self
 end
 
+ENT.SetCollisionsWidth = ENT.SetCollisionsWide
+ENT.SetCollisionsHeight = ENT.SetCollisionsTall
+
 function ENT:UpdateCollisionRules(name, old, new)
 	if not self.physinit then return end
 	if old == new then return end

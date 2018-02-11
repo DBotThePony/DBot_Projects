@@ -31,6 +31,9 @@ local table = table
 local ENABLE_VISUAL_SPHERE = CreateConVar('cl_border_sphere', '1', {FCVAR_ARCHIVE}, 'Enable border "sphere" visuals')
 local ENABLE_VISUALS = CreateConVar('cl_border_show', '1', {FCVAR_ARCHIVE}, 'Show borders')
 
+ENT.ENABLE_VISUAL_SPHERE = ENABLE_VISUAL_SPHERE
+ENT.ENABLE_VISUALS = ENABLE_VISUALS
+
 local STENCIL_REPLACE = STENCIL_REPLACE
 local STENCIL_KEEP = STENCIL_KEEP
 local STENCIL_NOTEQUAL = STENCIL_NOTEQUAL
@@ -88,7 +91,7 @@ function ENT:UpdateBounds()
 	self.sphereCheckSize = math.max(X, Y, Z)
 end
 
-local white = CreateMaterial('func_border_stencil4', 'UnlitGeneric', {
+local white = CreateMaterial('func_border_stencil', 'UnlitGeneric', {
 	['$basetexture'] = 'models/debug/debugwhite',
 	['$color'] = '1 1 1',
 	['$alpha'] = '0'
@@ -117,7 +120,7 @@ function ENT:FindEntities()
 	return output
 end
 
-local function actuallyDraw(self, pos, widths, heights, normal, rotate, entsFound, W, H, ang)
+function ENT:actuallyDraw(pos, widths, heights, normal, rotate, entsFound, W, H, ang)
 	render.SetMaterial(white)
 	render.SetStencilEnable(true)
 	render.ClearStencil()
@@ -131,6 +134,7 @@ local function actuallyDraw(self, pos, widths, heights, normal, rotate, entsFoun
 	render.SetStencilZFailOperation(STENCIL_KEEP)
 
 	render.SetStencilCompareFunction(STENCIL_NOTEQUAL)
+	render.OverrideColorWriteEnable(true, false)
 
 	render.DrawQuadEasy(pos, normal, W, H, color_white, 0)
 
@@ -166,6 +170,8 @@ local function actuallyDraw(self, pos, widths, heights, normal, rotate, entsFoun
 		cam.IgnoreZ(false)
 	end
 
+	render.OverrideColorWriteEnable(false)
+
 	render.SetStencilCompareFunction(STENCIL_EQUAL)
 	render.SetMaterial(FUNC_BORDER_TEXTURE)
 
@@ -182,6 +188,20 @@ local function actuallyDraw(self, pos, widths, heights, normal, rotate, entsFoun
 	render.SetStencilEnable(false)
 end
 
+function ENT:GetDrawColor()
+	local color
+
+	if self:IsEnabled() then
+		local toPass = self:FindPassEntity()
+		local allowedToPass = self:AllowObjectPass(toPass, false)
+		color = allowedToPass and self.colorIfPass or self.colorIfBlock
+	else
+		color = self.colorIfInactive
+	end
+
+	return color
+end
+
 function ENT:Draw()
 	if not self:ShowVisuals() or not self:ShowVisualBorder() then return end
 	if not ENABLE_VISUALS:GetBool() then return end
@@ -194,15 +214,7 @@ function ENT:Draw()
 
 	pos.z = pos.z + maxs.z * 0.5
 
-	local color
-
-	if self:IsEnabled() then
-		local toPass = self:FindPassEntity()
-		local allowedToPass = self:AllowObjectPass(toPass, false)
-		color = allowedToPass and self.colorIfPass or self.colorIfBlock
-	else
-		color = self.colorIfInactive
-	end
+	local color = self:GetDrawColor()
 
 	FUNC_BORDER_TEXTURE:SetVector('$color', color:ToVector())
 	FUNC_BORDER_TEXTURE:SetFloat('$alpha', color.a / 255)
@@ -215,6 +227,6 @@ function ENT:Draw()
 
 	local entsFound = self:FindEntities()
 
-	actuallyDraw(self, pos, widths, heights, ang:Right() * -1, 180, entsFound, W, H, ang)
-	actuallyDraw(self, pos, widths, heights, ang:Right(), 0, entsFound, W, H, ang)
+	self:actuallyDraw(pos, widths, heights, ang:Right() * -1, 180, entsFound, W, H, ang)
+	self:actuallyDraw(pos, widths, heights, ang:Right(), 0, entsFound, W, H, ang)
 end
