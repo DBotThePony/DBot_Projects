@@ -18,15 +18,18 @@ ENT.PrintName = 'Solid Border'
 ENT.Author = 'DBotThePony'
 ENT.Base = 'func_border'
 
+local SERVER = SERVER
 local BaseClass = baseclass.Get('func_border')
 
 function ENT:SetupDataTables()
 	BaseClass.SetupDataTables(self)
 	self:NetworkVar('Bool', 6, 'DrawInner')
 
-	self:SetCollisionMins(Vector(-50, -50, 0))
-	self:SetCollisionMaxs(Vector(50, 50, 50))
-	self:SetDrawInner(true)
+	if SERVER then
+		self:SetCollisionMins(Vector(-50, -50, 0))
+		self:SetCollisionMaxs(Vector(50, 50, 50))
+		self:SetDrawInner(true)
+	end
 
 	self.DrawInner = self.GetDrawInner
 end

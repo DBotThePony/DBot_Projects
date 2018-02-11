@@ -21,6 +21,7 @@ ENT.RenderGroup = RENDERGROUP_TRANSLUCENT
 
 local TRANSMIT_ALWAYS = TRANSMIT_ALWAYS
 local CLIENT = CLIENT
+local SERVER = SERVER
 local ipairs = ipairs
 local hook = hook
 local MOVETYPE_NOCLIP = MOVETYPE_NOCLIP
@@ -56,6 +57,7 @@ local mappings = {
 	'ShowVisualVignette',
 	'AllowNoclip',
 	'IsEnabled',
+	'DrawIfCanPass',
 }
 
 function ENT:SetupDataTables()
@@ -65,20 +67,24 @@ function ENT:SetupDataTables()
 	self:NetworkVar('Bool', 3, 'PlaySound')
 	self:NetworkVar('Bool', 4, 'AllowNoclip')
 	self:NetworkVar('Bool', 5, 'IsEnabled')
+	self:NetworkVar('Bool', 7, 'DrawIfCanPass')
 
 	self:NetworkVar('Vector', 0, 'CollisionMins')
 	self:NetworkVar('Vector', 1, 'CollisionMaxs')
 	self:NetworkVar('Angle', 0, 'RealAngle')
 
-	self:SetShowVisuals(true)
-	self:SetShowVisualBorder(true)
-	self:SetShowVisualVignette(true)
-	self:SetPlaySound(true)
-	self:SetAllowNoclip(true)
-	self:SetIsEnabled(true)
+	if SERVER then
+		self:SetShowVisuals(true)
+		self:SetShowVisualBorder(true)
+		self:SetShowVisualVignette(true)
+		self:SetPlaySound(true)
+		self:SetAllowNoclip(true)
+		self:SetIsEnabled(true)
+		self:SetDrawIfCanPass(true)
 
-	self:SetCollisionMins(Vector(-50, -1, 0))
-	self:SetCollisionMaxs(Vector(50, 1, 100))
+		self:SetCollisionMins(Vector(-50, -1, 0))
+		self:SetCollisionMaxs(Vector(50, 1, 100))
+	end
 
 	for i, map in ipairs(mappings) do
 		self[map] = self['Get' .. map]

@@ -195,11 +195,19 @@ function ENT:GetDrawColor()
 		local toPass = self:FindPassEntity()
 		local allowedToPass = self:AllowObjectPass(toPass, false)
 		color = allowedToPass and self.colorIfPass or self.colorIfBlock
+
+		if allowedToPass and not self:DrawIfCanPass() then
+			return color, true
+		end
 	else
 		color = self.colorIfInactive
+
+		if not self:DrawIfCanPass() then
+			return color, true
+		end
 	end
 
-	return color
+	return color, false
 end
 
 function ENT:Draw()
@@ -214,7 +222,8 @@ function ENT:Draw()
 
 	pos.z = pos.z + maxs.z * 0.5
 
-	local color = self:GetDrawColor()
+	local color, nodraw = self:GetDrawColor()
+	if nodraw then return end
 
 	FUNC_BORDER_TEXTURE:SetVector('$color', color:ToVector())
 	FUNC_BORDER_TEXTURE:SetFloat('$alpha', color.a / 255)

@@ -36,6 +36,9 @@ function ENT:Draw()
 	local eyepos = EyePos()
 	if eyepos:Distance(pos) > self.sphereCheckSize * 3 then return end
 
+	local color, nodraw = self:GetDrawColor()
+	if nodraw then return end
+
 	local mins = self:GetCollisionMins()
 	local maxs = self:GetCollisionMaxs()
 	local faces = DLib.vector.ExtractFacesAndCentre(mins, maxs)
@@ -59,7 +62,6 @@ function ENT:Draw()
 		end
 	end
 
-	local color = self:GetDrawColor()
 	local entsFound = self:FindEntities()
 	local Centre = DLib.vector.Centre(mins, maxs)
 
