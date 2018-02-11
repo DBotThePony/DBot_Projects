@@ -33,19 +33,40 @@ function ENT:Draw()
 	if not self:ShowVisuals() or not self:ShowVisualBorder() then return end
 	if not self.ENABLE_VISUALS:GetBool() then return end
 	local pos = self:GetRenderOrigin() or self:GetPos()
-	if EyePos():Distance(pos) > self.sphereCheckSize * 1.5 then return end
+	local eyepos = EyePos()
+	if eyepos:Distance(pos) > self.sphereCheckSize * 3 then return end
 
 	local mins = self:GetCollisionMins()
 	local maxs = self:GetCollisionMaxs()
+	local faces = DLib.vector.ExtractFacesAndCentre(mins, maxs)
+
+	if eyepos:Distance(pos) > self.sphereCheckSize * 1.5 then
+		local surfaceData = DLib.vector.CalculateSurfaceFromTwoPoints(mins, maxs, pos)
+		local hit = false
+
+		for i, faceData in ipairs(faces) do
+			local dist = DLib.vector.DistanceFromPointToSurface(eyepos, surfaceData)
+			-- print(dist, self.sphereCheckSize * 1.5, dist < self.sphereCheckSize * 1.5)
+
+			if dist < self.sphereCheckSize * 1.5 then
+				hit = true
+				break
+			end
+		end
+
+		if not hit then
+			return
+		end
+	end
+
 	local color = self:GetDrawColor()
+	local entsFound = self:FindEntities()
+	local Centre = DLib.vector.Centre(mins, maxs)
 
 	FUNC_BORDER_TEXTURE:SetVector('$color', color:ToVector())
 	FUNC_BORDER_TEXTURE:SetFloat('$alpha', color.a / 255)
 
-	local entsFound = self:FindEntities()
-
-	local faces = DLib.vector.ExtractFacesAndCentre(mins, maxs)
-	local Centre = DLib.vector.Centre(mins, maxs)
+	local candrawInner = self:DrawInner() and DLib.vector.IsPositionInsideBox(eyepos, pos + mins, pos + maxs)
 
 	for i, faceData in ipairs(faces) do
 		local W, H = DLib.vector.FindQuadSize(faceData[1], faceData[2], faceData[3], faceData[4])
@@ -55,7 +76,7 @@ function ENT:Draw()
 
 		self:actuallyDraw(pos + faceData[6], widths, heights, faceData[5], 0, entsFound, W, H, ang)
 
-		if self:DrawInner() then
+		if candrawInner then
 			self:actuallyDraw(pos + faceData[6], widths, heights, faceData[5] * -1, 180, entsFound, W, H, ang)
 		end
 	end
