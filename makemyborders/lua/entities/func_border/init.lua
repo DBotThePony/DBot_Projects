@@ -118,3 +118,7 @@ end
 function ENT:SThink()
 
 end
+
+function ENT:SaveToDatabase()
+	return func_border_write(self)
+end

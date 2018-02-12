@@ -236,6 +236,9 @@ function ENT:Draw()
 
 	local entsFound = self:FindEntities()
 
-	self:actuallyDraw(pos, widths, heights, ang:Right() * -1, 180, entsFound, W, H, ang)
-	self:actuallyDraw(pos, widths, heights, ang:Right(), 0, entsFound, W, H, ang)
+	local ang2 = Angle(ang)
+	ang2.y = ang2.y - 90
+
+	self:actuallyDraw(pos, widths, heights, ang:Right() * -1, 180, entsFound, W, H, ang2)
+	self:actuallyDraw(pos, widths, heights, ang:Right(), 0, entsFound, W, H, ang2)
 end
