@@ -16,11 +16,16 @@
 local DLib = DLib
 local LINK = DLib.DMySQL3.Connect('func_border')
 local borders = func_border_data_ref
+local DROP = false
 
 for name, config in pairs(borders) do
+	if DROP then
+		LINK:Query('DROP TABLE func_' .. name, print, print)
+	end
+
 	local build = [[
 		CREATE TABLE IF NOT EXISTS func_]] .. name .. [[ (
-			"id" VARCHAR(255) NOT NULL,
+			"id" INTEGER NOT NULL,
 			"gamemap" VARCHAR(255) NOT NULL,
 			"posx" float NOT NULL DEFAULT '0',
 			"posy" float NOT NULL DEFAULT '0',
@@ -34,14 +39,14 @@ for name, config in pairs(borders) do
 			"yaw" float NOT NULL DEFAULT '0', ]]
 
 	for i, valueData in ipairs(config) do
-		build = build .. '"' .. valueData[1] .. '" ' .. valueData[2] .. ' NOT NULL DEFAULT \'' .. valueData[3] .. ', '
+		build = build .. '"' .. valueData[1] .. '" ' .. valueData[2] .. ' NOT NULL DEFAULT \'' .. valueData[3] .. '\', '
 	end
 
 	build = build .. [[
 		PRIMARY KEY ("id", "gamemap") )
 	]]
 
-	LINK:Query(build, nil, error)
+	LINK:Query(build, function() end, error)
 end
 
 local INIT = false
