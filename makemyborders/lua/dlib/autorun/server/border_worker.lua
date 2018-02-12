@@ -79,7 +79,7 @@ net.receive('func_border_request', function()
 				for i2, var in ipairs(vars) do
 					if var[2] == 'boolean' then
 						net.WriteBool(tobool(row[var[1]]))
-					elseif var[2] == 'string' then
+					elseif var[2]:lower():startsWith('varchar') then
 						net.WriteString(row[var[1]])
 					elseif var[2] == 'int' then
 						net.WriteInt(row[var[1]], 64)
@@ -149,7 +149,7 @@ net.receive('func_border_edit', function(len, ply)
 
 			if value[2] == 'boolean' then
 				read = net.ReadBool()
-			elseif value[2] == 'string' then
+			elseif value[2]:lower():startsWith('varchar') then
 				read = net.ReadString()
 			elseif value[2] == 'int' then
 				read = net.ReadInt(64)

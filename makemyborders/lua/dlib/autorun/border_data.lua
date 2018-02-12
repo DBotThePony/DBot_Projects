@@ -15,7 +15,7 @@
 
 local borders = {
 	border = {
-		{'ShowVsials', 'boolean', 'true'},
+		{'ShowVisuals', 'boolean', 'true'},
 		{'ShowVisualBorder', 'boolean', 'true'},
 		{'ShowVisualVignette', 'boolean', 'true'},
 		{'PlaySound', 'boolean', 'true'},

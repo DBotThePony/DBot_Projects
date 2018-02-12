@@ -106,18 +106,18 @@ local function placeBorder(classname, row)
 	for i2, valueData in ipairs(loadData) do
 		local func = ent['Set' .. valueData[1]]
 
-		if func then
+		if func and row[valueData[1]] ~= nil then
 			if valueData[2]:lower() == 'boolean' then
-				func(ent, tobool(row[valuedata[1]]))
+				func(ent, tobool(row[valueData[1]]))
 			elseif valueData[2]:lower():startsWith('varchar') then
-				func(ent, row[valuedata[1]])
+				func(ent, row[valueData[1]])
 			else
-				local num = tonumber(row[valuedata[1]])
+				local num = tonumber(row[valueData[1]])
 
 				if num then
 					func(ent)
 				else
-					ProtectedCall(function() error('Unable to cast numeric type - ' .. valuedata[1] .. ' for ' .. classname .. '!') end)
+					ProtectedCall(function() error('Unable to cast numeric type - ' .. valueData[1] .. ' for ' .. classname .. '!') end)
 				end
 			end
 		end
@@ -143,12 +143,13 @@ end
 hook.Add('func_border_Initialize', 'func_border_init', placeBorders, 10)
 
 function func_border_write(borderEntity, callback)
-	assert(IsValid(borderEntity), error('Invalid border entity!'))
+	assert(IsValid(borderEntity), 'Invalid border entity!')
 	assert(borderEntity:GetClass():startsWith('func_'), 'Entity is not even a func logical entity!')
 	local grabID = borderEntity:GetClass():sub(6):lower()
 	local data = assert(borders[grabID], 'Entity is not a valid known border!')
 	local savedata = assert(SAVEDATA[grabID], 'No save entries were even loaded for ' .. grabID .. '! This is either a bug or problem with database! Operation can not continue')
 	local id, find
+	local isNew = true
 	local map = SQLStr(game.GetMap())
 
 	if borderEntity.__SPAWN_BY_INITIALIZE then
@@ -164,6 +165,8 @@ function func_border_write(borderEntity, callback)
 		if not find then
 			error('border.__SPAWN_ID is present, but no SAVEDATA entry? wtf?! Looks like bad API usage or something')
 		end
+
+		isNew = false
 	else
 		id = 0
 
@@ -177,7 +180,7 @@ function func_border_write(borderEntity, callback)
 	end
 
 	local pos = borderEntity:GetPos()
-	local yaw = borderEntity:GetAngles().y
+	local yaw = (borderEntity:GetRealAngle() or borderEntity:GetAngles()).y
 	local x = pos.x
 	local y = pos.y
 	local z = pos.z
@@ -206,12 +209,13 @@ function func_border_write(borderEntity, callback)
 	}
 
 	for k, valueData in ipairs(data) do
-		newSavedata[valueData[1]] = tostring(borderEntity['Get' .. valueData[1]](borderEntity))
+		local func = assert(borderEntity['Get' .. valueData[1]], 'Function ' .. valueData[1] .. ' is not found in ' .. tostring(borderEntity) .. ', saving can not continue.')
+		newSavedata[valueData[1]] = tostring(func(borderEntity))
 	end
 
 	LINK:Query(('DELETE FROM func_%s WHERE "gamemap" = %s AND "id" = %i'):format(grabID, map, id), function()
 		local buildQuery = 'INSERT INTO func_' .. grabID .. ' VALUES (' ..
-			("'%i', '%s', '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%f'"):format(id, map, x, y, z, minsx, minsy, minsz, maxsx, maxsy, maxsz, yaw)
+			("'%i', %s, '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%f'"):format(id, map, x, y, z, minsx, minsy, minsz, maxsx, maxsy, maxsz, yaw)
 
 		for k, valueData in ipairs(data) do
 			buildQuery = buildQuery .. ', ' .. SQLStr(tostring(borderEntity['Get' .. valueData[1]](borderEntity)))
@@ -224,13 +228,21 @@ function func_border_write(borderEntity, callback)
 	borderEntity:Remove()
 	placeBorder(grabID, newSavedata)
 
+	if isNew then
+		table.insert(savedata, newSavedata)
+	else
+		table.Merge(find, newSavedata)
+	end
+
 	return newSavedata
 end
 
 local function PostCleanupMap()
-	for n, ndata in pairs(SAVEDATA) do
-		hook.Run('func_border_Initialize', n, ndata)
-	end
+	timer.Simple(0.3, function()
+		for n, ndata in pairs(SAVEDATA) do
+			hook.Run('func_border_Initialize', n, ndata)
+		end
+	end)
 end
 
 hook.Add('PostCleanupMap', 'func_borders_place', PostCleanupMap)
