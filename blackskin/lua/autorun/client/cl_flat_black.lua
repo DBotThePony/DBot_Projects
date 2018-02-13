@@ -37,16 +37,16 @@ local function OverrideFont(status)
 		FontIsOverrided = false
 	elseif status and not FontIsOverrided then
 		surface.CreateFont('DermaDefault', {
-			font = 'Roboto',
-			size = 14,
-			weight = 500,
+			font = 'PT Sans',
+			size = 15,
+			weight = 600,
 			extended = true,
 			antialias = true,
 		})
 
 		surface.CreateFont('DermaDefaultBold', {
-			font = 'Roboto',
-			size = 15,
+			font = 'PT Sans',
+			size = 18,
 			weight = 800,
 			extended = true,
 			antialias = true,
