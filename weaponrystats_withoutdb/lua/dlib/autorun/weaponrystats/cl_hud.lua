@@ -20,15 +20,21 @@ local ALLOW_BLINK = CreateConVar('cl_weaponrystats_blinking', '1', {FCVAR_ARCHIV
 local GET_POSITION = DLib.HUDCommons.DefinePosition('weaponrystats', 0.7, 15)
 
 surface.CreateFont('WPS.DisplayName', {
-	font = 'Roboto',
-	size = 18,
-	weight = 400
+	font = 'Exo 2',
+	size = 24,
+	weight = 500
+})
+
+surface.CreateFont('WPS.DisplayName2', {
+	font = 'Exo 2',
+	size = 17,
+	weight = 500
 })
 
 surface.CreateFont('WPS.DisplayStats', {
-	font = 'Roboto',
-	size = 14,
-	weight = 400
+	font = 'PT Sans',
+	size = 18,
+	weight = 500
 })
 
 local qualityColors = {
@@ -148,15 +154,18 @@ local function HUDPaint()
 	local colorQuality = Color(math.Clamp(r + sin, 0, 255), math.Clamp(g + sin, 0, 255), math.Clamp(b + sin, 0, 255))
 	doDrawText(name, x, y, colorQuality)
 
-	y = y + 17
-
-	surface.SetFont('WPS.DisplayStats')
+	surface.SetFont('WPS.DisplayName2')
+	y = y + 19
 
 	doDrawText(string.format('Level %i weapon', currentQuality), x, y, colorQuality)
 	y = y + 16
 
 	doDrawText(string.format('%i damage per second', dps), x, y, STATS_COLOR)
 	y = y + 19
+
+	x = x + 7
+
+	surface.SetFont('WPS.DisplayStats')
 
 	if additional then
 		doDrawText(string.format('%+i%% damage (+%i%% additional damage)', damage * 100 - 100, add * 100), x, y, STATS_COLOR)
