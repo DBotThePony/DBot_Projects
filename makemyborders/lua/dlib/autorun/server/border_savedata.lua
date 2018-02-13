@@ -18,35 +18,95 @@ local LINK = DLib.DMySQL3.Connect('func_border')
 local borders = func_border_data_ref
 local DROP = false
 
+local ready = 0
+local init
+
 for name, config in pairs(borders) do
+	ready = ready + 1
+
 	if DROP then
 		LINK:Query('DROP TABLE func_' .. name, print, print)
 	end
 
 	local build = [[
 		CREATE TABLE IF NOT EXISTS func_]] .. name .. [[ (
-			"id" INTEGER NOT NULL,
-			"gamemap" VARCHAR(255) NOT NULL,
-			"posx" float NOT NULL DEFAULT '0',
-			"posy" float NOT NULL DEFAULT '0',
-			"posz" float NOT NULL DEFAULT '0',
-			"minsx" float NOT NULL DEFAULT '0',
-			"minsy" float NOT NULL DEFAULT '0',
-			"minsz" float NOT NULL DEFAULT '0',
-			"maxsx" float NOT NULL DEFAULT '0',
-			"maxsy" float NOT NULL DEFAULT '0',
-			"maxsz" float NOT NULL DEFAULT '0',
-			"yaw" float NOT NULL DEFAULT '0', ]]
+			`id` INTEGER NOT NULL,
+			`gamemap` VARCHAR(255) NOT NULL,
+			`posx` float NOT NULL DEFAULT '0',
+			`posy` float NOT NULL DEFAULT '0',
+			`posz` float NOT NULL DEFAULT '0',
+			`minsx` float NOT NULL DEFAULT '0',
+			`minsy` float NOT NULL DEFAULT '0',
+			`minsz` float NOT NULL DEFAULT '0',
+			`maxsx` float NOT NULL DEFAULT '0',
+			`maxsy` float NOT NULL DEFAULT '0',
+			`maxsz` float NOT NULL DEFAULT '0',
+			`yaw` float NOT NULL DEFAULT '0', ]]
 
 	for i, valueData in ipairs(config) do
-		build = build .. '"' .. valueData[1] .. '" ' .. valueData[2] .. ' NOT NULL DEFAULT \'' .. valueData[3] .. '\', '
+		build = build .. ' `' .. valueData[1] .. '` ' .. valueData[2] .. ' NOT NULL DEFAULT \'' .. valueData[3] .. '\', '
 	end
 
 	build = build .. [[
-		PRIMARY KEY ("id", "gamemap") )
+		PRIMARY KEY (`id`, `gamemap`) )
 	]]
 
-	LINK:Query(build, function() end, error)
+	LINK:Query(build, function()
+		LINK:GatherTableColumns('func_' .. name, function(columns)
+			local knownColumns = {}
+
+			for i, configEntry in ipairs(config) do
+				knownColumns[configEntry[1]] = {false, configEntry}
+				needsUpdate = needsUpdate + 1
+			end
+
+			for i, row in ipairs(columns) do
+				if knownColumns[row.field] == false then
+					knownColumns[row.field] = true
+					needsUpdate = needsUpdate - 1
+				end
+			end
+
+			if needsUpdate == 0 then
+				ready = ready - 1
+
+				if ready == 0 then
+					if AreEntitiesAvaliable() then
+						init()
+					else
+						hook.Add('InitPostEntity', 'func_border_spawn', init)
+					end
+				end
+			else
+				local function finish()
+					ready = ready - 1
+
+					if ready == 0 then
+						if AreEntitiesAvaliable() then
+							init()
+						else
+							hook.Add('InitPostEntity', 'func_border_spawn', init)
+						end
+					end
+				end
+
+				local function err(traceback, data)
+					error('ERROR ON UPDATING BORDER DATABASE! FATAL: ' .. data)
+				end
+
+				LINK:Begin(true)
+
+				for row, status in pairs(knownColumns) do
+					if type(status) == 'table' then
+						local configEntry = status[2]
+						LINK:Add('ALTER TABLE func_' .. name .. ' ADD COLUMN `' .. row .. '` ' .. configEntry[2] .. ' NOT NULL DEFAULT \'' .. valueData[3] .. '\'', nil, err)
+					end
+				end
+
+				LINK:Commit(finish)
+			end
+		end)
+	end, error)
 end
 
 local INIT = false
@@ -56,7 +116,7 @@ function func_border_getSaveData()
 	return SAVEDATA
 end
 
-local function init()
+function init()
 	INIT = false
 
 	local queries = 0
@@ -76,14 +136,8 @@ local function init()
 			end
 		end
 
-		LINK:Query('SELECT * FROM func_' .. name .. ' WHERE "gamemap" = ' .. map, success, error)
+		LINK:Query('SELECT * FROM func_' .. name .. ' WHERE `gamemap` = ' .. map, success, error)
 	end
-end
-
-if AreEntitiesAvaliable() then
-	init()
-else
-	hook.Add('InitPostEntity', 'func_border_spawn', init)
 end
 
 local function placeBorder(classname, row)
@@ -213,7 +267,7 @@ function func_border_write(borderEntity, callback)
 		newSavedata[valueData[1]] = tostring(func(borderEntity))
 	end
 
-	LINK:Query(('DELETE FROM func_%s WHERE "gamemap" = %s AND "id" = %i'):format(grabID, map, id), function()
+	LINK:Query(('DELETE FROM func_%s WHERE `gamemap` = %s AND `id` = %i'):format(grabID, map, id), function()
 		local buildQuery = 'INSERT INTO func_' .. grabID .. ' VALUES (' ..
 			("'%i', %s, '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%f'"):format(id, map, x, y, z, minsx, minsy, minsz, maxsx, maxsy, maxsz, yaw)
 
