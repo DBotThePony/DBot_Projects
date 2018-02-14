@@ -91,6 +91,7 @@ net.receive('func_border_request', function()
 		end
 
 		net.WriteUInt(0, 8)
+		net.CompressOngoing()
 		net.Send(ply)
 	end)
 end)
