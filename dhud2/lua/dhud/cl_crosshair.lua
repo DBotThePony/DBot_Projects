@@ -73,6 +73,9 @@ local function Draw()
 	local wep = ply:GetActiveWeapon()
 	if not IsValid(wep) then return end
 
+	if wep.HUDShouldDraw and wep:HUDShouldDraw('CHudCrosshair') == false then return end
+	if wep.DrawCrosshair == false then return end
+
 	bypass = true
 	local can = hook.Run('HUDShouldDraw', 'CHudCrosshair')
 	bypass = false
