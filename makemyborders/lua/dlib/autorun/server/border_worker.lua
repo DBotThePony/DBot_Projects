@@ -48,7 +48,7 @@ net.receive('func_border_request', function()
 
 		local savedata = func_border_getSaveData()
 
-		if not savedata then
+		if not savedata or table.Count(savedata) == 0 then
 			net.start('func_border_request')
 			net.WriteUInt(2, 8)
 			net.Send(ply)
@@ -74,18 +74,16 @@ net.receive('func_border_request', function()
 				net.WriteVectorDouble(maxs)
 				net.WriteDouble(yaw)
 
+				net.WriteUInt(tonumber(row.lastmodified), 64)
+				net.WriteString(row.modifiedby)
+				net.WriteString(row.modifiedid)
+				net.WriteString(row.createdby)
+				net.WriteString(row.createdid)
+
 				local vars = borders[border]
 
 				for i2, var in ipairs(vars) do
-					if var[2] == 'boolean' then
-						net.WriteBool(tobool(row[var[1]]))
-					elseif var[2]:lower():startsWith('varchar') then
-						net.WriteString(row[var[1]])
-					elseif var[2] == 'int' then
-						net.WriteInt(row[var[1]], 64)
-					elseif var[2] == 'float' then
-						net.WriteDouble(row[var[1]])
-					end
+					var.nwwrite(var.fix(row[var[1]]))
 				end
 			end
 		end
@@ -145,20 +143,8 @@ net.receive('func_border_edit', function(len, ply)
 		ent:SetCollisionMaxs(maxs)
 		ent:SetAngles(Angle(0, yaw, 0))
 
-		for i, value in ipairs(border) do
-			local read
-
-			if value[2] == 'boolean' then
-				read = net.ReadBool()
-			elseif value[2]:lower():startsWith('varchar') then
-				read = net.ReadString()
-			elseif value[2] == 'int' then
-				read = net.ReadInt(64)
-			elseif value[2] == 'float' then
-				read = net.ReadDouble()
-			end
-
-			ent['Set' .. value[1]](ent, read)
+		for i, var in ipairs(border) do
+			ent['Set' .. var[1]](ent, var.nwread())
 		end
 
 		if isNew then
