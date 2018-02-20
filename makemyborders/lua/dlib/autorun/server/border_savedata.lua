@@ -30,8 +30,8 @@ for name, config in pairs(borders) do
 
 	local build = [[
 		CREATE TABLE IF NOT EXISTS func_]] .. name .. [[ (
-			`id` INTEGER NOT NULL,
-			`gamemap` VARCHAR(255) NOT NULL,
+			`id` integer NOT NULL,
+			`gamemap` varchar(255) NOT NULL,
 			`posx` float NOT NULL DEFAULT '0',
 			`posy` float NOT NULL DEFAULT '0',
 			`posz` float NOT NULL DEFAULT '0',
@@ -41,7 +41,13 @@ for name, config in pairs(borders) do
 			`maxsx` float NOT NULL DEFAULT '0',
 			`maxsy` float NOT NULL DEFAULT '0',
 			`maxsz` float NOT NULL DEFAULT '0',
-			`yaw` float NOT NULL DEFAULT '0', ]]
+			`yaw` float NOT NULL DEFAULT '0',
+			`lastmodified` integer NOT NULL DEFAULT '0',
+			`modifiedby` varchar(255) NOT NULL DEFAULT '<unknown>',
+			`modifiedid` varchar(255) NOT NULL DEFAULT '<unknown>',
+			`createdby` varchar(255) NOT NULL DEFAULT '<unknown>',
+			`createdid` varchar(255) NOT NULL DEFAULT '<unknown>',
+			]]
 
 	for i, valueData in ipairs(config) do
 		build = build .. ' `' .. valueData[1] .. '` ' .. valueData[2] .. ' NOT NULL DEFAULT \'' .. valueData[3] .. '\', '
