@@ -178,7 +178,7 @@ ENT.Jumpscare = =>
 	@SetAngles(newang)
 
 ENT.TryMoveTo = (pos) =>
-	tr = util.TraceHull({
+	tr = util.TraceLine({
 		start: @GetPos()
 		endpos: pos
 		mins: @OBBMins()
@@ -190,6 +190,7 @@ ENT.TryMoveTo = (pos) =>
 			if ent\IsNPC() return false
 			if ent\IsVehicle() return false
 			if ent\GetClass() == 'dbot_scp173' return false
+			if ent\GetClass() == 'npc_bullseye' return false
 			return true
 	})
 	
@@ -249,6 +250,7 @@ ENT.Think = =>
 	filter = {@, plyTarget}
 	
 	table.insert(filter, val) for val in *ents.FindByClass('dbot_scp173')
+	table.insert(filter, val) for val in *ents.FindByClass('npc_bullseye')
 	table.insert(filter, val) for val in *player.GetAll()
 	
 	tr = util.TraceHull({
