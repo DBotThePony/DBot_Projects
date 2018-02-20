@@ -22,6 +22,8 @@ local borders = {
 		{'AllowNoclip', 'boolean', 'true'},
 		{'IsEnabled', 'boolean', 'true'},
 		{'DrawIfCanPass', 'boolean', 'true'},
+		mins = Vector(-100, -1, 0),
+		maxs = Vector(100, 1, 200),
 	},
 }
 
@@ -44,6 +46,9 @@ local function newConf(base, name, values)
 				table.insert(copy, value)
 			end
 		end
+
+		copy.mins = values.mins or copy.mins
+		copy.maxs = values.maxs or copy.maxs
 	end
 
 	borders[name] = copy
@@ -64,6 +69,52 @@ newConf('solidborder', 'teamborder', {
 	{'Team', 'int', '1000'},
 	{'DrawIfCanPass', 'boolean', 'false'},
 	{'DrawInner', 'boolean', 'false'},
+	mins = Vector(-100, -100, 0),
+	maxs = Vector(100, 100, 200),
 })
+
+hook.Run('RegisterBorderData', newConf)
+
+for id, data in pairs(borders) do
+	for i, entry in ipairs(data) do
+		local t = entry[2]
+		if t == 'int' or t == 'integer' then
+			entry.check = 'number'
+
+			function entry.nwread()
+				return net.ReadUInt(64)
+			end
+
+			function entry.nwwrite(value)
+				return net.WriteUInt(value, 64)
+			end
+
+			function entry.fix(value)
+				return math.floor(tonumber(value or 0) or 0)
+			end
+		elseif t:startsWith('varchar') then
+			entry.check = 'string'
+			entry.nwread = net.ReadString
+			entry.newwrite = net.WriteString
+			entry.fix = tostring
+		elseif t == 'float' or t == 'decimal' or t == 'double' then
+			entry.check = 'number'
+			entry.nwread = net.ReadDouble
+			entry.nwwrite = net.WriteDouble
+			entry.fix = tonumber
+		elseif t == 'boolean' or t == 'bool' then
+			entry.check = 'boolean'
+			entry.nwread = net.ReadBool
+			entry.nwwrite = net.WriteBool
+			entry.fix = tobool
+		end
+
+		entry.default = entry[3]
+		entry.name = entry[1]
+		entry.type = entry.check
+		entry.sqltype = entry[2]
+		entry.defaultLua = entry.fix(entry[3])
+	end
+end
 
 _G.func_border_data_ref = borders
