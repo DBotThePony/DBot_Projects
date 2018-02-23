@@ -205,7 +205,7 @@ local function openBorderEdit(borderData, classname, mins, maxs)
 		net.WriteVectorDouble(borderData.pos)
 		net.WriteVectorDouble(borderData.mins)
 		net.WriteVectorDouble(borderData.maxs)
-		net.WriteVectorDouble(borderData.yaw)
+		net.WriteDouble(borderData.yaw)
 
 		for i, var in ipairs(borders[classname]) do
 			var.nwwrite(specific[var[1]]())
