@@ -17,6 +17,8 @@ local DLib = DLib
 local LINK = DLib.DMySQL3.Connect('func_border')
 local borders = func_border_data_ref
 local DROP = false
+local INIT = false
+local SAVEDATA = {}
 
 local ready = 0
 local init
@@ -27,7 +29,39 @@ for name, config in pairs(borders) do
 	if DROP then
 		LINK:Query('DROP TABLE func_' .. name, print, print)
 	end
+end
 
+function func_border_getSaveData()
+	return SAVEDATA
+end
+
+function init()
+	INIT = false
+
+	local queries = 0
+	local map = SQLStr(game.GetMap())
+
+	for name, config in pairs(borders) do
+		queries = queries + 1
+
+		local function success(data)
+			queries = queries - 1
+			SAVEDATA[name] = data
+
+			if queries <= 0 then
+				INIT = true
+
+				for n, ndata in pairs(SAVEDATA) do
+					hook.Run('func_border_Initialize', n, ndata)
+				end
+			end
+		end
+
+		LINK:Query('SELECT * FROM func_' .. name .. ' WHERE `gamemap` = ' .. map, success, error)
+	end
+end
+
+for name, config in pairs(borders) do
 	local build = [[
 		CREATE TABLE IF NOT EXISTS func_]] .. name .. [[ (
 			`id` integer NOT NULL,
@@ -42,11 +76,6 @@ for name, config in pairs(borders) do
 			`maxsy` float NOT NULL DEFAULT '0',
 			`maxsz` float NOT NULL DEFAULT '0',
 			`yaw` float NOT NULL DEFAULT '0',
-			`lastmodified` integer NOT NULL DEFAULT '0',
-			`modifiedby` varchar(255) NOT NULL DEFAULT '<unknown>',
-			`modifiedid` varchar(255) NOT NULL DEFAULT '<unknown>',
-			`createdby` varchar(255) NOT NULL DEFAULT '<unknown>',
-			`createdid` varchar(255) NOT NULL DEFAULT '<unknown>',
 			]]
 
 	for i, valueData in ipairs(config) do
@@ -60,6 +89,7 @@ for name, config in pairs(borders) do
 	LINK:Query(build, function()
 		LINK:GatherTableColumns('func_' .. name, function(columns)
 			local knownColumns = {}
+			local needsUpdate = 0
 
 			for i, configEntry in ipairs(config) do
 				knownColumns[configEntry[1]] = {false, configEntry}
@@ -67,8 +97,8 @@ for name, config in pairs(borders) do
 			end
 
 			for i, row in ipairs(columns) do
-				if knownColumns[row.field] == false then
-					knownColumns[row.field] = true
+				if knownColumns[row.field] and knownColumns[row.field][1] == false then
+					knownColumns[row.field][2] = true
 					needsUpdate = needsUpdate - 1
 				end
 			end
@@ -103,7 +133,7 @@ for name, config in pairs(borders) do
 				LINK:Begin(true)
 
 				for row, status in pairs(knownColumns) do
-					if type(status) == 'table' then
+					if status[1] == false then
 						local configEntry = status[2]
 						LINK:Add('ALTER TABLE func_' .. name .. ' ADD COLUMN `' .. row .. '` ' .. configEntry[2] .. ' NOT NULL DEFAULT \'' .. valueData[3] .. '\'', nil, err)
 					end
@@ -113,37 +143,6 @@ for name, config in pairs(borders) do
 			end
 		end)
 	end, error)
-end
-
-local INIT = false
-local SAVEDATA = {}
-
-function func_border_getSaveData()
-	return SAVEDATA
-end
-
-function init()
-	INIT = false
-
-	local queries = 0
-	local map = SQLStr(game.GetMap())
-
-	for name, config in pairs(borders) do
-		queries = queries + 1
-
-		local function success(data)
-			queries = queries - 1
-			SAVEDATA[name] = data
-
-			if queries <= 0 then
-				for n, ndata in pairs(SAVEDATA) do
-					hook.Run('func_border_Initialize', n, ndata)
-				end
-			end
-		end
-
-		LINK:Query('SELECT * FROM func_' .. name .. ' WHERE `gamemap` = ' .. map, success, error)
-	end
 end
 
 local function placeBorder(classname, row)

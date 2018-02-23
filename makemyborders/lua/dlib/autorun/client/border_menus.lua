@@ -26,12 +26,6 @@ local function readBorder(borderData)
 	output.maxs = net.ReadVectorDouble()
 	output.yaw = net.ReadDouble()
 
-	output.lastmodified = net.ReadUInt(64)
-	output.modifiedby = net.ReadString()
-	output.modifiedid = net.ReadString()
-	output.createdby = net.ReadString()
-	output.createdid = net.ReadString()
-
 	for i, var in ipairs(borderData) do
 		output[var[1]] = var.nwread()
 	end
@@ -92,7 +86,7 @@ local function openBorderEdit(borderData, classname, mins, maxs)
 		borderData.pos = pos
 		borderData.mins = borderData.mins or Vector(-250, 1, 0)
 		borderData.maxs = borderData.maxs or Vector(250, 1, 500)
-		borderData.yaw = math.NormalizeAngle(ang.y)
+		borderData.yaw = math.NormalizeAngle(ang.y - 90)
 
 		for i, var in ipairs(borders[classname]) do
 			borderData[var.name] = var.defaultLua
@@ -106,18 +100,8 @@ local function openBorderEdit(borderData, classname, mins, maxs)
 
 	if isNew then
 		self:SetTitle(' * New Border creation menu - ' .. classname)
-		self:Label('Created by: ---')
-		self:Label('Author SteamID: ---')
-		self:Label('Last modified: ---')
-		self:Label('Last modified by: ---')
-		self:Label('Last modified SteamID: ---')
 	else
 		self:SetTitle('Border edit menu - ' .. borderData.id .. ' [' .. classname .. ']')
-		self:Label('Created by: ' .. borderData.createdby)
-		self:Label('Author SteamID: ' .. borderData.createdid)
-		self:Label('Last modified: ' .. borderData.lastmodified)
-		self:Label('Last modified by: ' .. borderData.modifiedby)
-		self:Label('Last modified SteamID: ' .. borderData.modifiedid)
 	end
 
 	self:Label('Position'):DockMargin(5, 5, 5, 5)

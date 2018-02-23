@@ -74,12 +74,6 @@ net.receive('func_border_request', function(len, ply)
 				net.WriteVectorDouble(maxs)
 				net.WriteDouble(yaw)
 
-				net.WriteUInt(tonumber(row.lastmodified), 64)
-				net.WriteString(row.modifiedby)
-				net.WriteString(row.modifiedid)
-				net.WriteString(row.createdby)
-				net.WriteString(row.createdid)
-
 				local vars = borders[border]
 
 				for i2, var in ipairs(vars) do
