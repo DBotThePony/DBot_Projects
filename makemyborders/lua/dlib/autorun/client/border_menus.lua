@@ -64,7 +64,7 @@ local function readBorders()
 		output[read.classname] = read
 	end
 
-	return read
+	return output
 end
 
 local HOLDER, lastPos, STATUS_SIGN
@@ -92,7 +92,7 @@ local function openBorderEdit(borderData, classname, mins, maxs)
 		borderData.pos = pos
 		borderData.mins = borderData.mins or Vector(-250, 1, 0)
 		borderData.maxs = borderData.maxs or Vector(250, 1, 500)
-		borderData.yaw = ang.y
+		borderData.yaw = math.NormalizeAngle(ang.y)
 
 		for i, var in ipairs(borders[classname]) do
 			borderData[var.name] = var.defaultLua
@@ -100,6 +100,9 @@ local function openBorderEdit(borderData, classname, mins, maxs)
 	end
 
 	local self = vgui.Create('DLib_WindowScroll')
+
+	self:SetSize(400, 600)
+	self:Center()
 
 	if isNew then
 		self:SetTitle(' * New Border creation menu - ' .. classname)
@@ -117,46 +120,46 @@ local function openBorderEdit(borderData, classname, mins, maxs)
 		self:Label('Last modified SteamID: ' .. borderData.modifiedid)
 	end
 
-	self:Label('Position')
-	local X = self:AddPanel('DLib_NumberInput')
-	X:SetText('X')
+	self:Label('Position'):DockMargin(5, 5, 5, 5)
+	local X = self:AddPanel('DLib_NumberInputLabeledBare')
+	X:SetTitle('X')
 	X:SetValue(borderData.pos.x)
-	local Y = self:AddPanel('DLib_NumberInput')
-	Y:SetText('Y')
+	local Y = self:AddPanel('DLib_NumberInputLabeledBare')
+	Y:SetTitle('Y')
 	Y:SetValue(borderData.pos.y)
-	local Z = self:AddPanel('DLib_NumberInput')
-	Z:SetText('Z')
+	local Z = self:AddPanel('DLib_NumberInputLabeledBare')
+	Z:SetTitle('Z')
 	Z:SetValue(borderData.pos.z)
 
-	self:Label('Minimals')
-	local MINSX = self:AddPanel('DLib_NumberInput')
-	X:SetText('X')
-	X:SetValue(borderData.mins.x)
-	local MINSY = self:AddPanel('DLib_NumberInput')
-	Y:SetText('Y')
-	Y:SetValue(borderData.mins.y)
-	local MINSZ = self:AddPanel('DLib_NumberInput')
-	Z:SetText('Z')
-	Z:SetValue(borderData.mins.z)
+	self:Label('Minimals'):DockMargin(5, 5, 5, 5)
+	local MINSX = self:AddPanel('DLib_NumberInputLabeledBare')
+	MINSX:SetTitle('X')
+	MINSX:SetValue(borderData.mins.x)
+	local MINSY = self:AddPanel('DLib_NumberInputLabeledBare')
+	MINSY:SetTitle('Y')
+	MINSY:SetValue(borderData.mins.y)
+	local MINSZ = self:AddPanel('DLib_NumberInputLabeledBare')
+	MINSZ:SetTitle('Z')
+	MINSZ:SetValue(borderData.mins.z)
 
-	self:Label('Maximals')
-	local MAXSX = self:AddPanel('DLib_NumberInput')
-	X:SetText('X')
-	X:SetValue(borderData.maxs.x)
-	local MAXSY = self:AddPanel('DLib_NumberInput')
-	Y:SetText('Y')
-	Y:SetValue(borderData.maxs.y)
-	local MAXSZ = self:AddPanel('DLib_NumberInput')
-	Z:SetText('Z')
-	Z:SetValue(borderData.maxs.z)
+	self:Label('Maximals'):DockMargin(5, 5, 5, 5)
+	local MAXSX = self:AddPanel('DLib_NumberInputLabeledBare')
+	MAXSX:SetTitle('X')
+	MAXSX:SetValue(borderData.maxs.x)
+	local MAXSY = self:AddPanel('DLib_NumberInputLabeledBare')
+	MAXSY:SetTitle('Y')
+	MAXSY:SetValue(borderData.maxs.y)
+	local MAXSZ = self:AddPanel('DLib_NumberInputLabeledBare')
+	MAXSZ:SetTitle('Z')
+	MAXSZ:SetValue(borderData.maxs.z)
 
-	local YAW = self:AddPanel('DLib_NumberInput')
-	YAW:SetText('Yaw')
+	local YAW = self:AddPanel('DLib_NumberInputLabeledBare')
+	YAW:SetTitle('Yaw')
 	YAW:SetValue(borderData.yaw)
 
 	local specific = {}
 
-	self:Label('Border specific data')
+	self:Label('Border specific data'):DockMargin(5, 5, 5, 5)
 	for i, var in ipairs(borders[classname]) do
 		if var.check2 == 'boolean' then
 			local panel = self:AddPanel('DCheckBoxLabel')
@@ -164,20 +167,20 @@ local function openBorderEdit(borderData, classname, mins, maxs)
 			panel:SetText(var[1])
 			specific[var[1]] = function() return panel:GetChecked() end
 		elseif var.check2 == 'int' then
-			local panel = self:AddPanel('DLib_NumberInput')
+			local panel = self:AddPanel('DLib_NumberInputLabeledBare')
 			panel:SetIsFloatAllowed(false)
 			panel:SetValue(borderData[var[1]])
-			panel:SetText(var[1])
+			panel:SetTitle(var[1])
 			specific[var[1]] = function() return panel:GetNumber() end
 		elseif var.check2 == 'float' then
-			local panel = self:AddPanel('DLib_NumberInput')
+			local panel = self:AddPanel('DLib_NumberInputLabeledBare')
 			panel:SetValue(borderData[var[1]])
-			panel:SetText(var[1])
+			panel:SetTitle(var[1])
 			specific[var[1]] = function() return panel:GetNumber() end
 		elseif var.check2 == 'string' then
-			local panel = self:AddPanel('DLib_TextInput')
+			local panel = self:AddPanel('DLib_TextInputLabeledBare')
 			panel:SetValue(borderData[var[1]])
-			panel:SetText(var[1])
+			panel:SetTitle(var[1])
 			specific[var[1]] = function() return panel:GetValue() end
 		end
 	end
@@ -229,8 +232,7 @@ local function receive()
 		return
 	end
 
-	local readData = readBorders()
-	for borderClass, borderData in pairs(readData) do
+	for borderClass, borderData in pairs(readBorders()) do
 		local id = borderData.id
 		local x = borderData.pos.x
 		local y = borderData.pos.y
@@ -271,7 +273,9 @@ local function populate(self)
 
 	self:Help('This tab holds all the borders stored for current map.\nIf you want to remove a border, you can do it here\nor right click on needed border')
 
-	local list = vgui.Create(self, 'DListView')
+	local list = vgui.Create('DListView', self)
+	list:Dock(TOP)
+	list:SetSize(0, 600)
 	HOLDER = list
 	list:Clear()
 	list:AddColumn('Border ID')
@@ -318,10 +322,27 @@ local function populate(self)
 		STATUS_SIGN:SetText('Status: No access!')
 	end
 
+	STATUS_SIGN:DockMargin(5, 5, 5, 5)
+
+	local button = vgui.Create('DButton', self)
+	button:SetText('Refresh list')
+	button:Dock(TOP)
+	cami:HandlePanel('func_border_edit', button)
+	button:DockMargin(0, 5, 0, 5)
+
+	function button.DoClick()
+		if cami:HasPermission('func_border_view') then
+			net.Start('func_border_request')
+			net.SendToServer()
+		else
+			STATUS_SIGN:SetText('Status: No access!')
+		end
+	end
+
 	for classname, borderData in pairs(borders) do
-		local button = vgui.Create(self, 'DButton')
+		local button = vgui.Create('DButton', self)
 		button:SetText('Create new ' .. classname)
-		button:SetEnabled(cami:HasPermission('func_border_edit'))
+		button:Dock(TOP)
 		cami:HandlePanel('func_border_edit', button)
 
 		function button.DoClick()

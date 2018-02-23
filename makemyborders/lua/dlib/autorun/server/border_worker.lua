@@ -32,7 +32,7 @@ net.pool('func_border_request')
 net.pool('func_border_edit')
 net.pool('func_border_delete')
 
-net.receive('func_border_request', function()
+net.receive('func_border_request', function(len, ply)
 	if not IsValid(ply) then return end
 
 	CAMI.PlayerHasAccess(ply, 'func_border_view', function(allowed, reason)
@@ -40,7 +40,7 @@ net.receive('func_border_request', function()
 
 		if not allowed then
 			messages.chatPlayer(ply, 'No access! ' .. (reason or ''))
-			net.start('func_border_request')
+			net.Start('func_border_request')
 			net.WriteUInt(1, 8)
 			net.Send(ply)
 			return
@@ -49,12 +49,12 @@ net.receive('func_border_request', function()
 		local savedata = func_border_getSaveData()
 
 		if not savedata or table.Count(savedata) == 0 then
-			net.start('func_border_request')
+			net.Start('func_border_request')
 			net.WriteUInt(2, 8)
 			net.Send(ply)
 		end
 
-		net.start('func_border_request')
+		net.Start('func_border_request')
 		net.WriteUInt(0, 8)
 
 		for border, borderData in pairs(savedata) do
