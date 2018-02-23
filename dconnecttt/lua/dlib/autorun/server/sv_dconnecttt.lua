@@ -241,7 +241,7 @@ local function player_disconnect(data)
 	local ply = player.GetBySteamID(steamid)
 
 	if not ply then
-		Message(name, '<' .. steamid .. '> diconnected from server (' .. reason .. ')')
+		Message(name, '<' .. steamid .. '> disconnected from server (' .. reason .. ')')
 		return
 	end
 
@@ -254,7 +254,7 @@ local function player_disconnect(data)
 		name = name .. ' (' .. ply:SteamName() .. ')'
 	end
 
-	Message(team.GetColor(ply:Team()), name, TEXT_COLOR, '<' .. steamid .. '> diconnected from server (' .. reason .. ')')
+	Message(team.GetColor(ply:Team()), name, TEXT_COLOR, '<' .. steamid .. '> disconnected from server (' .. reason .. ')')
 end
 
 local function Timer()
