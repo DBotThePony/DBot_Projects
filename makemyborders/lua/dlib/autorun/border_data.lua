@@ -80,6 +80,7 @@ for id, data in pairs(borders) do
 		local t = entry[2]
 		if t == 'int' or t == 'integer' then
 			entry.check = 'number'
+			entry.check2 = 'int'
 
 			function entry.nwread()
 				return net.ReadUInt(64)
@@ -94,16 +95,19 @@ for id, data in pairs(borders) do
 			end
 		elseif t:startsWith('varchar') then
 			entry.check = 'string'
+			entry.check2 = 'string'
 			entry.nwread = net.ReadString
 			entry.newwrite = net.WriteString
 			entry.fix = tostring
 		elseif t == 'float' or t == 'decimal' or t == 'double' then
 			entry.check = 'number'
+			entry.check2 = 'float'
 			entry.nwread = net.ReadDouble
 			entry.nwwrite = net.WriteDouble
 			entry.fix = tonumber
 		elseif t == 'boolean' or t == 'bool' then
 			entry.check = 'boolean'
+			entry.check2 = 'boolean'
 			entry.nwread = net.ReadBool
 			entry.nwwrite = net.WriteBool
 			entry.fix = tobool
