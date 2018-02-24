@@ -47,19 +47,6 @@ function init()
 		local function success(data)
 			queries = queries - 1
 			SAVEDATA[name] = data
-			for i, row in ipairs(data) do
-				row.id = tonumber(row.id)
-				row.posx = tonumber(row.posx)
-				row.posy = tonumber(row.posy)
-				row.posz = tonumber(row.posz)
-				row.minsx = tonumber(row.minsx)
-				row.minsy = tonumber(row.minsy)
-				row.minsz = tonumber(row.minsz)
-				row.maxsx = tonumber(row.maxsx)
-				row.maxsy = tonumber(row.maxsy)
-				row.maxsz = tonumber(row.maxsz)
-				row.yaw = tonumber(row.yaw)
-			end
 
 			if queries <= 0 then
 				INIT = true
@@ -261,8 +248,9 @@ function func_border_write(borderEntity, callback, errCallback)
 		id = 0
 
 		for i, row in ipairs(savedata) do
-			if row.id > id then
-				id = row.id
+			local rid = tonumber(row.id)
+			if rid > id then
+				id = rid
 			end
 		end
 
