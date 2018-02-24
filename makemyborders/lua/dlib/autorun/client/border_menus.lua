@@ -21,6 +21,11 @@ local render = render
 local math = math
 local Color = Color
 
+local input = input
+local IN_DUCK = IN_DUCK
+local IN_USE = IN_USE
+local Vector = Vector
+
 local function readBorder(borderData)
 	local output = {}
 	output.id = net.ReadUInt(64)
@@ -66,6 +71,7 @@ end
 
 local HOLDER, lastPos, STATUS_SIGN
 local WAITING_WINDOW
+local isHidden = false
 
 local function openBorderEdit(borderData, classname, mins, maxs)
 	local isNew = borderData == nil or borderData.id == nil
@@ -99,7 +105,19 @@ local function openBorderEdit(borderData, classname, mins, maxs)
 	local self = vgui.Create('DLib_WindowScroll')
 	WAITING_WINDOW = self
 
-	self:SetSize(400, 600)
+	local hide = vgui.Create('DButton', self)
+	hide:SetPos(350, 3)
+	hide:SetText('Hide')
+	hide:SetSize(120, 20)
+
+	function hide.DoClick()
+		self:SetVisible(false)
+		self:KillFocus()
+		isHidden = true
+		messages.AddChat('To get back to editing window, press <' .. input.LookupBinding('+duck'):upper() .. '> + <' .. input.LookupBinding('use'):upper() .. '>')
+	end
+
+	self:SetSize(600, 800)
 	self:Center()
 
 	if isNew then
@@ -219,6 +237,18 @@ local function openBorderEdit(borderData, classname, mins, maxs)
 	end
 end
 
+local function CreateMove(cmd)
+	local self = WAITING_WINDOW
+	if not IsValid(self) then return end
+	if not isHidden then return end
+
+	if cmd:KeyDown(IN_DUCK) and cmd:KeyDown(IN_USE) then
+		isHidden = false
+		self:SetVisible(true)
+		self:MakePopup()
+	end
+end
+
 local function receive()
 	if not IsValid(HOLDER) then return end
 	HOLDER:Clear()
@@ -234,7 +264,8 @@ local function receive()
 		return
 	end
 
-	for borderClass, readData in pairs(readBorders()) do
+	local read = readBorders()
+	for borderClass, readData in pairs(read) do
 		for i, borderData in ipairs(readData.list) do
 			local id = borderData.id
 			local x = borderData.pos.x
@@ -249,6 +280,11 @@ local function receive()
 			line.classname = borderClass
 		end
 	end
+
+	print(read)
+	PrintTable(read)
+
+	STATUS_SIGN:SetText('Status: Ready.')
 
 	HOLDER:SortByColumn(10)
 end
@@ -387,6 +423,13 @@ local function populate(self)
 		cami:HandlePanel('func_border_edit', button)
 
 		function button.DoClick()
+			if IsValid(WAITING_WINDOW) then
+				WAITING_WINDOW:SetVisible(true)
+				WAITING_WINDOW:Center()
+				WAITING_WINDOW:MakePopup()
+				return
+			end
+
 			openBorderEdit(nil, classname, borderData.mins, borderData.maxs)
 		end
 	end
@@ -398,4 +441,5 @@ end)
 
 net.receive('func_border_request', receive)
 hook.Add('Think', 'func_border_updateMenu', Think)
-hook.Add('PostDrawTranslucentRenderables', 'func_border_drawFromMenu', PostDrawTranslucentRenderables)
+hook.Add('PostDrawTranslucentRenderables', 'func_border_drawFromMenu', PostDrawTranslucentRenderables, 5)
+hook.Add('CreateMove', 'func_border_drawFromMenu', CreateMove, -10)
