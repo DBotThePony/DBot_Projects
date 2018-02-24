@@ -47,6 +47,17 @@ function init()
 		local function success(data)
 			queries = queries - 1
 			SAVEDATA[name] = data
+			data.id = tonumber(data.id)
+			data.posx = tonumber(data.posx)
+			data.posy = tonumber(data.posy)
+			data.posz = tonumber(data.posz)
+			data.minsx = tonumber(data.minsx)
+			data.minsy = tonumber(data.minsy)
+			data.minsz = tonumber(data.minsz)
+			data.maxsx = tonumber(data.maxsx)
+			data.maxsy = tonumber(data.maxsy)
+			data.maxsz = tonumber(data.maxsz)
+			data.yaw = tonumber(data.yaw)
 
 			if queries <= 0 then
 				INIT = true
