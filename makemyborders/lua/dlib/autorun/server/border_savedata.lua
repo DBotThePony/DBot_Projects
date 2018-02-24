@@ -215,7 +215,7 @@ function func_border_remove(borderEntity, callback, errCallback)
 			callback(...)
 		end
 
-		table.removeByMember(savedata, 'id', id)
+		table.removeByMember(savedata, 'id', tostring(id))
 	end, errCallback or error)
 end
 
