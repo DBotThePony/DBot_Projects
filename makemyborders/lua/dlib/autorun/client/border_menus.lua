@@ -17,6 +17,9 @@ local messages = DLib.chat.registerWithMessages({}, 'Borders')
 local borders = func_border_data_ref
 local LocalPlayer = LocalPlayer
 local IsValid = IsValid
+local render = render
+local math = math
+local Color = Color
 
 local function readBorder(borderData)
 	local output = {}
@@ -94,6 +97,7 @@ local function openBorderEdit(borderData, classname, mins, maxs)
 	end
 
 	local self = vgui.Create('DLib_WindowScroll')
+	WAITING_WINDOW = self
 
 	self:SetSize(400, 600)
 	self:Center()
@@ -140,6 +144,20 @@ local function openBorderEdit(borderData, classname, mins, maxs)
 	local YAW = self:AddPanel('DLib_NumberInputLabeledBare')
 	YAW:SetTitle('Yaw')
 	YAW:SetValue(borderData.yaw)
+
+	self.XPanel = X
+	self.YPanel = Y
+	self.ZPanel = Z
+
+	self.MAXSX = MAXSX
+	self.MAXSY = MAXSY
+	self.MAXSZ = MAXSZ
+
+	self.MINSX = MINSX
+	self.MINSY = MINSY
+	self.MINSZ = MINSZ
+
+	self.YAW = YAW
 
 	local specific = {}
 
@@ -216,18 +234,20 @@ local function receive()
 		return
 	end
 
-	for borderClass, borderData in pairs(readBorders()) do
-		local id = borderData.id
-		local x = borderData.pos.x
-		local y = borderData.pos.y
-		local z = borderData.pos.z
-		local yaw = borderData.yaw
-		local wide = borderData.maxs.x - borderData.mins.x
-		local tall = borderData.maxs.y - borderData.mins.y
-		local height = borderData.maxs.y - borderData.mins.y
-		local line = HOLDER:AddLine(id, x, y, z, yaw, wide, tall, height, borderClass, '0')
-		line.borderData = borderData
-		line.classname = borderClass
+	for borderClass, readData in pairs(readBorders()) do
+		for i, borderData in ipairs(readData.list) do
+			local id = borderData.id
+			local x = borderData.pos.x
+			local y = borderData.pos.y
+			local z = borderData.pos.z
+			local yaw = borderData.yaw
+			local wide = borderData.maxs.x - borderData.mins.x
+			local tall = borderData.maxs.y - borderData.mins.y
+			local height = borderData.maxs.y - borderData.mins.y
+			local line = HOLDER:AddLine(id, x, y, z, yaw, wide, tall, height, borderClass, '0')
+			line.borderData = borderData
+			line.classname = borderClass
+		end
 	end
 
 	HOLDER:SortByColumn(10)
@@ -247,6 +267,43 @@ local function Think()
 		local x, y, z = line:GetValue(2), line:GetValue(3), line:GetValue(4)
 		line:SetColumnText(10, string.format('%i Hu', Vector(x, y, z):Distance(pos)))
 	end
+end
+
+local function PostDrawTranslucentRenderables()
+	local self = WAITING_WINDOW
+	if not IsValid(self) then return end
+
+	local pos = Vector(self.XPanel:GetNumber(), self.YPanel:GetNumber(), self.ZPanel:GetNumber())
+	local mins = Vector(self.MINSX:GetNumber(), self.MINSY:GetNumber(), self.MINSZ:GetNumber())
+	local maxs = Vector(self.MAXSX:GetNumber(), self.MAXSY:GetNumber(), self.MAXSZ:GetNumber())
+	local ang = Angle(0, self.YAW:GetNumber(), 0)
+
+	local faces = DLib.vector.ExtractFaces(mins, maxs)
+
+	render.SetColorMaterial()
+	local time = RealTime()
+	local color = Color(math.sin(time * 0.1) * 128 + 127, math.cos(time * 0.1) * 128 + 127, math.sin(time * 0.1 + 0.5) * 128 + 127)
+
+	for i, faceData in ipairs(faces) do
+		local one, two, three, four = faceData[1], faceData[2], faceData[3], faceData[4]
+
+		one:Rotate(ang)
+		two:Rotate(ang)
+		three:Rotate(ang)
+		four:Rotate(ang)
+
+		one = one + pos
+		two = two + pos
+		three = three + pos
+		four = four + pos
+
+		render.CullMode(0)
+		render.DrawQuad(one, two, three, four, color)
+		render.CullMode(1)
+		render.DrawQuad(one, two, three, four, color)
+	end
+
+	render.CullMode(0)
 end
 
 local cami = DLib.CAMIWatchdog('func_border_menu')
@@ -341,3 +398,4 @@ end)
 
 net.receive('func_border_request', receive)
 hook.Add('Think', 'func_border_updateMenu', Think)
+hook.Add('PostDrawTranslucentRenderables', 'func_border_drawFromMenu', PostDrawTranslucentRenderables)
