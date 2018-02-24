@@ -28,7 +28,7 @@ local Vector = Vector
 
 local function readBorder(borderData)
 	local output = {}
-	output.id = net.ReadUInt(64)
+	output.id = net.ReadUInt(32)
 	output.pos = net.ReadVectorDouble()
 	output.mins = net.ReadVectorDouble()
 	output.maxs = net.ReadVectorDouble()
@@ -281,9 +281,6 @@ local function receive()
 		end
 	end
 
-	print(read)
-	PrintTable(read)
-
 	STATUS_SIGN:SetText('Status: Ready.')
 
 	HOLDER:SortByColumn(10)
@@ -380,12 +377,6 @@ local function populate(self)
 		menu:AddCopyOption('Copy Yaw', tostring(line.borderData.yaw))
 		menu:AddCopyOption('Copy Mins', tostring(line.borderData.mins))
 		menu:AddCopyOption('Copy Maxs', tostring(line.borderData.maxs))
-		menu:AddCopyOption('Copy author\'s name', line.borderData.createdby)
-		menu:AddCopyOption('Copy author\'s SteamID', line.borderData.createdid)
-		menu:AddSteamID('Open author\'s steam', line.borderData.createdid)
-		menu:AddCopyOption('Copy modifiers\'s name', line.borderData.modifiedby)
-		menu:AddCopyOption('Copy modifiers\'s SteamID', line.borderData.modifiedid)
-		menu:AddSteamID('Open modifiers\'s steam', line.borderData.modifiedid)
 
 		menu:Open()
 	end
