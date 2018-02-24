@@ -185,8 +185,6 @@ net.receive('func_border_edit', function(len, ply)
 		if isNew then
 			ent:Spawn()
 			ent:Activate()
-			ent.__SPAWN_BY_INITIALIZE = true
-			ent.__SPAWN_ID = id
 		end
 
 		func_border_write(ent, function()

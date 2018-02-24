@@ -170,7 +170,7 @@ local function placeBorder(classname, row)
 	ent:SetAngles(ang)
 	ent:SetCollisionMins(mins)
 	ent:SetCollisionMaxs(maxs)
-	ent.__SPAWN_ID = row.id
+	ent.__SPAWN_ID = tonumber(row.id)
 	ent.__SPAWN_DATA = row
 
 	local loadData = borders[classname]
@@ -219,11 +219,17 @@ function func_border_remove(borderEntity, callback, errCallback)
 	assert(borderEntity:GetClass():startsWith('func_'), 'Entity is not even a func logical entity!')
 	local grabID = borderEntity:GetClass():sub(6):lower()
 	assert(borders[grabID], 'Entity is not a valid known border!')
-	assert(SAVEDATA[grabID], 'No save entries were even loaded for ' .. grabID .. '! This is either a bug or problem with database! Operation can not continue')
+	local savedata = assert(SAVEDATA[grabID], 'No save entries were even loaded for ' .. grabID .. '! This is either a bug or problem with database! Operation can not continue')
 	local map = SQLStr(game.GetMap())
 	local id = assert(borderEntity.__SPAWN_ID, 'Border has no ID!')
 
-	LINK:Query('DELETE FROM func_' .. grabID .. ' WHERE `gamemap` = ' .. map .. ' AND `id` = ' .. id, callback, errCallback or error)
+	LINK:Query('DELETE FROM func_' .. grabID .. ' WHERE `gamemap` = ' .. map .. ' AND `id` = ' .. id, function(...)
+		if callback then
+			callback(...)
+		end
+
+		table.removeByMember(savedata, 'id', id)
+	end, errCallback or error)
 end
 
 function func_border_write(borderEntity, callback, errCallback)

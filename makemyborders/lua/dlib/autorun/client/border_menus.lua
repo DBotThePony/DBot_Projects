@@ -233,6 +233,11 @@ local function openBorderEdit(borderData, classname, mins, maxs)
 
 		net.SendToServer()
 
+		timer.Simple(1, function()
+			net.Start('func_border_request')
+			net.SendToServer()
+		end)
+
 		self:Close()
 	end
 end
@@ -381,6 +386,11 @@ local function populate(self)
 						net.WriteUInt32(line.borderData.id)
 						net.WriteString(line.classname)
 						net.SendToServer()
+
+						timer.Simple(1, function()
+							net.Start('func_border_request')
+							net.SendToServer()
+						end)
 					end,
 					'Cancel'
 				)
