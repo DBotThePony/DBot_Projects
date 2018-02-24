@@ -27,6 +27,7 @@ local EyePos = EyePos
 local ents = ents
 local IsValid = IsValid
 local table = table
+local DLib = DLib
 
 local ENABLE_VISUAL_SPHERE = CreateConVar('cl_border_sphere', '1', {FCVAR_ARCHIVE}, 'Enable border "sphere" visuals')
 local ENABLE_VISUALS = CreateConVar('cl_border_show', '1', {FCVAR_ARCHIVE}, 'Show borders')
@@ -220,8 +221,6 @@ function ENT:Draw()
 	local mins = self:GetCollisionMins()
 	local maxs = self:GetCollisionMaxs()
 
-	pos.z = pos.z + maxs.z * 0.5
-
 	local color, nodraw = self:GetDrawColor()
 	if nodraw then return end
 
@@ -230,6 +229,9 @@ function ENT:Draw()
 
 	local W = maxs.x - mins.x
 	local H = maxs.z - mins.z
+	local cPos = DLib.vector.Centre(mins, maxs)
+	cPos:Rotate(ang)
+	pos = pos + cPos
 
 	local widths = math.max(math.floor(W / 256), 1)
 	local heights = math.max(math.floor(H / 256), 1)
