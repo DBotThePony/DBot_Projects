@@ -47,17 +47,19 @@ function init()
 		local function success(data)
 			queries = queries - 1
 			SAVEDATA[name] = data
-			data.id = tonumber(data.id)
-			data.posx = tonumber(data.posx)
-			data.posy = tonumber(data.posy)
-			data.posz = tonumber(data.posz)
-			data.minsx = tonumber(data.minsx)
-			data.minsy = tonumber(data.minsy)
-			data.minsz = tonumber(data.minsz)
-			data.maxsx = tonumber(data.maxsx)
-			data.maxsy = tonumber(data.maxsy)
-			data.maxsz = tonumber(data.maxsz)
-			data.yaw = tonumber(data.yaw)
+			for i, row in ipairs(data) do
+				row.id = tonumber(row.id)
+				row.posx = tonumber(row.posx)
+				row.posy = tonumber(row.posy)
+				row.posz = tonumber(row.posz)
+				row.minsx = tonumber(row.minsx)
+				row.minsy = tonumber(row.minsy)
+				row.minsz = tonumber(row.minsz)
+				row.maxsx = tonumber(row.maxsx)
+				row.maxsy = tonumber(row.maxsy)
+				row.maxsz = tonumber(row.maxsz)
+				row.yaw = tonumber(row.yaw)
+			end
 
 			if queries <= 0 then
 				INIT = true
