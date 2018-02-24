@@ -371,14 +371,35 @@ local function populate(self)
 
 		if cami:HasPermission('func_border_view') then
 			menu:AddOption('Edit...', function() openBorderEdit(line.borderData, line.classname, line.borderData.mins, borderData.maxs) end)
+			menu:AddOption('Delete...', function()
+				Derma_Query(
+					'Are you sure in deleting border ' .. line.classname .. ' with ID ' .. line.borderData.id .. '?',
+					'Confirm deletion',
+					'Confirm',
+					function()
+						net.Start('func_border_delete')
+						net.WriteUInt32(line.borderData.id)
+						net.WriteString(line.classname)
+						net.SendToServer()
+					end,
+					'Cancel'
+				)
+			end)
 		end
 
+		menu:AddCopyOption('Copy ID', tostring(line.borderData.id))
+		menu:AddCopyOption('Copy classname', tostring(line.classname))
 		menu:AddCopyOption('Copy Position', tostring(line.borderData.pos))
 		menu:AddCopyOption('Copy Yaw', tostring(line.borderData.yaw))
 		menu:AddCopyOption('Copy Mins', tostring(line.borderData.mins))
 		menu:AddCopyOption('Copy Maxs', tostring(line.borderData.maxs))
 
 		menu:Open()
+	end
+
+	function list:DoDoubleClick(id, line)
+		if not cami:HasPermission('func_border_view') then return end
+		openBorderEdit(line.borderData, line.classname, line.borderData.mins, borderData.maxs)
 	end
 
 	STATUS_SIGN = self:Help('Status: Updating...')

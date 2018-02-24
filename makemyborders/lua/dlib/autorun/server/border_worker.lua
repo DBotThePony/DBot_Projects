@@ -88,6 +88,47 @@ net.receive('func_border_request', function(len, ply)
 	end)
 end)
 
+net.receive('func_border_delete', function(len, ply)
+	if not IsValid(ply) then return end
+
+	CAMI.PlayerHasAccess(ply, 'func_border_edit', function(allowed, reason)
+		if not IsValid(ply) then return end
+
+		if not allowed then
+			messages.chatPlayer(ply, 'No access! ' .. (reason or ''))
+			return
+		end
+
+		local id = net.ReadUInt32()
+		local classID = net.ReadString():lower()
+		local border = borders[classID]
+
+		if not border then
+			messages.chatPlayer(ply, 'Unknown border classname! ' .. classID)
+			return
+		end
+
+		local ent
+
+		for i, entFind in ipairs(ents.FindByClass('func_' .. classID)) do
+			if IsValid(entFind) and entFind.__SPAWN_BY_INITIALIZE and entFind.__SPAWN_ID == id then
+				ent = entFind
+				break
+			end
+		end
+
+		if not ent then
+			messages.chatPlayer(ply, 'Unable to find border with ID ' .. id)
+			return
+		end
+
+		func_border_remove(ent, function()
+			ent:Remove()
+			messages.chatPlayer(ply, 'Operation successfull')
+		end)
+	end)
+end)
+
 net.receive('func_border_edit', function(len, ply)
 	if not IsValid(ply) then return end
 
@@ -144,6 +185,8 @@ net.receive('func_border_edit', function(len, ply)
 		if isNew then
 			ent:Spawn()
 			ent:Activate()
+			ent.__SPAWN_BY_INITIALIZE = true
+			ent.__SPAWN_ID = id
 		end
 
 		func_border_write(ent, function()

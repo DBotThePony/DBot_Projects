@@ -214,7 +214,19 @@ end
 
 hook.Add('func_border_Initialize', 'func_border_init', placeBorders, 10)
 
-function func_border_write(borderEntity, callback)
+function func_border_remove(borderEntity, callback, errCallback)
+	assert(IsValid(borderEntity), 'Invalid border entity!')
+	assert(borderEntity:GetClass():startsWith('func_'), 'Entity is not even a func logical entity!')
+	local grabID = borderEntity:GetClass():sub(6):lower()
+	assert(borders[grabID], 'Entity is not a valid known border!')
+	assert(SAVEDATA[grabID], 'No save entries were even loaded for ' .. grabID .. '! This is either a bug or problem with database! Operation can not continue')
+	local map = SQLStr(game.GetMap())
+	local id = assert(borderEntity.__SPAWN_ID, 'Border has no ID!')
+
+	LINK:Query('DELETE FROM func_' .. grabID .. ' WHERE `gamemap` = ' .. map .. ' AND `id` = ' .. id, callback, errCallback or error)
+end
+
+function func_border_write(borderEntity, callback, errCallback)
 	assert(IsValid(borderEntity), 'Invalid border entity!')
 	assert(borderEntity:GetClass():startsWith('func_'), 'Entity is not even a func logical entity!')
 	local grabID = borderEntity:GetClass():sub(6):lower()
@@ -294,8 +306,8 @@ function func_border_write(borderEntity, callback)
 		end
 
 		buildQuery = buildQuery .. ')'
-		LINK:Query(buildQuery, callback, error)
-	end)
+		LINK:Query(buildQuery, callback, errCallback or error)
+	end, errCallback or error)
 
 	borderEntity:Remove()
 	placeBorder(grabID, newSavedata)
