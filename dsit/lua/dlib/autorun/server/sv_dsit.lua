@@ -97,7 +97,8 @@ local function request(ply)
 	local mins, maxs = ply:GetHull()
 	maxs.z = maxs.z * 0.5
 	local eyes = ply:EyePos()
-	local ppos = ply:GetPos() + ply:OBBCenter()
+	local spos = ply:GetPos()
+	local ppos = spos + ply:OBBCenter()
 	local fwd = ply:EyeAngles():Forward()
 	maxs.z = 0
 	mins.z = 0
@@ -348,6 +349,7 @@ local function request(ply)
 	ply:DropObject()
 	ply:EnterVehicle(vehicle)
 	ply:SetEyeAngles(Angle(0, 90, 0))
+	ply.dsit_spos = spos
 
 	if weaponry then
 		if flashlight then ply:Flashlight(flashlight) end
@@ -443,7 +445,7 @@ local function PostLeave(ply, vehPos, upsideDown)
 		end
 	end
 
-	ply:SetPos(vehPos)
+	ply:SetPos(ply.dsit_spos or vehPos)
 end
 
 local function PlayerLeaveVehicle(ply, vehicle)
