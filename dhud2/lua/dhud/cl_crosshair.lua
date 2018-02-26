@@ -108,4 +108,4 @@ hook.Add('HUDShouldDraw', 'DHUD2.Crosshair', function(s)
 	if s ~= 'CHudCrosshair' then return end
 	if not DHUD2.IsEnabled() then return end
 	if not bypass and ENABLE:GetBool() then return false end
-end)
+end, 4)

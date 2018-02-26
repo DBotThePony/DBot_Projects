@@ -213,9 +213,9 @@ function Hist.Draw()
 	return true
 end
 
-hook.Add('HUDAmmoPickedUp', 'DHUD2.PickupHistory', Hist.Ammo)
-hook.Add('HUDItemPickedUp', 'DHUD2.PickupHistory', Hist.Item)
-hook.Add('HUDWeaponPickedUp', 'DHUD2.PickupHistory', Hist.Weapon)
-hook.Add('HUDDrawPickupHistory', 'DHUD2.PickupHistory', Hist.Draw)
+hook.Add('HUDAmmoPickedUp', 'DHUD2.PickupHistory', Hist.Ammo, 4)
+hook.Add('HUDItemPickedUp', 'DHUD2.PickupHistory', Hist.Item, 4)
+hook.Add('HUDWeaponPickedUp', 'DHUD2.PickupHistory', Hist.Weapon, 4)
+hook.Add('HUDDrawPickupHistory', 'DHUD2.PickupHistory', Hist.Draw, 4)
 
 DHUD2.VarHook('PickupHistory', Hist.Tick)
