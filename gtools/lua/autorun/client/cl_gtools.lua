@@ -1,4 +1,3 @@
-
 --[[
 Copyright (C) 2016-2018 DBot
 
@@ -158,7 +157,7 @@ function About(Panel)
 	local button = Panel:Button('GTools repository')
 
 	function button:DoClick()
-		gui.OpenURL('https://git.dbot.serealia.ca/dbot/dbot_projects')
+		gui.OpenURL('https://gitlab.com/DBotThePony/DBotProjects')
 	end
 
 	local button = Panel:Button('Questions or ideas? Join Discord!')
