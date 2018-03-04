@@ -15,9 +15,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
-local ENABLE = CreateConVar('dhud_voice', '1', FCVAR_ARCHIVE, 'Enable custom voice panel')
-DHUD2.AddConVar('dhud_voice', 'Enable custom voice panel', ENABLE)
-
 DHUD2.VoicePanels = DHUD2.VoicePanels or {}
 local VoicePanel = DHUD2.VoicePanel
 local VoicePanels = DHUD2.VoicePanels
@@ -80,8 +77,6 @@ end
 
 function PANEL:Think()
 	if not IsValid(self.ply) then self:Remove() return end
-	if not ENABLE:GetBool() then self:Remove() return end
-	if not DHUD2.ServerConVar('voice') then self:Remove() return end
 
 	self.Nick:SetText(self.ply:Nick())
 
@@ -169,7 +164,6 @@ local PlayerStartVoice
 local PlayerEndVoice
 
 local function Draw()
-	if not ENABLE:GetBool() or not DHUD2.ServerConVar('voice') then return end
 	if not IsValid(LocalPlayer()) then return end
 	if not LocalPlayer().DHUD2Talk then return end
 
@@ -203,10 +197,6 @@ local function Draw()
 end
 
 function PlayerStartVoice(_, ply)
-	if not DHUD2.ServerConVar('voice') then -- Oops
-		return DHUD2.PlayerStartVoice(_, ply)
-	end
-
 	if ply == LocalPlayer() then
 		ply.DRPIsTalking = true -- DarkRP support
 		-- But why DRPIsTalking is still used?
@@ -228,10 +218,6 @@ function PlayerStartVoice(_, ply)
 end
 
 function PlayerEndVoice(_, ply)
-	if not DHUD2.ServerConVar('voice') then -- Oops
-		return DHUD2.PlayerEndVoice(_, ply)
-	end
-
 	if ply == LocalPlayer() then
 		ply.DRPIsTalking = false -- DarkRP support
 		-- But why DRPIsTalking is still used?
@@ -250,19 +236,10 @@ function PlayerEndVoice(_, ply)
 end
 
 local function Update()
-	if ENABLE:GetBool() and DHUD2.ServerConVar('voice') then
-		timer.Stop('VoiceClean')
-		GAMEMODE.PlayerStartVoice = PlayerStartVoice
-		GAMEMODE.PlayerEndVoice = PlayerEndVoice
-	else
-		timer.Start('VoiceClean')
-		GAMEMODE.PlayerStartVoice = DHUD2.PlayerStartVoice
-		GAMEMODE.PlayerEndVoice = DHUD2.PlayerEndVoice
-	end
+	timer.Stop('VoiceClean')
+	GAMEMODE.PlayerStartVoice = PlayerStartVoice
+	GAMEMODE.PlayerEndVoice = PlayerEndVoice
 end
 
-cvars.AddChangeCallback('dhud_voice', Update, 'DHUD2.Voice')
-
 Update()
-
-DHUD2.DrawHook('voice', Draw)
+hook.Add('HUDPaint', 'DHUD2.Voice', Draw)
