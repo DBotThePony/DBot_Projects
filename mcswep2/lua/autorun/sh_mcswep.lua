@@ -13,14 +13,14 @@ limitations under the License.
 
 MsgC([[
 ALL THE SOUNDS, TEXTURES AND MODELS IS BELONG TO Mojang AB AND THEIR AUTHOR(s)
-AND LICENSED UNDER Mojang ELUA
+AND LICENSED UNDER Mojang EULA
 https://account.mojang.com/documents/minecraft_eula
-By downloading, using or distributing this mod, you accept Mojang ELUA
+By downloading, using or distributing this mod, you accept Mojang EULA
 and not going to violate it in any way
 
-Due to this mod is open source and free, this mod *passes* Mojang ELUA.
+Due to this mod is open source and free, this mod *passes* Mojang EULA.
 If you are going to make ANY money by using this mod, or this mod content
-(exept this addon's code), you are GOING TO VIOLATE Mojang ELUA!
+(exept this addon's code), you are GOING TO VIOLATE Mojang EULA!
 ]])
 
 local t = SysTime()
