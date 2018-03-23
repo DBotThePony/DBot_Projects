@@ -18,7 +18,7 @@ limitations under the License.
 AddCSLuaFile()
 
 ENT.Type = 'anim'
-ENT.PrintName = 'Speedmeter'
+ENT.PrintName = 'Speedometer'
 ENT.RenderGroup = RENDERGROUP_BOTH
 ENT.Author = 'DBot'
 
