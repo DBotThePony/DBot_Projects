@@ -1,0 +1,14 @@
+{
+	"title"		:	"DHUD 2.0 Damage Sense",
+	"type"		:	"effects",
+	"tags"		:	[ "fun" ],
+	"ignore"	:
+	[
+		"*.psd",
+		"*.vcproj",
+		"*.svn*",
+		"*.git*",
+		"README.md",
+		"LICENSE"
+	]
+}
