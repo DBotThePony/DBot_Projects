@@ -158,7 +158,7 @@ function ENT:UpdateVars()
 end
 
 function ENT:TriggerWireOutputs()
-	for k, v in ipairs(ENT.OutputsToTrigger) do
+	for k, v in ipairs(self.OutputsToTrigger) do
 		WireLib.TriggerOutput(self, v[2], v[1])
 	end
 end
