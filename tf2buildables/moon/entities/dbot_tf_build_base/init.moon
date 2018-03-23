@@ -549,6 +549,18 @@ ENT.UpdateRelationships = =>
 		if target\IsValid() and target\IsNPC()
 			target[pointerPrefix .. DTF2.Pointer(target) .. '_' .. pointer] = target\AddEntityRelationship(eye, D_LI, 0) or D_LI for {eye, pointer} in *@npc_bullseye when target[pointerPrefix .. DTF2.Pointer(target) .. '_' .. pointer] ~= D_LI
 
+rocketsAndBullets = {}
+
+hook.Add 'OnEntityCreated', 'TF2Buildables.Filter', =>
+	timer.Create 'TF2Buildables.FilterUpdate', 0, 1, ->
+		rocketsAndBullets = ents.FindByClass('*rocket*')
+		table.append(rocketsAndBullets, ents.FindByClass('*bullet*'))
+
+hook.Add 'EntityRemoved', 'TF2Buildables.Filter', =>
+	timer.Create 'TF2Buildables.FilterUpdate', 0, 1, ->
+		rocketsAndBullets = ents.FindByClass('*rocket*')
+		table.append(rocketsAndBullets, ents.FindByClass('*bullet*'))
+
 ENT.GetAlliesVisible = =>
 	output = {}
 	pos = @GetPos()
@@ -574,6 +586,7 @@ ENT.GetAlliesVisible = =>
 	newOutput = {}
 	trFilter = [eye[1] for eye in *@npc_bullseye]
 	table.insert(trFilter, @)
+	table.append(trFilter, rocketsAndBullets)
 
 	for {target, tpos, dist, center} in *output
 		trData = {
@@ -615,6 +628,7 @@ ENT.GetTargetsVisible = =>
 	newOutput = {}
 	trFilter = [eye[1] for eye in *@npc_bullseye]
 	table.insert(trFilter, @)
+	table.append(trFilter, rocketsAndBullets)
 
 	for {target, tpos, dist, center} in *output
 		trData = {
@@ -663,6 +677,7 @@ ENT.GetFirstVisible = (checkFor) =>
 	table.sort output, (a, b) -> a[3] < b[3]
 	trFilter = [eye[1] for eye in *@npc_bullseye]
 	table.insert(trFilter, @)
+	table.append(trFilter, rocketsAndBullets)
 	
 	for {target, tpos, dist, center} in *output
 		trData = {
