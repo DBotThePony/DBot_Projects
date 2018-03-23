@@ -204,7 +204,7 @@ local function Net()
 end
 
 surface.CreateFont('DHUD2.DamageNumber', {
-	font = 'Roboto',
+	font = 'PT Mono',
 	size = 72,
 	weight = 800,
 })
