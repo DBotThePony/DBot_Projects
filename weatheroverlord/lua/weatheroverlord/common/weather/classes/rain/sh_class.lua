@@ -49,7 +49,7 @@ function meta:GetLength()
 	local windMultiply1 = (wind:Length() / 53):progression(0, 9)
 	local windMultiply2 = (wind:Length() / 53):progression(9, 12)
 
-	return 24000 + hotPoint1 * 4000 + hotPoint2 * 10000 + tempMult * 12000 + windMultiply1 * 5000 - windMultiply2 * 13000
+	return (24000 + hotPoint1 * 4000 + hotPoint2 * 10000 + tempMult * 12000 + windMultiply1 * 5000 - windMultiply2 * 13000):abs()
 end
 
 function meta:Initialize(dryRun)
