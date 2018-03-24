@@ -163,38 +163,23 @@ end
 DHUD2.DrawHook('DeathFeed', Draw)
 DHUD2.VarHook('DeathFeed', Think)
 
-local function Override()
-	local function DrawDeathNotice(x, y)
-		if not DHUD2.IsEnabled() then return end
-		if not ENABLE:GetBool() then return end
-		if not DHUD2.ServerConVar('killfeed') then return end
+local function DrawDeathNotice(x, y)
+	if not DHUD2.IsEnabled() then return end
+	if not ENABLE:GetBool() then return end
+	if not DHUD2.ServerConVar('killfeed') then return end
 
-		--Don't do anything here
-		return true
-	end
-
-	local function AddDeathNotice(...)
-		if not DHUD2.IsEnabled() then return end
-		if not ENABLE:GetBool() then return end
-		if not DHUD2.ServerConVar('killfeed') then return end
-
-		DHUD2.AddDeathNotice(...)
-		return true
-	end
-
-	hook.Add('DrawDeathNotice', 'DHUD2.DrawDeathNotice', DrawDeathNotice)
-	hook.Add('AddDeathNotice', 'DHUD2.AddDeathNotice', AddDeathNotice)
-
-	Feed.oldDrawFunc = Feed.oldDrawFunc or GAMEMODE.AddDeathNotice
-
-	function GAMEMODE:AddDeathNotice(...)
-		if not DHUD2.IsEnabled() or not ENABLE:GetBool() or not DHUD2.ServerConVar('killfeed') then
-			if isfunction(Feed.oldDrawFunc) then Feed.oldDrawFunc(self, ...) end
-			return
-		end
-
-		DHUD2.AddDeathNotice(...)
-	end
+	--Don't do anything here
+	return true
 end
 
-timer.Simple(0, Override)
+local function AddDeathNotice(...)
+	if not DHUD2.IsEnabled() then return end
+	if not ENABLE:GetBool() then return end
+	if not DHUD2.ServerConVar('killfeed') then return end
+
+	DHUD2.AddDeathNotice(...)
+	return true
+end
+
+hook.Add('DrawDeathNotice', 'DHUD2.DrawDeathNotice', DrawDeathNotice)
+hook.Add('AddDeathNotice', 'DHUD2.AddDeathNotice', AddDeathNotice)
