@@ -122,6 +122,4 @@ sinclude('common/wind.lua')
 
 clinclude('client/hud.lua')
 
-DDayNight.LoadWeatherFiles()
-
 hook.Run('DDayNight_SeedChanges', self.SEED_VALID, self.SEED_VALID)

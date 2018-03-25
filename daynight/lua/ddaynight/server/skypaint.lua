@@ -76,30 +76,8 @@ local meta = DLib.FindMetaTable('WODate')
 local emptyVector = Vector(0, 0, 0)
 local proxiedValues = {}
 
-local function proxiedCall(callFunc, callString, callValue, lerpFunction, lerpMult)
-	local typeIn = type(callValue)
-	if typeIn ~= 'string' then
-		lerpMult = lerpMult or 6
-
-		if not lerpFunction then
-			if typeIn == 'number' then
-				lerpFunction = Lerp
-			elseif typeIn == 'Vector' then
-				lerpFunction = LerpVector
-			end
-		end
-
-		proxiedValues[callString] = proxiedValues[callString] or callValue
-		local newValue = DDayNight.CallWeatherModifier(callString, callValue)
-		local lerp = lerpFunction(FrameTime() * lerpMult, proxiedValues[callString], newValue)
-		proxiedValues[callString] = lerp
-		env_skypaint[callFunc](env_skypaint, lerp)
-		return lerp
-	else
-		local newValue = DDayNight.CallWeatherModifier(callString, callValue)
-		env_skypaint[callFunc](env_skypaint, newValue)
-		return newValue
-	end
+local function proxiedCall(callFunc, callValue)
+	return env_skypaint[callFunc](env_skypaint, callValue)
 end
 
 local function DDayNight_NewSecond()
@@ -119,20 +97,20 @@ local function DDayNight_NewSecond()
 	local windSpeed = wind:Length()
 
 	if nightProgression ~= 0 then
-		proxiedCall('SetStarSpeed', 'StarSpeed', 0.01)
-		proxiedCall('SetStarFade', 'StarFade', 0.78 * nightProgression)
-		proxiedCall('SetStarTexture', 'StarTexture', stars)
-		proxiedCall('SetStarScale', 'StarScale', 1.28)
+		env_skypaint:SetStarSpeed(0.01)
+		env_skypaint:SetStarFade(0.78 * nightProgression)
+		env_skypaint:SetStarTexture(stars)
+		env_skypaint:SetStarScale(1.28)
 	else
-		proxiedCall('SetStarSpeed', 'StarSpeed', windSpeed / 400)
-		proxiedCall('SetStarFade', 'StarFade', 0.4)
-		proxiedCall('SetStarTexture', 'StarTexture', clouds)
-		proxiedCall('SetStarScale', 'StarScale', 1.6)
+		env_skypaint:SetStarSpeed(windSpeed / 400)
+		env_skypaint:SetStarFade(0.4)
+		env_skypaint:SetStarTexture(clouds)
+		env_skypaint:SetStarScale(1.6)
 	end
 
 	if not isSunrise then
 		if noNight then
-			proxiedCall('SetSunSize', 'SunSize', 1.5 * self:GetDayLengthMultiplier())
+			env_skypaint:SetSunSize(1.5 * self:GetDayLengthMultiplier())
 
 			if not almostNightStart then
 				env_skypaint:SetDuskIntensity(0)
@@ -140,9 +118,9 @@ local function DDayNight_NewSecond()
 				env_skypaint:SetFadeBias(1)
 			else
 				local dusken = (progression - 0.9) * 10
-				proxiedCall('SetDuskIntensity', 'DuskIntensity', dusken * 2)
-				proxiedCall('SetDuskScale', 'DuskScale', dusken)
-				proxiedCall('SetFadeBias', 'FadeBias', 1 - dusken * 0.5)
+				env_skypaint:SetDuskIntensity(dusken * 2)
+				env_skypaint:SetDuskScale(dusken)
+				env_skypaint:SetFadeBias(1 - dusken * 0.5)
 			end
 
 			if env_skypaint:GetTopColor() ~= topDefault then
@@ -153,20 +131,20 @@ local function DDayNight_NewSecond()
 				env_skypaint:SetBottomColor(bottomDefault)
 			end
 		elseif semiNight then
-			proxiedCall('SetDuskScale', 'DuskScale', 1 - nightProgression * 0.5)
-			proxiedCall('SetFadeBias', 'FadeBias', 1 - math.Clamp(nightProgression * 3, 0.5, 1))
-			proxiedCall('SetSunSize', 'SunSize', math.max(1.5 * self:GetDayLengthMultiplier() * (1 - nightProgression * 1.5), 0))
+			env_skypaint:SetDuskScale(1 - nightProgression * 0.5)
+			env_skypaint:SetFadeBias(1 - math.Clamp(nightProgression * 3, 0.5, 1))
+			env_skypaint:SetSunSize(math.max(1.5 * self:GetDayLengthMultiplier() * (1 - nightProgression * 1.5), 0))
 
 			if nightProgression > 0.5 then
-				proxiedCall('SetDuskIntensity', 'DuskIntensity', 4 * (1 - nightProgression))
+				env_skypaint:SetDuskIntensity(4 * (1 - nightProgression))
 
 				local multSkyColor = 1 - (nightProgression - 0.5) * 2
 
 				local topColor = Color(51, 127, 255) * (multSkyColor ^ 2)
 				local bottomColor = Color(204, 255, 255) * multSkyColor * 1.1
 
-				proxiedCall('SetTopColor', 'TopColor', topColor:ToVector())
-				proxiedCall('SetBottomColor', 'BottomColor', bottomColor:ToVector())
+				env_skypaint:SetTopColor(topColor:ToVector())
+				env_skypaint:SetBottomColor(bottomColor:ToVector())
 			end
 		elseif fullNight then
 			env_skypaint:SetFadeBias(0)
@@ -181,14 +159,14 @@ local function DDayNight_NewSecond()
 		local dusken = progression * 10
 
 		if nightProgression > 0.5 then
-			proxiedCall('SetDuskIntensity', 'DuskIntensity', (1 - nightProgression) * 2)
-			proxiedCall('SetDuskScale', 'DuskScale', 1 - nightProgression)
+			env_skypaint:SetDuskIntensity((1 - nightProgression) * 2)
+			env_skypaint:SetDuskScale(1 - nightProgression)
 		elseif nightProgression < 0.5 and nightProgression > 0 then
 			env_skypaint:SetDuskIntensity(1.5)
 			env_skypaint:SetDuskScale(1)
 		elseif nightProgression == 0 and dusken < 1 then
-			proxiedCall('SetDuskScale', 'DuskScale', 1 - dusken)
-			proxiedCall('SetDuskIntensity', 'DuskIntensity', 1.5 * (1 - dusken))
+			env_skypaint:SetDuskScale(1 - dusken)
+			env_skypaint:SetDuskIntensity(1.5 * (1 - dusken))
 		else
 			env_skypaint:SetDuskScale(0)
 			env_skypaint:SetDuskIntensity(0)
@@ -197,11 +175,11 @@ local function DDayNight_NewSecond()
 		if nightProgression == 1 then
 			env_skypaint:SetSunSize(0)
 		elseif nightProgression > 0 then
-			proxiedCall('SetSunSize', 'SunSize', 1.5 * self:GetDayLengthMultiplier() * (0.5 - nightProgression * 0.5))
+			env_skypaint:SetSunSize(1.5 * self:GetDayLengthMultiplier() * (0.5 - nightProgression * 0.5))
 		elseif dusken < 1 then
-			proxiedCall('SetSunSize', 'SunSize', 1.5 * self:GetDayLengthMultiplier() * (0.5 + dusken * 0.5))
+			env_skypaint:SetSunSize(1.5 * self:GetDayLengthMultiplier() * (0.5 + dusken * 0.5))
 		else
-			proxiedCall('SetSunSize', 'SunSize', 1.5 * self:GetDayLengthMultiplier())
+			env_skypaint:SetSunSize(1.5 * self:GetDayLengthMultiplier())
 		end
 
 		local multSkyColor
@@ -216,8 +194,8 @@ local function DDayNight_NewSecond()
 			local topColor = Color(51, 127, 255) * (multSkyColor ^ 2)
 			local bottomColor = Color(204, 255, 255) * multSkyColor * 1.1
 
-			proxiedCall('SetTopColor', 'TopColor', topColor:ToVector())
-			proxiedCall('SetBottomColor', 'BottomColor', bottomColor:ToVector())
+			env_skypaint:SetTopColor(topColor:ToVector())
+			env_skypaint:SetBottomColor(bottomColor:ToVector())
 		else
 			if env_skypaint:GetTopColor() ~= topDefault then
 				env_skypaint:SetTopColor(topDefault)
