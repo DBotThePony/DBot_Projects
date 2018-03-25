@@ -120,11 +120,6 @@ sinclude('common/temperature.lua')
 sinclude('common/temperature_date.lua')
 sinclude('common/wind.lua')
 
-sinclude('common/weather/weather.lua')
-sinclude('common/weather/iweatherstate.lua')
-sinclude('common/weather/status.lua')
-sinclude('common/weather/controller.lua')
-
 clinclude('client/hud.lua')
 
 WOverlord.LoadWeatherFiles()
