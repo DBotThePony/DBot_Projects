@@ -13,33 +13,33 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-local WOverlord = WOverlord
+local DDayNight = DDayNight
 local DLib = DLib
 local net = net
 local hook = hook
 
-net.receive('weatheroverlord.replicateseed', function()
-	local old = WOverlord.SEED_VALID
-	WOverlord.SEED_VALID = net.ReadUInt(64)
+net.receive('ddaynight.replicateseed', function()
+	local old = DDayNight.SEED_VALID
+	DDayNight.SEED_VALID = net.ReadUInt(64)
 
-	if old ~= WOverlord.SEED_VALID then
-		hook.Run('WOverlord_SeedChanges', old, WOverlord.SEED_VALID)
+	if old ~= DDayNight.SEED_VALID then
+		hook.Run('DDayNight_SeedChanges', old, DDayNight.SEED_VALID)
 	end
 end)
 
 if IsValid(LocalPlayer()) then
-	net.Start('weatheroverlord.replicateseed')
+	net.Start('ddaynight.replicateseed')
 	net.SendToServer()
 else
 	local frame = 0
-	hook.Add('Think', 'WeatherOverlord_RequestSeed', function()
+	hook.Add('Think', 'DDayNight_RequestSeed', function()
 		if not IsValid(LocalPlayer()) then return end
 
 		frame = frame + 1
 		if frame < 200 then return end
 
-		hook.Remove('Think', 'WeatherOverlord_RequestSeed')
-		net.Start('weatheroverlord.replicateseed')
+		hook.Remove('Think', 'DDayNight_RequestSeed')
+		net.Start('ddaynight.replicateseed')
 		net.SendToServer()
 	end)
 end

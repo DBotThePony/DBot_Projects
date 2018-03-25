@@ -14,8 +14,8 @@
 -- limitations under the License.
 
 local DLib = DLib
-local WOverlord = WOverlord
-local self = WOverlord
+local DDayNight = DDayNight
+local self = DDayNight
 local math = math
 local ipairs = ipairs
 local pairs = pairs

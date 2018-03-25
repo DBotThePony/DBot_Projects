@@ -13,12 +13,12 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-include('weatheroverlord/sh_init.lua')
+include('ddaynight/sh_init.lua')
 
 if SERVER then
-	AddCSLuaFile('weatheroverlord/sh_init.lua')
-	AddCSLuaFile('weatheroverlord/cl_init.lua')
-	include('weatheroverlord/sv_init.lua')
+	AddCSLuaFile('ddaynight/sh_init.lua')
+	AddCSLuaFile('ddaynight/cl_init.lua')
+	include('ddaynight/sv_init.lua')
 else
-	include('weatheroverlord/cl_init.lua')
+	include('ddaynight/cl_init.lua')
 end

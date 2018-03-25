@@ -13,10 +13,10 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-_G.WOverlord = _G.WOverlord or {}
-local WOverlord = WOverlord
+_G.DDayNight = _G.DDayNight or {}
+local DDayNight = DDayNight
 local DLib = DLib
-local self = WOverlord
+local self = DDayNight
 local ipairs = ipairs
 local string = string
 local math = math
@@ -24,7 +24,7 @@ local SharedRandom = util.SharedRandom
 
 DLib.MessageMaker(self, 'WeatherOverlord')
 
-self.SEED = DLib.util.CreateSharedConvar('sv_woverlord_seed', math.random(1, 100000), 'Seed of Weather Overlord. Two same seeds on different servers will produce same weather, rain, snow, wind strength, temperature on same time!')
+self.SEED = DLib.util.CreateSharedConvar('sv_daynight_seed', math.random(1, 100000), 'Seed of Weather Overlord. Two same seeds on different servers will produce same weather, rain, snow, wind strength, temperature on same time!')
 
 if SERVER or not self.SEED_VALID then
 	self.SEED_VALID = self.SEED:GetInt()
@@ -33,7 +33,7 @@ end
 function self.random(min, max, name, additional)
 	additional = additional or 0
 	name = name or 'random'
-	return SharedRandom('WOverlord_' .. name, min, max, self.SEED_VALID + additional)
+	return SharedRandom('DDayNight_' .. name, min, max, self.SEED_VALID + additional)
 end
 
 function self.frandom(...)
@@ -59,17 +59,17 @@ local function seedChanges(cvar, oldValue, newValue)
 		newSeed = newSeed % math.pow(2, 31)
 		self.Message('String conversion to seed for ', newValue, ' is ', newSeed)
 		self.SEED:SetInt(newSeed)
-		hook.Run('WOverlord_SeedChanges', oldValue, newSeed)
+		hook.Run('DDayNight_SeedChanges', oldValue, newSeed)
 
 		self.SEED_VALID = newSeed
 		return
 	end
 
 	self.SEED_VALID = self.SEED:GetInt()
-	hook.Run('WOverlord_SeedChanges', oldValue, newValue)
+	hook.Run('DDayNight_SeedChanges', oldValue, newValue)
 end
 
-cvars.AddChangeCallback('sv_woverlord_seed', seedChanges, 'WeatherOverlord')
+cvars.AddChangeCallback('sv_daynight_seed', seedChanges, 'DDayNightCycle')
 
 self.indexedMonths = {
 	[0] = 'january',
@@ -122,6 +122,6 @@ sinclude('common/wind.lua')
 
 clinclude('client/hud.lua')
 
-WOverlord.LoadWeatherFiles()
+DDayNight.LoadWeatherFiles()
 
-hook.Run('WOverlord_SeedChanges', self.SEED_VALID, self.SEED_VALID)
+hook.Run('DDayNight_SeedChanges', self.SEED_VALID, self.SEED_VALID)

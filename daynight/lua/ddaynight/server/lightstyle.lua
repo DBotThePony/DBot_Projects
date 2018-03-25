@@ -14,7 +14,7 @@
 -- limitations under the License.
 
 local DLib = DLib
-local WOverlord = WOverlord
+local DDayNight = DDayNight
 local hook = hook
 local math = math
 local string = string
@@ -22,7 +22,7 @@ local engine = engine
 local net = net
 local light_environment
 
-net.pool('weatheroverlord.lightstyle')
+net.pool('ddaynight.lightstyle')
 
 local lastStyleOverall, lastStyleOutside
 
@@ -81,8 +81,8 @@ local function modifyOutside(pattern)
 	end
 end
 
-local function WOverlord_NewMinute()
-	local self = WOverlord.GetCurrentDateAccurate()
+local function DDayNight_NewMinute()
+	local self = DDayNight.GetCurrentDateAccurate()
 	local progression = self:GetDayProgression()
 	local progressionLight = self:GetLightProgression()
 	local fullNight = progressionLight == 0 or progressionLight == 1
@@ -147,11 +147,11 @@ local function WOverlord_NewMinute()
 
 	if dirty then
 		dirty = false
-		net.Start('weatheroverlord.lightstyle')
+		net.Start('ddaynight.lightstyle')
 		net.Broadcast()
 	end
 end
 
-hook.Add('WOverlord_NewMinute', 'WeatherOverlord_LightstyleModifier', WOverlord_NewMinute)
-hook.Add('InitPostEntity', 'WeatherOverlord_Lightstyle', initializeEntity)
-hook.Add('PostCleanupMap', 'WeatherOverlord_Lightstyle', initializeEntity)
+hook.Add('DDayNight_NewMinute', 'DDayNight_LightstyleModifier', DDayNight_NewMinute)
+hook.Add('InitPostEntity', 'DDayNight_Lightstyle', initializeEntity)
+hook.Add('PostCleanupMap', 'DDayNight_Lightstyle', initializeEntity)

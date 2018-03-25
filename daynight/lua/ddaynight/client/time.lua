@@ -14,141 +14,139 @@
 -- limitations under the License.
 
 local DLib = DLib
-local WOverlord = WOverlord
+local DDayNight = DDayNight
 local timer = timer
 local hook = hook
 local CurTime = CurTime
-local self = WOverlord
+local self = DDayNight
 local math = math
 local net = net
 
-net.pool('weatheroverlord.replicatetime')
-net.pool('weatheroverlord.forcetimechange')
-
-local timeSinceLastTick = 0
-
-self.TIME_CVAR = CreateConVar('sv_woverlord_time', '0', {FCVAR_ARCHIVE}, 'Current time in seconds. 0 is first second of the first year (january 1 of 1 year)')
-self.TIME = self.TIME_CVAR:GetInt()
-self.DATE_OBJECT = self.Date(self.TIME)
+self.INITIALIZE = false
+self.BOUND_TIME = 0
+self.BOUND_TIME_TO = 0
+local lastThink = 0
+self.DATE_OBJECT = self.Date(0)
 self.DATE_OBJECT_ACCURATE = self.Date(self.TIME)
 
 function self.GetAccurateTime()
-	return self.TIME + (CurTime() - timeSinceLastTick) * self.TIME_MULTIPLIER:GetInt()
+	return self.BOUND_TIME + (CurTime() - self.BOUND_TIME_TO) * self.TIME_MULTIPLIER:GetInt()
 end
+
+local sunset, sunrise = true, true
 
 local function Think()
+	if not self.INITIALIZE then return end
 	self.DATE_OBJECT_ACCURATE:SetStamp(self.GetAccurateTime())
-end
 
-local sunset, sunrise = false, false
+	if math.floor(lastThink) == math.floor(CurTime()) then return end
+	lastThink = CurTime()
 
-local function UpdateTime()
-	local add = self.TIME_MULTIPLIER:GetInt()
 	local old = self.TIME
-	self.TIME = self.TIME + add
+	self.TIME = math.floor(self.GetAccurateTime())
 	local new = self.TIME
-	self.TIME_CVAR:SetInt(self.TIME)
 	self.DATE_OBJECT:SetStamp(self.TIME)
-	timeSinceLastTick = CurTime()
 
 	if math.floor(old) < math.floor(new) then
-		hook.Run('WOverlord_NewSecond')
+		hook.Run('DDayNight_NewSecond')
 
 		for i = math.floor(old), math.floor(new) do
-			hook.Run('WOverlord_RealTimeSecond')
+			hook.Run('DDayNight_RealTimeSecond')
 		end
 	end
 
 	if math.floor(old / self.timeTypes.minute) < math.floor(new / self.timeTypes.minute) then
-		hook.Run('WOverlord_NewMinute')
+		hook.Run('DDayNight_NewMinute')
 	end
 
 	if math.floor(old / self.timeTypes.hour) < math.floor(new / self.timeTypes.hour) then
-		hook.Run('WOverlord_NewHour')
+		hook.Run('DDayNight_NewHour')
 	end
 
 	if math.floor(old / self.timeTypes.hour / 2) < math.floor(new / self.timeTypes.hour / 2) then
-		hook.Run('WOverlord_NewTwoHours')
+		hook.Run('DDayNight_NewTwoHours')
 	end
 
 	if math.floor(old / self.timeTypes.hour / 4) < math.floor(new / self.timeTypes.hour / 4) then
-		hook.Run('WOverlord_NewQuater')
+		hook.Run('DDayNight_NewQuater')
 	end
 
 	if math.floor(old / self.timeTypes.midday) < math.floor(new / self.timeTypes.midday) then
-		hook.Run('WOverlord_NewHalfofday')
+		hook.Run('DDayNight_NewHalfofday')
 	end
 
 	if math.floor(old / self.timeTypes.day) < math.floor(new / self.timeTypes.day) then
-		hook.Run('WOverlord_NewDay')
+		hook.Run('DDayNight_NewDay')
 	end
 
 	if math.floor(old / self.timeTypes.week) < math.floor(new / self.timeTypes.week) then
-		hook.Run('WOverlord_NewWeek')
+		hook.Run('DDayNight_NewWeek')
 	end
 
 	if math.floor(old / self.timeTypes.year) < math.floor(new / self.timeTypes.year) then
-		hook.Run('WOverlord_NewYear')
+		hook.Run('DDayNight_NewYear')
 	end
 
 	if math.floor(old / self.timeTypes.age) < math.floor(new / self.timeTypes.age) then
-		hook.Run('WOverlord_NewAge')
+		hook.Run('DDayNight_NewAge')
 	end
 
 	local progression = self.DATE_OBJECT:GetDayProgression()
 
 	if progression == 0 then
 		if sunrise then
-			hook.Run('WOverlord_InitializeTimeStatement')
+			hook.Run('DDayNight_InitializeTimeStatement')
 		end
 
 		sunrise = false
 		sunset = false
-	elseif progression > 0 and progression ~= 1 then
+	elseif progression > 0 then
 		if not sunrise then
 			sunset = false
 			sunrise = true
-			hook.Run('WOverlord_Sunrise')
+			hook.Run('DDayNight_Sunrise')
 		end
 	elseif progression == 1 then
 		if not sunset then
 			sunset = true
 			sunrise = false
-			hook.Run('WOverlord_Sunset')
+			hook.Run('DDayNight_Sunset')
 		end
 	end
 end
 
-local function ReplicateTime()
-	net.Start('weatheroverlord.replicatetime')
-	net.WriteUInt(self.TIME, 64)
-	net.WriteDouble(timeSinceLastTick)
-	net.Broadcast()
-end
+net.receive('ddaynight.replicatetime', function()
+	self.INITIALIZE = true
+	local time = net.ReadUInt(64)
+	local validAt = net.ReadDouble()
 
-function self.SetTime(stampnew)
-	local add = self.TIME_MULTIPLIER:GetInt()
-	stampnew = math.max(stampnew, add * 2)
-	self.TIME = stampnew - add * 2
-	UpdateTime()
-	ReplicateTime()
-	net.Start('weatheroverlord.forcetimechange')
-	net.Broadcast()
-	hook.Run('WOverlord_ForceRecalculateTime')
-
-	sunrise = false
-	sunset = false
-end
-
-net.Receive('weatheroverlord.replicatetime', function(len, ply)
-	if not IsValid(ply) then return end
-	net.Start('weatheroverlord.replicatetime')
-	net.WriteUInt(self.TIME, 64)
-	net.WriteDouble(timeSinceLastTick)
-	net.Send(ply)
+	self.BOUND_TIME = time
+	self.TIME = time
+	self.BOUND_TIME_TO = validAt
+	lastThink = validAt
 end)
 
-timer.Create('WOverlord.UpdateTime', 1, 0, function() ProtectedCall(UpdateTime) end)
-timer.Create('WOverlord.ReplicateTime', 10, 0, function() ProtectedCall(ReplicateTime) end)
-ReplicateTime()
-hook.Add('Think', 'WeatherOverlord_UpdateTime', Think)
+net.receive('ddaynight.forcetimechange', function()
+	sunset = false
+	sunrise = false
+	hook.Run('DDayNight_ForceRecalculateTime')
+end)
+
+if IsValid(LocalPlayer()) then
+	net.Start('ddaynight.replicatetime')
+	net.SendToServer()
+else
+	local frame = 0
+	hook.Add('Think', 'DDayNight_RequestTime', function()
+		if not IsValid(LocalPlayer()) then return end
+
+		frame = frame + 1
+		if frame < 200 then return end
+
+		hook.Remove('Think', 'DDayNight_RequestTime')
+		net.Start('ddaynight.replicatetime')
+		net.SendToServer()
+	end)
+end
+
+hook.Add('Think', 'DDayNight_UpdateTime', Think)

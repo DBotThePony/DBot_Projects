@@ -14,22 +14,22 @@
 -- limitations under the License.
 
 local DLib = DLib
-local WOverlord = WOverlord
+local DDayNight = DDayNight
 
 local function bridge(funcName, bridgeName)
-	WOverlord[bridgeName or funcName] = function(...)
-		local targetFunction = WOverlord.DATE_OBJECT[funcName]
-		return targetFunction(WOverlord.DATE_OBJECT, ...)
+	DDayNight[bridgeName or funcName] = function(...)
+		local targetFunction = DDayNight.DATE_OBJECT[funcName]
+		return targetFunction(DDayNight.DATE_OBJECT, ...)
 	end
 
-	WOverlord['Accurate' .. (bridgeName or funcName)] = function(...)
-		local targetFunction = WOverlord.DATE_OBJECT_ACCURATE[funcName]
-		return targetFunction(WOverlord.DATE_OBJECT_ACCURATE, ...)
+	DDayNight['Accurate' .. (bridgeName or funcName)] = function(...)
+		local targetFunction = DDayNight.DATE_OBJECT_ACCURATE[funcName]
+		return targetFunction(DDayNight.DATE_OBJECT_ACCURATE, ...)
 	end
 
-	WOverlord[(bridgeName or funcName) .. 'Accurate'] = function(...)
-		local targetFunction = WOverlord.DATE_OBJECT_ACCURATE[funcName]
-		return targetFunction(WOverlord.DATE_OBJECT_ACCURATE, ...)
+	DDayNight[(bridgeName or funcName) .. 'Accurate'] = function(...)
+		local targetFunction = DDayNight.DATE_OBJECT_ACCURATE[funcName]
+		return targetFunction(DDayNight.DATE_OBJECT_ACCURATE, ...)
 	end
 end
 

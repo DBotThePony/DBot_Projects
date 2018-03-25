@@ -16,7 +16,7 @@
 -- This object is supposted to be static
 
 local DLib = DLib
-local WOverlord = WOverlord
+local DDayNight = DDayNight
 local math = math
 local ipairs = ipairs
 local pairs = pairs
@@ -26,7 +26,7 @@ local string = string
 
 local meta = DLib.CreateLuaObject('WODay', false)
 
-WOverlord.Day = meta.Create
+DDayNight.Day = meta.Create
 
 function meta:Initialize(stamp)
 	self:SetStamp(stamp)
@@ -34,13 +34,13 @@ end
 
 function meta:SetStamp(stamp)
 	self.stamp = stamp
-	self.year = math.floor(stamp / WOverlord.timeTypes.year)
-	self.yearStamp = stamp % WOverlord.timeTypes.year
+	self.year = math.floor(stamp / DDayNight.timeTypes.year)
+	self.yearStamp = stamp % DDayNight.timeTypes.year
 
-	self.absoluteDay = math.floor(self.stamp / WOverlord.timeTypes.day)
-	self.yearDay = math.floor(self.yearStamp / WOverlord.timeTypes.day)
+	self.absoluteDay = math.floor(self.stamp / DDayNight.timeTypes.day)
+	self.yearDay = math.floor(self.yearStamp / DDayNight.timeTypes.day)
 
-	for i, seconds in pairs(WOverlord.monthsTimeInYearNumeric) do
+	for i, seconds in pairs(DDayNight.monthsTimeInYearNumeric) do
 		if seconds >= self.yearStamp then
 			self.month = i
 			break
@@ -50,31 +50,31 @@ function meta:SetStamp(stamp)
 	if self.month == 0 then
 		self.monthTime = self.yearStamp
 	else
-		self.monthTime = self.yearStamp - WOverlord.MonthLengthAbsolute(WOverlord.NormalizeMonth(self.month - 1)) - WOverlord.timeTypes.day
+		self.monthTime = self.yearStamp - DDayNight.MonthLengthAbsolute(DDayNight.NormalizeMonth(self.month - 1)) - DDayNight.timeTypes.day
 	end
 
-	self.monthDay = math.floor(self.monthTime / WOverlord.timeTypes.day) + 1
-	self.monthProgress = math.floor((self.monthDay / WOverlord.months[self.month]) * 10) / 10
+	self.monthDay = math.floor(self.monthTime / DDayNight.timeTypes.day) + 1
+	self.monthProgress = math.floor((self.monthDay / DDayNight.months[self.month]) * 10) / 10
 
 	if self.monthProgress < 0.5 then
-		local old = WOverlord.NormalizeMonth(self.month - 1)
+		local old = DDayNight.NormalizeMonth(self.month - 1)
 		local new = self.month
-		self.dayMultiplier = Lerp(self.monthProgress + 0.5, WOverlord.monthsDaytimeMultiplier[old], WOverlord.monthsDaytimeMultiplier[new])
-		self.nightMultiplier = Lerp(self.monthProgress + 0.5, WOverlord.monthsNighttimeMultiplier[old], WOverlord.monthsNighttimeMultiplier[new])
+		self.dayMultiplier = Lerp(self.monthProgress + 0.5, DDayNight.monthsDaytimeMultiplier[old], DDayNight.monthsDaytimeMultiplier[new])
+		self.nightMultiplier = Lerp(self.monthProgress + 0.5, DDayNight.monthsNighttimeMultiplier[old], DDayNight.monthsNighttimeMultiplier[new])
 	elseif self.monthProgress == 0.5 then
-		self.dayMultiplier = WOverlord.monthsDaytimeMultiplier[self.month]
-		self.nightMultiplier = WOverlord.monthsNighttimeMultiplier[self.month]
+		self.dayMultiplier = DDayNight.monthsDaytimeMultiplier[self.month]
+		self.nightMultiplier = DDayNight.monthsNighttimeMultiplier[self.month]
 	else
-		local new = WOverlord.NormalizeMonth(self.month + 1)
+		local new = DDayNight.NormalizeMonth(self.month + 1)
 		local old = self.month
-		self.dayMultiplier = Lerp(self.monthProgress - 0.5, WOverlord.monthsDaytimeMultiplier[old], WOverlord.monthsDaytimeMultiplier[new])
-		self.nightMultiplier = Lerp(self.monthProgress - 0.5, WOverlord.monthsNighttimeMultiplier[old], WOverlord.monthsNighttimeMultiplier[new])
+		self.dayMultiplier = Lerp(self.monthProgress - 0.5, DDayNight.monthsDaytimeMultiplier[old], DDayNight.monthsDaytimeMultiplier[new])
+		self.nightMultiplier = Lerp(self.monthProgress - 0.5, DDayNight.monthsNighttimeMultiplier[old], DDayNight.monthsNighttimeMultiplier[new])
 	end
 
-	self.dayStart = math.floor(WOverlord.middayTime - WOverlord.dayDiffPre * self.dayMultiplier) + WOverlord.frandom(-480, 480, 'sunrise', self.absoluteDay)
-	self.dayStartLighting = math.floor(WOverlord.middayTime - WOverlord.dayDiffPreLighting * self.dayMultiplier) + WOverlord.frandom(-480, 480, 'sunrise_lighting', self.absoluteDay)
-	self.dayEnd = math.floor(WOverlord.dayDiffPost * self.dayMultiplier + WOverlord.middayTime) + WOverlord.frandom(-480, 480, 'sunset', self.absoluteDay)
-	self.dayEndLighting = math.floor(WOverlord.dayDiffPostLighting * self.dayMultiplier + WOverlord.middayTime) + WOverlord.frandom(-480, 480, 'sunset_lighting', self.absoluteDay)
+	self.dayStart = math.floor(DDayNight.middayTime - DDayNight.dayDiffPre * self.dayMultiplier) + DDayNight.frandom(-480, 480, 'sunrise', self.absoluteDay)
+	self.dayStartLighting = math.floor(DDayNight.middayTime - DDayNight.dayDiffPreLighting * self.dayMultiplier) + DDayNight.frandom(-480, 480, 'sunrise_lighting', self.absoluteDay)
+	self.dayEnd = math.floor(DDayNight.dayDiffPost * self.dayMultiplier + DDayNight.middayTime) + DDayNight.frandom(-480, 480, 'sunset', self.absoluteDay)
+	self.dayEndLighting = math.floor(DDayNight.dayDiffPostLighting * self.dayMultiplier + DDayNight.middayTime) + DDayNight.frandom(-480, 480, 'sunset_lighting', self.absoluteDay)
 	self.dayLength = self.dayEnd - self.dayStart
 	self.dayLengthLighting = self.dayEndLighting - self.dayStartLighting
 
@@ -84,13 +84,13 @@ end
 
 function meta:CalculateMonthsFraction(tableIn)
 	if self.monthProgress < 0.5 then
-		local old = WOverlord.NormalizeMonth(self.month - 1)
+		local old = DDayNight.NormalizeMonth(self.month - 1)
 		local new = self.month
 		return Lerp(self.monthProgress + 0.5, tableIn[old], tableIn[new])
 	elseif self.monthProgress == 0.5 then
 		return tableIn[self.month]
 	else
-		local new = WOverlord.NormalizeMonth(self.month + 1)
+		local new = DDayNight.NormalizeMonth(self.month + 1)
 		local old = self.month
 		return Lerp(self.monthProgress - 0.5, tableIn[old], tableIn[new])
 	end
@@ -165,31 +165,31 @@ function meta:GetAbsoluteDay()
 end
 
 function meta:FormatSunrise()
-	return WOverlord.FormatHours(self.dayStart)
+	return DDayNight.FormatHours(self.dayStart)
 end
 
 function meta:FormatSunset()
-	return WOverlord.FormatHours(self.dayEnd)
+	return DDayNight.FormatHours(self.dayEnd)
 end
 
 function meta:FormatSunriseLighting()
-	return WOverlord.FormatHours(self.dayStartLighting)
+	return DDayNight.FormatHours(self.dayStartLighting)
 end
 
 function meta:FormatSunsetLighting()
-	return WOverlord.FormatHours(self.dayEndLighting)
+	return DDayNight.FormatHours(self.dayEndLighting)
 end
 
 function meta:FormatNightEnd()
-	return WOverlord.FormatHours(self.dayStartLighting)
+	return DDayNight.FormatHours(self.dayStartLighting)
 end
 
 function meta:FormatNightStart()
-	return WOverlord.FormatHours(self.dayEndLighting)
+	return DDayNight.FormatHours(self.dayEndLighting)
 end
 
 function meta:GetMonthString()
-	return WOverlord.monthNames[self.month]
+	return DDayNight.monthNames[self.month]
 end
 
 function meta:Format()

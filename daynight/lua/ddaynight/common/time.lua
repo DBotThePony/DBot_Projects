@@ -14,14 +14,14 @@
 -- limitations under the License.
 
 local DLib = DLib
-local WOverlord = WOverlord
-local self = WOverlord
+local DDayNight = DDayNight
+local self = DDayNight
 local math = math
 local ipairs = ipairs
 local pairs = pairs
 local table = table
 
-self.TIME_MULTIPLIER = DLib.util.CreateSharedConvar('sv_woverlord_time_speed', '30', 'One real second is equal this amount of seconds. Must be positive integer')
+self.TIME_MULTIPLIER = DLib.util.CreateSharedConvar('sv_ddaynight_time_speed', '30', 'One real second is equal this amount of seconds. Must be positive integer')
 self.TIME = 0
 
 function self.GetTime()

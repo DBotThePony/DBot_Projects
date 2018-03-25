@@ -13,33 +13,11 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-local DLib = DLib
-local WOverlord = WOverlord
-local self = WOverlord
-local math = math
-local ipairs = ipairs
-local pairs = pairs
-local table = table
+local render = render
+local timer = timer
 
-local function numerize(tabIn)
-	for index, month in pairs(self.indexedMonths) do
-		tabIn[index] = tabIn[month]
-	end
-end
-
-self.monthsAverageTemperature = {
-	january = -20,
-	feburary = -18,
-	march = -6,
-	april = 4,
-	may = 17,
-	june = 24,
-	july = 30,
-	august = 27,
-	september = 20,
-	october = 13,
-	november = -4,
-	december = -23,
-}
-
-numerize(self.monthsAverageTemperature)
+net.receive('ddaynight.lightstyle', function()
+	timer.Create('WO_DelayLightmapUpdate', 1, 1, function()
+		render.RedownloadAllLightmaps()
+	end)
+end)

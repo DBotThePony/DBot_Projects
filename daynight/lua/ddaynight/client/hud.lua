@@ -14,56 +14,56 @@
 -- limitations under the License.
 
 local DLib = DLib
-local WOverlord = WOverlord
-local self = WOverlord
+local DDayNight = DDayNight
+local self = DDayNight
 local surface = surface
 local string = string
 
-local ALWAYS_DISPLAY_TIME = CreateConVar('cl_woverlord_display', '1', {FCVAR_ARCHIVE}, 'Always display server time')
+local ALWAYS_DISPLAY_TIME = CreateConVar('cl_ddaynight_display', '1', {FCVAR_ARCHIVE}, 'Always display server time')
 
-surface.CreateFont('WOverlord_TopTimeTip', {
+surface.CreateFont('DDayNight_TopTimeTip', {
 	font = 'Roboto Mono Medium',
 	weight = 500,
 	size = 34
 })
 
-surface.CreateFont('WOverlord_TopTime', {
+surface.CreateFont('DDayNight_TopTime', {
 	font = 'Hack',
 	weight = 500,
 	size = 34
 })
 
-surface.CreateFont('WOverlord_BottomTime', {
+surface.CreateFont('DDayNight_BottomTime', {
 	font = 'Source Sans Pro',
 	weight = 500,
 	size = 46
 })
 
-surface.CreateFont('WOverlord_SunsetSunrise', {
+surface.CreateFont('DDayNight_SunsetSunrise', {
 	font = 'Exo 2',
 	weight = 400,
 	size = 28
 })
 
-surface.CreateFont('WOverlord_Night', {
+surface.CreateFont('DDayNight_Night', {
 	font = 'Exo 2',
 	weight = 400,
 	size = 20
 })
 
-surface.CreateFont('WOverlord_Temperature', {
+surface.CreateFont('DDayNight_Temperature', {
 	font = 'Exo 2 Thin',
 	weight = 500,
 	size = 20
 })
 
-surface.CreateFont('WOverlord_WindSpeed', {
+surface.CreateFont('DDayNight_WindSpeed', {
 	font = 'Exo 2',
 	weight = 500,
 	size = 20
 })
 
-surface.CreateFont('WOverlord_RegularTime', {
+surface.CreateFont('DDayNight_RegularTime', {
 	font = 'Roboto Mono Medium',
 	weight = 500,
 	size = 14
@@ -71,9 +71,9 @@ surface.CreateFont('WOverlord_RegularTime', {
 
 self.DISPLAY_FULL_TIME = false
 
-local GET_FULL_POSITION = DLib.HUDCommons.DefinePosition('woverlord_timefull', 0.5, 0.07)
-local GET_FULL_POSITION_SCOREBOARD = DLib.HUDCommons.DefinePosition('woverlord_timefull', 0.5, 0.4)
-local GET_REGULAR_POSITION = DLib.HUDCommons.DefinePosition('woverlord_time', 0.99, 0.99)
+local GET_FULL_POSITION = DLib.HUDCommons.DefinePosition('ddaynight_timefull', 0.5, 0.07)
+local GET_FULL_POSITION_SCOREBOARD = DLib.HUDCommons.DefinePosition('ddaynight_timefull', 0.5, 0.4)
+local GET_REGULAR_POSITION = DLib.HUDCommons.DefinePosition('ddaynight_time', 0.99, 0.99)
 
 local function HUDPaintFULL()
 	if not self.DISPLAY_FULL_TIME and not self.SCOREBOARD_IS_SHOWN then return end
@@ -87,21 +87,21 @@ local function HUDPaintFULL()
 	end
 
 	surface.SetTextColor(255, 255, 255)
-	surface.SetFont('WOverlord_TopTimeTip')
+	surface.SetFont('DDayNight_TopTimeTip')
 
 	local text = 'HH:MM:SS'
 	local w2, h2 = surface.GetTextSize(text)
 	surface.SetTextPos(x - w2 / 2, y)
 	surface.DrawText(text)
 
-	surface.SetFont('WOverlord_TopTime')
+	surface.SetFont('DDayNight_TopTime')
 
 	text = self.DATE_OBJECT_ACCURATE:FormatTime()
 	local w, h = surface.GetTextSize(text)
 	surface.SetTextPos(x - w / 2, y + h2)
 	surface.DrawText(text)
 
-	surface.SetFont('WOverlord_BottomTime')
+	surface.SetFont('DDayNight_BottomTime')
 	text = self.DATE_OBJECT_ACCURATE:FormatDateYear()
 	local w, h3 = surface.GetTextSize(text)
 
@@ -112,7 +112,7 @@ local function HUDPaintFULL()
 
 	if not self.DISPLAY_SUNRISE and not self.SCOREBOARD_IS_SHOWN then return end
 
-	surface.SetFont('WOverlord_SunsetSunrise')
+	surface.SetFont('DDayNight_SunsetSunrise')
 	text = 'Sunrise: ' .. self.DATE_OBJECT_ACCURATE:FormatSunrise() .. '   Sunset: ' .. self.DATE_OBJECT_ACCURATE:FormatSunset()
 	local w, h = surface.GetTextSize(text)
 
@@ -121,7 +121,7 @@ local function HUDPaintFULL()
 
 	y = y + h
 
-	surface.SetFont('WOverlord_Night')
+	surface.SetFont('DDayNight_Night')
 	text = 'Night end: ' .. self.DATE_OBJECT_ACCURATE:FormatNightEnd() .. '   Night start: ' .. self.DATE_OBJECT_ACCURATE:FormatNightStart()
 	w, h = surface.GetTextSize(text)
 
@@ -130,7 +130,7 @@ local function HUDPaintFULL()
 
 	y = y + h + 2
 
-	surface.SetFont('WOverlord_Temperature')
+	surface.SetFont('DDayNight_Temperature')
 	text = string.format('Temperature: %.1f°C', self.DATE_OBJECT_ACCURATE:GetTemperature())
 	w, h = surface.GetTextSize(text)
 
@@ -141,7 +141,7 @@ local function HUDPaintFULL()
 
 	y = y + h + 2
 
-	surface.SetFont('WOverlord_WindSpeed')
+	surface.SetFont('DDayNight_WindSpeed')
 	text = string.format('Wind speed: %.2f m/s; Beaufort Score: %i (%s)', self.DATE_OBJECT_ACCURATE:GetWindSpeedSI():GetMetres(), self.DATE_OBJECT_ACCURATE:GetBeaufortScore(), self.DATE_OBJECT_ACCURATE:GetBeaufortName())
 	w, h = surface.GetTextSize(text)
 
@@ -154,7 +154,7 @@ local function HUDPaint()
 
 	local x, y = GET_REGULAR_POSITION()
 	surface.SetTextColor(255, 255, 255)
-	surface.SetFont('WOverlord_RegularTime')
+	surface.SetFont('DDayNight_RegularTime')
 	local text = self.DATE_OBJECT_ACCURATE:Format()
 	local w, h = surface.GetTextSize(text)
 	surface.SetTextPos(x - w, y - h)
@@ -168,7 +168,7 @@ end
 local function ScoreboardHide()
 	self.SCOREBOARD_IS_SHOWN = false
 end
-hook.Add('HUDPaint', 'WeatherOverlord_DisplayTimeFull', HUDPaintFULL)
-hook.Add('ScoreboardShow', 'WeatherOverlord_DisplayTimeFull', ScoreboardShow, -10)
-hook.Add('ScoreboardHide', 'WeatherOverlord_DisplayTimeFull', ScoreboardHide, -10)
-hook.Add('HUDPaint', 'WeatherOverlord_DisplayTime', HUDPaint)
+hook.Add('HUDPaint', 'DDayNight_DisplayTimeFull', HUDPaintFULL)
+hook.Add('ScoreboardShow', 'DDayNight_DisplayTimeFull', ScoreboardShow, -10)
+hook.Add('ScoreboardHide', 'DDayNight_DisplayTimeFull', ScoreboardHide, -10)
+hook.Add('HUDPaint', 'DDayNight_DisplayTime', HUDPaint)

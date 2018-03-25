@@ -15,13 +15,13 @@
 
 local math = math
 local Lerp = Lerp
-local WOverlord = WOverlord
+local DDayNight = DDayNight
 local math = math
 local Vector = Vector
 local pairs = pairs
 local ipairs = ipairs
 
-WOverlord.beaufort = {
+DDayNight.beaufort = {
 	stille = 		{0, 0.3},
 	sillent = 		{1, 1.5},
 	light = 		{2, 3.3},
@@ -37,14 +37,14 @@ WOverlord.beaufort = {
 	hurricane = 	{12, 999},
 }
 
-WOverlord.beaufortLocalized = {}
-WOverlord.beaufortNumered = {}
+DDayNight.beaufortLocalized = {}
+DDayNight.beaufortNumered = {}
 
-for id, data in pairs(WOverlord.beaufort) do
-	WOverlord.beaufortLocalized[data[1]] = id
+for id, data in pairs(DDayNight.beaufort) do
+	DDayNight.beaufortLocalized[data[1]] = id
 	data[3] = id
 	data[4] = id:sub(1, 1):upper() .. id:sub(2)
-	WOverlord.beaufortNumered[data[1] + 1] = data
+	DDayNight.beaufortNumered[data[1] + 1] = data
 end
 
 local meta = DLib.FindMetaTable('WODate')
@@ -75,7 +75,7 @@ local function upscale(str, seed)
 	local concat = 'wind_direction_upscale_' .. str
 
 	for i = 1, 100 do
-		if WOverlord.random(0, 100, concat, seed % 600 - 15 * i + seed / 100) <= currentChance then
+		if DDayNight.random(0, 100, concat, seed % 600 - 15 * i + seed / 100) <= currentChance then
 			currentChance = currentChance * 0.75
 			currentStep = currentStep + math.pow(3, i)
 		else
@@ -94,7 +94,7 @@ local function calculate(self)
 	local average = Vector(0, 0, 0)
 
 	for hour = 1, 23 do
-		local date = WOverlord.Date(day * WOverlord.timeTypes.day + hour * WOverlord.timeTypes.hour)
+		local date = DDayNight.Date(day * DDayNight.timeTypes.day + hour * DDayNight.timeTypes.hour)
 		local wind = date:GetWindDirection()
 		average = average + wind
 		CACHE[day].perHour[hour] = wind
@@ -131,34 +131,34 @@ function meta:GetWindDirection()
 	local day = self:GetAbsoluteDay()
 	local hour = self:GetHour()
 	local part = math.floor(hour / hourPiece)
-	local part2 = WOverlord.timeTypes.hour * hourAmount
+	local part2 = DDayNight.timeTypes.hour * hourAmount
 	local t = (self:GetSecondInDay() % part2) / part2
 
 	local vec1 = Vector(0, 0, 0)
 
-	local post = WOverlord.Date(self:GetStamp() + hourAmount * WOverlord.timeTypes.hour)
+	local post = DDayNight.Date(self:GetStamp() + hourAmount * DDayNight.timeTypes.hour)
 
 	local dayPost = post:GetAbsoluteDay()
 	local hourPost = post:GetHour()
 	local partPost = math.floor(hourPost / 4)
 	local seed = day * hourAmount + part
 
-	local windSelfX = WOverlord.random(-upscale('x_minus', seed), upscale('x_plus', seed), 'wind_direction_x', seed)
-	local windSelfY = WOverlord.random(-upscale('y_minus', seed), upscale('y_plus', seed), 'wind_direction_y', seed)
+	local windSelfX = DDayNight.random(-upscale('x_minus', seed), upscale('x_plus', seed), 'wind_direction_x', seed)
+	local windSelfY = DDayNight.random(-upscale('y_minus', seed), upscale('y_plus', seed), 'wind_direction_y', seed)
 
 	seed = dayPost * hourAmount + partPost
-	local windPostX = WOverlord.random(-upscale('x_minus', seed), upscale('x_plus', seed), 'wind_direction_x', seed)
-	local windPostY = WOverlord.random(-upscale('y_minus', seed), upscale('y_plus', seed), 'wind_direction_y', seed)
+	local windPostX = DDayNight.random(-upscale('x_minus', seed), upscale('x_plus', seed), 'wind_direction_x', seed)
+	local windPostY = DDayNight.random(-upscale('y_minus', seed), upscale('y_plus', seed), 'wind_direction_y', seed)
 
-	if self:GetStamp() - hourAmount * WOverlord.timeTypes.hour >= 0 then
-		local pre = WOverlord.Date(self:GetStamp() - hourAmount * WOverlord.timeTypes.hour)
+	if self:GetStamp() - hourAmount * DDayNight.timeTypes.hour >= 0 then
+		local pre = DDayNight.Date(self:GetStamp() - hourAmount * DDayNight.timeTypes.hour)
 		local dayPre = pre:GetAbsoluteDay()
 		local hourPre = pre:GetHour()
 		local partPre = math.floor(hourPre / 4)
 
 		seed = dayPre * hourAmount + partPre
-		local windPreX = WOverlord.random(-upscale('x_minus', seed), upscale('x_plus', seed), 'wind_direction_x', seed)
-		local windPreY = WOverlord.random(-upscale('y_minus', seed), upscale('y_plus', seed), 'wind_direction_y', seed)
+		local windPreX = DDayNight.random(-upscale('x_minus', seed), upscale('x_plus', seed), 'wind_direction_x', seed)
+		local windPreY = DDayNight.random(-upscale('y_minus', seed), upscale('y_plus', seed), 'wind_direction_y', seed)
 
 		vec1 = Vector(windPreX, windPreY, 0)
 	end
@@ -180,7 +180,7 @@ end
 function meta:GetBeaufortScore()
 	local metresPerSecond = self:GetWindSpeedSI():GetMetres()
 
-	for i, data in ipairs(WOverlord.beaufortNumered) do
+	for i, data in ipairs(DDayNight.beaufortNumered) do
 		if data[2] >= metresPerSecond then
 			return data[1]
 		end
@@ -188,11 +188,11 @@ function meta:GetBeaufortScore()
 end
 
 function meta:GetBeaufortName()
-	return WOverlord.beaufortNumered[self:GetBeaufortScore() + 1][4]
+	return DDayNight.beaufortNumered[self:GetBeaufortScore() + 1][4]
 end
 
 function meta:GetBeaufortID()
-	return WOverlord.beaufortNumered[self:GetBeaufortScore() + 1][3]
+	return DDayNight.beaufortNumered[self:GetBeaufortScore() + 1][3]
 end
 
-hook.Add('WOverlord_SeedChanges', 'WeatherOverlord_ClearWind', reset)
+hook.Add('DDayNight_SeedChanges', 'DDayNight_ClearWind', reset)

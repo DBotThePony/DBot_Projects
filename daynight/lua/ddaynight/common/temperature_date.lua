@@ -15,7 +15,7 @@
 
 local math = math
 local Lerp = Lerp
-local WOverlord = WOverlord
+local DDayNight = DDayNight
 
 local meta = DLib.FindMetaTable('WODate')
 
@@ -35,11 +35,11 @@ function meta:GetAverageTemperature()
 	local day = self:GetDay()
 
 	if not TEMPERATURE_CACHE[day] then
-		local date = WOverlord.Date(day * WOverlord.timeTypes.day)
+		local date = DDayNight.Date(day * DDayNight.timeTypes.day)
 		local total = date:GetTemperature()
 
 		for hour = 1, 23 do
-			date:SetStamp(day * WOverlord.timeTypes.day + hour * WOverlord.timeTypes.hour)
+			date:SetStamp(day * DDayNight.timeTypes.day + hour * DDayNight.timeTypes.hour)
 			total = total + date:GetTemperature()
 		end
 
@@ -55,7 +55,7 @@ function meta:GetTemperature()
 	local hourPast = self:GetHour() - 1
 	local dayPast = day
 
-	local fraction = self:GetSecondInHour() / WOverlord.timeTypes.hour
+	local fraction = self:GetSecondInHour() / DDayNight.timeTypes.hour
 
 	if hourPast < 0 then
 		hourPast = 23
@@ -79,14 +79,14 @@ function meta:GetTemperature()
 		mult = 1
 	end
 
-	local rnd = WOverlord.random(0, 400, 'day_temperature_night', self:GetAbsoluteDay()) / 400 * mult
+	local rnd = DDayNight.random(0, 400, 'day_temperature_night', self:GetAbsoluteDay()) / 400 * mult
 
 	local current = formula(day, hour)
 	local past = formula(dayPast, hourPast)
 	local lerp = Lerp(fraction, past, current)
-	local usualTemperature = self:CalculateMonthsFraction(WOverlord.monthsAverageTemperature)
+	local usualTemperature = self:CalculateMonthsFraction(DDayNight.monthsAverageTemperature)
 
 	return usualTemperature + lerp - math.abs(usualTemperature) * rnd
 end
 
-hook.Add('WOverlord_SeedChanges', 'WeatherOverlord_ClearTemperature', reset)
+hook.Add('DDayNight_SeedChanges', 'DDayNight_ClearTemperature', reset)

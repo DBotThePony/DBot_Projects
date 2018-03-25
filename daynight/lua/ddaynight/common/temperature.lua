@@ -13,26 +13,33 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-local WOverlord = WOverlord
 local DLib = DLib
-local net = net
-local hook = hook
-local IsValid = IsValid
+local DDayNight = DDayNight
+local self = DDayNight
+local math = math
+local ipairs = ipairs
+local pairs = pairs
+local table = table
 
-net.pool('weatheroverlord.replicateseed')
-
-local function WOverlord_SeedChanges()
-	net.Start('weatheroverlord.replicateseed')
-	net.WriteUInt(WOverlord.SEED_VALID, 64)
-	net.Broadcast()
+local function numerize(tabIn)
+	for index, month in pairs(self.indexedMonths) do
+		tabIn[index] = tabIn[month]
+	end
 end
 
-net.receive('weatheroverlord.replicateseed', function(len, ply)
-	if not IsValid(ply) then return end
+self.monthsAverageTemperature = {
+	january = -20,
+	feburary = -18,
+	march = -6,
+	april = 4,
+	may = 17,
+	june = 24,
+	july = 30,
+	august = 27,
+	september = 20,
+	october = 13,
+	november = -4,
+	december = -23,
+}
 
-	net.Start('weatheroverlord.replicateseed')
-	net.WriteUInt(WOverlord.SEED_VALID, 64)
-	net.Send(ply)
-end)
-
-hook.Add('WOverlord_SeedChanges', 'WeatherOverlord_ReplicateSeed', WOverlord_SeedChanges)
+numerize(self.monthsAverageTemperature)

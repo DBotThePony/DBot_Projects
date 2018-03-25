@@ -16,7 +16,7 @@
 -- This object is supposted to be static
 
 local DLib = DLib
-local WOverlord = WOverlord
+local DDayNight = DDayNight
 local math = math
 local ipairs = ipairs
 local pairs = pairs
@@ -28,7 +28,7 @@ local type = type
 
 local meta = DLib.CreateLuaObject('WODate', false)
 
-WOverlord.Date = meta.Create
+DDayNight.Date = meta.Create
 
 function meta:Initialize(stamp)
 	self:SetStamp(stamp)
@@ -40,7 +40,7 @@ function meta:SetStamp(stamp)
 
 	if not self.dayObject or self.dayObject:GetAbsoluteDay() ~= self:GetAbsoluteDay() then
 		if not self.dayObject then
-			self.dayObject = WOverlord.Day(stamp)
+			self.dayObject = DDayNight.Day(stamp)
 		else
 			self.dayObject:SetStamp(stamp)
 		end
@@ -56,17 +56,17 @@ function meta:DateDay()
 end
 
 function meta:GetAge()
-	return math.floor(self.stamp / WOverlord.timeTypes.age)
+	return math.floor(self.stamp / DDayNight.timeTypes.age)
 end
 
 function meta:GetYear()
-	return math.floor(self.stamp / WOverlord.timeTypes.year)
+	return math.floor(self.stamp / DDayNight.timeTypes.year)
 end
 
 function meta:GetMonth()
-	local time = self.stamp % WOverlord.timeTypes.year
+	local time = self.stamp % DDayNight.timeTypes.year
 
-	for i, seconds in pairs(WOverlord.monthsTimeInYearNumeric) do
+	for i, seconds in pairs(DDayNight.monthsTimeInYearNumeric) do
 		if seconds >= time then
 			return i - 1
 		end
@@ -82,14 +82,14 @@ function meta:ClosestHour()
 end
 
 function meta:GetMonthTime()
-	local time = self.stamp % WOverlord.timeTypes.year
+	local time = self.stamp % DDayNight.timeTypes.year
 	local month = self:GetMonth()
 
 	if month == 0 then
 		return time
 	end
 
-	return time - WOverlord.MonthLength(month - 1)
+	return time - DDayNight.MonthLength(month - 1)
 end
 
 function meta:GetAbsoluteMonth()
@@ -97,39 +97,39 @@ function meta:GetAbsoluteMonth()
 end
 
 function meta:GetWeek()
-	return math.floor((self.stamp % WOverlord.timeTypes.year) / WOverlord.timeTypes.week)
+	return math.floor((self.stamp % DDayNight.timeTypes.year) / DDayNight.timeTypes.week)
 end
 
 function meta:GetLocalWeek()
-	return math.floor(self:GetMonthTime() / WOverlord.timeTypes.week)
+	return math.floor(self:GetMonthTime() / DDayNight.timeTypes.week)
 end
 
 function meta:GetDay()
-	return math.floor((self.stamp % WOverlord.timeTypes.year) / WOverlord.timeTypes.day)
+	return math.floor((self.stamp % DDayNight.timeTypes.year) / DDayNight.timeTypes.day)
 end
 
 function meta:GetLocalDay()
-	return math.floor((self.stamp % WOverlord.timeTypes.week) / WOverlord.timeTypes.day)
+	return math.floor((self.stamp % DDayNight.timeTypes.week) / DDayNight.timeTypes.day)
 end
 
 function meta:GetAbsoluteDay()
-	return math.floor(self.stamp / WOverlord.timeTypes.day)
+	return math.floor(self.stamp / DDayNight.timeTypes.day)
 end
 
 function meta:GetAbsoluteHour()
-	return math.floor(self.stamp / WOverlord.timeTypes.hour)
+	return math.floor(self.stamp / DDayNight.timeTypes.hour)
 end
 
 function meta:GetHour()
-	return math.floor((self.stamp % WOverlord.timeTypes.day) / WOverlord.timeTypes.hour)
+	return math.floor((self.stamp % DDayNight.timeTypes.day) / DDayNight.timeTypes.hour)
 end
 
 function meta:GetAbsoluteMinute()
-	return math.floor(self.stamp / WOverlord.timeTypes.minute)
+	return math.floor(self.stamp / DDayNight.timeTypes.minute)
 end
 
 function meta:GetMinute()
-	return math.floor((self.stamp % WOverlord.timeTypes.hour) / WOverlord.timeTypes.minute)
+	return math.floor((self.stamp % DDayNight.timeTypes.hour) / DDayNight.timeTypes.minute)
 end
 
 function meta:GetAbsoluteSecond()
@@ -137,11 +137,11 @@ function meta:GetAbsoluteSecond()
 end
 
 function meta:GetDayProgression()
-	return (self.stamp % WOverlord.timeTypes.day) / WOverlord.timeTypes.day
+	return (self.stamp % DDayNight.timeTypes.day) / DDayNight.timeTypes.day
 end
 
 function meta:GetDaySecond()
-	return self.stamp % WOverlord.timeTypes.day
+	return self.stamp % DDayNight.timeTypes.day
 end
 
 function meta:GetDayProgression()
@@ -189,39 +189,39 @@ function meta:GetStamp()
 end
 
 function meta:IsBeforeMidday()
-	return self:GetDaySecond() < WOverlord.middayTime
+	return self:GetDaySecond() < DDayNight.middayTime
 end
 
 function meta:IsAfterMidday()
-	return self:GetDaySecond() > WOverlord.middayTime
+	return self:GetDaySecond() > DDayNight.middayTime
 end
 
 function meta:GetSecond()
-	return math.floor(self.stamp % WOverlord.timeTypes.minute)
+	return math.floor(self.stamp % DDayNight.timeTypes.minute)
 end
 
 function meta:GetSecondInHour()
-	return math.floor(self.stamp % WOverlord.timeTypes.hour)
+	return math.floor(self.stamp % DDayNight.timeTypes.hour)
 end
 
 function meta:GetSecondInDay()
-	return math.floor(self.stamp % WOverlord.timeTypes.day)
+	return math.floor(self.stamp % DDayNight.timeTypes.day)
 end
 
 function meta:FormatCurrentHour()
-	return WOverlord.FormatHours(self.stamp)
+	return DDayNight.FormatHours(self.stamp)
 end
 
 function meta:FormatHour()
-	return WOverlord.FormatHours(self.stamp)
+	return DDayNight.FormatHours(self.stamp)
 end
 
 function meta:FormatCurrentTime()
-	return WOverlord.FormatTime(self.stamp)
+	return DDayNight.FormatTime(self.stamp)
 end
 
 function meta:FormatTime()
-	return WOverlord.FormatTime(self.stamp)
+	return DDayNight.FormatTime(self.stamp)
 end
 
 function meta:Format()

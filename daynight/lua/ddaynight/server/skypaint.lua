@@ -14,7 +14,7 @@
 -- limitations under the License.
 
 local DLib = DLib
-local WOverlord = WOverlord
+local DDayNight = DDayNight
 local hook = hook
 local CurTime = CurTime
 local math = math
@@ -90,22 +90,22 @@ local function proxiedCall(callFunc, callString, callValue, lerpFunction, lerpMu
 		end
 
 		proxiedValues[callString] = proxiedValues[callString] or callValue
-		local newValue = WOverlord.CallWeatherModifier(callString, callValue)
+		local newValue = DDayNight.CallWeatherModifier(callString, callValue)
 		local lerp = lerpFunction(FrameTime() * lerpMult, proxiedValues[callString], newValue)
 		proxiedValues[callString] = lerp
 		env_skypaint[callFunc](env_skypaint, lerp)
 		return lerp
 	else
-		local newValue = WOverlord.CallWeatherModifier(callString, callValue)
+		local newValue = DDayNight.CallWeatherModifier(callString, callValue)
 		env_skypaint[callFunc](env_skypaint, newValue)
 		return newValue
 	end
 end
 
-local function WOverlord_NewSecond()
+local function DDayNight_NewSecond()
 	if not env_skypaint then return end
 
-	local self = WOverlord.GetCurrentDateAccurate()
+	local self = DDayNight.GetCurrentDateAccurate()
 	local progression = self:GetDayProgression()
 	local progressionLight = self:GetLightProgression()
 	local fullNight = progressionLight == 0 or progressionLight == 1
@@ -230,7 +230,7 @@ local function WOverlord_NewSecond()
 	end
 end
 
-hook.Add('InitPostEntity', 'WeatherOverlord_InitializeSkypaint', initializeEntity)
-hook.Add('PostCleanupMap', 'WeatherOverlord_InitializeSkypaint', initializeEntity)
-hook.Remove('WOverlord_NewSecond', 'WeatherOverlord_Skypaint', WOverlord_NewSecond)
-hook.Add('Think', 'WeatherOverlord_Skypaint', WOverlord_NewSecond)
+hook.Add('InitPostEntity', 'DDayNight_InitializeSkypaint', initializeEntity)
+hook.Add('PostCleanupMap', 'DDayNight_InitializeSkypaint', initializeEntity)
+hook.Remove('DDayNight_NewSecond', 'DDayNight_Skypaint', DDayNight_NewSecond)
+hook.Add('Think', 'DDayNight_Skypaint', DDayNight_NewSecond)

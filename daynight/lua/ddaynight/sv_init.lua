@@ -13,11 +13,26 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-local render = render
-local timer = timer
+local DDayNight = DDayNight
+local DLib = DLib
+local net = net
+local hook = hook
+local IsValid = IsValid
 
-net.receive('weatheroverlord.lightstyle', function()
-	timer.Create('WO_DelayLightmapUpdate', 1, 1, function()
-		render.RedownloadAllLightmaps()
-	end)
+net.pool('ddaynight.replicateseed')
+
+local function DDayNight_SeedChanges()
+	net.Start('ddaynight.replicateseed')
+	net.WriteUInt(DDayNight.SEED_VALID, 64)
+	net.Broadcast()
+end
+
+net.receive('ddaynight.replicateseed', function(len, ply)
+	if not IsValid(ply) then return end
+
+	net.Start('ddaynight.replicateseed')
+	net.WriteUInt(DDayNight.SEED_VALID, 64)
+	net.Send(ply)
 end)
+
+hook.Add('DDayNight_SeedChanges', 'DDayNight_ReplicateSeed', DDayNight_SeedChanges)

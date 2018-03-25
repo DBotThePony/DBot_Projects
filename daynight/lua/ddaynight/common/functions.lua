@@ -15,12 +15,12 @@
 
 local DLib = DLib
 local math = math
-local WOverlord = WOverlord
+local DDayNight = DDayNight
 local util = util
 local MASK_BLOCKLOS = MASK_BLOCKLOS
 local Vector = Vector
 
-function WOverlord.CheckOutdoorPoint(posIn)
+function DDayNight.CheckOutdoorPoint(posIn)
 	local tr = util.TraceLine({
 		start = posIn + Vector(0, 0, 10),
 		endpos = posIn + Vector(0, 0, 16000),
@@ -30,7 +30,7 @@ function WOverlord.CheckOutdoorPoint(posIn)
 	return not tr.Hit or tr.HitSky
 end
 
-function WOverlord.CheckOutdoorPointHalf(posIn)
+function DDayNight.CheckOutdoorPointHalf(posIn)
 	local tr = util.TraceLine({
 		start = posIn + Vector(0, 0, 10),
 		endpos = posIn + Vector(0, 0, 8000),
@@ -40,7 +40,7 @@ function WOverlord.CheckOutdoorPointHalf(posIn)
 	return not tr.Hit or tr.HitSky
 end
 
-function WOverlord.TraceSky(posIn)
+function DDayNight.TraceSky(posIn)
 	return util.TraceLine({
 		start = posIn + Vector(0, 0, 10),
 		endpos = posIn + Vector(0, 0, 16000),
@@ -48,7 +48,7 @@ function WOverlord.TraceSky(posIn)
 	})
 end
 
-function WOverlord.TraceSkyHalf(posIn)
+function DDayNight.TraceSkyHalf(posIn)
 	return util.TraceLine({
 		start = posIn + Vector(0, 0, 10),
 		endpos = posIn + Vector(0, 0, 8000),
@@ -56,7 +56,7 @@ function WOverlord.TraceSkyHalf(posIn)
 	})
 end
 
-function WOverlord.TraceSkyNear(posIn)
+function DDayNight.TraceSkyNear(posIn)
 	return util.TraceLine({
 		start = posIn + Vector(0, 0, 10),
 		endpos = posIn + Vector(0, 0, 4000),
@@ -64,8 +64,8 @@ function WOverlord.TraceSkyNear(posIn)
 	})
 end
 
-function WOverlord.GetSkyPosition(posIn)
-	local tr = WOverlord.TraceSky(posIn)
+function DDayNight.GetSkyPosition(posIn)
+	local tr = DDayNight.TraceSky(posIn)
 	if tr.Hit and not tr.HitSky then return false end
 
 	if tr.Fraction <= 0.1 then
@@ -75,8 +75,8 @@ function WOverlord.GetSkyPosition(posIn)
 	end
 end
 
-function WOverlord.GetSkyPositionHalf(posIn)
-	local tr = WOverlord.TraceSkyHalf(posIn)
+function DDayNight.GetSkyPositionHalf(posIn)
+	local tr = DDayNight.TraceSkyHalf(posIn)
 	if tr.Hit and not tr.HitSky then return false end
 
 	if tr.Fraction <= 0.1 then
@@ -86,9 +86,9 @@ function WOverlord.GetSkyPositionHalf(posIn)
 	end
 end
 
-function WOverlord.GetSkyPositionNear(posIn)
-	if not WOverlord.CheckOutdoorPointHalf(posIn) then return false end
-	local tr = WOverlord.TraceSkyNear(posIn)
+function DDayNight.GetSkyPositionNear(posIn)
+	if not DDayNight.CheckOutdoorPointHalf(posIn) then return false end
+	local tr = DDayNight.TraceSkyNear(posIn)
 
 	if tr.Fraction <= 0.125 then
 		return tr.HitPos + Vector(0, 0, -5)

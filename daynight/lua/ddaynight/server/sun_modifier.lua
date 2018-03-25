@@ -14,7 +14,7 @@
 -- limitations under the License.
 
 local DLib = DLib
-local WOverlord = WOverlord
+local DDayNight = DDayNight
 local hook = hook
 local CurTime = CurTime
 local math = math
@@ -33,7 +33,7 @@ local function initializeEntity()
 
 	env_sun = sun[1]
 
-	local self = WOverlord.GetCurrentDate()
+	local self = DDayNight.GetCurrentDate()
 	local progression = self:GetDayProgression()
 
 	if progression ~= 0 and progression ~= 1 then
@@ -57,36 +57,36 @@ function meta:GetSunAngles()
 	return finalAngle
 end
 
-local function WOverlord_NewMinute()
+local function DDayNight_NewMinute()
 	if not env_sun then return end
 
-	local self = WOverlord.GetCurrentDate()
+	local self = DDayNight.GetCurrentDate()
 	local progression = self:GetDayProgression()
 
 	env_sun:SetKeyValue('sun_dir', tostring(self:GetSunAngles():Forward()))
 end
 
-local function WOverlord_Sunrise()
+local function DDayNight_Sunrise()
 	if not env_sun then return end
 
 	env_sun:Fire('turnon')
 end
 
-local function WOverlord_Sunset()
+local function DDayNight_Sunset()
 	if not env_sun then return end
 
 	env_sun:Fire('turnoff')
 end
 
-local function WOverlord_InitializeTimeStatement()
+local function DDayNight_InitializeTimeStatement()
 	if not env_sun then return end
 
 	env_sun:Fire('turnon')
 end
 
-hook.Add('InitPostEntity', 'WeatherOverlord_InitializeSun', initializeEntity)
-hook.Add('PostCleanupMap', 'WeatherOverlord_InitializeSun', initializeEntity)
-hook.Add('WOverlord_NewMinute', 'WeatherOverlord_Sun', WOverlord_NewMinute)
-hook.Add('WOverlord_Sunrise', 'WeatherOverlord_Sun', WOverlord_Sunrise)
-hook.Add('WOverlord_Sunset', 'WeatherOverlord_Sun', WOverlord_Sunset)
-hook.Add('WOverlord_InitializeTimeStatement', 'WeatherOverlord_Sun', WOverlWOverlord_InitializeTimeStatementord_Sunset)
+hook.Add('InitPostEntity', 'DDayNight_InitializeSun', initializeEntity)
+hook.Add('PostCleanupMap', 'DDayNight_InitializeSun', initializeEntity)
+hook.Add('DDayNight_NewMinute', 'DDayNight_Sun', DDayNight_NewMinute)
+hook.Add('DDayNight_Sunrise', 'DDayNight_Sun', DDayNight_Sunrise)
+hook.Add('DDayNight_Sunset', 'DDayNight_Sun', DDayNight_Sunset)
+hook.Add('DDayNight_InitializeTimeStatement', 'DDayNight_Sun', WOverlDDayNight_InitializeTimeStatementord_Sunset)
