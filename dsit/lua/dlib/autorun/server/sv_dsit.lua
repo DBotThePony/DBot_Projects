@@ -422,6 +422,11 @@ local function PostLeave(ply, vehPos, upsideDown)
 		vehPos = tr.HitPos + tr.HitNormal * 2
 	end
 
+	if ply.dsit_weapons ~= nil then
+		ply:SetAllowWeaponsInVehicle(ply.dsit_weapons)
+		ply.dsit_weapons = nil
+	end
+
 	local space = DLib.Freespace(vehPos + Vector(0, 0, 1), 25, 5)
 	local mins, maxs = ply:GetHull()
 	space:SetAABB(mins, maxs)
