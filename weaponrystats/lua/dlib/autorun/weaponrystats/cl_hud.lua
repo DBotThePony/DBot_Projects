@@ -53,8 +53,10 @@ local qualityColors = {
 	Color(108, 0, 255),
 }
 
+local alpha = 255
+
 local function doDrawText(text, x, y, color)
-	surface.SetTextColor(0, 0, 0)
+	surface.SetTextColor(0, 0, 0, alpha)
 	surface.SetTextPos(x + 1, y + 1)
 	surface.DrawText(text)
 
@@ -63,9 +65,15 @@ local function doDrawText(text, x, y, color)
 	surface.DrawText(text)
 end
 
+local lastWeapon
+local lastChange = 0
+
 local function HUDPaint()
 	if not weaponrystats.ENABLED:GetBool() then return end
-	local weapon = LocalPlayer():GetActiveWeapon()
+	local ply = LocalPlayer()
+	if not ply:IsValid() then return end
+	if ply:InVehicle() and not ply:GetAllowWeaponsInVehicle() then return end
+	local weapon = ply:GetActiveWeapon()
 	if not IsValid(weapon) then return end
 	local modif, wtype = weapon:GetWeaponModification(), weapon:GetWeaponType()
 	if not modif and not wtype then return end
@@ -73,12 +81,22 @@ local function HUDPaint()
 	local x, y = GET_POSITION()
 	local currentQuality = 0
 
+	local time = RealTime()
+
+	if weapon ~= lastWeapon then
+		lastChange = RealTime() + 4
+		lastWeapon = weapon
+	end
+
+	if lastChange < time then return end
+
 	local sin = 0
-	local STATS_COLOR = Color(255, 255, 255)
+	alpha = (1 - time:progression(lastChange - 1, lastChange)) * 255
+	local STATS_COLOR = Color(255, 255, 255, alpha)
 
 	if ALLOW_BLINK:GetBool() then
 		sin = math.sin(RealTime() * 10) * 20
-		STATS_COLOR = Color(230 + sin, 230 + sin, 230 + sin)
+		STATS_COLOR = Color(230 + sin, 230 + sin, 230 + sin, alpha)
 	end
 
 	local speed = 1
@@ -151,7 +169,7 @@ local function HUDPaint()
 	surface.SetFont('WPS.DisplayName')
 
 	local r, g, b = qualityColors[currentQualityColor].r, qualityColors[currentQualityColor].g, qualityColors[currentQualityColor].b
-	local colorQuality = Color(math.Clamp(r + sin, 0, 255), math.Clamp(g + sin, 0, 255), math.Clamp(b + sin, 0, 255))
+	local colorQuality = Color(math.Clamp(r + sin, 0, 255), math.Clamp(g + sin, 0, 255), math.Clamp(b + sin, 0, 255), alpha)
 	doDrawText(name, x, y, colorQuality)
 
 	surface.SetFont('WPS.DisplayName2')
