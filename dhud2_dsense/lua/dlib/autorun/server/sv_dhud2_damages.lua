@@ -14,6 +14,7 @@
 -- limitations under the License.
 
 util.AddNetworkString('DHUD2.DamagePlayer')
+local ENABLED = CreateConVar('sv_dhud2_dsense', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Enable damage sense')
 
 local zero = Vector(0, 0, 0)
 
@@ -102,6 +103,7 @@ local function writeArray(damageTypesIn)
 end
 
 local function EntityTakeDamage(ent, dmg)
+	if not ENABLED:GetBool() then return end
 	if not IsValid(ent) then return end
 
 	if dmg:GetDamage() < .1 then return end

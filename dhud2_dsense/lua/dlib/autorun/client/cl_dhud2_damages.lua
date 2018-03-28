@@ -13,6 +13,8 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+local ENABLED = CreateConVar('cl_dhud2_dsense', '1', {FCVAR_ARCHIVE}, 'Enable damage sense')
+
 local net = net
 local table = table
 local pairs = pairs
@@ -121,6 +123,7 @@ for i = 1, 4 do
 end
 
 local function NetPlayer()
+	if not ENABLED:GetBool() then return end
 	local dmg = net.ReadFloat()
 	local typeRead = readArray()
 	local pos = ReadVector()
@@ -158,6 +161,7 @@ end
 local node = DLib.node()
 
 local function Draw()
+	if not ENABLED:GetBool() then return end
 	local lpos = EyePos()
 	local lyaw = EyeAngles().y
 	local srcw, scrh = ScrW(), ScrH()
@@ -197,6 +201,7 @@ local function Draw()
 end
 
 local function Tick()
+	if not ENABLED:GetBool() then return end
 	local ctime = CurTime()
 
 	for k, data in ipairs(Damage.PHistory) do
