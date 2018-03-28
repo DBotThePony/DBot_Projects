@@ -77,13 +77,20 @@ local function Draw()
 	if wep.HUDShouldDraw and wep:HUDShouldDraw('CHudCrosshair') == false then return end
 	if wep.DrawCrosshair == false then return end
 
+	local tr = ply:GetEyeTrace()
+	local d = tr.HitPos:ToScreen()
+	local x, y = math.ceil(d.x / 1.1) * 1.1, math.ceil(d.y / 1.1) * 1.1 --Prevent shaking
+	
+	if wep.DoDrawCrosshair then
+		local status = wep:DoDrawCrosshair(x, y)
+		if status == true then return end
+	end
+
 	bypass = true
 	local can = hook.Run('HUDShouldDraw', 'CHudCrosshair')
 	bypass = false
 
 	if can == false then return end
-
-	local tr = ply:GetEyeTrace()
 
 	local color = DHUD2.GetColor('crosshair')
 
@@ -92,9 +99,6 @@ local function Draw()
 	end
 
 	surface.SetDrawColor(color)
-
-	local d = tr.HitPos:ToScreen()
-	local x, y = math.ceil(d.x / 1.1) * 1.1, math.ceil(d.y / 1.1) * 1.1 --Prevent shaking
 
 	if not Crasshairs.Funcs[wep:GetClass()] then
 		Crasshairs.Funcs.default(ply, tr.HitPos, tr, x, y)
