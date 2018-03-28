@@ -14,6 +14,7 @@
 -- limitations under the License.
 
 util.AddNetworkString('DHUD2.Damage')
+local ENABLED = CreateConVar('sv_dhud2_dnumbers', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Enable damage numbers')
 
 local zero = Vector(0, 0, 0)
 
@@ -65,28 +66,6 @@ local DisplayBlacklist = {
 	DMG_NERVEGAS,
 }
 
-local function GetObservedTo(ent)
-	for k, v in ipairs(player.GetAll()) do
-		if v:GetObserverTarget() == ent then
-			return v
-		end
-
-		if v:InVehicle() then
-			local veh = v:GetVehicle()
-
-			if veh:GetParent() == ent then
-				return v
-			end
-
-			for k, v2 in pairs(veh:GetChildren()) do
-				if v2 == ent then
-					return v
-				end
-			end
-		end
-	end
-end
-
 -- sometimes vector breaks
 local function WriteVector(vec)
 	net.WriteFloat(vec.x)
@@ -102,6 +81,7 @@ local function writeArray(damageTypesIn)
 end
 
 local function EntityTakeDamage(ent, dmg)
+	if not ENABLED:GetBool() then return end
 	if not IsValid(ent) then return end
 
 	if dmg:GetDamage() < .1 then return end

@@ -13,6 +13,8 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+local ENABLED = CreateConVar('cl_dhud2_dnumbers', '1', {FCVAR_ARCHIVE}, 'Enable damage numbers')
+
 local net = net
 local table = table
 local pairs = pairs
@@ -113,6 +115,7 @@ local function readArray()
 end
 
 local function Net()
+	if not ENABLED:GetBool() then return end
 	local pos = ReadVector()
 	local dmg = net.ReadFloat()
 	local typeRead = readArray()
@@ -153,6 +156,7 @@ surface.CreateFont('DHUD2.DamageNumber', {
 
 local function PostDrawTranslucentRenderables(a, b)
 	if a or b then return end
+	if not ENABLED:GetBool() then return end
 
 	local ply = DLib.HUDCommons.SelectPlayer()
 	local lpos = EyePos()
@@ -182,6 +186,7 @@ local function PostDrawTranslucentRenderables(a, b)
 end
 
 local function Tick()
+	if not ENABLED:GetBool() then return end
 	local ctime = CurTime()
 
 	for k, data in ipairs(Damage.History) do
