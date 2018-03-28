@@ -72,6 +72,7 @@ local function Draw()
 	local ply = DHUD2.SelectPlayer()
 	local wep = ply:GetActiveWeapon()
 	if not IsValid(wep) then return end
+	if ply:InVehicle() and not ply:GetAllowWeaponsInVehicle() then return end
 
 	if wep.HUDShouldDraw and wep:HUDShouldDraw('CHudCrosshair') == false then return end
 	if wep.DrawCrosshair == false then return end
