@@ -17,20 +17,46 @@ local weaponrystats = weaponrystats
 local uidCache = {}
 local weaponMeta = FindMetaTable('Weapon')
 
+local function checkup(self)
+	local status = true
+
+	if self.Primary and self.__wpClipSizeM ~= self.Primary.ClipSize then
+		self.weaponrystats_clipApplied = false
+		status = false
+	end
+
+	if self.Secondary and self.Secondary.ClipSize > 0 and self.__wpClipSize2M ~= self.Secondary.ClipSize then
+		self.weaponrystats_clipApplied = false
+		status = false
+	end
+
+	return status
+end
+
 function weaponMeta:ApplyClipModifications()
-	if self.weaponrystats_clipApplied then return end
-	local modif, wtype = self:GetWeaponModification(), self:GetWeaponType()
+	if not weaponrystats.ENABLED:GetBool() then return end
+	local self2 = self
+	local self = self2:GetTable()
+	if not self.Primary and not self.Secondary then return end
+	if self.weaponrystats_clipApplied and checkup(self) then return end
+	local modif, wtype = self2:GetWeaponModification(), self2:GetWeaponType()
 	if not modif or not wtype then return end
 	self.weaponrystats_clipApplied = true
 	local shouldBeAutomatic = modif.speed * wtype.speed >= 1.3
 
 	if self.Primary and self.Primary.ClipSize and self.Primary.ClipSize > 0 then
-		self.Primary.ClipSize = math.ceil(self.Primary.ClipSize * modif.clip * wtype.clip)
+		self.__wpClipSize = self.Primary.ClipSize
+		self.Primary.ClipSize = math.ceil(self.Primary.ClipSize * modif.clip * wtype.clip):max(1)
+		self2:SetClip1(self.Primary.ClipSize)
+		self.__wpClipSizeM = self.Primary.ClipSize
 		self.Primary.Automatic = self.Primary.Automatic or shouldBeAutomatic
 	end
 
 	if self.Secondary and self.Secondary.ClipSize and self.Secondary.ClipSize > 0 then
-		self.Secondary.ClipSize = math.ceil(self.Secondary.ClipSize * modif.clip * wtype.clip)
+		self.__wpClipSize2 = self.Secondary.ClipSize
+		self.Secondary.ClipSize = math.ceil(self.Secondary.ClipSize * modif.clip * wtype.clip):max(1)
+		self2:SetClip2(self.Secondary.ClipSize)
+		self.__wpClipSize2M = self.Secondary.ClipSize
 		self.Secondary.Automatic = self.Secondary.Automatic or shouldBeAutomatic
 	end
 end
