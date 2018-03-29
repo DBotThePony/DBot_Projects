@@ -31,7 +31,7 @@ function Hist.Weapon(wep)
 	if not ENABLE:GetBool() then return end
 	if not DHUD2.ServerConVar('pickuphistory') then return end
 
-	local c = CurTime()
+	local c = CurTimeL()
 
 	table.insert(Hist.Weapons, {
 		ent = wep,
@@ -50,7 +50,7 @@ function Hist.Item(str)
 	if not ENABLE:GetBool() then return end
 	if not DHUD2.ServerConVar('pickuphistory') then return end
 
-	local c = CurTime()
+	local c = CurTimeL()
 
 	table.insert(Hist.Items, {
 		name = str,
@@ -68,7 +68,7 @@ function Hist.Ammo(id, num)
 	if not ENABLE:GetBool() then return end
 	if not DHUD2.ServerConVar('pickuphistory') then return end
 
-	local c = CurTime()
+	local c = CurTimeL()
 
 	Hist.Ammos[id] = Hist.Ammos[id] or {
 		name = id,
@@ -90,14 +90,14 @@ end
 DHUD2.CreateColor('pickup', 'Pickup History Text', 255, 255, 255, 255)
 
 local WIDTH = 150
-DHUD2.DefinePosition('pickup', ScrW() - WIDTH, ScrH() / 2 - 100)
+DHUD2.DefinePosition('pickup', ScrWL() - WIDTH, ScrHL() / 2 - 100)
 
 function Hist.Tick()
 	if not DHUD2.IsEnabled() then return end
 	if not ENABLE:GetBool() then return end
 	if not DHUD2.ServerConVar('pickuphistory') then return end
 
-	local c = CurTime()
+	local c = CurTimeL()
 
 	for k, v in pairs(Hist.Weapons) do
 		if v.fade < c then

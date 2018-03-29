@@ -17,7 +17,7 @@ local DLib = DLib
 local DDayNight = DDayNight
 local timer = timer
 local hook = hook
-local CurTime = CurTime
+local CurTimeL = CurTimeL
 local self = DDayNight
 local math = math
 local net = net
@@ -33,7 +33,7 @@ self.DATE_OBJECT = self.Date(self.TIME)
 self.DATE_OBJECT_ACCURATE = self.Date(self.TIME)
 
 function self.GetAccurateTime()
-	return self.TIME + (CurTime() - timeSinceLastTick) * self.TIME_MULTIPLIER:GetInt()
+	return self.TIME + (CurTimeL() - timeSinceLastTick) * self.TIME_MULTIPLIER:GetInt()
 end
 
 local function Think()
@@ -49,13 +49,13 @@ local function UpdateTime()
 	local new = self.TIME
 	self.TIME_CVAR:SetInt(self.TIME)
 	self.DATE_OBJECT:SetStamp(self.TIME)
-	timeSinceLastTick = CurTime()
+	timeSinceLastTick = CurTimeL()
 
 	if math.floor(old) < math.floor(new) then
 		hook.Run('DDayNight_NewSecond')
 
 		for i = math.floor(old), math.floor(new) do
-			hook.Run('DDayNight_RealTimeSecond')
+			hook.Run('DDayNight_RealTimeLSecond')
 		end
 	end
 

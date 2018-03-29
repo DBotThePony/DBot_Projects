@@ -27,7 +27,7 @@ local surface = surface
 local EyePos = EyePos
 local EyeAngles = EyeAngles
 local DHUD2 = {}
-local CurTime = CurTime
+local CurTimeL = CurTimeL
 local DLib = DLib
 local math = math
 
@@ -134,9 +134,9 @@ local function NetPlayer()
 
 	for i, type in ipairs(typeRead) do
 		local dtype = Types[type]
-		DisableAt = CurTime() + 0.2
+		DisableAt = CurTimeL() + 0.2
 
-		local ctime = CurTime()
+		local ctime = CurTimeL()
 		local tolive = math.Clamp(dmg / 10, 3, 12)
 		local col = Damage.Colors[dtype] or color_white
 		local scale = math.Clamp(dmg / 10, 0.5, 2)
@@ -164,7 +164,7 @@ local function Draw()
 	if not ENABLED:GetBool() then return end
 	local lpos = EyePos()
 	local lyaw = EyeAngles().y
-	local srcw, scrh = ScrW(), ScrH()
+	local srcw, ScrHL = ScrWL(), ScrHL()
 
 	surface.SetDrawColor(255, 255, 255)
 	draw.NoTexture()
@@ -177,7 +177,7 @@ local function Draw()
 
 		local cos, sin = math.cos(turn), math.sin(turn)
 
-		local x, y = srcw / 2 + cos * 200, scrh / 2 + sin * 200
+		local x, y = srcw / 2 + cos * 200, ScrHL / 2 + sin * 200
 
 		local gen = {
 			{x = x + 7.5 * sin * v.scale, y = y - 7.5 * cos * v.scale},
@@ -202,14 +202,14 @@ end
 
 local function Tick()
 	if not ENABLED:GetBool() then return end
-	local ctime = CurTime()
+	local ctime = CurTimeL()
 
 	for k, data in ipairs(Damage.PHistory) do
 		if data.finish < ctime then
 			table.remove(Damage.PHistory, k)
 		end
 
-		data.cfade = math.Clamp(1 - (CurTime() - data.fade), 0, 1)
+		data.cfade = math.Clamp(1 - (CurTimeL() - data.fade), 0, 1)
 		data.color.a = data.cfade * 255
 	end
 end

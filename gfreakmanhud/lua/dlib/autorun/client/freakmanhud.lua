@@ -17,13 +17,13 @@ local DLib = DLib
 local HUDCommons = DLib.HUDCommons
 local surface = surface
 local draw = draw
-local RealTime = RealTime
-local CurTime = CurTime
+local RealTimeL = RealTimeL
+local CurTimeL = CurTimeL
 local hook = hook
 local IsValid = IsValid
 local LocalPlayer = LocalPlayer
-local ScrW = ScrW
-local ScrH = ScrH
+local ScrWL = ScrWL
+local ScrHL = ScrHL
 
 local ENABLE = CreateConVar('cl_freakman_hud', '1', {FCVAR_ARCHIVE}, 'Enable Gordon Freakman HUD')
 local ENABLE2 = CreateConVar('sv_freakman_hud', '1', {FCVAR_REPLICATED}, 'Enable Gordon Freakman HUD')
@@ -113,7 +113,7 @@ local function HUDPaint()
 
 	pattern:Next()
 
-	local x, y = 40, ScrH() - 30 - HEALTH_HEIGHT
+	local x, y = 40, ScrHL() - 30 - HEALTH_HEIGHT
 
 	draw.RoundedBox(8, x, y, HEALTH_WIDTH, HEALTH_HEIGHT, BACKGROUND_COLOR)
 
@@ -127,7 +127,7 @@ local function HUDPaint()
 
 	pattern:SimpleText(HEALTH, FONT_NUMBERS, x, y, rainbow:Next())
 
-	local time = RealTime()
+	local time = RealTimeL()
 
 	if LAST_HEALTH_CHANGE > time then
 		TEXT_COLOR_ALPHA.a = (LAST_HEALTH_CHANGE - time) / 2 * 255
@@ -137,7 +137,7 @@ local function HUDPaint()
 	if ARMOR > 0 then
 		patternArmor:Next()
 
-		y = ScrH() - 30 - HEALTH_HEIGHT
+		y = ScrHL() - 30 - HEALTH_HEIGHT
 		x = 80 + HEALTH_WIDTH
 
 		draw.RoundedBox(8, x, y, HEALTH_WIDTH * 1.1, HEALTH_HEIGHT, BACKGROUND_COLOR)
@@ -158,7 +158,7 @@ local function HUDPaint()
 		end
 	end
 
-	x, y = ScrW() - 40, ScrH() - 30 - HEALTH_HEIGHT
+	x, y = ScrWL() - 40, ScrHL() - 30 - HEALTH_HEIGHT
 
 	if CLIP2_MAX > 0 or CLIP2 > 0 or AMMO2 > 0 then
 		local touse = math.max(CLIP2, AMMO2)
@@ -228,11 +228,11 @@ local function Tick()
 	local _ARMOR = ply:Armor()
 
 	if HEALTH ~= newhp then
-		LAST_HEALTH_CHANGE = RealTime() + 2
+		LAST_HEALTH_CHANGE = RealTimeL() + 2
 	end
 
 	if ARMOR ~= _ARMOR then
-		LAST_ARMOR_CHANGE = RealTime() + 2
+		LAST_ARMOR_CHANGE = RealTimeL() + 2
 	end
 
 	HEALTH = newhp
@@ -250,31 +250,31 @@ local function Tick()
 		local _AMMO2 = ply:GetAmmoCount(weapon:GetSecondaryAmmoType())
 
 		if CLIP1 ~= _CLIP1 then
-			CLIP1_CHANGE = RealTime() + 2
+			CLIP1_CHANGE = RealTimeL() + 2
 		end
 
 		if CLIP2 ~= _CLIP2 then
-			CLIP2_CHANGE = RealTime() + 2
+			CLIP2_CHANGE = RealTimeL() + 2
 		end
 
 		if CLIP1_MAX ~= _CLIP1_MAX then
-			CLIP1_MAX_CHANGE = RealTime() + 2
+			CLIP1_MAX_CHANGE = RealTimeL() + 2
 		end
 
 		if CLIP2_MAX ~= _CLIP2_MAX then
-			CLIP2_MAX_CHANGE = RealTime() + 2
+			CLIP2_MAX_CHANGE = RealTimeL() + 2
 		end
 
 		if CLIP2_MAX ~= _CLIP2_MAX then
-			CLIP2_MAX_CHANGE = RealTime() + 2
+			CLIP2_MAX_CHANGE = RealTimeL() + 2
 		end
 
 		if AMMO1 ~= _AMMO1 then
-			AMMO1_CHANGE = RealTime() + 2
+			AMMO1_CHANGE = RealTimeL() + 2
 		end
 
 		if AMMO2 ~= _AMMO2 then
-			AMMO2_CHANGE = RealTime() + 2
+			AMMO2_CHANGE = RealTimeL() + 2
 		end
 
 		CLIP1 = _CLIP1

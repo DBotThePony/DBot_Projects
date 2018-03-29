@@ -291,7 +291,7 @@ function SWEP:DrawHUD()
 
 		if MCSWEP2.DRAW_BLOCKPLACE_COLOR:GetBool() then
 			render.SetColorModulation(mc.GetVisualPlaceColorBlend())
-			render.SetBlend(.4 + math.sin(CurTime() * 5) * .1)
+			render.SetBlend(.4 + math.sin(CurTimeL() * 5) * .1)
 
 			ent:DrawModel()
 
@@ -306,7 +306,7 @@ function SWEP:DrawHUD()
 			render.SetColorModulation(1, 1, 1)
 			render.SetBlend(1)
 		else
-			render.SetBlend(.4 + math.sin(CurTime() * 5) * .1)
+			render.SetBlend(.4 + math.sin(CurTimeL() * 5) * .1)
 			ent:DrawModel()
 			render.SetBlend(1)
 		end
@@ -319,8 +319,8 @@ function SWEP:Reload()
 	if CLIENT then return end
 	if not self:GetOwner():KeyDown(IN_RELOAD) then return end
 	self.NextReload = self.NextReload or 0
-	if self.NextReload > CurTime() then return end
-	self.NextReload = CurTime() + 1
+	if self.NextReload > CurTimeL() then return end
+	self.NextReload = CurTimeL() + 1
 	net.Start('MCSWEP2.OpenMenu')
 	net.Send(self:GetOwner())
 end

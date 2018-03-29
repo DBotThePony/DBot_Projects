@@ -128,7 +128,7 @@ local function PlayerAuthed(ply, steamid)
 	timer.Simple(0, function()
 		if not IsValid(ply) then return end
 
-		ply:SetNWFloat('DConnecttt.JoinTime', CurTime())
+		ply:SetNWFloat('DConnecttt.JoinTime', CurTimeL())
 
 		DConn.Query('SELECT * FROM dconnecttt WHERE steamid64 = "' .. steamid64 .. '";', function(data)
 			if not IsValid(ply) then return end
@@ -161,7 +161,7 @@ local function PlayerAuthed(ply, steamid)
 
 				ply.DConnecttt_Session = 0
 				ply.DConnecttt_Total = tonumber(totaltime)
-				ply:SetNWFloat('DConnecttt_Join', CurTime())
+				ply:SetNWFloat('DConnecttt_Join', CurTimeL())
 				ply:SetNWFloat('DConnecttt_Total_OnJoin', ply.DConnecttt_Total)
 
 				local PrintNick = nick
@@ -190,9 +190,9 @@ local function CheckPassword(steamid64, ip, svpass, clpass, nick)
 	local realip = string.Explode(':', ip)[1]
 	local steamid = util.SteamIDFrom64(steamid64)
 
-	IPBuffer[realip] = IPBuffer[realip] or {0, CurTime()}
+	IPBuffer[realip] = IPBuffer[realip] or {0, CurTimeL()}
 
-	if IPBuffer[realip][2] + SPAM_DELAY:GetInt() > CurTime() then
+	if IPBuffer[realip][2] + SPAM_DELAY:GetInt() > CurTimeL() then
 		IPBuffer[realip][1] = IPBuffer[realip][1] + 1
 	else
 		IPBuffer[realip][1] = 0
@@ -265,16 +265,16 @@ local function Timer()
 
 		ply.DConnecttt_Session = (ply.DConnecttt_Session or 0) + 1
 		ply.DConnecttt_Total = (ply.DConnecttt_Total or 0) + 1
-		ply.DConnecttt_LastTick = ply.DConnecttt_LastTick or CurTime()
+		ply.DConnecttt_LastTick = ply.DConnecttt_LastTick or CurTimeL()
 
 		if ply:IsBot() then
-			ply.DConnecttt_LastTick = CurTime()
+			ply.DConnecttt_LastTick = CurTimeL()
 		end
 
-		local deadTime = CurTime() - ply.DConnecttt_LastTick
+		local deadTime = CurTimeL() - ply.DConnecttt_LastTick
 		ply:SetNWBool('DConnecttt_Dead', deadTime > 5)
 
-		if KICK_NOT_RESPONDING and ply.DConnecttt_LastTick + 360 < CurTime() then
+		if KICK_NOT_RESPONDING and ply.DConnecttt_LastTick + 360 < CurTimeL() then
 			ply.DConnecttt_Kicked = true
 			ply:Kick('[DConnecttt] Your client has failed to reply to a query in time. Please reconnect or restart your game.')
 		end
@@ -289,10 +289,10 @@ local function SaveTimer()
 end
 
 local function PlayerTick(len, ply)
-	ply.DConnecttt_LastTick = CurTime()
+	ply.DConnecttt_LastTick = CurTimeL()
 
 	if ply:GetNWFloat('DConnecttt.FastInit', 0) == 0 then
-		ply:SetNWFloat('DConnecttt.FastInit', CurTime())
+		ply:SetNWFloat('DConnecttt.FastInit', CurTimeL())
 	end
 end
 
@@ -303,7 +303,7 @@ function plyMeta:TotalTimeConnected()
 end
 
 function plyMeta:SessionTime()
-	return CurTime() - self:GetNWFloat('DConnecttt_Join')
+	return CurTimeL() - self:GetNWFloat('DConnecttt_Join')
 end
 
 -- UTime interface

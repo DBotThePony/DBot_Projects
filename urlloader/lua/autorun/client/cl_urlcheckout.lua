@@ -51,8 +51,8 @@ local function CheckPage(URL)
 end
 
 local function Checkout(URL)
-	if LastCall == CurTime() then return end --If something calling OnPlayerChat twice, ignore. Also prevents link DDoS attack
-	LastCall = CurTime()
+	if LastCall == CurTimeL() then return end --If something calling OnPlayerChat twice, ignore. Also prevents link DDoS attack
+	LastCall = CurTimeL()
 
 	chat.AddText(Grey, 'Checking out URL...')
 

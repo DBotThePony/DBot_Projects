@@ -30,8 +30,8 @@ self.DISABLED = false
 
 self.RestoreSpeed = 1
 
-self.RestoreLastFrameCurTime = 0
-self.RestoreLastFrameRealTime = 0
+self.RestoreLastFrameCurTimeL = 0
+self.RestoreLastFrameRealTimeL = 0
 self.RestoreLastFrameSysTime = 0
 
 function self.SetRestoreSpeed(speed)
@@ -175,8 +175,8 @@ function self.RecordFrame()
 	local time = SysTime()
 	local frame = self.GetCurrentFrame()
 
-	self.RestoreLastFrameCurTime = frame.CurTime
-	self.RestoreLastFrameRealTime = frame.RealTime
+	self.RestoreLastFrameCurTimeL = frame.CurTimeL
+	self.RestoreLastFrameRealTimeL = frame.RealTimeL
 	self.RestoreLastFrameSysTime = frame.SysTime
 
 	local tab = hook.GetTable().FlashbackRecordFrame
@@ -198,13 +198,13 @@ function self.RestoreFrame()
 	if not frame then self.EndRestore() return end
 
 	self.CurrentFrame = frame
-	self.LastFrame = frame.CurTime
+	self.LastFrame = frame.CurTimeL
 
 	local tab = hook.GetTable().FlashbackRestoreFrame
 
 	if not tab then
-		self.RestoreLastFrameCurTime = frame.CurTime
-		self.RestoreLastFrameRealTime = frame.RealTime
+		self.RestoreLastFrameCurTimeL = frame.CurTimeL
+		self.RestoreLastFrameRealTimeL = frame.RealTimeL
 		self.RestoreLastFrameSysTime = frame.SysTime
 		return
 	end
@@ -213,8 +213,8 @@ function self.RestoreFrame()
 		xpcall(func, Err, self.GetCurrentData(k) or {}, k)
 	end
 
-	self.RestoreLastFrameCurTime = frame.CurTime
-	self.RestoreLastFrameRealTime = frame.RealTime
+	self.RestoreLastFrameCurTimeL = frame.CurTimeL
+	self.RestoreLastFrameRealTimeL = frame.RealTimeL
 	self.RestoreLastFrameSysTime = frame.SysTime
 
 	local delta = (SysTime() - time) * 1000
@@ -224,14 +224,14 @@ function self.RestoreFrame()
 	end
 end
 
-function self.CurTime()
-	if not self.IsRestoring then return CurTime() end
-	return self.GetCurrentFrame().CurTime
+function self.CurTimeL()
+	if not self.IsRestoring then return CurTimeL() end
+	return self.GetCurrentFrame().CurTimeL
 end
 
-function self.RealTime()
-	if not self.IsRestoring then return RealTime() end
-	return self.GetCurrentFrame().RealTime
+function self.RealTimeL()
+	if not self.IsRestoring then return RealTimeL() end
+	return self.GetCurrentFrame().RealTimeL
 end
 
 function self.SysTime()
@@ -239,14 +239,14 @@ function self.SysTime()
 	return self.GetCurrentFrame().SysTime
 end
 
-function self.CurTimeDelta()
+function self.CurTimeLDelta()
 	if not self.IsRestoring then return 0 end
-	return - self.RestoreLastFrameCurTime + self.GetCurrentFrame().CurTime
+	return - self.RestoreLastFrameCurTimeL + self.GetCurrentFrame().CurTimeL
 end
 
-function self.RealTimeDelta()
+function self.RealTimeLDelta()
 	if not self.IsRestoring then return 0 end
-	return - self.RestoreLastFrameRealTime + self.GetCurrentFrame().RealTime
+	return - self.RestoreLastFrameRealTimeL + self.GetCurrentFrame().RealTimeL
 end
 
 function self.SysTimeDelta()
@@ -260,19 +260,19 @@ self.IgnoreNextThink = false
 function self.OnThink()
 	if self.DISABLED then return end
 
-	if not self.IgnoreNextThink and self.NextThink > RealTime() then return end
+	if not self.IgnoreNextThink and self.NextThink > RealTimeL() then return end
 
 	if CLIENT then
 		if self.IsRestoring then
-			self.NextThink = RealTime() + self.ServerFPSTime * (1 / self.RestoreSpeed)
+			self.NextThink = RealTimeL() + self.ServerFPSTime * (1 / self.RestoreSpeed)
 		else
-			self.NextThink = RealTime() + self.ServerFPSTime
+			self.NextThink = RealTimeL() + self.ServerFPSTime
 		end
 	else
 		if self.IsRestoring then
-			self.NextThink = RealTime() + FrameTime() * (1 / self.RestoreSpeed)
+			self.NextThink = RealTimeL() + FrameTime() * (1 / self.RestoreSpeed)
 		else
-			self.NextThink = RealTime()
+			self.NextThink = RealTimeL()
 		end
 	end
 
@@ -281,9 +281,9 @@ function self.OnThink()
 		self.SkipCurrentFrame = false
 	end
 
-	if self.LastGC < RealTime() then
+	if self.LastGC < RealTimeL() then
 		self.rungc()
-		self.LastGC = RealTime() + 20
+		self.LastGC = RealTimeL() + 20
 	end
 
 	if #self.Frames > 10000 then
@@ -348,11 +348,11 @@ function self.GetPreviousFrame()
 end
 
 function self.GetCurrentFrame()
-	if (self.IsRestoring or self.LastFrame == CurTime()) and not self.SkipCurrentFrame then
+	if (self.IsRestoring or self.LastFrame == CurTimeL()) and not self.SkipCurrentFrame then
 		return self.CurrentFrame
 	end
 
-	if (self.CurrentFrame and self.CurrentFrame.CurTime == CurTime()) and not self.SkipCurrentFrame then
+	if (self.CurrentFrame and self.CurrentFrame.CurTimeL == CurTimeL()) and not self.SkipCurrentFrame then
 		return self.CurrentFrame
 	end
 
@@ -361,8 +361,8 @@ function self.GetCurrentFrame()
 
 	newFrame.ID = index
 	newFrame.index = index
-	newFrame.CurTime = CurTime()
-	newFrame.RealTime = RealTime()
+	newFrame.CurTimeL = CurTimeL()
+	newFrame.RealTimeL = RealTimeL()
 	newFrame.SysTime = SysTime()
 
 	newFrame.Data = {}
@@ -370,7 +370,7 @@ function self.GetCurrentFrame()
 	newFrame.Data.default.index = index
 	newFrame.Data.default.ID = index
 
-	self.LastFrame = CurTime()
+	self.LastFrame = CurTimeL()
 
 	self.CurrentFrame = newFrame
 

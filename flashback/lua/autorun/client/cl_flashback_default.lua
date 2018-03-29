@@ -104,7 +104,7 @@ local Default = {
 
 				if v == NULL then continue end -- ???
 
-				if v.FlashbackTimeSpawned == self.CurTime() then
+				if v.FlashbackTimeSpawned == self.CurTimeL() then
 					SafeRemoveEntity(v)
 					continue
 				end
@@ -147,7 +147,7 @@ local Default = {
 			if not data.ToRestore then return end
 
 			for i, entry in ipairs(data.ToRestore) do
-				if entry.tab.FlashbackTimeSpawned == self.CurTime() then continue end
+				if entry.tab.FlashbackTimeSpawned == self.CurTimeL() then continue end
 
 				local ent = ClientsideModel(entry.model, entry.group)
 
@@ -212,7 +212,7 @@ local Default = {
 local function OnEntityCreated(ent)
 	if not self.IsRecording then return end
 
-	local time = self.GetCurrentFrame().CurTime
+	local time = self.GetCurrentFrame().CurTimeL
 	local data = self.GetCurrentData('DFlashback.DefaultClient.ents')
 	data.FrameProps = data.FrameProps or {}
 

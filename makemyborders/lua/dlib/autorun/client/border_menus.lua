@@ -319,7 +319,7 @@ local function PostDrawTranslucentRenderables()
 	local faces = DLib.vector.ExtractFaces(mins, maxs)
 
 	render.SetColorMaterial()
-	local time = RealTime()
+	local time = RealTimeL()
 	local color = Color(math.sin(time * 0.1) * 128 + 127, math.cos(time * 0.1) * 128 + 127, math.sin(time * 0.1 + 0.5) * 128 + 127)
 
 	for i, faceData in ipairs(faces) do

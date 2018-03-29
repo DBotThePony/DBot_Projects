@@ -167,13 +167,13 @@ local TOTAL = #Cam.Funcs
 local CURRENT = 6
 
 local DELAY = 120
-local NextView = CurTime() + DELAY
+local NextView = CurTimeL() + DELAY
 local Active = false
 
 local function Reset()
 	CURRENT = 1
 	Active = false
-	NextView = CurTime() + DELAY
+	NextView = CurTimeL() + DELAY
 end
 
 local function KeyPress(ply)
@@ -213,13 +213,13 @@ local function Think()
 	local ang = ply:EyeAngles()
 	local epos = ply:EyePos()
 
-	if NextView < CurTime() and not Active then
+	if NextView < CurTimeL() and not Active then
 		local get1 = ply:EyeAngles()
 		local get2 = EyePos()
 
 		if get2 ~= get1 then
 			Active = false
-			NextView = CurTime() + DELAY
+			NextView = CurTimeL() + DELAY
 		end
 
 		CalcData.origin = epos
@@ -236,13 +236,13 @@ local function Think()
 
 	local data = Cam.Funcs[CURRENT]
 
-	if NextRender > CurTime() then
+	if NextRender > CurTimeL() then
 		local nang, npos = data.render(ply, CalcData.angles, CalcData.origin)
 		CalcData.angles = nang
 		CalcData.origin = npos
 	end
 
-	if NextPause < CurTime() then
+	if NextPause < CurTimeL() then
 		CURRENT = CURRENT + 1
 
 		if CURRENT > TOTAL then
@@ -254,8 +254,8 @@ local function Think()
 		CalcData.angles = nang
 		CalcData.origin = npos
 
-		NextRender = ndata.time + CurTime()
-		NextPause = ndata.time + CurTime() + ndata.pause
+		NextRender = ndata.time + CurTimeL()
+		NextPause = ndata.time + CurTimeL() + ndata.pause
 	end
 end
 
@@ -267,7 +267,7 @@ local function Draw()
 	DHUD2.WordBox('Freecam Mode. Press any key to stop freecam mode.', 'DHUD2.Default', x, y, DHUD2.GetColor('generic'), DHUD2.GetColor('bg'), true)
 end
 
-DHUD2.DefinePosition('freecam_notify', ScrW() / 2, ScrH() / 2 - 40)
+DHUD2.DefinePosition('freecam_notify', ScrWL() / 2, ScrHL() / 2 - 40)
 
 DHUD2.DrawHook('Freecam', Draw)
 

@@ -28,17 +28,17 @@ function ENT:Draw()
 	render.ModelMaterialOverride(debugwtite)
 	render.ResetModelLighting(1, 1, 1)
 	render.SetColorModulation(0, 0, 0)
-	
+
 	self:DrawModel()
-	
+
 	render.ModelMaterialOverride()
 	render.SuppressEngineLighting(false)
 end
 
 function ENT:Think()
-	self.LastFrame = self.LastFrame or CurTime()
-	self:FrameAdvance(CurTime() - self.LastFrame)
-	self.LastFrame = CurTime()
+	self.LastFrame = self.LastFrame or CurTimeL()
+	self:FrameAdvance(CurTimeL() - self.LastFrame)
+	self.LastFrame = CurTimeL()
 end
 
 local oldStatus = false
@@ -76,21 +76,21 @@ local ColorModifier = {
 local function Headache()
 	sound.PlayURL('https://dbot.serealia.ca/custom/content/sound/thaumcraft/heartbeat.ogg', '', function()
 		chat.AddText(table.Random(Phrases), '')
-		DisplayUntil = CurTime() + 7
+		DisplayUntil = CurTimeL() + 7
 	end)
 end
 
 local function RenderScreenspaceEffects()
-	if DisplayUntil + 3 < CurTime() then return end
-	
-	local multipler = math.min(1, (DisplayUntil - CurTime() + 3) / 3)
-	
+	if DisplayUntil + 3 < CurTimeL() then return end
+
+	local multipler = math.min(1, (DisplayUntil - CurTimeL() + 3) / 3)
+
 	if multipler == 1 then
-		ColorModifier['$pp_colour_colour'] = math.abs(math.sin(CurTime() * 4) * .5)
+		ColorModifier['$pp_colour_colour'] = math.abs(math.sin(CurTimeL() * 4) * .5)
 	else
 		ColorModifier['$pp_colour_colour'] = Lerp(.8, ColorModifier['$pp_colour_colour'], 1 - multipler)
 	end
-	
+
 	DrawColorModify(ColorModifier)
 end
 
@@ -111,7 +111,7 @@ local function Stop()
 			stream:Stop()
 		end
 	end
-	
+
 	timer.Stop('DBot_SlenderStreams_Headache')
 	timer.Stop('DBot_SlenderStreams')
 end
@@ -120,27 +120,27 @@ Stop()
 
 local function Begin()
 	Current = 1
-	
+
 	DBot_SlenderStreams[Current]:Play()
 	DBot_SlenderStreams[Current]:EnableLooping(true)
-	
+
 	timer.Create('DBot_SlenderStreams_Headache', 1, 0, function()
-		if math.random(1, 100) <= 5 and LastPlay + 30 < CurTime() then
-			LastPlay = CurTime()
+		if math.random(1, 100) <= 5 and LastPlay + 30 < CurTimeL() then
+			LastPlay = CurTimeL()
 			Headache()
 		end
 	end)
-	
+
 	timer.Create('DBot_SlenderStreams', 20, 4, function()
 		Current = Current + 1
-		
+
 		if Current < #stages then
 			local prev = DBot_SlenderStreams[Current - 1]
-		
+
 			if prev and IsValid(prev) then
 				prev:Stop()
 			end
-			
+
 			DBot_SlenderStreams[Current]:Play()
 			DBot_SlenderStreams[Current]:EnableLooping(true)
 		end
@@ -163,7 +163,7 @@ end)
 
 net.Receive('Slendermane.StatusChanges', function()
 	local status = net.ReadBool()
-	
+
 	if status then
 		chat.AddText(color_white, 'SLENDERMANE IS CHASING Y.O.U')
 		Begin()

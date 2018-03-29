@@ -129,10 +129,10 @@ local DEFAULT_HEIGHT = 100
 DHUD2.DEFAULT_WIDTH = DEFAULT_WIDTH
 DHUD2.DEFAULT_HEIGHT = DEFAULT_HEIGHT
 
-DHUD2.DefinePosition('default', ScrW() / 2, ScrH() - DEFAULT_HEIGHT - 10)
-DHUD2.DefinePosition('entitydisplay', ScrW() / 2, ScrH() / 2 + 40)
-DHUD2.DefinePosition('npcbardisplay', ScrW() / 2, ScrH() / 2 + 40)
-DHUD2.DefinePosition('entityhp', ScrW() / 2, ScrH() / 2 + 60)
+DHUD2.DefinePosition('default', ScrWL() / 2, ScrHL() - DEFAULT_HEIGHT - 10)
+DHUD2.DefinePosition('entitydisplay', ScrWL() / 2, ScrHL() / 2 + 40)
+DHUD2.DefinePosition('npcbardisplay', ScrWL() / 2, ScrHL() / 2 + 40)
+DHUD2.DefinePosition('entityhp', ScrWL() / 2, ScrHL() / 2 + 60)
 
 Default.HPBAR_WIDTH = DEFAULT_WIDTH - 40
 Default.HPBAR_HEIGHT = 20

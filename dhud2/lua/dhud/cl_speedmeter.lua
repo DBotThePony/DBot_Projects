@@ -18,7 +18,7 @@ limitations under the License.
 local ENABLE = CreateConVar('dhud_speedmeter', '1', FCVAR_ARCHIVE, 'Enable speedmeter')
 DHUD2.AddConVar('dhud_speedmeter', 'Enable speedmeter', ENABLE)
 
-DHUD2.DefinePosition('speedmeter', ScrW() - 200, ScrH() / 2 + 50)
+DHUD2.DefinePosition('speedmeter', ScrWL() - 200, ScrHL() / 2 + 50)
 DHUD2.CreateColor('speedmeter_text', 'Speedmeter Text', 255, 255, 255, 255)
 
 local HU_IN_METER = 40
@@ -70,11 +70,11 @@ local function Think(self, ply)
 
 	local pos = ply:GetVehicle():GetPos()
 
-	local dist = pos:Distance(LastPos) / (CurTime() - LastFrame) --Hu per second i think
+	local dist = pos:Distance(LastPos) / (CurTimeL() - LastFrame) --Hu per second i think
 	if dist ~= dist then dist = 0 end --Divided by zero
 	CurrSpeed = Lerp(0.1 * FrameTime() * 10, CurrSpeed, dist)
 	LastPos = pos
-	LastFrame = CurTime()
+	LastFrame = CurTimeL()
 end
 
 local function Draw(self, ply)

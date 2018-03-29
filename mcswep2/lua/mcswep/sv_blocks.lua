@@ -68,10 +68,10 @@ local function GrassUpdate(self)
 end
 
 local function GrassThink(self)
-	self.NextGrassThink = self.NextGrassThink or (CurTime() + math.random(5, 10))
+	self.NextGrassThink = self.NextGrassThink or (CurTimeL() + math.random(5, 10))
 
-	if self.NextGrassThink < CurTime() then
-		self.NextGrassThink = CurTime() + math.random(5, 10)
+	if self.NextGrassThink < CurTimeL() then
+		self.NextGrassThink = CurTimeL() + math.random(5, 10)
 
 		local tblock = self:GetBlockAtSide(mc.SIDE_TOP)
 		if IsValid(tblock) and tblock:IsOpaque() then return end

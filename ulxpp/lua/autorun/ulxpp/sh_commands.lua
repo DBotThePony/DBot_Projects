@@ -24,7 +24,7 @@ ENT.PrintName = 'Trainfuck'
 ENT.Author = 'DBot'
 
 function ENT:Initialize()
-	self.time = CurTime() + 4
+	self.time = CurTimeL() + 4
 	self:SetModel("models/props_combine/CombineTrain01a.mdl")
 	self:SetCollisionGroup(COLLISION_GROUP_PLAYER)
 
@@ -62,7 +62,7 @@ end
 function ENT:Think()
 	if CLIENT then return end
 
-	if self.time < CurTime() then
+	if self.time < CurTimeL() then
 		SafeRemoveEntity(self)
 		return
 	end

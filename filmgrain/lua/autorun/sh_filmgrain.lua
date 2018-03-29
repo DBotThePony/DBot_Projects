@@ -35,7 +35,7 @@ local STEP = 128
 local CurrentLines = {}
 
 local function RebuildLines()
-	local w, h = ScrW(), ScrH()
+	local w, h = ScrWL(), ScrHL()
 
 	for i = 1, LINES_COUNT:GetInt() do
 		table.insert(CurrentLines, {pos = math.random(100, w - 100), size = math.random(1, 3), speed = math.random(1, 3), dir = math.random(1, 2) == 1, change = 0})
@@ -51,13 +51,13 @@ local function PostDrawHUD()
 	if not ENABLE:GetBool() then return end
 	if not system.HasFocus() then return end -- Performance
 
-	LastCall = LastCall or CurTime()
+	LastCall = LastCall or CurTimeL()
 
 	surface.SetDrawColor(255, 255, 255, 3)
 
 	if ENABLE_LINES:GetBool() then
-		local ctime = CurTime()
-		local w, h = ScrW(), ScrH()
+		local ctime = CurTimeL()
+		local w, h = ScrWL(), ScrHL()
 
 		for k, data in ipairs(CurrentLines) do
 			local change = data.speed * (ctime - LastCall) * .1
@@ -84,8 +84,8 @@ local function PostDrawHUD()
 	local ShiftX = math.random(-100, 100)
 	local ShiftY = math.random(-100, 100)
 
-	for X = -200, ScrW() + 200, STEP do
-		for Y = -200, ScrH() + 200, STEP do
+	for X = -200, ScrWL() + 200, STEP do
+		for Y = -200, ScrHL() + 200, STEP do
 			surface.DrawTexturedRectRotated(X + ShiftX,Y + ShiftY, 128, 128, math.random(-2,2) * 90)
 		end
 	end

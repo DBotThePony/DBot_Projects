@@ -82,7 +82,7 @@ if SERVER then
 	function SWEP:Think()
 		BaseClass.Think(self)
 		if self:GetSMGBonusActive() then
-			self:SetSMGDamageDealt(math.max(0, DTF2.GrabInt(self.CRITEY_REQUIRED) * (self.criteyEndsAt - CurTime()) / DTF2.GrabInt(self.CRITEY_DURACTION)))
+			self:SetSMGDamageDealt(math.max(0, DTF2.GrabInt(self.CRITEY_REQUIRED) * (self.criteyEndsAt - CurTimeL()) / DTF2.GrabInt(self.CRITEY_DURACTION)))
 		end
 	end
 
@@ -91,7 +91,7 @@ if SERVER then
 		 if self:GetSMGBonusActive() then return false end
 		self:SetMiniCritBoosted(true)
 		self:SetSMGBonusActive(true)
-		self.criteyEndsAt = CurTime() + DTF2.GrabInt(self.CRITEY_DURACTION)
+		self.criteyEndsAt = CurTimeL() + DTF2.GrabInt(self.CRITEY_DURACTION)
 
 		timer.Create('DTF2.ProSMG.' .. self:EntIndex(), DTF2.GrabInt(self.CRITEY_DURACTION), 1, function()
 			if IsValid(self) then

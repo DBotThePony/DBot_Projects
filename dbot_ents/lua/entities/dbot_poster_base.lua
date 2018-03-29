@@ -47,35 +47,35 @@ end
 function ENT:CreateHTMLPanel()
 	self.LastHTMLTry = self.LastHTMLTry or 0
 	self.Tries = self.Tries or 0
-	
-	if NextPanelCreate > CurTime() then return end
-	if self.LastHTMLTry > CurTime() then return end
-	
+
+	if NextPanelCreate > CurTimeL() then return end
+	if self.LastHTMLTry > CurTimeL() then return end
+
 	if self.Tries > 3 then return end
-	
+
 	if IsValid(self.HTMLPanel) then return elseif self.HTMLPanel then self.HTMLPanel:Remove() end
-	
+
 	self.HTMLPanel = vgui.Create('HTML')
-	NextPanelCreate = CurTime() + 4
+	NextPanelCreate = CurTimeL() + 4
 	self.HTMLPanel:SetVisible(false)
 	self.HTMLPanel:SetMouseInputEnabled(false)
 	self.HTMLPanel:SetKeyBoardInputEnabled(false)
 	self.HTMLPanel:Dock(FILL)
-	
+
 	self:OpenURL(self:GetURL())
 	self.HTMLPanel:UpdateHTMLTexture()
 	self.Texture = self.HTMLPanel:GetHTMLMaterial()
-	
+
 	self.LastMatID = self.Texture and surface.GetTextureID(self.Texture:GetName()) or 0
-	
-	self.LastHTMLTry = CurTime() + 3
+
+	self.LastHTMLTry = CurTimeL() + 3
 	self.Tries = self.Tries + 1
-	
+
 	if self.Tries > 3 then
 		chat.AddText(Color(0, 200, 0), '[DPoster] ', Color(200, 200, 200), 'Something wrong with HTML panels... I will try to create HTML Panel again in 60 seconds')
 		timer.Simple(60, function()
 			if not IsValid(self) then return end
-			
+
 			self.Tries = 0
 		end)
 	end
@@ -92,43 +92,43 @@ function ENT:SpawnFunction(ply, tr, ClassName)
 	ent:Spawn()
 	ent:SetAngles(Vec:Angle() + Angle(0, -90, 90))
 	ent:Activate()
-	
+
 	return ent
 end
 
 function ENT:Initialize()
 	self:SetModel(self.Model)
-	
+
 	self.URL = self.URL or {}
 	self:SetCPoster(math.random(1, #self.URL))
-	
+
 	if SERVER then
 		self:PhysicsInit(SOLID_VPHYSICS)
 		self:SetSolid(SOLID_VPHYSICS)
 		self:SetMoveType(MOVETYPE_VPHYSICS)
-		
-		self.NextChange = CurTime() + self.ChangeDelay
-		
+
+		self.NextChange = CurTimeL() + self.ChangeDelay
+
 		local phys = self:GetPhysicsObject()
-		
+
 		if IsValid(phys) then
 			phys:EnableMotion(false)
 		end
 	else
 		self:CreateHTMLPanel()
-		
-		self.LastTextThink = CurTime()
-		
+
+		self.LastTextThink = CurTimeL()
+
 		self:DrawShadow(false)
 	end
 end
 
 function ENT:OpenURL(url)
 	if not IsValid(self.HTMLPanel) then self:CreateHTMLPanel() end
-	
+
 	self.LastURL = url
 	url = url or ''
-	
+
 	--local width = self.IWidth*8
 	--local height = self.IHeight*8
 	local width = 512
@@ -149,7 +149,7 @@ function ENT:OpenURL(url)
 		  vertical-align: middle;
 		}
 		</style>
-		
+
 		<script type='text/javascript'>
 		var keepResizing = true;
 		function resize(obj) {
@@ -180,73 +180,73 @@ function ENT:OpenURL(url)
 		</body>
 		</html>
 	]]
-	
+
 	self.HTMLPanel:SetHTML(page)
 end
 
 function ENT:Draw()
 	self:DrawModel()
-	
+
 	if not system.HasFocus() then return end
 	local url = self:GetURL()
-	
+
 	if not IsValid(self.HTMLPanel) then self:CreateHTMLPanel() return end
-	
+
 	if not self.Texture then return end
-	if not self.LastMatID then 
+	if not self.LastMatID then
 		local mat = surface.GetTextureID(self.Texture:GetName())
 		self.LastMatID = mat
-		return 
+		return
 	end
-	
+
 	local pos = self:GetPos()
 	local ang = self:GetAngles()
-	
+
 	local newang = ang - Angle(0, 90, 0)
-	
+
 	cam.Start3D2D(pos + newang:Forward() * 4 + newang:Up() * (self.IHeight / 2) - newang:Right() * (self.IHeight / 2), ang, 1)
-	
+
 	surface.SetDrawColor(255, 255, 255, 255)
-	
+
 	surface.SetTexture(self.LastMatID)
 	surface.DrawTexturedRect(0, 0, self.IWidth, self.IHeight)
-	
+
 	cam.End3D2D()
 end
 
 function ENT:Think()
 	if SERVER then
 		self.NextChange = self.NextChange or 0
-		
-		if self.NextChange < CurTime() then
-			self.NextChange = CurTime() + self.ChangeDelay
+
+		if self.NextChange < CurTimeL() then
+			self.NextChange = CurTimeL() + self.ChangeDelay
 			self:SetCPoster(math.random(1, #self.URL))
 		end
-		
+
 		return
 	end
-	
+
 	self.InactiveFrames = self.InactiveFrames or 0
-	
+
 	if not system.HasFocus() then return end
 	local url = self:GetURL()
-	
+
 	if url ~= self.LastURL and IsValid(self.HTMLPanel) then
 		self:OpenURL(url)
 	end
 
-	if self.LastTextThink < CurTime() then
+	if self.LastTextThink < CurTimeL() then
 		if not IsValid(self.HTMLPanel) then self:CreateHTMLPanel() return end
-		
+
 		self.HTMLPanel:UpdateHTMLTexture()
 		self.Texture = self.HTMLPanel:GetHTMLMaterial()
-		
+
 		self.LastMatID = self.Texture and surface.GetTextureID(self.Texture:GetName()) or 0
-		
-		self.LastTextThink = CurTime() + 1
+
+		self.LastTextThink = CurTimeL() + 1
 		self.LastURL = url
-		
-		self.LastTextThink = CurTime() + 3
+
+		self.LastTextThink = CurTimeL() + 3
 	end
 end
 

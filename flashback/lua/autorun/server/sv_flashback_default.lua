@@ -147,7 +147,7 @@ local Default = {
 				ply:SetEyeAngles(self.FindDelta(myKey, uid .. 'ang', ply:EyeAngles()))
 				ply:SetHealth(self.FindDelta(myKey, uid .. 'health', ply:Health()))
 				ply:SetMaxHealth(self.FindDelta(myKey, uid .. 'maxhealth', ply:GetMaxHealth()))
-				ply:FrameAdvance(self.RealTimeDelta())
+				ply:FrameAdvance(self.RealTimeLDelta())
 
 				local currVel = ply:GetVelocity()
 				local oldVel = self.FindDelta(myKey, uid .. 'velocity', currVel)
@@ -172,7 +172,7 @@ local Default = {
 
 						weaponz[class] = weapon
 
-						weapon:FrameAdvance(self.RealTimeDelta())
+						weapon:FrameAdvance(self.RealTimeLDelta())
 					end
 
 					for id, ammo in pairs(data[ply].ammos) do
@@ -252,7 +252,7 @@ local Default = {
 
 				if v == NULL then continue end -- ???
 
-				if v.FlashbackTimeSpawned == self.CurTime() then
+				if v.FlashbackTimeSpawned == self.CurTimeL() then
 					SafeRemoveEntity(v)
 					continue
 				end
@@ -307,7 +307,7 @@ local Default = {
 			if not data.ToRestore then return end
 
 			for i, entry in ipairs(data.ToRestore) do
-				if entry.tab.FlashbackTimeSpawned == self.CurTime() then continue end
+				if entry.tab.FlashbackTimeSpawned == self.CurTimeL() then continue end
 
 				local ent = ents.Create(entry.class)
 
@@ -386,7 +386,7 @@ local Default = {
 local function OnEntityCreated(ent)
 	if not self.IsRecording then return end
 
-	local time = self.GetCurrentFrame().CurTime
+	local time = self.GetCurrentFrame().CurTimeL
 	local data = self.GetCurrentData('DFlashback.Default.ents')
 	data.FrameProps = data.FrameProps or {}
 

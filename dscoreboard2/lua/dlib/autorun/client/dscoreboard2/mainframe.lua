@@ -18,7 +18,7 @@
 local board = DScoreBoard2
 
 local MiscFunctions = {
-    CurTimeThink = function(self)
+    CurTimeLThink = function(self)
         self:SetText('Your time: ' .. os.date('%H:%M:%S - %d/%m/%y', os.time()))
     end,
 
@@ -31,7 +31,7 @@ local MiscFunctions = {
     end,
 
     UpTimeThink = function(self)
-        self:SetText('Map uptime: ' .. string.NiceTime(CurTime()))
+        self:SetText('Map uptime: ' .. string.NiceTime(CurTimeL()))
     end,
 
     MemThink = function(self)
@@ -50,7 +50,7 @@ local CURRENT_PANEL
 
 function PANEL:Init()
     CURRENT_PANEL = self
-    self:SetSize(ScrW() - 100, ScrH() - 100)
+    self:SetSize(ScrWL() - 100, ScrHL() - 100)
     self:Center()
 
     local top = self:Add('EditablePanel')
@@ -79,7 +79,7 @@ function PANEL:Init()
     lab:DockMargin(4, 0, 4, 0)
     lab:SetWidth(230)
     lab:SetTextColor(DScoreBoard2.Colors.textcolor)
-    lab.Think = MiscFunctions.CurTimeThink
+    lab.Think = MiscFunctions.CurTimeLThink
 
     local lab = topInfo:Add('DLabel')
     lab:SetFont(DScoreBoard2.FONT_TOPINFO)
@@ -258,7 +258,7 @@ local function CalcView(ply, pos, ang, fov, znear, zfar)
 
     local ang2 = Angle(ang.p, ang.y, 0)
 
-    local add = Vector(0, -ScrW() * 0.06, 0)
+    local add = Vector(0, -ScrWL() * 0.06, 0)
     add:Rotate(ang)
 
     local add2 = Vector(-100, 0, 0)

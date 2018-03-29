@@ -45,7 +45,7 @@ net.Receive('DScoreBoard2.Connect', function()
 
     board.Connecting[steamid] = {
         nick = nick,
-        timestamp = CurTime()
+        timestamp = CurTimeL()
     }
 
     board.Disconnected[steamid] = nil
@@ -63,7 +63,7 @@ net.Receive('DScoreBoard2.Disconnect', function()
     board.Disconnected[steamid] = {
         nick = nick,
         country = country,
-        timestamp = CurTime()
+        timestamp = CurTimeL()
     }
 
     board.Connecting[steamid] = nil

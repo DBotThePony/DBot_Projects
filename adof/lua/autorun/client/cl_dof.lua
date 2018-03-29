@@ -77,7 +77,7 @@ local function DrawOnScreen()
 	surface.SetDrawColor(255, 255, 255, 255)
 	surface.SetMaterial(fmat)
 
-	local W, H = ScrW(), ScrH()
+	local W, H = ScrWL(), ScrHL()
 
 	local toupdate = LocalPlayer():WaterLevel() < 1
 	for i=0, ADOF.NUM_DOF_NODES do
@@ -312,14 +312,14 @@ local function Think()
 		if tr.Entity:IsPlayer() then dist = math.max(dist, 50) end
 	end
 
-	if ((IsValid(tr.Entity) and dist < 300) or dist < 200) and FocusCooldown < CurTime() then
+	if ((IsValid(tr.Entity) and dist < 300) or dist < 200) and FocusCooldown < CurTimeL() then
 		if not Focused then
-			FocusCooldown = CurTime() + 0.3
+			FocusCooldown = CurTimeL() + 0.3
 			Focused = true
 		end
 		local offset = 40
 
-		last = CurTime() + 0.4
+		last = CurTimeL() + 0.4
 
 		if not IsValid(tr.Entity) then
 			offset = 20
@@ -334,7 +334,7 @@ local function Think()
 			end
 		else
 			LastHitWasEntity = true
-			EntityHitCooldown = CurTime() + 1
+			EntityHitCooldown = CurTimeL() + 1
 
 			local dist = dist / 2
 			if tr.Entity:IsPlayer() and dist < 60 and ShouldEnabledScreen() then
@@ -366,15 +366,15 @@ local function Think()
 			if dist < 150 and (not IsValid(tr.Entity) or not (tr.Entity:IsPlayer() or tr.Entity:GetClass() == 'prop_door_rotating')) then --We are looking at the thing, not player
 				SHOULD_DRAW_BOKEN = true
 				BOKEN_FOCUS = math.Clamp(0.6 - dist / 150, 0,1)
-				BokenCooldown = CurTime() + 2
+				BokenCooldown = CurTimeL() + 2
 				BOKEN_FORCE = math.Clamp(BOKEN_FORCE + BOKEN_STEP * (FrameTime() * 66), 0,1)
 			elseif dist < 150 and IsValid(tr.Entity) then
 				SHOULD_DRAW_BOKEN = true
 				BOKEN_FOCUS = math.Clamp(0.5 - dist / 90, 0,1)
-				BokenCooldown = CurTime() + 2
+				BokenCooldown = CurTimeL() + 2
 				BOKEN_FORCE = math.Clamp(BOKEN_FORCE + BOKEN_STEP * (FrameTime() * 66), 0,1)
 			else --We are too far or not looking at anything
-				if BokenCooldown < CurTime() then
+				if BokenCooldown < CurTimeL() then
 					SHOULD_DRAW_BOKEN = false
 					BOKEN_FOCUS = 0.1
 				else
@@ -383,7 +383,7 @@ local function Think()
 			end
 		end
 
-		if not IsValid(tr.Entity) and LastHitWasEntity and EntityHitCooldown < CurTime() then
+		if not IsValid(tr.Entity) and LastHitWasEntity and EntityHitCooldown < CurTimeL() then
 			lastdist = dist
 			LastHitWasEntity = false
 		elseif not IsValid(tr.Entity) and not LastHitWasEntity then
@@ -393,17 +393,17 @@ local function Think()
 		end
 
 		ADOF.SPACING = Change(ADOF.SPACING, ((lastdist - 40)^2)/6)
-	elseif last < CurTime() then
+	elseif last < CurTimeL() then
 		ADOF.OFFSET = math.min(ADOF.OFFSET + 80 * (FrameTime() * 66), ADOF.Max)
 		ADOF.SPACING = math.min(ADOF.SPACING + 80 * (FrameTime() * 66), 400)
 		LastHitWasEntity = false
 
 		if ENABLE_BOKEN:GetBool() then
-			if ADOF.OFFSET > 200 and BokenCooldown < CurTime() then
+			if ADOF.OFFSET > 200 and BokenCooldown < CurTimeL() then
 				SHOULD_DRAW_BOKEN = false
 				BOKEN_FOCUS = 0.1
 				BOKEN_FORCE = math.Clamp(BOKEN_FORCE - BOKEN_STEP * (FrameTime() * 66), 0,1)
-			elseif BokenCooldown > CurTime() and ADOF.OFFSET > 200 then
+			elseif BokenCooldown > CurTimeL() and ADOF.OFFSET > 200 then
 				BOKEN_FORCE = math.Clamp(BOKEN_FORCE - BOKEN_STEP * (FrameTime() * 66), 0,1)
 			end
 		end

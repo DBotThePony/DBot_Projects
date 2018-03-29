@@ -26,7 +26,7 @@ end
 DHUD2.PlayerStartVoice = DHUD2.PlayerStartVoice or GAMEMODE.PlayerStartVoice
 DHUD2.PlayerEndVoice = DHUD2.PlayerEndVoice or GAMEMODE.PlayerEndVoice
 
-DHUD2.DefinePosition('voice', ScrW() - 300, 100)
+DHUD2.DefinePosition('voice', ScrWL() - 300, 100)
 DHUD2.CreateColor('voice_wave', 'Voice Waves', 27, 160, 218, 255)
 
 surface.CreateFont('DHUD2.Voice', {
@@ -82,7 +82,7 @@ function PANEL:Think()
 
 	if self.IsFadingOut then
 		table.insert(self.Waves, 0)
-		local coff = self.FadeAt - RealTime()
+		local coff = self.FadeAt - RealTimeL()
 		self:SetAlpha(coff * 127)
 
 		if coff <= 0 then
@@ -142,7 +142,7 @@ local function BuildVoicePanel()
 	VoicePanel:SetKeyboardInputEnabled(false)
 	VoicePanel:ParentToHUD()
 	VoicePanel:SetPos(DHUD2.GetPosition('voice'))
-	VoicePanel:SetSize(250, ScrH() - 350)
+	VoicePanel:SetSize(250, ScrHL() - 350)
 	VoicePanel.Think = function() VoicePanel:SetPos(DHUD2.GetPosition('voice')) end
 end
 
@@ -167,7 +167,7 @@ local function Draw()
 	if not IsValid(LocalPlayer()) then return end
 	if not LocalPlayer().DHUD2Talk then return end
 
-	local ctime = RealTime()
+	local ctime = RealTimeL()
 
 	local funcs = {
 		math.sin(ctime + ctime % 3) * 6,
@@ -188,7 +188,7 @@ local function Draw()
 
 	surface.SetDrawColor(DHUD2.GetColor('voice_wave'))
 	local x, y = DHUD2.GetPosition('voice')
-	y = y + ScrH() - 370
+	y = y + ScrHL() - 370
 
 	for i, val in ipairs(funcs) do
 		val = math.abs(val)
@@ -231,7 +231,7 @@ function PlayerEndVoice(_, ply)
 
 	if IsValid(VoicePanels[ply]) then
 		VoicePanels[ply].IsFadingOut = true
-		VoicePanels[ply].FadeAt = RealTime() + 2
+		VoicePanels[ply].FadeAt = RealTimeL() + 2
 	end
 end
 

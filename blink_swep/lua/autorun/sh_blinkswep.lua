@@ -33,14 +33,14 @@ if CLIENT then
 		local wep = net.ReadEntity()
 		if not IsValid(wep) then return end
 		wep.Jumping = true
-		wep.JumpTime = CurTime() + net.ReadFloat() --I don't trust replicated convars
+		wep.JumpTime = CurTimeL() + net.ReadFloat() --I don't trust replicated convars
 	end)
 
 	net.Receive('dbot_blink.finish', function()
 		local wep = net.ReadEntity()
 		if not IsValid(wep) then return end
 		wep.Jumping = false
-		wep.NextJump = CurTime() + net.ReadFloat() --I don't trust replicated convars
+		wep.NextJump = CurTimeL() + net.ReadFloat() --I don't trust replicated convars
 	end)
 end
 
@@ -86,7 +86,7 @@ end
 
 function SWEP:Deploy()
 	self.Jumping = false
-	self.DeployTime = CurTime() + DEPLOY_DELAY:GetFloat()
+	self.DeployTime = CurTimeL() + DEPLOY_DELAY:GetFloat()
 	if self:GetOwner():IsPlayer() then
 		self:GetOwner():DrawViewModel(false)
 	end
@@ -163,9 +163,9 @@ local FIRING = Color(63, 192, 255)
 local READY = Color(117, 255, 250)
 
 function SWEP:DrawHUD()
-	local x, y = ScrW() / 2 - 60, ScrH() / 2 + 40
+	local x, y = ScrWL() / 2 - 60, ScrHL() / 2 + 40
 
-	local cTime = CurTime()
+	local cTime = CurTimeL()
 	local hit = false
 
 	if self.DeployTime > cTime then
@@ -199,8 +199,8 @@ end
 function SWEP:PrimaryAttack()
 	if CLIENT then return end
 	if self.Jumping then return end
-	if self.DeployTime > CurTime() then return end
-	if self.NextJump > CurTime() then return end
+	if self.DeployTime > CurTimeL() then return end
+	if self.NextJump > CurTimeL() then return end
 
 	local ply = self:GetOwner()
 	if not IsValid(ply) then return end
@@ -211,14 +211,14 @@ function SWEP:PrimaryAttack()
 	end
 
 	self.Jumping = true
-	self.JumpTime = CurTime() + TIME_PREPARE:GetFloat()
+	self.JumpTime = CurTimeL() + TIME_PREPARE:GetFloat()
 	self:NetMessage()
 end
 
 function SWEP:Jump()
 	self.Jumping = false
 	local ply = self:GetOwner()
-	self.NextJump = CurTime() + ATTACK_DELAY:GetFloat()
+	self.NextJump = CurTimeL() + ATTACK_DELAY:GetFloat()
 
 	if not IsValid(ply) then return end --Owner died before jump
 	if CLIENT then return end
@@ -247,7 +247,7 @@ function SWEP:Think()
 	if not IsValid(ply) then return end
 
 	if self.Jumping then
-		if self.JumpTime < CurTime() then
+		if self.JumpTime < CurTimeL() then
 			self:Jump()
 		end
 	end

@@ -22,7 +22,7 @@ net.Receive('ULXPP.sin', function()
 		local Pos = net.ReadVector()
 
 		hook.Add('Move', 'ULXPP_SIN', function(ply, mv)
-			mv:SetOrigin(Pos + Vector(0, 0, math.sin(CurTime()) * 50))
+			mv:SetOrigin(Pos + Vector(0, 0, math.sin(CurTimeL()) * 50))
 			return true
 		end)
 	else
@@ -63,7 +63,7 @@ end)
 hook.Add('PostDrawHUD', '!ULXPP.Banish', function()
 	if ULXPP.BANISHED then
 		surface.SetDrawColor(color_black)
-		surface.DrawRect(0, 0, ScrW(), ScrH())
+		surface.DrawRect(0, 0, ScrWL(), ScrHL())
 		return true
 	end
 end, -1)
@@ -71,7 +71,7 @@ end, -1)
 hook.Add('HUDPaint', '!ULXPP.Banish', function()
 	if ULXPP.BANISHED then
 		surface.SetDrawColor(color_black)
-		surface.DrawRect(0, 0, ScrW(), ScrH())
+		surface.DrawRect(0, 0, ScrWL(), ScrHL())
 		return true
 	end
 end, -1)

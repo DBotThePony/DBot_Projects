@@ -27,7 +27,7 @@ local surface = surface
 local EyePos = EyePos
 local EyeAngles = EyeAngles
 local DHUD2 = {}
-local CurTime = CurTime
+local CurTimeL = CurTimeL
 local DLib = DLib
 local math = math
 
@@ -125,7 +125,7 @@ local function Net()
 
 	for i, type in ipairs(typeRead) do
 		local dtype = Types[type]
-		local ctime = CurTime()
+		local ctime = CurTimeL()
 		local tolive = math.Clamp(dmg / 25, 3, 12)
 		local col = Damage.Colors[dtype] or color_white
 		local data = {
@@ -187,7 +187,7 @@ end
 
 local function Tick()
 	if not ENABLED:GetBool() then return end
-	local ctime = CurTime()
+	local ctime = CurTimeL()
 
 	for k, data in ipairs(Damage.History) do
 		if data.finish < ctime then
@@ -200,7 +200,7 @@ local function Tick()
 			data.shift = data.shift + FrameTime() * 40
 		end
 
-		data.cfade = math.Clamp(1 - (CurTime() - data.fade), 0, 1)
+		data.cfade = math.Clamp(1 - (CurTimeL() - data.fade), 0, 1)
 		data.color.a = data.cfade * 255
 	end
 end

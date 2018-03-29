@@ -166,7 +166,7 @@ function ENT:MakeIgnite()
 	self:SetIsIgnited(true)
 	self.phys:EnableMotion(true)
 	self.phys:Wake()
-	self.ExplodeAt = CurTime() + self.FuzeTime
+	self.ExplodeAt = CurTimeL() + self.FuzeTime
 	self:SetExplodeAt(self.ExplodeAt)
 	self:EmitSound('minecraft/fuse.ogg')
 end
@@ -193,7 +193,7 @@ local debugwtite = Material('models/debug/debugwhite')
 
 function ENT:RealDraw()
 	if self:GetIsIgnited() then
-		local div = CurTime() % 1
+		local div = CurTimeL() % 1
 		local ceil = div >= 0.5 and 1 or 0
 
 		if ceil == 0 then
@@ -202,7 +202,7 @@ function ENT:RealDraw()
 			render.ResetModelLighting(1, 1, 1)
 		end
 
-		local left = self:GetExplodeAt() - CurTime()
+		local left = self:GetExplodeAt() - CurTimeL()
 
 		if left <= 0.2 then
 			local mult = (0.2 - left) * 3 + 1
@@ -227,7 +227,7 @@ function ENT:Think()
 	self.BaseClass.Think(self)
 
 	if self.ExplodeAt then
-		if self.ExplodeAt <= CurTime() then
+		if self.ExplodeAt <= CurTimeL() then
 			self:Explode()
 		end
 	end

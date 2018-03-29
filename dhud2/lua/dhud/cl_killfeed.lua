@@ -29,7 +29,7 @@ local Fall = 'done his last flight'
 DHUD2.CreateColor('feed_npc', 'Death Feed NPC Color', 255, 230, 105, 255)
 DHUD2.CreateColor('feed_suicide', 'Death Feed Suicide Color', 255, 255, 255, 255)
 
-DHUD2.DefinePosition('killfeed', ScrW() - 100, 100)
+DHUD2.DefinePosition('killfeed', ScrWL() - 100, 100)
 
 function DHUD2.AddDeathNotice(attacker, aTeam, weapon, victim, vTeam)
 	if not DHUD2.IsEnabled() then return end
@@ -82,10 +82,10 @@ function DHUD2.AddDeathNotice(attacker, aTeam, weapon, victim, vTeam)
 		data.vcolor = table.Copy(DHUD2.GetColor('feed_suicide'))
 	end
 
-	data.start = CurTime()
-	data.endtime = CurTime() + 8
+	data.start = CurTimeL()
+	data.endtime = CurTimeL() + 8
 	data.time = 8
-	data.startfade = CurTime() + 7
+	data.startfade = CurTimeL() + 7
 	data.alpha = 255
 
 	data.width = 0
@@ -144,7 +144,7 @@ local function Think()
 	if not ENABLE:GetBool() then return end
 	if not DHUD2.ServerConVar('killfeed') then return end
 
-	local ctime = CurTime()
+	local ctime = CurTimeL()
 	for k, data in pairs(Feed.History) do
 		if data.endtime < ctime then
 			Feed.History[k] = nil
@@ -152,7 +152,7 @@ local function Think()
 		end
 
 		if data.startfade < ctime then
-			data.alpha = (data.endtime - CurTime()) * 255
+			data.alpha = (data.endtime - CurTimeL()) * 255
 			data.vcolor.a = data.alpha
 			data.acolor.a = data.alpha
 			data.weaponcolor.a = data.alpha

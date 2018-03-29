@@ -108,7 +108,7 @@ else
 	local DisplayTable = {}
 
 	net.Receive('MultiFreezeTool.ShowUp', function()
-		display = RealTime() + 2
+		display = RealTimeL() + 2
 		DisplayTable = {}
 
 		local max = net.ReadUInt(12)
@@ -134,9 +134,9 @@ else
 
 	hook.Add('PostDrawWorldToolgun', 'multifreeze', function(ply, weapon, mode)
 		if mode ~= 'multifreeze' then return end
-		if display < RealTime() then return end
+		if display < RealTimeL() then return end
 
-		if RealTime() % 0.5 < .25 then return end
+		if RealTimeL() % 0.5 < .25 then return end
 
 		local r, g, b = vars.select_r:GetInt() / 255, vars.select_g:GetInt() / 255, vars.select_b:GetInt() / 255
 

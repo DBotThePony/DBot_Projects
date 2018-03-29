@@ -30,7 +30,7 @@ local WIDTH = 200
 local HEIGHT = 200
 local MaxDist = 1000
 
-DHUD2.DefinePosition('minimap', ScrW() - WIDTH - 30, ScrH() - HEIGHT - 30)
+DHUD2.DefinePosition('minimap', ScrWL() - WIDTH - 30, ScrHL() - HEIGHT - 30)
 
 local ENTS = {}
 
@@ -338,7 +338,7 @@ local function Draw()
 	if not DrawBigMap then
 		DrawMap(x, y, WIDTH, HEIGHT, Mult)
 	else
-		DrawMap(100, 100, ScrW() - 200, ScrH() - 200, 5)
+		DrawMap(100, 100, ScrWL() - 200, ScrHL() - 200, 5)
 	end
 end
 

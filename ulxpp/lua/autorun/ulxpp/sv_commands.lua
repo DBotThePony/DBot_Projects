@@ -64,7 +64,7 @@ ULXPP.Funcs = {
 			ent:Spawn()
 			ent:SetPlayer(ply)
 			ply:ExitVehicle()
-			ent.time = CurTime() + 4
+			ent.time = CurTimeL() + 4
 		end
 
 		ulx.fancyLogAdmin(ply, "#A trainfucked #T", targets)
@@ -121,12 +121,12 @@ ULXPP.Funcs = {
 			hook.Add('Think', id, function()
 				if not IsValid(ply) then return end
 				ply:ExitVehicle()
-				ply:SetPos(ply.ULXPP_SINPOS + Vector(0, 0, math.sin(CurTime()) * 50))
+				ply:SetPos(ply.ULXPP_SINPOS + Vector(0, 0, math.sin(CurTimeL()) * 50))
 			end)
 
 			hook.Add('Move', id, function(ply2, mv)
 				if ply2 ~= ply then return end
-				mv:SetOrigin(ply.ULXPP_SINPOS + Vector(0, 0, math.sin(CurTime()) * 50))
+				mv:SetOrigin(ply.ULXPP_SINPOS + Vector(0, 0, math.sin(CurTimeL()) * 50))
 				return true
 			end)
 

@@ -70,7 +70,7 @@ if CLIENT then
 	hook.Add('Think', CURRENT_TOOL_MODE, function()
 		if not IsValid(SCREEN_MODEL) then return end
 
-		if LAST_DRAW < RealTime() then
+		if LAST_DRAW < RealTimeL() then
 			SCREEN_MODEL:Remove()
 		end
 	end)
@@ -83,7 +83,7 @@ if CLIENT then
 end
 
 function TOOL:DrawHUD()
-	local sw, sh = ScrW(), ScrH()
+	local sw, sh = ScrWL(), ScrHL()
 	local w, h = 192, 192
 
 	surface.SetDrawColor(0, 0, 0)
@@ -96,7 +96,7 @@ function TOOL:DrawHUD()
 	elseif not util.IsValidModel(mdl) then
 		draw.DrawText('Invalid model', 'MDL_Manip', sw - w / 2, h / 2 - 10, color_white, TEXT_ALIGN_CENTER)
 	else
-		LAST_DRAW = RealTime() + 1
+		LAST_DRAW = RealTimeL() + 1
 
 		if not IsValid(SCREEN_MODEL) then
 			SCREEN_MODEL = ClientsideModel(mdl, RENDERGROUP_BOTH)
@@ -113,7 +113,7 @@ function TOOL:DrawHUD()
 		SCREEN_MODEL:SetModel(mdl)
 		SCREEN_MODEL:SetAngles(oAng)
 
-		cam.Start3D(Vector(-70 + math.sin(RealTime()) * 10), Angle(0, 0, 0), 90, sw - w, 0, w, h)
+		cam.Start3D(Vector(-70 + math.sin(RealTimeL()) * 10), Angle(0, 0, 0), 90, sw - w, 0, w, h)
 		SCREEN_MODEL:DrawModel()
 		cam.End3D()
 	end

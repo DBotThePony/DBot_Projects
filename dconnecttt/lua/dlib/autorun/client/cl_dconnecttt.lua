@@ -37,7 +37,7 @@ function plyMeta:TotalTimeConnected()
 end
 
 function plyMeta:SessionTime()
-	return CurTime() - self:GetNWFloat('DConnecttt_Join')
+	return CurTimeL() - self:GetNWFloat('DConnecttt_Join')
 end
 
 -- UTime interface
@@ -113,8 +113,8 @@ local function Populate(Panel)
 	Panel:CheckBox('Draw visual effect when player loses connection', 'cl_dconn_draw')
 	Panel:CheckBox('Draw time played on server', 'cl_dconn_drawtime')
 
-	Panel:NumSlider('X Position of text', 'cl_dconn_x', 0, ScrW(), 1)
-	Panel:NumSlider('Y Position of text', 'cl_dconn_y', 0, ScrH(), 1)
+	Panel:NumSlider('X Position of text', 'cl_dconn_x', 0, ScrWL(), 1)
+	Panel:NumSlider('Y Position of text', 'cl_dconn_y', 0, ScrHL(), 1)
 
 	local lab = Label('Text color')
 	Panel:AddItem(lab)
@@ -143,7 +143,7 @@ local disconnect = Material('icon16/disconnect.png')
 local connect = Material('icon16/connect.png')
 local currentmat = disconnect
 local current = false
-local lastchange = CurTime()
+local lastchange = CurTimeL()
 
 surface.CreateFont('DConnecttt.Disconnect', {
 	font = 'Roboto',
@@ -176,7 +176,7 @@ local function Draw(ply)
 end
 
 local function PrePlayerDraw(ply)
-	local delta = CurTime() - ply:GetNWFloat('DConnecttt.JoinTime', 0)
+	local delta = CurTimeL() - ply:GetNWFloat('DConnecttt.JoinTime', 0)
 
 	if delta < 0 or delta >= 20 then return end
 	local defaultMult = delta / 20
@@ -185,7 +185,7 @@ local function PrePlayerDraw(ply)
 	local multToUse = 0
 
 	if fast ~= 0 then
-		local fastMult = (CurTime() - fast) / 4
+		local fastMult = (CurTimeL() - fast) / 4
 
 		if fastMult > defaultMult then
 			multToUse = fastMult
@@ -215,8 +215,8 @@ local function PrePlayerDraw(ply)
 
 	ply.DConnecttt_lastParticle = ply.DConnecttt_lastParticle or 0
 
-	if ply.DConnecttt_lastParticle < RealTime() then
-		ply.DConnecttt_lastParticle = RealTime() + 0.05
+	if ply.DConnecttt_lastParticle < RealTimeL() then
+		ply.DConnecttt_lastParticle = RealTimeL() + 0.05
 		local new = newPos + Vector(math.random(mins.x, maxs.x), math.random(mins.y, maxs.y), 0)
 
 		local particle = emitter:Add('particle/fire', new)
@@ -241,9 +241,9 @@ local function PostDrawTranslucentRenderables(a, b)
 	if a or b then return end
 	if not DRAW_NOT_RESPONDING:GetBool() then return end
 
-	if lastchange < CurTime() then
+	if lastchange < CurTimeL() then
 		current = not current
-		lastchange = CurTime() + 2
+		lastchange = CurTimeL() + 2
 		currentmat = current and connect or disconnect
 	end
 

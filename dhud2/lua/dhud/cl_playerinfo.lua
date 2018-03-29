@@ -83,7 +83,7 @@ end
 
 DHUD2.EntityVar('drawplyinfo', false, UpdateVars)
 
-DHUD2.DefinePosition('playerinfo', ScrW() / 2, ScrH() / 2 + 40)
+DHUD2.DefinePosition('playerinfo', ScrWL() / 2, ScrHL() / 2 + 40)
 DHUD2.CreateColor('plytext', 'Player name', 255, 255, 255, 255)
 
 local function Draw()

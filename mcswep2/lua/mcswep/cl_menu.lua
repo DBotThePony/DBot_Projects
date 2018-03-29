@@ -18,8 +18,8 @@ limitations under the License.
 local self = MCSWEP2
 local mc = MCSWEP2
 
-self.MouseX = self.MouseX or ScrW() / 2
-self.MouseY = self.MouseY or ScrH() / 2
+self.MouseX = self.MouseX or ScrWL() / 2
+self.MouseY = self.MouseY or ScrHL() / 2
 
 function self.OpenMenu()
 	if not IsValid(self.MENU) then self.MENU = self.BuildMenu() end
@@ -153,7 +153,7 @@ local Meta = {
 function self.BuildMenu()
 	local self = vgui.Create('DFrame')
 	self:SetTitle('MCSwep/2')
-	self:SetSize(ScrW() - 100, ScrH() - 100)
+	self:SetSize(ScrWL() - 100, ScrHL() - 100)
 	self:Center()
 	self:MakePopup()
 	self:SetDeleteOnClose(false)
@@ -177,7 +177,7 @@ function self.BuildMenu()
 	ResetButton:SetMouseInputEnabled(true)
 	ResetButton:SetCursor('hand')
 	ResetButton.DoClick = function()
-		self:SetSize(ScrW() - 100, ScrH() - 100)
+		self:SetSize(ScrWL() - 100, ScrHL() - 100)
 		self:Center()
 
 		timer.Simple(0, function()

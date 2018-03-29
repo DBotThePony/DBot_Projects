@@ -60,7 +60,7 @@ local function Draw()
 		Create()
 	end
 
-	cam.Start3D(drawPosition, drawAngles, 70, 0, ScrH() - 200, 200, 200)
+	cam.Start3D(drawPosition, drawAngles, 70, 0, ScrHL() - 200, 200, 200)
 
 	render.SuppressEngineLighting(true)
 	render.ModelMaterialOverride(debugwtite)
@@ -100,12 +100,12 @@ local function Draw()
 
 		ent:SetPlaybackRate(1.5)
 
-		ent:FrameAdvance(CurTime() - LastFrame)
-		LastFrame = CurTime()
+		ent:FrameAdvance(CurTimeL() - LastFrame)
+		LastFrame = CurTimeL()
 
 		local sq = ply:GetSequence()
 
-		if ent.LastBonesSetup < CurTime() then
+		if ent.LastBonesSetup < CurTimeL() then
 			if ent:GetModel() ~= ply:GetModel() then ent:SetModel(ply:GetModel()) end
 
 			ent:SetMaterial(ply:GetMaterial())
@@ -126,7 +126,7 @@ local function Draw()
 				ent:SetBodygroup(group.id, ply:GetBodygroup(group.id))
 			end
 
-			ent.LastBonesSetup = CurTime() + 1
+			ent.LastBonesSetup = CurTimeL() + 1
 		end
 
 		if sq ~= ent.LastSQ then

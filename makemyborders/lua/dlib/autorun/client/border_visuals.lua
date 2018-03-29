@@ -18,7 +18,7 @@ local hook = hook
 local system = system
 local cam = cam
 local render = render
-local RealTime = RealTime
+local RealTimeL = RealTimeL
 local draw = draw
 
 local ENABLE_VISUALS = CreateConVar('cl_border_animation', '1', {FCVAR_ARCHIVE}, 'Animate the border')
@@ -54,7 +54,7 @@ local function RenderScene()
 	init()
 	if ready and not ENABLE_VISUALS:GetBool() then return end
 
-	local ctime = RealTime()
+	local ctime = RealTimeL()
 	lastThink = lastThink or ctime
 	borderAnimShift = (borderAnimShift + (ctime - lastThink) * 4) % borderRepeatValue
 	lastThink = ctime

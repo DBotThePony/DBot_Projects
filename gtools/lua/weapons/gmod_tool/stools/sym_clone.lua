@@ -1004,7 +1004,7 @@ if CLIENT then
 			local get = SymmetryPositions(toMirror, SELECTED_ENTITY:GetPos(), symmAngle)
 
 			render.SetColorModulation(select_red, select_green, select_blue)
-			render.SetBlend(0.7 + math.sin(CurTime() * 3) * .1)
+			render.SetBlend(0.7 + math.sin(CurTimeL() * 3) * .1)
 
 			for i, v in ipairs(get) do
 				local ent = SELECT_TABLE[i]
@@ -1069,8 +1069,8 @@ function TOOL:LeftClick(tr)
 end
 
 function TOOL:RightClick(tr)
-	self:GetSWEP().SymmLastRightClick = self:GetSWEP().SymmLastRightClick or CurTime()
-	if self:GetSWEP().SymmLastRightClick > CurTime() then
+	self:GetSWEP().SymmLastRightClick = self:GetSWEP().SymmLastRightClick or CurTimeL()
+	if self:GetSWEP().SymmLastRightClick > CurTimeL() then
 		if SERVER then
 			GTools.PChatPrint(self:GetOwner(), 'Stop spamming!')
 		end
@@ -1078,7 +1078,7 @@ function TOOL:RightClick(tr)
 		return false
 	end
 
-	self:GetSWEP().SymmLastRightClick = CurTime() + 2
+	self:GetSWEP().SymmLastRightClick = CurTimeL() + 2
 
 	if not self:GetOwner():KeyDown(IN_USE) then
 		if not CanUse(self:GetOwner(), tr.Entity) then return false end

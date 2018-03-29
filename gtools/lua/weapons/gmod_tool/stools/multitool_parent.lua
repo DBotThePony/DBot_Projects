@@ -98,7 +98,7 @@ function TOOL:DrawHUD()
 
 	local w = surface.GetTextSize('Unsaved changes')
 
-	surface.SetTextPos(ScrW() / 2 - w / 2, 180)
+	surface.SetTextPos(ScrWL() / 2 - w / 2, 180)
 	surface.DrawText('Unsaved changes')
 end
 

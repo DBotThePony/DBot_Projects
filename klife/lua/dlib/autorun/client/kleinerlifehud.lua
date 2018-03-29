@@ -17,13 +17,13 @@ local DLib = DLib
 local HUDCommons = DLib.HUDCommons
 local surface = surface
 local draw = draw
-local RealTime = RealTime
-local CurTime = CurTime
+local RealTimeL = RealTimeL
+local CurTimeL = CurTimeL
 local hook = hook
 local IsValid = IsValid
 local LocalPlayer = LocalPlayer
-local ScrW = ScrW
-local ScrH = ScrH
+local ScrWL = ScrWL
+local ScrHL = ScrHL
 local math = math
 
 local ENABLE = CreateConVar('cl_klife_hud', '1', {FCVAR_ARCHIVE}, 'Enable Kleiner Life HUD')
@@ -127,8 +127,8 @@ local AMMO1_CHANGE = 0
 local AMMO2_CHANGE = 0
 
 local BAR_WIDTH = 7
-local BAR_HEIGHT = ScrH() / 20
-local BAR_AMPLITUDE = ScrH() / 150
+local BAR_HEIGHT = ScrHL() / 20
+local BAR_AMPLITUDE = ScrHL() / 150
 local BAR_SPEED_MULTIPLIER = 4
 local BAR_SIN_SPACING = 2
 local BAR_SPACING = BAR_WIDTH * 3 + 4
@@ -147,16 +147,16 @@ local AMMO2_WIDTH = 180
 local AMMO_HEIGHT = 100
 
 local function colDiff(colIn, diff)
-	return Color(colIn.r, colIn.g, colIn.b, 255 * (diff - RealTime()) / 2)
+	return Color(colIn.r, colIn.g, colIn.b, 255 * (diff - RealTimeL()) / 2)
 end
 
 local function HUDPaint()
 	if not ENABLE:GetBool() then return end
 	if not ENABLE2:GetBool() then return end
 	if not FIRST_THINK then return end
-	local x, y = 40, ScrH() - 120
-	local ctime = (RealTime() % (math.pi * 50)) * BAR_SPEED_MULTIPLIER
-	local rtime = RealTime()
+	local x, y = 40, ScrHL() - 120
+	local ctime = (RealTimeL() % (math.pi * 50)) * BAR_SPEED_MULTIPLIER
+	local rtime = RealTimeL()
 
 	for i = 1, CURRENT_HPBARS do
 		local sin = math.sin(ctime + i / BAR_SIN_SPACING)
@@ -170,7 +170,7 @@ local function HUDPaint()
 		x = x + BAR_SPACING
 	end
 
-	x, y = 40, ScrH() - 120
+	x, y = 40, ScrHL() - 120
 
 	for i = 1, ARMORBARS1 do
 		local sin = math.sin(ctime + i / BAR_SIN_SPACING)
@@ -178,7 +178,7 @@ local function HUDPaint()
 		x = x + BAR_SPACING
 	end
 
-	x, y = 40, ScrH() - 120
+	x, y = 40, ScrHL() - 120
 
 	for i = 1, ARMORBARS2 do
 		local sin = math.sin(ctime + i / BAR_SIN_SPACING)
@@ -186,8 +186,8 @@ local function HUDPaint()
 		x = x + BAR_SPACING
 	end
 
-	x = ScrW() - 60
-	y = ScrH() - 40 - AMMO_HEIGHT
+	x = ScrWL() - 60
+	y = ScrHL() - 40 - AMMO_HEIGHT
 
 	if CLIP2_MAX > 0 or CLIP2 > 0 or AMMO2 > 0 then
 		local touse = math.max(CLIP2, AMMO2)
@@ -261,11 +261,11 @@ local function Tick()
 	local _ARMOR = ply:Armor()
 
 	if HEALTH ~= newhp then
-		LAST_HEALTH_CHANGE = RealTime() + 2
+		LAST_HEALTH_CHANGE = RealTimeL() + 2
 	end
 
 	if ARMOR ~= _ARMOR then
-		LAST_ARMOR_CHANGE = RealTime() + 2
+		LAST_ARMOR_CHANGE = RealTimeL() + 2
 	end
 
 	CURRENT_HPBARS = math.min(20, HEALTH / ply:GetMaxHealth() * HPBARS)
@@ -286,31 +286,31 @@ local function Tick()
 		local _AMMO2 = ply:GetAmmoCount(weapon:GetSecondaryAmmoType())
 
 		if CLIP1 ~= _CLIP1 then
-			CLIP1_CHANGE = RealTime() + 2
+			CLIP1_CHANGE = RealTimeL() + 2
 		end
 
 		if CLIP2 ~= _CLIP2 then
-			CLIP2_CHANGE = RealTime() + 2
+			CLIP2_CHANGE = RealTimeL() + 2
 		end
 
 		if CLIP1_MAX ~= _CLIP1_MAX then
-			CLIP1_MAX_CHANGE = RealTime() + 2
+			CLIP1_MAX_CHANGE = RealTimeL() + 2
 		end
 
 		if CLIP2_MAX ~= _CLIP2_MAX then
-			CLIP2_MAX_CHANGE = RealTime() + 2
+			CLIP2_MAX_CHANGE = RealTimeL() + 2
 		end
 
 		if CLIP2_MAX ~= _CLIP2_MAX then
-			CLIP2_MAX_CHANGE = RealTime() + 2
+			CLIP2_MAX_CHANGE = RealTimeL() + 2
 		end
 
 		if AMMO1 ~= _AMMO1 then
-			AMMO1_CHANGE = RealTime() + 2
+			AMMO1_CHANGE = RealTimeL() + 2
 		end
 
 		if AMMO2 ~= _AMMO2 then
-			AMMO2_CHANGE = RealTime() + 2
+			AMMO2_CHANGE = RealTimeL() + 2
 		end
 
 		CLIP1 = _CLIP1

@@ -41,37 +41,37 @@ local NextPanelCreate = 0
 function ENT:CreateHTMLPanel()
 	self.LastHTMLTry = self.LastHTMLTry or 0
 	self.Tries = self.Tries or 0
-	
-	if NextPanelCreate > CurTime() then return end
-	if self.LastHTMLTry > CurTime() then return end
-	
+
+	if NextPanelCreate > CurTimeL() then return end
+	if self.LastHTMLTry > CurTimeL() then return end
+
 	if self.Tries > 3 then return end
-	
+
 	if IsValid(self.HTMLPanel) then return elseif self.HTMLPanel then self.HTMLPanel:Remove() end
-	
+
 	if self.HTMLPanel then self.HTMLPanel:Remove() end
-	
+
 	self.HTMLPanel = vgui.Create('DHTML')
-	NextPanelCreate = CurTime() + 4
+	NextPanelCreate = CurTimeL() + 4
 	self.HTMLPanel:SetVisible(false)
 	self.HTMLPanel:SetMouseInputEnabled(false)
 	self.HTMLPanel:SetKeyBoardInputEnabled(false)
 	self.HTMLPanel:Dock(FILL)
-	
+
 	self:OpenURL(self:GetURL() or '')
 	self.HTMLPanel:UpdateHTMLTexture()
 	self.Texture = self.HTMLPanel:GetHTMLMaterial()
-	
+
 	self.LastMatID = self.Texture and surface.GetTextureID(self.Texture:GetName()) or 0
-	
-	self.LastHTMLTry = CurTime() + 3
+
+	self.LastHTMLTry = CurTimeL() + 3
 	self.Tries = self.Tries + 1
-	
+
 	if self.Tries > 3 then
 		chat.AddText(Color(0, 200, 0), '[DPicture] ', Color(200, 200, 200), 'Something wrong with HTML panels... I will try to create HTML Panel again in 60 seconds')
 		timer.Simple(60, function()
 			if not IsValid(self) then return end
-			
+
 			self.Tries = 0
 		end)
 	end
@@ -89,36 +89,36 @@ function ENT:SpawnFunction( ply, tr, ClassName )
 	ent:Spawn()
 	ent:SetAngles(Vec:Angle() + Angle(0,-90, 90))
 	ent:Activate()
-	
+
 	return ent
 end
 
 function ENT:Initialize()
 	self:SetModel(self.Model)
-	
+
 	if SERVER then
 		self:PhysicsInit(SOLID_VPHYSICS)
 		self:SetSolid(SOLID_VPHYSICS)
 		self:SetMoveType(MOVETYPE_VPHYSICS)
-		
+
 		local phys = self:GetPhysicsObject()
-		
+
 		if IsValid(phys) then
 		--	phys:EnableMotion(false)
 		end
-		
+
 		if not self.SpawnedByFunction then
 			self:SetAngles(Angle(0,-90, 90))
 		end
-		
+
 		self:SetUseType(SIMPLE_USE)
-		
+
 		self:SetURL(table.Random(__DPicturePics))
 	else
 		self:CreateHTMLPanel()
-		
-		self.LastTextThink = CurTime()
-		
+
+		self.LastTextThink = CurTimeL()
+
 		self:DrawShadow(false)
 	end
 end
@@ -126,7 +126,7 @@ end
 function ENT:Use(ply)
 	if not IsValid(ply) then return end
 	if not ply:IsPlayer() then return end
-	
+
 	net.Start('DPictureSet')
 	net.WriteEntity(self)
 	net.Send(ply)
@@ -134,7 +134,7 @@ end
 
 function ENT:OpenURL(url)
 	if not IsValid(self.HTMLPanel) then self:CreateHTMLPanel() end
-	
+
 	url = url or ''
 
 	local width = 512
@@ -155,7 +155,7 @@ function ENT:OpenURL(url)
 		  vertical-align: middle;
 		}
 		</style>
-		
+
 		<script type='text/javascript'>
 		var keepResizing = true;
 		function resize(obj) {
@@ -186,17 +186,17 @@ function ENT:OpenURL(url)
 		</body>
 		</html>
 	]]
-	
+
 	self.HTMLPanel:SetHTML(page)
 end
 
 function ENT:Draw()
 	if not system.HasFocus() then return end
-	
+
 	--[==[
-	if not DLib.CanLocalPlayerSee(self) then 
+	if not DLib.CanLocalPlayerSee(self) then
 		self.InactiveFrames = (self.InactiveFrames or 0) + 1
-		
+
 		--[[if self.InactiveFrames > framelimit then
 			if IsValid(self.HTMLPanel) then
 				self.HTMLPanel:Remove()
@@ -207,61 +207,61 @@ function ENT:Draw()
 		self.InactiveFrames = 0
 	end
 	]==]
-	
+
 	self:DrawModel()
-	
+
 	if not IsValid(self.HTMLPanel) then self:CreateHTMLPanel() return end
-	
+
 	if not self.Texture then return end
-	if not self.LastMatID then 
+	if not self.LastMatID then
 		local mat = surface.GetTextureID(self.Texture:GetName())
 		self.LastMatID = mat
-		return 
+		return
 	end
-	
+
 	local pos = self:GetPos()
 	local ang = self:GetAngles()
-	
+
 	local newang = ang - Angle(0, 90, 0)
-	
+
 	cam.Start3D2D(pos + newang:Forward() * 4 + newang:Up() * (self.IHeight / 2) - newang:Right() * (self.IHeight / 2), ang, 1)
-	
+
 	surface.SetDrawColor(255, 255, 255, 255)
-	
+
 	surface.SetTexture(self.LastMatID)
 	surface.DrawTexturedRect(0, 0, self.IWidth, self.IHeight)
-	
+
 	cam.End3D2D()
 end
 
 function ENT:Think()
 	if not CLIENT then return end
 	self.InactiveFrames = (self.InactiveFrames or 0)
-	
+
 	if not system.HasFocus() then return end
 	local url = self:GetURL()
-	
+
 	if not url then return end
 
 	if self.InactiveFrames < framelimit then
-		if self.LastTextThink < CurTime() then
+		if self.LastTextThink < CurTimeL() then
 			if not IsValid(self.HTMLPanel) then self:CreateHTMLPanel() end
 			if not IsValid(self.HTMLPanel) then return end --Even we recreated panel, it don't work
-			
+
 			self.HTMLPanel:UpdateHTMLTexture()
 			self.Texture = self.HTMLPanel:GetHTMLMaterial()
-			
-			self.LastTextThink = CurTime() + 3
+
+			self.LastTextThink = CurTimeL() + 3
 		end
-		
+
 		if self.LastURL ~= url then
 			self:OpenURL(url)
 			self.HTMLPanel:UpdateHTMLTexture()
 			self.Texture = self.HTMLPanel:GetHTMLMaterial()
-			
+
 			self.LastMatID = surface.GetTextureID(self.Texture:GetName())
-			
-			self.LastTextThink = CurTime() + 1
+
+			self.LastTextThink = CurTimeL() + 1
 			self.LastURL = url
 		end
 	end

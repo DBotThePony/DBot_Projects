@@ -31,19 +31,19 @@ ENT.Sound = 'items/spawn_item.wav'
 
 function ENT:SpawnFunction(ply, tr, class)
 	if not tr.Hit then return end
-	
+
 	local ent = ents.Create(class)
 	ent:SetPos(tr.HitPos + tr.HitNormal * 8)
 	ent:Spawn()
 	ent:Activate()
-	
+
 	return ent
 end
 
 function ENT:Initialize()
 	self:SetModel(self.Model or 'error.mdl')
 	self:DrawShadow(false)
-	
+
 	if CLIENT then
 		self.ClientsideModel = ClientsideModel(self.Model or 'error.mdl')
 		self.ClientsideModel:SetPos(self:GetPos())
@@ -54,7 +54,7 @@ function ENT:Initialize()
 		self.LastDraw = 0
 		return
 	end
-	
+
 	self:PhysicsInit(SOLID_VPHYSICS)
 	self:SetMoveType(MOVETYPE_NONE)
 	self:SetSolid(SOLID_NONE)
@@ -86,40 +86,40 @@ function ENT:End()
 		SafeRemoveEntity(self)
 		return
 	end
-	
+
 	self.Used = true
-	self.Timer = CurTime() + self.RespawnTimer
+	self.Timer = CurTimeL() + self.RespawnTimer
 	self:SetNoDraw(true)
 end
 
 function ENT:Think()
 	if CLIENT then return end
-	
+
 	if self.Used then
-		if self.Timer < CurTime() then
+		if self.Timer < CurTimeL() then
 			self:BringBack()
 		else
 			return
 		end
 	end
-	
+
 	local pos = self:GetPos()
-	
+
 	for k, v in ipairs(player.GetAll()) do
 		if not v:IsPlayer() then continue end
 		if not v:Alive() then continue end
 		if v:GetPos():Distance(pos) > 128 then continue end
 		if not self:OnUse(v) then continue end
-		
+
 		self:End()
-		
+
 		break
 	end
 end
 
 function ENT:Draw()
-	self.CurrAng.y = self.CurrAng.y + (self.LastDraw - CurTime()) * 44
-	self.LastDraw = CurTime()
+	self.CurrAng.y = self.CurrAng.y + (self.LastDraw - CurTimeL()) * 44
+	self.LastDraw = CurTimeL()
 	self.CurrAng:Normalize()
 	self.ClientsideModel:SetAngles(self.CurrAng)
 	self.ClientsideModel:DrawModel()

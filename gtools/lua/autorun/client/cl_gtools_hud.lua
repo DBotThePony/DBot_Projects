@@ -269,7 +269,7 @@ function PostDrawTranslucentRenderables(a, b)
 
 		local toScreen = mins:ToScreen()
 
-		local W, H = ScrW(), ScrH()
+		local W, H = ScrWL(), ScrHL()
 		local Wh, Hh = W / 2, H / 2
 		local x, y = toScreen.x, toScreen.y
 
@@ -300,7 +300,7 @@ function PostDrawTranslucentRenderables(a, b)
 
 			local toScreen = center:ToScreen()
 
-			local W, H = ScrW(), ScrH()
+			local W, H = ScrWL(), ScrHL()
 			local Wh, Hh = W / 2, H / 2
 			local x, y = toScreen.x, toScreen.y
 
@@ -337,7 +337,7 @@ function PostDrawTranslucentRenderables(a, b)
 
 		local toScreen = center:ToScreen()
 
-		local W, H = ScrW(), ScrH()
+		local W, H = ScrWL(), ScrHL()
 		local Wh, Hh = W / 2, H / 2
 		local x, y = toScreen.x, toScreen.y
 

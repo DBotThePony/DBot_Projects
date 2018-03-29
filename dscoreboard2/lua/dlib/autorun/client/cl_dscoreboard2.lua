@@ -64,7 +64,7 @@ function board.RefreshDCache()
     end
 
     for k, v in pairs(board.Disconnected) do
-        if v.timestamp + 180 < CurTime() or
+        if v.timestamp + 180 < CurTimeL() or
             player.GetBySteamID(k)
         then
             board.Disconnected[k] = nil

@@ -49,7 +49,7 @@ local currentStatus = false
 local radius = 25
 
 local function DrawIsRecording()
-	local x, y = ScrW() - 250, 100
+	local x, y = ScrWL() - 250, 100
 
 	surface.SetTextColor(255, 255, 255)
 	surface.SetDrawColor(255, 0, 0)
@@ -66,8 +66,8 @@ local function DrawIsRecording()
 
 	surface.DrawText('[   REC]')
 
-	if nextChange < CurTime() then
-		nextChange = CurTime() + 1
+	if nextChange < CurTimeL() then
+		nextChange = CurTimeL() + 1
 		currentStatus = not currentStatus
 	end
 
@@ -95,7 +95,7 @@ local function DrawIsRecording()
 end
 
 local function DrawIsReplaying()
-	local x, y = ScrW() - 375, 100
+	local x, y = ScrWL() - 375, 100
 
 	surface.SetTextColor(255, 255, 255)
 	surface.SetDrawColor(0, 255, 0)
@@ -112,8 +112,8 @@ local function DrawIsReplaying()
 
 	surface.DrawText('[   REPLAY]')
 
-	if nextChange < CurTime() then
-		nextChange = CurTime() + 0.4
+	if nextChange < CurTimeL() then
+		nextChange = CurTimeL() + 0.4
 		currentStatus = not currentStatus
 	end
 
@@ -136,8 +136,8 @@ local function DrawIsReplaying()
 	end
 
 	local Start = CoverDelta
-	local End = ScrH() - CoverDelta
-	local Width = ScrW()
+	local End = ScrHL() - CoverDelta
+	local Width = ScrWL()
 
 	for i = 1, 20 do
 		surface.SetDrawColor(255, 255, 255, math.random(3, 10))
@@ -155,18 +155,18 @@ local function HUDPaint()
 	if self.IsRestoring then
 		DrawIsReplaying()
 
-		CoverDelta = Lerp(CurTime() - LastDraw, CoverDelta, 100)
+		CoverDelta = Lerp(CurTimeL() - LastDraw, CoverDelta, 100)
 	else
-		CoverDelta = Lerp(CurTime() - LastDraw, CoverDelta, 0)
+		CoverDelta = Lerp(CurTimeL() - LastDraw, CoverDelta, 0)
 	end
 
 	if CoverDelta > 1 then
 		surface.SetDrawColor(0, 0, 0, 255)
-		surface.DrawRect(0, 0, ScrW(), CoverDelta)
-		surface.DrawRect(0, ScrH() - CoverDelta, ScrW(), CoverDelta)
+		surface.DrawRect(0, 0, ScrWL(), CoverDelta)
+		surface.DrawRect(0, ScrHL() - CoverDelta, ScrWL(), CoverDelta)
 	end
 
-	LastDraw = CurTime()
+	LastDraw = CurTimeL()
 end
 
 hook.Add('HUDPaint', 'DFlashback.HUDPaint', HUDPaint)

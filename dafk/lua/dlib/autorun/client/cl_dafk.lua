@@ -38,7 +38,7 @@ local function Receive()
 
 		if ply == LocalPlayer() then
 			freezeTimer = true
-			fadeAt = CurTime() + 6
+			fadeAt = CurTimeL() + 6
 			freezeTime = time
 		end
 	end
@@ -158,7 +158,7 @@ local function PostDrawTranslucentRenderables(a, b)
 
 	if EFFECTS:GetBool() then
 		local toRemove = {}
-		local cTime = CurTime()
+		local cTime = CurTimeL()
 
 		surface.SetTextPos(0, 0)
 		surface.SetFont('DAFK.Zzz')
@@ -199,7 +199,7 @@ local function Zzz(ply)
 	data.pos.z = data.pos.z - 20
 	data.vel = VectorRand() * 5
 	data.vel.z = 4
-	data.fade = CurTime() + 3
+	data.fade = CurTimeL() + 3
 
 	table.insert(ZZZToDraw, data)
 end
@@ -247,10 +247,10 @@ local function PostDrawHUD()
 
 	if pace and pace.IsActive() then return end
 	local time = freezeTimer and freezeTime or LocalPlayer():GetAFKTime()
-	local w, h = ScrW(), ScrH()
+	local w, h = ScrWL(), ScrHL()
 
 	surface.SetFont('DAFK.Away')
-	local percent = (fadeAt - CurTime()) / 6
+	local percent = (fadeAt - CurTimeL()) / 6
 
 	if not freezeTimer then
 		surface.SetTextColor(255, 255, 255)
@@ -284,14 +284,14 @@ local LastMouseBeat = 0
 
 local function Think()
 	if not system.HasFocus() then return end
-	if LastMouseBeat > RealTime() then return end
+	if LastMouseBeat > RealTimeL() then return end
 
 	local cond = input.IsMouseDown(MOUSE_LEFT) or
 		input.IsMouseDown(MOUSE_RIGHT) or
 		input.IsMouseDown(MOUSE_MIDDLE)
 
 	if cond then
-		LastMouseBeat = RealTime() + 1
+		LastMouseBeat = RealTimeL() + 1
 		net.Start('DAFK.Heartbeat')
 		net.SendToServer()
 	end

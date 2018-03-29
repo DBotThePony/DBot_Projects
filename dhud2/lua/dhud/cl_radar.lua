@@ -106,7 +106,7 @@ local function Update()
 	end
 end
 
-DHUD2.DefinePosition('radar', ScrW() / 2, 40)
+DHUD2.DefinePosition('radar', ScrWL() / 2, 40)
 
 local RADAR_WIDTH = 500
 

@@ -81,10 +81,10 @@ local function HUDPaint()
 	local x, y = GET_POSITION()
 	local currentQuality = 0
 
-	local time = RealTime()
+	local time = RealTimeL()
 
 	if weapon ~= lastWeapon then
-		lastChange = RealTime() + 4
+		lastChange = RealTimeL() + 4
 		lastWeapon = weapon
 	end
 
@@ -95,7 +95,7 @@ local function HUDPaint()
 	local STATS_COLOR = Color(255, 255, 255, alpha)
 
 	if ALLOW_BLINK:GetBool() then
-		sin = math.sin(RealTime() * 10) * 20
+		sin = math.sin(RealTimeL() * 10) * 20
 		STATS_COLOR = Color(230 + sin, 230 + sin, 230 + sin, alpha)
 	end
 

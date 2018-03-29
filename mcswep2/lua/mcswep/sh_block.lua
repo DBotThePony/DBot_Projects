@@ -322,8 +322,8 @@ function ENT:MakeItFall()
 	self:SetFallEndZ(tr.HitPos.z)
 
 	self:SetFallDivider((lpos.z - tr.HitPos.z) / self:FallSpeedMultipler())
-	self:SetFallStart(CurTime())
-	self:SetFallEnd(CurTime() + self:GetFallDivider())
+	self:SetFallStart(CurTimeL())
+	self:SetFallEnd(CurTimeL() + self:GetFallDivider())
 
 	self:SetCollisionGroup(COLLISION_GROUP_WORLD)
 end
@@ -404,7 +404,7 @@ end
 
 function ENT:GetFallPosition()
 	local lpos = self:GetPos()
-	local ctime = CurTime()
+	local ctime = CurTimeL()
 	local lerp = math.Clamp((self:GetFallEnd() - ctime) / self:GetFallDivider(), 0, 1)
 
 	lpos.z = self:GetFallStartZ() - (self:GetFallStartZ() - self:GetFallEndZ()) * (1 - lerp)
@@ -540,9 +540,9 @@ if SERVER then
 	local LastUpdate = 0
 
 	timer.Create('MCSWEP2.ChokeEnts', 0.25, 0, function()
-		if LastUpdate + 1 < CurTime() then
+		if LastUpdate + 1 < CurTimeL() then
 			ENTS = ents.GetAll()
-			LastUpdate = CurTime()
+			LastUpdate = CurTimeL()
 		end
 
 		local mcblocks = {}
@@ -1110,7 +1110,7 @@ end
 
 function ENT:InitializeBlockID(id, ...)
 	self.BaseClass.InitializeBlockID(self, id, ...)
-	self.GrowAt = CurTime() + 180 * mc.TreeTypes[id].mult
+	self.GrowAt = CurTimeL() + 180 * mc.TreeTypes[id].mult
 end
 
 function ENT:CanChoke()
@@ -1162,7 +1162,7 @@ function ENT:Think()
 	self.BaseClass.Think(self)
 	if CLIENT then return end
 
-	if self.GrowAt < CurTime() then
+	if self.GrowAt < CurTimeL() then
 		self:Grow()
 	end
 end

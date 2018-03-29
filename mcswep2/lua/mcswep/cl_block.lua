@@ -60,7 +60,7 @@ function ENT:RealDraw()
 			dlight.Brightness = mult
 			dlight.Decay = 1
 			dlight.Size = 256 * mult
-			dlight.DieTime = CurTime() + 0.2
+			dlight.DieTime = CurTimeL() + 0.2
 		end
 	end
 end

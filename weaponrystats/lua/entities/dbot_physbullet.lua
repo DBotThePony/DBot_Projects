@@ -78,7 +78,7 @@ function ENT:Initialize()
 	self.phys:EnableGravity(false)
 	self.phys:SetMass(1)
 	self.setup = false
-	self.dissapearTime = CurTime() + 10
+	self.dissapearTime = CurTimeL() + 10
 	self:SetCustomCollisionCheck(true)
 	self.m_modifSpeed = self.m_modifSpeed or 1
 	self.m_modifPenet = self.m_modifPenet or 1
@@ -451,7 +451,7 @@ end
 function ENT:Think()
 	if self.invalidBullet then return end
 
-	if self.dissapearTime < CurTime() then
+	if self.dissapearTime < CurTimeL() then
 		return self:Remove()
 	end
 

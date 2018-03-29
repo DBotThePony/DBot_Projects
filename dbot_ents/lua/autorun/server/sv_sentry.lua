@@ -8,13 +8,13 @@ end
 
 local function Nearests(pos, dis)
 	local reply = {}
-	
+
 	for k, v in pairs(player.GetAll()) do
 		if v:GetPos():Distance(pos) < dis then
 			table.insert(reply, v)
 		end
 	end
-	
+
 	return reply
 end
 
@@ -26,19 +26,19 @@ local blacklist = {
 
 function ApplyDSentryDamage(ent, dmg)
 	if not (IsValid(ent) and not ent:IsPlayer() and not ent:IsNPC() and not ent.IsSentryPart and not table.HasValue(blacklist, ent:GetClass())) then return end
-	
+
 	local phys = ent:GetPhysicsObject()
 	if not IsValid(phys) then return end
 	local size = phys:GetVolume()
 	if not size then return end
-	
+
 	ent.DMaxHealth = ent.DMaxHealth or size / 1000
 	ent.DHealth = ent.DHealth or ent.DMaxHealth
 	ent.DHealth = ent.DHealth - dmg:GetDamage()
 	local p = ent.DHealth / ent.DMaxHealth
-	
+
 	ent:SetColor(Color(255, 255 * p, 255 * p))
-	
+
 	if ent.DHealth < 0 then
 		SafeRemoveEntity(ent)
 	end
@@ -141,7 +141,7 @@ local Commands = {
 		local t = Entity(tonumber(args[1]))
 		if not IsValid(t) then return end
 		local sentrys = GetDSentries()
-		
+
 		for k, ent in ipairs(DPP.GetEntsByUID(t:UniqueID())) do
 			for k, v in ipairs(sentrys) do
 				v:AddTarget(ent)
@@ -215,21 +215,21 @@ local function EntityTakeDamage(ent, dmg)
 		local a = dmg:GetAttacker()
 		if not IsValid(a) then return end
 		if a == ent then return end
-		
+
 		local class = a:GetClass()
-		
+
 		if a:IsNPC() then
 			for k, v in ipairs(GetDSentries()) do
 				v:AddTarget(a)
 			end
 		elseif not Invalid[class] then
 			local owner = a.CPPIGetOwner and a:CPPIGetOwner()
-			
+
 			for k, v in pairs(GetDSentries()) do
 				if not IsValid(v) then continue end
-				
+
 				v:AddTarget(a)
-				
+
 				if IsValid(owner) and owner ~= ent then
 					if ADMIN_ONLY then
 						if ent:IsAdmin() and not owner:HasGodMode() then
@@ -237,7 +237,7 @@ local function EntityTakeDamage(ent, dmg)
 						else
 							if v.IsIDLE and v:CanSeeTarget(owner) then
 								v.WatchAtPlayer = owner
-								v.NextIDLEThink = CurTime() + 4
+								v.NextIDLEThink = CurTimeL() + 4
 							end
 						end
 					else
@@ -249,14 +249,14 @@ local function EntityTakeDamage(ent, dmg)
 		elseif a:IsPlayer() then
 			for k, v in pairs(GetDSentries()) do
 				if not IsValid(v) then continue end
-				
+
 				if ADMIN_ONLY then
 					if ent:IsAdmin() and not a:HasGodMode() then
 						v:AddTarget(a)
 					else
 						if v.IsIDLE and v:CanSeeTarget(a) then
 							v.WatchAtPlayer = a
-							v.NextIDLEThink = CurTime() + 4
+							v.NextIDLEThink = CurTimeL() + 4
 						end
 					end
 				else
@@ -269,17 +269,17 @@ local function EntityTakeDamage(ent, dmg)
 		local a = dmg:GetAttacker()
 		if not IsValid(a) then return end
 		if a:GetClass() == 'dbot_sentry' then return end
-		
+
 		local inflictor = dmg:GetInflictor()
 		local addInflictor = false
-		
+
 		if IsValid(inflictor) then
 			addInflictor = not inflictor:IsWeapon() and inflictor.CPPIGetOwner and inflictor:CPPIGetOwner() == a
 		end
-		
+
 		for k, v in ipairs(GetDSentries()) do
 			v:AddTarget(a)
-			
+
 			if addInflictor then
 				v:AddTarget(inflictor)
 			end
@@ -289,26 +289,26 @@ end
 
 local function ACF_BulletDamage(Activated, Entity, Energy, FrAera, Angle, Inflictor, Bone, Gun)
 	if not Entity.IsDSentry then return end
-	
+
 	if IsValid(Inflictor) then
 		for k, v in ipairs(GetDSentries()) do
 			v:AddTarget(Inflictor)
 		end
 	end
-	
+
 	return false
 end
 
 local function Think()
 	local get = GetDSentries()
-	
+
 	for k, class in ipairs(ValidTargets) do
 		for k, npc in ipairs(ents.FindByClass(class)) do
 			if npc.AddRelationship then
 				npc:AddRelationship('dbot_sentry D_HT 1')
 				npc:AddRelationship('dbot_sentry_r D_HT 1')
 			end
-			
+
 			for k, sentry in ipairs(get) do
 				sentry:AddTarget(npc)
 			end

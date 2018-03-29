@@ -54,7 +54,7 @@ end
 function PANEL:Think()
     if not self.steamid then return end
 
-    local delta = math.floor(CurTime() - self.stamp)
+    local delta = math.floor(CurTimeL() - self.stamp)
 
     local seconds = delta % 60
     delta = delta - seconds
@@ -69,7 +69,7 @@ end
 
 function PANEL:SetSteamID(id)
     self.steamid = id
-    self.stamp = CurTime()
+    self.stamp = CurTimeL()
     self.avatar:SetSteamID(id, 32)
 end
 

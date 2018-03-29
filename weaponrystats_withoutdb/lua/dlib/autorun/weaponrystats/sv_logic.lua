@@ -21,7 +21,7 @@ local function EntityTakeDamage(self, dmginfo)
 	if IN_DAMAGE then return end
 	local weapon, attacker = DLib.combat.findWeapon(dmginfo)
 	if not IsValid(weapon) then return end
-	if weapon.weaponrystats_bullets == CurTime() then return end
+	if weapon.weaponrystats_bullets == CurTimeL() then return end
 	local modif, wtype = weapon:GetWeaponModification(), weapon:GetWeaponType()
 
 	if not modif and not wtype then return end
@@ -57,8 +57,8 @@ local function EntityTakeDamage(self, dmginfo)
 			avg:add(dmginfo:GetDamage())
 		end
 
-		if avg.lastSend < CurTime() then
-			avg.lastSend = CurTime() + 0.2
+		if avg.lastSend < CurTimeL() then
+			avg.lastSend = CurTimeL() + 0.2
 		end
 
 		weapon:SetDLibVar('wps_dps', math.ceil(avg:calculate()))

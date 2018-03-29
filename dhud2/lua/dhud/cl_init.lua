@@ -216,13 +216,13 @@ local function Tick()
 
 		if iscrit then
 			if not v.iscrit then
-				v.draw = CurTime() + 4
+				v.draw = CurTimeL() + 4
 				v.iscrit = true
 				v.islow = true
 			end
 		elseif islow then
 			if not v.islow then
-				v.draw = CurTime() + 4
+				v.draw = CurTimeL() + 4
 				v.islow = false
 				v.islow = true
 			end
@@ -257,7 +257,7 @@ local function HUDPaint()
 		DHUD2.IsHudDrawing = false
 	end
 
-	local c = CurTime()
+	local c = CurTimeL()
 
 	local x, y = DHUD2.GetPosition('warning')
 	local col = DHUD2.GetColor('warning')
@@ -302,8 +302,8 @@ local function HUDPaint()
 end
 
 DHUD2.CreateColor('warning', 'Warning text', 255, 150, 150, 255)
-DHUD2.DefinePosition('warning', ScrW() / 2, ScrH() / 2 - 90)
-DHUD2.DefinePosition('printmessage', ScrW() / 2, ScrH() / 2 - 160)
+DHUD2.DefinePosition('warning', ScrWL() / 2, ScrHL() / 2 - 90)
+DHUD2.DefinePosition('printmessage', ScrWL() / 2, ScrHL() / 2 - 160)
 
 function DHUD2.IsShiftEnabled()
 	if DHUD2.ServerConVar('shift') then

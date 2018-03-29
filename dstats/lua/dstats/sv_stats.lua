@@ -64,7 +64,7 @@ function self.Load(ply, steamid)
 	ply.DStats.stats.cache.session = {}
 
 	ply.DStats.stats.stamp = os.time()
-	ply.DStats.stats.savein = CurTime() + 60
+	ply.DStats.stats.savein = CurTimeL() + 60
 
 	self.Query('SELECT stat, svalue FROM dstats__default WHERE ply = ' .. SQLStr(steamid), function(data)
 		ply.DStats.stats.LOADED = true
@@ -155,7 +155,7 @@ function self.Save(ply)
 		session = {},
 	}
 
-	N(ply).savein = CurTime() + 60
+	N(ply).savein = CurTimeL() + 60
 end
 
 function self.SaveAll()
@@ -165,7 +165,7 @@ function self.SaveAll()
 end
 
 function self.SaveTimer()
-	local ctime = CurTime()
+	local ctime = CurTimeL()
 
 	for k, v in ipairs(player.GetAll()) do
 		if not v.DStats then continue end

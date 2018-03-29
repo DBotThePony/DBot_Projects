@@ -96,7 +96,7 @@ function ENT:End()
 	end
 
 	self.Used = true
-	self.Timer = CurTime() + self.RespawnTimer
+	self.Timer = CurTimeL() + self.RespawnTimer
 	self:SetNoDraw(true)
 	if not self:GetShouldRespawn() then self:Remove() end
 end
@@ -105,7 +105,7 @@ function ENT:Think()
 	if CLIENT then return end
 
 	if self.Used then
-		if self.Timer < CurTime() then
+		if self.Timer < CurTimeL() then
 			self:BringBack()
 		else
 			return
@@ -127,8 +127,8 @@ function ENT:Think()
 end
 
 function ENT:Draw()
-	self.CurrAng.y = self.CurrAng.y + (self.LastDraw - CurTime()) * 44
-	self.LastDraw = CurTime()
+	self.CurrAng.y = self.CurrAng.y + (self.LastDraw - CurTimeL()) * 44
+	self.LastDraw = CurTimeL()
 	self.CurrAng:Normalize()
 	if IsValid(self.ClientsideModel) then
 		self.ClientsideModel:SetAngles(self.CurrAng)

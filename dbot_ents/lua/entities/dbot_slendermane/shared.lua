@@ -39,14 +39,14 @@ function ENT:Initialize()
 	self.CurrentVictimTimer = 0
 	self.CLOSE_ENOUGH_FOR = 0
 	self.IDLE_FOR = 0
-	self.CLOSE_ENOUGH_FOR_LAST = CurTime()
-	self.WATCH_ME_FOR_LAST = CurTime()
-	self.TARGET_SELECT_COOLDOWN = CurTime()
-	self.CHASE_STARTED_AT = CurTime()
-	
+	self.CLOSE_ENOUGH_FOR_LAST = CurTimeL()
+	self.WATCH_ME_FOR_LAST = CurTimeL()
+	self.TARGET_SELECT_COOLDOWN = CurTimeL()
+	self.CHASE_STARTED_AT = CurTimeL()
+
 	self:SetModel('models/ppm/player_default_base.mdl')
 	self:SetSequence(self:LookupSequence('idle_all_01'))
-	
+
 	if SERVER then
 		self:PhysicsInitBox(Vector(-16, -16, 0), Vector(16, 16, 60))
 		self:SetMoveType(MOVETYPE_NONE)
@@ -54,9 +54,9 @@ function ENT:Initialize()
 	else
 		self:SetPlaybackRate(2)
 	end
-	
-	self.LastFrame = CurTime()
-	
+
+	self.LastFrame = CurTimeL()
+
 	if CLIENT then
 		timer.Simple(0.5, function()
 			for k, v in ipairs(self:GetBodyGroups()) do

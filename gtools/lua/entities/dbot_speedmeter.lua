@@ -164,9 +164,9 @@ function ENT:TriggerWireOutputs()
 end
 
 function ENT:Think()
-	self.LastThink = self.LastThink or CurTime()
-	local delta = CurTime() - self.LastThink
-	self.LastThink = CurTime()
+	self.LastThink = self.LastThink or CurTimeL()
+	local delta = CurTimeL() - self.LastThink
+	self.LastThink = CurTimeL()
 
 	if delta <= 0 then return end -- ???
 

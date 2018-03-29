@@ -32,11 +32,11 @@ function plyMeta:SetIsAFK(status)
 end
 
 function plyMeta:SetAFKTime(time)
-	self:SetNWInt('DAFK.TimerStart', math.floor(CurTime() - time))
+	self:SetNWInt('DAFK.TimerStart', math.floor(CurTimeL() - time))
 end
 
 function plyMeta:GetAFKTime()
-	return math.floor(CurTime() - self:GetNWInt('DAFK.TimerStart'))
+	return math.floor(CurTimeL() - self:GetNWInt('DAFK.TimerStart'))
 end
 
 function plyMeta:IsEvenAFK()

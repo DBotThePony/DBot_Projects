@@ -102,9 +102,9 @@ local Mins, Maxs = Vector(-5, -5, 0), Vector(5, 5, 5)
 function ENT:Initialize()
 	self:SetModel('models/workshop/player/items/pyro/eotl_ducky/eotl_bonus_duck.mdl')
 
-	self.CreatedAt = CurTime()
-	self.Expires = CurTime() + DISSAPEAR:GetInt()
-	self.Fade = CurTime() + DISSAPEAR:GetInt() - 4
+	self.CreatedAt = CurTimeL()
+	self.Expires = CurTimeL() + DISSAPEAR:GetInt()
+	self.Fade = CurTimeL() + DISSAPEAR:GetInt() - 4
 
 	if CLIENT then
 		self.NextFadeState = 0
@@ -183,8 +183,8 @@ function ENT:Draw()
 	if not IsValid(self.ClientsideModel) then return end
 	self.CAngle.y = self.CAngle.y + (FrameTime() * 66)
 
-	if self.Fade < CurTime() then
-		local ctime = CurTime()
+	if self.Fade < CurTimeL() then
+		local ctime = CurTimeL()
 		local left = self.Expires
 		local percent = (left - ctime) / 4
 
@@ -200,7 +200,7 @@ function ENT:Draw()
 	self.ClientsideModel:SetAngles(self.CAngle)
 	self.ClientsideModel:DrawModel()
 
-	if self.Fade < CurTime() then
+	if self.Fade < CurTimeL() then
 		render.SetBlend(1)
 	end
 end
@@ -232,9 +232,9 @@ ENT.PrintName = 'Mann Bear'
 function ENT:Initialize()
 	self:SetModel('models/props_watergate/bottle_pickup.mdl')
 
-	self.CreatedAt = CurTime()
-	self.Expires = CurTime() + BEER_DISSAPEAR:GetInt()
-	self.Fade = CurTime() + BEER_DISSAPEAR:GetInt() - 4
+	self.CreatedAt = CurTimeL()
+	self.Expires = CurTimeL() + BEER_DISSAPEAR:GetInt()
+	self.Fade = CurTimeL() + BEER_DISSAPEAR:GetInt() - 4
 
 	if CLIENT then
 		self:SetSolid(SOLID_NONE)
@@ -288,9 +288,9 @@ if CLIENT then
 	local DuckDisplayTimer = 0
 
 	hook.Add('HUDPaint', 'DBot_DuckOMeter', function()
-		if DuckDisplayTimer < CurTime() then return end
-		local fade = (DuckDisplayTimer - CurTime()) / 4
-		local x, y = ScrW() - 200, ScrH() / 2 + 100
+		if DuckDisplayTimer < CurTimeL() then return end
+		local fade = (DuckDisplayTimer - CurTimeL()) / 4
+		local x, y = ScrWL() - 200, ScrHL() / 2 + 100
 		draw.DrawText('Ducks collected: ' .. DockOMetrValue .. '\nOn this server: ' .. DockOMetrValue_Server, 'DBot_DuckOMeter', x, y, Color(255, 255, 255, fade * 255))
 	end)
 
@@ -299,7 +299,7 @@ if CLIENT then
 		DockOMetrValue_Server = net.ReadUInt(16)
 		sql.Query('DELETE FROM dbot_duckometr')
 		sql.Query('INSERT INTO dbot_duckometr (cval) VALUES (' .. DockOMetrValue .. ')')
-		DuckDisplayTimer = CurTime() + 4
+		DuckDisplayTimer = CurTimeL() + 4
 	end)
 
 	return
@@ -359,7 +359,7 @@ local function Think()
 
 		local lpos = self:GetPos()
 
-		if self.CreatedAt + 0.4 > CurTime() then continue end
+		if self.CreatedAt + 0.4 > CurTimeL() then continue end
 
 		local hit = false
 
@@ -376,7 +376,7 @@ local function Think()
 
 		if hit then continue end
 
-		if self.Expires < CurTime() then
+		if self.Expires < CurTimeL() then
 			self:Remove()
 		end
 	end
@@ -389,7 +389,7 @@ local function Think()
 
 		local lpos = self:GetPos()
 
-		if self.CreatedAt + 0.4 > CurTime() then continue end
+		if self.CreatedAt + 0.4 > CurTimeL() then continue end
 
 		local hit = false
 
@@ -406,7 +406,7 @@ local function Think()
 
 		if hit then continue end
 
-		if self.Expires < CurTime() then
+		if self.Expires < CurTimeL() then
 			self:Remove()
 		end
 	end

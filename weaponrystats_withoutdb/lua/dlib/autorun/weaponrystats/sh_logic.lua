@@ -165,7 +165,7 @@ local function EntityFireBullets(self, bulletData)
 		return
 	end
 
-	findWeapon.weaponrystats_bullets = CurTime()
+	findWeapon.weaponrystats_bullets = CurTimeL()
 
 	do
 		local oldCallback = bulletData.Callback
@@ -268,7 +268,7 @@ weaponMeta.weaponrystats_SetNextSecondaryFire = weaponMeta.weaponrystats_SetNext
 
 function weaponMeta:SetNextPrimaryFire(time)
 	if not weaponrystats.ENABLED:GetBool() then return weaponMeta.weaponrystats_SetNextPrimaryFire(self, time) end
-	local delta = time - CurTime()
+	local delta = time - CurTimeL()
 
 	if delta > 0 then
 		local modif, wtype = self:GetWeaponModification(), self:GetWeaponType()
@@ -281,7 +281,7 @@ function weaponMeta:SetNextPrimaryFire(time)
 			delta = delta / wtype.speed
 		end
 
-		time = CurTime() + delta
+		time = CurTimeL() + delta
 	end
 
 	return weaponMeta.weaponrystats_SetNextPrimaryFire(self, time)
@@ -289,7 +289,7 @@ end
 
 function weaponMeta:SetNextSecondaryFire(time)
 	if not weaponrystats.ENABLED:GetBool() then return weaponMeta.weaponrystats_SetNextSecondaryFire(self, time) end
-	local delta = time - CurTime()
+	local delta = time - CurTimeL()
 
 	if delta > 0 then
 		local modif, wtype = self:GetWeaponModification(), self:GetWeaponType()
@@ -302,7 +302,7 @@ function weaponMeta:SetNextSecondaryFire(time)
 			delta = delta / wtype.speed
 		end
 
-		time = CurTime() + delta
+		time = CurTimeL() + delta
 	end
 
 	return weaponMeta.weaponrystats_SetNextSecondaryFire(self, time)

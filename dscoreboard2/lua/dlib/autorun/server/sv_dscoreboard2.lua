@@ -142,7 +142,7 @@ local function RatePlayer(ply, cmd, args)
     ply.DSCOREBOARD_RATE_COOLDOWN = ply.DSCOREBOARD_RATE_COOLDOWN or {}
     ply.DSCOREBOARD_RATE_COOLDOWN[i1] = ply.DSCOREBOARD_RATE_COOLDOWN[i1] or 0
 
-    local ctime = CurTime()
+    local ctime = CurTimeL()
     if ply.DSCOREBOARD_RATE_COOLDOWN[i1] > ctime then
         ChatPrint(ply, ChatColor, 'You must wait ' .. math.floor(ply.DSCOREBOARD_RATE_COOLDOWN[i1] - ctime) .. ' seconds before rating this player again.')
         return
@@ -163,7 +163,7 @@ local Connect
 
 local function PlayerConnect(nick, ip)
     if not Connect then return end
-    if Connect.frame ~= CurTime() then Connect = nil return end
+    if Connect.frame ~= CurTimeL() then Connect = nil return end
 
     net.Start('DScoreBoard2.Connect')
     net.WriteString(Connect.steamid)
@@ -203,7 +203,7 @@ local function CheckPassword(steamid64, ip, svpass, clpass, nick)
         ip = ip,
         steamid64 = steamid64,
         nick = nick,
-        frame = CurTime(),
+        frame = CurTimeL(),
         steamid = steamid,
     }
 end
