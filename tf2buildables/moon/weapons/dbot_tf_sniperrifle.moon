@@ -115,19 +115,24 @@ if SERVER
 		else
 			@SetCharge(0)
 else
-	--ScopeMaterial = Material('hud/scope_sniper_alt_ul')
-	--ScopeW = 512
-	--ScopeH = 372
+	ScopeMaterial = Material('hud/scope_sniper_alt_ul')
+	ScopeW = 512
+	ScopeH = 372
 	SWEP.DrawHUD = =>
 		return if not @GetIsCharging()
-		--surface.SetMaterial(ScopeMaterial)
-		--w, h = ScrW(), ScrH()
-		--min = math.min(w, h)
-		--surface.SetDrawColor(0, 0, 0)
-		--surface.DrawRect(0, 0, w, h)
-		--surface.SetDrawColor(255, 255, 255)
-		--surface.DrawTexturedRectRotated(w / 2 - ScopeW / 2, h / 2 - ScopeH / 2, ScopeW, ScopeH, 0)
-		--surface.DrawTexturedRectRotated(w / 2 - ScopeH / 2 - 7, h / 2 + ScopeW / 2, ScopeW, ScopeH + 14, 90)
+		surface.SetMaterial(ScopeMaterial)
+		w, h = ScrWL(), ScrHL()
+		aspectRatio = h / ScopeH / 2
+		min = math.min(w, h)
+		surface.SetDrawColor(0, 0, 0)
+		surface.DrawRect(0, 0, w / 2 - ScopeW * aspectRatio, h)
+		surface.DrawRect(w / 2 + ScopeW * aspectRatio, 0, w, h)
+		surface.DrawRect(0, h * 0.96, w, h)
+		surface.SetDrawColor(255, 255, 255)
+		surface.DrawTexturedRect(w / 2 - ScopeW * aspectRatio, 0, ScopeW * aspectRatio, ScopeH * aspectRatio)
+		surface.DrawTexturedRectUV(w / 2 - 1, 0, ScopeW * aspectRatio + 1, ScopeH * aspectRatio, 1, 0, 0, 1)
+		surface.DrawTexturedRectUV(w / 2 - 1, h / 2 - 1, ScopeW * aspectRatio + 1, ScopeH * aspectRatio, 1, 1, 0, 0)
+		surface.DrawTexturedRectUV(w / 2 - ScopeW * aspectRatio, h / 2 - 1, ScopeW * aspectRatio, ScopeH * aspectRatio, 0, 1, 1, 0)
 		DTF2.DrawSmallCenteredBar(@GetCharge() / @MaxCharge, 'Charge')
 	SWEP.TranslateFOV = (fov) =>
 		@currentZoom = Lerp(FrameTime() * 4, @currentZoom, @targetZoom)
