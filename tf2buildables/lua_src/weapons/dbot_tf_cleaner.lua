@@ -41,8 +41,8 @@ SWEP.BulletDamage = 8
 SWEP.ReloadBullets = 25
 SWEP.DefaultSpread = Vector(1, 1, 0) * 0.02
 
-SWEP.FireSoundsScript = 'Weapon_ProSniperRifle.Single'
-SWEP.FireCritSoundsScript = 'Weapon_ProSniperRifle.SingleCrit'
+SWEP.FireSoundsScript = 'Weapon_UrbanProfessional.Single'
+SWEP.FireCritSoundsScript = 'Weapon_UrbanProfessional.SingleCrit'
 SWEP.EmptySoundsScript = 'Weapon_SMG.Empty'
 
 SWEP.DrawAnimation = 'smg_draw'
