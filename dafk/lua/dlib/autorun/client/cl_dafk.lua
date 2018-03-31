@@ -330,6 +330,7 @@ local Hooks = {
 	'KeyPress',
 	'ScoreboardShow',
 	'ScoreboardHide',
+	'PlayerBindPress',
 }
 
 local function HookFunc()
