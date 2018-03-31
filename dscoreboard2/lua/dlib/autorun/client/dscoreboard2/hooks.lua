@@ -47,6 +47,10 @@ local function Close()
     return true
 end
 
+local function checkBoardStuff()
+    return IsValid(board.Board) and board.Board:IsVisible()
+end
+
 local function KeyPress()
     if not IsValid(board.Board) then return false end
     if not board.Board:IsVisible() then return false end
@@ -78,10 +82,9 @@ end)
 hook.Add('ScoreboardShow', 'DScoreBoard2', Open)
 hook.Add('ScoreboardHide', 'DScoreBoard2', Close)
 hook.Add('CreateMove', 'DScoreBoard2', function(cmd)
-    if cmd:KeyDown(IN_ATTACK2) then
-        if KeyPress() then
-            cmd:SetButtons(cmd:GetButtons() - IN_ATTACK2)
-        end
+    if cmd:KeyDown(IN_ATTACK2) and checkBoardStuff() then
+        KeyPress()
+        cmd:SetButtons(cmd:GetButtons() - IN_ATTACK2)
     end
 end)
 
