@@ -32,8 +32,9 @@ net.Receive('DScoreBoard2.Flags', function()
 
     for i = 1, count do
         local ply = net.ReadEntity()
-        if not IsValid(ply) then continue end
-        ply.DSCOREBOARD_FLAG = net.ReadString()
+        if IsValid(ply) then
+            ply.DSCOREBOARD_FLAG = net.ReadString()
+        end
     end
 end)
 

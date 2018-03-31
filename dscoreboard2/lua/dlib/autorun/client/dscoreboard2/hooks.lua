@@ -21,7 +21,7 @@ local function Create(force)
     if force and IsValid(board.Board) then board.Board:Remove() end
     if IsValid(board.Board) then return end
 
-    local status, board2 = pcall(vgui.Create, 'DScoreBoard2')
+    local status, board2 = xpcall(vgui.Create, function(err) print(debug.traceback(err)) end, 'DScoreBoard2')
     if status then
         board.Board = board2
     end
