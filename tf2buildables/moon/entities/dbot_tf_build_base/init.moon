@@ -335,10 +335,15 @@ hook.Add 'Think', 'DTF2.CheckBuildablesAllies', ->
 				timer.Create("DTF2.Forgive.#{build}.#{attacker}", FORGIVE_TIMER\GetInt(), 1, -> build\UnmarkEntity(attacker) if IsValid(attacker) and IsValid(build)) if FORGIVE\GetBool()
 	return
 
+sbox_playershurtplayers = GetConVar('sbox_playershurtplayers')
+
 hook.Add 'EntityTakeDamage', 'DTF2.CheckBuildablesAllies', (dmg) =>
 	return if not UPDATE_OWNED_RELATIONSHIPS_ALL\GetBool()
 	attacker = dmg\GetAttacker()
 	inflictor = dmg\GetInflictor()
+	if engine.ActiveGamemode() == 'sandbox' and type(@) == 'Player' and type(attacker) == 'Player'
+		sbox_playershurtplayers = sbox_playershurtplayers or GetConVar('sbox_playershurtplayers')
+		return if not sbox_playershurtplayers\GetBool()
 	return if attacker == @ or not IsValid(attacker) or attacker.IsTF2Building or @IsTF2Building or IsValid(inflictor) and inflictor.IsTF2Building or IS_ENEMY(attacker, false) or not IS_ALLY(@) or IS_ALLY(@) and IS_ALLY(attacker)
 	for {victim, attacker2} in *ENTS_TO_CHECK
 		return if victim == @ and attacker2 == attacker
