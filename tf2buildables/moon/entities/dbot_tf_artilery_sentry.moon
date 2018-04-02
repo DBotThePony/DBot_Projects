@@ -15,7 +15,6 @@
 -- limitations under the License.
 --
 
-DEFINE_BASECLASS('dbot_tf_sentry')
 AddCSLuaFile()
 
 ENT.Base = 'dbot_tf_sentry'

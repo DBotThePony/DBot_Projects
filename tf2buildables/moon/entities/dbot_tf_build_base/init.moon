@@ -300,9 +300,14 @@ checkFriendlyFire = (dmg) =>
 
 hook.Add 'EntityTakeDamage', 'DTF2.BuildablesFriendlyFire', checkFriendlyFire
 
+sbox_playershurtplayers = GetConVar('sbox_playershurtplayers')
+
 hook.Add 'EntityTakeDamage', 'DTF2.CheckBuildablesOwner', (dmg) =>
 	return if not UPDATE_OWNED_RELATIONSHIPS\GetBool()
 	attacker = dmg\GetAttacker()
+	if engine.ActiveGamemode() == 'sandbox' and type(@) == 'Player' and type(attacker) == 'Player'
+		sbox_playershurtplayers = sbox_playershurtplayers or GetConVar('sbox_playershurtplayers')
+		return if not sbox_playershurtplayers\GetBool()
 	return if attacker == @ or not IsValid(attacker) or not @GetBuildedSentry or dmg\GetDamage() <= 0 or checkFriendlyFire(@, dmg)
 	sentry = @GetBuildedSentry()
 	dispenser = @GetBuildedDispenser()
@@ -334,8 +339,6 @@ hook.Add 'Think', 'DTF2.CheckBuildablesAllies', ->
 				build\MarkAsEnemy(attacker)
 				timer.Create("DTF2.Forgive.#{build}.#{attacker}", FORGIVE_TIMER\GetInt(), 1, -> build\UnmarkEntity(attacker) if IsValid(attacker) and IsValid(build)) if FORGIVE\GetBool()
 	return
-
-sbox_playershurtplayers = GetConVar('sbox_playershurtplayers')
 
 hook.Add 'EntityTakeDamage', 'DTF2.CheckBuildablesAllies', (dmg) =>
 	return if not UPDATE_OWNED_RELATIONSHIPS_ALL\GetBool()
