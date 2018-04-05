@@ -14,6 +14,7 @@
 -- limitations under the License.
 
 local KICK_NOT_RESPONDING = CreateConVar('sv_dconn_kick', '1', {FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Kick not responding clients')
+local KICK_TIMEOUT = CreateConVar('sv_dconn_kick_time', '360', {FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Kick timeout in seconds')
 local PREVENT_CONNECTION_SPAM = CreateConVar('sv_dconn_spam', '1', {FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Prevent connection spam')
 local SPAM_TRIES = CreateConVar('sv_dconn_spamtries', '3', {FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Max connection tries before ban player')
 local SPAM_DELAY = CreateConVar('sv_dconn_spamdelay', '60', {FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Connection spam delay in seconds')
@@ -261,30 +262,31 @@ local function Timer()
 	local KICK_NOT_RESPONDING = KICK_NOT_RESPONDING:GetBool()
 
 	for k, ply in pairs(player.GetAll()) do
-		if not ply.DCONNECT_INITIALIZE then continue end
+		if ply.DCONNECT_INITIALIZE then
+			ply.DConnecttt_Session = (ply.DConnecttt_Session or 0) + 1
+			ply.DConnecttt_Total = (ply.DConnecttt_Total or 0) + 1
+			ply.DConnecttt_LastTick = ply.DConnecttt_LastTick or CurTimeL()
 
-		ply.DConnecttt_Session = (ply.DConnecttt_Session or 0) + 1
-		ply.DConnecttt_Total = (ply.DConnecttt_Total or 0) + 1
-		ply.DConnecttt_LastTick = ply.DConnecttt_LastTick or CurTimeL()
+			if ply:IsBot() then
+				ply.DConnecttt_LastTick = CurTimeL()
+			end
 
-		if ply:IsBot() then
-			ply.DConnecttt_LastTick = CurTimeL()
-		end
+			local deadTime = CurTimeL() - ply.DConnecttt_LastTick
+			ply:SetNWBool('DConnecttt_Dead', deadTime > 5)
 
-		local deadTime = CurTimeL() - ply.DConnecttt_LastTick
-		ply:SetNWBool('DConnecttt_Dead', deadTime > 5)
-
-		if KICK_NOT_RESPONDING and ply.DConnecttt_LastTick + 360 < CurTimeL() then
-			ply.DConnecttt_Kicked = true
-			ply:Kick('[DConnecttt] Your client has failed to reply to a query in time. Please reconnect or restart your game.')
+			if KICK_NOT_RESPONDING and ply.DConnecttt_LastTick + KICK_TIMEOUT:GetFloat() < CurTimeL() then
+				ply.DConnecttt_Kicked = true
+				ply:Kick('[DConnecttt] Your client has failed to reply to a query in time. Please reconnect or restart your game.')
+			end
 		end
 	end
 end
 
 local function SaveTimer()
 	for k, ply in pairs(player.GetAll()) do
-		if not ply.DCONNECT_INITIALIZE then continue end
-		xpcall(DConn.SavePlayerData, print, ply)
+		if ply.DCONNECT_INITIALIZE then
+			xpcall(DConn.SavePlayerData, print, ply)
+		end
 	end
 end
 
