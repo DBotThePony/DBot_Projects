@@ -438,15 +438,16 @@ local function PostLeave(ply, vehPos, upsideDown)
 
 	if position then
 		ply:SetPos(position)
-	else
-		for i, shift in attemptToFind:ipairs() do
-			space:SetPos(vehPos + shift)
-			position = space:Search()
+		return
+	end
 
-			if position then
-				ply:SetPos(position)
-				return
-			end
+	for i, shift in attemptToFind:ipairs() do
+		space:SetPos(vehPos + shift)
+		position = space:Search()
+
+		if position then
+			ply:SetPos(position)
+			return
 		end
 	end
 
