@@ -40,7 +40,7 @@ local function Populate(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
 
-	local lab = Label('DSit made by DBotThePony')
+	local lab = Label('gui.dsit.menu.author')
 	Panel:AddItem(lab)
 	lab:SetDark(true)
 
@@ -56,15 +56,15 @@ local function PopulateClient(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
 
-	local lab = Label('DSit made by DBotThePony')
+	local lab = Label('gui.dsit.menu.author')
 	Panel:AddItem(lab)
 	lab:SetDark(true)
 
-	Panel:CheckBox('Allow to sit on me', 'cl_dsit_allow_on_me')
-	Panel:CheckBox('Allow only for friends', 'cl_dsit_friendsonly')
-	Panel:CheckBox('Check for "get off" message in chat', 'cl_dsit_message')
-	Panel:NumSlider('Max players on you', 'cl_dsit_maxonme', 0, 32, 0)
-	Panel:Button('Get off player on you', 'dsit_getoff')
+	Panel:CheckBox('gui.dsit.menu.sitonme', 'cl_dsit_allow_on_me')
+	Panel:CheckBox('gui.dsit.menu.friendsonly', 'cl_dsit_friendsonly')
+	Panel:CheckBox('gui.dsit.menu.getoff_check', 'cl_dsit_message')
+	Panel:NumSlider('gui.dsit.menu.max', 'cl_dsit_maxonme', 0, 32, 0)
+	Panel:Button('gui.dsit.menu.getoff', 'dsit_getoff')
 
 	local button = Panel:Button('Discord')
 	button.DoClick = function()

@@ -49,7 +49,7 @@ local function PhysgunDrop(ply, ent)
 	ply.dsit_pickup = nil
 end
 
-DLib.friends.Register('dsit', 'DSit Friend', true)
+DLib.friends.Register('dsit', 'gui.dsit.friend', true)
 
 local function Think()
 	local lply, lang
