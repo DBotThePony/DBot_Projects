@@ -373,6 +373,7 @@ ENT.Initialize = =>
 	@SetMoveType(MOVETYPE_NONE)
 	@GetPhysicsObject()\EnableMotion(false)
 	@obbcenter = @OBBCenter()
+	@SetBloodColor(BLOOD_COLOR_MECH)
 
 	@SetIsBuilding(false)
 	@SetnwLevel(1)
