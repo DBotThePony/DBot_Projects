@@ -80,10 +80,10 @@ local function HUDPaint()
 		local pttime = ent:TotalTimeConnected()
 		local nick = ent:Nick()
 
-		add = string.format('\n\n%s\'s session time: %s\n%s\'s total time: %s', nick, DLib.string.tformat(pstime), nick, DLib.string.tformat(pttime))
+		add = DLib.i18n.localize('gui.dconn.session.playerinfo', nick, DLib.string.tformat(pstime), nick, DLib.string.tformat(pttime))
 	end
 
-	local text = 'Session time: ' .. DLib.string.tformat(stime) .. '\nTotal time: ' .. DLib.string.tformat(ttime) .. add
+	local text = DLib.i18n.localize('gui.dconn.session.info', DLib.string.tformat(stime), DLib.string.tformat(ttime) .. add)
 	surface.SetFont('DConnecttt.HUD')
 	local w, h = surface.GetTextSize(text)
 	local x, y = HUD_POSITION()
@@ -102,11 +102,11 @@ local function Populate(Panel)
 	Panel:AddItem(lab)
 	lab:SetDark(true)
 
-	Panel:CheckBox('Draw visual effect when player loses connection', 'cl_dconn_draw')
-	Panel:CheckBox('Draw time played on server', 'cl_dconn_drawtime')
+	Panel:CheckBox('gui.dconn.settings.cl_dconn_draw', 'cl_dconn_draw')
+	Panel:CheckBox('gui.dconn.settings.cl_dconn_drawtime', 'cl_dconn_drawtime')
 
-	Panel:NumSlider('X Position of text', 'cl_dconn_x', 0, ScrWL(), 1)
-	Panel:NumSlider('Y Position of text', 'cl_dconn_y', 0, ScrHL(), 1)
+	Panel:NumSlider('gui.dconn.settings.cl_dconn_x', 'cl_dconn_x', 0, ScrWL(), 1)
+	Panel:NumSlider('gui.dconn.settings.cl_dconn_y', 'cl_dconn_y', 0, ScrHL(), 1)
 
 	local lab = Label('Text color')
 	Panel:AddItem(lab)
@@ -161,7 +161,7 @@ local function Draw(ply)
 	cam.Start3D2D(eyes + add, ang, 0.1)
 
 	surface.DrawTexturedRect(0, 16, 32, 32)
-	surface.DrawText('? Connection lost')
+	surface.DrawText(DLib.i18n.localize('info.dconn.connection_lost'))
 	surface.SetTextPos(0, 0)
 
 	cam.End3D2D()
