@@ -20,15 +20,13 @@ local SPAM_TRIES = CreateConVar('sv_dconn_spamtries', '3', {FCVAR_NOTIFY, FCVAR_
 local SPAM_DELAY = CreateConVar('sv_dconn_spamdelay', '60', {FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Connection spam delay in seconds')
 local DISPLAY_NICKS = CreateConVar('sv_dconn_hoverdisplay', '1', {FCVAR_NOTIFY, FCVAR_ARCHIVE, FCVAR_REPLICATED}, 'Display players nicks on hovering')
 
-DConn = DConn or {}
-
-net.pool('DConnecttt.ChatPrint')
 net.pool('DConnecttt.PlayerTick')
 
-local EMPTY_FUNC = function() end
+DConn = DConn or {}
+DLib.MessageMaker(DConn, 'DConnecttt')
+DLib.chat.generate('DConnecttt', DConn)
 
 local LINK = DMySQL3.Connect('dconnecttt')
-
 function DConn.Query(q, callback)
 	return LINK:Query(q, callback, callback)
 end
@@ -36,24 +34,10 @@ end
 -- Listen for advanced disconnect event
 gameevent.Listen('player_disconnect')
 
-local PrefixColor = Color(0, 200, 0)
-local Prefix = '[DConnecttt] '
-local TEXT_COLOR = Color(200, 200, 200)
-
-local chat = DLib.chat.generate('DConnecttt')
-
-local function ChatPrint(...)
-	chat.chatAll(...)
-end
-
-function DConn.Message(...)
-	MsgC(PrefixColor, Prefix, TEXT_COLOR, ...)
-	MsgC('\n')
-end
-
+local TEXT_COLOR = Color(221, 186, 80)
 local function Message(...)
-	ChatPrint(...)
-	DConn.Message(...)
+	DConn.LChatAll(...)
+	DConn.LMessage(...)
 end
 
 local PendingDisconnects = {}

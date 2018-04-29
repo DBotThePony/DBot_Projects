@@ -16,19 +16,11 @@
 local HUD_POSITION = DLib.HUDCommons.DefinePosition('dconnecttt', 0, 0)
 local COLOR_TO_USE = DLib.HUDCommons.CreateColor('dconnecttt_bg', 'DConnecttt Background', 0, 0, 0, 150)
 local COLOR_TO_USE_TEXT = DLib.HUDCommons.CreateColor('dconnecttt', 'DConnecttt Background', 255, 255, 255)
-
 local DRAW_NOT_RESPONDING = CreateConVar('cl_dconn_draw', '1', {FCVAR_ARCHIVE}, 'Draw visual effect when player loses connection')
 local DRAW_TIME = CreateConVar('cl_dconn_drawtime', '1', {FCVAR_ARCHIVE}, 'Draw time played on server')
-
 local DISPLAY_NICKS = CreateConVar('sv_dconn_hoverdisplay', '1', {FCVAR_NOTIFY, FCVAR_ARCHIVE, FCVAR_REPLICATED}, 'Display players nicks on hovering')
 
-do
-	local PrefixColor = Color(0, 200, 0)
-	local Prefix = '[DConnecttt] '
-	local ChatColor = Color(200, 200, 200)
-
-	DLib.chat.registerChat('DConnecttt', PrefixColor, Prefix, ChatColor)
-end
+local messaging = DLib.chat.registerWithMessages({}, 'DConnecttt')
 
 local plyMeta = FindMetaTable('Player')
 
