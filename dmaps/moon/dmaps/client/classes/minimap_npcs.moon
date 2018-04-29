@@ -1,19 +1,19 @@
 
 --
 -- Copyright (C) 2017 DBot
--- 
+--
 -- Licensed under the Apache License, Version 2.0 (the 'License');
 -- you may not use this file except in compliance with the License.
 -- You may obtain a copy of the License at
--- 
+--
 --     http://www.apache.org/licenses/LICENSE-2.0
--- 
+--
 -- Unless required by applicable law or agreed to in writing, software
 -- distributed under the License is distributed on an 'AS IS' BASIS,
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
--- 
+--
 
 import DMaps, timer, CreateConVar, draw, surface, Color from _G
 import DisplayedEntityBase, DeathPointer from DMaps
@@ -75,21 +75,21 @@ class NPCPointer extends DisplayedEntityBase
 	new: (...) =>
 		super(...)
 		@eyesYaw = 0
-	
+
 	@CheckNPC: (npc, nClass) => true
 	@GetNPCSize: (nClass = '') => @__NPCs_Sizes[nClass] or 1
 	GetNPCSize: => @@GetNPCSize(@GetClass())
 	@RegisterSizeMultiplier: (nClass = {}, size = 1) =>
 		nClass = {nClass} if type(nClass) ~= 'table'
 		@__NPCs_Sizes[c] = size for c in *nClass
-	
+
 	@GetNPCName: (nClass = '') =>  @__NPCs_Names[nClass] or nClass
 	GetNPCName: => @@GetNPCName(@GetClass())
 	@RegisterNPCName = (npcs = {}, names = {}) =>
 		npcs = {npcs} if type(npcs) ~= 'table'
 		names = {names} if type(names) ~= 'table'
 		@__NPCs_Names[ent] = (names[i] or 'Perfectly generic NPCS') for i, ent in pairs npcs
-	
+
 	@RegisterNPC = (npcs = {}, tp = false) =>
 		npcs = {npcs} if type(npcs) ~= 'table'
 		if tp
@@ -100,7 +100,7 @@ class NPCPointer extends DisplayedEntityBase
 			for npc in *npcs
 				@__NPCs_Friendly[npc] = nil
 				@__NPCs_Enemy[npc] = true
-	
+
 	Think: (map) =>
 		return if not POINTS_ENABLED\GetBool()
 		return if not SV_POINTS_ENABLED\GetBool()
@@ -114,7 +114,7 @@ class NPCPointer extends DisplayedEntityBase
 			return
 		super(map)
 		@eyesYaw = @entity\EyeAngles().y if IsValid(@entity)
-	
+
 	Draw: (map) => -- Override
 		return if not POINTS_ENABLED\GetBool()
 		return if not SV_POINTS_ENABLED\GetBool()
@@ -165,14 +165,14 @@ class FriendlyNPCPointer extends NPCPointer
 		@DefaultRangeQ = @DefaultRange ^ 2
 
 	GetRenderPriority: => 25
-	
+
 	@Setup()
 
 	new: (...) =>
 		super(...)
 		@HP = 0
 		@MHP = 0
-	
+
 	Think: (map) =>
 		super(map)
 		if IsValid(@entity)
@@ -219,12 +219,12 @@ class EnemyNPCPointer extends NPCPointer
 		@DefaultRangeQ = @DefaultRange ^ 2
 
 	GetRenderPriority: => 26
-	
+
 	@Setup()
 
 	new: (...) =>
 		super(...)
-	
+
 	@CheckNPC: (npc, nClass) =>
 		if @__NPCs_Enemy[nClass] return true
 		return false
@@ -255,7 +255,7 @@ class TurrentNPCPointer extends NPCPointer
 
 	new: (...) =>
 		super(...)
-	
+
 	@CheckNPC: (npc, nClass) =>
 		return nClass == 'npc_turret_floor' or
 			nClass == 'npc_turret_ground' or
@@ -265,7 +265,7 @@ class TurrentNPCPointer extends NPCPointer
 			nClass == 'monster_turret' or
 			nClass == 'monster_miniturret' or
 			nClass == 'monster_sentry'
-	
+
 	Draw: (map) => -- Override
 		return if not POINTS_ENABLED\GetBool()
 		return if not SV_POINTS_ENABLED\GetBool()
@@ -280,7 +280,7 @@ class TurrentNPCPointer extends NPCPointer
 		surface.DrawPoly(line1)
 		surface.DrawPoly(line2)
 		super(map)
-		
+
 
 DMaps.NPCPointer = NPCPointer
 DMaps.FriendlyNPCPointer = FriendlyNPCPointer
@@ -395,23 +395,20 @@ hook.Add 'DMaps.DispalyedEntitiesUpdate', 'DMaps.NPCs', (list, lpos) ->
 	return if not SV_POINTS_ENABLED\GetBool()
 	return if not NPC_POINTS_ENABLED\GetBool()
 	return if not SV_NPC_POINTS_ENABLED\GetBool()
-	for {ent, mClass, pos, mdl, dist} in *list
-		if DMaps.IgnoreNPCs[mClass] continue
-		if not ent\IsNPC() continue
-		if ent.__dmaps_ignore continue
 
-		hit = false
-		for handler in *DMaps.NPCsHandlers
-			reply = handler\CheckNPC(ent, mClass)
-			if dist > handler.DefaultRangeQ and reply
-				hit = true
-				break
-			elseif not reply
-				continue
-			handler\AddEntity(ent)
-			hit = true
-			break
-		
-		if hit continue
-		if dist > NPCPointer.DefaultRangeQ continue
-		NPCPointer\AddEntity(ent)
+	for {ent, mClass, pos, mdl, dist} in *list
+		if not DMaps.IgnoreNPCs[mClass] and ent\IsNPC() and not ent.__dmaps_ignore
+			hit = false
+			for handler in *DMaps.NPCsHandlers
+				reply = handler\CheckNPC(ent, mClass)
+				if dist > handler.DefaultRangeQ and reply
+					hit = true
+					break
+				elseif reply
+					handler\AddEntity(ent)
+					hit = true
+					break
+
+			if not hit
+				if dist <= NPCPointer.DefaultRangeQ
+					NPCPointer\AddEntity(ent)

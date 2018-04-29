@@ -1,19 +1,19 @@
 
 --
 -- Copyright (C) 2017 DBot
--- 
+--
 -- Licensed under the Apache License, Version 2.0 (the 'License');
 -- you may not use this file except in compliance with the License.
 -- You may obtain a copy of the License at
--- 
+--
 --     http://www.apache.org/licenses/LICENSE-2.0
--- 
+--
 -- Unless required by applicable law or agreed to in writing, software
 -- distributed under the License is distributed on an 'AS IS' BASIS,
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
--- 
+--
 
 import DMaps, timer, CreateConVar, draw, surface, Color from _G
 import DisplayedEntityBase from DMaps
@@ -78,7 +78,7 @@ class VehiclePointer extends DisplayedEntityBase
 		@color = Color(88, 211, 179)
 		@lineColor = Color(128, 248, 180)
 		@CalcColor()
-		
+
 	CalcColor: =>
 		bytes = {string.byte(@model, 1, #@model)}
 		r = 0
@@ -113,7 +113,7 @@ class VehiclePointer extends DisplayedEntityBase
 				\AddOption('Open Driver\'s Steam profile', -> gui.OpenURL("http://steamcommunity.com/profiles/#{ply\SteamID64()}/"))
 			\Open()
 		return true
-	
+
 	Think: (map) =>
 		return if not POINTS_ENABLED\GetBool()
 		return if not SV_POINTS_ENABLED\GetBool()
@@ -137,16 +137,16 @@ class VehiclePointer extends DisplayedEntityBase
 			elseif @isDriven and dist > @@DistDrivenQ
 				@Remove()
 				return
-	
+
 	@generateTriangleStrip = (X = 0, Y = 0, ang = 0, hypo = 20, myShift = 30, height = 70) =>
 		sin = math.sin(math.rad(ang))
 		cos = math.cos(math.rad(ang))
 
 		hH = height * .1
-		
+
 		X -= myShift * cos
 		Y -= myShift * sin
-		
+
 		trigData = {
 			{x: hH * 2, y: 0}
 			{x: hH * 1.3, y: -hypo * .3}
@@ -163,7 +163,7 @@ class VehiclePointer extends DisplayedEntityBase
 			newY = y * cos + x * sin
 			data.x = newX + X
 			data.y = newY + Y
-		
+
 		return trigData
 
 	Draw: (map) => -- Override
@@ -221,11 +221,7 @@ hook.Add 'DMaps.DispalyedEntitiesUpdate', 'DMaps.Vehicles', (list, lpos) ->
 	return if not SV_VEHICLE_POINTS_ENABLED\GetBool()
 
 	for {ent, mClass, pos, mdl, dist} in *list
-		if not IsValid(ent) continue
-		if not ent\IsVehicle() continue
-		if mClass == 'prop_vehicle_prisoner_pod' continue
-
-		drv = IsValid(ent\GetDriver())
-		if not drv and dist > VehiclePointer.DistNotDrivenQ continue
-		if drv and dist > VehiclePointer.DistDrivenQ continue
-		VehiclePointer\AddEntity(ent)
+		if IsValid(ent) and ent\IsVehicle() and mClass ~= 'prop_vehicle_prisoner_pod'
+			drv = IsValid(ent\GetDriver())
+			if drv and dist <= VehiclePointer.DistNotDrivenQ and not (drv and dist > VehiclePointer.DistDrivenQ)
+				VehiclePointer\AddEntity(ent)

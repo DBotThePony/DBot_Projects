@@ -1,19 +1,19 @@
 
 --
 -- Copyright (C) 2017 DBot
--- 
+--
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
 -- You may obtain a copy of the License at
--- 
+--
 --     http://www.apache.org/licenses/LICENSE-2.0
--- 
+--
 -- Unless required by applicable law or agreed to in writing, software
 -- distributed under the License is distributed on an "AS IS" BASIS,
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
--- 
+--
 
 import DMaps, ents, IsValid, type, table, timer, engine from _G
 import render, surface, math, Color, color_white, CreateConVar from _G
@@ -70,7 +70,7 @@ class DisplayedEntityBase extends DMapEntityPointer
 	@AddEntity = (ent) =>
 		if @KnownEntities[ent] return
 		@(ent)
-	
+
 	@DoGC = =>
 		for ent, obj in pairs @KnownEntities
 			obj\Remove() if not IsValid(ent)
@@ -82,7 +82,7 @@ class DisplayedEntityBase extends DMapEntityPointer
 		@@KnownEntities[entity] = @ if IsValid(entity)
 		@_TABLE_ID = table.insert(@@INSTANCES, @)
 		hook.Run('DMaps.EntityPointCreated', @)
-	
+
 	Think: (map) =>
 		return if not POINTS_ENABLED\GetBool()
 		return if not SV_POINTS_ENABLED\GetBool()
@@ -150,7 +150,7 @@ DMaps.RegisterMapEntityEasy = (gamemodes = {}, classes = {}, names = {}, color =
 		cName = classes[1]
 	else
 		cName = classes
-	
+
 	cName = "E#{cName}Point"
 	newClass = class extends DisplayedEntityBase
 		@Entity = classes
@@ -244,19 +244,18 @@ timer.Create 'DMaps.DispalyedEntitiesUpdate', 0.5, 0, ->
 
 	DMaps.__lastEntsGetAll = {}
 	for ent in *ents.GetAll()
-		if not IsValid(ent) continue
-		mClass = ent\GetClass()
-		if not mClass continue
-		if not ent\GetSolid() == SOLID_NONE continue
-		pos = ent\GetPos()
-		if not pos continue
-		mdl = ent\GetModel()
-		if not mdl continue
-		table.insert(DMaps.__lastEntsGetAll, {ent, mClass, pos, mdl, pos\DistToSqr(lpos)})
+		if IsValid(ent)
+			mClass = ent\GetClass()
+			if mClass and ent\GetSolid() ~= SOLID_NONE
+				pos = ent\GetPos()
+				if pos
+					mdl = ent\GetModel()
+					if mdl
+						table.insert(DMaps.__lastEntsGetAll, {ent, mClass, pos, mdl, pos\DistToSqr(lpos)})
 
 	for {ent, mClass, pos, mdl, dist} in *DMaps.__lastEntsGetAll
-		if not avaliable[mClass] continue
-		if dist > avaliable[mClass].DefaultRangeQ continue
-		avaliable[mClass]\AddEntity(ent)
-	
+		if avaliable[mClass]
+			if dist <= avaliable[mClass].DefaultRangeQ
+				avaliable[mClass]\AddEntity(ent)
+
 	hook.Run('DMaps.DispalyedEntitiesUpdate', DMaps.__lastEntsGetAll, lpos)
