@@ -114,7 +114,7 @@ local function openBorderEdit(borderData, classname, mins, maxs)
 		self:SetVisible(false)
 		self:KillFocus()
 		isHidden = true
-		messages.AddChat('To get back to editing window, press <' .. input.LookupBinding('+duck'):upper() .. '> + <' .. input.LookupBinding('use'):upper() .. '>')
+		messages.AddChat('To get back to editing window, press <' .. input.LookupBinding('+duck', true):upper() .. '> + <' .. input.LookupBinding('use', true):upper() .. '>')
 	end
 
 	self:SetSize(600, 800)
