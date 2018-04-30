@@ -35,6 +35,7 @@ end
 
 function weaponMeta:ApplyClipModifications()
 	if not weaponrystats.ENABLED:GetBool() then return end
+	if self.IsTFA and self:IsTFA() then return end -- no.
 	local self2 = self
 	local self = self2:GetTable()
 	if not self.Primary and not self.Secondary then return end
