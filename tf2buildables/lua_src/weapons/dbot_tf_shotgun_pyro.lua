@@ -19,7 +19,7 @@ AddCSLuaFile()
 
 SWEP.Base = 'dbot_tf_shotgun'
 SWEP.Author = 'DBot'
-SWEP.Category = 'TF2'
+SWEP.Category = 'TF2 Pyro'
 SWEP.PrintName = 'Pyro Shotgun'
 SWEP.ViewModel = 'models/weapons/c_models/c_pyro_arms.mdl'
 SWEP.Spawnable = true
