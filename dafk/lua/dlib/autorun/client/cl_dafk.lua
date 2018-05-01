@@ -62,6 +62,7 @@ surface.CreateFont('DAFK.Text', {
 	size = 40,
 	font = 'Roboto',
 	weight = 600,
+	extended = true,
 })
 
 surface.CreateFont('DAFK.Zzz', {
@@ -74,6 +75,7 @@ surface.CreateFont('DAFK.Away', {
 	size = 100,
 	font = 'Roboto',
 	weight = 500,
+	extended = true,
 })
 
 local function GetEyePos(ply)
@@ -100,7 +102,7 @@ local function Draw(ply)
 
 	local delta = (eyePos - lpos):Angle()
 	local ang = Angle(0, delta.y - 90, 90)
-	local text = 'AFK for: ' .. DLib.string.tformat(time)
+	local text = DLib.i18n.localize('player.dafk.status.afk', DLib.i18n.tformat(time))
 	local add = Vector(-surface.GetTextSize(text) * .05, 0, 0)
 	add:Rotate(ang)
 
@@ -117,7 +119,7 @@ local function DrawTabbedOut(ply)
 
 	local delta = (eyePos - lpos):Angle()
 	local ang = Angle(0, delta.y - 90, 90)
-	local text = 'Tabbed out - Game window is not focused'
+	local text = DLib.i18n.localize('player.dafk.status.tabbed')
 	local add = Vector(-surface.GetTextSize(text) * .05, 0, 0)
 	add:Rotate(ang)
 
@@ -266,15 +268,16 @@ local function PostDrawHUD()
 	end
 
 	local x, y = w / 2, 200
-	local str = DLib.string.tformat(time)
+	local str = DLib.i18n.tformat(time)
+	local awayfor = DLib.i18n.localize('player.dafk.status.awayfor')
 
-	local tX, tY = surface.GetTextSize('Away for')
+	local tX, tY = surface.GetTextSize(awayfor)
 	local tX2, tY2 = surface.GetTextSize(str)
 
 	surface.DrawRect(x - math.max(tX, tX2) / 2 - 20, y - 20, math.max(tX, tX2) + 20, tY * 2 + 30)
 
 	surface.SetTextPos(x - tX / 2, y)
-	surface.DrawText('Away for')
+	surface.DrawText(awayfor)
 
 	surface.SetTextPos(x - tX2 / 2, y + tY + 10)
 	surface.DrawText(str)
@@ -301,16 +304,16 @@ local function PopulateClient(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
 
-	local lab = Label('DAFK was maded by DBot')
+	local lab = Label('gui.dafk.menu.about')
 	Panel:AddItem(lab)
 	lab:SetDark(true)
 
-	Panel:CheckBox('Draw "Zzz" effect', 'cl_dafk_zzz')
-	Panel:CheckBox('AFK time on screen', 'cl_dafk_screen')
-	Panel:CheckBox('Enable chat notifications', 'cl_dafk_chat')
-	Panel:CheckBox('Draw text above player head', 'cl_dafk_text')
-	Panel:CheckBox('Hide DAFK when camera is deployed', 'cl_dafk_hide')
-	Panel:CheckBox('Display whatever your game window is focused\nto other players', 'cl_dafk_focus'):SizeToContents()
+	Panel:CheckBox('gui.dafk.menu.cl_dafk_zzz', 'cl_dafk_zzz')
+	Panel:CheckBox('gui.dafk.menu.cl_dafk_screen', 'cl_dafk_screen')
+	Panel:CheckBox('gui.dafk.menu.cl_dafk_chat', 'cl_dafk_chat')
+	Panel:CheckBox('gui.dafk.menu.cl_dafk_text', 'cl_dafk_text')
+	Panel:CheckBox('gui.dafk.menu.cl_dafk_hide', 'cl_dafk_hide')
+	Panel:CheckBox('gui.dafk.menu.cl_dafk_focus', 'cl_dafk_focus'):SizeToContents()
 
 	local button = Panel:Button('Steam Workshop')
 	button.DoClick = function()

@@ -63,9 +63,9 @@ function plyMeta:GenerateAFKMessage(status, time)
 	local message
 
 	if not status then
-		message = generator.formatMessage(self, ' is now ', GREEN, 'BACK', generator.textcolor, ' to his keyboard! Was AFK for ' .. DLib.string.tformat(time))
+		message = generator.LFormatMessage(self, 'message.dafk.status.now', GREEN, 'message.dafk.status.back', generator.textcolor, 'message.dafk.status.to', DLib.string.tformat(time))
 	else
-		message = generator.formatMessage(self, ' is now ', RED, 'AWAY', generator.textcolor, ' from his keyboard!')
+		message = generator.LFormatMessage(self, 'message.dafk.status.now', RED, 'message.dafk.status.away', generator.textcolor, 'message.dafk.status.from')
 	end
 
 	return message
