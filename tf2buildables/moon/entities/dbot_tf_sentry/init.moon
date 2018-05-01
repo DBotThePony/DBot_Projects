@@ -29,6 +29,7 @@ ENT.CallDestroy = (attacker = NULL, inflictor = NULL, dmg) => hook.Run('TF2Sentr
 ENT.OnOtherKilled = (victim, dmg) =>
 	if dmg\GetAttacker() == @ or dmg\GetInflictor() == @ or IsValid(dmg\GetInflictor()) and dmg\GetInflictor().IsBuildingPart and dmg\GetInflictor().IsBuildingPart and dmg\GetInflictor()\GetBuildableOwner() == @
 		@SetKills(@GetKills() + 1)
+		@lastSpotSoundTarget = CurTime() + 0.3
 		@currentTarget = NULL
 
 ENT.Initialize = =>
@@ -59,6 +60,8 @@ ENT.Initialize = =>
 	@muzzle_l = 0
 	@muzzle_r = 0
 	@nextMuzzle = false
+	@lastSpotSoundTarget = 0
+	@lastLookingAtTargetSound = 0
 	@UpdateSequenceList()
 	@SetRockets(DTF2.GrabInt(@MAX_ROCKETS))
 
@@ -188,13 +191,18 @@ ENT.BehaveUpdate = (delta) =>
 
 	newTarget = @GetFirstVisible(@currentTarget)
 	if newTarget ~= @currentTarget
-		@currentTarget = newTarget
-		@lookingAtTarget = false
-		if IsValid(newTarget)
+		if IsValid(newTarget) and @lastSpotSoundTarget < CurTime() and (@lastLookingAtTargetSound < CurTime() or @lastLookingAtTarget ~= newTarget)
 			net.Start('DTF2.SentryWing', true)
 			net.WriteEntity(@)
 			net.WriteEntity(newTarget)
-			net.Broadcast()
+			net.SendPAS(@GetPos() + Vector(0, 0, 4))
+
+		lastLookingAtTarget = @lastLookingAtTarget
+		if IsValid(@currentTarget)
+			@lastLookingAtTarget = @currentTarget
+			@lastLookingAtTargetSound = CurTime() + 0.75
+		@currentTarget = newTarget
+		@lookingAtTarget = false
 
 	if IsValid(@currentTarget)
 		@currentTargetPosition = @currentTarget\WorldSpaceCenter()
