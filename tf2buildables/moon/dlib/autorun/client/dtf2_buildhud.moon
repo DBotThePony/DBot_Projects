@@ -86,7 +86,7 @@ BUILD_FONT_AFFORD = DLib.HUDCommons.CreateColor('tf_build_can_build', 'TF Can Bu
 BUILD_FONT_NOT_AFFORD = DLib.HUDCommons.CreateColor('tf_build_cant_build', 'TF Cant Build Font', 200, 40, 40)
 BUILD_FONT_COLOR = DLib.HUDCommons.CreateColor('tf_build_font', 'TF Build Font', 255, 255, 255)
 BUILD_FONT_COLOR_INACTIVE = DLib.HUDCommons.CreateColor('tf_build_fontin', 'TF Build Font Inactive', 170, 170, 170)
-BUILD_POSITION = DLib.HUDCommons.DefinePosition('tf_build_clr', 0.5, 0.4)
+BUILD_POSITION = DLib.HUDCommons.Position2.DefinePosition('tf_build_clr', 0.5, 0.4)
 
 BUILD_BG_NOTBUILT = DLib.HUDCommons.CreateColor('tf_bg_notbuilt', 'TF Not built background', 70, 70, 70, 150)
 BUILD_BG_BUILT = DLib.HUDCommons.CreateColor('tf_bg_built', 'TF built background', 0, 0, 0, 150)
@@ -98,7 +98,7 @@ UPGRADE_BAR = DLib.HUDCommons.CreateColor('tf_bar_upgrade', 'TF teleporter upgra
 ROCKETS_BAR = DLib.HUDCommons.CreateColor('tf_bar_rockets', 'TF sentry rockets bar', 255, 255, 255)
 KILLS = DLib.HUDCommons.CreateColor('tf_sentry_kills', 'TF sentry kills', 255, 255, 255)
 TELEPORTS = DLib.HUDCommons.CreateColor('tf_sentry_kills', 'TF teleporter teleports', 255, 255, 255)
-BUILDABLES_POSITION = DLib.HUDCommons.DefinePosition('tf_buildables', 10, 10)
+BUILDABLES_POSITION = DLib.HUDCommons.Position2.DefinePosition('tf_buildables', 10, 10)
 
 BUILDABLES_WIDTH = 300
 BUILDABLES_HEIGHT = 70

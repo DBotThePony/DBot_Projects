@@ -73,7 +73,7 @@ hook.Add 'DTF2.MetalEffect', 'DTF2.MetalHistory', (event = true, amount = 0) ->
 	data.b = b
 	data.a = 255
 
-METAL_COUNTER_POS = DLib.HUDCommons.DefinePosition('tf_metal_counter', .8, .95)
+METAL_COUNTER_POS = DLib.HUDCommons.Position2.DefinePosition('tf_metal_counter', .8, .95)
 
 DTF2.DrawMetalCounter = ->
 	x, y = METAL_COUNTER_POS()
@@ -83,9 +83,9 @@ DTF2.DrawMetalCounter = ->
 	for data in *METAL_HISTORY
 		DLib.HUDCommons.WordBox(data.text, nil, x, y - data.slide, Color(data.r, data.g, data.b, data.a), Color(0, 0, 0, 150 * data.fade))
 
-CENTERED_BUILDABLES_POS = DLib.HUDCommons.DefinePosition('tf_centered_buildables', .5, .6)
-CENTERED_BAR_POS = DLib.HUDCommons.DefinePosition('tf_centered', .5, .65)
-CENTERED_BAR_SMALLER_POS = DLib.HUDCommons.DefinePosition('tf_smallcentered', .5, .73)
+CENTERED_BUILDABLES_POS = DLib.HUDCommons.Position2.DefinePosition('tf_centered_buildables', .5, .6)
+CENTERED_BAR_POS = DLib.HUDCommons.Position2.DefinePosition('tf_centered', .5, .65)
+CENTERED_BAR_SMALLER_POS = DLib.HUDCommons.Position2.DefinePosition('tf_smallcentered', .5, .73)
 
 DTF2.DrawCenteredBar = (mult = 0.5, text) ->
 	x, y = CENTERED_BAR_POS()
