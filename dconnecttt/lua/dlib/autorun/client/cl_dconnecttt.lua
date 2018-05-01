@@ -64,6 +64,7 @@ surface.CreateFont('DConnecttt.HUD', {
 	font = 'Roboto',
 	size = 12,
 	weight = 500,
+	extended = true
 })
 
 local function HUDPaint()
@@ -141,6 +142,7 @@ surface.CreateFont('DConnecttt.Disconnect', {
 	font = 'Roboto',
 	size = 72,
 	weight = 800,
+	extended = true
 })
 
 local function Draw(ply)
