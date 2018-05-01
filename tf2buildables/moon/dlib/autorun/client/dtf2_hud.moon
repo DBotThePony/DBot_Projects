@@ -35,6 +35,7 @@ surface.CreateFont(FONT, {
 	'font': 'Roboto'
 	'size': 18
 	'weight': 400
+	'extended': true
 })
 
 METAL_HISTORY = {}

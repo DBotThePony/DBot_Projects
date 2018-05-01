@@ -44,36 +44,42 @@ surface.CreateFont('DTF2.BuildUpFont', {
 	'font': 'Roboto'
 	'size': 32
 	'weight': 800
+	'extended': true
 })
 
 surface.CreateFont('DTF2.BuildSmallFont', {
 	'font': 'Roboto'
 	'size': 16
 	'weight': 500
+	'extended': true
 })
 
 surface.CreateFont('DTF2.BuildMediumFont', {
 	'font': 'Roboto'
 	'size': 18
 	'weight': 500
+	'extended': true
 })
 
 surface.CreateFont('DTF2.NotBuilt', {
 	'font': 'Roboto'
 	'size': 24
 	'weight': 500
+	'extended': true
 })
 
 surface.CreateFont('DTF2.BuildableName', {
 	'font': 'Roboto'
 	'size': 20
 	'weight': 800
+	'extended': true
 })
 
 surface.CreateFont('DTF2.SentryKills', {
 	'font': 'Roboto'
 	'size': 16
 	'weight': 400
+	'extended': true
 })
 
 WIDTH = 510
