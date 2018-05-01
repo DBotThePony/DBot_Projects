@@ -37,9 +37,9 @@ local schat
 
 if CLIENT then
 	CreateConVar('cl_touchme_enabled', '1', {FCVAR_USERINFO, FCVAR_ARCHIVE}, 'Enable Touch Me')
-	DLib.chat.registerChat('touchme', Color(0, 200, 0), '[Touch Me] ', Color(200, 200, 200))
+	schat = DLib.chat.registerWithMessages({}, 'Touch Me')
 else
-	schat = DLib.chat.generate('touchme', schat)
+	schat = DLib.chat.generate('Touch Me', schat)
 end
 
 CAMI.RegisterPrivilege({
@@ -155,7 +155,7 @@ if SERVER then
 							})
 
 							if tr.Hit then
-								schat.chatPlayer(pickuper, 'No no and no! Bad pone!')
+								schat.chatPlayer(pickuper, 'message.touchme.exploit_hit')
 								ply:SetPos(positions[1])
 								pickuper:SetDLibVar('touchme_nono', true)
 
