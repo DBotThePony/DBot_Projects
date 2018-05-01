@@ -36,7 +36,7 @@ message.dsit.status.hook = 'You can not sit right now'
 
 info.dsit.nopos = 'No position were detected, returning you to last known position...'
 
-gui.dsit.menu.author = 'DSit done by DBotThePony'
+gui.dsit.menu.author = 'DSit were created by DBotThePony'
 gui.dsit.menu.sitonme = 'Allow to sit on me'
 gui.dsit.menu.friendsonly = 'Allow only for friends'
 gui.dsit.menu.getoff_check = 'Check for "get off" message in chat'
