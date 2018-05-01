@@ -122,14 +122,14 @@ DTF2.DrawSentryHUD = (sentry, x, y, centered = false, isHUD = false) ->
 	if isHUD
 		surface.SetTextPos(x + BUILDABLES_WIDTH / 2 - 30, y + 3)
 		surface.SetFont('DTF2.BuildableNameSmall')
-		text = 'DISPENSER ' .. lvl
+		text = DLib.i18n.localize('gui.tf2.hud.draw.sentry', lvl)
 		if IsValid(sentry\GetTFPlayer()) and sentry\GetTFPlayer()\IsPlayer()
-			text ..= ' built by ' .. sentry\GetTFPlayer()\Nick()
+			text ..= DLib.i18n.localize('gui.tf2.hud.buildable.by', sentry\GetTFPlayer()\Nick())
 		surface.DrawText()
 	else
 		surface.SetTextPos(x + BUILDABLES_WIDTH / 2, y + 3)
 		surface.SetFont('DTF2.BuildableName')
-		surface.DrawText('SENTRY GUN ' .. lvl)
+		surface.DrawText(DLib.i18n.localize('gui.tf2.hud.draw.sentry', lvl))
 	surface.SetDrawColor(255, 255, 255)
 	surface.SetMaterial(icon)
 	surface.DrawTexturedRect(x + 30, y + 5, 90, 90)
@@ -196,14 +196,14 @@ DTF2.DrawDispenserHUD = (dispenser, x, y, centered = false, isHUD = false) ->
 	if isHUD
 		surface.SetTextPos(x + BUILDABLES_WIDTH / 2 - 30, y + 3)
 		surface.SetFont('DTF2.BuildableNameSmall')
-		text = 'DISPENSER ' .. lvl
-		if IsValid(dispenser\GetTFPlayer()) and dispenser\GetTFPlayer()\IsPlayer()
-			text ..= ' built by ' .. dispenser\GetTFPlayer()\Nick()
+		text = DLib.i18n.localize('gui.tf2.hud.draw.dispenser', lvl)
+		if IsValid(sentry\GetTFPlayer()) and sentry\GetTFPlayer()\IsPlayer()
+			text ..= DLib.i18n.localize('gui.tf2.hud.buildable.by', sentry\GetTFPlayer()\Nick())
 		surface.DrawText()
 	else
 		surface.SetTextPos(x + BUILDABLES_WIDTH / 2, y + 3)
 		surface.SetFont('DTF2.BuildableName')
-		surface.DrawText('DISPENSER ' .. lvl)
+		surface.DrawText(DLib.i18n.localize('gui.tf2.hud.draw.dispenser', lvl))
 	surface.SetDrawColor(255, 255, 255)
 	surface.SetMaterial(icon)
 	surface.DrawTexturedRect(x + 30, y + 5, 60, 60)
@@ -253,16 +253,16 @@ DTF2.DrawTeleporterEntranceHUD = (teleporter, x, y, centered = false, isHUD = fa
 	surface.DrawRect(x, y, BUILDABLES_WIDTH, BUILDABLES_HEIGHT)
 	surface.SetTextColor(BUILD_FONT_COLOR())
 	if isHUD
-		surface.SetTextPos(x + BUILDABLES_WIDTH / 2 - 70, y + 3)
+		surface.SetTextPos(x + BUILDABLES_WIDTH / 2 - 30, y + 3)
 		surface.SetFont('DTF2.BuildableNameSmall')
-		text = 'TELEPORTER ENTRANCE ' .. lvl
-		if IsValid(teleporter\GetTFPlayer()) and teleporter\GetTFPlayer()\IsPlayer()
-			text ..= ' built by ' .. teleporter\GetTFPlayer()\Nick()
+		text = DLib.i18n.localize('gui.tf2.hud.draw.telein', lvl)
+		if IsValid(sentry\GetTFPlayer()) and sentry\GetTFPlayer()\IsPlayer()
+			text ..= DLib.i18n.localize('gui.tf2.hud.buildable.by', sentry\GetTFPlayer()\Nick())
 		surface.DrawText()
 	else
-		surface.SetTextPos(x + BUILDABLES_WIDTH / 2 - 70, y + 3)
+		surface.SetTextPos(x + BUILDABLES_WIDTH / 2, y + 3)
 		surface.SetFont('DTF2.BuildableName')
-		surface.DrawText('TELEPORTER ENTRANCE ' .. lvl)
+		surface.DrawText(DLib.i18n.localize('gui.tf2.hud.draw.telein', lvl))
 	surface.SetDrawColor(255, 255, 255)
 	surface.SetMaterial(icon)
 	surface.DrawTexturedRect(x + 30, y + 5, 60, 60)
@@ -317,16 +317,16 @@ DTF2.DrawTeleporterExitHUD = (teleporter, x, y, centered = false, isHUD = false)
 	surface.DrawRect(x, y, BUILDABLES_WIDTH, BUILDABLES_HEIGHT)
 	surface.SetTextColor(BUILD_FONT_COLOR())
 	if isHUD
-		surface.SetTextPos(x + BUILDABLES_WIDTH / 2 - 70, y + 3)
+		surface.SetTextPos(x + BUILDABLES_WIDTH / 2 - 30, y + 3)
 		surface.SetFont('DTF2.BuildableNameSmall')
-		text = 'TELEPORTER EXIT ' .. lvl
-		if IsValid(teleporter\GetTFPlayer()) and teleporter\GetTFPlayer()\IsPlayer()
-			text ..= ' built by ' .. teleporter\GetTFPlayer()\Nick()
+		text = DLib.i18n.localize('gui.tf2.hud.draw.teleout', lvl)
+		if IsValid(sentry\GetTFPlayer()) and sentry\GetTFPlayer()\IsPlayer()
+			text ..= DLib.i18n.localize('gui.tf2.hud.buildable.by', sentry\GetTFPlayer()\Nick())
 		surface.DrawText()
 	else
-		surface.SetTextPos(x + BUILDABLES_WIDTH / 2 - 70, y + 3)
+		surface.SetTextPos(x + BUILDABLES_WIDTH / 2, y + 3)
 		surface.SetFont('DTF2.BuildableName')
-		surface.DrawText('TELEPORTER EXIT ' .. lvl)
+		surface.DrawText(DLib.i18n.localize('gui.tf2.hud.draw.teleout', lvl))
 	surface.SetDrawColor(255, 255, 255)
 	surface.SetMaterial(icon)
 	surface.DrawTexturedRect(x + 30, y + 5, 60, 60)
@@ -367,6 +367,9 @@ DTF2.DrawTeleporterExitHUD = (teleporter, x, y, centered = false, isHUD = false)
 		DLib.HUDCommons.SoftBarMult(x + 22, y, 130, 16, buildMult, UPGRADE_BAR(), BAR_BACKGROUND(), 'tf_teleporter_exit_built')
 
 LAST_FRAME = 0
+L = DLib.i18n.localize
+LDrawText = (...) -> surface.DrawText(L(...))
+LGetTextSize = (...) -> surface.GetTextSize(L(...))
 
 DTF2.DrawBuildablesHUD = (ply = LocalPlayer()) =>
 	LAST_FRAME = FrameNumber()
@@ -382,10 +385,10 @@ DTF2.DrawBuildablesHUD = (ply = LocalPlayer()) =>
 		surface.SetTextColor(BUILD_FONT_COLOR())
 		surface.SetTextPos(x + BUILDABLES_WIDTH / 2, y + 3)
 		surface.SetFont('DTF2.BuildableName')
-		surface.DrawText('SENTRY GUN')
+		LDrawText('gui.tf2.hud.main.sentry')
 		surface.SetTextPos(x + BUILDABLES_WIDTH / 2 - 20, y + BUILDABLES_HEIGHT_SENTRY / 2 - 10)
 		surface.SetFont('DTF2.NotBuilt')
-		surface.DrawText('Not Built')
+		LDrawText('gui.tf2.hud.main.notbuilt')
 		surface.SetDrawColor(255, 255, 255)
 		surface.SetMaterial(hud_obj_status_sentry_1)
 		surface.DrawTexturedRect(x + 30, y + 5, 90, 90)
@@ -400,10 +403,10 @@ DTF2.DrawBuildablesHUD = (ply = LocalPlayer()) =>
 		surface.SetTextColor(BUILD_FONT_COLOR())
 		surface.SetTextPos(x + BUILDABLES_WIDTH / 2, y + 3)
 		surface.SetFont('DTF2.BuildableName')
-		surface.DrawText('DISPENSER')
+		LDrawText('gui.tf2.hud.main.dispenser')
 		surface.SetTextPos(x + BUILDABLES_WIDTH / 2 - 20, y + BUILDABLES_HEIGHT / 2 - 10)
 		surface.SetFont('DTF2.NotBuilt')
-		surface.DrawText('Not Built')
+		LDrawText('gui.tf2.hud.main.notbuilt')
 		surface.SetDrawColor(255, 255, 255)
 		surface.SetMaterial(hud_obj_status_dispenser)
 		surface.DrawTexturedRect(x + 30, y + 5, 60, 60)
@@ -418,10 +421,10 @@ DTF2.DrawBuildablesHUD = (ply = LocalPlayer()) =>
 		surface.SetTextColor(BUILD_FONT_COLOR())
 		surface.SetTextPos(x + BUILDABLES_WIDTH / 2 - 70, y + 3)
 		surface.SetFont('DTF2.BuildableName')
-		surface.DrawText('TELEPORT ENTRANCE')
+		LDrawText('gui.tf2.hud.main.telein')
 		surface.SetTextPos(x + BUILDABLES_WIDTH / 2 - 20, y + BUILDABLES_HEIGHT / 2 - 10)
 		surface.SetFont('DTF2.NotBuilt')
-		surface.DrawText('Not Built')
+		LDrawText('gui.tf2.hud.main.notbuilt')
 		surface.SetDrawColor(255, 255, 255)
 		surface.SetMaterial(hud_obj_status_tele_entrance)
 		surface.DrawTexturedRect(x + 30, y + 5, 60, 60)
@@ -436,10 +439,10 @@ DTF2.DrawBuildablesHUD = (ply = LocalPlayer()) =>
 		surface.SetTextColor(BUILD_FONT_COLOR())
 		surface.SetTextPos(x + BUILDABLES_WIDTH / 2 - 70, y + 3)
 		surface.SetFont('DTF2.BuildableName')
-		surface.DrawText('TELEPORT EXIT')
+		LDrawText('gui.tf2.hud.main.teleout')
 		surface.SetTextPos(x + BUILDABLES_WIDTH / 2 - 20, y + BUILDABLES_HEIGHT / 2 - 10)
 		surface.SetFont('DTF2.NotBuilt')
-		surface.DrawText('Not Built')
+		LDrawText('gui.tf2.hud.main.notbuilt')
 		surface.SetDrawColor(255, 255, 255)
 		surface.SetMaterial(hud_obj_status_tele_exit)
 		surface.DrawTexturedRect(x + 30, y + 5, 60, 60)
@@ -478,16 +481,16 @@ DTF2.DrawPDAHUD = (ply = LocalPlayer(), sentryStatus = IsValid(ply\GetBuildedSen
 	x -= WIDTH / 2
 	surface.SetDrawColor(DTF2.BACKGROUND_COLOR())
 	surface.DrawRect(x, y, WIDTH, DTF2.PDA_CONSUMES_METAL\GetBool() and HEIGHT_COSTS or HEIGHT)
-	w, h = surface.GetTextSize('BUILD')
+	w, h = LGetTextSize('gui.tf2.hud.main.build')
 	surface.DrawRect(x + 4, y + 4, WIDTH - 8, h + 4)
 	surface.SetTextPos(rx - w / 2, ry + 5)
-	surface.DrawText('BUILD')
+	LDrawText('gui.tf2.hud.main.build')
 
 	buttons = {
-		{eng_build_sentry_blueprint, sentryStatus, 'SENTRY GUN', DTF2.PDA_COST_SENTRY\GetInt()}
-		{eng_build_dispenser_blueprint, dispenserStatus, 'DISPENSER', DTF2.PDA_COST_DISPENSER\GetInt()}
-		{eng_build_tele_entrance_blueprint, teleInStatus, 'TELEPORT ENTRANCE', DTF2.PDA_COST_TELE_IN\GetInt()}
-		{eng_build_tele_exit_blueprint, teleOutStatus, 'TELEPORT EXIT', DTF2.PDA_COST_TELE_OUT\GetInt()}
+		{eng_build_sentry_blueprint, sentryStatus, 'gui.tf2.hud.main.sentry', DTF2.PDA_COST_SENTRY\GetInt()}
+		{eng_build_dispenser_blueprint, dispenserStatus, 'gui.tf2.hud.main.dispenser', DTF2.PDA_COST_DISPENSER\GetInt()}
+		{eng_build_tele_entrance_blueprint, teleInStatus, 'gui.tf2.hud.main.telein', DTF2.PDA_COST_TELE_IN\GetInt()}
+		{eng_build_tele_exit_blueprint, teleOutStatus, 'gui.tf2.hud.main.teleout', DTF2.PDA_COST_TELE_OUT\GetInt()}
 	}
 
 	y += h + 8
@@ -498,9 +501,9 @@ DTF2.DrawPDAHUD = (ply = LocalPlayer(), sentryStatus = IsValid(ply\GetBuildedSen
 		surface.SetFont('DTF2.BuildSmallFont')
 		surface.SetTextColor(BUILD_FONT_COLOR())
 		surface.SetDrawColor(DTF2.BACKGROUND_COLOR())
-		w, h = surface.GetTextSize(text)
+		w, h = LGetTextSize(text)
 		surface.SetTextPos(x + ICON_WIDTH / 2 - w / 2, y)
-		surface.DrawText(text)
+		LDrawText(text)
 		surface.DrawRect(x, y + h + 2, ICON_WIDTH, ICON_HEIGHT)
 		
 		if not status
@@ -510,18 +513,17 @@ DTF2.DrawPDAHUD = (ply = LocalPlayer(), sentryStatus = IsValid(ply\GetBuildedSen
 			surface.SetTextColor(BUILD_FONT_COLOR())
 		else
 			surface.SetTextPos(x + 23, y + ICON_HEIGHT / 2 - 4)
-			surface.DrawText('ALREADY')
+			LDrawText('gui.tf2.hud.main.already')
 			surface.SetTextPos(x + 33, y + ICON_HEIGHT / 2 + h)
-			surface.DrawText('BUILT')
+			LDrawText('gui.tf2.hud.main.built')
 			surface.SetTextColor(BUILD_FONT_COLOR_INACTIVE())
 		
 		lx, ly = x, y
 		if DTF2.PDA_CONSUMES_METAL\GetBool()
 			surface.SetTextColor(ply\CanAffordTF2Metal(cost) and BUILD_FONT_AFFORD() or BUILD_FONT_NOT_AFFORD())
-			ctxt = 'COST: ' .. cost
-			w, h = surface.GetTextSize(ctxt)
+			w, h = LGetTextSize('gui.tf2.hud.main.cost', cost)
 			surface.SetTextPos(lx + ICON_WIDTH / 2 - 3 - w / 2, ly + ICON_HEIGHT + 23)
-			surface.DrawText(ctxt)
+			LDrawText('gui.tf2.hud.main.cost', cost)
 			ly += 22
 			surface.SetTextColor(BUILD_FONT_COLOR())
 		
@@ -529,7 +531,7 @@ DTF2.DrawPDAHUD = (ply = LocalPlayer(), sentryStatus = IsValid(ply\GetBuildedSen
 		surface.SetDrawColor(DTF2.BACKGROUND_COLOR())
 		surface.DrawRect(lx + ICON_WIDTH / 2 - 10, ly + ICON_HEIGHT + 23, 20, 22)
 		surface.SetTextPos(lx + ICON_WIDTH / 2 - 5, ly + ICON_HEIGHT + 26)
-		surface.DrawText(cnt)
+		LDrawText(cnt)
 
 		x += ICON_WIDTH + ICONS_SPACING
 		cnt += 1
@@ -542,10 +544,10 @@ DTF2.DestructionPDAHUD = (ply = LocalPlayer(), sentryStatus = IsValid(ply\GetBui
 	x -= WIDTH / 2
 	surface.SetDrawColor(DTF2.BACKGROUND_COLOR())
 	surface.DrawRect(x, y, WIDTH, HEIGHT)
-	w, h = surface.GetTextSize('DEMOLISH')
+	w, h = LGetTextSize('gui.tf2.hud.main.demolish')
 	surface.DrawRect(x + 4, y + 4, WIDTH - 8, h + 4)
 	surface.SetTextPos(rx - w / 2, ry + 5)
-	surface.DrawText('DEMOLISH')
+	LDrawText('gui.tf2.hud.main.demolish')
 	sentry_s = hud_obj_status_sentry_1
 	sentry = ply\GetBuildedSentry()
 	if IsValid(sentry)
@@ -558,10 +560,10 @@ DTF2.DestructionPDAHUD = (ply = LocalPlayer(), sentryStatus = IsValid(ply\GetBui
 				sentry_s = hud_obj_status_sentry_3
 
 	buttons = {
-		{sentry_s, sentryStatus, 'SENTRY GUN'}
-		{hud_obj_status_dispenser, dispenserStatus, 'DISPENSER'}
-		{hud_obj_status_tele_entrance, teleInStatus, 'TELEPORT ENTRANCE'}
-		{hud_obj_status_tele_exit, teleOutStatus, 'TELEPORT EXIT'}
+		{sentry_s, sentryStatus, 'gui.tf2.hud.main.sentry'}
+		{hud_obj_status_dispenser, dispenserStatus, 'gui.tf2.hud.main.dispenser'}
+		{hud_obj_status_tele_entrance, teleInStatus, 'gui.tf2.hud.main.telein'}
+		{hud_obj_status_tele_exit, teleOutStatus, 'gui.tf2.hud.main.teleout'}
 	}
 
 	y += h + 8
@@ -574,7 +576,7 @@ DTF2.DestructionPDAHUD = (ply = LocalPlayer(), sentryStatus = IsValid(ply\GetBui
 		surface.SetDrawColor(DTF2.BACKGROUND_COLOR())
 		w, h = surface.GetTextSize(text)
 		surface.SetTextPos(x + ICON_WIDTH / 2 - w / 2, y)
-		surface.DrawText(text)
+		LDrawText(text)
 		surface.DrawRect(x, y + h + 2, ICON_WIDTH, ICON_HEIGHT)
 		
 		if status
@@ -586,16 +588,16 @@ DTF2.DestructionPDAHUD = (ply = LocalPlayer(), sentryStatus = IsValid(ply\GetBui
 			surface.SetTextColor(BUILD_FONT_COLOR())
 		else
 			surface.SetTextPos(x + 38, y + ICON_HEIGHT / 2 - 4)
-			surface.DrawText('NOT')
+			LDrawText('gui.tf2.hud.main.notb')
 			surface.SetTextPos(x + 33, y + ICON_HEIGHT / 2 + h)
-			surface.DrawText('BUILT')
+			LDrawText('gui.tf2.hud.main.built')
 			surface.SetTextColor(BUILD_FONT_COLOR_INACTIVE())
 		
 		surface.SetFont('DTF2.BuildMediumFont')
 		surface.SetDrawColor(DTF2.BACKGROUND_COLOR())
 		surface.DrawRect(x + ICON_WIDTH / 2 - 10, y + ICON_HEIGHT + 23, 20, 22)
 		surface.SetTextPos(x + ICON_WIDTH / 2 - 5, y + ICON_HEIGHT + 26)
-		surface.DrawText(cnt)
+		LDrawText(cnt)
 
 		x += ICON_WIDTH + ICONS_SPACING
 		cnt += 1

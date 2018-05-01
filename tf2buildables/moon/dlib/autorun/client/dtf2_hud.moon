@@ -77,7 +77,7 @@ METAL_COUNTER_POS = DLib.HUDCommons.DefinePosition('tf_metal_counter', .8, .95)
 
 DTF2.DrawMetalCounter = ->
 	x, y = METAL_COUNTER_POS()
-	DLib.HUDCommons.WordBox("Avaliable Metal: #{LocalPlayer()\GetTF2Metal()}", FONT, x, y, FONT_COLOR(), BACKGROUND_COLOR())
+	DLib.HUDCommons.WordBox(DLib.i18n.localize('gui.tf2.hud.generic.metal', LocalPlayer()\GetTF2Metal()), FONT, x, y, FONT_COLOR(), BACKGROUND_COLOR())
 	
 	x += 110
 	for data in *METAL_HISTORY
@@ -104,10 +104,10 @@ DTF2.DrawBuildingInfo = =>
 	x, y = CENTERED_BUILDABLES_POS()
 	text = @GetDrawText and @GetDrawText() or @PrintName
 	if IsValid(@GetTFPlayer()) and @GetTFPlayer()\IsPlayer()
-		text ..= " built by #{@GetTFPlayer()\Nick()}"
+		text ..= DLib.i18n.localize('gui.tf2.hud.buildable.by', @GetTFPlayer()\Nick())
 	hp, mhp = @Health(), @GetMaxHealth()
-	text ..= "\nHealth: #{hp}/#{mhp}"
-	text ..= "\nUpgrade level: #{@GetUpgradeAmount()}/#{DTF2.GrabInt(@MAX_UPGRADE)}" if @GetLevel() < 3
+	text ..= '\n' .. DLib.i18n.localize('gui.tf2.hud.buildable.hp', hp, mhp)
+	text ..= '\n' .. DLib.i18n.localize('gui.tf2.hud.buildable.upgrade', @GetUpgradeAmount(), DTF2.GrabInt(@MAX_UPGRADE)) if @GetLevel() < 3
 	text ..= '\n'
 	text ..= @GetHUDText()
 

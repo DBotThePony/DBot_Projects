@@ -38,8 +38,8 @@ ENT.Initialize = =>
 	@isEmpty = false
 
 ENT.GetHUDText = =>
-	text = "Bullets: #{@GetAmmoAmount()}/#{@GetMaxAmmo()}\n"
-	text ..= "Rockets: #{@GetRockets()}/#{DTF2.GrabInt(@MAX_ROCKETS)}\n" if @GetLevel() == 3
+	text = DLib.i18n.localize('gui.tf2.hud.sentry.bullets', @GetAmmoAmount(), @GetMaxAmmo())
+	text ..= DLib.i18n.localize('gui.tf2.hud.sentry.rockets', @GetRockets(), DTF2.GrabInt(@MAX_ROCKETS)) if @GetLevel() == 3
 	return text
 
 ENT.CreateMuzzleflashModel = (attach = '') =>
