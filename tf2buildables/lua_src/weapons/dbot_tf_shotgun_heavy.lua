@@ -33,3 +33,5 @@ SWEP.AttackAnimationCrit = 'fire'
 SWEP.ReloadStart = 'reload_start'
 SWEP.ReloadLoop = 'reload_loop'
 SWEP.ReloadEnd = 'reload_end'
+
+SWEP.IS_ENGIE_SHOTGUN = false

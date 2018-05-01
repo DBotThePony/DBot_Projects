@@ -58,7 +58,10 @@ SWEP.Primary = {
 	['Automatic'] = true
 }
 
+SWEP.IS_ENGIE_SHOTGUN = true
+
 function SWEP:DrawHUD()
+	if not self.IS_ENGIE_SHOTGUN then return end
 	DTF2.DrawBuildablesHUD()
 	DTF2.DrawMetalCounter()
 end
