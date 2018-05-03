@@ -42,6 +42,7 @@ function ENT:Initialize()
 	self.CreatedAt = CurTimeL()
 	self.Expires = CurTimeL() + DISSAPEAR:GetInt()
 	self.Fade = CurTimeL() + DISSAPEAR:GetInt() - 4
+	self.SurfaceBounces = 0
 
 	if CLIENT then
 		self.NextFadeState = 0
@@ -55,7 +56,8 @@ function ENT:Initialize()
 		return
 	end
 
-	self:PhysicsInitBox(Mins, Maxs)
+	--self:PhysicsInitBox(Mins, Maxs)
+	self:PhysicsInitSphere(16)
 	self:SetSolid(SOLID_BBOX)
 	self:SetMoveType(MOVETYPE_VPHYSICS)
 	self:SetCollisionGroup(COLLISION_GROUP_WORLD)
@@ -74,12 +76,12 @@ end
 
 function ENT:Push()
 	if not self.Phys then return end
-	local Ang = Angle(math.random(45, 90), math.random(-180, 180), math.random(45, 90))
+	local Ang = Vector(math.random(-50, 50), math.random(-50, 50), math.random(300, 600))
 
 	if not CRAZY_PHYS:GetBool() then
-		self.Phys:SetVelocity(Ang:Forward() * math.random(50, 200) + Vector(0, 0, 300))
+		self.Phys:SetVelocity(Ang)
 	else
-		local vel = Ang:Forward() * math.random(3000, 10000)
+		local vel = Ang * math.random(3000, 10000)
 		vel.z = math.max(vel.z, -2000) + 3000
 		self.Phys:SetVelocity(vel)
 	end
@@ -111,9 +113,17 @@ function ENT:PhysicsCollide(data)
 
 	if IsValid(ent) then return end
 
-	self.Phys:EnableMotion(false)
-	self.Phys:Sleep()
-	self.SLEEPING = true
+	--print('hit', self)
+	self.SurfaceBounces = self.SurfaceBounces + 1
+
+	if self.SurfaceBounces >= 3 then
+		self.Phys:EnableMotion(false)
+		self.Phys:Sleep()
+		self.SLEEPING = true
+		return
+	end
+
+	self.Phys:AddVelocity(data.HitNormal * data.OurOldVelocity * 0.4)
 end
 
 function ENT:Think()
