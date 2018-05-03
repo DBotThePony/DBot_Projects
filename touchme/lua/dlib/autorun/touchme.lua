@@ -155,7 +155,7 @@ if SERVER then
 							})
 
 							if tr.Hit then
-								schat.chatPlayer(pickuper, 'message.touchme.exploit_hit')
+								schat.LChatPlayer(pickuper, 'message.touchme.exploit_hit')
 								ply:SetPos(positions[1])
 								pickuper:SetDLibVar('touchme_nono', true)
 
