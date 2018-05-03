@@ -15,6 +15,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
+local WATER = CreateConVar('sv_limited_oxygen', '1', {FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Enable limited oxygen')
+local FLASHLIGHT = CreateConVar('sv_limited_flashlight', '1', {FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Enable limited flashlight')
+
 local Flashlight = 100
 local RFlashlight = 100
 local Oxygen = 100
@@ -39,6 +42,7 @@ local function GetAddition()
 end
 
 local function FlashlightFunc()
+	if not FLASHLIGHT:GetBool() then return end
 	local x, y = DEFINED_POSITION()
 
 	surface.SetDrawColor(0, 0, 0, 150)
@@ -52,6 +56,7 @@ local function FlashlightFunc()
 end
 
 local function OxygenFunc()
+	if not WATER:GetBool() then return end
 	local x, y = DEFINED_POSITION()
 
 	surface.SetDrawColor(0, 0, 0, 150)
@@ -67,6 +72,7 @@ local function OxygenFunc()
 end
 
 local function HUDPaint()
+	if not FLASHLIGHT:GetBool() and not WATER:GetBool() then return end
 	surface.SetDrawColor(255, 255, 255)
 	surface.SetFont('DBot_LimitedFlashlightAndOxygen')
 	surface.SetTextColor(255, 255, 255)
