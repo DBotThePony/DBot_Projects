@@ -89,13 +89,15 @@ function ENT:Collect(ply)
 	self:EmitSound(table.frandom(DUCK_TOUCH_SOUND), 75)
 	self:Remove()
 
-	ply.CurrentDucksCollected = (ply.CurrentDucksCollected or 0) + 1
+	if IsValid(ply) and ply:IsPlayer() then
+		ply.CurrentDucksCollected = (ply.CurrentDucksCollected or 0) + 1
 
-	net.Start('DBot_DuckOMeter')
-	net.WriteUInt(ply.CurrentDucksCollected, 16)
-	net.Send(ply)
+		net.Start('DBot_DuckOMeter', true)
+		net.WriteUInt(ply.CurrentDucksCollected, 16)
+		net.Send(ply)
 
-	sql.Query(string.format('REPLACE INTO dbot_duckometr_sv (steamid, cval) VALUES (%q, %q)', ply:SteamID(), ply.CurrentDucksCollected))
+		sql.Query(string.format('REPLACE INTO dbot_duckometr_sv (steamid, cval) VALUES (%q, %q)', ply:SteamID(), ply.CurrentDucksCollected))
+	end
 
 	hook.Run('PostCollectDuck', self, ply)
 end
