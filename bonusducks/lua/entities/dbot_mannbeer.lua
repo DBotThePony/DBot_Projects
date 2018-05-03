@@ -18,6 +18,8 @@ AddCSLuaFile()
 local BEER_DISSAPEAR = CreateConVar('sv_beer_time', '60', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'How long beer exists')
 DBOT_ACTIVE_BEER = DBOT_ACTIVE_BEER or {}
 
+DEFINE_BASECLASS('dbot_duck')
+
 ENT.Type = 'anim'
 ENT.Author = 'DBotThePony'
 ENT.Base = 'dbot_duck'
@@ -27,31 +29,17 @@ ENT.PrintName = 'Mann Bear'
 local Mins, Maxs = Vector(-5, -5, 0), Vector(5, 5, 5)
 
 function ENT:Initialize()
+	BaseClass.Initialize(self)
 	self:SetModel('models/props_watergate/bottle_pickup.mdl')
 
-	self.CreatedAt = CurTimeL()
 	self.Expires = CurTimeL() + BEER_DISSAPEAR:GetInt()
 	self.Fade = CurTimeL() + BEER_DISSAPEAR:GetInt() - 4
 
 	if CLIENT then
-		self:SetSolid(SOLID_NONE)
+		if IsValid(self.ClientsideModel) then self.ClientsideModel:Remove() end
 		self.ClientsideModel = ClientsideModel('models/props_watergate/bottle_pickup.mdl')
 		self.ClientsideModel:SetNoDraw(true)
-
-		self.CAngle = Angle()
 		return
-	end
-
-	self:PhysicsInitBox(Mins, Maxs)
-	self:SetSolid(SOLID_BBOX)
-	self:SetMoveType(MOVETYPE_VPHYSICS)
-	self:SetCollisionGroup(COLLISION_GROUP_WORLD)
-
-	local phys = self:GetPhysicsObject()
-
-	if IsValid(phys) then
-		phys:Wake()
-		self.Phys = phys
 	end
 
 	table.insert(DBOT_ACTIVE_BEER, self)

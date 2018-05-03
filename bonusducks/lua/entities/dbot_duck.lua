@@ -67,7 +67,9 @@ function ENT:Initialize()
 		self.Phys = phys
 	end
 
-	table.insert(DBOT_ACTIVE_DUCKS, self)
+	if self:GetClass() == 'dbot_duck' then
+		table.insert(DBOT_ACTIVE_DUCKS, self)
+	end
 end
 
 function ENT:Push()
@@ -103,7 +105,7 @@ function ENT:Collect(ply)
 end
 
 function ENT:PhysicsCollide(data)
-	if self.SLEEPING then return end
+	if self.SLEEPING then return end -- ???
 	if not self.Phys then return end
 	local ent = data.HitEntity
 
