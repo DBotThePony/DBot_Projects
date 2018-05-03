@@ -24,6 +24,7 @@ surface.CreateFont('DBot_LimitedFlashlightAndOxygen', {
 	font = 'Roboto',
 	size = 14,
 	weight = 500,
+	extended = true,
 })
 
 net.Receive('DBot_LimitedFlashlightAndOxygen', function()
@@ -37,17 +38,7 @@ local function GetAddition()
 	return DHUD2 and DHUD2.GetDamageShift(3) or 0
 end
 
-local OHeight, OWidth, FHeight, FWidth
-
-local function dosizes()
-	surface.SetFont('DBot_LimitedFlashlightAndOxygen')
-	OHeight, OWidth = surface.GetTextSize('Oxygen')
-	FHeight, FWidth = surface.GetTextSize('Flashlight')
-end
-
 local function FlashlightFunc()
-	if not OHeight then dosizes() end
-
 	local x, y = DEFINED_POSITION()
 
 	surface.SetDrawColor(0, 0, 0, 150)
@@ -57,12 +48,10 @@ local function FlashlightFunc()
 	surface.DrawRect(x - 95 + GetAddition(), y + GetAddition(), 190 * Flashlight / 100, 16)
 
 	surface.SetTextPos(x - 86 + GetAddition(), y + 1 + GetAddition())
-	surface.DrawText('Flashlight')
+	surface.DrawText(DLib.i18n.localize('gui.breathe.flashlight'))
 end
 
 local function OxygenFunc()
-	if not OHeight then dosizes() end
-
 	local x, y = DEFINED_POSITION()
 
 	surface.SetDrawColor(0, 0, 0, 150)
@@ -71,8 +60,10 @@ local function OxygenFunc()
 	surface.SetDrawColor(0, 255, 255, 150)
 	surface.DrawRect(x - 95 + GetAddition(), y + GetAddition() + 25, 190 * Oxygen / 100, 16)
 
-	surface.SetTextPos(x + 60 - OWidth + GetAddition(), y + 1 + GetAddition() + 25)
-	surface.DrawText('Oxygen')
+	local text = DLib.i18n.localize('gui.breathe.oxygen')
+	local w, h = surface.GetTextSize(text)
+	surface.SetTextPos(x + 90 - w + GetAddition() - 10, y + 25 + GetAddition())
+	surface.DrawText(text)
 end
 
 local function HUDPaint()
