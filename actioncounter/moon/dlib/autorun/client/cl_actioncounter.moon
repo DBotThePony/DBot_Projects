@@ -1,19 +1,17 @@
 
---
--- Copyright (C) 2017 DBot
--- 
+-- Copyright (C) 2017-2018 DBot
+
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
 -- You may obtain a copy of the License at
--- 
+
 --     http://www.apache.org/licenses/LICENSE-2.0
--- 
+
 -- Unless required by applicable law or agreed to in writing, software
 -- distributed under the License is distributed on an "AS IS" BASIS,
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
--- 
 
 import Notify from DLib
 
@@ -21,24 +19,27 @@ HUInMeter = 40
 DISABLE = CreateConVar('cl_ac_disable', '0', {FCVAR_ARCHIVE}, 'Disable action counter display')
 
 NetworkedValues = {
-	{'jump', 'Jump streak: %s'}
-	{'speed', 'Run distance: %sm'}
-	{'duck', 'Duck distance: %sm'}
-	{'walk', 'Walk distance: %sm'}
-	{'water', 'On water distance: %sm'}
-	{'uwater', 'Underwater distance: %sm'}
-	{'fall', 'Fall distance: %sm'}
-	{'climb', 'Climb distance: %sm'}
-	{'height', 'Maximal potential height: %sm'}
+	{'jump'}
+	{'speed'}
+	{'duck'}
+	{'walk'}
+	{'water'}
+	{'uwater'}
+	{'fall'}
+	{'climb'}
+	{'height'}
 }
+
+for value in *NetworkedValues
+	value[2] = "gui.actioncounter.#{value[1]}"
 
 for nData in *NetworkedValues
 	nData.func = =>
 		if nData.lastChange > RealTime! - 4
 			if nData[1] ~= 'jump'
-				@SetText(nData[2]\format(math.floor(nData.networkValue / HUInMeter * 10) / 10))
+				@SetText(DLib.i18n.localize(nData[2], math.floor(nData.networkValue / HUInMeter * 10) / 10))
 			else
-				@SetText(nData[2]\format(nData.networkValue))
+				@SetText(DLib.i18n.localize(nData[2], nData.networkValue))
 				
 			@ExtendTimer!
 
