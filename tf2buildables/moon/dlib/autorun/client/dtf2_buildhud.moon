@@ -104,7 +104,7 @@ UPGRADE_BAR = DLib.HUDCommons.CreateColor('tf_bar_upgrade', 'TF teleporter upgra
 ROCKETS_BAR = DLib.HUDCommons.CreateColor('tf_bar_rockets', 'TF sentry rockets bar', 255, 255, 255)
 KILLS = DLib.HUDCommons.CreateColor('tf_sentry_kills', 'TF sentry kills', 255, 255, 255)
 TELEPORTS = DLib.HUDCommons.CreateColor('tf_sentry_kills', 'TF teleporter teleports', 255, 255, 255)
-BUILDABLES_POSITION = DLib.HUDCommons.Position2.DefinePosition('tf_buildables', 10, 10)
+BUILDABLES_POSITION = DLib.HUDCommons.Position2.DefinePosition('tf_buildables', 0.02, 0.02)
 
 BUILDABLES_WIDTH = 300
 BUILDABLES_HEIGHT = 70
