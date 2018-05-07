@@ -24,6 +24,8 @@ net.pool('DScoreBoard2.ChatPrint')
 net.pool('DScoreBoard2.Connect')
 net.pool('DScoreBoard2.Disconnect')
 
+CreateConVar('sv_dscoreboard2_thirdperson', '1', {FCVAR_REPLICATED, FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Allow scoreboard thirdperson')
+
 gameevent.Listen('player_disconnect')
 
 timer.Create('DScoreBoard2.ServerMemory', 1, 0, function()

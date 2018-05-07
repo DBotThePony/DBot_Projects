@@ -294,6 +294,8 @@ local function CalcView(ply, pos, ang, fov, znear, zfar)
     return data
 end
 
+local ALLOW_THIRD_PERSON = CreateConVar('sv_dscoreboard2_thirdperson', '1', {FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Allow scoreboard thirdperson')
+
 function PANEL:DoHide()
     self:SetVisible(false)
     self:UnFocus()
@@ -303,7 +305,10 @@ function PANEL:DoHide()
 end
 
 function PANEL:DoShow()
-    hook.Add('CalcView', 'DScoreBoard2', CalcView)
+    if ALLOW_THIRD_PERSON:GetBool() then
+        hook.Add('CalcView', 'DScoreBoard2', CalcView)
+    end
+
     self:SetVisible(true)
     self.VISIBLE = true
 end
