@@ -405,8 +405,8 @@ _G.DSIT_REQUEST_DEBUG = request
 
 local attemptToFind = table()
 
-for x = -1, 1 do
-	for y = -1, 1 do
+for x = -2, 2 do
+	for y = -2, 2 do
 		attemptToFind:insert(Vector(x * 40, y * 40, 5))
 	end
 end
@@ -429,8 +429,8 @@ local function PostLeave(ply, vehPos, upsideDown)
 
 	local space = DLib.Freespace(vehPos + Vector(0, 0, 1), 25, 5)
 	local mins, maxs = ply:GetHull()
-	space:SetAABB(mins, maxs)
-	space:SetSAABB(mins, maxs)
+	space:SetAABB(mins * 0.75, maxs * 0.75)
+	space:SetSAABB(mins * 0.75, maxs * 0.75)
 	space:SetStrict(true)
 	space:SetMaskReachable(MASK_VISIBLE_AND_NPCS)
 	space.filter:addArray(player.GetAll())
