@@ -56,6 +56,7 @@ DLib.getinfo.Replicate('cl_touchme_enabled')
 local trackedPlayers = {}
 
 local function PhysgunPickup(ply, ent)
+	if not ENABLED:GetBool() then return end
 	if not ent:IsPlayer() then return end
 	if ent:InVehicle() then return end
 
