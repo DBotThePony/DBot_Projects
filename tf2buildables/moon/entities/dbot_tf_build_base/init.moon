@@ -125,7 +125,7 @@ ENT.DoSpeedup = (time = DTF2.GrabFloat(@SPEEDUP_TIME), index = NULL, strength = 
 	@SetPlaybackRate(0.5 + 0.5 * @CURRENT_SPEEDUP_MULT)
 	@SetBuildSpeedup(true)
 
-	timer.Create "DTF2.BuildSpeedup.#{@EntIndex()}", time, 1, ->
+	timer.Create "DTF2.BuildSpeedup.#{@EntIndex()}.#{index\EntIndex()}", time, 1, ->
 		return if not IsValid(@)
 		@speedupCache[index] = nil
 
@@ -146,6 +146,8 @@ ENT.SetBuildStatus = (status = false) =>
 		@RealSetModel(@BuildModel1)
 		@UpdateSequenceList()
 		@SetBuildSpeedup(false)
+		timer.Remove("DTF2.BuildSpeedup.#{@EntIndex()}.#{index\EntIndex()}") for index, value in pairs @speedupCache
+		@speedupCache = {}
 		@StartActivity(ACT_OBJ_PLACING)
 		@ResetSequence(@buildSequence)
 		@SetBuildFinishAt(CurTime() + DTF2.GrabFloat(@BuildTime))
