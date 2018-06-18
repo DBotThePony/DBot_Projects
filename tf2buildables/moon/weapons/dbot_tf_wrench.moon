@@ -47,7 +47,7 @@ SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
 	return if CLIENT
 	dmginfo\SetDamage(0)
 	dmginfo\SetDamageType(0)
-	if hitEntity\DoSpeedup()
+	if hitEntity\DoSpeedup(nil, @GetOwner())
 		@EmitSoundServerside('Weapon_Wrench.HitBuilding_Success')
 		return
 	amount = hitEntity\SimulateRepair(@GetOwner()\GetTF2Metal())

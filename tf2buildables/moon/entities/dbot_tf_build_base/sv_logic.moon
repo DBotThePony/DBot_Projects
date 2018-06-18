@@ -79,7 +79,7 @@ ENT.Think = =>
 		@nextMarkedRebuild = CurTime() + 60
 	else
 		@UpdateMarkedList()
-	
+
 	isBuild, leftBuild, buildMult = @GetBuildingStatus()
 	if isBuild
 		if @GetBuildSpeedup()

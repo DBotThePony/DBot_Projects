@@ -51,6 +51,7 @@ ENT.Initialize = =>
 	@CreateBullseye()
 	@markedTargets = {}
 	@markedAllies = {}
+	@speedupCache = {}
 	@nextMarkedRebuild = CurTime() + 60
 	timer.Simple 0.1, -> @DuplicatorFunc() if @IsValid()
 
@@ -113,21 +114,34 @@ ENT.PlayUpgradeAnimation = (playOnModel = @MODEL_UPGRADE_ANIMS) =>
 	@ResetSequence(@upgradeSequence) if playOnModel
 	return true
 
-ENT.DoSpeedup = (time = DTF2.GrabFloat(@SPEEDUP_TIME), strength = DTF2.GrabFloat(@SPEEDUP_MULT)) =>
+ENT.DoSpeedup = (time = DTF2.GrabFloat(@SPEEDUP_TIME), index = NULL, strength = DTF2.GrabFloat(@SPEEDUP_MULT)) =>
 	return false if not @GetIsBuilding()
+	assert(IsValid(index), 'Invalid entity specified as index of speedup')
+
+	@speedupCache[index] = strength
+	@CURRENT_SPEEDUP_MULT = 0
+	@CURRENT_SPEEDUP_MULT += value for key, value in pairs @speedupCache
+
+	@SetPlaybackRate(0.5 + 0.5 * @CURRENT_SPEEDUP_MULT)
 	@SetBuildSpeedup(true)
-	@SetPlaybackRate(0.5 + 0.5 * strength)
-	@CURRENT_SPEEDUP_MULT = strength
+
 	timer.Create "DTF2.BuildSpeedup.#{@EntIndex()}", time, 1, ->
 		return if not IsValid(@)
-		@SetBuildSpeedup(false)
-		@SetPlaybackRate(0.5)
+		@speedupCache[index] = nil
+
+		@CURRENT_SPEEDUP_MULT = 0
+		@CURRENT_SPEEDUP_MULT += value for key, value in pairs @speedupCache
+
+		@SetBuildSpeedup(false) if @CURRENT_SPEEDUP_MULT == 0
+		@SetPlaybackRate(0.5 + 0.5 * @CURRENT_SPEEDUP_MULT)
+
 	return true
 
 ENT.SetBuildStatus = (status = false) =>
 	return false if @GetLevel() > 1
 	return false if @GetIsBuilding() == status
 	@SetIsBuilding(status)
+
 	if status
 		@RealSetModel(@BuildModel1)
 		@UpdateSequenceList()
@@ -145,4 +159,5 @@ ENT.SetBuildStatus = (status = false) =>
 		@StartActivity(ACT_OBJ_RUNNING)
 		@OnBuildFinish()
 		@SetPlaybackRate(1)
+
 	return true

@@ -21,7 +21,7 @@ DTF2 = _G.DTF2
 ENT.CreateBullseye = =>
 	if @npc_bullseye
 		eye\Remove() for {eye} in *@npc_bullseye when IsValid(eye)
-	
+
 	mins, maxs, center = @OBBMins(), @OBBMaxs(), @OBBCenter()
 
 	box = {

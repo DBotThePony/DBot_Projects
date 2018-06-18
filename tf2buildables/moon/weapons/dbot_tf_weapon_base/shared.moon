@@ -282,10 +282,10 @@ SWEP.DisplayCritEffect = (hitEntity) =>
 SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
 	if not @incomingCrit and IsValid(hitEntity)
 		@damageDealtForCrit += dmginfo\GetDamage()
-	
+
 	if (@incomingCrit or @incomingMiniCrit) and IsValid(hitEntity)
 		@DisplayCritEffect(hitEntity)
-	
+
 	if @DamageDegradation and not @incomingCrit
 		pos = tr.HitPos
 		lpos = @GetOwner()\GetPos()

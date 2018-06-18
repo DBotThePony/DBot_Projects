@@ -54,7 +54,7 @@ ENT.REPAIR_HEALTH = CreateConVar('tf_build_repair', '40', {FCVAR_ARCHIVE, FCVAR_
 ENT.UPGRADE_HIT = CreateConVar('tf_build_upgrade', '25', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Default upgrade speed for buildables')
 ENT.MAX_UPGRADE = CreateConVar('tf_build_maxupgrade', '200', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Default max upgrade for buildables')
 ENT.SPEEDUP_TIME = CreateConVar('tf_build_speedup', '1.25', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Speedup time when hitting with wrench')
-ENT.SPEEDUP_MULT = CreateConVar('tf_build_speedup_mult', '0.25', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Speedup multiplier')
+ENT.SPEEDUP_MULT = CreateConVar('tf_build_speedup_mult', '0.35', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Speedup multiplier')
 ENT.GetMaxUpgrade = => DTF2.GrabInt(@MAX_UPGRADE)
 
 ENT.UPGRADE_ANIMS = true
@@ -142,7 +142,7 @@ ENT.SimulateRepair = (thersold = 200, simulate = CLIENT) =>
 	repairHP = 0
 	repairHP = math.Clamp(math.min((@GetMaxHealth() - @Health()) * 0.5, DTF2.GrabInt(@REPAIR_HEALTH) * 0.5), 0, thersold - weight) if @IsAvaliableForRepair()
 
-	weight += math.ceil(repairHP) if repairHP ~= 0 
+	weight += math.ceil(repairHP) if repairHP ~= 0
 	@SetHealth(@Health() + repairHP * 2) if repairHP ~= 0 and not simulate
 	weight += @CustomRepair(thersold - weight, simulate)
 	weight += @SimulateUpgrade(thersold - weight, simulate)

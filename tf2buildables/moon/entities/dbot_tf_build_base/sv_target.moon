@@ -181,7 +181,7 @@ UpdateTargetList = ->
 				classify == CLASS_NONE or
 				classify == CLASS_COMBINE) then
 				VALID_TARGETS[#VALID_TARGETS + 1] = npcData
-	
+
 	if ATTACK_PLAYERS\GetBool()
 		for ent in *player.GetAll()
 			center = ENT_OBBCENTER(ent)
@@ -350,7 +350,7 @@ ENT.MarkAsEnemy = (ent = NULL) =>
 	return false if ent == @GetTFPlayer()
 	for target in *@markedTargets
 		return false if target[1] == ent
-	
+
 	for i = 1, #@markedAllies
 		if @markedAllies[i][1] == ent
 			table.remove(@markedAllies, i)
@@ -392,7 +392,7 @@ ENT.MarkAsAlly = (ent = NULL) =>
 	return false if not IsValid(ent)
 	for target in *@markedAllies
 		return false if target[1] == ent
-	
+
 	for i = 1, #@markedTargets
 		if @markedTargets[i][1] == ent
 			table.remove(@markedTargets, i)
@@ -439,7 +439,7 @@ ENT.GetAlliesVisible = =>
 	output = {}
 	pos = @GetPos()
 	mx = DTF2.GrabInt(@MAX_DISTANCE) ^ 2
-	
+
 	for {target, tpos, mins, maxs, center, rotatedCenter} in *VALID_ALLIES
 		hit = false
 		for target2 in *@markedTargets
@@ -450,12 +450,12 @@ ENT.GetAlliesVisible = =>
 			dist = pos\DistToSqr(tpos)
 			if target\IsValid() and dist < mx
 				table.insert(output, {target, tpos, dist, rotatedCenter})
-	
+
 	for {target, tpos, mins, maxs, center, rotatedCenter} in *@markedAllies
 		dist = pos\DistToSqr(tpos)
 		if target\IsValid() and dist < mx
 			table.insert(output, {target, tpos, dist, rotatedCenter})
-	
+
 	table.sort output, (a, b) -> a[3] < b[3]
 	newOutput = {}
 	trFilter = [eye[1] for eye in *@npc_bullseye]
@@ -481,7 +481,7 @@ ENT.GetTargetsVisible = =>
 	output = {}
 	pos = @GetPos()
 	mx = DTF2.GrabInt(@MAX_DISTANCE) ^ 2
-	
+
 	for {target, tpos, mins, maxs, center, rotatedCenter} in *VALID_TARGETS
 		hit = false
 		for target2 in *@markedAllies
@@ -492,7 +492,7 @@ ENT.GetTargetsVisible = =>
 			dist = pos\DistToSqr(tpos)
 			if target\IsValid() and dist < mx
 				table.insert(output, {target, tpos, dist, rotatedCenter})
-	
+
 	for {target, tpos, mins, maxs, center, rotatedCenter} in *@markedTargets
 		dist = pos\DistToSqr(tpos)
 		if target\IsValid() and dist < mx
@@ -541,16 +541,16 @@ ENT.GetFirstVisible = (checkFor) =>
 	if IsValid(checkFor)
 		if checkFor\GetPos()\DistToSqr(pos) > mx
 			checkFor = nil
-	
+
 	output = {}
-	
+
 	for {target, tpos, mins, maxs, center, rotatedCenter} in *VALID_TARGETS
 		hit = false
 		for target2 in *@markedAllies
 			if target2[1] == target
 				hit = true
 				break
-		
+
 		if not hit
 			dist = pos\DistToSqr(tpos)
 			dist = 0 if target == checkFor
@@ -562,12 +562,12 @@ ENT.GetFirstVisible = (checkFor) =>
 		dist = 0 if target == checkFor
 		if target\IsValid() and dist < mx
 			table.insert(output, {target, tpos, dist, rotatedCenter})
-	
+
 	table.sort output, (a, b) -> a[3] < b[3]
 	trFilter = [eye[1] for eye in *@npc_bullseye]
 	table.insert(trFilter, @)
 	table.append(trFilter, rocketsAndBullets)
-	
+
 	for {target, tpos, dist, center} in *output
 		trData = {
 			filter: trFilter
