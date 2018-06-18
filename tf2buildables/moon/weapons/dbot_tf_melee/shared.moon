@@ -90,6 +90,11 @@ SWEP.OnMiss = =>
 
 SWEP.OnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
 	BaseClass.OnHit(@, hitEntity, tr, dmginfo)
-	@PlayHitSound() if not IsValid(hitEntity)
-	@PlayFleshHitSound() if IsValid(hitEntity) and (hitEntity\IsPlayer() or hitEntity\IsNPC())
+	if not IsValid(hitEntity)
+		@PlayHitSound()
+	else
+		if hitEntity\IsPlayer() or hitEntity\IsNPC()
+			@PlayFleshHitSound()
+		else
+			@PlayHitSound()
 	dmginfo\SetDamageType(DMG_CLUB)
