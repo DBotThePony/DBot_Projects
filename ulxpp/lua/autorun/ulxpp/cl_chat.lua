@@ -20,6 +20,7 @@ limitations under the License.
 --I just CAN'T EVEN UNDERTSAND ULib!
 
 local ENABLE = CreateConVar('ulx_autocomplete', '1', FCVAR_ARCHIVE, 'Enable chat autocomplete')
+local ENABLED_SLASH = CreateConVar('sv_ulxpp_slash', '1', {FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Enable / command prefix')
 
 local function RealSplit(str, ignore)
 	if not str then return {} end
@@ -35,7 +36,7 @@ local function RealSplit(str, ignore)
 		if char == ' ' and TOKEN_LEVEL == 0 then
 			table.insert(reply, currentstr)
 			currentstr = ''
-			continue
+			goto CONTINUE
 		elseif char == '<' then
 			TOKEN_LEVEL = TOKEN_LEVEL + 1
 		elseif char == '>' or char == ']' then --[<Some text: <Some Val>] --!!!, > last one is missing
@@ -43,6 +44,7 @@ local function RealSplit(str, ignore)
 		end
 
 		currentstr = currentstr .. char
+		::CONTINUE::
 	end
 
 	table.insert(reply, currentstr)
@@ -72,6 +74,7 @@ local function ChatTextChanged(str)
 	local token = str[1]
 	Drawn = {}
 	if token ~= '/' and token ~= '!' then return end
+	if token == '/' and not ENABLED_SLASH:GetBool() then return end
 	curtoken = token
 
 	local split = string.Explode(' ', str)
@@ -82,8 +85,9 @@ local function ChatTextChanged(str)
 
 	for k, data in pairs(ulx.cmdsByCategory) do
 		for i, obj in pairs(data) do
-			if not obj.say_cmd then continue end
-			if string.sub(ULXPP.UnpackCommand(obj.cmd), 1, len) == find then table.insert(Found, obj) end
+			if obj.say_cmd and string.sub(ULXPP.UnpackCommand(obj.cmd), 1, len) == find then
+				table.insert(Found, obj)
+			end
 		end
 	end
 
@@ -97,37 +101,37 @@ local function ChatTextChanged(str)
 
 	for k, v in pairs(Found) do
 		local access = ULib.ucl.query(ply, v.cmd)
-		if not access then continue end
+		if access then
+			playerTarget = false
 
-		playerTarget = false
-
-		if total > 10 then
-			table.insert(Drawn, '<...>')
-			break
-		end
-
-		local usage = v:getUsage(ply)
-		local usplit = RealSplit(usage or '', true)
-
-		for k, v in pairs(usplit) do
-			if v == '-' then break end
-			if v == '<player>' or v == '<players>' then
-				playerTarget = true
-				targetPly = split[k + 1]
+			if total > 10 then
+				table.insert(Drawn, '<...>')
+				break
 			end
 
-			if split[k + 1] then
-				usplit[k] = split[k + 1]
+			local usage = v:getUsage(ply)
+			local usplit = RealSplit(usage or '', true)
+
+			for k, v in pairs(usplit) do
+				if v == '-' then break end
+				if v == '<player>' or v == '<players>' then
+					playerTarget = true
+					targetPly = split[k + 1]
+				end
+
+				if split[k + 1] then
+					usplit[k] = split[k + 1]
+				end
+			end
+
+			local format = token .. ULXPP.UnpackCommand(v.cmd) .. ' ' .. table.concat(usplit, ' ')
+
+			if not table.HasValue(Drawn, format) then
+				total = total + 1
+				last = ULXPP.UnpackCommand(v.cmd)
+				table.insert(Drawn, format)
 			end
 		end
-
-		local format = token .. ULXPP.UnpackCommand(v.cmd) .. ' ' .. table.concat(usplit, ' ')
-		if table.HasValue(Drawn, format) then continue end --eh
-		total = total + 1
-
-		last = ULXPP.UnpackCommand(v.cmd)
-
-		table.insert(Drawn, format)
 	end
 
 	if total == 0 then
@@ -145,11 +149,11 @@ local function ChatTextChanged(str)
 
 			for k, v in pairs(player.GetAll()) do
 				if target then
-					if not string.find(string.lower(v:Nick()), target) then continue end
+					if not string.find(string.lower(v:Nick()), target) then goto CONTINUE end
 				end
 
 				local return_value, msg = hook.Run(ULib.HOOK_PLAYER_TARGET, LocalPlayer(), curcommand, v)
-				if return_value == false then continue end
+				if return_value == false then goto CONTINUE end
 
 				if not hit then
 					hit = true
@@ -162,6 +166,7 @@ local function ChatTextChanged(str)
 				end
 
 				table.insert(Drawn, v:Nick())
+				::CONTINUE::
 			end
 
 			if not hit then
@@ -218,8 +223,9 @@ local function OnChatTab(str)
 
 	for k, v in pairs(split2) do
 		if v == '-' then break end --We hit help end
-		if split1[k] then continue end
-		output = output .. ' ' .. v
+		if not split1[k] then
+			output = output .. ' ' .. v
+		end
 	end
 
 	return output

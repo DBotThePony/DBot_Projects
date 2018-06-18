@@ -15,9 +15,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
---Adding really fucking needed slash to commands
---i REALLY don't know why it is not added officially
+local ENABLED = CreateConVar('sv_ulxpp_slash', '1', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Enable / command prefix')
+
 local function sayCmdCheck(ply, strText, bTeam)
+	if not ENABLED:GetBool() then return end
 	if string.sub(strText, 1, 1) ~= '/' then return end
 	strText = '!' .. string.sub(strText, 2)
 
