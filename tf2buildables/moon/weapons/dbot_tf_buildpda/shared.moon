@@ -185,7 +185,7 @@ SWEP.TriggerBuildRequest = (requestType = @BUILD_SENTRY) =>
 	else
 		switch requestType
 			when @BUILD_SENTRY
-				@SetBuildType(math.random(1, #@SENTRIES))
+				@SetBuildType(math.random() > 0.85 and 2 or 1)
 	@SetBuildStatus(requestType)
 	@UpdateModel()
 	@SendWeaponSequence(@BoxDrawAnimation)
