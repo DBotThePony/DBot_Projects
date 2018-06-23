@@ -70,10 +70,14 @@ ENT.CheckTarget = (target = NULL) =>
 ENT.OnBuildStart = => -- Override
 ENT.OnBuildFinish = => -- Override
 ENT.OnUpgradeFinish = => -- Override
+
 ENT.Think = =>
 	cTime = CurTime()
 	delta = cTime - @lastThink
+	deltaSpeed = delta
+	--deltaSpeed = delta * 3 if @GetAfterMove()
 	@lastThink = cTime
+
 	if @nextMarkedRebuild < CurTime()
 		@RebuildMarkedList()
 		@nextMarkedRebuild = CurTime() + 60
@@ -81,11 +85,23 @@ ENT.Think = =>
 		@UpdateMarkedList()
 
 	isBuild, leftBuild, buildMult = @GetBuildingStatus()
+
 	if isBuild
 		if @GetBuildSpeedup()
-			@SetBuildFinishAt(@GetBuildFinishAt() - delta * @CURRENT_SPEEDUP_MULT)
+			@SetBuildFinishAt(@GetBuildFinishAt() - deltaSpeed * @CURRENT_SPEEDUP_MULT)
 			isBuild, leftBuild, buildMult = @GetBuildingStatus()
-		@SetHealth(math.Clamp(@GetMaxHealth() * buildMult, 1, @GetMaxHealth()))
+
+		if not @GetAfterMove()
+			newhealth = @GetMaxHealth() * buildMult
+			deltaHealth = newhealth - @__currentMeanBuildHelath
+			@__currentMeanBuildHelath = newhealth
+			@__currentBuildHelathBuffer += deltaHealth
+
+			if @__currentBuildHelathBuffer > 1
+				part = @__currentBuildHelathBuffer % 1
+				@SetHealth(@Health() + @__currentBuildHelathBuffer - part)
+				@__currentBuildHelathBuffer = part
+
 		if leftBuild <= 0
 			@SetBuildSpeedup(false)
 			@SetIsBuilding(false)
@@ -95,16 +111,30 @@ ENT.Think = =>
 			@ResetSequence(@idleSequence)
 			@OnBuildFinish()
 			@SetPlaybackRate(1)
+
+			if @GetAfterMove() and @GetLevel() < @GetTargetLevel()
+				@SetLevel(@GetLevel() + 1)
+			elseif @GetAfterMove()
+				@SetAfterMove(false)
+				@SetTargetLevel(0)
 	elseif @GetIsUpgrading()
 		if @upgradeFinishAt < cTime
 			@SetBuildSpeedup(false)
 			@SetIsUpgrading(false)
+
 			switch @GetLevel()
 				when 2
 					@RealSetModel(@IdleModel2) if @GetModel() ~= @IdleModel2
 				when 3
 					@RealSetModel(@IdleModel3) if @GetModel() ~= @IdleModel3
+
 			@UpdateSequenceList()
 			@StartActivity(ACT_OBJ_RUNNING)
 			@ResetSequence(@idleSequence)
 			@OnUpgradeFinish()
+
+			if @GetAfterMove() and @GetLevel() < @GetTargetLevel()
+				@SetLevel(@GetLevel() + 1)
+			elseif @GetAfterMove()
+				@SetAfterMove(false)
+				@SetTargetLevel(0)

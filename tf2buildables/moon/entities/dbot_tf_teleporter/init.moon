@@ -49,6 +49,7 @@ ENT.SetupAsExit = (entrance = NULL) =>
 	entrance\SetTeamType(@GetTeamType())
 	@SetEntrance(entrance)
 	@SelectLevel(entrance)
+	@MoveCategory = @MOVE_TELE_OUT
 
 ENT.SetupAsEntrance = (exit = NULL) =>
 	@SetIsExit(false)
@@ -58,6 +59,7 @@ ENT.SetupAsEntrance = (exit = NULL) =>
 	exit\SetTeamType(@GetTeamType())
 	@SetExit(exit)
 	@SelectLevel(exit)
+	@MoveCategory = @MOVE_TELE_IN
 
 ENT.DetectStanding = =>
 	pos = @GetPos() + Vector(0, 0, 4)
@@ -134,7 +136,7 @@ ENT.TriggerReceive = (ent = NULL, force = false) =>
 			endpos: pos + Vector(0, 0, 24)
 			mask: MASK_SOLID
 			:mins, :maxs
-			filter: (entHit) -> 
+			filter: (entHit) ->
 				return false if entHit == @ or entHit == ent or not IsValid(entHit)
 				table.insert(targets, entHit) if not @IsAlly(entHit)
 				return false
@@ -160,9 +162,9 @@ ENT.TriggerReceive = (ent = NULL, force = false) =>
 		ent\SetEyeAngles(@GetTeleAngles())
 	else
 		ent\SetAngles(@GetTeleAngles())
-	
+
 	@DoReset()
-	
+
 	if @SPAWN_BREAD\GetBool() and math.random(1, 100) < @BREAD_CHANCE\GetInt()
 		tpPoint = @GetBreadPoint()
 		spawnedEnts = {}
@@ -188,13 +190,13 @@ ENT.BehaveUpdate = (delta) =>
 		@currentTeleTarget = NULL
 		@currentTeleTimer = 0
 		return
-	
+
 	if not @ReadyToTeleport()
 		@ResetSequence(0) if @GetSequence() ~= 0
 		@currentTeleTarget = NULL
 		@currentTeleTimer = 0
 		return
-	
+
 	@ResetSequence(2) if @GetSequence() ~= 2
 	@UpdateRelationships()
 	isAlly, tr = @DetectStanding()
@@ -202,13 +204,13 @@ ENT.BehaveUpdate = (delta) =>
 		@currentTeleTarget = NULL
 		@currentTeleTimer = 0
 		return
-	
+
 	ent = tr.Entity
 	return if ent\IsPlayer() and ent\InVehicle()
 	if @currentTeleTarget ~= ent
 		@currentTeleTarget = ent
 		@currentTeleTimer = 0
-	
+
 	@currentTeleTimer += delta
 	if @currentTeleTimer > DTF2.GrabFloat(@TELE_WAIT)
 		@TriggerTeleport(ent)

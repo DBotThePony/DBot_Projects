@@ -26,6 +26,7 @@ ENT.Initialize = =>
 	@idleSound\SetSoundLevel(75)
 	@idleSound\Play()
 	@lastArrowAngle = 0
+	@MoveCategory = @MOVE_DISPENSER
 
 ENT.OnRemove = =>
 	@idleSound\Stop() if @idleSound
@@ -63,14 +64,14 @@ ENT.Draw = =>
 
 	@lastArrowAngle = Lerp(0.1, @lastArrowAngle, @GetAvaliablePercent() * 180)
 	render.OverrideDepthEnable(true, true)
-	
+
 	do
 		pos = Vector(SCREEN_POS_1)
 		pos\Rotate(ang)
 		pos += lpos
 		render.SetMaterial(screenMat)
 		render.DrawQuadEasy(pos, fwd, WIDTH, HEIGHT, SCREEN_COLOR, 180)
-	
+
 	do
 		pos = Vector(ARROW_POS_1)
 		pos\Rotate(ang)
@@ -83,14 +84,14 @@ ENT.Draw = =>
 
 		render.SetMaterial(SCREEN_BG_ARROW)
 		render.DrawQuadEasy(pos, fwd, WIDTH_ARROW, HEIGHT_ARROW, SCREEN_COLOR, -90 - @lastArrowAngle)
-	
+
 	do
 		pos = Vector(SCREEN_POS_2)
 		pos\Rotate(ang)
 		pos += lpos
 		render.SetMaterial(screenMat)
 		render.DrawQuadEasy(pos, -fwd, WIDTH, HEIGHT, SCREEN_COLOR, 180)
-	
+
 	do
 		pos = Vector(ARROW_POS_2)
 		pos\Rotate(ang)

@@ -19,6 +19,7 @@ _G.DTF2 = _G.DTF2 or {}
 DTF2 = _G.DTF2
 
 include 'shared.lua'
+include 'sv_pickable.lua'
 AddCSLuaFile 'cl_init.lua'
 
 ENT.DuplicatorFunc = =>
@@ -77,21 +78,23 @@ ENT.SetLevel = (val = 1, playAnimation = @UPGRADE_ANIMS, force = false) =>
 	val = math.Clamp(math.floor(val), 1, 3)
 	@SetnwLevel(val)
 	@mLevel = val
+	currentHealthMultiplier = @GetMaxHealth() / @Health()
+	currentHealthMultiplier = 1 if currentHealthMultiplier ~= currentHealthMultiplier
 	switch val
 		when 1
 			@RealSetModel(@IdleModel1) if @GetModel() ~= @IdleModel1
-			@SetHealth(DTF2.GrabInt(@HealthLevel1)) if @Health() == @GetMaxHealth()
+			@SetHealth(DTF2.GrabInt(@HealthLevel1) * currentHealthMultiplier)
 			@SetMaxHealth(DTF2.GrabInt(@HealthLevel1))
 			@UpdateSequenceList()
 		when 2
 			@RealSetModel(@IdleModel2) if @GetModel() ~= @IdleModel2
-			@SetHealth(DTF2.GrabInt(@HealthLevel2)) if @Health() == @GetMaxHealth()
+			@SetHealth(DTF2.GrabInt(@HealthLevel2) * currentHealthMultiplier)
 			@SetMaxHealth(DTF2.GrabInt(@HealthLevel2))
 			@UpdateSequenceList()
 			@PlayUpgradeAnimation() if playAnimation
 		when 3
 			@RealSetModel(@IdleModel3) if @GetModel() ~= @IdleModel3
-			@SetHealth(DTF2.GrabInt(@HealthLevel3))
+			@SetHealth(DTF2.GrabInt(@HealthLevel3) * currentHealthMultiplier)
 			@SetMaxHealth(DTF2.GrabInt(@HealthLevel3))
 			@UpdateSequenceList()
 			@PlayUpgradeAnimation() if playAnimation
@@ -122,7 +125,11 @@ ENT.DoSpeedup = (time = DTF2.GrabFloat(@SPEEDUP_TIME), index = NULL, strength = 
 	@CURRENT_SPEEDUP_MULT = 0
 	@CURRENT_SPEEDUP_MULT += value for key, value in pairs @speedupCache
 
-	@SetPlaybackRate(0.5 + 0.5 * @CURRENT_SPEEDUP_MULT)
+	if not @GetAfterMove()
+		@SetPlaybackRate(0.5 + 0.5 * @CURRENT_SPEEDUP_MULT)
+	else
+		@SetPlaybackRate(2 + 0.5 * @CURRENT_SPEEDUP_MULT)
+
 	@SetBuildSpeedup(true)
 
 	timer.Create "DTF2.BuildSpeedup.#{@EntIndex()}.#{index\EntIndex()}", time, 1, ->
@@ -133,11 +140,14 @@ ENT.DoSpeedup = (time = DTF2.GrabFloat(@SPEEDUP_TIME), index = NULL, strength = 
 		@CURRENT_SPEEDUP_MULT += value for key, value in pairs @speedupCache
 
 		@SetBuildSpeedup(false) if @CURRENT_SPEEDUP_MULT == 0
-		@SetPlaybackRate(0.5 + 0.5 * @CURRENT_SPEEDUP_MULT)
+		if not @GetAfterMove()
+			@SetPlaybackRate(0.5 + 0.5 * @CURRENT_SPEEDUP_MULT)
+		else
+			@SetPlaybackRate(2 + 0.5 * @CURRENT_SPEEDUP_MULT)
 
 	return true
 
-ENT.SetBuildStatus = (status = false) =>
+ENT.SetBuildStatus = (status = false, moved = false) =>
 	return false if @GetLevel() > 1
 	return false if @GetIsBuilding() == status
 	@SetIsBuilding(status)
@@ -150,10 +160,21 @@ ENT.SetBuildStatus = (status = false) =>
 		@speedupCache = {}
 		@StartActivity(ACT_OBJ_PLACING)
 		@ResetSequence(@buildSequence)
-		@SetBuildFinishAt(CurTime() + DTF2.GrabFloat(@BuildTime))
-		@OnBuildStart()
-		@SetPlaybackRate(0.5)
-		@SetHealth(1)
+
+		@SetBuildStartedAt(CurTime())
+
+		if not moved
+			@SetBuildFinishAt(CurTime() + DTF2.GrabFloat(@BuildTime))
+			@OnBuildStart()
+			@SetPlaybackRate(0.5)
+			@SetHealth(1)
+		else
+			@SetBuildFinishAt(CurTime() + DTF2.GrabFloat(@BuildTime) / 3)
+			@SetPlaybackRate(1.5)
+
+		@__targetBuildHelath = @GetMaxHealth()
+		@__currentMeanBuildHelath = 1
+		@__currentBuildHelathBuffer = 0
 	else
 		@RealSetModel(@IdleModel1)
 		@UpdateSequenceList()
@@ -163,3 +184,6 @@ ENT.SetBuildStatus = (status = false) =>
 		@SetPlaybackRate(1)
 
 	return true
+
+ENT.OnPlayerDoMove = (mover, weapon) =>
+ENT.OnMoved = (mover, weapon) =>

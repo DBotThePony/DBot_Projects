@@ -21,6 +21,7 @@ gui.tf2.hud.generic.metal = 'Avaliable Metal: %i'
 
 gui.tf2.hud.buildable.by = ' built by: %s'
 gui.tf2.hud.buildable.hp = 'Health: %s'
+gui.tf2.hud.buildable.pickable = 'Press %s\nto pickup buildable'
 gui.tf2.hud.buildable.upgrade = 'Upgrade level: %s'
 
 gui.tf2.hud.draw.sentry = 'SENTRY GUN %i'

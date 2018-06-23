@@ -20,7 +20,7 @@ include 'shared.lua'
 ENT.Initialize = =>
 	@DrawShadow(false)
 	-- @SetModel(@IdleModel1)
-	
+
 	@UpdateSequenceList()
 	@lastSeqModel = @IdleModel1
 	@lastAnimTick = CurTime()
@@ -33,3 +33,13 @@ ENT.Draw = =>
 
 ENT.DrawHUD = => DTF2.DrawBuildingInfo(@)
 ENT.GetHUDText = => ''
+
+hook.Add 'PlayerBindPress', 'DTF2.PickupBuildable', (bind, pressed) =>
+	return if not pressed
+	return if not bind\find('attack2')
+	tr = @GetEyeTrace()
+	return if not IsValid(tr.Entity) or not tr.Entity.IsTF2Building
+	return if not tr.Entity\CanBeMoved(@)
+	net.Start('dtf2.movebuildable')
+	net.WriteEntity(tr.Entity)
+	net.SendToServer()

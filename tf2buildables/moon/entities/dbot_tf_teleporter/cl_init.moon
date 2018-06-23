@@ -44,7 +44,7 @@ net.Receive 'DTF2.TeleportedEntity', ->
 	-- spawnBread = net.ReadBool()
 	teamType = false
 	teamType = entrance\GetTeamType() if IsValid(entrance)
-	
+
 	if IsValid(ent)
 		particleSystem = CreateParticleSystem(ent, teamType and 'player_recent_teleport_blue' or 'player_recent_teleport_red', PATTACH_ABSORIGIN_FOLLOW, 0)
 		CreateParticleSystem(ent, 'teleported_flash', PATTACH_ABSORIGIN_FOLLOW, 0)
@@ -52,13 +52,13 @@ net.Receive 'DTF2.TeleportedEntity', ->
 		if ent == LocalPlayer()
 			ent\ScreenFade(SCREENFADE.IN, color_white, FLASH_TIME, 0)
 			ent.__teleFOV = RealTime() + FOV_TIME
-	
+
 	if IsValid(exit)
 		exit\EmitSound(exit.RECEIVE_SOUND)
 		CreateParticleSystem(entrance, teamType and 'teleportedin_blue' or 'teleportedin_red', PATTACH_ABSORIGIN_FOLLOW, 0)
-	
+
 	CreateParticleSystem(entrance, 'teleported_flash', PATTACH_ABSORIGIN_FOLLOW, 0) if IsValid(entrance)
-	
+
 	-- if IsValid(exit) and spawnBread
 	--     tpPoint = exit\GetBreadPoint()
 	--     spawnedEnts = {}
@@ -84,6 +84,7 @@ net.Receive 'DTF2.TeleportedEntity', ->
 hook.Add 'CalcView', 'DTF2.TeleportFOV', (origin = Vector(0, 0, 0), angles = Angle(0, 0, 0), fov = 90, znear = 0, zfar = 10000) => {:origin, :angles, :znear, :zfar, fov: fov + (@__teleFOV - RealTime()) / FOV_TIME * FOV_STRENGTH} if @__teleFOV and @__teleFOV > RealTime()
 
 ENT.ClientTeleporterThink = =>
+	@MoveCategory = @GetIsExit() and @MOVE_TELE_OUT or @MOVE_TELE_IN
 	if @IsValidTeleporter()
 		if @ReadyToTeleport()
 			if @BaseClass.IsAvaliable(@)
@@ -94,7 +95,7 @@ ENT.ClientTeleporterThink = =>
 				if @spinningSound
 					@spinningSound\Stop()
 					@spinningSound = nil
-			
+
 			if @IsAvaliable()
 				if not @playedReady
 					@EmitSound(@READY_SOUND)
@@ -120,7 +121,7 @@ ENT.Draw = =>
 			if IsValid(@particlesReady)
 				@particlesReady\StopEmission()
 				@particlesReady = nil
-		
+
 		if @BaseClass.IsAvaliable(@) and @IsValidTeleporter()
 			if not IsValid(@particlesAvaliable)
 				@particlesAvaliable = CreateParticleSystem(@, @GetAvaliableEffect(), PATTACH_ABSORIGIN_FOLLOW, 0)

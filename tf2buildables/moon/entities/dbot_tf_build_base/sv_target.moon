@@ -44,6 +44,7 @@ ENT.Explode = =>
 	@Remove()
 
 ENT.OnInjured = (dmg) =>
+	return if @GetIsMoving()
 	if dmg\GetAttacker() == @ or dmg\GetAttacker()\IsValid() and @IsAlly(dmg\GetAttacker())
 		dmg\SetDamage(0)
 		dmg\SetMaxDamage(0)
@@ -243,7 +244,7 @@ hook.Add 'EntityTakeDamage', 'DTF2.Bullseye', (dmg) =>
 checkFriendlyFire = (dmg) =>
 	attacker = dmg\GetAttacker()
 	inflictor = dmg\GetInflictor()
-	if @IsTF2Building and (attacker\IsValid() and (@IsAlly(attacker) or attacker == @))
+	if @IsTF2Building and not @GetIsMoving() and (attacker\IsValid() and (@IsAlly(attacker) or attacker == @))
 		dmg\SetDamage(0)
 		dmg\SetDamageBonus(0)
 		dmg\SetMaxDamage(0)

@@ -75,6 +75,7 @@ SWEP.SetupDataTables = =>
 	@NetworkVar('Int', 10, 'BuildStatus')
 	@NetworkVar('Int', 11, 'BuildType')
 	@NetworkVar('Bool', 9, 'IsMoving')
+	@NetworkVar('Entity', 9, 'MovingEntity')
 	@SetIsMoving(false)
 	@SetBuildType(1)
 
@@ -153,7 +154,7 @@ SWEP.CheckBuildableAvaliability = (slot = @SLOT_SENTRY) =>
 SWEP.TriggerBuildRequest = (requestType = @BUILD_SENTRY) =>
 	return false if not IsValid(@GetOwner()) or not @GetOwner()\IsPlayer()
 	return false if @GetBuildStatus() ~= @BUILD_NONE
-	
+
 	switch requestType
 		when @BUILD_SENTRY
 			return false if not @CheckBuildableAvaliability(@SLOT_SENTRY)
@@ -163,7 +164,7 @@ SWEP.TriggerBuildRequest = (requestType = @BUILD_SENTRY) =>
 			return false if not @CheckBuildableAvaliability(@SLOT_TELE_IN)
 		when @BUILD_TELE_OUT
 			return false if not @CheckBuildableAvaliability(@SLOT_TELE_OUT)
-	
+
 	if DTF2.PDA_CONSUMES_METAL\GetBool()
 		with @GetOwner()
 			switch requestType
@@ -219,6 +220,5 @@ SWEP.SecondaryAttack = =>
 	@SetNextSecondaryFire(CurTime() + 0.1)
 	if IsFirstTimePredicted()
 		@SetBuildRotation(@GetBuildRotation() + 1)
-		if @GetBuildRotation() > 3
-			@SetBuildRotation(0)
+		@SetBuildRotation(0) if @GetBuildRotation() > 3
 	return true

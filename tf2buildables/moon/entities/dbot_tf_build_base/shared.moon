@@ -21,6 +21,13 @@ ENT.Type = 'nextbot'
 ENT.Base = 'base_nextbot'
 ENT.IsTF2Building = true
 
+ENT.MoveCategory = -1
+
+ENT.MOVE_SENTRY = 5
+ENT.MOVE_DISPENSER = 6
+ENT.MOVE_TELE_IN = 7
+ENT.MOVE_TELE_OUT = 8
+
 ENT.BuildModel1 = 'models/buildables/dispenser.mdl'
 ENT.BuildModel2 = 'models/buildables/dispenser_lvl2.mdl'
 ENT.BuildModel3 = 'models/buildables/dispenser_lvl3.mdl'
@@ -82,13 +89,20 @@ ENT.SetupDataTables = =>
 	@NetworkVar('Bool', 2, 'IsUpgrading')
 	@NetworkVar('Bool', 1, 'BuildSpeedup')
 	@NetworkVar('Bool', 16, 'TeamType')
-	@NetworkVar('Bool', 17, 'IsMovable')
+	@NetworkVar('Bool', 17, 'IsMoving')
+	@NetworkVar('Bool', 18, 'IsMovable')
+	@NetworkVar('Bool', 19, 'AfterMove')
 	@NetworkVar('Int', 1, 'nwLevel')
 	@NetworkVar('Int', 16, 'UpgradeAmount')
+	@NetworkVar('Int', 17, 'TargetLevel')
 	@NetworkVar('Entity', 0, 'TFPlayer')
 	@NetworkVar('Float', 0, 'BuildFinishAt')
+	@NetworkVar('Float', 4, 'BuildStartedAt')
+	@SetIsMoving(false)
 	@SetIsMovable(false)
+	@SetAfterMove(false)
 	@SetBuildFinishAt(0)
+	@SetBuildStartedAt(0)
 
 ENT.SelectAttacker = => IsValid(@GetTFPlayer()) and @GetTFPlayer() or @
 
@@ -111,7 +125,7 @@ ENT.GetMaxHP = (level = @GetLevel()) =>
 		else
 			DTF2.GrabInt(@HealthLevel1)
 
-ENT.IsAvaliable = => not @GetIsBuilding() and not @GetIsUpgrading()
+ENT.IsAvaliable = => not @GetIsBuilding() and not @GetIsUpgrading() and not @GetIsMoving()
 ENT.IsAvaliableForRepair = => not @GetIsBuilding() and not @GetIsUpgrading()
 ENT.CustomRepair = (thersold = 200, simulate = CLIENT) =>
 	return 0 if thersold == 0
@@ -120,8 +134,9 @@ ENT.CustomRepair = (thersold = 200, simulate = CLIENT) =>
 
 ENT.GetBuildingStatus = =>
 	if @GetIsBuilding()
+		delta = @GetBuildFinishAt() - @GetBuildStartedAt()
 		deltaBuild = math.Clamp(@GetBuildFinishAt() - CurTime(), 0, DTF2.GrabFloat(@BuildTime))
-		deltaBuildMult = math.Clamp(1 - deltaBuild / DTF2.GrabFloat(@BuildTime), 0, 1)
+		deltaBuildMult = math.Clamp(1 - deltaBuild / delta, 0, 1)
 		return true, deltaBuild, deltaBuildMult
 	else
 		return false, 0, 1
@@ -147,3 +162,16 @@ ENT.SimulateRepair = (thersold = 200, simulate = CLIENT) =>
 	weight += @CustomRepair(thersold - weight, simulate)
 	weight += @SimulateUpgrade(thersold - weight, simulate)
 	return weight
+
+DLib.nw.poolEntity('dtf2_move')
+
+ENT.CanBeMoved = (byPlayer = NULL) =>
+	return IsValid(byPlayer) and byPlayer\IsPlayer() and
+		@GetPos()\Distance(byPlayer\GetPos()) < 200 and
+		byPlayer == @GetTFPlayer() and
+		@GetIsMovable() and
+		@MoveCategory ~= -1 and
+		@IsAvaliable() and
+		IsValid(byPlayer\GetWeapon('dbot_tf_buildpda')) and
+		not IsValid(byPlayer\GetDLibVar('dtf2_move')) and
+		not @GetAfterMove()

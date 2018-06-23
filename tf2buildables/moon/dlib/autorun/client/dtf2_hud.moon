@@ -79,7 +79,7 @@ METAL_COUNTER_POS = DLib.HUDCommons.Position2.DefinePosition('tf_metal_counter',
 DTF2.DrawMetalCounter = ->
 	x, y = METAL_COUNTER_POS()
 	DLib.HUDCommons.WordBox(DLib.i18n.localize('gui.tf2.hud.generic.metal', LocalPlayer()\GetTF2Metal()), FONT, x, y, FONT_COLOR(), BACKGROUND_COLOR())
-	
+
 	x += 110
 	for data in *METAL_HISTORY
 		DLib.HUDCommons.WordBox(data.text, nil, x, y - data.slide, Color(data.r, data.g, data.b, data.a), Color(0, 0, 0, 150 * data.fade))
@@ -118,6 +118,9 @@ DTF2.DrawBuildingInfo = =>
 	surface.DrawRect(x - W / 2, y + H - 12, W, 12)
 	surface.SetDrawColor(COLOR_HP_BAR())
 	surface.DrawRect(x - W / 2, y + H - 12, W * math.Clamp(hp / mhp, 0, 1), 12)
+
+	if @CanBeMoved(LocalPlayer())
+		W, H = DLib.HUDCommons.AdvancedWordBox(DLib.i18n.localize('gui.tf2.hud.buildable.pickable', input.LookupBinding('+attack2')\upper()), FONT, x + W / 1.8, y, FONT_COLOR(), BACKGROUND_COLOR(), false)
 
 hook.Add 'HUDPaint', 'DTF2.BuildablesHUD', ->
 	self = LocalPlayer()\GetEyeTrace().Entity

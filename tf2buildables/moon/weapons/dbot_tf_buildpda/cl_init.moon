@@ -49,6 +49,7 @@ SWEP.Think = =>
 SWEP.OnRemove = =>
 	BaseClass.OnRemove(@) if BaseClass.OnRemove
 	@blueprintModel\Remove() if IsValid(@blueprintModel)
+	@sphereModel\Remove() if IsValid(@sphereModel)
 
 SWEP.DrawHUD = =>
 	DTF2.DrawPDAHUD(@GetOwner()) if @GetBuildStatus() == @BUILD_NONE

@@ -21,6 +21,7 @@ gui.tf2.hud.generic.metal = 'Металл: %i'
 
 gui.tf2.hud.buildable.by = ' построено: %s'
 gui.tf2.hud.buildable.hp = 'Здоровье: %s'
+gui.tf2.hud.buildable.pickable = 'Нажмите %s\nчтобы подобрать постройку'
 gui.tf2.hud.buildable.upgrade = 'Улучшение: %s'
 
 gui.tf2.hud.draw.sentry = 'ТУРЕЛЬ %i'

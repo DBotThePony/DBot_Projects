@@ -36,6 +36,7 @@ ENT.Initialize = =>
 	@lastYaw = 0
 	@fireAnim = 0
 	@isEmpty = false
+	@MoveCategory = @MOVE_SENTRY
 
 ENT.GetHUDText = =>
 	text = DLib.i18n.localize('gui.tf2.hud.sentry.bullets', @GetAmmoAmount(), @GetMaxAmmo())
@@ -51,7 +52,7 @@ ENT.CreateMuzzleflashModel = (attach = '') =>
 	with attach
 		muzzleflash\SetPos(.Pos)
 		muzzleflash\SetAngles(.Ang)
-	
+
 	muzzleflash\SetModelScale(math.random(80, 100) / 100)
 
 	return muzzleflash
@@ -89,7 +90,7 @@ ENT.Draw = =>
 					ang = Angle(0, 0, 0)
 					@ManipulateBoneAngles(MUZZLE_BONE_ID_3_L, ang)
 					@ManipulateBoneAngles(MUZZLE_BONE_ID_3_R, ang)
-	
+
 	diffPitch = math.AngleDifference(@lastPitch, @GetAimPitch())
 	diffYaw = math.AngleDifference(@lastYaw, @GetAimYaw())
 	@lastPitch = Lerp(FrameTime() * 10, @lastPitch, @lastPitch - diffPitch)
@@ -99,7 +100,7 @@ ENT.Draw = =>
 	@aim_yaw = @lastYaw + math.random(1, 2) / 100
 	@SetPoseParameter('aim_pitch', @aim_pitch)
 	@SetPoseParameter('aim_yaw', @aim_yaw)
-	
+
 	@InvalidateBoneCache()
 	BaseClass.Draw(@)
 
@@ -125,7 +126,7 @@ net.Receive 'DTF2.SentryFire', ->
 	sentry\SetPoseParameter('aim_pitch', (sentry.aim_pitch or 0) + math.random(1, 2) / 2)
 	sentry\SetPoseParameter('aim_yaw', (sentry.aim_yaw or 0) + math.random(1, 2) / 2)
 	sentry\InvalidateBoneCache()
-	
+
 	if not isEmpty
 		if OLD_SENTRY_MUZZLEFLASH\GetBool()
 			switch sentry\GetLevel()

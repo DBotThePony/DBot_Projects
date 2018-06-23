@@ -29,6 +29,7 @@ ENT.Initialize = =>
 	@beams = {}
 	@nextAmmo = CurTime()
 	@nextChangeUp = CurTime()
+	@MoveCategory = @MOVE_DISPENSER
 
 ENT.HealTarget = (ent = NULL, delta = 1, cTime = CurTime()) =>
 	return if not IsValid(ent)
@@ -47,7 +48,7 @@ ENT.BehaveUpdate = (delta) =>
 	BaseClass.BehaveUpdate(@, delta)
 	return if not @IsAvaliable()
 	@UpdateRelationships()
-	
+
 	@healing = @GetAlliesVisible()
 	beam.__isValid = false for ply, beam in pairs @beams
 
@@ -68,7 +69,7 @@ ENT.BehaveUpdate = (delta) =>
 		if not beam.__isValid
 			beam\Remove()
 			@beams[ply] = nil
-	
+
 	cTime = CurTime()
 	@HealTarget(ply, delta, cTime) for ply in *@healing
 	@nextAmmo = cTime + 1 if @nextAmmo < cTime

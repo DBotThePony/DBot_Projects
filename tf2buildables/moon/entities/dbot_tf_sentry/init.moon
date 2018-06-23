@@ -64,6 +64,7 @@ ENT.Initialize = =>
 	@lastLookingAtTargetSound = 0
 	@UpdateSequenceList()
 	@SetRockets(DTF2.GrabInt(@MAX_ROCKETS))
+	@MoveCategory = @MOVE_SENTRY
 
 ENT.HULL_SIZE = 2
 ENT.HULL_TRACE_MINS = Vector(-ENT.HULL_SIZE, -ENT.HULL_SIZE, -ENT.HULL_SIZE)
@@ -95,7 +96,7 @@ ENT.SetLevel = (val = 1, playAnimation = true, force = false) =>
 			@SetAmmoAmount(DTF2.GrabInt(@MAX_AMMO_2)) if @GetAmmoAmount() == @GetMaxAmmo(oldLevel)
 		when 3
 			@SetAmmoAmount(DTF2.GrabInt(@MAX_AMMO_3)) if @GetAmmoAmount() == @GetMaxAmmo(oldLevel)
-			
+
 	return true
 
 ENT.GetAdditionalVector = =>
@@ -110,14 +111,14 @@ ENT.GetAdditionalVector = =>
 ENT.FireBullet = (force = false) =>
 	return false if @lastBulletFire > CurTime() and not force
 	@lastBulletFire = CurTime() + @GetReloadTime()
-	
+
 	if @GetAmmoAmount() <= 0 and not force
 		net.Start('DTF2.SentryFire', true)
 		net.WriteEntity(@)
 		net.WriteBool(false)
 		net.Broadcast()
 		return false
-	
+
 	@SetAmmoAmount(@GetAmmoAmount() - 1)
 
 	@SetPoseParameter('aim_pitch', @GetAimPitch())
@@ -126,7 +127,7 @@ ENT.FireBullet = (force = false) =>
 	srcPos = @GetPos() + @GetAdditionalVector()
 	dir = @currentTargetPosition - srcPos
 	dir\Normalize()
-	
+
 	bulletData = {
 		Attacker: @
 		Callback: @BulletHit
@@ -150,9 +151,9 @@ ENT.FireBullet = (force = false) =>
 ENT.FireRocket = (force = false) =>
 	return false if @lastRocketsFire > CurTime() and not force
 	@lastRocketsFire = CurTime() + DTF2.GrabInt(@ROCKETS_RELOAD)
-	
+
 	return false if @GetRockets() <= 0 and not force
-	
+
 	@SetRockets(@GetRockets() - 1)
 
 	{:Ang, :Pos} = @GetAttachment(@LookupAttachment('rocket'))
@@ -217,7 +218,7 @@ ENT.BehaveUpdate = (delta) =>
 		@idleAnim = true
 		if @idleWaitOnAngle < cTime
 			@idleAngle = @GetAngles()
-		
+
 		@idleYaw += delta * DTF2.GrabInt(@SENTRY_SCAN_YAW_MULT) if @idleDirection
 		@idleYaw -= delta * DTF2.GrabInt(@SENTRY_SCAN_YAW_MULT) if not @idleDirection
 		if @idleYaw > DTF2.GrabInt(@SENTRY_SCAN_YAW_CONST) or @idleYaw < -DTF2.GrabInt(@SENTRY_SCAN_YAW_CONST)
@@ -242,7 +243,7 @@ ENT.Think = =>
 		@anglesUpdated = true
 		@currentAngle = @GetAngles()
 		@targetAngle = @currentAngle
-		
+
 	return if @behavePause > cTime
 	delta = cTime - @lastSentryThink
 	@lastSentryThink = cTime
@@ -251,7 +252,7 @@ ENT.Think = =>
 		@currentTarget = NULL
 		@SetBodygroup(2, 0)
 		return
-	
+
 	diffPitch = math.Clamp(math.AngleDifference(@currentAngle.p, @targetAngle.p), -2, 2)
 	diffYaw = math.Clamp(math.AngleDifference(@currentAngle.y, @targetAngle.y), -2, 2)
 	newPitch = @currentAngle.p - diffPitch * delta * DTF2.GrabFloat(@SENTRY_ANGLE_CHANGE_MULT)
@@ -260,7 +261,7 @@ ENT.Think = =>
 	{p: cp, y: cy, r: cr} = @GetAngles()
 	posePitch = math.floor(math.NormalizeAngle(cp - newPitch))
 	poseYaw = math.floor(math.NormalizeAngle(cy - newYaw))
-	
+
 	@SetAimPitch(posePitch)
 	@SetAimYaw(poseYaw)
 

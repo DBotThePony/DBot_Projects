@@ -31,6 +31,18 @@ SWEP.TELEPORTER_BUILDUP = {'vo/engineer_autobuildingteleporter01.mp3', 'vo/engin
 
 DEFINE_BASECLASS('dbot_tf_weapon_base')
 
+SWEP.OnRemove = =>
+	BaseClass.OnRemove(@) if BaseClass.OnRemove
+	moving = @GetMovingEntity()
+	if IsValid(moving) and moving\Health() > 0
+		with dmg = DamageInfo()
+			\SetDamage(math.pow(2, 31) - 1)
+			\SetAttacker(IsValid(@GetOwner()) and @GetOwner() or @)
+			\SetInflictor(@)
+			\SetDamageType(DMG_DIRECT\bor(DMG_BLAST, DMG_SLASH))
+			moving\SetPos(IsValid(@GetOwner()) and @GetOwner()\GetPos() or @GetPos())
+			moving\TakeDamageInfo(dmg)
+
 net.Receive 'DTF2.BuildRequest', (len = 0, ply = NULL) ->
 	return if not IsValid(ply)
 	slot = net.ReadUInt(8)
@@ -87,7 +99,40 @@ SWEP.TriggerBuild = =>
 			ent = ents.Create(@CLASS_TELEPORT)
 			ply\SetBuildedTeleporterOut(ent)
 			ply\EmitSound(table.Random(@TELEPORTER_BUILDUP), 55, 100, 1)
+		when @MOVE_SENTRY, @MOVE_DISPENSER, @MOVE_TELE_IN, @MOVE_TELE_OUT
+			ent = @GetMovingEntity()
+
+			if not IsValid(ent)
+				@SetBuildStatus(@BUILD_NONE)
+				return NULL
+
+			@GetOwner()\SetDLibVar('dtf2_move', NULL)
+			@SetMovingEntity(NULL)
+
+			ent\SetPos(tr.HitPos)
+			ent\SetAngles(@GetBuildAngle())
+			ent\SetAfterMove(true)
+			ent\SetIsMovable(true)
+			ent\SetIsMoving(false)
+			ent\SetUpgradeAmount(0)
+			ent\SetSolid(SOLID_BBOX)
+			ent\SetNoDraw(false)
+
+			ent\SetTargetLevel(ent\GetLevel())
+			ent\SetLevel(1, false)
+
+			ent\SetBuildStatus(true, true)
+			ent\OnMoved(@GetOwner(), @)
+
+			@SetBuildStatus(@BUILD_NONE)
+			@UpdateModel()
+			@SendWeaponSequence(@IdleAnimation)
+			@SwitchToWrench()
+
+			return true
+
 	return false if not IsValid(ent)
+
 	ang = @GetBuildAngle()
 	ent\SetPos(tr.HitPos)
 	ent\SetAngles(ang)
@@ -96,6 +141,7 @@ SWEP.TriggerBuild = =>
 	ent\SetAngles(ang)
 	ent\SetTFPlayer(ply)
 	ent\SetBuildStatus(true)
+	ent\SetIsMovable(true)
 	@SetBuildStatus(@BUILD_NONE)
 	@UpdateModel()
 	@SendWeaponSequence(@IdleAnimation)
