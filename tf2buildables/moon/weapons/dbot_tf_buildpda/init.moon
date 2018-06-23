@@ -111,17 +111,18 @@ SWEP.TriggerBuild = =>
 
 			ent\SetPos(tr.HitPos)
 			ent\SetAngles(@GetBuildAngle())
-			ent\SetAfterMove(true)
-			ent\SetIsMovable(true)
-			ent\SetIsMoving(false)
-			ent\SetUpgradeAmount(0)
+
+			if not ent.InstantBuildableMove\GetBool()
+				ent\SetAfterMove(true)
+				ent\SetIsMovable(true)
+				ent\SetIsMoving(false)
+
+				ent\SetTargetLevel(ent\GetLevel())
+				ent\SetLevel(1, false)
+				ent\SetBuildStatus(true, true)
+
 			ent\SetSolid(SOLID_BBOX)
 			ent\SetNoDraw(false)
-
-			ent\SetTargetLevel(ent\GetLevel())
-			ent\SetLevel(1, false)
-
-			ent\SetBuildStatus(true, true)
 			ent\OnMoved(@GetOwner(), @)
 
 			@SetBuildStatus(@BUILD_NONE)

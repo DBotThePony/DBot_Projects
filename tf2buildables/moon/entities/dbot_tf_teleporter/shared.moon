@@ -193,10 +193,11 @@ ENT.ThinkPlaybackRate = =>
 		@currentPlayback = Lerp(0.05, @currentPlayback, @targetPlayback)
 	else
 		if @GetIsBuilding()
-			@currentPlayback = Lerp(0.05, @currentPlayback, 0.5)
+			@currentPlayback = Lerp(0.05, @currentPlayback, 0.5) if not @GetAfterMove()
+			@currentPlayback = Lerp(0.05, @currentPlayback, 1.5) if @GetAfterMove()
 		else
 			@currentPlayback = Lerp(0.05, @currentPlayback, 1)
-	
+
 	if oldPlayback ~= @currentPlayback
 		@SetPlaybackRate(@currentPlayback)
 
@@ -211,7 +212,7 @@ ENT.CalculatePlaybackRate = (animTime = 1 - (@GetResetAt() - CurTime()) / @GetRe
 ENT.Think = =>
 	@BaseClass.Think(@)
 	@ThinkPlaybackRate()
-	
+
 	if @BaseClass.IsAvaliable(@)
 		if @IsValidTeleporter()
 			if @GetResetAt() > CurTime()

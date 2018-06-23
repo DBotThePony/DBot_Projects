@@ -95,11 +95,11 @@ ENT.Think = =>
 			newhealth = @GetMaxHealth() * buildMult
 			deltaHealth = newhealth - @__currentMeanBuildHelath
 			@__currentMeanBuildHelath = newhealth
-			@__currentBuildHelathBuffer += deltaHealth
+			@__currentBuildHelathBuffer += deltaHealth * 1.02
 
 			if @__currentBuildHelathBuffer > 1
 				part = @__currentBuildHelathBuffer % 1
-				@SetHealth(@Health() + @__currentBuildHelathBuffer - part)
+				@SetHealth((@Health() + @__currentBuildHelathBuffer - part)\min(@GetMaxHealth())\ceil())
 				@__currentBuildHelathBuffer = part
 
 		if leftBuild <= 0

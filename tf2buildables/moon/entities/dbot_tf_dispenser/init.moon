@@ -92,3 +92,7 @@ ENT.Think = =>
 		@ChargeUp()
 	@NextThink(CurTime() + 0.1)
 	return true
+
+ENT.OnPlayerDoMove = =>
+	beam\Remove() for ply, beam in pairs @beams
+	@beams = {}

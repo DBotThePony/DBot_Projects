@@ -99,7 +99,7 @@ ENT.SetLevel = (val = 1, playAnimation = @UPGRADE_ANIMS, force = false) =>
 			@UpdateSequenceList()
 			@PlayUpgradeAnimation() if playAnimation
 	@CreateBullseye()
-	@SetUpgradeAmount(0)
+	@SetUpgradeAmount(0) if not @GetAfterMove()
 	return true
 
 ENT.PlayUpgradeAnimation = (playOnModel = @MODEL_UPGRADE_ANIMS) =>

@@ -26,14 +26,24 @@ SWEP.INVALID_INPUT_SOUND = 'weapons/medigun_no_target.wav'
 SWEP.Think = =>
 	BaseClass.Think(@)
 	build = @GetBuildStatus()
+
 	if build ~= @BUILD_NONE
 		if not IsValid(@blueprintModel)
 			with @blueprintModel = ClientsideModel(@SENTRY_BLUEPRINT, RENDERGROUP_OTHER)
 				\SetNoDraw(true)
 				\DrawShadow(false)
 				\SetPos(LocalPlayer()\GetPos())
+
+		moving = build == @MOVE_DISPENSER or build == @MOVE_TELE_IN or build == @MOVE_SENTRY or build == @MOVE_TELE_OUT
+		if not @__interruptNextRotate and moving
+			@__interruptNextRotate = CurTime() + 0.2
+			@SetBuildRotation(0)
+		elseif @__interruptNextRotate and not moving
+			@__interruptNextRotate = nil
+
 		status, tr = @CalcAndCheckBuildSpot()
 		seq = status and 0 or 1
+
 		with @blueprintModel
 			switch build
 				when @BUILD_SENTRY, @MOVE_SENTRY

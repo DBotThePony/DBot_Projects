@@ -36,9 +36,10 @@ ENT.IdleModel1 = 'models/buildables/dispenser_light.mdl'
 ENT.IdleModel2 = 'models/buildables/dispenser_lvl2_light.mdl'
 ENT.IdleModel3 = 'models/buildables/dispenser_lvl3_light.mdl'
 
-ENT.HealthLevel1 = CreateConVar('tf_build_hp1', '150', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Default Max HP for 1 level buildables')
-ENT.HealthLevel2 = CreateConVar('tf_build_hp2', '180', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Default Max HP for 2 level buildables')
-ENT.HealthLevel3 = CreateConVar('tf_build_hp3', '216', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Default Max HP for 3 level buildables')
+ENT.HealthLevel1 = DLib.util.CreateSharedConvar('tf_build_hp1', '150', 'Default Max HP for 1 level buildables')
+ENT.HealthLevel2 = DLib.util.CreateSharedConvar('tf_build_hp2', '180', 'Default Max HP for 2 level buildables')
+ENT.HealthLevel3 = DLib.util.CreateSharedConvar('tf_build_hp3', '216', 'Default Max HP for 3 level buildables')
+ENT.InstantBuildableMove = DLib.util.CreateSharedConvar('tf_instant_buildable_move', '0', 'Deploying buildables will not trigger update animations and instantly will be ready to use (like in MvM prepare)')
 
 ENT.BuildTime = 2
 
@@ -97,7 +98,7 @@ ENT.SetupDataTables = =>
 	@NetworkVar('Int', 17, 'TargetLevel')
 	@NetworkVar('Entity', 0, 'TFPlayer')
 	@NetworkVar('Float', 0, 'BuildFinishAt')
-	@NetworkVar('Float', 4, 'BuildStartedAt')
+	@NetworkVar('Float', 8, 'BuildStartedAt')
 	@SetIsMoving(false)
 	@SetIsMovable(false)
 	@SetAfterMove(false)
@@ -135,6 +136,7 @@ ENT.CustomRepair = (thersold = 200, simulate = CLIENT) =>
 ENT.GetBuildingStatus = =>
 	if @GetIsBuilding()
 		delta = @GetBuildFinishAt() - @GetBuildStartedAt()
+		delta = 1 if delta == 0
 		deltaBuild = math.Clamp(@GetBuildFinishAt() - CurTime(), 0, DTF2.GrabFloat(@BuildTime))
 		deltaBuildMult = math.Clamp(1 - deltaBuild / delta, 0, 1)
 		return true, deltaBuild, deltaBuildMult

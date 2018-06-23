@@ -271,3 +271,13 @@ ENT.Think = =>
 		@SetPoseParameter('aim_yaw', @GetAimYaw())
 
 	@lookingAtTarget = diffPitch ~= -2 and diffPitch ~= 2 and diffYaw ~= -2 and diffYaw ~= 2 and not @idleAnim
+
+ENT.OnPlayerDoMove = =>
+	@targetAngle = Angle(0, 0, 0)
+	@currentAngle = Angle(0, 0, 0)
+	@idleAngle = Angle(0, 0, 0)
+
+ENT.OnMoved = =>
+	@targetAngle = @GetAngles()
+	@currentAngle = @GetAngles()
+	@idleAngle = @GetAngles()

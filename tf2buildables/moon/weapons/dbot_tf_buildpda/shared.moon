@@ -197,9 +197,11 @@ SWEP.PrimaryAttack = =>
 	return false if @GetBuildStatus() == @BUILD_NONE
 	@SetNextPrimaryFire(CurTime() + 1)
 	status, tr = @CalcAndCheckBuildSpot()
+
 	if not status
 		surface.PlaySound(@INVALID_INPUT_SOUND) if CLIENT and IsFirstTimePredicted()
 		return false
+
 	if DTF2.PDA_CONSUMES_METAL\GetBool()
 		with @GetOwner()
 			switch @GetBuildStatus()
@@ -211,11 +213,13 @@ SWEP.PrimaryAttack = =>
 					return false if not \AffordAndSimulateTF2Metal(DTF2.PDA_COST_TELE_IN\GetInt())
 				when @BUILD_TELE_OUT
 					return false if not \AffordAndSimulateTF2Metal(DTF2.PDA_COST_TELE_OUT\GetInt())
+
 	return true if CLIENT
 	@TriggerBuild()
 	return true
 
 SWEP.SecondaryAttack = =>
+	return false if CLIENT and @__interruptNextRotate and @__interruptNextRotate > CurTime()
 	return false if @GetBuildStatus() == @BUILD_NONE
 	@SetNextSecondaryFire(CurTime() + 0.1)
 	if IsFirstTimePredicted()
