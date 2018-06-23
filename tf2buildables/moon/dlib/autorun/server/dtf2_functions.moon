@@ -121,7 +121,14 @@ DTF2.GiveAmmo = (weightThersold = 40) =>
 	weightThersold -= @SimulateTF2MetalAdd(weightThersold)
 	return oldWeight if weightThersold == 0
 
+	ammoTypes = {}
+	for k, weapon in pairs @GetWeapons()
+		first, second = game.GetAmmoName(weapon\GetPrimaryAmmoType()), game.GetAmmoName(weapon\GetSecondaryAmmoType())
+		ammoTypes[first] = true if first
+		ammoTypes[second] = true if second
+
 	for {:name, :weight, :maximal, :nominal} in *AMMO_TO_GIVE
+		continue if not ammoTypes[name]
 		count = @GetAmmoCount(name)
 		continue if count >= maximal
 		deltaNeeded = math.Clamp(maximal - count, 0, math.min(nominal, math.floor(weightThersold / weight)))
@@ -131,7 +138,7 @@ DTF2.GiveAmmo = (weightThersold = 40) =>
 		weightThersold -= weightedDelta
 		@GiveAmmo(deltaNeeded, name)
 		return oldWeight if weightedDelta <= 0
-	
+
 	return oldWeight - weightThersold
 
 RAGDOLL_DURATION = CreateConVar('tf_dbg_fake_rag_duration', '25', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Fake ragdolls TTL duration')
