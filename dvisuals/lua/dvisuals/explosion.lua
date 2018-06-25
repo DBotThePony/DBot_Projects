@@ -59,12 +59,6 @@ hook.Add('HUDPaintBackground', 'DVisuals.Explosions', function()
 	if not explosionActive then return end
 	local w, h = ScrWL(), ScrHL()
 
-	--render.UpdateScreenEffectTexture()
-	--local rt = render.GetScreenEffectTexture()
-	--rtmat:SetTexture('$basetexture', rt)
-
-	--surface.SetMaterial(rtmat)
-	--surface.SetDrawColor(255, 255, 255, 40)
 	surface.SetMaterial(blurmat)
 	local progression = CurTimeL():progression(explosionStart, explosionEnd)
 	local passes = 40 * (1 - progression) + 10 * explosionSpread
@@ -73,13 +67,8 @@ hook.Add('HUDPaintBackground', 'DVisuals.Explosions', function()
 		render.UpdateScreenEffectTexture()
 
 		surface.DrawTexturedRect(0, 0, w, h)
-		--[[for x = -5, 5 do
-			for y = -5, 5 do
-				surface.DrawTexturedRect(x, y, w, h)
-			end
-		end]]
 	end
-end)
+end, -4)
 
 local Quintic = Quintic
 
@@ -90,7 +79,6 @@ hook.Add('Think', 'DVisuals.Explosions', function()
 
 	if IsValid(DVisuals.RingingSound) then
 		local strengthOfEffect = 1 - time:progression(explosionStart, explosionDeaf)
-		--print(strengthOfEffect)
 
 		if strengthOfEffect == 0 then
 			DVisuals.RingingSound:Stop()
@@ -124,7 +112,6 @@ local ringing = Sound('enhancedvisuals/ringing.wav')
 hook.Add('EntityEmitSound', 'DVisuals.Explosions', function(data)
 	if not DVisuals.ENABLE_EXPLOSIONS() then return end
 	if INPLAY then return end
-	--if not explosionActive then return end
 	if data.SoundName == ringing then return end
 	if data.OriginalSoundName == ringing then return end
 
