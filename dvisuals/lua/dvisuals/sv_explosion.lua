@@ -27,7 +27,7 @@ hook.Add('EntityTakeDamage', 'DVisuals.Explosions', function(self, dmg)
 	if dmg:GetDamageType():band(DMG_BLAST) == 0 then return end
 	if dmg:GetDamage() < 4 then return end
 
-	net.Start('DVisuals.Explosions')
+	net.Start('DVisuals.Explosions', true)
 	net.WriteUInt(dmg:GetDamage():sqrt():ceil():clamp(3, 16), 4)
 	net.Send(self)
 end, -2)
