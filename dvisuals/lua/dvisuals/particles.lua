@@ -106,6 +106,7 @@ local RealFrameTime = RealFrameTime
 local ScreenSize = ScreenSize
 local ScrWL = ScrWL
 local ScrHL = ScrHL
+local Quintic = Quintic
 
 hook.Add('Think', 'DVisuals.ThinkParticles', function()
 	local ply = LocalPlayer()
@@ -116,6 +117,7 @@ hook.Add('Think', 'DVisuals.ThinkParticles', function()
 	local diffYaw = ang.y:angleDifference(lastAngle.y) / 120
 	lastAngle = LerpAngle(RealFrameTime() * 10, lastAngle, ang)
 	local w, h = ScrWL(), ScrHL()
+	local w2, h2 = w / 2, h / 2
 	local velocity = ((ply:GetVelocity():Length() - 300):max(0):sqrt() / 400) * RealFrameTime() * 66
 
 	local toremove
@@ -136,18 +138,18 @@ hook.Add('Think', 'DVisuals.ThinkParticles', function()
 			end
 
 			if particleData.matData.blowoffWalk then
-				local value = ScreenSize(3) * velocity * particleData.matData.blowoffWalkMultiplier * particleData.walkScatter
+				local value = ScreenSize(9) * velocity * particleData.matData.blowoffWalkMultiplier * particleData.walkScatter
 
-				if particleData.x > w / 2 then
-					particleData.x = particleData.x + value
+				if particleData.x > w2 then
+					particleData.x = particleData.x + value * Quintic((particleData.x - w2) / w2)
 				else
-					particleData.x = particleData.x - value
+					particleData.x = particleData.x - value * Quintic((w2 - particleData.x) / w2)
 				end
 
-				if particleData.y > h / 2 then
-					particleData.y = particleData.y + value
+				if particleData.y > h2 then
+					particleData.y = particleData.y + value * Quintic((particleData.y - h2) / h2)
 				else
-					particleData.y = particleData.y - value
+					particleData.y = particleData.y - value * Quintic((h2 - particleData.y) / h2)
 				end
 			end
 
