@@ -22,6 +22,7 @@ local table = table
 local math = math
 local ipairs = ipairs
 local Color = Color
+local HUDCommons = DLib.HUDCommons
 local sand = include('sand.lua')
 
 local registered = {}
@@ -90,7 +91,9 @@ local RealTimeL = RealTimeL
 local surface = surface
 
 hook.Add('PostDrawHUD', 'DVisuals.RenderParticles', function()
-	if LocalPlayer():ShouldDrawLocalPlayer() then return end
+	local ply, lply = HUDCommons.SelectPlayer(), LocalPlayer()
+
+	if ply == lply and ply:ShouldDrawLocalPlayer() then return end
 
 	for i, particleData in ipairs(particles) do
 		surface.SetDrawColor(particleData.color)
@@ -110,6 +113,10 @@ local Quintic = Quintic
 local SOLID_NONE = SOLID_NONE
 
 local function findVehicle(ply)
+	if not ply:InVehicle() or vehicle:GetSolid() == SOLID_NONE then
+		return ply
+	end
+
 	local vehicle = ply:GetVehicle()
 	local parent = vehicle:GetParent()
 
@@ -126,18 +133,13 @@ local function findVehicle(ply)
 	return vehicle
 end
 
+DVisuals.FindVehicle = findVehicle
+
 hook.Add('Think', 'DVisuals.ThinkParticles', function()
-	local ply = LocalPlayer()
+	local ply = HUDCommons.SelectPlayer()
 	if not IsValid(ply) then return end
 	local ang = ply:EyeAnglesFixed()
-	local targetEntity
-
-	if not ply:InVehicle() or ply:GetVehicle():GetSolid() == SOLID_NONE then
-		targetEntity = ply
-	else
-		targetEntity = findVehicle(ply)
-	end
-
+	local targetEntity = findVehicle(ply)
 	local vehicle = targetEntity ~= ply
 
 	local diffPitch = ang.p:angleDifference(lastAngle.p) / 120
@@ -232,7 +234,7 @@ end
 local lastThink = 0
 
 hook.Add('Think', 'DVisuals.CreateParticles', function()
-	local ply = LocalPlayer()
+	local ply = HUDCommons.SelectPlayer()
 	if not IsValid(ply) then return end
 	local ground = ply:OnGround()
 	local time = RealTimeL()
