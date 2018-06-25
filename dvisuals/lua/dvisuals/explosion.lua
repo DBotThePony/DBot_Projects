@@ -189,7 +189,7 @@ net.receive('DVisuals.Explosions', function()
 	DVisuals.RingingSound:Play()
 	INPLAY = false
 
-	LocalPlayer():SetDSP(0, true)
+	LocalPlayer():SetDSP(16, true)
 end)
 
 hook.Add('HUDShouldDraw', 'DVisuals.Explosions', function(strName)
