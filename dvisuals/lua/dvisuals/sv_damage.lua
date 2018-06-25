@@ -17,9 +17,11 @@
 
 local DVisuals = DVisuals
 local DMG_BLAST = DMG_BLAST
+local DMG_HEAT = DMG_BURN -- loal
 local net = net
 
 net.pool('DVisuals.Explosions')
+net.pool('DVisuals.Fires')
 
 hook.Add('EntityTakeDamage', 'DVisuals.Explosions', function(self, dmg)
 	if not DVisuals.ENABLE_EXPLOSIONS() then return end
@@ -29,5 +31,19 @@ hook.Add('EntityTakeDamage', 'DVisuals.Explosions', function(self, dmg)
 
 	net.Start('DVisuals.Explosions', true)
 	net.WriteUInt(dmg:GetDamage():sqrt():ceil():clamp(3, 16), 4)
+	net.Send(self)
+end, -2)
+
+hook.Add('EntityTakeDamage', 'DVisuals.Fires', function(self, dmg)
+	if not DVisuals.ENABLE_FIRE() then return end
+	if not self:IsPlayer() then return end
+	if dmg:GetDamageType():band(DMG_HEAT) == 0 and dmg:GetDamageType():band(DMG_SLOWBURN) == 0 and dmg:GetDamageType():band(DMG_PLASMA) == 0 then return end
+	if dmg:GetDamage() < 1 then return end
+	local attacker = dmg:GetAttacker()
+
+	if attacker:IsValid() and attacker:GetClass() == 'entityflame' then return end
+
+	net.Start('DVisuals.Fires', true)
+	net.WriteUInt((dmg:GetDamage() / 3):ceil():min(16), 4)
 	net.Send(self)
 end, -2)

@@ -72,7 +72,7 @@ hook.Add('PostDrawHUD', 'DVisuals.RenderFireParticles', function()
 		surface.SetMaterial(particleData.mat)
 		surface.DrawTexturedRectRotated(particleData.x, particleData.y, particleData.size, particleData.size, particleData.rotation)
 	end
-end, -3)
+end, -9)
 
 hook.Add('PostDrawHUD', 'DVisuals.RenderFireOverlay', function()
 	if not DVisuals.ENABLE_FIRE() then return end
@@ -145,4 +145,14 @@ hook.Add('Think', 'DVisuals.ThinkFireParticles', function()
 	if toremove then
 		table.removeValues(particles, toremove)
 	end
+end)
+
+net.receive('DVisuals.Fires', function()
+	local score = net.ReadUInt(4)
+
+	for i = 1, score do
+		createParticle()
+	end
+
+	firesOverlayStrength = firesOverlayStrength + score / 32
 end)

@@ -101,7 +101,7 @@ hook.Add('PostDrawHUD', 'DVisuals.RenderParticles', function()
 		surface.SetMaterial(particleData.mat)
 		surface.DrawTexturedRectRotated(particleData.x, particleData.y, particleData.size, particleData.size, particleData.rotation)
 	end
-end)
+end, -9)
 
 local lastAngle = Angle()
 local LerpAngle = LerpAngle
