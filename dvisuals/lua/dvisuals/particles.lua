@@ -107,18 +107,45 @@ local ScreenSize = ScreenSize
 local ScrWL = ScrWL
 local ScrHL = ScrHL
 local Quintic = Quintic
+local SOLID_NONE = SOLID_NONE
+
+local function findVehicle(ply)
+	local vehicle = ply:GetVehicle()
+	local parent = vehicle:GetParent()
+
+	-- cyclic parenting will cause crash
+	for i = 1, 4 do
+		if not IsValid(parent) then
+			break
+		end
+
+		vehicle = parent
+		parent = vehicle:GetParent()
+	end
+
+	return vehicle
+end
 
 hook.Add('Think', 'DVisuals.ThinkParticles', function()
 	local ply = LocalPlayer()
 	if not IsValid(ply) then return end
 	local ang = ply:EyeAnglesFixed()
+	local targetEntity
+
+	if not ply:InVehicle() or ply:GetVehicle():GetSolid() == SOLID_NONE then
+		targetEntity = ply
+	else
+		targetEntity = findVehicle(ply)
+	end
+
+	local vehicle = targetEntity ~= ply
 
 	local diffPitch = ang.p:angleDifference(lastAngle.p) / 120
 	local diffYaw = ang.y:angleDifference(lastAngle.y) / 120
 	lastAngle = LerpAngle(RealFrameTime() * 10, lastAngle, ang)
 	local w, h = ScrWL(), ScrHL()
 	local w2, h2 = w / 2, h / 2
-	local velocity = ((ply:GetVelocity():Length() - 300):max(0):sqrt() / 400) * RealFrameTime() * 66
+	local velocity = ((targetEntity:GetVelocity():Length() - 300):max(0):sqrt() / 400) * RealFrameTime() * 66
 
 	local toremove
 	local time = RealTimeL()
@@ -209,12 +236,37 @@ hook.Add('Think', 'DVisuals.CreateParticles', function()
 	if not IsValid(ply) then return end
 	local ground = ply:OnGround()
 	local time = RealTimeL()
+	local targetEntity
 
-	local tr = util.TraceLine({
-		start = ply:GetPos() + Vector(0, 0, 15),
-		endpos = ply:GetPos() - Vector(0, 0, 30),
-		mask = MASK_BLOCKLOS
-	})
+	local tr
+
+	if not ply:InVehicle() or ply:GetVehicle():GetSolid() == SOLID_NONE then
+		targetEntity = ply
+
+		tr = util.TraceLine({
+			start = ply:GetPos() + Vector(0, 0, 15),
+			endpos = ply:GetPos() - Vector(0, 0, 30),
+			mask = MASK_BLOCKLOS
+		})
+	else
+		local vehicle = findVehicle(ply)
+		targetEntity = vehicle
+
+		local mins, maxs, center = vehicle:OBBMins(), vehicle:OBBMaxs(), vehicle:OBBCenter()
+		local ang = vehicle:GetAngles()
+		mins:Rotate(ang)
+		maxs:Rotate(ang)
+		center:Rotate(ang)
+		local pos = vehicle:GetPos()
+
+		tr = util.TraceLine({
+			start = pos + center,
+			endpos = pos - center,
+			mask = MASK_BLOCKLOS,
+			mins = mins,
+			maxs = maxs,
+		})
+	end
 
 	local mat = tr.MatType or MAT_GRASS
 	if not mat then return end
@@ -231,9 +283,8 @@ hook.Add('Think', 'DVisuals.CreateParticles', function()
 
 	if not matData then return end
 
-	if not lastOnGround and ground and matData.fall then
+	if targetEntity == ply and not lastOnGround and ground and matData.fall then
 		local force = lastVelocity:Length():min(matData.maxspeed)
-		--print(force)
 
 		if force >= matData.minspeed then
 			local chance = force:pow(2)
@@ -250,7 +301,7 @@ hook.Add('Think', 'DVisuals.CreateParticles', function()
 	end
 
 	lastOnGround = ground
-	lastVelocity = ply:GetVelocity()
+	lastVelocity = targetEntity:GetVelocity()
 
 	if not ground then return end
 	if lastThink > time then return end
@@ -259,11 +310,16 @@ hook.Add('Think', 'DVisuals.CreateParticles', function()
 
 	if chance >= matData.minspeed then
 		local roll = chance + 500
+		local mult = targetEntity == ply and matData.vehicleMultiplier or matData.multiplier
 
-		for i = 1, matData.multiplier * 3 do
+		if targetEntity ~= ply then
+			roll = roll - 300
+		end
+
+		for i = 1, mult * 3 do
 			if math.random() < chance / roll then
 				createParticle(matData)
-			else
+			elseif targetEntity == ply then
 				break
 			end
 		end
