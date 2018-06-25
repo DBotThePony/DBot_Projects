@@ -116,7 +116,7 @@ hook.Add('Think', 'DVisuals.ThinkParticles', function()
 	local diffYaw = ang.y:angleDifference(lastAngle.y) / 120
 	lastAngle = LerpAngle(RealFrameTime() * 10, lastAngle, ang)
 	local w, h = ScrWL(), ScrHL()
-	local velocity = ply:GetVelocity():Length():sqrt() / 2000
+	local velocity = ((ply:GetVelocity():Length() - 300):max(0):sqrt() / 400) * RealFrameTime() * 66
 
 	local toremove
 	local time = RealTimeL()
