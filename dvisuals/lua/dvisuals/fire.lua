@@ -154,5 +154,5 @@ net.receive('DVisuals.Fires', function()
 		createParticle()
 	end
 
-	firesOverlayStrength = firesOverlayStrength + score / 32
+	firesOverlayStrength = (firesOverlayStrength + score / 32):clamp(0, 1)
 end)
