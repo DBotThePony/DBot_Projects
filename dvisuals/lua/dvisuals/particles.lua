@@ -76,6 +76,8 @@ local RealTimeL = RealTimeL
 local surface = surface
 
 hook.Add('PostDrawHUD', 'DVisuals.RenderParticles', function()
+	if LocalPlayer():ShouldDrawLocalPlayer() then return end
+	
 	for i, particleData in ipairs(particles) do
 		surface.SetDrawColor(particleData.color)
 		particleData.mat:SetFloat('$alpha', particleData.color.a / 255)
