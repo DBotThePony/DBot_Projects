@@ -26,6 +26,9 @@ for i = 0, 5 do
 		['$nofog'] = '1',
 	})
 
+	mat:Recompute()
+	mat:SetTexture('$basetexture', 'enchancedvisuals/splat/sand/sand' .. i)
+
 	table.insert(particles, mat)
 end
 

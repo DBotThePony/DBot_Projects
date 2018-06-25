@@ -39,8 +39,22 @@ local function registerParticle(particleData)
 	particleData.vehicleMultiplier = particleData.vehicleMultiplier or 4
 	particleData.fadeTimerMultiplier = particleData.fadeTimerMultiplier or 1
 
+	particleData.blowoffRotateMultiplier = particleData.blowoffRotateMultiplier or 1
+	particleData.blowoffRotateScatter = particleData.blowoffRotateScatter or 1
+
+	particleData.blowoffWalkMultiplier = particleData.blowoffWalkMultiplier or particleData.blowoffRotateMultiplier
+	particleData.blowoffWalkScatter = particleData.blowoffWalkScatter or particleData.blowoffRotateScatter
+
 	if particleData.vehicles == nil then
 		particleData.vehicles = false
+	end
+
+	if particleData.blowoff == nil then
+		particleData.blowoff = true
+	end
+
+	if particleData.blowoffWalk == nil then
+		particleData.blowoffWalk = true
 	end
 
 	if particleData.walk == nil then
@@ -77,7 +91,7 @@ local surface = surface
 
 hook.Add('PostDrawHUD', 'DVisuals.RenderParticles', function()
 	if LocalPlayer():ShouldDrawLocalPlayer() then return end
-	
+
 	for i, particleData in ipairs(particles) do
 		surface.SetDrawColor(particleData.color)
 		particleData.mat:SetFloat('$alpha', particleData.color.a / 255)
@@ -86,7 +100,24 @@ hook.Add('PostDrawHUD', 'DVisuals.RenderParticles', function()
 	end
 end)
 
+local lastAngle = Angle()
+local LerpAngle = LerpAngle
+local RealFrameTime = RealFrameTime
+local ScreenSize = ScreenSize
+local ScrWL = ScrWL
+local ScrHL = ScrHL
+
 hook.Add('Think', 'DVisuals.ThinkParticles', function()
+	local ply = LocalPlayer()
+	if not IsValid(ply) then return end
+	local ang = ply:EyeAnglesFixed()
+
+	local diffPitch = ang.p:angleDifference(lastAngle.p) / 120
+	local diffYaw = ang.y:angleDifference(lastAngle.y) / 120
+	lastAngle = LerpAngle(RealFrameTime() * 10, lastAngle, ang)
+	local w, h = ScrWL(), ScrHL()
+	local velocity = ply:GetVelocity():Length():sqrt() / 2000
+
 	local toremove
 	local time = RealTimeL()
 
@@ -98,6 +129,35 @@ hook.Add('Think', 'DVisuals.ThinkParticles', function()
 			table.insert(toremove, i)
 		else
 			particleData.color.a = 255 * fade
+
+			if particleData.matData.blowoff then
+				particleData.x = particleData.x + diffYaw * ScreenSize(2) * particleData.matData.blowoffRotateMultiplier * particleData.rotateScatter
+				particleData.y = particleData.y - diffPitch * ScreenSize(2) * particleData.matData.blowoffRotateMultiplier * particleData.rotateScatter
+			end
+
+			if particleData.matData.blowoffWalk then
+				local value = ScreenSize(3) * velocity * particleData.matData.blowoffWalkMultiplier * particleData.walkScatter
+
+				if particleData.x > w / 2 then
+					particleData.x = particleData.x + value
+				else
+					particleData.x = particleData.x - value
+				end
+
+				if particleData.y > h / 2 then
+					particleData.y = particleData.y + value
+				else
+					particleData.y = particleData.y - value
+				end
+			end
+
+			if particleData.x + particleData.size < 0 or particleData.x - particleData.size > w then
+				toremove = toremove or {}
+				table.insert(toremove, i)
+			elseif particleData.y + particleData.size < 0 or particleData.y - particleData.size > h then
+				toremove = toremove or {}
+				table.insert(toremove, i)
+			end
 		end
 	end
 
@@ -108,9 +168,6 @@ end)
 
 local lastOnGround = true
 local lastVelocity = Vector()
-local ScreenSize = ScreenSize
-local ScrWL = ScrWL
-local ScrHL = ScrHL
 local MASK_BLOCKLOS = MASK_BLOCKLOS
 local util = util
 
@@ -123,6 +180,8 @@ local function createParticle(matData)
 	local ttl = matData.fadeTimerMultiplier * (math.random(18) + 3)
 	local size = matData.sizeMultiplier * ScreenSize(16) + nurandom(ScreenSize(20) * matData.sizeScatter)
 	local w, h = ScrWL(), ScrHL()
+	local rotateScatter = math.random(ScreenSize(6)) * matData.blowoffRotateScatter + 1
+	local walkScatter = math.random(ScreenSize(6)) * matData.blowoffWalkScatter + 1
 
 	table.insert(particles, {
 		mat = table.frandom(matData.particles),
@@ -133,6 +192,8 @@ local function createParticle(matData)
 		endtime = time + ttl,
 		color = Color(),
 		size = size,
+		rotateScatter = rotateScatter,
+		walkScatter = walkScatter,
 		rotation = math.random(360) - 180,
 		matData = matData
 	})
