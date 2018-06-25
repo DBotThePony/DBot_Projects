@@ -113,7 +113,7 @@ local Quintic = Quintic
 local SOLID_NONE = SOLID_NONE
 
 local function findVehicle(ply)
-	if not ply:InVehicle() or vehicle:GetSolid() == SOLID_NONE then
+	if not ply:InVehicle() or ply:GetVehicle():GetSolid() == SOLID_NONE then
 		return ply
 	end
 
