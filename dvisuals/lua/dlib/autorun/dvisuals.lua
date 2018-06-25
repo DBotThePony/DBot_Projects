@@ -21,6 +21,7 @@ local DVisuals = DVisuals
 local function CreateShared(thing, cvarname, default, desscription)
 	if SERVER then
 		local enabled = CreateConVar('sv_' .. cvarname, default, {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, desscription)
+		CreateConVar('sv_' .. cvarname .. '_ov', '1', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Allow clientside override of this setting')
 
 		DVisuals[thing] = function()
 			return enabled:GetBool()
@@ -33,18 +34,27 @@ local function CreateShared(thing, cvarname, default, desscription)
 		end, nil, enabled
 	else
 		local enabled_sv = CreateConVar('sv_' .. cvarname, default, {FCVAR_REPLICATED, FCVAR_NOTIFY}, desscription)
+		local enabled_sv_override = CreateConVar('sv_' .. cvarname .. '_ov', default, {FCVAR_REPLICATED, FCVAR_NOTIFY}, desscription)
 		local enabled_cl = CreateConVar('cl_' .. cvarname, default, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, desscription)
 
 		DVisuals[thing] = function()
-			return enabled_sv:GetBool() and enabled_cl:GetBool()
+			if enabled_sv_override:GetBool() then
+				return enabled_sv:GetBool() and enabled_cl:GetBool()
+			else
+				return enabled_sv:GetBool()
+			end
 		end
 
 		DVisuals[thing .. '_SV'] = enabled_sv
 		DVisuals[thing .. '_CL'] = enabled_cl
 
 		return function()
-			return enabled_sv:GetBool() and enabled_cl:GetBool()
-		end, enabled_cl, enabled_sv
+			if enabled_sv_override:GetBool() then
+				return enabled_sv:GetBool() and enabled_cl:GetBool()
+			else
+				return enabled_sv:GetBool()
+			end
+		end, enabled_cl, enabled_sv, enabled_sv_override
 	end
 end
 
