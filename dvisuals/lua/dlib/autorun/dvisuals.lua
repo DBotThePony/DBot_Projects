@@ -52,8 +52,11 @@ CreateShared('ENABLE_EXPLOSIONS', 'ev_explosions', '1', {FCVAR_ARCHIVE}, 'Whenev
 
 if SERVER then
 	AddCSLuaFile('DVisuals/explosion.lua')
+	AddCSLuaFile('DVisuals/particles.lua')
+	AddCSLuaFile('DVisuals/sand.lua')
 	include('DVisuals/sv_explosion.lua')
 	return
 end
 
 include('DVisuals/explosion.lua')
+include('DVisuals/particles.lua')
