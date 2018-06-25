@@ -58,15 +58,17 @@ local function CreateShared(thing, cvarname, default, desscription)
 	end
 end
 
-CreateShared('ENABLE_EXPLOSIONS', 'ev_explosions', '1', {FCVAR_ARCHIVE}, 'Whenever enable explosion damage aftershock')
-CreateShared('ENABLE_WATER', 'ev_water', '1', {FCVAR_ARCHIVE}, 'Whenever enable water effect')
-CreateShared('ENABLE_PARTICLES', 'ev_particles', '1', {FCVAR_ARCHIVE}, 'Whenever enable any particles')
+CreateShared('ENABLE_EXPLOSIONS', 'ev_explosions', '1', 'Whenever enable explosion damage aftershock')
+CreateShared('ENABLE_WATER', 'ev_water', '1', 'Whenever enable water effect')
+CreateShared('ENABLE_PARTICLES', 'ev_particles', '1', 'Whenever enable any particles')
+CreateShared('ENABLE_FIRE', 'ev_fires', '1', 'Whenever enable fire/heat effects')
 
 if SERVER then
 	AddCSLuaFile('DVisuals/explosion.lua')
 	AddCSLuaFile('DVisuals/particles.lua')
 	AddCSLuaFile('DVisuals/sand.lua')
 	AddCSLuaFile('DVisuals/water.lua')
+	AddCSLuaFile('DVisuals/fire.lua')
 	include('DVisuals/sv_explosion.lua')
 	return
 end
@@ -74,3 +76,4 @@ end
 include('DVisuals/explosion.lua')
 include('DVisuals/water.lua')
 include('DVisuals/particles.lua')
+include('DVisuals/fire.lua')
