@@ -101,6 +101,7 @@ end
 net.receive('DVisuals.Slash', function()
 	if not DVisuals.ENABLE_BLOOD() then return end
 	if not DVisuals.ENABLE_BLOOD_SLASH() then return end
+	if not DVisuals.ENABLE_BLOOD_RECEIVED() then return end
 
 	local score = net.ReadUInt(8)
 	local yaw = net.ReadInt(8)
@@ -132,6 +133,7 @@ end)
 net.receive('DVisuals.SlashOther', function()
 	if not DVisuals.ENABLE_BLOOD() then return end
 	if not DVisuals.ENABLE_BLOOD_SLASH() then return end
+	if not DVisuals.ENABLE_BLOOD_DEALT() then return end
 
 	local score = net.ReadUInt(8)
 	local yaw = net.ReadInt(8)
@@ -162,6 +164,7 @@ end)
 
 net.receive('DVisuals.Generic', function()
 	if not DVisuals.ENABLE_BLOOD() then return end
+	if not DVisuals.ENABLE_BLOOD_RECEIVED() then return end
 
 	local score = net.ReadUInt(8)
 	local bloodColor = net.ReadUInt(4)
@@ -177,6 +180,7 @@ end)
 
 net.receive('DVisuals.GenericOther', function()
 	if not DVisuals.ENABLE_BLOOD() then return end
+	if not DVisuals.ENABLE_BLOOD_DEALT() then return end
 
 	local score = net.ReadUInt(8)
 	local bloodColor = net.ReadUInt(4)
