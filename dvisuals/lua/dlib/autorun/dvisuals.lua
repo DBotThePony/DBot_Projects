@@ -62,6 +62,7 @@ CreateShared('ENABLE_EXPLOSIONS', 'ev_explosions', '1', 'Whenever enable explosi
 CreateShared('ENABLE_WATER', 'ev_water', '1', 'Whenever enable water effect')
 CreateShared('ENABLE_PARTICLES', 'ev_particles', '1', 'Whenever enable any particles')
 CreateShared('ENABLE_FIRE', 'ev_fires', '1', 'Whenever enable fire/heat effects')
+CreateShared('ENABLE_FROZEN', 'ev_frost', '1', 'Whenever enable frozen/freeze (not really) effects')
 
 if SERVER then
 	AddCSLuaFile('DVisuals/explosion.lua')

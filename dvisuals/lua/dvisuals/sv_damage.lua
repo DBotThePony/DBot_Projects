@@ -23,6 +23,7 @@ local CurTimeL = CurTimeL
 
 net.pool('DVisuals.Explosions')
 net.pool('DVisuals.Fires')
+net.pool('DVisuals.Frost')
 
 hook.Add('EntityTakeDamage', 'DVisuals.Explosions', function(self, dmg)
 	if not DVisuals.ENABLE_EXPLOSIONS() then return end
@@ -47,5 +48,20 @@ hook.Add('EntityTakeDamage', 'DVisuals.Fires', function(self, dmg)
 
 	net.Start('DVisuals.Fires', true)
 	net.WriteUInt((dmg:GetDamage() / 3):ceil():min(16), 4)
+	net.Send(self)
+end, -2)
+
+local DMG_SONIC = DMG_SONIC
+local DMG_PARALYZE = DMG_PARALYZE
+
+hook.Add('EntityTakeDamage', 'DVisuals.FeelsFrozen', function(self, dmg)
+	if not DVisuals.ENABLE_FROZEN() then return end
+	if not self:IsPlayer() then return end
+	if dmg:GetDamageType():band(DMG_SONIC) == 0 and dmg:GetDamageType():band(DMG_PARALYZE) == 0 then return end
+	if dmg:GetDamage() < 1 then return end
+	local attacker = dmg:GetAttacker()
+
+	net.Start('DVisuals.Frost', true)
+	net.WriteUInt((dmg:GetDamage() / 3):ceil():min(255), 8)
 	net.Send(self)
 end, -2)

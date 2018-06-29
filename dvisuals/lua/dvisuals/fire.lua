@@ -48,6 +48,20 @@ local fireparticles = {
 	})
 }
 
+local snowparticles = {}
+
+for i = 0, 3 do
+	table.insert(snowparticles, CreateMaterial('enchancedvisuals/splat/snow/snow' .. i, 'UnlitGeneric', {
+		['$basetexture'] = 'enchancedvisuals/splat/snow/snow' .. i,
+		['$translucent'] = '1',
+		['$alpha'] = '1',
+		['$nolod'] = '1',
+		['$nofog'] = '1',
+		['$color'] = '[1 0.75 0.38]',
+		['$color2'] = '[1 0.75 0.38]',
+	}))
+end
+
 local fires = CreateMaterial('enchancedvisuals/overlay/heat/heat0', 'UnlitGeneric', {
 	['$basetexture'] = 'enchancedvisuals/overlay/heat/heat0',
 	['$translucent'] = '1',
@@ -56,15 +70,33 @@ local fires = CreateMaterial('enchancedvisuals/overlay/heat/heat0', 'UnlitGeneri
 	['$nofog'] = '1',
 })
 
+local freeze = CreateMaterial('enchancedvisuals/overlay/freeze/freeze0', 'UnlitGeneric', {
+	['$basetexture'] = 'enchancedvisuals/overlay/freeze/freeze0',
+	['$translucent'] = '1',
+	['$alpha'] = '1',
+	['$nolod'] = '1',
+	['$nofog'] = '1',
+})
+
 local firesOverlayStrength = 0
+local frozenOverlayStrength = 0
 
 hook.Add('PostDrawHUD', 'DVisuals.RenderFireOverlay', function()
 	if not DVisuals.ENABLE_FIRE() then return end
-	if firesOverlayStrength == 0 then return end
-	fires:SetFloat('$alpha', firesOverlayStrength)
-	surface.SetDrawColor(255, 255, 255)
-	surface.SetMaterial(fires)
-	surface.DrawTexturedRect(0, 0, ScrWL(), ScrHL())
+
+	if firesOverlayStrength ~= 0 then
+		fires:SetFloat('$alpha', firesOverlayStrength)
+		surface.SetDrawColor(255, 255, 255)
+		surface.SetMaterial(fires)
+		surface.DrawTexturedRect(0, 0, ScrWL(), ScrHL())
+	end
+
+	if frozenOverlayStrength ~= 0 then
+		freeze:SetFloat('$alpha', frozenOverlayStrength)
+		surface.SetDrawColor(255, 255, 255)
+		surface.SetMaterial(freeze)
+		surface.DrawTexturedRect(0, 0, ScrWL(), ScrHL())
+	end
 end, 9)
 
 local nextOnFire = 0
@@ -78,6 +110,13 @@ local function createParticle()
 	local size = ScreenSize(40) + nurandom(ScreenSize(60))
 
 	DVisuals.CreateParticle(table.frandom(fireparticles), ttl, size, Color(math.random(55) + 200, math.random(30) + 170, math.random(80) + 60))
+end
+
+local function createFrostParticle()
+	local ttl = math.random(8) + 2
+	local size = ScreenSize(30) + nurandom(ScreenSize(20))
+
+	DVisuals.CreateParticle(table.frandom(snowparticles), ttl, size, Color())
 end
 
 hook.Add('Think', 'DVisuals.ThinkFireParticles', function()
@@ -101,6 +140,8 @@ hook.Add('Think', 'DVisuals.ThinkFireParticles', function()
 	else
 		firesOverlayStrength = (firesOverlayStrength - RealFrameTime() / 8):max(0)
 	end
+
+	frozenOverlayStrength = (frozenOverlayStrength - RealFrameTime() / 8):max(0)
 end)
 
 net.receive('DVisuals.Fires', function()
@@ -111,4 +152,14 @@ net.receive('DVisuals.Fires', function()
 	end
 
 	firesOverlayStrength = (firesOverlayStrength + score / 32):clamp(0, 1)
+end)
+
+net.receive('DVisuals.Frost', function()
+	local score = net.ReadUInt(8)
+
+	for i = 1, score do
+		createFrostParticle()
+	end
+
+	frozenOverlayStrength = (frozenOverlayStrength + score / 32):clamp(0, 1)
 end)
