@@ -69,6 +69,23 @@ function DVisuals.CreateParticle(mat, ttl, size, color)
 	})
 end
 
+function DVisuals.CreateParticleOverrided(mat, ttl, size, overrides)
+	local time = RealTimeL()
+	local w, h = ScrWL(), ScrHL()
+
+	table.insert(particles, {
+		mat = mat,
+		x = overrides.x or (size / 2 + math.random(w - size / 2)),
+		y = overrides.y or (size / 2 + math.random(h - size / 2)),
+		start = overrides.start or time,
+		startfade = overrides.startfade or time + ttl * 0.75,
+		endtime = overrides.endtime or time + ttl,
+		color = overrides.color or Color(),
+		size = size,
+		rotation = overrides.rotation or (math.random(360) - 180),
+	})
+end
+
 hook.Add('Think', 'DVisuals.ThinkStaticParticles', function()
 	local ply = HUDCommons.SelectPlayer()
 	if not IsValid(ply) then return end
