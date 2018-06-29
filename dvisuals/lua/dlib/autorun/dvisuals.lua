@@ -64,6 +64,7 @@ CreateShared('ENABLE_PARTICLES', 'ev_particles', '1', 'Whenever enable any parti
 CreateShared('ENABLE_FIRE', 'ev_fires', '1', 'Whenever enable fire/heat effects')
 CreateShared('ENABLE_FROZEN', 'ev_frost', '1', 'Whenever enable frozen/freeze (not really) effects')
 
+CreateShared('ENABLE_FALLDAMAGE', 'ev_fall', '1', 'Enable fall effects')
 CreateShared('ENABLE_BLOOD', 'ev_blood', '1', 'Enable blood effects in general')
 CreateShared('ENABLE_BLOOD_SLASH', 'ev_slash', '1', 'Enable slash blood effects')
 CreateShared('ENABLE_BLOOD_DEALT', 'ev_blood_dealt', '1', 'Enable blood effects when hurting others on close distance')

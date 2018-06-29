@@ -113,6 +113,8 @@ end)
 
 net.receive('DVisuals.Fall', function()
 	if not DVisuals.ENABLE_BLOOD() then return end
+	if not DVisuals.ENABLE_FALLDAMAGE() then return end
+
 	local speed = net.ReadUInt(16)
 
 	for i = 1, speed / 100 do
