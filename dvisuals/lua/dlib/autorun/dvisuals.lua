@@ -66,6 +66,7 @@ CreateShared('ENABLE_FIRE', 'ev_fires', '1', 'Whenever enable fire/heat effects'
 if SERVER then
 	AddCSLuaFile('DVisuals/explosion.lua')
 	AddCSLuaFile('DVisuals/particles.lua')
+	AddCSLuaFile('DVisuals/static_particles.lua')
 	AddCSLuaFile('DVisuals/sand.lua')
 	AddCSLuaFile('DVisuals/water.lua')
 	AddCSLuaFile('DVisuals/fire.lua')
@@ -73,6 +74,7 @@ if SERVER then
 	return
 end
 
+include('DVisuals/static_particles.lua')
 include('DVisuals/explosion.lua')
 include('DVisuals/water.lua')
 include('DVisuals/particles.lua')

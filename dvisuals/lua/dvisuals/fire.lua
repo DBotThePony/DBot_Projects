@@ -57,29 +57,6 @@ local fires = CreateMaterial('enchancedvisuals/overlay/heat/heat0', 'UnlitGeneri
 })
 
 local firesOverlayStrength = 0
-local render = render
-local TEXFILTER = TEXFILTER
-
-hook.Add('PostDrawHUD', 'DVisuals.RenderFireParticles', function()
-	if not DVisuals.ENABLE_FIRE() then return end
-	local ply, lply = HUDCommons.SelectPlayer(), LocalPlayer()
-	if ply == lply and ply:ShouldDrawLocalPlayer() then return end
-
-	render.PushFilterMag(TEXFILTER.POINT)
-	render.PushFilterMin(TEXFILTER.POINT)
-
-	for i, particleData in ipairs(particles) do
-		surface.SetDrawColor(particleData.color)
-		particleData.mat:SetFloat('$alpha', particleData.color.a / 255)
-		particleData.mat:SetVector('$color', particleData.color:ToVector())
-		particleData.mat:SetVector('$color2', particleData.color:ToVector())
-		surface.SetMaterial(particleData.mat)
-		surface.DrawTexturedRectRotated(particleData.x, particleData.y, particleData.size, particleData.size, particleData.rotation)
-	end
-
-	render.PopFilterMag()
-	render.PopFilterMin()
-end, -9)
 
 hook.Add('PostDrawHUD', 'DVisuals.RenderFireOverlay', function()
 	if not DVisuals.ENABLE_FIRE() then return end
@@ -97,22 +74,10 @@ local function nurandom(max)
 end
 
 local function createParticle()
-	local time = RealTimeL()
 	local ttl = math.random(4) + 1
 	local size = ScreenSize(40) + nurandom(ScreenSize(60))
-	local w, h = ScrWL(), ScrHL()
 
-	table.insert(particles, {
-		mat = table.frandom(fireparticles),
-		x = size / 2 + math.random(w - size / 2),
-		y = size / 2 + math.random(h - size / 2),
-		start = time,
-		startfade = time + ttl * 0.75,
-		endtime = time + ttl,
-		color = Color(math.random(55) + 200, math.random(30) + 170, math.random(80) + 60),
-		size = size,
-		rotation = math.random(360) - 180,
-	})
+	DVisuals.CreateParticle(table.frandom(fireparticles), ttl, size, Color(math.random(55) + 200, math.random(30) + 170, math.random(80) + 60))
 end
 
 hook.Add('Think', 'DVisuals.ThinkFireParticles', function()
@@ -120,7 +85,6 @@ hook.Add('Think', 'DVisuals.ThinkFireParticles', function()
 	local ply = HUDCommons.SelectPlayer()
 	if not IsValid(ply) then return end
 
-	local toremove
 	local time = RealTimeL()
 	local onfire = ply:IsOnFire()
 
@@ -136,21 +100,6 @@ hook.Add('Think', 'DVisuals.ThinkFireParticles', function()
 		firesOverlayStrength = (firesOverlayStrength + RealFrameTime() / 8):min(1)
 	else
 		firesOverlayStrength = (firesOverlayStrength - RealFrameTime() / 8):max(0)
-	end
-
-	for i, particleData in ipairs(particles) do
-		local fade = 1 - time:progression(particleData.startfade, particleData.endtime)
-
-		if fade == 0 then
-			toremove = toremove or {}
-			table.insert(toremove, i)
-		else
-			particleData.color.a = 255 * fade
-		end
-	end
-
-	if toremove then
-		table.removeValues(particles, toremove)
 	end
 end)
 
