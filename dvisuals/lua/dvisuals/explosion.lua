@@ -118,7 +118,7 @@ hook.Add('Think', 'DVisuals.Explosions', function()
 
 	local time = CurTimeL()
 
-	if IsValid(DVisuals.RingingSound) then
+	--[[if IsValid(DVisuals.RingingSound) then
 		local strengthOfEffect = 1 - time:progression(explosionStart, explosionDeaf)
 
 		if strengthOfEffect == 0 then
@@ -135,20 +135,23 @@ hook.Add('Think', 'DVisuals.Explosions', function()
 
 		DVisuals.RingingSound:ChangeVolume(volume:clamp(0, 1) - math.random() * 0.1)
 		LocalPlayer():SetDSP(0, true)
-	end
+	end]]
 
 	if not explosionActive then return end
 
 	if explosionEnd < time then
 		explosionActive = false
+		LocalPlayer():SetDSP(0)
 		return
 	end
 
 	explosionSpread = Lerp(RealFrameTime() * 12, explosionSpread, math.random() * 2 - 1)
+	LocalPlayer():SetDSP(0)
+	LocalPlayer():SetDSP(37)
 end)
 
 local INPLAY = false
-local ringing = Sound('enhancedvisuals/ringing.wav')
+--local ringing = Sound('enhancedvisuals/ringing.wav')
 
 hook.Add('SurfaceEmitSound', 'DVisuals.Explosions', function(path)
 	if not DVisuals.ENABLE_EXPLOSIONS() then return end
@@ -273,12 +276,12 @@ net.receive('DVisuals.Explosions', function()
 		explosionActive = true
 	end
 
-	INPLAY = true
+	--[[INPLAY = true
 	DVisuals.RingingSound = CreateSound(LocalPlayer(), ringing)
 	DVisuals.RingingSound:ChangeVolume(1)
 	DVisuals.RingingSound:SetSoundLevel(0)
 	DVisuals.RingingSound:Play()
-	INPLAY = false
+	INPLAY = false]]
 
 	LocalPlayer():SetDSP(16, true)
 end)

@@ -19,6 +19,7 @@ local DVisuals = DVisuals
 local DMG_BLAST = DMG_BLAST
 local DMG_HEAT = DMG_BURN -- loal
 local net = net
+local CurTimeL = CurTimeL
 
 net.pool('DVisuals.Explosions')
 net.pool('DVisuals.Fires')
@@ -29,8 +30,9 @@ hook.Add('EntityTakeDamage', 'DVisuals.Explosions', function(self, dmg)
 	if dmg:GetDamageType():band(DMG_BLAST) == 0 then return end
 	if dmg:GetDamage() < 4 then return end
 
+	local score = dmg:GetDamage():sqrt():ceil():clamp(3, 16)
 	net.Start('DVisuals.Explosions', true)
-	net.WriteUInt(dmg:GetDamage():sqrt():ceil():clamp(3, 16), 4)
+	net.WriteUInt(score, 4)
 	net.Send(self)
 end, -2)
 
