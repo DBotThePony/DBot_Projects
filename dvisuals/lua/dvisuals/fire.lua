@@ -57,12 +57,16 @@ local fires = CreateMaterial('enchancedvisuals/overlay/heat/heat0', 'UnlitGeneri
 })
 
 local firesOverlayStrength = 0
+local render = render
+local TEXFILTER = TEXFILTER
 
 hook.Add('PostDrawHUD', 'DVisuals.RenderFireParticles', function()
 	if not DVisuals.ENABLE_FIRE() then return end
 	local ply, lply = HUDCommons.SelectPlayer(), LocalPlayer()
-
 	if ply == lply and ply:ShouldDrawLocalPlayer() then return end
+
+	render.PushFilterMag(TEXFILTER.POINT)
+	render.PushFilterMin(TEXFILTER.POINT)
 
 	for i, particleData in ipairs(particles) do
 		surface.SetDrawColor(particleData.color)
@@ -72,6 +76,9 @@ hook.Add('PostDrawHUD', 'DVisuals.RenderFireParticles', function()
 		surface.SetMaterial(particleData.mat)
 		surface.DrawTexturedRectRotated(particleData.x, particleData.y, particleData.size, particleData.size, particleData.rotation)
 	end
+
+	render.PopFilterMag()
+	render.PopFilterMin()
 end, -9)
 
 hook.Add('PostDrawHUD', 'DVisuals.RenderFireOverlay', function()

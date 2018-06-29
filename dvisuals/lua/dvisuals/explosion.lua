@@ -23,6 +23,8 @@ local ScrHL = ScrHL
 local RealFrameTime = RealFrameTime
 local Lerp = Lerp
 local IsValid = IsValid
+local math = math
+local HUDCommons = DLib.HUDCommons
 
 --local EXPLOSION_DIVIDER = CreateConVar('')
 
@@ -54,7 +56,46 @@ local rtmat = CreateMaterial('DVisuals_ExplosionRT', 'UnlitGeneric', {
 	['$nofog'] = '1'
 })
 
-hook.Add('HUDPaintBackground', 'DVisuals.Explosions', function()
+local dust = {}
+
+for i = 0, 2 do
+	local mat = CreateMaterial('enchancedvisuals/splat/dust/dust' .. i, 'UnlitGeneric', {
+		['$basetexture'] = 'enchancedvisuals/splat/dust/dust' .. i,
+		['$translucent'] = '1',
+		['$alpha'] = '1',
+		['$nolod'] = '1',
+		['$nofog'] = '1',
+	})
+
+	table.insert(dust, mat)
+end
+
+local particles = {}
+local TEXFILTER = TEXFILTER
+local render = render
+
+hook.Add('PostDrawHUD', 'DVisuals.ExplosionsParticles', function()
+	if not DVisuals.ENABLE_EXPLOSIONS() then return end
+	local ply, lply = HUDCommons.SelectPlayer(), LocalPlayer()
+	if ply == lply and ply:ShouldDrawLocalPlayer() then return end
+
+	render.PushFilterMag(TEXFILTER.POINT)
+	render.PushFilterMin(TEXFILTER.POINT)
+
+	for i, particleData in ipairs(particles) do
+		surface.SetDrawColor(particleData.color)
+		particleData.mat:SetFloat('$alpha', particleData.color.a / 255)
+		particleData.mat:SetVector('$color', particleData.color:ToVector())
+		particleData.mat:SetVector('$color2', particleData.color:ToVector())
+		surface.SetMaterial(particleData.mat)
+		surface.DrawTexturedRectRotated(particleData.x, particleData.y, particleData.size, particleData.size, particleData.rotation)
+	end
+
+	render.PopFilterMag()
+	render.PopFilterMin()
+end, -9)
+
+hook.Add('PostDrawHUD', 'DVisuals.Explosions', function()
 	if not DVisuals.ENABLE_EXPLOSIONS() then return end
 	if not explosionActive then return end
 	local w, h = ScrWL(), ScrHL()
@@ -68,7 +109,7 @@ hook.Add('HUDPaintBackground', 'DVisuals.Explosions', function()
 
 		surface.DrawTexturedRect(0, 0, w, h)
 	end
-end, -4)
+end, 10)
 
 local Quintic = Quintic
 
@@ -138,9 +179,62 @@ local CreateSound = CreateSound
 local LocalPlayer = LocalPlayer
 local SNDLVL_NONE = SNDLVL_NONE
 
+hook.Add('Think', 'DVisuals.ThinkExplosionParticles', function()
+	if not DVisuals.ENABLE_EXPLOSIONS() then return end
+
+	local toremove
+	local time = RealTimeL()
+
+	for i, particleData in ipairs(particles) do
+		local fade = 1 - time:progression(particleData.startfade, particleData.endtime)
+
+		if fade == 0 then
+			toremove = toremove or {}
+			table.insert(toremove, i)
+		else
+			particleData.color.a = 255 * fade
+		end
+	end
+
+	if toremove then
+		table.removeValues(particles, toremove)
+	end
+end)
+
+local function nurandom(max)
+	return math.random(max / 2) - max / 2
+end
+
+local function createParticle()
+	local time = RealTimeL()
+	local ttl = math.random(20) + 10
+	local size = ScreenSize(80) + nurandom(ScreenSize(120))
+	local w, h = ScrWL(), ScrHL()
+
+	table.insert(particles, {
+		mat = table.frandom(dust),
+		x = size / 2 + math.random(w - size / 2),
+		y = size / 2 + math.random(h - size / 2),
+		start = time,
+		startfade = time + ttl * 0.75,
+		endtime = time + ttl,
+		color = Color(),
+		size = size,
+		rotation = math.random(360) - 180,
+	})
+end
+
 net.receive('DVisuals.Explosions', function()
 	local score = net.ReadUInt(4) / 3
 	local time = CurTimeL()
+
+	for i = 1, score * 3 do
+		if math.random() > 0.1 then
+			createParticle()
+		else
+			break
+		end
+	end
 
 	if explosionEnd < time + score then
 		explosionStart = time

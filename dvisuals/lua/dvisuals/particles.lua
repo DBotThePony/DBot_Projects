@@ -89,11 +89,15 @@ local LocalPlayer = LocalPlayer
 local IsValid = IsValid
 local RealTimeL = RealTimeL
 local surface = surface
+local render = render
+local TEXFILTER = TEXFILTER
 
 hook.Add('PostDrawHUD', 'DVisuals.RenderParticles', function()
 	local ply, lply = HUDCommons.SelectPlayer(), LocalPlayer()
-
 	if ply == lply and ply:ShouldDrawLocalPlayer() then return end
+
+	render.PushFilterMag(TEXFILTER.POINT)
+	render.PushFilterMin(TEXFILTER.POINT)
 
 	for i, particleData in ipairs(particles) do
 		surface.SetDrawColor(particleData.color)
@@ -101,6 +105,9 @@ hook.Add('PostDrawHUD', 'DVisuals.RenderParticles', function()
 		surface.SetMaterial(particleData.mat)
 		surface.DrawTexturedRectRotated(particleData.x, particleData.y, particleData.size, particleData.size, particleData.rotation)
 	end
+
+	render.PopFilterMag()
+	render.PopFilterMin()
 end, -9)
 
 local lastAngle = Angle()
@@ -209,7 +216,7 @@ end
 local function createParticle(matData)
 	local time = RealTimeL()
 	local ttl = matData.fadeTimerMultiplier * (math.random(18) + 3)
-	local size = matData.sizeMultiplier * ScreenSize(16) + nurandom(ScreenSize(20) * matData.sizeScatter)
+	local size = matData.sizeMultiplier * ScreenSize(20) + nurandom(ScreenSize(20) * matData.sizeScatter)
 	local w, h = ScrWL(), ScrHL()
 	local rotateScatter = math.random(ScreenSize(6)) * matData.blowoffRotateScatter + 1
 	local walkScatter = math.random(ScreenSize(6)) * matData.blowoffWalkScatter + 1
