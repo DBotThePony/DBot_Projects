@@ -89,7 +89,7 @@ net.receive('DVisuals.Slash', function()
 		local maxScatterY = Quintic(scatterX:progression(0, scatterWidth, scatterWidth / 2))
 		--print(scatterX, scatterWidth, maxScatterY)
 
-		DVisuals.CreateParticleOverrided(table.frandom(slashparticles), ttl, (score / 3):random() * ScreenSize(6) + ScreenSize(3), {
+		DVisuals.CreateParticleOverrided(table.frandom(slashparticles), ttl, (score / 2):random() * ScreenSize(6) + ScreenSize(3), {
 			x = currentX + scatterX - scatterWidth / 2,
 			y = randY + (math.random(scatterHeight) - scatterHeight / 2) * maxScatterY,
 			color = Color(200 + math.random(40), 20, 40)
