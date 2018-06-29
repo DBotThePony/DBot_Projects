@@ -150,6 +150,16 @@ end)
 local INPLAY = false
 local ringing = Sound('enhancedvisuals/ringing.wav')
 
+hook.Add('SurfaceEmitSound', 'DVisuals.Explosions', function(path)
+	if not DVisuals.ENABLE_EXPLOSIONS() then return end
+	local progression = CurTimeL():progression(explosionStart, explosionDeaf)
+	if progression == 1 then return end
+
+	LocalPlayer():EmitSound(path)
+
+	return false
+end)
+
 hook.Add('EntityEmitSound', 'DVisuals.Explosions', function(data)
 	if not DVisuals.ENABLE_EXPLOSIONS() then return end
 	if INPLAY then return end
