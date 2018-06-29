@@ -98,6 +98,8 @@ hook.AddPostModifier('GetFallDamage', 'DVisuals.BloodHandler', function(damage)
 	return damage
 end)
 
+local player = player
+
 hook.Add('EntityTakeDamage', 'DVisuals.BloodHandler', function(self, dmg)
 	if not DVisuals.ENABLE_BLOOD() then return end
 
@@ -130,6 +132,34 @@ hook.Add('EntityTakeDamage', 'DVisuals.BloodHandler', function(self, dmg)
 			net.Start('DVisuals.Generic', true)
 			net.WriteUInt((dmg:GetDamage() / 3):ceil():min(255), 8)
 			net.Send(self)
+		end
+	end
+
+	local typ = type(self)
+
+	if typ == 'NPC' or typ == 'Player' or typ == 'NextBot' then
+		local bloodColor = self:GetBloodColor()
+
+		if bloodColor ~= BLOOD_COLOR_MECH and bloodColor ~= DONT_BLEED then
+			local lpos = self:GetPos()
+
+			for i, ply in ipairs(player.GetAll()) do
+				if ply:Alive() and ply ~= self and ply:EyePos():Distance(lpos) < 256 then
+					local diff = (self:GetPos() - ply:EyePos()):Angle()
+					local yaw = ply:EyeAngles().yaw:angleDifference(diff.yaw)
+
+					if yaw < 90 and yaw > -90 then
+						net.Start('DVisuals.SlashOther', true)
+						net.WriteUInt(dmg:GetDamage():ceil():min(255, self:GetMaxHealth()), 8)
+						net.WriteInt(yaw:floor(), 8)
+						net.Send(ply)
+					else
+						net.Start('DVisuals.GenericOther', true)
+						net.WriteUInt(dmg:GetDamage():ceil():min(255, self:GetMaxHealth()), 8)
+						net.Send(ply)
+					end
+				end
+			end
 		end
 	end
 end, -2)

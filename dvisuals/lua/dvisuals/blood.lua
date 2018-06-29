@@ -97,6 +97,36 @@ net.receive('DVisuals.Slash', function()
 	end
 end)
 
+net.receive('DVisuals.SlashOther', function()
+	if not DVisuals.ENABLE_BLOOD() then return end
+	if not DVisuals.ENABLE_BLOOD_SLASH() then return end
+
+	local score = net.ReadUInt(8)
+	local yaw = net.ReadInt(8)
+	local w, h = ScrWL(), ScrHL()
+
+	local mult = (score / 8):clamp(1, 6)
+	local currentX = (yaw + 90) / 180 * w
+	local randY = math.random(h * 0.8) + h * 0.1
+	local scatterWidth = (ScreenSize(30) + ScreenSize(120):random()) * mult
+	local scatterHeight = (ScreenSize(20) + ScreenSize(20):random()) * mult
+	local ttl = math.random((score / 4):sqrt()) + 2
+
+	--print(scatterWidth, scatterHeight, currentX, yaw)
+
+	for i = 1, (score:sqrt() * 5):max(4) do
+		local scatterX = math.random(scatterWidth)
+		local maxScatterY = Quintic(scatterX:progression(0, scatterWidth, scatterWidth / 2))
+		--print(scatterX, scatterWidth, maxScatterY)
+
+		DVisuals.CreateParticleOverrided(table.frandom(slashparticles), ttl, (score / 2):random() * ScreenSize(5) + ScreenSize(3), {
+			x = currentX + scatterX - scatterWidth / 2,
+			y = randY + (math.random(scatterHeight) - scatterHeight / 2) * maxScatterY,
+			color = Color(200 + math.random(40), 20, 40, 160)
+		})
+	end
+end)
+
 net.receive('DVisuals.Generic', function()
 	if not DVisuals.ENABLE_BLOOD() then return end
 
@@ -105,6 +135,20 @@ net.receive('DVisuals.Generic', function()
 	for i = 1, score / 2 do
 		if math.random(score / 3 + 1) < score then
 			DVisuals.CreateParticle(table.frandom(pierceparticles), math.random(20) + 5, ScreenSize(40) + ScreenSize(30):random(), Color(math.random(55) + 160, 20, 50))
+		else
+			break
+		end
+	end
+end)
+
+net.receive('DVisuals.GenericOther', function()
+	if not DVisuals.ENABLE_BLOOD() then return end
+
+	local score = net.ReadUInt(8)
+
+	for i = 1, score do
+		if math.random(score / 3 + 1) < score then
+			DVisuals.CreateParticle(table.frandom(pierceparticles), math.random(10) + 3, ScreenSize(40) + ScreenSize(30):random(), Color(math.random(50) + 130, 20, 50, 160))
 		else
 			break
 		end

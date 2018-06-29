@@ -66,6 +66,7 @@ function DVisuals.CreateParticle(mat, ttl, size, color)
 		color = color or Color(),
 		size = size,
 		rotation = math.random(360) - 180,
+		alpha = color and color.a or 255,
 	})
 end
 
@@ -83,6 +84,7 @@ function DVisuals.CreateParticleOverrided(mat, ttl, size, overrides)
 		color = overrides.color or Color(),
 		size = size,
 		rotation = overrides.rotation or (math.random(360) - 180),
+		alpha = overrides.color and overrides.color.a or overrides.alpha or 255,
 	})
 end
 
@@ -100,7 +102,7 @@ hook.Add('Think', 'DVisuals.ThinkStaticParticles', function()
 			toremove = toremove or {}
 			table.insert(toremove, i)
 		else
-			particleData.color.a = 255 * fade
+			particleData.color.a = particleData.alpha * fade
 		end
 	end
 
