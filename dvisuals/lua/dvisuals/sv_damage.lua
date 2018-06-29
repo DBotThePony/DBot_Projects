@@ -30,6 +30,8 @@ net.pool('DVisuals.SlashOther')
 net.pool('DVisuals.Generic')
 net.pool('DVisuals.GenericOther')
 
+net.pool('DVisuals.Fall')
+
 hook.Add('EntityTakeDamage', 'DVisuals.Explosions', function(self, dmg)
 	if not DVisuals.ENABLE_EXPLOSIONS() then return end
 	if not self:IsPlayer() then return end
@@ -72,37 +74,59 @@ end, -2)
 
 local DMG_SLASH = DMG_SLASH
 local DMG_BULLET = DMG_BULLET
+local DMG_FALL = DMG_FALL
+local NEXT_SPEED = 0
+local NEXT_PLAYER = NULL
+
+hook.Add('GetFallDamage', 'DVisuals.BloodHandler', function(self, speed)
+	NEXT_SPEED = speed
+	NEXT_PLAYER = self
+end, -10)
+
+hook.AddPostModifier('GetFallDamage', 'DVisuals.BloodHandler', function(damage)
+	if damage > 0 and NEXT_PLAYER:IsValid() then
+		net.Start('DVisuals.Fall', true)
+		net.WriteUInt(NEXT_SPEED, 16)
+		net.Send(NEXT_PLAYER)
+		NEXT_PLAYER = NULL
+		NEXT_SPEED = 0
+	end
+
+	return damage
+end)
 
 hook.Add('EntityTakeDamage', 'DVisuals.BloodHandler', function(self, dmg)
 	if not DVisuals.ENABLE_BLOOD() then return end
 
-	if self:IsPlayer() and dmg:GetDamageType():band(DMG_SLASH) ~= 0 then
-		local attacker = dmg:GetAttacker()
+	if self:IsPlayer() then
+		if dmg:GetDamageType():band(DMG_SLASH) ~= 0 then
+			local attacker = dmg:GetAttacker()
 
-		if attacker:IsValid() and attacker:GetPos():Distance(self:GetPos()) < 256 then
-			local diff = (attacker:GetPos() - self:EyePos()):Angle()
-			local yaw = self:EyeAngles().yaw:angleDifference(diff.yaw)
+			if attacker:IsValid() and attacker:GetPos():Distance(self:GetPos()) < 256 then
+				local diff = (attacker:GetPos() - self:EyePos()):Angle()
+				local yaw = self:EyeAngles().yaw:angleDifference(diff.yaw)
 
-			if yaw < 90 and yaw > -90 then
-				net.Start('DVisuals.Slash', true)
-				net.WriteUInt(dmg:GetDamage():ceil():min(255), 8)
-				net.WriteInt(yaw:floor(), 8)
-				net.Send(self)
+				if yaw < 90 and yaw > -90 then
+					net.Start('DVisuals.Slash', true)
+					net.WriteUInt(dmg:GetDamage():ceil():min(255), 8)
+					net.WriteInt(yaw:floor(), 8)
+					net.Send(self)
+				else
+					net.Start('DVisuals.Generic', true)
+					net.WriteUInt(dmg:GetDamage():ceil():min(255), 8)
+					net.Send(self)
+				end
 			else
 				net.Start('DVisuals.Generic', true)
 				net.WriteUInt(dmg:GetDamage():ceil():min(255), 8)
 				net.Send(self)
 			end
-		else
+		end
+
+		if dmg:GetDamageType():band(DMG_BULLET) ~= 0 then
 			net.Start('DVisuals.Generic', true)
-			net.WriteUInt(dmg:GetDamage():ceil():min(255), 8)
+			net.WriteUInt((dmg:GetDamage() / 3):ceil():min(255), 8)
 			net.Send(self)
 		end
-	end
-
-	if self:IsPlayer() and dmg:GetDamageType():band(DMG_BULLET) ~= 0 then
-		net.Start('DVisuals.Generic', true)
-		net.WriteUInt((dmg:GetDamage() / 3):ceil():min(255), 8)
-		net.Send(self)
 	end
 end, -2)

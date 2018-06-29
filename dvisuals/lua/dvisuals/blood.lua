@@ -29,6 +29,7 @@ local Quintic = Quintic
 
 local slashparticles = {}
 local pierceparticles = {}
+local impactparticles = {}
 
 for i = 0, 4 do
 	table.insert(slashparticles, CreateMaterial('enchancedvisuals/splat/slash/slash' .. i, 'UnlitGeneric', {
@@ -45,6 +46,18 @@ end
 for i = 0, 2 do
 	table.insert(pierceparticles, CreateMaterial('enchancedvisuals/splat/pierce/pierce' .. i, 'UnlitGeneric', {
 		['$basetexture'] = 'enchancedvisuals/splat/pierce/pierce' .. i,
+		['$translucent'] = '1',
+		['$alpha'] = '1',
+		['$nolod'] = '1',
+		['$nofog'] = '1',
+		['$color'] = '[1 1 1]',
+		['$color2'] = '[1 1 1]',
+	}))
+end
+
+for i = 0, 2 do
+	table.insert(impactparticles, CreateMaterial('enchancedvisuals/splat/impact/impact' .. i, 'UnlitGeneric', {
+		['$basetexture'] = 'enchancedvisuals/splat/impact/impact' .. i,
 		['$translucent'] = '1',
 		['$alpha'] = '1',
 		['$nolod'] = '1',
@@ -95,5 +108,18 @@ net.receive('DVisuals.Generic', function()
 		else
 			break
 		end
+	end
+end)
+
+net.receive('DVisuals.Fall', function()
+	if not DVisuals.ENABLE_BLOOD() then return end
+	local speed = net.ReadUInt(16)
+
+	for i = 1, speed / 100 do
+		DVisuals.CreateParticle(table.frandom(impactparticles), math.random(20) + 10, ScreenSize(30) + ScreenSize(50):random(), Color(math.random(80) + 60, 20, 10))
+	end
+
+	for i = 1, speed / 60 do
+		DVisuals.CreateParticle(table.frandom(slashparticles), math.random(30) + 5, ScreenSize(80) + ScreenSize(60):random(), Color(math.random(70) + 120, 20, 10))
 	end
 end)
