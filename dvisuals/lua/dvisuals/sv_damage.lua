@@ -104,7 +104,7 @@ hook.Add('EntityTakeDamage', 'DVisuals.BloodHandler', function(self, dmg)
 	if not DVisuals.ENABLE_BLOOD() then return end
 
 	if self:IsPlayer() then
-		local bloodColor = self:GetBloodColor()
+		local bloodColor = self:GetBloodColor():max(0)
 
 		if dmg:GetDamageType():band(DMG_SLASH) ~= 0 then
 			local attacker = dmg:GetAttacker()
