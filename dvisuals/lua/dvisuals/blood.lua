@@ -67,12 +67,44 @@ for i = 0, 2 do
 	}))
 end
 
+local bloodColorGen = {
+	[BLOOD_COLOR_RED] = function(alpha)
+		return Color(math.random(55) + 160, 20, 50, alpha)
+	end,
+
+	[BLOOD_COLOR_ZOMBIE] = function(alpha)
+		return Color(math.random(40) + 150, 80 + math.random(70), 50, alpha)
+	end,
+
+	[BLOOD_COLOR_GREEN] = function(alpha)
+		return Color(math.random(40) + 150, 80 + math.random(70), 50, alpha)
+	end,
+
+	[BLOOD_COLOR_ANTLION_WORKER] = function(alpha)
+		return Color(20, math.random(55) + 200, 30, alpha)
+	end,
+
+	[BLOOD_COLOR_YELLOW] = function(alpha)
+		return Color(200 + math.random(35), 185 + math.random(22), 77 + math.random(20), alpha)
+	end,
+
+	[BLOOD_COLOR_ANTLION] = function(alpha)
+		return Color(170 + math.random(35), 160 + math.random(22), 77 + math.random(20), alpha)
+	end,
+}
+
+local function makeSomeBlood(colorID, alpha)
+	local func = bloodColorGen[colorID] or bloodColorGen[BLOOD_COLOR_RED]
+	return func(alpha)
+end
+
 net.receive('DVisuals.Slash', function()
 	if not DVisuals.ENABLE_BLOOD() then return end
 	if not DVisuals.ENABLE_BLOOD_SLASH() then return end
 
 	local score = net.ReadUInt(8)
 	local yaw = net.ReadInt(8)
+	local bloodColor = net.ReadUInt(4)
 	local w, h = ScrWL(), ScrHL()
 
 	local mult = (score / 8):clamp(1, 8)
@@ -92,7 +124,7 @@ net.receive('DVisuals.Slash', function()
 		DVisuals.CreateParticleOverrided(table.frandom(slashparticles), ttl, (score / 2):random() * ScreenSize(6) + ScreenSize(3), {
 			x = currentX + scatterX - scatterWidth / 2,
 			y = randY + (math.random(scatterHeight) - scatterHeight / 2) * maxScatterY,
-			color = Color(200 + math.random(40), 20, 40)
+			color = makeSomeBlood(bloodColor, 255)
 		})
 	end
 end)
@@ -103,6 +135,7 @@ net.receive('DVisuals.SlashOther', function()
 
 	local score = net.ReadUInt(8)
 	local yaw = net.ReadInt(8)
+	local bloodColor = net.ReadUInt(4)
 	local w, h = ScrWL(), ScrHL()
 
 	local mult = (score / 8):clamp(1, 6)
@@ -122,7 +155,7 @@ net.receive('DVisuals.SlashOther', function()
 		DVisuals.CreateParticleOverrided(table.frandom(slashparticles), ttl, (score / 2):random() * ScreenSize(5) + ScreenSize(3), {
 			x = currentX + scatterX - scatterWidth / 2,
 			y = randY + (math.random(scatterHeight) - scatterHeight / 2) * maxScatterY,
-			color = Color(200 + math.random(40), 20, 40, 160)
+			color = makeSomeBlood(bloodColor, 150)
 		})
 	end
 end)
@@ -131,10 +164,11 @@ net.receive('DVisuals.Generic', function()
 	if not DVisuals.ENABLE_BLOOD() then return end
 
 	local score = net.ReadUInt(8)
+	local bloodColor = net.ReadUInt(4)
 
 	for i = 1, score / 2 do
 		if math.random(score / 3 + 1) < score then
-			DVisuals.CreateParticle(table.frandom(pierceparticles), math.random(20) + 5, ScreenSize(40) + ScreenSize(30):random(), Color(math.random(55) + 160, 20, 50))
+			DVisuals.CreateParticle(table.frandom(pierceparticles), math.random(20) + 5, ScreenSize(40) + ScreenSize(30):random(), makeSomeBlood(bloodColor, 255))
 		else
 			break
 		end
@@ -145,10 +179,11 @@ net.receive('DVisuals.GenericOther', function()
 	if not DVisuals.ENABLE_BLOOD() then return end
 
 	local score = net.ReadUInt(8)
+	local bloodColor = net.ReadUInt(4)
 
 	for i = 1, score do
 		if math.random(score / 3 + 1) < score then
-			DVisuals.CreateParticle(table.frandom(pierceparticles), math.random(10) + 3, ScreenSize(40) + ScreenSize(30):random(), Color(math.random(50) + 130, 20, 50, 160))
+			DVisuals.CreateParticle(table.frandom(pierceparticles), math.random(10) + 3, ScreenSize(40) + ScreenSize(30):random(), makeSomeBlood(bloodColor, 160))
 		else
 			break
 		end

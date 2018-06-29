@@ -104,6 +104,8 @@ hook.Add('EntityTakeDamage', 'DVisuals.BloodHandler', function(self, dmg)
 	if not DVisuals.ENABLE_BLOOD() then return end
 
 	if self:IsPlayer() then
+		local bloodColor = self:GetBloodColor()
+
 		if dmg:GetDamageType():band(DMG_SLASH) ~= 0 then
 			local attacker = dmg:GetAttacker()
 
@@ -115,15 +117,18 @@ hook.Add('EntityTakeDamage', 'DVisuals.BloodHandler', function(self, dmg)
 					net.Start('DVisuals.Slash', true)
 					net.WriteUInt(dmg:GetDamage():ceil():min(255), 8)
 					net.WriteInt(yaw:floor(), 8)
+					net.WriteUInt(bloodColor, 4)
 					net.Send(self)
 				else
 					net.Start('DVisuals.Generic', true)
 					net.WriteUInt(dmg:GetDamage():ceil():min(255), 8)
+					net.WriteUInt(bloodColor, 4)
 					net.Send(self)
 				end
 			else
 				net.Start('DVisuals.Generic', true)
 				net.WriteUInt(dmg:GetDamage():ceil():min(255), 8)
+				net.WriteUInt(bloodColor, 4)
 				net.Send(self)
 			end
 		end
@@ -131,6 +136,7 @@ hook.Add('EntityTakeDamage', 'DVisuals.BloodHandler', function(self, dmg)
 		if dmg:GetDamageType():band(DMG_BULLET) ~= 0 then
 			net.Start('DVisuals.Generic', true)
 			net.WriteUInt((dmg:GetDamage() / 3):ceil():min(255), 8)
+			net.WriteUInt(bloodColor, 4)
 			net.Send(self)
 		end
 	end
@@ -144,18 +150,29 @@ hook.Add('EntityTakeDamage', 'DVisuals.BloodHandler', function(self, dmg)
 			local lpos = self:GetPos()
 
 			for i, ply in ipairs(player.GetAll()) do
-				if ply:Alive() and ply ~= self and ply:EyePos():Distance(lpos) < 256 then
-					local diff = (self:GetPos() - ply:EyePos()):Angle()
-					local yaw = ply:EyeAngles().yaw:angleDifference(diff.yaw)
+				local dist = ply:EyePos():Distance(lpos)
 
-					if yaw < 90 and yaw > -90 then
-						net.Start('DVisuals.SlashOther', true)
-						net.WriteUInt(dmg:GetDamage():ceil():min(255, self:GetMaxHealth()), 8)
-						net.WriteInt(yaw:floor(), 8)
-						net.Send(ply)
-					else
+				if ply:Alive() and ply ~= self then
+					if dist < 192 then
+						local diff = (self:GetPos() - ply:EyePos()):Angle()
+						local yaw = ply:EyeAngles().yaw:angleDifference(diff.yaw)
+
+						if yaw < 90 and yaw > -90 then
+							net.Start('DVisuals.SlashOther', true)
+							net.WriteUInt(dmg:GetDamage():ceil():min(255, self:GetMaxHealth()), 8)
+							net.WriteInt(yaw:floor(), 8)
+							net.WriteUInt(bloodColor, 4)
+							net.Send(ply)
+						else
+							net.Start('DVisuals.GenericOther', true)
+							net.WriteUInt(dmg:GetDamage():ceil():min(255, self:GetMaxHealth()), 8)
+							net.WriteUInt(bloodColor, 4)
+							net.Send(ply)
+						end
+					elseif dist < 256 then
 						net.Start('DVisuals.GenericOther', true)
 						net.WriteUInt(dmg:GetDamage():ceil():min(255, self:GetMaxHealth()), 8)
+						net.WriteUInt(bloodColor, 4)
 						net.Send(ply)
 					end
 				end
