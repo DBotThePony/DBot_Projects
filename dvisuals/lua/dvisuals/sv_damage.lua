@@ -101,6 +101,8 @@ hook.Add('EntityTakeDamage', 'DVisuals.BloodHandler', function(self, dmg)
 	end
 
 	if self:IsPlayer() and dmg:GetDamageType():band(DMG_BULLET) ~= 0 then
-
+		net.Start('DVisuals.Generic', true)
+		net.WriteUInt((dmg:GetDamage() / 3):ceil():min(255), 8)
+		net.Send(self)
 	end
 end, -2)

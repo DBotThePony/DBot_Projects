@@ -28,10 +28,23 @@ local ScreenSize = ScreenSize
 local Quintic = Quintic
 
 local slashparticles = {}
+local pierceparticles = {}
 
 for i = 0, 4 do
 	table.insert(slashparticles, CreateMaterial('enchancedvisuals/splat/slash/slash' .. i, 'UnlitGeneric', {
 		['$basetexture'] = 'enchancedvisuals/splat/slash/slash' .. i,
+		['$translucent'] = '1',
+		['$alpha'] = '1',
+		['$nolod'] = '1',
+		['$nofog'] = '1',
+		['$color'] = '[1 1 1]',
+		['$color2'] = '[1 1 1]',
+	}))
+end
+
+for i = 0, 2 do
+	table.insert(pierceparticles, CreateMaterial('enchancedvisuals/splat/pierce/pierce' .. i, 'UnlitGeneric', {
+		['$basetexture'] = 'enchancedvisuals/splat/pierce/pierce' .. i,
 		['$translucent'] = '1',
 		['$alpha'] = '1',
 		['$nolod'] = '1',
@@ -58,7 +71,7 @@ net.receive('DVisuals.Slash', function()
 
 	--print(scatterWidth, scatterHeight, currentX, yaw)
 
-	for i = 1, (score * 7):max(4) do
+	for i = 1, (score:sqrt() * 5):max(4) do
 		local scatterX = math.random(scatterWidth)
 		local maxScatterY = Quintic(scatterX:progression(0, scatterWidth, scatterWidth / 2))
 		--print(scatterX, scatterWidth, maxScatterY)
@@ -68,5 +81,19 @@ net.receive('DVisuals.Slash', function()
 			y = randY + (math.random(scatterHeight) - scatterHeight / 2) * maxScatterY,
 			color = Color(200 + math.random(40), 20, 40)
 		})
+	end
+end)
+
+net.receive('DVisuals.Generic', function()
+	if not DVisuals.ENABLE_BLOOD() then return end
+
+	local score = net.ReadUInt(8)
+
+	for i = 1, score / 2 do
+		if math.random(score / 3 + 1) < score then
+			DVisuals.CreateParticle(table.frandom(pierceparticles), math.random(20) + 5, ScreenSize(40) + ScreenSize(30):random(), Color(math.random(55) + 160, 20, 50))
+		else
+			break
+		end
 	end
 end)
