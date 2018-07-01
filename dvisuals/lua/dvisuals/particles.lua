@@ -161,6 +161,7 @@ end
 DVisuals.FindVehicle = findVehicle
 
 hook.Add('Think', 'DVisuals.ThinkParticles', function()
+	if not DVisuals.ENABLE_PARTICLES() then return end
 	local ply = HUDCommons.SelectPlayer()
 	if not IsValid(ply) then return end
 	local ang = ply:EyeAnglesFixed()
@@ -259,6 +260,7 @@ end
 local lastThink = 0
 
 hook.Add('Think', 'DVisuals.CreateParticles', function()
+	if not DVisuals.ENABLE_PARTICLES() then return end
 	local ply = HUDCommons.SelectPlayer()
 	if not IsValid(ply) then return end
 	local ground = ply:OnGround()
