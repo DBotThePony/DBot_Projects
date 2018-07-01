@@ -27,25 +27,41 @@ local function CreateShared(thing, cvarname, default, description)
 		local enabled = CreateConVar('sv_' .. cvarname, default, {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, description)
 		CreateConVar('sv_' .. cvarname .. '_ov', '1', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Allow clientside override of this setting')
 
-		DVisuals[thing] = function()
-			return enabled:GetBool()
+		if thing == 'ENABLE' then
+			DVisuals[thing] = function()
+				return enabled:GetBool()
+			end
+		else
+			DVisuals[thing] = function()
+				return DVisuals.ENABLE() and enabled:GetBool()
+			end
 		end
 
 		DVisuals[thing .. '_SV'] = enabled
 
-		return function()
-			return enabled:GetBool()
-		end, nil, enabled
+		return DVisuals[thing], nil, enabled
 	else
 		local enabled_sv = CreateConVar('sv_' .. cvarname, default, {FCVAR_REPLICATED, FCVAR_NOTIFY}, description)
 		local enabled_sv_override = CreateConVar('sv_' .. cvarname .. '_ov', default, {FCVAR_REPLICATED, FCVAR_NOTIFY}, description)
 		local enabled_cl = CreateConVar('cl_' .. cvarname, default, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, description)
 
-		DVisuals[thing] = function()
-			if enabled_sv_override:GetBool() then
-				return enabled_sv:GetBool() and enabled_cl:GetBool()
-			else
-				return enabled_sv:GetBool()
+		if thing == 'ENABLE' then
+			DVisuals[thing] = function()
+				if enabled_sv_override:GetBool() then
+					return enabled_sv:GetBool() and enabled_cl:GetBool()
+				else
+					return enabled_sv:GetBool()
+				end
+			end
+		else
+			DVisuals[thing] = function()
+				if not DVisuals.ENABLE() then return false end
+
+				if enabled_sv_override:GetBool() then
+					return enabled_sv:GetBool() and enabled_cl:GetBool()
+				else
+					return enabled_sv:GetBool()
+				end
 			end
 		end
 
@@ -57,13 +73,7 @@ local function CreateShared(thing, cvarname, default, description)
 
 		table.insert(DVisuals.ClientCVars, {enabled_cl, 'gui.dvisuals.cvar.' .. enabled_cl:GetName()})
 
-		return function()
-			if enabled_sv_override:GetBool() then
-				return enabled_sv:GetBool() and enabled_cl:GetBool()
-			else
-				return enabled_sv:GetBool()
-			end
-		end, enabled_cl, enabled_sv, enabled_sv_override
+		return DVisuals[thing], enabled_cl, enabled_sv, enabled_sv_override
 	end
 end
 

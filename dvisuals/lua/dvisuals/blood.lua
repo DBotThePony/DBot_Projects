@@ -179,6 +179,7 @@ net.receive('DVisuals.Generic', function()
 end)
 
 net.receive('DVisuals.GenericOther', function()
+	if not DVisuals.ENABLE() then return end
 	if not DVisuals.ENABLE_BLOOD() then return end
 	if not DVisuals.ENABLE_BLOOD_DEALT() then return end
 
