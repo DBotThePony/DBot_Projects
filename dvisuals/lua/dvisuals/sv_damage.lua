@@ -79,13 +79,13 @@ local NEXT_SPEED = 0
 local NEXT_PLAYER = NULL
 
 hook.Add('GetFallDamage', 'DVisuals.BloodHandler', function(self, speed)
-	if not DVisuals.ENABLE_FALLDAMAGE() then return end
+	if not DVisuals.ENABLE_FALL() then return end
 	NEXT_SPEED = speed
 	NEXT_PLAYER = self
 end, -10)
 
 hook.AddPostModifier('GetFallDamage', 'DVisuals.BloodHandler', function(damage)
-	if not DVisuals.ENABLE_FALLDAMAGE() then return damage end
+	if not DVisuals.ENABLE_FALL() then return damage end
 
 	if damage > 0 and NEXT_PLAYER:IsValid() then
 		net.Start('DVisuals.Fall', true)
