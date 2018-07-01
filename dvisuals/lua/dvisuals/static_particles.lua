@@ -52,9 +52,16 @@ hook.Add('PostDrawHUD', 'DVisuals.RenderStaticParticles', function()
 	render.PopFilterMin()
 end, -9)
 
+local LIMIT = CreateConVar('cl_ev_limit', '1', {FCVAR_ARCHIVE}, 'Limit maximal amount of static particles on screen')
+local LIMIT_NUM = CreateConVar('cl_ev_limit_amount', '200', {FCVAR_ARCHIVE}, 'Maximum particles')
+
 function DVisuals.CreateParticle(mat, ttl, size, color)
 	local time = RealTimeL()
 	local w, h = ScrWL(), ScrHL()
+
+	if LIMIT:GetBool() and #particles > LIMIT_NUM:GetInt() then
+		table.remove(particles, 1)
+	end
 
 	table.insert(particles, {
 		mat = mat,
@@ -73,6 +80,10 @@ end
 function DVisuals.CreateParticleOverrided(mat, ttl, size, overrides)
 	local time = RealTimeL()
 	local w, h = ScrWL(), ScrHL()
+
+	if LIMIT:GetBool() and #particles > LIMIT_NUM:GetInt() then
+		table.remove(particles, 1)
+	end
 
 	table.insert(particles, {
 		mat = mat,
