@@ -78,6 +78,7 @@ if SERVER then
 	AddCSLuaFile('DVisuals/water.lua')
 	AddCSLuaFile('DVisuals/fire.lua')
 	AddCSLuaFile('DVisuals/blood.lua')
+	AddCSLuaFile('DVisuals/snow.lua')
 	include('DVisuals/sv_damage.lua')
 	return
 end

@@ -24,6 +24,7 @@ local ipairs = ipairs
 local Color = Color
 local HUDCommons = DLib.HUDCommons
 local sand = include('sand.lua')
+local snow = include('snow.lua')
 
 local registered = {}
 
@@ -80,6 +81,10 @@ end
 
 if sand then
 	registerParticle(sand)
+end
+
+if snow then
+	registerParticle(snow)
 end
 
 hook.Run('RegisterVisualParticles', registerParticle)
