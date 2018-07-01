@@ -53,7 +53,7 @@ hook.Add('PostDrawHUD', 'DVisuals.RenderStaticParticles', function()
 end, -9)
 
 local LIMIT = CreateConVar('cl_ev_limit', '1', {FCVAR_ARCHIVE}, 'Limit maximal amount of static particles on screen')
-local LIMIT_NUM = CreateConVar('cl_ev_limit_amount', '200', {FCVAR_ARCHIVE}, 'Maximum particles')
+local LIMIT_NUM = CreateConVar('cl_ev_limit_amount', '2000', {FCVAR_ARCHIVE}, 'Maximum particles')
 
 function DVisuals.CreateParticle(mat, ttl, size, color)
 	local time = RealTimeL()
