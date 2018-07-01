@@ -198,8 +198,6 @@ function DVisuals.FallBloodHanlder(speed)
 	if not DVisuals.ENABLE_BLOOD() then return end
 	if not DVisuals.ENABLE_FALLDAMAGE() then return end
 
-	local speed = net.ReadUInt(16)
-
 	for i = 1, speed / 100 do
 		DVisuals.CreateParticle(table.frandom(impactparticles), math.random(20) + 10, ScreenSize(30) + ScreenSize(50):random(), Color(math.random(80) + 60, 20, 10))
 	end
