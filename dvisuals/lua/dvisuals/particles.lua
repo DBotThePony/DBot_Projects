@@ -25,6 +25,7 @@ local Color = Color
 local HUDCommons = DLib.HUDCommons
 local sand = include('sand.lua')
 local snow = include('snow.lua')
+local bloody, bloody2 = include('bloody.lua')
 
 local registered = {}
 
@@ -46,6 +47,8 @@ local function registerParticle(particleData)
 
 	particleData.blowoffWalkMultiplier = particleData.blowoffWalkMultiplier or particleData.blowoffRotateMultiplier
 	particleData.blowoffWalkScatter = particleData.blowoffWalkScatter or particleData.blowoffRotateScatter
+
+	particleData.grabColor = particleData.grabColor or function() return Color() end
 
 	if particleData.vehicles == nil then
 		particleData.vehicles = false
@@ -87,6 +90,14 @@ if snow then
 	registerParticle(snow)
 end
 
+if bloody then
+	registerParticle(bloody)
+end
+
+if bloody2 then
+	registerParticle(bloody2)
+end
+
 hook.Run('RegisterVisualParticles', registerParticle)
 
 local particles = {}
@@ -107,6 +118,8 @@ hook.Add('PostDrawHUD', 'DVisuals.RenderParticles', function()
 	for i, particleData in ipairs(particles) do
 		surface.SetDrawColor(particleData.color)
 		particleData.mat:SetFloat('$alpha', particleData.color.a / 255)
+		particleData.mat:SetVector('$color', particleData.color:ToVector())
+		particleData.mat:SetVector('$color2', particleData.color:ToVector())
 		surface.SetMaterial(particleData.mat)
 		surface.DrawTexturedRectRotated(particleData.x, particleData.y, particleData.size, particleData.size, particleData.rotation)
 	end
@@ -233,7 +246,7 @@ local function createParticle(matData)
 		start = time,
 		startfade = time + ttl * 0.75,
 		endtime = time + ttl,
-		color = Color(),
+		color = matData.grabColor(),
 		size = size,
 		rotateScatter = rotateScatter,
 		walkScatter = walkScatter,
