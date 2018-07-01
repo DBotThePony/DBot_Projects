@@ -15,6 +15,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+gui.dvisuals.donate = 'Joost donate'
 gui.dvisuals.override = 'Server can override those values, so they will not have any effect'
 gui.dvisuals.cvarname = 'ConVar ID: %s'
 

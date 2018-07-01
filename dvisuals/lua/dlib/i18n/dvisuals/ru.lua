@@ -15,6 +15,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+gui.dvisuals.donate = 'Дать на чашку чая'
 gui.dvisuals.override = 'Сервер может переопределить данные значения, поэтому они не будут иметь какого либо эффекта'
 gui.dvisuals.cvarname = 'ConVar ID: %s'
 

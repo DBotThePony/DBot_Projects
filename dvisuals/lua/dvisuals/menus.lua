@@ -27,6 +27,10 @@ local function PopulateClient(self)
 		local checkbox = self:CheckBox(desc, cvar:GetName())
 		checkbox:SetTooltip(DLib.i18n.localize(desc) .. '\n\n' .. DLib.i18n.localize('gui.dvisuals.cvarname', cvar:GetName()))
 	end
+
+	self:Button('gui.dvisuals.donate').DoClick = function()
+		gui.OpenURL('https://paypal.me/DBotThePony')
+	end
 end
 
 hook.Add('PopulateToolMenu', 'HUDCommons.PopulateMenus', function()
