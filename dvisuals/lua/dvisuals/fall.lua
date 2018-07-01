@@ -37,7 +37,9 @@ net.receive('DVisuals.Fall', function()
 	local speed = net.ReadUInt(16)
 	DVisuals.FallBloodHanlder(speed)
 
-	strength = strength + speed / 400
+	if DVisuals.ENABLE_FALL_SHAKE() then
+		strength = strength + speed / 400
+	end
 end)
 
 hook.Add('Think', 'DVisuals.Fall', function()
