@@ -17,6 +17,8 @@
 
 local A = resource.AddSingleFile
 
+resource.AddWorkshop('1427986071')
+
 A'materials/enchancedvisuals/overlay/crack/crack0.vtf'
 A'materials/enchancedvisuals/overlay/crack/crack1.vtf'
 A'materials/enchancedvisuals/overlay/crack/crack10.vtf'
