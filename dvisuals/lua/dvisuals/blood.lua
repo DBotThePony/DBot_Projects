@@ -194,7 +194,7 @@ net.receive('DVisuals.GenericOther', function()
 	end
 end)
 
-net.receive('DVisuals.Fall', function()
+function DVisuals.FallBloodHanlder(speed)
 	if not DVisuals.ENABLE_BLOOD() then return end
 	if not DVisuals.ENABLE_FALLDAMAGE() then return end
 
@@ -207,4 +207,4 @@ net.receive('DVisuals.Fall', function()
 	for i = 1, speed / 60 do
 		DVisuals.CreateParticle(table.frandom(slashparticles), math.random(30) + 5, ScreenSize(80) + ScreenSize(60):random(), Color(math.random(70) + 120, 20, 10))
 	end
-end)
+end
