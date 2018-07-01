@@ -37,7 +37,7 @@ net.receive('DVisuals.Fall', function()
 	local speed = net.ReadUInt(16)
 	DVisuals.FallBloodHanlder(speed)
 
-	if DVisuals.ENABLE_FALL_SHAKE() then
+	if DVisuals.ENABLE_FALL_SHAKE() and speed > 600 then
 		strength = strength + speed / 400
 	end
 end)
@@ -49,7 +49,7 @@ hook.Add('Think', 'DVisuals.Fall', function()
 		return
 	end
 
-	strength = (strength - FrameTime()):max(0)
+	strength = (strength - FrameTime() * 0.7):max(0)
 	targetstrength = Lerp(RealFrameTime() * 10, targetstrength, strength)
 end)
 

@@ -72,6 +72,7 @@ function DVisuals.CreateParticle(mat, ttl, size, color)
 		endtime = time + ttl,
 		color = color or Color(),
 		size = size,
+		wash = true,
 		rotation = math.random(360) - 180,
 		alpha = color and color.a or 255,
 	})
@@ -94,6 +95,7 @@ function DVisuals.CreateParticleOverrided(mat, ttl, size, overrides)
 		endtime = overrides.endtime or time + ttl,
 		color = overrides.color or Color(),
 		size = size,
+		wash = overrides.wash == true,
 		rotation = overrides.rotation or (math.random(360) - 180),
 		alpha = overrides.color and overrides.color.a or overrides.alpha or 255,
 	})
@@ -102,6 +104,8 @@ end
 hook.Add('Think', 'DVisuals.ThinkStaticParticles', function()
 	local ply = HUDCommons.SelectPlayer()
 	if not IsValid(ply) then return end
+
+	local water = ply:WaterLevel() >= 3
 
 	local toremove
 	local time = RealTimeL()
@@ -114,6 +118,12 @@ hook.Add('Think', 'DVisuals.ThinkStaticParticles', function()
 			table.insert(toremove, i)
 		else
 			particleData.color.a = particleData.alpha * fade
+
+			if fade == 1 and water and particleData.wash then
+				local delta = particleData.endtime - particleData.startfade
+				particleData.startfade = RealTimeL()
+				particleData.endtime = RealTimeL() + delta
+			end
 		end
 	end
 
