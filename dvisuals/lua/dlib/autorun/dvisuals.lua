@@ -18,9 +18,13 @@
 _G.DVisuals = _G.DVisuals or {}
 local DVisuals = DVisuals
 
-local function CreateShared(thing, cvarname, default, desscription)
+if CLIENT then
+	DVisuals.ClientCVars = {}
+end
+
+local function CreateShared(thing, cvarname, default, description)
 	if SERVER then
-		local enabled = CreateConVar('sv_' .. cvarname, default, {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, desscription)
+		local enabled = CreateConVar('sv_' .. cvarname, default, {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, description)
 		CreateConVar('sv_' .. cvarname .. '_ov', '1', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Allow clientside override of this setting')
 
 		DVisuals[thing] = function()
@@ -33,9 +37,9 @@ local function CreateShared(thing, cvarname, default, desscription)
 			return enabled:GetBool()
 		end, nil, enabled
 	else
-		local enabled_sv = CreateConVar('sv_' .. cvarname, default, {FCVAR_REPLICATED, FCVAR_NOTIFY}, desscription)
-		local enabled_sv_override = CreateConVar('sv_' .. cvarname .. '_ov', default, {FCVAR_REPLICATED, FCVAR_NOTIFY}, desscription)
-		local enabled_cl = CreateConVar('cl_' .. cvarname, default, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, desscription)
+		local enabled_sv = CreateConVar('sv_' .. cvarname, default, {FCVAR_REPLICATED, FCVAR_NOTIFY}, description)
+		local enabled_sv_override = CreateConVar('sv_' .. cvarname .. '_ov', default, {FCVAR_REPLICATED, FCVAR_NOTIFY}, description)
+		local enabled_cl = CreateConVar('cl_' .. cvarname, default, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, description)
 
 		DVisuals[thing] = function()
 			if enabled_sv_override:GetBool() then
@@ -47,6 +51,11 @@ local function CreateShared(thing, cvarname, default, desscription)
 
 		DVisuals[thing .. '_SV'] = enabled_sv
 		DVisuals[thing .. '_CL'] = enabled_cl
+		DVisuals[thing .. '_SV_OV'] = enabled_sv_override
+
+		--print(string.format("gui.dvisuals.cvar.%s = '%s'", enabled_cl:GetName(), description))
+
+		table.insert(DVisuals.ClientCVars, {enabled_cl, 'gui.dvisuals.cvar.' .. enabled_cl:GetName()})
 
 		return function()
 			if enabled_sv_override:GetBool() then
@@ -58,6 +67,7 @@ local function CreateShared(thing, cvarname, default, desscription)
 	end
 end
 
+CreateShared('ENABLE', 'ev_enabled', '1', 'Main power switch')
 CreateShared('ENABLE_EXPLOSIONS', 'ev_explosions', '1', 'Whenever enable explosion damage aftershock')
 CreateShared('ENABLE_WATER', 'ev_water', '1', 'Whenever enable water effect')
 CreateShared('ENABLE_PARTICLES', 'ev_particles', '1', 'Whenever enable any particles')
@@ -66,6 +76,7 @@ CreateShared('ENABLE_FROZEN', 'ev_frost', '1', 'Whenever enable frozen/freeze (n
 
 CreateShared('ENABLE_FALLDAMAGE', 'ev_fall', '1', 'Enable fall effects')
 CreateShared('ENABLE_BLOOD', 'ev_blood', '1', 'Enable blood effects in general')
+CreateShared('ENABLE_BLOOD_LITEGIBS', 'ev_blood_litegibs', '1', 'Enable litegibs support')
 CreateShared('ENABLE_BLOOD_RECEIVED', 'ev_blood_receive', '1', 'Enable blood effects when taking damage from others')
 CreateShared('ENABLE_BLOOD_SLASH', 'ev_slash', '1', 'Enable slash blood effects')
 CreateShared('ENABLE_BLOOD_DEALT', 'ev_blood_dealt', '1', 'Enable blood effects when hurting others on close distance')
@@ -86,6 +97,7 @@ if SERVER then
 	AddCSLuaFile('DVisuals/fall.lua')
 	AddCSLuaFile('DVisuals/heartbeat.lua')
 	AddCSLuaFile('DVisuals/litegibs.lua')
+	AddCSLuaFile('DVisuals/menus.lua')
 	include('DVisuals/sv_damage.lua')
 	return
 end
@@ -99,3 +111,4 @@ include('DVisuals/blood.lua')
 include('DVisuals/fall.lua')
 include('DVisuals/heartbeat.lua')
 include('DVisuals/litegibs.lua')
+include('DVisuals/menus.lua')

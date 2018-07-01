@@ -44,6 +44,8 @@ for i = 0, 3 do
 end
 
 hook.Add('PlayerFootstep', 'DVisuals.LiteGibs', function(ply, pos)
+	if not DVisuals.ENABLE_BLOOD() then return end
+	if not DVisuals.ENABLE_BLOOD_LITEGIBS() then return end
 	if not LiteGibs then return end
 	local lply = HUDCommons.SelectPlayer()
 	if not lply:IsValid() then return end
