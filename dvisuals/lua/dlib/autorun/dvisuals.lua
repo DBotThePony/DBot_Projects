@@ -72,6 +72,8 @@ CreateShared('ENABLE_BLOOD_DEALT', 'ev_blood_dealt', '1', 'Enable blood effects 
 CreateShared('ENABLE_FALL', 'ev_fall', '1', 'Enable fall effects in general')
 CreateShared('ENABLE_FALL_SHAKE', 'ev_fall_shake', '1', 'Enable a bit shaking after fall')
 
+CreateShared('ENABLE_LOWHEALTH', 'ev_lowhealth', '1', 'Enable low health visuals')
+
 if SERVER then
 	AddCSLuaFile('DVisuals/explosion.lua')
 	AddCSLuaFile('DVisuals/particles.lua')
@@ -82,6 +84,7 @@ if SERVER then
 	AddCSLuaFile('DVisuals/blood.lua')
 	AddCSLuaFile('DVisuals/snow.lua')
 	AddCSLuaFile('DVisuals/fall.lua')
+	AddCSLuaFile('DVisuals/heartbeat.lua')
 	include('DVisuals/sv_damage.lua')
 	return
 end
@@ -93,3 +96,4 @@ include('DVisuals/particles.lua')
 include('DVisuals/fire.lua')
 include('DVisuals/blood.lua')
 include('DVisuals/fall.lua')
+include('DVisuals/heartbeat.lua')
