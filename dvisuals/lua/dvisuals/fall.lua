@@ -54,7 +54,7 @@ hook.Add('Think', 'DVisuals.Fall', function()
 end)
 
 hook.Add('CalcView', 'DVisuals.Fall', function(ply, origin, angles, fov, znear, zfar)
-	if targetstrength == 0 then return end
+	if targetstrength <= 0.02 then return end
 	if ply:ShouldDrawLocalPlayer() then return end
 
 	local value = targetstrength:min(1.2)
