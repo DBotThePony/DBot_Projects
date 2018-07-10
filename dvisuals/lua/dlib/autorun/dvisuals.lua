@@ -83,6 +83,7 @@ CreateShared('ENABLE_WATER', 'ev_water', '1', 'Whenever enable water effect')
 CreateShared('ENABLE_PARTICLES', 'ev_particles', '1', 'Whenever enable any particles')
 CreateShared('ENABLE_FIRE', 'ev_fires', '1', 'Whenever enable fire/heat effects')
 CreateShared('ENABLE_FROZEN', 'ev_frost', '1', 'Whenever enable frozen/freeze (not really) effects')
+CreateShared('ENABLE_THIRDPERSON', 'ev_thirdperson', '0', 'Draw effects while in third person mode')
 
 CreateShared('ENABLE_FALLDAMAGE', 'ev_fall', '1', 'Enable fall effects')
 CreateShared('ENABLE_BLOOD', 'ev_blood', '1', 'Enable blood effects in general')

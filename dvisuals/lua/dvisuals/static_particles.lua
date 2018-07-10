@@ -34,7 +34,7 @@ local TEXFILTER = TEXFILTER
 
 hook.Add('PostDrawHUD', 'DVisuals.RenderStaticParticles', function()
 	local ply, lply = HUDCommons.SelectPlayer(), LocalPlayer()
-	if ply == lply and ply:ShouldDrawLocalPlayer() then return end
+	if ply == lply and ply:ShouldDrawLocalPlayer() and not DVisuals.ENABLE_THIRDPERSON() then return end
 
 	render.PushFilterMag(TEXFILTER.POINT)
 	render.PushFilterMin(TEXFILTER.POINT)
