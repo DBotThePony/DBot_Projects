@@ -179,6 +179,7 @@ local function createParticle()
 end
 
 net.receive('DVisuals.Explosions', function()
+	if not DVisuals.ENABLE_EXPLOSIONS() then return end
 	local score = net.ReadUInt(4) / 3
 	local time = CurTimeL()
 
