@@ -23,7 +23,7 @@ net.pool('ddaynight.replicateseed')
 
 local function DDayNight_SeedChanges()
 	net.Start('ddaynight.replicateseed')
-	net.WriteUInt(DDayNight.SEED_VALID, 64)
+	net.WriteBigUInt(DDayNight.SEED_VALID, 64)
 	net.Broadcast()
 end
 
@@ -31,7 +31,7 @@ net.receive('ddaynight.replicateseed', function(len, ply)
 	if not IsValid(ply) then return end
 
 	net.Start('ddaynight.replicateseed')
-	net.WriteUInt(DDayNight.SEED_VALID, 64)
+	net.WriteBigUInt(DDayNight.SEED_VALID, 64)
 	net.Send(ply)
 end)
 
