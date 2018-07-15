@@ -117,9 +117,6 @@ hook.Add('PostDrawHUD', 'DVisuals.RenderParticles', function()
 
 	for i, particleData in ipairs(particles) do
 		surface.SetDrawColor(particleData.color)
-		particleData.mat:SetFloat('$alpha', particleData.color.a / 255)
-		particleData.mat:SetVector('$color', particleData.color:ToVector())
-		particleData.mat:SetVector('$color2', particleData.color:ToVector())
 		surface.SetMaterial(particleData.mat)
 		surface.DrawTexturedRectRotated(particleData.x, particleData.y, particleData.size, particleData.size, particleData.rotation)
 	end

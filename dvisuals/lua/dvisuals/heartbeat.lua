@@ -59,8 +59,7 @@ hook.Add('PostDrawHUD', 'DVisuals.Heartbeat', function()
 
 	if lowFr ~= 0 then
 		local fr = lowFr * 0.6 + CurTimeL():progression(flash2Start, flash2End, flash2Delta) * 0.1
-		lowhealth:SetFloat('$alpha', fr)
-		surface.SetDrawColor(255, 255, 255)
+		surface.SetDrawColor(255, 255, 255, 255 * fr)
 		surface.SetMaterial(lowhealth)
 		surface.DrawTexturedRect(0, 0, ScrWL(), ScrHL())
 	end

@@ -48,15 +48,13 @@ hook.Add('PostDrawHUD', 'DVisuals.RenderFireOverlay', function()
 	if not DVisuals.ENABLE_FIRE() then return end
 
 	if firesOverlayStrength ~= 0 then
-		fires:SetFloat('$alpha', firesOverlayStrength)
-		surface.SetDrawColor(255, 255, 255)
+		surface.SetDrawColor(255, 255, 255, 255 * firesOverlayStrength)
 		surface.SetMaterial(fires)
 		surface.DrawTexturedRect(0, 0, ScrWL(), ScrHL())
 	end
 
 	if frozenOverlayStrength ~= 0 then
-		freeze:SetFloat('$alpha', frozenOverlayStrength)
-		surface.SetDrawColor(255, 255, 255)
+		surface.SetDrawColor(255, 255, 255, 255 * frozenOverlayStrength)
 		surface.SetMaterial(freeze)
 		surface.DrawTexturedRect(0, 0, ScrWL(), ScrHL())
 	end
