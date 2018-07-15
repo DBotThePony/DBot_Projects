@@ -18,14 +18,7 @@
 local particles = {}
 
 for i = 0, 3 do
-	local mat = CreateMaterial('enchancedvisuals/splat/snow/snow' .. i, 'UnlitGeneric', {
-		['$basetexture'] = 'enchancedvisuals/splat/snow/snow' .. i,
-		['$translucent'] = '1',
-		['$alpha'] = '1',
-		['$nolod'] = '1',
-		['$nofog'] = '1',
-	})
-
+	local mat = CreateMaterial('enchancedvisuals/splat/snow/snow' .. i .. '.png')
 	table.insert(particles, mat)
 end
 

@@ -18,17 +18,7 @@
 local particles = {}
 
 for i = 0, 5 do
-	local mat = CreateMaterial('enchancedvisuals/splat/sand/sand' .. i, 'UnlitGeneric', {
-		['$basetexture'] = 'enchancedvisuals/splat/sand/sand' .. i,
-		['$translucent'] = '1',
-		['$alpha'] = '1',
-		['$nolod'] = '1',
-		['$nofog'] = '1',
-	})
-
-	mat:Recompute()
-	mat:SetTexture('$basetexture', 'enchancedvisuals/splat/sand/sand' .. i)
-
+	local mat = Material('enchancedvisuals/splat/sand/sand' .. i .. '.png')
 	table.insert(particles, mat)
 end
 

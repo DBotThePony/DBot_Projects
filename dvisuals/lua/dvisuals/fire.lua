@@ -29,54 +29,17 @@ local ScrHL = ScrHL
 
 local particles = {}
 local fireparticles = {
-	CreateMaterial('enchancedvisuals/splat/fire/fire0', 'UnlitGeneric', {
-		['$basetexture'] = 'enchancedvisuals/splat/fire/fire0',
-		['$translucent'] = '1',
-		['$alpha'] = '1',
-		['$nolod'] = '1',
-		['$nofog'] = '1',
-		['$color'] = '[1 0.75 0.38]',
-		['$color2'] = '[1 0.75 0.38]',
-	}), CreateMaterial('enchancedvisuals/splat/fire/fire1', 'UnlitGeneric', {
-		['$basetexture'] = 'enchancedvisuals/splat/fire/fire1',
-		['$translucent'] = '1',
-		['$alpha'] = '1',
-		['$nolod'] = '1',
-		['$nofog'] = '1',
-		['$color'] = '[1 0.75 0.38]',
-		['$color2'] = '[1 0.75 0.38]',
-	})
+	Material('enchancedvisuals/splat/fire/fire0.png'), Material('enchancedvisuals/splat/fire/fire1.png'), nil
 }
 
 local snowparticles = {}
 
 for i = 0, 3 do
-	table.insert(snowparticles, CreateMaterial('enchancedvisuals/splat/snow/snow' .. i, 'UnlitGeneric', {
-		['$basetexture'] = 'enchancedvisuals/splat/snow/snow' .. i,
-		['$translucent'] = '1',
-		['$alpha'] = '1',
-		['$nolod'] = '1',
-		['$nofog'] = '1',
-		['$color'] = '[1 1 1]',
-		['$color2'] = '[1 1 1]',
-	}))
+	table.insert(snowparticles, Material('enchancedvisuals/splat/snow/snow' .. i .. '.png'))
 end
 
-local fires = CreateMaterial('enchancedvisuals/overlay/heat/heat0', 'UnlitGeneric', {
-	['$basetexture'] = 'enchancedvisuals/overlay/heat/heat0',
-	['$translucent'] = '1',
-	['$alpha'] = '1',
-	['$nolod'] = '1',
-	['$nofog'] = '1',
-})
-
-local freeze = CreateMaterial('enchancedvisuals/overlay/freeze/freeze0', 'UnlitGeneric', {
-	['$basetexture'] = 'enchancedvisuals/overlay/freeze/freeze0',
-	['$translucent'] = '1',
-	['$alpha'] = '1',
-	['$nolod'] = '1',
-	['$nofog'] = '1',
-})
+local fires = Material('enchancedvisuals/overlay/heat/heat0.png')
+local freeze = Material('enchancedvisuals/overlay/freeze/freeze0.png')
 
 local firesOverlayStrength = 0
 local frozenOverlayStrength = 0

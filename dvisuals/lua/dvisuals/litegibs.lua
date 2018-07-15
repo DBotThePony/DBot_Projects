@@ -32,13 +32,7 @@ local gibStepVelocity = 40
 local splatter = {}
 
 for i = 0, 3 do
-	local mat = CreateMaterial('enchancedvisuals/splat/splatter/splatter' .. i, 'UnlitGeneric', {
-		['$basetexture'] = 'enchancedvisuals/splat/splatter/splatter' .. i,
-		['$translucent'] = '1',
-		['$alpha'] = '1',
-		['$nolod'] = '1',
-		['$nofog'] = '1',
-	})
+	local mat = Material('enchancedvisuals/splat/splatter/splatter' .. i .. '.png')
 
 	table.insert(splatter, mat)
 end

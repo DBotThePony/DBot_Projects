@@ -36,21 +36,8 @@ end
 
 local targetHealth = 100
 
-local lowhealth = CreateMaterial('enchancedvisuals/overlay/lowhealth/lowhealth0', 'UnlitGeneric', {
-	['$basetexture'] = 'enchancedvisuals/overlay/lowhealth/lowhealth0',
-	['$translucent'] = '1',
-	['$alpha'] = '1',
-	['$nolod'] = '1',
-	['$nofog'] = '1',
-})
-
-local damaged = CreateMaterial('enchancedvisuals/overlay/damaged/damaged0', 'UnlitGeneric', {
-	['$basetexture'] = 'enchancedvisuals/overlay/damaged/damaged0',
-	['$translucent'] = '1',
-	['$alpha'] = '0.5',
-	['$nolod'] = '1',
-	['$nofog'] = '1',
-})
+local lowhealth = Material('enchancedvisuals/overlay/lowhealth/lowhealth0.png')
+local damaged = Material('enchancedvisuals/overlay/damaged/damaged0.png')
 
 local alive = true
 local flashStart = 0

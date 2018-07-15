@@ -32,39 +32,15 @@ local pierceparticles = {}
 local impactparticles = {}
 
 for i = 0, 4 do
-	table.insert(slashparticles, CreateMaterial('enchancedvisuals/splat/slash/slash' .. i, 'UnlitGeneric', {
-		['$basetexture'] = 'enchancedvisuals/splat/slash/slash' .. i,
-		['$translucent'] = '1',
-		['$alpha'] = '1',
-		['$nolod'] = '1',
-		['$nofog'] = '1',
-		['$color'] = '[1 1 1]',
-		['$color2'] = '[1 1 1]',
-	}))
+	table.insert(slashparticles, Material('enchancedvisuals/splat/slash/slash' .. i .. '.png'))
 end
 
 for i = 0, 2 do
-	table.insert(pierceparticles, CreateMaterial('enchancedvisuals/splat/pierce/pierce' .. i, 'UnlitGeneric', {
-		['$basetexture'] = 'enchancedvisuals/splat/pierce/pierce' .. i,
-		['$translucent'] = '1',
-		['$alpha'] = '1',
-		['$nolod'] = '1',
-		['$nofog'] = '1',
-		['$color'] = '[1 1 1]',
-		['$color2'] = '[1 1 1]',
-	}))
+	table.insert(pierceparticles, Material('enchancedvisuals/splat/pierce/pierce' .. i .. '.png'))
 end
 
 for i = 0, 2 do
-	table.insert(impactparticles, CreateMaterial('enchancedvisuals/splat/impact/impact' .. i, 'UnlitGeneric', {
-		['$basetexture'] = 'enchancedvisuals/splat/impact/impact' .. i,
-		['$translucent'] = '1',
-		['$alpha'] = '1',
-		['$nolod'] = '1',
-		['$nofog'] = '1',
-		['$color'] = '[1 1 1]',
-		['$color2'] = '[1 1 1]',
-	}))
+	table.insert(impactparticles, Material('enchancedvisuals/splat/impact/impact' .. i .. '.png'))
 end
 
 local bloodColorGen = {

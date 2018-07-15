@@ -59,13 +59,7 @@ local rtmat = CreateMaterial('DVisuals_ExplosionRT', 'UnlitGeneric', {
 local dust = {}
 
 for i = 0, 2 do
-	local mat = CreateMaterial('enchancedvisuals/splat/dust/dust' .. i, 'UnlitGeneric', {
-		['$basetexture'] = 'enchancedvisuals/splat/dust/dust' .. i,
-		['$translucent'] = '1',
-		['$alpha'] = '1',
-		['$nolod'] = '1',
-		['$nofog'] = '1',
-	})
+	local mat = Material('enchancedvisuals/splat/dust/dust' .. i .. '.png')
 
 	table.insert(dust, mat)
 end
