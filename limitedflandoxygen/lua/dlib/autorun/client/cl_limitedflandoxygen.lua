@@ -23,6 +23,8 @@ local RFlashlight = 100
 local Oxygen = 100
 local ROxygen = 100
 
+DLib.RegisterAddonName('LimitedOxygen&Flashlight')
+
 surface.CreateFont('DBot_LimitedFlashlightAndOxygen', {
 	font = 'Roboto',
 	size = 14,

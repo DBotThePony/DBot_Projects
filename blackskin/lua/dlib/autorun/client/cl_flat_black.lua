@@ -13,6 +13,8 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+DLib.RegisterAddonName('BlackFlat Skin')
+
 _G.DFlatBlack = _G.DFlatBlack or {}
 local FontIsOverrided = false
 

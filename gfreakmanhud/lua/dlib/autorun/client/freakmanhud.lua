@@ -25,6 +25,8 @@ local LocalPlayer = LocalPlayer
 local ScrWL = ScrWL
 local ScrHL = ScrHL
 
+DLib.RegisterAddonName('Freakman HUD')
+
 local ENABLE = CreateConVar('cl_freakman_hud', '1', {FCVAR_ARCHIVE}, 'Enable Gordon Freakman HUD')
 local ENABLE2 = CreateConVar('sv_freakman_hud', '1', {FCVAR_REPLICATED}, 'Enable Gordon Freakman HUD')
 

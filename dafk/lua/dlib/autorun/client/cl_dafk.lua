@@ -22,6 +22,8 @@ local TEXT = CreateConVar('cl_dafk_text', '1', FCVAR_ARCHIVE, 'Draw text on the 
 local CAMERA_HIDE = CreateConVar('cl_dafk_hide', '1', FCVAR_ARCHIVE, 'Stop drawing AFK effects when camera is deployed')
 local FOCUS = CreateConVar('cl_dafk_focus', '1', FCVAR_ARCHIVE, 'Broadcast message whatever your game window is focused')
 
+DLib.RegisterAddonName('DAFK')
+
 local freezeTimer = false
 local freezeTime = 0
 local fadeAt = 0

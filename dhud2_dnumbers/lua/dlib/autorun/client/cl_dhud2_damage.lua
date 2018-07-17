@@ -13,6 +13,8 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+DLib.RegisterAddonName('DHUD/2')
+
 local ENABLED = CreateConVar('cl_dhud2_dnumbers', '1', {FCVAR_ARCHIVE}, 'Enable damage numbers')
 
 local net = net

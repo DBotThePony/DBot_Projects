@@ -13,6 +13,8 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+DLib.RegisterAddonName('DConnecttt')
+
 local HUD_POSITION = DLib.HUDCommons.DefinePosition('dconnecttt', 0, 0)
 local COLOR_TO_USE = DLib.HUDCommons.CreateColor('dconnecttt_bg', 'DConnecttt Background', 0, 0, 0, 150)
 local COLOR_TO_USE_TEXT = DLib.HUDCommons.CreateColor('dconnecttt', 'DConnecttt Background', 255, 255, 255)

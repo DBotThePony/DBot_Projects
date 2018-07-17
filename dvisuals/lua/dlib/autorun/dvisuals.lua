@@ -114,6 +114,8 @@ if SERVER then
 	return
 end
 
+DLib.RegisterAddonName('DVisuals')
+
 include('DVisuals/static_particles.lua')
 include('DVisuals/explosion.lua')
 include('DVisuals/water.lua')

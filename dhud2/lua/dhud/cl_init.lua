@@ -15,6 +15,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
+DLib.RegisterAddonName('DHUD/2')
+
 local ENABLE = CreateConVar('dhud_enable', '1', FCVAR_ARCHIVE, 'Enable DHUD2')
 local ENABLE_SHIFT = CreateConVar('dhud_shift', '1', FCVAR_ARCHIVE, 'Enable Shifting')
 

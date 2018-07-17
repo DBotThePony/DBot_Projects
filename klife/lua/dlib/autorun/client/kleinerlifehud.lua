@@ -26,6 +26,8 @@ local ScrWL = ScrWL
 local ScrHL = ScrHL
 local math = math
 
+DLib.RegisterAddonName('Kleiner-Life HUD')
+
 local ENABLE = CreateConVar('cl_klife_hud', '1', {FCVAR_ARCHIVE}, 'Enable Kleiner Life HUD')
 local ENABLE2 = CreateConVar('sv_klife_hud', '1', {FCVAR_REPLICATED}, 'Enable Kleiner Life HUD')
 

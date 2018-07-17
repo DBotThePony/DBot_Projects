@@ -18,6 +18,8 @@ local ALLOW_FRIENDS_ONLY = CreateConVar('cl_dsit_friendsonly', '0', {FCVAR_ARCHI
 local SEND_MESSAGE = CreateConVar('cl_dsit_message', '1', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'React to "get off" in chat')
 local MAXIMUM_ON_ME = CreateConVar('cl_dsit_maxonme', '0', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'Maximum players on you. 0 to disable')
 
+DLib.RegisterAddonName('DSit')
+
 local messaging = DLib.chat.registerWithMessages({}, 'DSit')
 local DSIT_TRACKED_VEHICLES = _G.DSIT_TRACKED_VEHICLES
 
