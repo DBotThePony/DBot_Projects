@@ -38,6 +38,7 @@ local schat
 if CLIENT then
 	CreateConVar('cl_touchme_enabled', '1', {FCVAR_USERINFO, FCVAR_ARCHIVE}, 'Enable Touch Me')
 	schat = DLib.chat.registerWithMessages({}, 'Touch Me')
+	DLib.RegisterAddonName('Touch Me')
 else
 	schat = DLib.chat.generate('Touch Me', schat)
 end

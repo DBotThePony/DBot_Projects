@@ -18,6 +18,9 @@
 export DTF2
 DTF2 = DTF2 or {}
 
+if CLIENT
+	DLib.RegisterAddonName('TF2 Buildables')
+
 BOOL_OR_FUNC = (val, undef = true, ...) ->
 	switch type(val)
 		when 'function'

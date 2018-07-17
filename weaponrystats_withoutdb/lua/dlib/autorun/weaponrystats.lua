@@ -31,6 +31,8 @@ if SERVER then
 	AddCSLuaFile('cl_hud.lua')
 	AddCSLuaFile('cl_util.lua')
 	AddCSLuaFile('cl_hooks.lua')
+else
+	DLib.RegisterAddonName('Weaponry Stats')
 end
 
 weaponrystats = {}
