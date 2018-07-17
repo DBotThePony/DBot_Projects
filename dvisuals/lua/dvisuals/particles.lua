@@ -116,6 +116,7 @@ hook.Add('PostDrawHUD', 'DVisuals.RenderParticles', function()
 	render.PushFilterMin(TEXFILTER.POINT)
 
 	for i, particleData in ipairs(particles) do
+		particleData.mat:SetFloat('$alpha', particleData.color.a / 255)
 		surface.SetDrawColor(particleData.color)
 		surface.SetMaterial(particleData.mat)
 		surface.DrawTexturedRectRotated(particleData.x, particleData.y, particleData.size, particleData.size, particleData.rotation)
@@ -244,7 +245,7 @@ local function createParticle(matData)
 		start = time,
 		startfade = time + ttl * 0.75,
 		endtime = time + ttl,
-		color = matData.grabColor(),
+		color = Color(matData.grabColor()),
 		size = size,
 		rotateScatter = rotateScatter,
 		walkScatter = walkScatter,

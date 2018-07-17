@@ -40,6 +40,7 @@ hook.Add('PostDrawHUD', 'DVisuals.RenderStaticParticles', function()
 	render.PushFilterMin(TEXFILTER.POINT)
 
 	for i, particleData in ipairs(particles) do
+		particleData.mat:SetFloat('$alpha', particleData.color.a / 255)
 		surface.SetDrawColor(particleData.color)
 		surface.SetMaterial(particleData.mat)
 		surface.DrawTexturedRectRotated(particleData.x, particleData.y, particleData.size, particleData.size, particleData.rotation)
@@ -67,7 +68,7 @@ function DVisuals.CreateParticle(mat, ttl, size, color)
 		start = time,
 		startfade = time + ttl * 0.75,
 		endtime = time + ttl,
-		color = color or Color(),
+		color = Color(color or Color()),
 		size = size,
 		wash = true,
 		rotation = math.random(360) - 180,
@@ -90,7 +91,7 @@ function DVisuals.CreateParticleOverrided(mat, ttl, size, overrides)
 		start = overrides.start or time,
 		startfade = overrides.startfade or time + ttl * 0.75,
 		endtime = overrides.endtime or time + ttl,
-		color = overrides.color or Color(),
+		color = Color(overrides.color or Color()),
 		size = size,
 		wash = overrides.wash == true,
 		rotation = overrides.rotation or (math.random(360) - 180),

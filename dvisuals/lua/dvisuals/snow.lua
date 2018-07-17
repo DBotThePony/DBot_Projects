@@ -18,7 +18,7 @@
 local particles = {}
 
 for i = 0, 3 do
-	local mat = CreateMaterial('enchancedvisuals/splat/snow/snow' .. i .. '.png')
+	local mat = Material('enchancedvisuals/splat/snow/snow' .. i .. '.png')
 	table.insert(particles, mat)
 end
 

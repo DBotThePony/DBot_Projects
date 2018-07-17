@@ -32,15 +32,18 @@ local pierceparticles = {}
 local impactparticles = {}
 
 for i = 0, 4 do
-	table.insert(slashparticles, Material('enchancedvisuals/splat/slash/slash' .. i .. '.png'))
+	local mat = Material('enchancedvisuals/splat/slash/slash' .. i .. '.png')
+	table.insert(slashparticles, mat)
 end
 
 for i = 0, 2 do
-	table.insert(pierceparticles, Material('enchancedvisuals/splat/pierce/pierce' .. i .. '.png'))
+	local mat = Material('enchancedvisuals/splat/pierce/pierce' .. i .. '.png')
+	table.insert(pierceparticles, mat)
 end
 
 for i = 0, 2 do
-	table.insert(impactparticles, Material('enchancedvisuals/splat/impact/impact' .. i .. '.png'))
+	local mat = Material('enchancedvisuals/splat/impact/impact' .. i .. '.png')
+	table.insert(impactparticles, mat)
 end
 
 local bloodColorGen = {

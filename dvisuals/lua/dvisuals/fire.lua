@@ -35,7 +35,8 @@ local fireparticles = {
 local snowparticles = {}
 
 for i = 0, 3 do
-	table.insert(snowparticles, Material('enchancedvisuals/splat/snow/snow' .. i .. '.png'))
+	local mat = Material('enchancedvisuals/splat/snow/snow' .. i .. '.png')
+	table.insert(snowparticles, mat)
 end
 
 local fires = Material('enchancedvisuals/overlay/heat/heat0.png')
