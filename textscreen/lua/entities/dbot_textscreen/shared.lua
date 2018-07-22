@@ -19,6 +19,9 @@ ENT.Author = 'DBot'
 ENT.Spawnable = true
 ENT.AdminSpawnable = true
 
+local NORMAL_SIZE = 24
+local sizeConst = NORMAL_SIZE + NORMAL_SIZE:lshift(8) + NORMAL_SIZE:lshift(16) + NORMAL_SIZE:lshift(24)
+
 function ENT:SetupDataTables()
 	self:NetworkVar('Bool', 0, 'IsPersistent')
 	self:NetworkVar('Bool', 1, 'AlwaysDraw')
@@ -53,10 +56,10 @@ function ENT:SetupDataTables()
 	self:SetTextFontSlot3(0)
 	self:SetTextFontSlot4(0)
 
-	self:SetTextSizeSlot1(0)
-	self:SetTextSizeSlot2(0)
-	self:SetTextSizeSlot3(0)
-	self:SetTextSizeSlot4(0)
+	self:SetTextSizeSlot1(sizeConst)
+	self:SetTextSizeSlot2(sizeConst)
+	self:SetTextSizeSlot3(sizeConst)
+	self:SetTextSizeSlot4(sizeConst)
 
 	self:SetTextAlignSlot1(0)
 	self:SetTextAlignSlot2(0)
@@ -71,13 +74,44 @@ function ENT:SetupDataTables()
 	end
 end
 
+for i = 1, 16 do
+	ENT['SetColor' .. i] = function(self, color)
+		self['SetTextColor' .. i](self, color:ToNumber())
+	end
+
+	ENT['SetTextColorEasy' .. i] = function(self, color)
+		self['SetTextColor' .. i](self, color:ToNumber())
+	end
+
+	local textSlotPos = 1 + ((i - 1) / 4):floor()
+	local textAlignPos = 1 + ((i - 1) / 8):floor()
+	local perBit = 4 - i % 4
+	local perBitAlign = 8 - i % 8
+	local fontmask = (0xFF):lshift(perBit * 8):bnot()
+	local alignMask = (0xF):lshift(perBitAlign * 4):bnot()
+
+	ENT['SetTextSize' .. i] = function(self, newID)
+		local oldID = self['GetTextSizeSlot' .. textSlotPos](self)
+		self['SetTextSizeSlot' .. textSlotPos](self, oldID:band(fontmask):bor(newID:band(0xFF):lshift(perBit * 8)))
+	end
+
+	ENT['SetFontID' .. i] = function(self, newID)
+		local oldID = self['GetTextFontSlot' .. textSlotPos](self)
+		self['SetTextFontSlot' .. textSlotPos](self, oldID:band(fontmask):bor(newID:band(0xFF):lshift(perBit * 8)))
+	end
+
+	ENT['SetAlign' .. i] = function(self, newID)
+		local oldID = self['GetTextAlignSlot' .. textSlotPos](self)
+		self['SetTextAlignSlot' .. textSlotPos](self, oldID:band(alignMask):bor(newID:band(0xF):lshift(perBitAlign * 4)))
+	end
+end
+
 function ENT:Initialize()
 	self:SetModel('models/props_phx/construct/metal_plate1x2.mdl')
-	
+
 	if SERVER then
 		self:InitializeSV()
 	else
 		self:InitializeCL()
 	end
 end
-

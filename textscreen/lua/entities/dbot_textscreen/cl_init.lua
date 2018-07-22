@@ -22,21 +22,11 @@ local CRC = util.CRC
 local surface = surface
 local LocalToWorld = LocalToWorld
 local Vector = Vector
+local cam = cam
 
 ENT.RenderGroup = RENDERGROUP_BOTH
 
-function ENT:DrawText()
-	for i, lineData in ipairs(self.Lines) do
-		for i2, line in ipairs(lineData.draw) do
-			local lineStuff = lineData.data[i2]
-			surface.SetFont(lineStuff.font)
-			surface.SetTextColor(lineStuff.color)
-
-			surface.SetTextPos(line.x, line.y)
-			surface.DrawText(lineStuff.text)
-		end
-	end
-end
+local NORMAL_SIZE = 24
 
 local debugprint = print:Compose(debug.traceback)
 local emptyAng = Angle(0, 90, 0)
@@ -46,11 +36,25 @@ function ENT:DrawTranslucent()
 
 	local pos, ang = self:GetPos(), self:GetAngles()
 
-	local lpos, lang = LocalToWorld(Vector(-self.TotalHeight / 2, -self.TotalWidth / 2, 20) * 0.25, emptyAng, pos, ang)
+	for i, lineData in ipairs(self.Lines) do
+		for i2, line in ipairs(lineData.draw) do
+			local lineStuff = lineData.data[i2]
 
-	cam.Start3D2D(lpos, lang, 0.25)
-	xpcall(self.DrawText, debugprint, self)
-	cam.End3D2D()
+			local xInCanvas = -self.TotalHeight / 2 + line.y
+			local yInCanvas = -self.TotalWidth / 2 + line.x
+
+			local posInCanvas = Vector(xInCanvas, yInCanvas, 20) * 0.25
+			local lpos, lang = LocalToWorld(posInCanvas, emptyAng, pos, ang)
+
+			cam.Start3D2D(lpos, lang, lineStuff.mult * 0.25)
+			surface.SetFont(lineStuff.font)
+			surface.SetTextColor(lineStuff.color)
+
+			surface.SetTextPos(0, 0)
+			surface.DrawText(lineStuff.text)
+			cam.End3D2D()
+		end
+	end
 end
 
 function ENT:Draw()
@@ -163,6 +167,7 @@ function ENT:ParseNWValues()
 				font = font[line].id,
 				color = color[line],
 				size = size[line],
+				mult = size[line] / NORMAL_SIZE,
 				alignFlags = align[line],
 
 				align = {
@@ -199,8 +204,8 @@ function ENT:ParseNWValues()
 			surface.SetFont(data.font)
 			local w, h = surface.GetTextSize(data.text .. ' ')
 
-			lW = lW + w
-			lH = lH:max(h)
+			lW = lW + w * data.mult
+			lH = lH:max(h * data.mult)
 		end
 
 		self.TotalWidth = self.TotalWidth:max(lW)
@@ -211,6 +216,8 @@ function ENT:ParseNWValues()
 			surface.SetFont(data.font)
 			local w, h = surface.GetTextSize(data.text)
 			local w2, h2 = surface.GetTextSize(' ')
+			w, h = w * data.mult, h * data.mult
+			w2, h2 = w2 * data.mult, h2 * data.mult
 
 			local delta = lH - h
 			local ypos = delta / 2
@@ -278,9 +285,9 @@ function ENT:Think()
 
 	if IsValid(ply) then
 		self.ShouldDrawWorldModel = self:GetAlwaysDraw() or
-			not self:GetNeverDraw() and 
+			not self:GetNeverDraw() and
 			(ply:GetActiveWeaponClass() == 'weapon_physgun' or ply:GetActiveWeaponClass() == 'gmod_tool')
-			
+
 	end
 
 	return true
