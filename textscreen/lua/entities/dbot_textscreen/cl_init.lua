@@ -269,16 +269,12 @@ function ENT:ParseNWValues()
 end
 
 function ENT:InitializeCL()
-	self.NextStateCheck = RealTimeL() + 10
 	self.ShouldDrawWorldModel = false
 	self:CheckForChanges()
 end
 
 function ENT:Think()
-	if self.NextStateCheck < RealTimeL() then
-		self:CheckForChanges()
-	end
-
+	self:CheckForChanges()
 	self:SetNextClientThink(CurTimeL() + 1)
 
 	local ply = DLib.HUDCommons.SelectPlayer()

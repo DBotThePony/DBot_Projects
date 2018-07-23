@@ -18,6 +18,8 @@ if not TEXT_SCREEN_AVALIABLE_FONTS then
 	return
 end
 
+DLib.RegisterAddonName('TextScreens')
+
 for k, font in pairs(TEXT_SCREEN_AVALIABLE_FONTS) do
 	if font.definition then
 		surface.CreateFont(font.id, font.definition)
