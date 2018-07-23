@@ -45,7 +45,7 @@ hook.Add('PhysgunDrop', 'DBot_TextScreens', function(ply, ent)
 	if ent:GetClass() ~= 'dbot_textscreen' then return end
 
 	if not ent:GetIsMovable() then
-		local phys = self:GetPhysicsObject()
+		local phys = ent:GetPhysicsObject()
 
 		if phys:IsValid() then
 			phys:EnableMotion(false)
