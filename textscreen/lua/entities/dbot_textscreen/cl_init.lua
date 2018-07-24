@@ -237,9 +237,9 @@ function ENT:ParseNWValues()
 			local delta = lH - h
 			local ypos = delta / 2
 
-			if lineData.align.top then
+			if data.align.top then
 				ypos = 0
-			elseif lineData.align.bottom then
+			elseif data.align.bottom then
 				ypos = delta
 			end
 
