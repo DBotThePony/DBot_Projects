@@ -96,15 +96,13 @@ if CLIENT then
 		end
 
 		for i = 1, 16 do
-			local spoiler = vgui.Create('DCollapsibleCategory', self)
+			local spoiler = vgui.Create('DForm', self)
 			spoiler:Dock(TOP)
 			spoiler:SetExpanded(false)
 			spoiler:SetLabel('gui.tool.textscreens.spoiler', i)
 			spoiler:DockMargin(0, 8, 0, 8)
 
-			local canvas = vgui.Create('EditablePanel', spoiler)
-
-			local toparent = self:Button('gui.tool.textscreens.reset_this')
+			local toparent = spoiler:Button('gui.tool.textscreens.reset_this')
 
 			toparent.DoClick = function()
 				for k, v in pairs(perCategory[i]) do
@@ -112,17 +110,7 @@ if CLIENT then
 				end
 			end
 
-			toparent:SetParent(canvas)
-			toparent:Dock(TOP)
-			toparent:DockMargin(8, 8, 8, 8)
-
-			local toparent, toparent2 = self:ComboBox('gui.tool.textscreens.font')
-			toparent2:SetParent(canvas)
-			toparent2:Dock(TOP)
-			toparent2:DockMargin(8, 8, 8, 8)
-			toparent:SetParent(canvas)
-			toparent:Dock(TOP)
-			toparent:DockMargin(8, 8, 8, 8)
+			toparent = spoiler:ComboBox('gui.tool.textscreens.font')
 
 			for i, fontdata in ipairs(TEXT_SCREEN_AVALIABLE_FONTS) do
 				toparent:AddChoice(fontdata.name)
@@ -134,13 +122,8 @@ if CLIENT then
 				RunConsoleCommand('dtextscreen_font_' .. i, tostring(index - 1))
 			end
 
-			toparent, toparent2 = self:ComboBox('gui.tool.textscreens.align.line')
-			toparent2:SetParent(canvas)
-			toparent2:Dock(TOP)
-			toparent2:DockMargin(8, 8, 8, 8)
-			toparent:SetParent(canvas)
-			toparent:Dock(TOP)
-			toparent:DockMargin(8, 8, 8, 8)
+			toparent = spoiler:ComboBox('gui.tool.textscreens.align.line')
+
 			toparent:AddChoice('gui.tool.textscreens.align.center')
 			toparent:AddChoice('gui.tool.textscreens.align.right')
 			toparent:AddChoice('gui.tool.textscreens.align.left')
@@ -152,25 +135,12 @@ if CLIENT then
 			)
 
 			toparent.OnSelect = function(_, index, value)
-				if index == 1 then
-					RunConsoleCommand('dtextscreen_align_left_' .. i, '0')
-					RunConsoleCommand('dtextscreen_align_right_' .. i, '0')
-				elseif index == 2 then
-					RunConsoleCommand('dtextscreen_align_left_' .. i, '0')
-					RunConsoleCommand('dtextscreen_align_right_' .. i, '1')
-				else
-					RunConsoleCommand('dtextscreen_align_left_' .. i, '1')
-					RunConsoleCommand('dtextscreen_align_right_' .. i, '0')
-				end
+				RunConsoleCommand('dtextscreen_align_left_' .. i, index == 3 and '1' or '0')
+				RunConsoleCommand('dtextscreen_align_right_' .. i, index == 2 and '1' or '0')
 			end
 
-			toparent, toparent2 = self:ComboBox('gui.tool.textscreens.align.row')
-			toparent2:SetParent(canvas)
-			toparent2:Dock(TOP)
-			toparent2:DockMargin(8, 8, 8, 8)
-			toparent:SetParent(canvas)
-			toparent:Dock(TOP)
-			toparent:DockMargin(8, 8, 8, 8)
+			toparent = spoiler:ComboBox('gui.tool.textscreens.align.row')
+
 			toparent:AddChoice('gui.tool.textscreens.align.center')
 			toparent:AddChoice('gui.tool.textscreens.align.top')
 			toparent:AddChoice('gui.tool.textscreens.align.bottom')
@@ -182,35 +152,13 @@ if CLIENT then
 			)
 
 			toparent.OnSelect = function(_, index, value)
-				if index == 1 then
-					RunConsoleCommand('dtextscreen_align_top_' .. i, '0')
-					RunConsoleCommand('dtextscreen_align_bottom_' .. i, '0')
-				elseif index == 2 then
-					RunConsoleCommand('dtextscreen_align_top_' .. i, '1')
-					RunConsoleCommand('dtextscreen_align_bottom_' .. i, '0')
-				else
-					RunConsoleCommand('dtextscreen_align_top_' .. i, '0')
-					RunConsoleCommand('dtextscreen_align_bottom_' .. i, '1')
-				end
+				RunConsoleCommand('dtextscreen_align_top_' .. i, index == 2 and '1' or '0')
+				RunConsoleCommand('dtextscreen_align_bottom_' .. i, index == 3 and '1' or '0')
 			end
 
-			toparent, toparent2 = self:TextEntry('gui.tool.textscreens.text', 'dtextscreen_text_' .. i)
-			toparent2:SetParent(canvas)
-			toparent2:Dock(TOP)
-			toparent2:DockMargin(8, 8, 8, 8)
-			toparent:SetParent(canvas)
-			toparent:Dock(TOP)
-			toparent:DockMargin(8, 8, 8, 8)
-
-			toparent = self:NumSlider('gui.tool.textscreens.fontsize', 'dtextscreen_size_' .. i, 8, 128, 0)
-			toparent:SetParent(canvas)
-			toparent:Dock(TOP)
-			toparent:DockMargin(8, 8, 8, 8)
-
-			toparent = self:CheckBox('gui.tool.textscreens.newline', 'dtextscreen_newline_' .. i)
-			toparent:SetParent(canvas)
-			toparent:Dock(TOP)
-			toparent:DockMargin(8, 8, 8, 8)
+			spoiler:TextEntry('gui.tool.textscreens.text', 'dtextscreen_text_' .. i)
+			spoiler:NumSlider('gui.tool.textscreens.fontsize', 'dtextscreen_size_' .. i, 8, 128, 0)
+			spoiler:CheckBox('gui.tool.textscreens.newline', 'dtextscreen_newline_' .. i)
 
 			local mixer = vgui.Create('DColorMixer', spoiler)
 			mixer:Dock(TOP)
@@ -221,7 +169,7 @@ if CLIENT then
 			mixer:SetConVarB('dtextscreen_color_' .. i .. '_b')
 			mixer:SetConVarA('dtextscreen_color_' .. i .. '_a')
 
-			spoiler:SetContents(canvas)
+			spoiler:AddItem(mixer)
 		end
 	end
 end
