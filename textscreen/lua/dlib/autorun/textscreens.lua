@@ -20,7 +20,8 @@ TEXT_SCREEN_AVALIABLE_FONTS = {
 		definition = {
 			font = 'PT Sans',
 			size = 80,
-			weight = 500
+			weight = 500,
+			extended = true
 		},
 		mult = 0.6
 	},
@@ -31,7 +32,8 @@ TEXT_SCREEN_AVALIABLE_FONTS = {
 			font = 'PT Sans',
 			italic = true,
 			size = 80,
-			weight = 500
+			weight = 500,
+			extended = true
 		},
 		mult = 0.6
 	},
@@ -41,7 +43,8 @@ TEXT_SCREEN_AVALIABLE_FONTS = {
 		definition = {
 			font = 'PT Sans',
 			size = 80,
-			weight = 600
+			weight = 600,
+			extended = true
 		},
 		mult = 0.6
 	},
@@ -52,7 +55,8 @@ TEXT_SCREEN_AVALIABLE_FONTS = {
 			font = 'PT Sans',
 			italic = true,
 			size = 80,
-			weight = 600
+			weight = 600,
+			extended = true
 		},
 		mult = 0.6
 	},
@@ -62,7 +66,8 @@ TEXT_SCREEN_AVALIABLE_FONTS = {
 		definition = {
 			font = 'Roboto',
 			size = 80,
-			weight = 500
+			weight = 500,
+			extended = true
 		},
 		mult = 0.6
 	},
@@ -72,7 +77,8 @@ TEXT_SCREEN_AVALIABLE_FONTS = {
 		definition = {
 			font = 'Roboto',
 			size = 80,
-			weight = 600
+			weight = 600,
+			extended = true
 		},
 		mult = 0.6
 	},
@@ -82,7 +88,8 @@ TEXT_SCREEN_AVALIABLE_FONTS = {
 		definition = {
 			font = 'Roboto',
 			size = 80,
-			weight = 800
+			weight = 800,
+			extended = true
 		},
 		mult = 0.6
 	},
@@ -98,7 +105,8 @@ TEXT_SCREEN_AVALIABLE_FONTS = {
 		definition = {
 			font = 'Exo 2',
 			size = 80,
-			weight = 500
+			weight = 500,
+			extended = true
 		},
 		mult = 0.6
 	},
@@ -108,7 +116,8 @@ TEXT_SCREEN_AVALIABLE_FONTS = {
 		definition = {
 			font = 'Exo 2',
 			size = 80,
-			weight = 400
+			weight = 400,
+			extended = true
 		},
 		mult = 0.6
 	},
@@ -118,7 +127,8 @@ TEXT_SCREEN_AVALIABLE_FONTS = {
 		definition = {
 			font = 'Exo 2 Thin',
 			size = 80,
-			weight = 500
+			weight = 500,
+			extended = true
 		},
 		mult = 0.6
 	},
@@ -129,7 +139,8 @@ TEXT_SCREEN_AVALIABLE_FONTS = {
 			font = 'Exo 2',
 			size = 80,
 			italic = true,
-			weight = 400
+			weight = 400,
+			extended = true
 		},
 		mult = 0.6
 	},
@@ -140,7 +151,8 @@ TEXT_SCREEN_AVALIABLE_FONTS = {
 			font = 'Exo 2 Thin',
 			size = 80,
 			italic = true,
-			weight = 300
+			weight = 300,
+			extended = true
 		},
 		mult = 0.6
 	},
@@ -150,7 +162,8 @@ TEXT_SCREEN_AVALIABLE_FONTS = {
 		definition = {
 			font = 'Exo 2',
 			size = 80,
-			weight = 600
+			weight = 600,
+			extended = true
 		},
 		mult = 0.6
 	},
@@ -160,7 +173,8 @@ TEXT_SCREEN_AVALIABLE_FONTS = {
 		definition = {
 			font = 'Exo 2',
 			size = 80,
-			weight = 800
+			weight = 800,
+			extended = true
 		},
 		mult = 0.6
 	},
@@ -171,7 +185,8 @@ TEXT_SCREEN_AVALIABLE_FONTS = {
 			font = 'Exo 2',
 			italic = true,
 			size = 80,
-			weight = 800
+			weight = 800,
+			extended = true
 		},
 		mult = 0.6
 	},
