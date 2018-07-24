@@ -110,46 +110,52 @@ if CLIENT then
 				end
 			end
 
-			toparent = spoiler:ComboBox('gui.tool.textscreens.font')
+			local toparent = spoiler:ComboBox('gui.tool.textscreens.font')
 
 			for i, fontdata in ipairs(TEXT_SCREEN_AVALIABLE_FONTS) do
 				toparent:AddChoice(fontdata.name)
 			end
 
-			toparent:SetValue(TEXT_SCREEN_AVALIABLE_FONTS[(GetConVar('dtextscreen_font_' .. i):GetInt() + 1):clamp(1, #TEXT_SCREEN_AVALIABLE_FONTS + 1)].name)
+			hook.Add('DTextScreen.SettingsUpdate', toparent, function()
+				toparent:SetValue(TEXT_SCREEN_AVALIABLE_FONTS[(GetConVar('dtextscreen_font_' .. i):GetInt() + 1):clamp(1, #TEXT_SCREEN_AVALIABLE_FONTS + 1)].name)
+			end)
 
 			toparent.OnSelect = function(_, index, value)
 				RunConsoleCommand('dtextscreen_font_' .. i, tostring(index - 1))
 			end
 
-			toparent = spoiler:ComboBox('gui.tool.textscreens.align.line')
+			local toparent = spoiler:ComboBox('gui.tool.textscreens.align.line')
 
 			toparent:AddChoice('gui.tool.textscreens.align.center')
 			toparent:AddChoice('gui.tool.textscreens.align.right')
 			toparent:AddChoice('gui.tool.textscreens.align.left')
 
-			toparent:SetValue(
-				GetConVar('dtextscreen_align_left_' .. i):GetBool() and 'gui.tool.textscreens.align.left' or
-				GetConVar('dtextscreen_align_right_' .. i):GetBool() and 'gui.tool.textscreens.align.right' or
-				'gui.tool.textscreens.align.center'
-			)
+			hook.Add('DTextScreen.SettingsUpdate', toparent, function()
+				toparent:SetValue(
+					GetConVar('dtextscreen_align_left_' .. i):GetBool() and 'gui.tool.textscreens.align.left' or
+					GetConVar('dtextscreen_align_right_' .. i):GetBool() and 'gui.tool.textscreens.align.right' or
+					'gui.tool.textscreens.align.center'
+				)
+			end)
 
 			toparent.OnSelect = function(_, index, value)
 				RunConsoleCommand('dtextscreen_align_left_' .. i, index == 3 and '1' or '0')
 				RunConsoleCommand('dtextscreen_align_right_' .. i, index == 2 and '1' or '0')
 			end
 
-			toparent = spoiler:ComboBox('gui.tool.textscreens.align.row')
+			local toparent = spoiler:ComboBox('gui.tool.textscreens.align.row')
 
 			toparent:AddChoice('gui.tool.textscreens.align.center')
 			toparent:AddChoice('gui.tool.textscreens.align.top')
 			toparent:AddChoice('gui.tool.textscreens.align.bottom')
 
-			toparent:SetValue(
-				GetConVar('dtextscreen_align_top_' .. i):GetBool() and 'gui.tool.textscreens.align.top' or
-				GetConVar('dtextscreen_align_bottom_' .. i):GetBool() and 'gui.tool.textscreens.align.bottom' or
-				'gui.tool.textscreens.align.center'
-			)
+			hook.Add('DTextScreen.SettingsUpdate', toparent, function()
+				toparent:SetValue(
+					GetConVar('dtextscreen_align_top_' .. i):GetBool() and 'gui.tool.textscreens.align.top' or
+					GetConVar('dtextscreen_align_bottom_' .. i):GetBool() and 'gui.tool.textscreens.align.bottom' or
+					'gui.tool.textscreens.align.center'
+				)
+			end)
 
 			toparent.OnSelect = function(_, index, value)
 				RunConsoleCommand('dtextscreen_align_top_' .. i, index == 2 and '1' or '0')
@@ -171,6 +177,8 @@ if CLIENT then
 
 			spoiler:AddItem(mixer)
 		end
+
+		hook.Run('DTextScreen.SettingsUpdate')
 	end
 end
 
@@ -258,6 +266,8 @@ if CLIENT then
 			RunConsoleCommand('dtextscreen_text_' .. i, '')
 			RunConsoleCommand('dtextscreen_newline_' .. i, '1')
 		end
+
+		hook.Run('DTextScreen.SettingsUpdate')
 	end
 
 	net.receive('dtextscreen_copy', function()
