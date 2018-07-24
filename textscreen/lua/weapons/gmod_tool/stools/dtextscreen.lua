@@ -71,10 +71,28 @@ if CLIENT then
 	function TOOL:BuildCPanel()
 		if not IsValid(self) then return end
 
+		local manager = vgui.Create('ControlPresets', self)
+		self:AddItem(manager)
+
+		for k, v in pairs(TOOL.ClientConVar) do
+			manager:AddConVar('dtextscreen_' .. k)
+		end
+
+		local oldOnSelect = manager.OnSelect
+
+		function manager:OnSelect(...)
+			oldOnSelect(self, ...)
+			hook.Run('DTextScreen.SettingsUpdate')
+		end
+
+		manager:SetPreset('dtextscreens')
+
 		self:Button('gui.tool.textscreens.reset').DoClick = function()
 			for k, v in pairs(TOOL.ClientConVar) do
 				RunConsoleCommand('dtextscreen_' .. k, v)
 			end
+
+			hook.Run('DTextScreen.SettingsUpdate')
 		end
 
 		self:CheckBox('gui.tool.textscreens.movable', 'dtextscreen_movable')
