@@ -13,7 +13,7 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-gui.tool.textscreens.font_al = 'Set all lines font to'
+gui.tool.textscreens.font_all = 'Set all lines font to'
 gui.tool.textscreens.font = 'Text font'
 gui.tool.textscreens.reset = 'Reset all values'
 gui.tool.textscreens.reset_this = 'Reset these values'
