@@ -253,6 +253,11 @@ if CLIENT then
 
 			if total == 17 then break end
 		end
+
+		for i = total, 16 do
+			RunConsoleCommand('dtextscreen_text_' .. i, '')
+			RunConsoleCommand('dtextscreen_newline_' .. i, '1')
+		end
 	end
 
 	net.receive('dtextscreen_copy', function()
