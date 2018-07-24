@@ -13,6 +13,7 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+gui.tool.textscreens.font_al = 'Set all lines font to'
 gui.tool.textscreens.font = 'Text font'
 gui.tool.textscreens.reset = 'Reset all values'
 gui.tool.textscreens.reset_this = 'Reset these values'
@@ -20,3 +21,12 @@ gui.tool.textscreens.spoiler = 'Text line %i'
 gui.tool.textscreens.text = 'Text'
 gui.tool.textscreens.newline = 'Put this text on a new line.'
 gui.tool.textscreens.fontsize = 'Font size'
+
+gui.tool.textscreens.align.line = 'Align per line'
+gui.tool.textscreens.align.row = 'Align per row'
+
+gui.tool.textscreens.align.left = 'Left'
+gui.tool.textscreens.align.right = 'Right'
+gui.tool.textscreens.align.center = 'Center'
+gui.tool.textscreens.align.top = 'Top'
+gui.tool.textscreens.align.bottom = 'Bottom'

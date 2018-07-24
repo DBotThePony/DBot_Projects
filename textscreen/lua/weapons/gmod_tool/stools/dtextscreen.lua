@@ -33,7 +33,7 @@ for i = 1, 16 do
 		['align_left_' .. i] = '0',
 		['align_right_' .. i] = '0',
 		['align_top_' .. i] = '0',
-		['align_down_' .. i] = '0',
+		['align_bottom_' .. i] = '0',
 		['font_' .. i] = '0',
 		['size_' .. i] = '24',
 		['color_' .. i .. '_r'] = '200',
@@ -69,6 +69,19 @@ if CLIENT then
 		self:Button('gui.tool.textscreens.reset').DoClick = function()
 			for k, v in pairs(TOOL.ClientConVar) do
 				RunConsoleCommand('dtextscreen_' .. k, v)
+			end
+		end
+
+		local combobox = self:ComboBox('gui.tool.textscreens.font_all')
+
+		for i, fontdata in ipairs(TEXT_SCREEN_AVALIABLE_FONTS) do
+			combobox:AddChoice(fontdata.name)
+		end
+
+		combobox:SetValue(TEXT_SCREEN_AVALIABLE_FONTS[1].name)
+		combobox.OnSelect = function(_, index, value)
+			for i = 1, 16 do
+				RunConsoleCommand('dtextscreen_font_' .. i, tostring(index - 1))
 			end
 		end
 
@@ -109,6 +122,66 @@ if CLIENT then
 
 			toparent.OnSelect = function(_, index, value)
 				RunConsoleCommand('dtextscreen_font_' .. i, tostring(index - 1))
+			end
+
+			toparent, toparent2 = self:ComboBox('gui.tool.textscreens.align.line')
+			toparent2:SetParent(canvas)
+			toparent2:Dock(TOP)
+			toparent2:DockMargin(8, 8, 8, 8)
+			toparent:SetParent(canvas)
+			toparent:Dock(TOP)
+			toparent:DockMargin(8, 8, 8, 8)
+			toparent:AddChoice('gui.tool.textscreens.align.center')
+			toparent:AddChoice('gui.tool.textscreens.align.right')
+			toparent:AddChoice('gui.tool.textscreens.align.left')
+
+			toparent:SetValue(
+				GetConVar('dtextscreen_align_left_' .. i):GetBool() and 'gui.tool.textscreens.align.left' or
+				GetConVar('dtextscreen_align_right_' .. i):GetBool() and 'gui.tool.textscreens.align.right' or
+				'gui.tool.textscreens.align.center'
+			)
+
+			toparent.OnSelect = function(_, index, value)
+				if index == 1 then
+					RunConsoleCommand('dtextscreen_align_left_' .. i, '0')
+					RunConsoleCommand('dtextscreen_align_right_' .. i, '0')
+				elseif index == 2 then
+					RunConsoleCommand('dtextscreen_align_left_' .. i, '0')
+					RunConsoleCommand('dtextscreen_align_right_' .. i, '1')
+				else
+					RunConsoleCommand('dtextscreen_align_left_' .. i, '1')
+					RunConsoleCommand('dtextscreen_align_right_' .. i, '0')
+				end
+			end
+
+			toparent, toparent2 = self:ComboBox('gui.tool.textscreens.align.row')
+			toparent2:SetParent(canvas)
+			toparent2:Dock(TOP)
+			toparent2:DockMargin(8, 8, 8, 8)
+			toparent:SetParent(canvas)
+			toparent:Dock(TOP)
+			toparent:DockMargin(8, 8, 8, 8)
+			toparent:AddChoice('gui.tool.textscreens.align.center')
+			toparent:AddChoice('gui.tool.textscreens.align.top')
+			toparent:AddChoice('gui.tool.textscreens.align.bottom')
+
+			toparent:SetValue(
+				GetConVar('dtextscreen_align_top_' .. i):GetBool() and 'gui.tool.textscreens.align.top' or
+				GetConVar('dtextscreen_align_bottom_' .. i):GetBool() and 'gui.tool.textscreens.align.bottom' or
+				'gui.tool.textscreens.align.center'
+			)
+
+			toparent.OnSelect = function(_, index, value)
+				if index == 1 then
+					RunConsoleCommand('dtextscreen_align_top_' .. i, '0')
+					RunConsoleCommand('dtextscreen_align_bottom_' .. i, '0')
+				elseif index == 2 then
+					RunConsoleCommand('dtextscreen_align_top_' .. i, '1')
+					RunConsoleCommand('dtextscreen_align_bottom_' .. i, '0')
+				else
+					RunConsoleCommand('dtextscreen_align_top_' .. i, '0')
+					RunConsoleCommand('dtextscreen_align_bottom_' .. i, '1')
+				end
 			end
 
 			toparent, toparent2 = self:TextEntry('gui.tool.textscreens.text', 'dtextscreen_text_' .. i)
@@ -166,6 +239,16 @@ if CLIENT then
 			local align = ent['GetAlign' .. i](ent)
 			local color = ent['GetColor' .. i](ent)
 
+			local left, right, top, bottom =
+				align:band(TEXT_SCREEN_ALIGN_LEFT) == TEXT_SCREEN_ALIGN_LEFT,
+				align:band(TEXT_SCREEN_ALIGN_RIGHT) == TEXT_SCREEN_ALIGN_RIGHT,
+				align:band(TEXT_SCREEN_ALIGN_TOP) == TEXT_SCREEN_ALIGN_TOP,
+				align:band(TEXT_SCREEN_ALIGN_BOTTOM) == TEXT_SCREEN_ALIGN_BOTTOM,
+
+			RunConsoleCommand('dtextscreen_align_left_' .. i, left and '1' or '0')
+			RunConsoleCommand('dtextscreen_align_right_' .. i, right and '1' or '0')
+			RunConsoleCommand('dtextscreen_align_top_' .. i, top and '1' or '0')
+			RunConsoleCommand('dtextscreen_align_bottom_' .. i, bottom and '1' or '0')
 			RunConsoleCommand('dtextscreen_font_' .. i, font:tostring())
 			RunConsoleCommand('dtextscreen_size_' .. i, size:tostring())
 			RunConsoleCommand('dtextscreen_color_' .. i .. '_r', color.r:tostring())
@@ -279,12 +362,35 @@ function TOOL:LeftClick(tr)
 
 		if text ~= '' then
 			local newline = tobool(self:GetClientInfo('newline_' .. i))
+			local left = tobool(self:GetClientInfo('align_left_' .. i))
+			local right = tobool(self:GetClientInfo('align_right_' .. i))
+			local top = tobool(self:GetClientInfo('align_top_' .. i))
+			local bottom = tobool(self:GetClientInfo('align_bottom_' .. i))
+
 			local font = tonumber(self:GetClientInfo('font_' .. i)) or 0
 			local size = tonumber(self:GetClientInfo('size_' .. i)) or 24
 			local r = tonumber(self:GetClientInfo('color_' .. i .. '_r')) or 200
 			local g = tonumber(self:GetClientInfo('color_' .. i .. '_g')) or 200
 			local b = tonumber(self:GetClientInfo('color_' .. i .. '_b')) or 200
 			local a = tonumber(self:GetClientInfo('color_' .. i .. '_a')) or 200
+
+			local alignFlags = 0
+
+			if left then
+				alignFlags = alignFlags + TEXT_SCREEN_ALIGN_LEFT
+			end
+
+			if right then
+				alignFlags = alignFlags + TEXT_SCREEN_ALIGN_RIGHT
+			end
+
+			if top then
+				alignFlags = alignFlags + TEXT_SCREEN_ALIGN_TOP
+			end
+
+			if bottom then
+				alignFlags = alignFlags + TEXT_SCREEN_ALIGN_BOTTOM
+			end
 
 			if finaltext then
 				if newline then
@@ -299,7 +405,7 @@ function TOOL:LeftClick(tr)
 			textscreen['SetColor' .. i](textscreen, Color(r, g, b, a))
 			textscreen['SetTextSize' .. i](textscreen, size:clamp(8, 128))
 			textscreen['SetFontID' .. i](textscreen, font:clamp(0, #TEXT_SCREEN_AVALIABLE_FONTS - 1))
-			textscreen['SetAlign' .. i](textscreen, 0)
+			textscreen['SetAlign' .. i](textscreen, alignFlags)
 		else
 			textscreen['SetTextColor' .. i](textscreen, -0x37373701)
 			textscreen['SetTextSize' .. i](textscreen, 24)
