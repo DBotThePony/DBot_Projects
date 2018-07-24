@@ -22,6 +22,11 @@ gui.tool.textscreens.text = 'Text'
 gui.tool.textscreens.newline = 'Put this text on a new line.'
 gui.tool.textscreens.fontsize = 'Font size'
 
+gui.tool.textscreens.movable = 'Make physics affected'
+gui.tool.textscreens.doubledraw = 'DoubleDraw (draw both sides)'
+gui.tool.textscreens.alwaysdraw = 'Always draw model'
+gui.tool.textscreens.neverdraw = 'Never draw model'
+
 gui.tool.textscreens.align.line = 'Align per line'
 gui.tool.textscreens.align.row = 'Align per row'
 

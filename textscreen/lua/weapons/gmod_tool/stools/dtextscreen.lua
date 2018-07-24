@@ -49,6 +49,11 @@ for i, category in ipairs(perCategory) do
 	end
 end
 
+TOOL.ClientConVar['movable'] = '0'
+TOOL.ClientConVar['doubledraw'] = '1'
+TOOL.ClientConVar['always_draw'] = '0'
+TOOL.ClientConVar['never_draw'] = '0'
+
 if CLIENT then
 	TOOL.Information = {
 		{name = 'left'},
@@ -71,6 +76,11 @@ if CLIENT then
 				RunConsoleCommand('dtextscreen_' .. k, v)
 			end
 		end
+
+		self:CheckBox('gui.tool.textscreens.movable', 'dtextscreen_movable')
+		self:CheckBox('gui.tool.textscreens.doubledraw', 'dtextscreen_doubledraw')
+		self:CheckBox('gui.tool.textscreens.alwaysdraw', 'dtextscreen_always_draw')
+		self:CheckBox('gui.tool.textscreens.neverdraw', 'dtextscreen_never_draw')
 
 		local combobox = self:ComboBox('gui.tool.textscreens.font_all')
 
@@ -257,6 +267,11 @@ if CLIENT then
 			RunConsoleCommand('dtextscreen_color_' .. i .. '_a', color.a:tostring())
 		end
 
+		RunConsoleCommand('dtextscreen_doubledraw', ent:GetDoubleDraw() and '1' or '0')
+		RunConsoleCommand('dtextscreen_always_draw', ent:GetAlwaysDraw() and '1' or '0')
+		RunConsoleCommand('dtextscreen_never_draw', ent:GetNeverDraw() and '1' or '0')
+		RunConsoleCommand('dtextscreen_movable', ent:GetIsMovable() and '1' or '0')
+
 		local textraw = ent:GetTextSlot1() .. ent:GetTextSlot2() .. ent:GetTextSlot3() .. ent:GetTextSlot4()
 		local text = textraw:split('\n')
 		local total = 1
@@ -337,6 +352,10 @@ function TOOL:LeftClick(tr)
 		textscreen = ents.Create('dbot_textscreen')
 		textscreen:SetPos(tr.HitPos + tr.HitNormal * 6)
 
+		textscreen:SetIsMovable(tobool(self:GetClientInfo('movable')))
+		textscreen:SetAlwaysDraw(tobool(self:GetClientInfo('always_draw')))
+		textscreen:SetNeverDraw(tobool(self:GetClientInfo('never_draw')))
+
 		local ang = tr.HitNormal:Angle()
 		ang:RotateAroundAxis(ang:Right(), -90)
 
@@ -354,6 +373,8 @@ function TOOL:LeftClick(tr)
 	end
 
 	if CLIENT then return true end
+
+	textscreen:SetDoubleDraw(tobool(self:GetClientInfo('doubledraw')))
 
 	local finaltext
 
