@@ -93,17 +93,37 @@ if CLIENT then
 			toparent:Dock(TOP)
 			toparent:DockMargin(8, 8, 8, 8)
 
-			local toparent, toparent2 = self:TextEntry('gui.tool.textscreens.text', 'dtextscreen_text_' .. i)
+			local toparent, toparent2 = self:ComboBox('gui.tool.textscreens.font')
 			toparent2:SetParent(canvas)
 			toparent2:Dock(TOP)
 			toparent2:DockMargin(8, 8, 8, 8)
 			toparent:SetParent(canvas)
 			toparent:Dock(TOP)
 			toparent:DockMargin(8, 8, 8, 8)
+
+			for i, fontdata in ipairs(TEXT_SCREEN_AVALIABLE_FONTS) do
+				toparent:AddChoice(fontdata.name)
+			end
+
+			toparent:SetValue(TEXT_SCREEN_AVALIABLE_FONTS[(GetConVar('dtextscreen_font_' .. i):GetInt() + 1):clamp(1, #TEXT_SCREEN_AVALIABLE_FONTS + 1)].name)
+
+			toparent.OnSelect = function(_, index, value)
+				RunConsoleCommand('dtextscreen_font_' .. i, tostring(index - 1))
+			end
+
+			toparent, toparent2 = self:TextEntry('gui.tool.textscreens.text', 'dtextscreen_text_' .. i)
+			toparent2:SetParent(canvas)
+			toparent2:Dock(TOP)
+			toparent2:DockMargin(8, 8, 8, 8)
+			toparent:SetParent(canvas)
+			toparent:Dock(TOP)
+			toparent:DockMargin(8, 8, 8, 8)
+
 			toparent = self:NumSlider('gui.tool.textscreens.fontsize', 'dtextscreen_size_' .. i, 8, 128, 0)
 			toparent:SetParent(canvas)
 			toparent:Dock(TOP)
 			toparent:DockMargin(8, 8, 8, 8)
+
 			toparent = self:CheckBox('gui.tool.textscreens.newline', 'dtextscreen_newline_' .. i)
 			toparent:SetParent(canvas)
 			toparent:Dock(TOP)
@@ -278,7 +298,7 @@ function TOOL:LeftClick(tr)
 
 			textscreen['SetColor' .. i](textscreen, Color(r, g, b, a))
 			textscreen['SetTextSize' .. i](textscreen, size:clamp(8, 128))
-			textscreen['SetFontID' .. i](textscreen, font:clamp(0, #TEXT_SCREEN_AVALIABLE_FONTS))
+			textscreen['SetFontID' .. i](textscreen, font:clamp(0, #TEXT_SCREEN_AVALIABLE_FONTS - 1))
 			textscreen['SetAlign' .. i](textscreen, 0)
 		else
 			textscreen['SetTextColor' .. i](textscreen, -0x37373701)

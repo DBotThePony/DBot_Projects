@@ -130,10 +130,10 @@ function ENT:ParseNWValues()
 
 	for i = 1, 4 do
 		local a, b, c, d = fonts(self['GetTextFontSlot' .. i](self))
-		table.insert(font, TEXT_SCREEN_AVALIABLE_FONTS[a - 1] or TEXT_SCREEN_AVALIABLE_FONTS[1])
-		table.insert(font, TEXT_SCREEN_AVALIABLE_FONTS[b - 1] or TEXT_SCREEN_AVALIABLE_FONTS[1])
-		table.insert(font, TEXT_SCREEN_AVALIABLE_FONTS[c - 1] or TEXT_SCREEN_AVALIABLE_FONTS[1])
-		table.insert(font, TEXT_SCREEN_AVALIABLE_FONTS[d - 1] or TEXT_SCREEN_AVALIABLE_FONTS[1])
+		table.insert(font, TEXT_SCREEN_AVALIABLE_FONTS[a + 1] or TEXT_SCREEN_AVALIABLE_FONTS[1])
+		table.insert(font, TEXT_SCREEN_AVALIABLE_FONTS[b + 1] or TEXT_SCREEN_AVALIABLE_FONTS[1])
+		table.insert(font, TEXT_SCREEN_AVALIABLE_FONTS[c + 1] or TEXT_SCREEN_AVALIABLE_FONTS[1])
+		table.insert(font, TEXT_SCREEN_AVALIABLE_FONTS[d + 1] or TEXT_SCREEN_AVALIABLE_FONTS[1])
 	end
 
 	for i = 1, 4 do
@@ -169,7 +169,7 @@ function ENT:ParseNWValues()
 				font = font[line].id,
 				color = color[line],
 				size = size[line],
-				mult = size[line] / NORMAL_SIZE,
+				mult = (size[line] / NORMAL_SIZE) * (font[line].mult or 1),
 				alignFlags = align[line],
 
 				align = {
