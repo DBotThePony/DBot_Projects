@@ -27,8 +27,8 @@ gui.tool.textscreens.doubledraw = 'DoubleDraw (draw both sides)'
 gui.tool.textscreens.alwaysdraw = 'Always draw model'
 gui.tool.textscreens.neverdraw = 'Never draw model'
 
-gui.tool.textscreens.align.line = 'Align per line'
-gui.tool.textscreens.align.row = 'Align per row'
+gui.tool.textscreens.align.line = 'Align per line (H)'
+gui.tool.textscreens.align.row = 'Align per row (V)'
 
 gui.tool.textscreens.align.left = 'Left'
 gui.tool.textscreens.align.right = 'Right'
