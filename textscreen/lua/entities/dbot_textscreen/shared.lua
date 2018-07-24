@@ -22,6 +22,8 @@ ENT.AdminSpawnable = true
 local NORMAL_SIZE = 24
 local sizeConst = NORMAL_SIZE + NORMAL_SIZE:lshift(8) + NORMAL_SIZE:lshift(16) + NORMAL_SIZE:lshift(24)
 
+local SERVER = SERVER
+
 function ENT:SetupDataTables()
 	self:NetworkVar('Bool', 0, 'IsPersistent')
 	self:NetworkVar('Bool', 1, 'AlwaysDraw')
@@ -30,7 +32,7 @@ function ENT:SetupDataTables()
 
 	for i = 0, 3 do
 		self:NetworkVar('String', i, 'TextSlot' .. (i + 1))
-		self['SetTextSlot' .. (i + 1)](self, '')
+		if SERVER then self['SetTextSlot' .. (i + 1)](self, '') end
 	end
 
 	self:NetworkVar('Int', 0, 'TextFontSlot1')
@@ -40,7 +42,7 @@ function ENT:SetupDataTables()
 
 	for i = 0, 15 do
 		self:NetworkVar('Int', 4 + i, 'TextColor' .. (i + 1))
-		self['SetTextColor' .. (i + 1)](self, 0xFFFFFFFF)
+		if SERVER then self['SetTextColor' .. (i + 1)](self, 0xFFFFFFFF) end
 	end
 
 	self:NetworkVar('Int', 20, 'TextSizeSlot1')
@@ -51,36 +53,40 @@ function ENT:SetupDataTables()
 	self:NetworkVar('Int', 24, 'TextAlignSlot1')
 	self:NetworkVar('Int', 25, 'TextAlignSlot2')
 
-	self:SetTextFontSlot1(0)
-	self:SetTextFontSlot2(0)
-	self:SetTextFontSlot3(0)
-	self:SetTextFontSlot4(0)
-
-	self:SetTextSizeSlot1(sizeConst)
-	self:SetTextSizeSlot2(sizeConst)
-	self:SetTextSizeSlot3(sizeConst)
-	self:SetTextSizeSlot4(sizeConst)
-
-	self:SetTextAlignSlot1(0)
-	self:SetTextAlignSlot2(0)
-
-	self:SetNeverDraw(false)
-	self:SetAlwaysDraw(false)
-	self:SetIsPersistent(false)
-	self:SetIsMovable(false)
-
 	if SERVER then
+		self:SetTextFontSlot1(0)
+		self:SetTextFontSlot2(0)
+		self:SetTextFontSlot3(0)
+		self:SetTextFontSlot4(0)
+
+		self:SetTextSizeSlot1(sizeConst)
+		self:SetTextSizeSlot2(sizeConst)
+		self:SetTextSizeSlot3(sizeConst)
+		self:SetTextSizeSlot4(sizeConst)
+
+		self:SetTextAlignSlot1(0)
+		self:SetTextAlignSlot2(0)
+
+		self:SetNeverDraw(false)
+		self:SetAlwaysDraw(false)
+		self:SetIsPersistent(false)
+		self:SetIsMovable(false)
+
 		self:NetworkVarNotify('IsMovable', self.UpdatePhysics)
 	end
 end
 
 for i = 1, 16 do
 	ENT['SetColor' .. i] = function(self, color)
-		self['SetTextColor' .. i](self, color:ToNumber())
+		self['SetTextColor' .. i](self, color:ToNumber(true))
+	end
+
+	ENT['GetColor' .. i] = function(self, color)
+		return ColorBE(self['GetTextColor' .. i](self), true)
 	end
 
 	ENT['SetTextColorEasy' .. i] = function(self, color)
-		self['SetTextColor' .. i](self, color:ToNumber())
+		self['SetTextColor' .. i](self, color:ToNumber(true))
 	end
 
 	local textSlotPos = 1 + ((i - 1) / 4):floor()
@@ -95,14 +101,26 @@ for i = 1, 16 do
 		self['SetTextSizeSlot' .. textSlotPos](self, oldID:band(fontmask):bor(newID:band(0xFF):lshift(perBit * 8)))
 	end
 
+	ENT['GetTextSize' .. i] = function(self, newID)
+		return self['GetTextSizeSlot' .. textSlotPos](self):rshift(perBit * 8):band(0xFF)
+	end
+
 	ENT['SetFontID' .. i] = function(self, newID)
 		local oldID = self['GetTextFontSlot' .. textSlotPos](self)
 		self['SetTextFontSlot' .. textSlotPos](self, oldID:band(fontmask):bor(newID:band(0xFF):lshift(perBit * 8)))
 	end
 
+	ENT['GetFontID' .. i] = function(self, newID)
+		return self['GetTextFontSlot' .. textSlotPos](self):rshift(perBit * 8):band(0xFF)
+	end
+
 	ENT['SetAlign' .. i] = function(self, newID)
-		local oldID = self['GetTextAlignSlot' .. textSlotPos](self)
-		self['SetTextAlignSlot' .. textSlotPos](self, oldID:band(alignMask):bor(newID:band(0xF):lshift(perBitAlign * 4)))
+		local oldID = self['GetTextAlignSlot' .. textAlignPos](self)
+		self['SetTextAlignSlot' .. textAlignPos](self, oldID:band(alignMask):bor(newID:band(0xF):lshift(perBitAlign * 4)))
+	end
+
+	ENT['GetAlign' .. i] = function(self, newID)
+		return self['GetTextAlignSlot' .. textAlignPos](self):rshift(perBitAlign * 4):band(0xF)
 	end
 end
 
@@ -114,4 +132,6 @@ function ENT:Initialize()
 	else
 		self:InitializeCL()
 	end
+
+	self:DrawShadow(false)
 end

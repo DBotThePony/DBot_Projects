@@ -13,6 +13,8 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+include('shared.lua')
+
 local LocalPlayer = LocalPlayer
 local util = util
 local table = table
@@ -143,7 +145,7 @@ function ENT:ParseNWValues()
 	end
 
 	for i = 1, 16 do
-		table.insert(color, ColorBE(self['GetTextColor' .. i](self)))
+		table.insert(color, ColorBE(self['GetTextColor' .. i](self), true))
 	end
 
 	self.Lines = {}
