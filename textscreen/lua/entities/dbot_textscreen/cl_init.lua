@@ -214,7 +214,7 @@ function ENT:ParseNWValues()
 		-- pass one - determine line bounds
 		for i, data in ipairs(lineData.data) do
 			surface.SetFont(data.font)
-			local w, h = surface.GetTextSize(data.text .. ' ')
+			local w, h = surface.GetTextSize(data.text)
 
 			lW = lW + w * data.mult
 			lH = lH:max(h * data.mult)
