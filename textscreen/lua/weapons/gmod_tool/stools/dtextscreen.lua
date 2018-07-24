@@ -333,7 +333,6 @@ function TOOL:LeftClick(tr)
 		textscreen = ents.Create('dbot_textscreen')
 		textscreen:SetPos(tr.HitPos + tr.HitNormal * 6)
 
-		textscreen:SetIsMovable(tobool(self:GetClientInfo('movable')))
 		textscreen:SetAlwaysDraw(tobool(self:GetClientInfo('always_draw')))
 		textscreen:SetNeverDraw(tobool(self:GetClientInfo('never_draw')))
 
@@ -356,6 +355,7 @@ function TOOL:LeftClick(tr)
 	if CLIENT then return true end
 
 	textscreen:SetDoubleDraw(tobool(self:GetClientInfo('doubledraw')))
+	textscreen:SetIsMovable(tobool(self:GetClientInfo('movable')))
 
 	local finaltext
 
