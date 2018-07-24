@@ -93,6 +93,9 @@ function ENT:HashsumState()
 	sum = (sum + self:GetTextSizeSlot3()) % 0x7FFFFFFF
 	sum = (sum + self:GetTextSizeSlot4()) % 0x7FFFFFFF
 
+	sum = (sum + self:GetTextAlignSlot1()) % 0x7FFFFFFF
+	sum = (sum + self:GetTextAlignSlot2()) % 0x7FFFFFFF
+
 	for i = 1, 16 do
 		sum = (sum + self['GetTextColor' .. i](self)) % 0x7FFFFFFF
 	end
