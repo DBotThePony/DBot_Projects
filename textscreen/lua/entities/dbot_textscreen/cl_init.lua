@@ -33,11 +33,7 @@ local NORMAL_SIZE = 24
 local debugprint = print:Compose(debug.traceback)
 local emptyAng = Angle(0, 90, 0)
 
-function ENT:DrawTranslucent()
-	if not self.Lines then return end
-
-	local pos, ang = self:GetPos(), self:GetAngles()
-
+function ENT:DrawLines(pos, ang)
 	for i, lineData in ipairs(self.Lines) do
 		for i2, line in ipairs(lineData.draw) do
 			local lineStuff = lineData.data[i2]
@@ -56,6 +52,20 @@ function ENT:DrawTranslucent()
 			surface.DrawText(lineStuff.text)
 			cam.End3D2D()
 		end
+	end
+end
+
+function ENT:DrawTranslucent()
+	if not self.Lines then return end
+
+	local pos, ang = self:GetPos(), self:GetAngles()
+
+	self:DrawLines(pos, ang)
+
+	if self:GetDoubleDraw() then
+		ang:RotateAroundAxis(ang:Right(), 180)
+		ang:RotateAroundAxis(ang:Up(), 180)
+		self:DrawLines(pos, ang)
 	end
 end
 

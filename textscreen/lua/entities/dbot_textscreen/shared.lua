@@ -29,6 +29,7 @@ function ENT:SetupDataTables()
 	self:NetworkVar('Bool', 1, 'AlwaysDraw')
 	self:NetworkVar('Bool', 2, 'NeverDraw')
 	self:NetworkVar('Bool', 3, 'IsMovable')
+	self:NetworkVar('Bool', 4, 'DoubleDraw')
 
 	for i = 0, 3 do
 		self:NetworkVar('String', i, 'TextSlot' .. (i + 1))
@@ -71,6 +72,7 @@ function ENT:SetupDataTables()
 		self:SetAlwaysDraw(false)
 		self:SetIsPersistent(false)
 		self:SetIsMovable(false)
+		self:SetDoubleDraw(true)
 
 		self:NetworkVarNotify('IsMovable', self.UpdatePhysics)
 	end
