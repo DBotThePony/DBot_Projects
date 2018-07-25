@@ -124,6 +124,20 @@ if CLIENT then
 				hook.Run('DTextScreen.SettingsUpdate')
 			end
 
+			if i ~= 16 and i ~= 1 then
+				local toparent = spoiler:Button('gui.tool.textscreens.reset_this_under')
+
+				toparent.DoClick = function()
+					for i2 = i, 16 do
+						for k, v in pairs(perCategory[i2]) do
+							RunConsoleCommand('dtextscreen_' .. k, v)
+						end
+					end
+
+					hook.Run('DTextScreen.SettingsUpdate')
+				end
+			end
+
 			local toparent = spoiler:ComboBox('gui.tool.textscreens.font')
 
 			for i, fontdata in ipairs(DTextScreens.FONTS) do
