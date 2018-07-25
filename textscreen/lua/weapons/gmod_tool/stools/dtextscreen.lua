@@ -103,6 +103,8 @@ if CLIENT then
 			for i = 1, 16 do
 				RunConsoleCommand('dtextscreen_font_' .. i, tostring(index - 1))
 			end
+
+			hook.Run('DTextScreen.SettingsUpdate')
 		end
 
 		for i = 1, 16 do
@@ -118,6 +120,8 @@ if CLIENT then
 				for k, v in pairs(perCategory[i]) do
 					RunConsoleCommand('dtextscreen_' .. k, v)
 				end
+
+				hook.Run('DTextScreen.SettingsUpdate')
 			end
 
 			local toparent = spoiler:ComboBox('gui.tool.textscreens.font')
