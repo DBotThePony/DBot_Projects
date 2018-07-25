@@ -19,7 +19,7 @@ gui.tool.textscreens.reset = 'Reset all values'
 gui.tool.textscreens.reset_this = 'Reset these values'
 gui.tool.textscreens.spoiler = 'Text line %i'
 gui.tool.textscreens.text = 'Text'
-gui.tool.textscreens.newline = 'Put this text on a new line.'
+gui.tool.textscreens.newline = 'Put this text on a new line'
 gui.tool.textscreens.fontsize = 'Font size'
 
 gui.tool.textscreens.movable = 'Make screen be gravity affected'
