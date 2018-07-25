@@ -248,3 +248,60 @@ DTextScreens.ALIGN_LEFT = 1
 DTextScreens.ALIGN_RIGHT = 2
 DTextScreens.ALIGN_TOP = 4
 DTextScreens.ALIGN_BOTTOM = 8
+
+local hook = hook
+local IsValid = FindMetaTable('Entity').IsValid
+local net = net
+local LocalPlayer = LocalPlayer
+
+properties.Add('dtextscreen_clone', {
+	Type = 'simple',
+	MenuLabel = 'gui.property.dtextscreens.clone',
+	Order = 1919,
+	MenuIcon = 'icon16/font_go.png',
+
+	Filter = function(self, ent, ply)
+		ply = ply or LocalPlayer()
+		if not IsValid(ent) then return false end
+		if ent:GetClass() ~= 'dbot_textscreen' then return false end
+		if not ply:CheckLimit('dtextscreens') then return false end
+		return hook.Run('CanProparty', ply, 'dtextscreen_clone', ent) ~= false
+	end,
+
+	Action = function(self, ent, tr)
+		self:MsgStart()
+		net.WriteEntity(ent)
+		self:MsgEnd()
+	end,
+
+	Receive = function(self, len, ply)
+		local ent = net.ReadEntity()
+
+		if not self:Filter(ent, ply) then return false end
+
+		if not ply:CheckLimit('dtextscreens') then return false end
+		if CLIENT then return true end
+
+		local clone = ents.Create('dbot_textscreen')
+
+		clone:SetPos(ent:GetPos() + ent:GetAngles():Up() * 32)
+		clone:SetAngles(ent:GetAngles())
+
+		undo.Create('DTextscreen')
+		undo.AddEntity(clone)
+		undo.SetPlayer(ply)
+		undo.Finish()
+
+		ply:AddCleanup('dtextscreen', clone)
+		ply:AddCount('dtextscreens', clone)
+
+		ent:CloneInto(clone)
+
+		clone:Spawn()
+		clone:Activate()
+
+		clone:DropToFloor()
+
+		return true
+	end
+})

@@ -56,3 +56,4 @@ message.textscreens.status.spawned = 'Spawned present textscreens from database 
 
 gui.property.dtextscreens.new = 'Make persistent textscreen'
 gui.property.dtextscreens.remove = 'Remove persistent textscreen'
+gui.property.dtextscreens.clone = 'Clone this textscreen'
