@@ -64,10 +64,6 @@ if CLIENT then
 	DLib.i18n.RegisterProxy('tool.dtextscreen.left')
 	DLib.i18n.RegisterProxy('tool.dtextscreen.right')
 
-	local function AddLine(self, id)
-
-	end
-
 	function TOOL:BuildCPanel()
 		if not IsValid(self) then return end
 
@@ -102,11 +98,11 @@ if CLIENT then
 
 		local combobox = self:ComboBox('gui.tool.textscreens.font_all')
 
-		for i, fontdata in ipairs(TEXT_SCREEN_AVALIABLE_FONTS) do
+		for i, fontdata in ipairs(DTextScreens.FONTS) do
 			combobox:AddChoice(fontdata.name)
 		end
 
-		combobox:SetValue(TEXT_SCREEN_AVALIABLE_FONTS[1].name)
+		combobox:SetValue(DTextScreens.FONTS[1].name)
 		combobox.OnSelect = function(_, index, value)
 			for i = 1, 16 do
 				RunConsoleCommand('dtextscreen_font_' .. i, tostring(index - 1))
@@ -130,12 +126,12 @@ if CLIENT then
 
 			local toparent = spoiler:ComboBox('gui.tool.textscreens.font')
 
-			for i, fontdata in ipairs(TEXT_SCREEN_AVALIABLE_FONTS) do
+			for i, fontdata in ipairs(DTextScreens.FONTS) do
 				toparent:AddChoice(fontdata.name)
 			end
 
 			hook.Add('DTextScreen.SettingsUpdate', toparent, function()
-				toparent:SetValue(TEXT_SCREEN_AVALIABLE_FONTS[(GetConVar('dtextscreen_font_' .. i):GetInt() + 1):clamp(1, #TEXT_SCREEN_AVALIABLE_FONTS + 1)].name)
+				toparent:SetValue(DTextScreens.FONTS[(GetConVar('dtextscreen_font_' .. i):GetInt() + 1):clamp(1, #DTextScreens.FONTS + 1)].name)
 			end)
 
 			toparent.OnSelect = function(_, index, value)
@@ -224,10 +220,10 @@ if CLIENT then
 			local color = ent['GetColor' .. i](ent)
 
 			local left, right, top, bottom =
-				align:band(TEXT_SCREEN_ALIGN_LEFT) == TEXT_SCREEN_ALIGN_LEFT,
-				align:band(TEXT_SCREEN_ALIGN_RIGHT) == TEXT_SCREEN_ALIGN_RIGHT,
-				align:band(TEXT_SCREEN_ALIGN_TOP) == TEXT_SCREEN_ALIGN_TOP,
-				align:band(TEXT_SCREEN_ALIGN_BOTTOM) == TEXT_SCREEN_ALIGN_BOTTOM,
+				align:band(DTextScreens.ALIGN_LEFT) == DTextScreens.ALIGN_LEFT,
+				align:band(DTextScreens.ALIGN_RIGHT) == DTextScreens.ALIGN_RIGHT,
+				align:band(DTextScreens.ALIGN_TOP) == DTextScreens.ALIGN_TOP,
+				align:band(DTextScreens.ALIGN_BOTTOM) == DTextScreens.ALIGN_BOTTOM,
 
 			RunConsoleCommand('dtextscreen_align_left_' .. i, left and '1' or '0')
 			RunConsoleCommand('dtextscreen_align_right_' .. i, right and '1' or '0')
@@ -379,19 +375,19 @@ function TOOL:LeftClick(tr)
 			local alignFlags = 0
 
 			if left then
-				alignFlags = alignFlags + TEXT_SCREEN_ALIGN_LEFT
+				alignFlags = alignFlags + DTextScreens.ALIGN_LEFT
 			end
 
 			if right then
-				alignFlags = alignFlags + TEXT_SCREEN_ALIGN_RIGHT
+				alignFlags = alignFlags + DTextScreens.ALIGN_RIGHT
 			end
 
 			if top then
-				alignFlags = alignFlags + TEXT_SCREEN_ALIGN_TOP
+				alignFlags = alignFlags + DTextScreens.ALIGN_TOP
 			end
 
 			if bottom then
-				alignFlags = alignFlags + TEXT_SCREEN_ALIGN_BOTTOM
+				alignFlags = alignFlags + DTextScreens.ALIGN_BOTTOM
 			end
 
 			if finaltext then
@@ -406,7 +402,7 @@ function TOOL:LeftClick(tr)
 
 			textscreen['SetColor' .. i](textscreen, Color(r, g, b, a))
 			textscreen['SetTextSize' .. i](textscreen, size:clamp(8, 128))
-			textscreen['SetFontID' .. i](textscreen, font:clamp(0, #TEXT_SCREEN_AVALIABLE_FONTS - 1))
+			textscreen['SetFontID' .. i](textscreen, font:clamp(0, #DTextScreens.FONTS - 1))
 			textscreen['SetAlign' .. i](textscreen, alignFlags)
 		else
 			textscreen['SetTextColor' .. i](textscreen, -0x37373701)

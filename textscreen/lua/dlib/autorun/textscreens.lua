@@ -13,7 +13,29 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-TEXT_SCREEN_AVALIABLE_FONTS = {
+_G.DTextScreens = DTextScreens or {}
+
+DLib.CMessage(DTextScreens, 'DTextScreens')
+
+CAMI.RegisterPrivilege({
+	Name = 'dtextscreen_new',
+	MinLevel = 'superadmin',
+	Description = 'Ability to put new permanent screens'
+})
+
+CAMI.RegisterPrivilege({
+	Name = 'dtextscreen_remove',
+	MinLevel = 'superadmin',
+	Description = 'Ability to remove existing permanent screens'
+})
+
+CAMI.RegisterPrivilege({
+	Name = 'dtextscreen_reload',
+	MinLevel = 'admin',
+	Description = 'Ability to reload existing permanent screens from database'
+})
+
+DTextScreens.FONTS = {
 	{
 		name = 'PT Sans',
 		id = 'textscreen.ptsans',
@@ -214,15 +236,15 @@ local defaults = {
 }
 
 for i, name in ipairs(defaults) do
-	table.insert(TEXT_SCREEN_AVALIABLE_FONTS, {
+	table.insert(DTextScreens.FONTS, {
 		name = 'GMod Default: ' .. name,
 		id = name,
 		mult = 4,
 	})
 end
 
-TEXT_SCREEN_ALIGN_CENTER = 0
-TEXT_SCREEN_ALIGN_LEFT = 1
-TEXT_SCREEN_ALIGN_RIGHT = 2
-TEXT_SCREEN_ALIGN_TOP = 4
-TEXT_SCREEN_ALIGN_BOTTOM = 8
+DTextScreens.ALIGN_CENTER = 0
+DTextScreens.ALIGN_LEFT = 1
+DTextScreens.ALIGN_RIGHT = 2
+DTextScreens.ALIGN_TOP = 4
+DTextScreens.ALIGN_BOTTOM = 8

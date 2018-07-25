@@ -13,14 +13,14 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-if not TEXT_SCREEN_AVALIABLE_FONTS then
-	DLib.Message('FATAL: Unable to find TEXT_SCREEN_AVALIABLE_FONTS for textscreens!')
+if not DTextScreens.FONTS then
+	DLib.Message('FATAL: Unable to find DTextScreens.FONTS for textscreens!')
 	return
 end
 
 DLib.RegisterAddonName('TextScreens')
 
-for k, font in pairs(TEXT_SCREEN_AVALIABLE_FONTS) do
+for k, font in pairs(DTextScreens.FONTS) do
 	if font.definition then
 		surface.CreateFont(font.id, font.definition)
 	end

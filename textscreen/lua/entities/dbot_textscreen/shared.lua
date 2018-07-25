@@ -78,6 +78,29 @@ function ENT:SetupDataTables()
 	end
 end
 
+local cloneFuncs = {'TextAlignSlot1', 'TextAlignSlot2'}
+
+for i = 1, 4 do
+	table.insert(cloneFuncs, 'TextSlot' .. i)
+	table.insert(cloneFuncs, 'TextSizeSlot' .. i)
+	table.insert(cloneFuncs, 'TextFontSlot' .. i)
+end
+
+for i = 1, 16 do
+	table.insert(cloneFuncs, 'TextColor' .. i)
+end
+
+function ENT:CloneInto(ent)
+	ent:SetIsMovable(self:GetIsMovable())
+	ent:SetNeverDraw(self:GetNeverDraw())
+	ent:SetAlwaysDraw(self:GetAlwaysDraw())
+	ent:SetDoubleDraw(self:GetDoubleDraw())
+
+	for i, funcname in ipairs(cloneFuncs) do
+		ent['Set' .. funcname](ent, self['Get' .. funcname](self))
+	end
+end
+
 for i = 1, 16 do
 	ENT['SetColor' .. i] = function(self, color)
 		self['SetTextColor' .. i](self, color:ToNumber(true))

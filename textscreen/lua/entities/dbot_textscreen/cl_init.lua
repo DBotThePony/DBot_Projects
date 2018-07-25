@@ -143,10 +143,10 @@ function ENT:ParseNWValues()
 
 	for i = 1, 4 do
 		local a, b, c, d = fonts(self['GetTextFontSlot' .. i](self))
-		table.insert(font, TEXT_SCREEN_AVALIABLE_FONTS[a + 1] or TEXT_SCREEN_AVALIABLE_FONTS[1])
-		table.insert(font, TEXT_SCREEN_AVALIABLE_FONTS[b + 1] or TEXT_SCREEN_AVALIABLE_FONTS[1])
-		table.insert(font, TEXT_SCREEN_AVALIABLE_FONTS[c + 1] or TEXT_SCREEN_AVALIABLE_FONTS[1])
-		table.insert(font, TEXT_SCREEN_AVALIABLE_FONTS[d + 1] or TEXT_SCREEN_AVALIABLE_FONTS[1])
+		table.insert(font, DTextScreens.FONTS[a + 1] or DTextScreens.FONTS[1])
+		table.insert(font, DTextScreens.FONTS[b + 1] or DTextScreens.FONTS[1])
+		table.insert(font, DTextScreens.FONTS[c + 1] or DTextScreens.FONTS[1])
+		table.insert(font, DTextScreens.FONTS[d + 1] or DTextScreens.FONTS[1])
 	end
 
 	for i = 1, 4 do
@@ -186,10 +186,10 @@ function ENT:ParseNWValues()
 				alignFlags = align[line],
 
 				align = {
-					left = align[line]:band(TEXT_SCREEN_ALIGN_LEFT) == TEXT_SCREEN_ALIGN_LEFT,
-					right = align[line]:band(TEXT_SCREEN_ALIGN_RIGHT) == TEXT_SCREEN_ALIGN_RIGHT,
-					top = align[line]:band(TEXT_SCREEN_ALIGN_TOP) == TEXT_SCREEN_ALIGN_TOP,
-					bottom = align[line]:band(TEXT_SCREEN_ALIGN_BOTTOM) == TEXT_SCREEN_ALIGN_BOTTOM,
+					left = align[line]:band(DTextScreens.ALIGN_LEFT) == DTextScreens.ALIGN_LEFT,
+					right = align[line]:band(DTextScreens.ALIGN_RIGHT) == DTextScreens.ALIGN_RIGHT,
+					top = align[line]:band(DTextScreens.ALIGN_TOP) == DTextScreens.ALIGN_TOP,
+					bottom = align[line]:band(DTextScreens.ALIGN_BOTTOM) == DTextScreens.ALIGN_BOTTOM,
 				}
 			}
 
