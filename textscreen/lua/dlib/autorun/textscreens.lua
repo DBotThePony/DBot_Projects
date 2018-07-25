@@ -19,19 +19,19 @@ DLib.CMessage(DTextScreens, 'DTextScreens')
 
 CAMI.RegisterPrivilege({
 	Name = 'dtextscreen_new',
-	MinLevel = 'superadmin',
+	MinAccess = 'superadmin',
 	Description = 'Ability to put new permanent screens'
 })
 
 CAMI.RegisterPrivilege({
 	Name = 'dtextscreen_remove',
-	MinLevel = 'superadmin',
+	MinAccess = 'superadmin',
 	Description = 'Ability to remove existing permanent screens'
 })
 
 CAMI.RegisterPrivilege({
 	Name = 'dtextscreen_reload',
-	MinLevel = 'admin',
+	MinAccess = 'admin',
 	Description = 'Ability to reload existing permanent screens from database'
 })
 
