@@ -57,3 +57,10 @@ message.textscreens.status.spawned = 'Spawned present textscreens from database 
 gui.property.dtextscreens.new = 'Make persistent textscreen'
 gui.property.dtextscreens.remove = 'Remove persistent textscreen'
 gui.property.dtextscreens.clone = 'Clone this textscreen'
+
+gui.tool.dtextscreen.name = 'Textscreens placer'
+gui.tool.dtextscreen.desc = 'Allows you to do place, modify and copy operations over textscreens'
+gui.tool.dtextscreen.left = 'Left click to place/update textscreens'
+gui.tool.dtextscreen.right = 'Right click to copy existing textscreen settings'
+
+gui.undone.dtextscreen = 'Undone DTextScreen'

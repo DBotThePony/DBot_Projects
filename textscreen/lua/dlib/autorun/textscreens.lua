@@ -307,3 +307,11 @@ properties.Add('dtextscreen_clone', {
 		return true
 	end
 })
+
+hook.Add('DLib.TranslationsReloaded', 'DTextScreens', function()
+	DLib.i18n.RegisterProxy('tool.dtextscreen.name', 'gui.tool.dtextscreen.name')
+	DLib.i18n.RegisterProxy('tool.dtextscreen.desc', 'gui.tool.dtextscreen.desc')
+	DLib.i18n.RegisterProxy('tool.dtextscreen.left', 'gui.tool.dtextscreen.left')
+	DLib.i18n.RegisterProxy('tool.dtextscreen.right', 'gui.tool.dtextscreen.right')
+	DLib.i18n.RegisterProxy('Undone_DTextscreen', 'gui.undone.dtextscreen')
+end)

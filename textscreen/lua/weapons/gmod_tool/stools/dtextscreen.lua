@@ -60,10 +60,6 @@ if CLIENT then
 		{name = 'right'},
 	}
 
-	--DLib.i18n.RegisterProxy('tool.dtextscreen.left', 'gui.tool.dtextscreen.left')
-	DLib.i18n.RegisterProxy('tool.dtextscreen.left')
-	DLib.i18n.RegisterProxy('tool.dtextscreen.right')
-
 	function TOOL:BuildCPanel()
 		if not IsValid(self) then return end
 
