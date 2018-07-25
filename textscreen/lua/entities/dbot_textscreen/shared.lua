@@ -54,6 +54,8 @@ function ENT:SetupDataTables()
 	self:NetworkVar('Int', 24, 'TextAlignSlot1')
 	self:NetworkVar('Int', 25, 'TextAlignSlot2')
 
+	self:NetworkVar('Int', 26, 'TextShadowSlot')
+
 	if SERVER then
 		self:SetTextFontSlot1(0)
 		self:SetTextFontSlot2(0)
@@ -67,6 +69,8 @@ function ENT:SetupDataTables()
 
 		self:SetTextAlignSlot1(0)
 		self:SetTextAlignSlot2(0)
+
+		self:SetTextShadowSlot(0)
 
 		self:SetNeverDraw(false)
 		self:SetAlwaysDraw(false)
@@ -106,7 +110,7 @@ for i = 1, 16 do
 		self['SetTextColor' .. i](self, color:ToNumber(true))
 	end
 
-	ENT['GetColor' .. i] = function(self, color)
+	ENT['GetColor' .. i] = function(self)
 		return ColorBE(self['GetTextColor' .. i](self), true)
 	end
 
@@ -126,7 +130,7 @@ for i = 1, 16 do
 		self['SetTextSizeSlot' .. textSlotPos](self, oldID:band(fontmask):bor(newID:band(0xFF):lshift(perBit * 8)))
 	end
 
-	ENT['GetTextSize' .. i] = function(self, newID)
+	ENT['GetTextSize' .. i] = function(self)
 		return self['GetTextSizeSlot' .. textSlotPos](self):rshift(perBit * 8):band(0xFF)
 	end
 
@@ -135,7 +139,7 @@ for i = 1, 16 do
 		self['SetTextFontSlot' .. textSlotPos](self, oldID:band(fontmask):bor(newID:band(0xFF):lshift(perBit * 8)))
 	end
 
-	ENT['GetFontID' .. i] = function(self, newID)
+	ENT['GetFontID' .. i] = function(self)
 		return self['GetTextFontSlot' .. textSlotPos](self):rshift(perBit * 8):band(0xFF)
 	end
 
@@ -144,8 +148,22 @@ for i = 1, 16 do
 		self['SetTextAlignSlot' .. textAlignPos](self, oldID:band(alignMask):bor(newID:band(0xF):lshift(perBitAlign * 4)))
 	end
 
-	ENT['GetAlign' .. i] = function(self, newID)
+	ENT['GetAlign' .. i] = function(self)
 		return self['GetTextAlignSlot' .. textAlignPos](self):rshift(perBitAlign * 4):band(0xF)
+	end
+
+	ENT['GetShadow' .. i] = function(self)
+		return self:GetTextShadowSlot():rshift(i - 1):band(1) == 1
+	end
+
+	ENT['SetShadow' .. i] = function(self, status)
+		local oldMask = self:GetTextShadowSlot()
+
+		if status then
+			self:SetTextShadowSlot(oldMask:bor((1):lshift(i - 1)))
+		else
+			self:SetTextShadowSlot(oldMask:band((1):lshift(i - 1):bnot()))
+		end
 	end
 end
 

@@ -38,6 +38,22 @@ function ENT:DrawLines(pos, ang)
 		for i2, line in ipairs(lineData.draw) do
 			local lineStuff = lineData.data[i2]
 
+			if lineStuff.shadow then
+				local xInCanvas = -self.TotalHeight / 2 + line.yShadow
+				local yInCanvas = -self.TotalWidth / 2 + line.xShadow
+
+				local posInCanvas = Vector(xInCanvas, yInCanvas, 20) * 0.25
+				local lpos, lang = LocalToWorld(posInCanvas, emptyAng, pos, ang)
+
+				cam.Start3D2D(lpos, lang, lineStuff.mult * 0.25)
+				surface.SetFont(lineStuff.font)
+				surface.SetTextColor(lineStuff.shadowColor)
+
+				surface.SetTextPos(0, 0)
+				surface.DrawText(lineStuff.text)
+				cam.End3D2D()
+			end
+
 			local xInCanvas = -self.TotalHeight / 2 + line.y
 			local yInCanvas = -self.TotalWidth / 2 + line.x
 
@@ -50,6 +66,7 @@ function ENT:DrawLines(pos, ang)
 
 			surface.SetTextPos(0, 0)
 			surface.DrawText(lineStuff.text)
+
 			cam.End3D2D()
 		end
 	end
@@ -96,6 +113,8 @@ function ENT:HashsumState()
 	sum = (sum + self:GetTextAlignSlot1()) % 0x7FFFFFFF
 	sum = (sum + self:GetTextAlignSlot2()) % 0x7FFFFFFF
 
+	sum = (sum + self:GetTextShadowSlot()) % 0x7FFFFFFF
+
 	for i = 1, 16 do
 		sum = (sum + self['GetTextColor' .. i](self)) % 0x7FFFFFFF
 	end
@@ -137,6 +156,7 @@ function ENT:ParseNWValues()
 	local font = {}
 	local color = {}
 	local size = {}
+	local shadow = {}
 	local align = {alignInt(self:GetTextAlignSlot1())}
 
 	table.append(align, {alignInt(self:GetTextAlignSlot2())})
@@ -159,6 +179,7 @@ function ENT:ParseNWValues()
 
 	for i = 1, 16 do
 		table.insert(color, ColorBE(self['GetTextColor' .. i](self), true))
+		table.insert(shadow, self['GetShadow' .. i](self))
 	end
 
 	self.Lines = {}
@@ -184,6 +205,8 @@ function ENT:ParseNWValues()
 				size = size[line],
 				mult = (size[line] / NORMAL_SIZE) * (font[line].mult or 1),
 				alignFlags = align[line],
+				shadow = shadow[line],
+				shadowColor = Color(0, 0, 0, color[line].a),
 
 				align = {
 					left = align[line]:band(DTextScreens.ALIGN_LEFT) == DTextScreens.ALIGN_LEFT,
@@ -249,7 +272,9 @@ function ENT:ParseNWValues()
 				spacing = w2,
 				str = data.text,
 				x = 0,
-				y = ypos
+				xShadow = w2 * 0.1,
+				y = ypos,
+				yShadow = h2 * 0.03
 			}
 		end
 
@@ -275,7 +300,9 @@ function ENT:ParseNWValues()
 
 		for i, data in ipairs(lineData.data) do
 			drawdata[i].x = currentX
+			drawdata[i].xShadow = currentX + drawdata[i].xShadow
 			drawdata[i].y = drawdata[i].y + totalY
+			drawdata[i].yShadow = drawdata[i].yShadow + totalY
 			currentX = currentX + drawdata[i].w + drawdata[i].spacing
 		end
 

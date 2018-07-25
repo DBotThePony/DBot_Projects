@@ -30,6 +30,7 @@ for i = 1, 16 do
 	perCategory[i] = {
 		['text_' .. i] = '',
 		['newline_' .. i] = '1',
+		['shadow_' .. i] = '0',
 		['align_left_' .. i] = '0',
 		['align_right_' .. i] = '0',
 		['align_top_' .. i] = '0',
@@ -193,6 +194,7 @@ if CLIENT then
 			spoiler:TextEntry('gui.tool.textscreens.text', 'dtextscreen_text_' .. i)
 			spoiler:NumSlider('gui.tool.textscreens.fontsize', 'dtextscreen_size_' .. i, 8, 128, 0)
 			spoiler:CheckBox('gui.tool.textscreens.newline', 'dtextscreen_newline_' .. i)
+			spoiler:CheckBox('gui.tool.textscreens.shadow', 'dtextscreen_shadow_' .. i)
 
 			local mixer = vgui.Create('DColorMixer', spoiler)
 			mixer:Dock(TOP)
@@ -232,6 +234,7 @@ if CLIENT then
 			local font = ent['GetFontID' .. i](ent)
 			local align = ent['GetAlign' .. i](ent)
 			local color = ent['GetColor' .. i](ent)
+			local shadow = ent['GetShadow' .. i](ent)
 
 			local left, right, top, bottom =
 				align:band(DTextScreens.ALIGN_LEFT) == DTextScreens.ALIGN_LEFT,
@@ -243,6 +246,7 @@ if CLIENT then
 			RunConsoleCommand('dtextscreen_align_right_' .. i, right and '1' or '0')
 			RunConsoleCommand('dtextscreen_align_top_' .. i, top and '1' or '0')
 			RunConsoleCommand('dtextscreen_align_bottom_' .. i, bottom and '1' or '0')
+			RunConsoleCommand('dtextscreen_shadow_' .. i, shadow and '1' or '0')
 			RunConsoleCommand('dtextscreen_font_' .. i, font:tostring())
 			RunConsoleCommand('dtextscreen_size_' .. i, size:tostring())
 			RunConsoleCommand('dtextscreen_color_' .. i .. '_r', color.r:tostring())
@@ -374,6 +378,7 @@ function TOOL:LeftClick(tr)
 
 		if text ~= '' then
 			local newline = tobool(self:GetClientInfo('newline_' .. i))
+			local shadow = tobool(self:GetClientInfo('shadow_' .. i))
 			local left = tobool(self:GetClientInfo('align_left_' .. i))
 			local right = tobool(self:GetClientInfo('align_right_' .. i))
 			local top = tobool(self:GetClientInfo('align_top_' .. i))
@@ -418,11 +423,13 @@ function TOOL:LeftClick(tr)
 			textscreen['SetTextSize' .. i](textscreen, size:clamp(8, 128))
 			textscreen['SetFontID' .. i](textscreen, font:clamp(0, #DTextScreens.FONTS - 1))
 			textscreen['SetAlign' .. i](textscreen, alignFlags)
+			textscreen['SetShadow' .. i](textscreen, shadow)
 		else
 			textscreen['SetTextColor' .. i](textscreen, -0x37373701)
 			textscreen['SetTextSize' .. i](textscreen, 24)
 			textscreen['SetFontID' .. i](textscreen, 0)
 			textscreen['SetAlign' .. i](textscreen, 0)
+			textscreen['SetShadow' .. i](textscreen, false)
 		end
 	end
 
