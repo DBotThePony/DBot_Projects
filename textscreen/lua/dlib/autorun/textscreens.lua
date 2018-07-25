@@ -254,6 +254,8 @@ local IsValid = FindMetaTable('Entity').IsValid
 local net = net
 local LocalPlayer = LocalPlayer
 
+local VEC, ANG = Vector(0, 0, 32), Angle(0, 0, 0)
+
 properties.Add('dtextscreen_clone', {
 	Type = 'simple',
 	MenuLabel = 'gui.property.dtextscreens.clone',
@@ -284,8 +286,10 @@ properties.Add('dtextscreen_clone', {
 
 		local clone = ents.Create('dbot_textscreen')
 
-		clone:SetPos(ent:GetPos() + ent:GetAngles():Up() * 32)
-		clone:SetAngles(ent:GetAngles())
+		local npos, nang = LocalToWorld(VEC, ANG, ent:GetPos(), ent:GetAngles())
+
+		clone:SetPos(npos)
+		clone:SetAngles(nang)
 
 		undo.Create('DTextscreen')
 		undo.AddEntity(clone)
@@ -299,8 +303,6 @@ properties.Add('dtextscreen_clone', {
 
 		clone:Spawn()
 		clone:Activate()
-
-		clone:DropToFloor()
 
 		return true
 	end
