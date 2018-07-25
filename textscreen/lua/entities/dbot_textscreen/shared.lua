@@ -101,11 +101,6 @@ for i = 1, 16 do
 end
 
 function ENT:CloneInto(ent)
-	ent:SetIsMovable(self:GetIsMovable())
-	ent:SetNeverDraw(self:GetNeverDraw())
-	ent:SetAlwaysDraw(self:GetAlwaysDraw())
-	ent:SetDoubleDraw(self:GetDoubleDraw())
-
 	for i, funcname in ipairs(cloneFuncs) do
 		ent['Set' .. funcname](ent, self['Get' .. funcname](self))
 	end
