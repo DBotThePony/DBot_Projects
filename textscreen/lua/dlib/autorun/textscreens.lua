@@ -215,24 +215,14 @@ DTextScreens.FONTS = {
 }
 
 local defaults = {
-	'DebugFixed',
-    'DebugFixedSmall',
     'Marlett',
     'Trebuchet18',
     'Trebuchet24',
-    'HudHintTextLarge',
-    'HudHintTextSmall',
-    'CenterPrintText',
-    'HudSelectionText',
     'CloseCaption_Normal',
     'CloseCaption_Bold',
     'CloseCaption_BoldItalic',
     'ChatFont',
-    'TargetID',
-    'TargetIDSmall',
     'HL2MPTypeDeath',
-    'BudgetLabel',
-    'HudNumbers',
 }
 
 for i, name in ipairs(defaults) do
@@ -241,6 +231,35 @@ for i, name in ipairs(defaults) do
 		id = name,
 		mult = 4,
 	})
+end
+
+for i = 1, #DTextScreens.FONTS do
+	local def = DTextScreens.FONTS[i]
+
+	if def.definition then
+		local copy = table.Copy(def.definition)
+
+		copy.outline = true
+		copy.antialias = false
+
+		table.insert(DTextScreens.FONTS, {
+			name = def.name .. ' Outlined',
+			id = def.id .. '_outline',
+			definition = copy,
+			mult = def.mult,
+		})
+
+		copy = table.Copy(def.definition)
+
+		copy.scanlines = 4
+
+		table.insert(DTextScreens.FONTS, {
+			name = def.name .. ' Scanlines',
+			id = def.id .. '_scanlines',
+			definition = copy,
+			mult = def.mult,
+		})
+	end
 end
 
 DTextScreens.ALIGN_CENTER = 0
