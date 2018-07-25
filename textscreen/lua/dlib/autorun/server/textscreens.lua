@@ -28,6 +28,7 @@ local insertstrtab = {
 	'neverdraw',
 	'alwaysdraw',
 	'doubledraw',
+	'overallsize',
 	'screentext',
 }
 
@@ -60,6 +61,7 @@ CREATE TABLE IF NOT EXISTS dtextscreens (
 	neverdraw BOOLEAN NOT NULL DEFAULT 0,
 	alwaysdraw BOOLEAN NOT NULL DEFAULT 0,
 	doubledraw BOOLEAN NOT NULL DEFAULT 1,
+	overallsize FLOAT NOT NULL DEFAULT 10,
 
 	screentext TEXT NOT NULL DEFAULT '',
 
@@ -123,6 +125,7 @@ concommand.Add('dtextscreen_new', function(self, cmd, args)
 		table.insert(lines, SQLStr(ent:GetNeverDraw() and '1' or '0'))
 		table.insert(lines, SQLStr(ent:GetAlwaysDraw() and '1' or '0'))
 		table.insert(lines, SQLStr(ent:GetDoubleDraw() and '1' or '0'))
+		table.insert(lines, SQLStr(ent:GetOverallSize()))
 		table.insert(lines, SQLStr(text))
 
 		for i = 1, 16 do
@@ -267,13 +270,9 @@ function LoadTextscreens(callback)
 			screen:SetAlwaysDraw(tobool(row.alwaysdraw))
 			screen:SetNeverDraw(tobool(row.neverdraw))
 			screen:SetDoubleDraw(tobool(row.doubledraw))
+			screen:SetOverallSize(row.overallsize:tonumber())
 
 			for i = 1, 16 do
-				table.insert(insertstrtab, 'color' .. i)
-				table.insert(insertstrtab, 'align' .. i)
-				table.insert(insertstrtab, 'size' .. i)
-				table.insert(insertstrtab, 'font' .. i)
-
 				screen['SetTextColor' .. i](screen, row['color' .. i]:tonumber())
 				screen['SetAlign' .. i](screen, row['align' .. i]:tonumber())
 				screen['SetTextSize' .. i](screen, row['size' .. i]:tonumber())

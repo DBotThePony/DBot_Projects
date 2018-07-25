@@ -56,6 +56,8 @@ function ENT:SetupDataTables()
 
 	self:NetworkVar('Int', 26, 'TextShadowSlot')
 
+	self:NetworkVar('Float', 0, 'OverallSize')
+
 	if SERVER then
 		self:SetTextFontSlot1(0)
 		self:SetTextFontSlot2(0)
@@ -71,6 +73,7 @@ function ENT:SetupDataTables()
 		self:SetTextAlignSlot2(0)
 
 		self:SetTextShadowSlot(0)
+		self:SetOverallSize(10)
 
 		self:SetNeverDraw(false)
 		self:SetAlwaysDraw(false)
@@ -82,7 +85,10 @@ function ENT:SetupDataTables()
 	end
 end
 
-local cloneFuncs = {'TextAlignSlot1', 'TextAlignSlot2'}
+local cloneFuncs = {
+	'TextAlignSlot1', 'TextAlignSlot2', 'TextShadowSlot', 'OverallSize',
+	'IsMovable', 'NeverDraw', 'AlwaysDraw', 'DoubleDraw'
+}
 
 for i = 1, 4 do
 	table.insert(cloneFuncs, 'TextSlot' .. i)

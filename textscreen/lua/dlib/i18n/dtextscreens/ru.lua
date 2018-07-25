@@ -23,6 +23,7 @@ gui.tool.textscreens.text = 'Текст'
 gui.tool.textscreens.newline = 'Расположить на новой строке'
 gui.tool.textscreens.fontsize = 'Размер шрифта'
 gui.tool.textscreens.shadow = 'Добавить тень'
+gui.tool.textscreens.overall_size = 'Общий размер'
 
 gui.tool.textscreens.movable = 'Подвержен гравитации'
 gui.tool.textscreens.doubledraw = 'DoubleDraw (отрисовка по обе стороны)'

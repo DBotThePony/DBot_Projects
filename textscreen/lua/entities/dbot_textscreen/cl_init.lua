@@ -114,6 +114,7 @@ function ENT:HashsumState()
 	sum = (sum + self:GetTextAlignSlot2()) % 0x7FFFFFFF
 
 	sum = (sum + self:GetTextShadowSlot()) % 0x7FFFFFFF
+	sum = (sum + self:GetOverallSize()) % 0x7FFFFFFF
 
 	for i = 1, 16 do
 		sum = (sum + self['GetTextColor' .. i](self)) % 0x7FFFFFFF
@@ -158,6 +159,7 @@ function ENT:ParseNWValues()
 	local size = {}
 	local shadow = {}
 	local align = {alignInt(self:GetTextAlignSlot1())}
+	local overall = self:GetOverallSize() / 10
 
 	table.append(align, {alignInt(self:GetTextAlignSlot2())})
 
@@ -203,7 +205,7 @@ function ENT:ParseNWValues()
 				font = font[line].id,
 				color = color[line],
 				size = size[line],
-				mult = (size[line] / NORMAL_SIZE) * (font[line].mult or 1),
+				mult = (size[line] / NORMAL_SIZE) * (font[line].mult or 1) * overall,
 				alignFlags = align[line],
 				shadow = shadow[line],
 				shadowColor = Color(0, 0, 0, color[line].a),

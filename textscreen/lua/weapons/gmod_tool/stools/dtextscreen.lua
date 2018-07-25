@@ -50,6 +50,7 @@ for i, category in ipairs(perCategory) do
 	end
 end
 
+TOOL.ClientConVar['overall_size'] = '10'
 TOOL.ClientConVar['movable'] = '0'
 TOOL.ClientConVar['doubledraw'] = '1'
 TOOL.ClientConVar['always_draw'] = '0'
@@ -107,6 +108,8 @@ if CLIENT then
 
 			hook.Run('DTextScreen.SettingsUpdate')
 		end
+
+		self:NumSlider('gui.tool.textscreens.overall_size', 'dtextscreen_overall_size', 0.1, 60, 2)
 
 		for i = 1, 16 do
 			local spoiler = vgui.Create('DForm', self)
@@ -370,6 +373,7 @@ function TOOL:LeftClick(tr)
 
 	textscreen:SetDoubleDraw(tobool(self:GetClientInfo('doubledraw')))
 	textscreen:SetIsMovable(tobool(self:GetClientInfo('movable')))
+	textscreen:SetOverallSize(self:GetClientNumber('overall_size', 10):clamp(0.1, 60))
 
 	local finaltext
 
@@ -384,12 +388,12 @@ function TOOL:LeftClick(tr)
 			local top = tobool(self:GetClientInfo('align_top_' .. i))
 			local bottom = tobool(self:GetClientInfo('align_bottom_' .. i))
 
-			local font = tonumber(self:GetClientInfo('font_' .. i)) or 0
-			local size = tonumber(self:GetClientInfo('size_' .. i)) or 24
-			local r = tonumber(self:GetClientInfo('color_' .. i .. '_r')) or 200
-			local g = tonumber(self:GetClientInfo('color_' .. i .. '_g')) or 200
-			local b = tonumber(self:GetClientInfo('color_' .. i .. '_b')) or 200
-			local a = tonumber(self:GetClientInfo('color_' .. i .. '_a')) or 200
+			local font = self:GetClientNumber('font_' .. i, 0)
+			local size = self:GetClientNumber('size_' .. i, 24)
+			local r = self:GetClientNumber('color_' .. i .. '_r', 200)
+			local g = self:GetClientNumber('color_' .. i .. '_g', 200)
+			local b = self:GetClientNumber('color_' .. i .. '_b', 200)
+			local a = self:GetClientNumber('color_' .. i .. '_a', 200)
 
 			local alignFlags = 0
 
