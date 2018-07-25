@@ -274,7 +274,7 @@ function ENT:ParseNWValues()
 				x = 0,
 				xShadow = w2 * 0.1,
 				y = ypos,
-				yShadow = h2 * 0.03
+				yShadow = ypos + h2 * 0.03
 			}
 		end
 
