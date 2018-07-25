@@ -13,6 +13,11 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+local DLib = DLib
+local properties = properties
+local IsValid = FindMetaTable('Entity').IsValid
+local hook = hook
+
 if not DTextScreens.FONTS then
 	DLib.Message('FATAL: Unable to find DTextScreens.FONTS for textscreens!')
 	return
@@ -25,3 +30,43 @@ for k, font in pairs(DTextScreens.FONTS) do
 		surface.CreateFont(font.id, font.definition)
 	end
 end
+
+local privs = DLib.CAMIWatchdog('dtextscreen', nil, 'dtextscreen_new', 'dtextscreen_remove', 'dtextscreen_reload')
+
+properties.Add('dtextscreen_new', {
+	Type = 'simple',
+	MenuLabel = 'gui.property.dtextscreens.new',
+	Order = 1920,
+	MenuIcon = 'icon16/font_add.png',
+
+	Filter = function(self, ent)
+		if not privs:HasPermission('dtextscreen_new') then return false end
+		if not IsValid(ent) then return false end
+		if ent:GetClass() ~= 'dbot_textscreen' then return false end
+		if ent:GetIsPersistent() then return false end
+		return true
+	end,
+
+	Action = function(self, ent, tr)
+		RunConsoleCommand('dtextscreen_new', ent:EntIndex())
+	end
+})
+
+properties.Add('dtextscreen_remove', {
+	Type = 'simple',
+	MenuLabel = 'gui.property.dtextscreens.remove',
+	Order = 1921,
+	MenuIcon = 'icon16/font_delete.png',
+
+	Filter = function(self, ent)
+		if not privs:HasPermission('dtextscreen_remove') then return false end
+		if not IsValid(ent) then return false end
+		if ent:GetClass() ~= 'dbot_textscreen' then return false end
+		if not ent:GetIsPersistent() then return false end
+		return true
+	end,
+
+	Action = function(self, ent, tr)
+		RunConsoleCommand('dtextscreen_remove', ent:EntIndex())
+	end
+})

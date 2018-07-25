@@ -53,3 +53,6 @@ message.textscreens.status.success_reload = 'Successfully reloaded textscreens f
 message.textscreens.status.reloaded = ' reloaded textscreens from database'
 message.textscreens.status.reload_fail = ' failed to reload textscreens from database'
 message.textscreens.status.spawned = 'Spawned present textscreens from database (if any). Total spawned: %i'
+
+gui.property.dtextscreens.new = 'Make persistent textscreen'
+gui.property.dtextscreens.remove = 'Remove persistent textscreen'
