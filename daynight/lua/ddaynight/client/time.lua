@@ -30,7 +30,7 @@ self.DATE_OBJECT = self.Date(0)
 self.DATE_OBJECT_ACCURATE = self.Date(self.TIME)
 
 function self.GetAccurateTime()
-	return self.BOUND_TIME + (CurTimeL() - self.BOUND_TIME_TO) * self.TIME_MULTIPLIER:GetInt()
+	return self.BOUND_TIME + (CurTimeL() - self.BOUND_TIME_TO):max(0) * self.TIME_MULTIPLIER:GetInt() -- ???
 end
 
 local sunset, sunrise = true, true
