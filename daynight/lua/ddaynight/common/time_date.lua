@@ -35,7 +35,7 @@ function meta:Initialize(stamp)
 end
 
 function meta:SetStamp(stamp)
-	assert(type(stamp) == 'number' and stamp >= 0, 'Invalid stamp. Called time is ' .. stamp)
+	assert(type(stamp) == 'number' and stamp >= 0, 'Invalid stamp. Called time is ' .. tostring(stamp))
 	self.stamp = stamp
 
 	if not self.dayObject or self.dayObject:GetAbsoluteDay() ~= self:GetAbsoluteDay() then
