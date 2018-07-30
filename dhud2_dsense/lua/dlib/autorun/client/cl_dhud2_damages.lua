@@ -16,6 +16,7 @@
 DLib.RegisterAddonName('DHUD/2')
 
 local ENABLED = CreateConVar('cl_dhud2_dsense', '1', {FCVAR_ARCHIVE}, 'Enable damage sense')
+local ENABLED_NUMBERS = CreateConVar('cl_dhud2_dsense_numbers', '1', {FCVAR_ARCHIVE}, 'Show numbers representing damage')
 
 local net = net
 local table = table
@@ -187,18 +188,23 @@ local function Draw()
 			{x = x - 7.5 * sin * v.scale, y = y + 7.5 * cos * v.scale},
 		}
 
-		local selectFont = math.floor(v.scale * 2)
-		surface.SetFont('DHUD2.DamageNumber' .. selectFont)
+		if ENABLED_NUMBERS:GetBool() then
+			local selectFont = math.floor(v.scale * 2)
+			surface.SetFont('DHUD2.DamageNumber' .. selectFont)
 
-		surface.SetTextColor(v.color.r, v.color.g, v.color.b, v.color.a)
-		surface.SetDrawColor(v.color.r, v.color.g, v.color.b, v.color.a)
-		surface.DrawPoly(gen)
+			surface.SetTextColor(v.color.r, v.color.g, v.color.b, v.color.a)
+			surface.SetDrawColor(v.color.r, v.color.g, v.color.b, v.color.a)
+			surface.DrawPoly(gen)
 
-		local w, h = surface.GetTextSize(v.dmg)
+			local w, h = surface.GetTextSize(v.dmg)
 
-		local x1, y1 = node.findNearestAlt(x - (w / 2 + 4) * cos - w / 2 + 3, y - (h / 2) * sin - h / 2, selectFont, h / 24)
-		surface.SetTextPos(x1, y1)
-		surface.DrawText(v.dmg)
+			local x1, y1 = node.findNearestAlt(x - (w / 2 + 4) * cos - w / 2 + 3, y - (h / 2) * sin - h / 2, selectFont, h / 24)
+			surface.SetTextPos(x1, y1)
+			surface.DrawText(v.dmg)
+		else
+			surface.SetDrawColor(v.color.r, v.color.g, v.color.b, v.color.a)
+			surface.DrawPoly(gen)
+		end
 	end
 end
 
