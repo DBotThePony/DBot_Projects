@@ -41,9 +41,14 @@ function ENT:SetupDataTables()
 	self:NetworkVar('Int', 2, 'TextFontSlot3')
 	self:NetworkVar('Int', 3, 'TextFontSlot4')
 
-	for i = 0, 15 do
-		self:NetworkVar('Int', 4 + i, 'TextColor' .. (i + 1))
-		if SERVER then self['SetTextColor' .. (i + 1)](self, 0xFFFFFFFF) end
+	for i = 1, 16 do
+		self:NetworkVar('Int', 3 + i, 'TextColor' .. i)
+		self:NetworkVar('Float', i, 'TextRotation' .. i)
+
+		if SERVER then
+			self['SetTextColor' .. i](self, 0xFFFFFFFF)
+			self['SetTextRotation' .. i](self, 0)
+		end
 	end
 
 	self:NetworkVar('Int', 20, 'TextSizeSlot1')
@@ -98,6 +103,7 @@ end
 
 for i = 1, 16 do
 	table.insert(cloneFuncs, 'TextColor' .. i)
+	table.insert(cloneFuncs, 'TextRotation' .. i)
 end
 
 function ENT:CloneInto(ent)

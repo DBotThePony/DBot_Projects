@@ -37,6 +37,7 @@ for i = 1, 16 do
 		['align_bottom_' .. i] = '0',
 		['font_' .. i] = '0',
 		['size_' .. i] = '24',
+		['rotate_' .. i] = '0',
 		['color_' .. i .. '_r'] = '200',
 		['color_' .. i .. '_g'] = '200',
 		['color_' .. i .. '_b'] = '200',
@@ -196,6 +197,7 @@ if CLIENT then
 
 			spoiler:TextEntry('gui.tool.textscreens.text', 'dtextscreen_text_' .. i)
 			spoiler:NumSlider('gui.tool.textscreens.fontsize', 'dtextscreen_size_' .. i, 8, 128, 0)
+			spoiler:NumSlider('gui.tool.textscreens.rotate', 'dtextscreen_rotate_' .. i, -180, 180, 2)
 			spoiler:CheckBox('gui.tool.textscreens.newline', 'dtextscreen_newline_' .. i)
 			spoiler:CheckBox('gui.tool.textscreens.shadow', 'dtextscreen_shadow_' .. i)
 
@@ -238,6 +240,7 @@ if CLIENT then
 			local align = ent['GetAlign' .. i](ent)
 			local color = ent['GetColor' .. i](ent)
 			local shadow = ent['GetShadow' .. i](ent)
+			local rotate = ent['GetTextRotation' .. i](ent)
 
 			local left, right, top, bottom =
 				align:band(DTextScreens.ALIGN_LEFT) == DTextScreens.ALIGN_LEFT,
@@ -252,6 +255,7 @@ if CLIENT then
 			RunConsoleCommand('dtextscreen_shadow_' .. i, shadow and '1' or '0')
 			RunConsoleCommand('dtextscreen_font_' .. i, font:tostring())
 			RunConsoleCommand('dtextscreen_size_' .. i, size:tostring())
+			RunConsoleCommand('dtextscreen_rotate_' .. i, rotate:tostring())
 			RunConsoleCommand('dtextscreen_color_' .. i .. '_r', color.r:tostring())
 			RunConsoleCommand('dtextscreen_color_' .. i .. '_g', color.g:tostring())
 			RunConsoleCommand('dtextscreen_color_' .. i .. '_b', color.b:tostring())
@@ -390,6 +394,7 @@ function TOOL:LeftClick(tr)
 
 			local font = self:GetClientNumber('font_' .. i, 0)
 			local size = self:GetClientNumber('size_' .. i, 24)
+			local rotate = self:GetClientNumber('rotate_' .. i, 0):clamp(-180, 180)
 			local r = self:GetClientNumber('color_' .. i .. '_r', 200)
 			local g = self:GetClientNumber('color_' .. i .. '_g', 200)
 			local b = self:GetClientNumber('color_' .. i .. '_b', 200)
@@ -428,12 +433,14 @@ function TOOL:LeftClick(tr)
 			textscreen['SetFontID' .. i](textscreen, font:clamp(0, #DTextScreens.FONTS - 1))
 			textscreen['SetAlign' .. i](textscreen, alignFlags)
 			textscreen['SetShadow' .. i](textscreen, shadow)
+			textscreen['SetTextRotation' .. i](textscreen, rotate)
 		else
 			textscreen['SetTextColor' .. i](textscreen, -0x37373701)
 			textscreen['SetTextSize' .. i](textscreen, 24)
 			textscreen['SetFontID' .. i](textscreen, 0)
 			textscreen['SetAlign' .. i](textscreen, 0)
 			textscreen['SetShadow' .. i](textscreen, false)
+			textscreen['SetTextRotation' .. i](textscreen, 0)
 		end
 	end
 

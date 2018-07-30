@@ -34,11 +34,13 @@ local insertstrtab = {
 
 for i = 1, 16 do
 	table.insert(extrarows, 'color' .. i .. ' INTEGER NOT NULL DEFAULT 13158600')
+	table.insert(extrarows, 'rotation' .. i .. ' INTEGER NOT NULL DEFAULT 0')
 	table.insert(extrarows, 'align' .. i .. ' TINYINT NOT NULL DEFAULT 0')
 	table.insert(extrarows, 'size' .. i .. ' TINYINT NOT NULL DEFAULT 0')
 	table.insert(extrarows, 'font' .. i .. ' TINYINT NOT NULL DEFAULT 0')
 
 	table.insert(insertstrtab, 'color' .. i)
+	table.insert(insertstrtab, 'rotation' .. i)
 	table.insert(insertstrtab, 'align' .. i)
 	table.insert(insertstrtab, 'size' .. i)
 	table.insert(insertstrtab, 'font' .. i)
@@ -47,7 +49,7 @@ end
 insertstr = table.concat(insertstrtab, ',')
 
 local dbDef = [[
-CREATE TABLE IF NOT EXISTS dtextscreens (
+CREATE TABLE IF NOT EXISTS dtextscreens2 (
 	id INTEGER NOT NULL PRIMARY KEY ]] .. LINK:AI() .. [[,
 	gamemap INTEGER NOT NULL,
 
@@ -70,6 +72,19 @@ CREATE TABLE IF NOT EXISTS dtextscreens (
 ]]
 
 LINK:Query(dbDef)
+
+LINK:Query('SELECT * FROM dtextscreens', function(data)
+	if #data == 0 then return end
+
+	local query = 'BEGIN;'
+
+	for i, row in ipairs(data) do
+		query = query .. DMySQL3.InsertEasy(row)
+	end
+
+	query = query .. 'COMMIT;DROP TABLE dtextscreens;'
+	LINK:Query(query)
+end, function() end)
 
 concommand.Add('dtextscreen_new', function(self, cmd, args)
 	CAMI.PlayerHasAccess(self, 'dtextscreen_new', function(can, reason)
@@ -130,13 +145,14 @@ concommand.Add('dtextscreen_new', function(self, cmd, args)
 
 		for i = 1, 16 do
 			table.insert(lines, SQLStr(ent['GetTextColor' .. i](ent)))
+			table.insert(lines, SQLStr(ent['GetTextRotation' .. i](ent)))
 			table.insert(lines, SQLStr(ent['GetAlign' .. i](ent)))
 			table.insert(lines, SQLStr(ent['GetTextSize' .. i](ent)))
 			table.insert(lines, SQLStr(ent['GetFontID' .. i](ent)))
 		end
 
-		LINK:Query('INSERT INTO dtextscreens (' .. insertstr .. ') VALUES (' .. table.concat(lines, ', ') .. ')', function()
-			LINK:Query(string.format('SELECT id FROM dtextscreens WHERE gamemap = %s AND x = %s AND y = %s AND z = %s', map, x, y, z), function(data)
+		LINK:Query('INSERT INTO dtextscreens2 (' .. insertstr .. ') VALUES (' .. table.concat(lines, ', ') .. ')', function()
+			LINK:Query(string.format('SELECT id FROM dtextscreens2 WHERE gamemap = %s AND x = %s AND y = %s AND z = %s', map, x, y, z), function(data)
 				if not data or #data == 0 then
 					DTextScreens.LMessagePlayer(self, 'message.textscreens.error.noid')
 					return
@@ -203,7 +219,7 @@ concommand.Add('dtextscreen_remove', function(self, cmd, args)
 			return
 		end
 
-		LINK:Query('DELETE FROM dtextscreens WHERE id = ' .. ent.DATABASE_ID, function()
+		LINK:Query('DELETE FROM dtextscreens2 WHERE id = ' .. ent.DATABASE_ID, function()
 			ent:Remove()
 			DTextScreens.LMessagePlayer(self, 'message.textscreens.status.success_remove')
 		end, function(err)
@@ -254,7 +270,7 @@ function LoadTextscreens(callback)
 		end
 	end
 
-	LINK:Query('SELECT * FROM dtextscreens WHERE gamemap = ' .. SQLStr(map), function(data)
+	LINK:Query('SELECT * FROM dtextscreens2 WHERE gamemap = ' .. SQLStr(map), function(data)
 		--xpcall(function()
 		for i, row in ipairs(data) do
 			local screen = ents.Create('dbot_textscreen')

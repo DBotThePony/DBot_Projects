@@ -39,13 +39,10 @@ function ENT:DrawLines(pos, ang)
 			local lineStuff = lineData.data[i2]
 
 			if lineStuff.shadow then
-				local xInCanvas = -self.TotalHeight / 2 + line.yShadow
-				local yInCanvas = -self.TotalWidth / 2 + line.xShadow
-
-				local posInCanvas = Vector(xInCanvas, yInCanvas, 20) * 0.25
-				local lpos, lang = LocalToWorld(posInCanvas, emptyAng, pos, ang)
+				local lpos, lang = LocalToWorld(line.posInCanvasShadow, line.ang, pos, ang)
 
 				cam.Start3D2D(lpos, lang, lineStuff.mult * 0.25)
+
 				surface.SetFont(lineStuff.font)
 				surface.SetTextColor(lineStuff.shadowColor)
 
@@ -54,18 +51,55 @@ function ENT:DrawLines(pos, ang)
 				cam.End3D2D()
 			end
 
-			local xInCanvas = -self.TotalHeight / 2 + line.y
-			local yInCanvas = -self.TotalWidth / 2 + line.x
+			local lpos, lang = LocalToWorld(line.posInCanvas, line.ang, pos, ang)
+			local lpos2, lang2 = LocalToWorld(line.posInCanvas, emptyAng, pos, ang)
 
-			local posInCanvas = Vector(xInCanvas, yInCanvas, 20) * 0.25
-			local lpos, lang = LocalToWorld(posInCanvas, emptyAng, pos, ang)
+			--[[cam.Start3D2D(lpos2, lang2, lineStuff.mult * 0.25)
+
+			draw.NoTexture()
+
+			surface.SetDrawColor(100, 255, 255)
+			surface.DrawPoly({
+				{x = line.posInCanvas.x, y = line.posInCanvas.y},
+				{x = line.posInCanvas.x + line.wc, y = line.posInCanvas.y},
+				{x = line.posInCanvas.x + line.wc, y = line.posInCanvas.y + line.hc},
+				{x = line.posInCanvas.x, y = line.posInCanvas.y + line.hc},
+			})
+
+			surface.SetDrawColor(255, 255, 255)
+			surface.DrawPoly({
+				{x = line.posInCanvas.x, y = line.posInCanvas.y},
+				{x = line.posInCanvas.x + line.w, y = line.posInCanvas.y},
+				{x = line.posInCanvas.x + line.w, y = line.posInCanvas.y + line.h},
+				{x = line.posInCanvas.x, y = line.posInCanvas.y + line.h},
+			})
+
+			cam.End3D2D()]]
 
 			cam.Start3D2D(lpos, lang, lineStuff.mult * 0.25)
+
+			--[[surface.SetDrawColor(100, 100, 255)
+			surface.DrawPoly({
+				{x = line.posInCanvas.x, y = line.posInCanvas.y},
+				{x = line.posInCanvas.x + line.wc, y = line.posInCanvas.y},
+				{x = line.posInCanvas.x + line.wc, y = line.posInCanvas.y + line.hc},
+				{x = line.posInCanvas.x, y = line.posInCanvas.y + line.hc},
+			})]]
+
 			surface.SetFont(lineStuff.font)
 			surface.SetTextColor(lineStuff.color)
 
 			surface.SetTextPos(0, 0)
 			surface.DrawText(lineStuff.text)
+
+			--[[surface.DrawPoly({
+				{x = line.posInCanvas.x, y = line.posInCanvas.y},
+				{x = line.posInCanvas.x + line.w, y = line.posInCanvas.y},
+				{x = line.posInCanvas.x + line.w, y = line.posInCanvas.y + line.h},
+				{x = line.posInCanvas.x, y = line.posInCanvas.y + line.h},
+			})]]
+
+
 
 			cam.End3D2D()
 		end
@@ -118,6 +152,7 @@ function ENT:HashsumState()
 
 	for i = 1, 16 do
 		sum = (sum + self['GetTextColor' .. i](self)) % 0x7FFFFFFF
+		sum = (sum + self['GetTextRotation' .. i](self)) % 0x7FFFFFFF
 	end
 
 	return sum
@@ -151,6 +186,48 @@ local function alignInt(int)
 		int:band(15)
 end
 
+local function determineNewBoundaries(rad, w, h)
+	local x1, y1 = -w / 2, h / 2
+	local x2, y2 = w / 2, h / 2
+	local x3, y3 = w / 2, -h / 2
+	local x4, y4 = -w / 2, -h / 2
+	local sin, cos = rad:sin(), rad:cos()
+
+	x1, y1 =
+		x1 * cos - y1 * sin,
+		x1 * sin + y1 * cos
+
+	x2, y2 =
+		x2 * cos - y2 * sin,
+		x2 * sin + y2 * cos
+
+	x3, y3 =
+		x3 * cos - y3 * sin,
+		x3 * sin + y3 * cos
+
+	x4, y4 =
+		x4 * cos - y4 * sin,
+		x4 * sin + y4 * cos
+
+	local xs = {x1, x2, x3, x4}
+	local ys = {y1, y2, y3, y4}
+	local lenX, lenY = 0, 0
+
+	for i, one in ipairs(xs) do
+		for i2, two in ipairs(xs) do
+			lenX = lenX:max((one - two):abs())
+		end
+	end
+
+	for i, one in ipairs(ys) do
+		for i2, two in ipairs(ys) do
+			lenY = lenY:max((one - two):abs())
+		end
+	end
+
+	return lenX, lenY
+end
+
 function ENT:ParseNWValues()
 	local textraw = self:GetTextSlot1() .. self:GetTextSlot2() .. self:GetTextSlot3() .. self:GetTextSlot4()
 	local text = textraw:split('\n')
@@ -158,6 +235,7 @@ function ENT:ParseNWValues()
 	local color = {}
 	local size = {}
 	local shadow = {}
+	local rotate = {}
 	local align = {alignInt(self:GetTextAlignSlot1())}
 	local overall = self:GetOverallSize() / 10
 
@@ -182,6 +260,7 @@ function ENT:ParseNWValues()
 	for i = 1, 16 do
 		table.insert(color, ColorBE(self['GetTextColor' .. i](self), true))
 		table.insert(shadow, self['GetShadow' .. i](self))
+		table.insert(rotate, self['GetTextRotation' .. i](self))
 	end
 
 	self.Lines = {}
@@ -192,7 +271,9 @@ function ENT:ParseNWValues()
 
 		local lineTable = {
 			data = {},
-			draw = {}
+			draw = {},
+			w = 0,
+			h = 0
 		}
 
 		for i2, str in ipairs(separated) do
@@ -203,6 +284,10 @@ function ENT:ParseNWValues()
 			local data = {
 				text = str,
 				font = font[line].id,
+				rotate = rotate[line],
+				--rotate = 0,
+				rad = rotate[line]:rad(),
+				--rad = 0,
 				color = color[line],
 				size = size[line],
 				mult = (size[line] / NORMAL_SIZE) * (font[line].mult or 1) * overall,
@@ -243,10 +328,14 @@ function ENT:ParseNWValues()
 		for i, data in ipairs(lineData.data) do
 			surface.SetFont(data.font)
 			local w, h = surface.GetTextSize(data.text)
+			w, h = determineNewBoundaries(data.rad, w, h)
 
 			lW = lW + w * data.mult
 			lH = lH:max(h * data.mult)
 		end
+
+		lineData.w = lW
+		lineData.h = lH
 
 		self.TotalWidth = self.TotalWidth:max(lW)
 		self.TotalHeight = self.TotalHeight + lH
@@ -259,7 +348,24 @@ function ENT:ParseNWValues()
 			w, h = w * data.mult, h * data.mult
 			w2, h2 = w2 * data.mult, h2 * data.mult
 
-			local delta = lH - h
+			local wc, hc = w, h
+			local w2c, h2c = w2, h2
+
+			w, h = determineNewBoundaries(data.rad, w, h)
+			w2, h2 = determineNewBoundaries(data.rad, w2, h2)
+
+			local sin, cos = data.rad:sin(), data.rad:cos()
+
+			local rotateX, rotateY = -wc / 2, hc / 2
+			local rotateX2, rotateY2 = -wc / 2, hc / 2
+
+			rotateX = rotateX * cos - rotateY * sin
+			rotateY = rotateX * sin + rotateY * cos
+
+			rotateX = rotateX - rotateX2
+			rotateY = rotateY - rotateY2
+
+			local delta = lH - hc
 			local ypos = delta / 2
 
 			if data.align.top then
@@ -271,17 +377,18 @@ function ENT:ParseNWValues()
 			drawdata[i] = {
 				w = w,
 				h = h,
+				wc = wc,
+				hc = hc,
+				w2c = w2c,
+				h2c = h2c,
 				spacing = w2,
 				str = data.text,
-				x = 0,
-				xShadow = w2 * 0.1,
-				y = ypos,
-				yShadow = ypos + h2 * 0.03
+				x = rotateX,
+				xShadow = w2 * 0.1 * cos - h2 * 0.15 * sin + rotateX,
+				y = ypos + rotateY,
+				yShadow = ypos + h2 * 0.03 * cos + w2 * 0.05 * sin + rotateY
 			}
 		end
-
-		lineData.lW = lW
-		lineData.lH = lH
 	end
 
 	-- phase three - align all lines at Y
@@ -289,7 +396,7 @@ function ENT:ParseNWValues()
 
 	for line, lineData in ipairs(self.Lines) do
 		local drawdata = lineData.draw
-		local lW, lH = lineData.lW, lineData.lH
+		local lW, lH = lineData.w, lineData.h
 
 		local currentX = 0
 
@@ -301,7 +408,7 @@ function ENT:ParseNWValues()
 		end
 
 		for i, data in ipairs(lineData.data) do
-			drawdata[i].x = currentX
+			drawdata[i].x = drawdata[i].x + currentX
 			drawdata[i].xShadow = currentX + drawdata[i].xShadow
 			drawdata[i].y = drawdata[i].y + totalY
 			drawdata[i].yShadow = drawdata[i].yShadow + totalY
@@ -309,6 +416,23 @@ function ENT:ParseNWValues()
 		end
 
 		totalY = totalY + lH * 1.05
+	end
+
+	-- phase five - calculate in-canvas aligns and rotations
+	for i, lineData in ipairs(self.Lines) do
+		for i2, data in ipairs(lineData.draw) do
+			local lineStuff = lineData.data[i2]
+
+			data.xInCanvas = -self.TotalHeight / 2 + data.y
+			data.xInCanvasShadow = -self.TotalHeight / 2 + data.yShadow
+			data.yInCanvas = -self.TotalWidth / 2 + data.x
+			data.yInCanvasShadow = -self.TotalWidth / 2 + data.xShadow
+
+			data.posInCanvas = Vector(data.xInCanvas, data.yInCanvas, 20) * 0.25
+			data.posInCanvasShadow = Vector(data.xInCanvasShadow, data.yInCanvasShadow, 20) * 0.25
+
+			data.ang = Angle(0, 90 - lineStuff.rotate, 0)
+		end
 	end
 end
 
