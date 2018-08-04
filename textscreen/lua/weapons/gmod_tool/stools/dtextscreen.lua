@@ -375,8 +375,10 @@ function TOOL:LeftClick(tr)
 
 	if CLIENT then return true end
 
+	local movable = tobool(self:GetClientInfo('movable'))
+
 	textscreen:SetDoubleDraw(tobool(self:GetClientInfo('doubledraw')))
-	textscreen:SetIsMovable(tobool(self:GetClientInfo('movable')))
+	textscreen:SetIsMovable(movable)
 	textscreen:SetOverallSize(self:GetClientNumber('overall_size', 10):clamp(0.1, 60))
 
 	local finaltext
@@ -459,6 +461,23 @@ function TOOL:LeftClick(tr)
 	if isnew then
 		textscreen:Spawn()
 		textscreen:Activate()
+
+		if not movable then
+			textscreen:SetCollisionGroup(COLLISION_GROUP_NONE)
+
+			if IsValid(ent) and not ent:IsRagdoll() then
+				local weld = constraint.Weld(ent, textscreen, 0, 0, 0, true)
+
+				if weld then
+					undo.Create('Weld')
+					undo.AddEntity(weld)
+					undo.SetPlayer(ply)
+					undo.Finish()
+
+					ply:AddCleanup('constraints', weld)
+				end
+			end
+		end
 	end
 
 	return true
