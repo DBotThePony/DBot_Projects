@@ -364,11 +364,6 @@ function TOOL:LeftClick(tr)
 
 		isnew = true
 
-		undo.Create('DTextscreen')
-		undo.AddEntity(textscreen)
-		undo.SetPlayer(ply)
-		undo.Finish()
-
 		ply:AddCleanup('dtextscreen', textscreen)
 		ply:AddCount('dtextscreens', textscreen)
 	end
@@ -462,6 +457,9 @@ function TOOL:LeftClick(tr)
 		textscreen:Spawn()
 		textscreen:Activate()
 
+		undo.Create('DTextscreen')
+		undo.AddEntity(textscreen)
+
 		if not movable then
 			textscreen:SetCollisionGroup(COLLISION_GROUP_NONE)
 
@@ -469,15 +467,14 @@ function TOOL:LeftClick(tr)
 				local weld = constraint.Weld(ent, textscreen, 0, 0, 0, true)
 
 				if weld then
-					undo.Create('Weld')
-					undo.AddEntity(weld)
-					undo.SetPlayer(ply)
-					undo.Finish()
-
+					textscreen:SetIsMovable(true)
 					ply:AddCleanup('constraints', weld)
 				end
 			end
 		end
+
+		undo.SetPlayer(ply)
+		undo.Finish()
 	end
 
 	return true
