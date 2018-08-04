@@ -461,12 +461,13 @@ function TOOL:LeftClick(tr)
 		undo.AddEntity(textscreen)
 
 		if not movable then
-			textscreen:SetCollisionGroup(COLLISION_GROUP_NONE)
+			textscreen:SetCollisionGroup(COLLISION_GROUP_WORLD)
 
 			if IsValid(ent) and not ent:IsRagdoll() then
 				local weld = constraint.Weld(ent, textscreen, 0, 0, 0, true)
 
 				if weld then
+					textscreen:SetCollisionGroup(COLLISION_GROUP_NONE)
 					textscreen:SetIsMovable(true)
 					ply:AddCleanup('constraints', weld)
 				end
