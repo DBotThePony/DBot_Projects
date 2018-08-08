@@ -15,11 +15,14 @@
 
 local MOVETYPE_VPHYSICS = MOVETYPE_VPHYSICS
 local SOLID_VPHYSICS = SOLID_VPHYSICS
+local COLLISION_GROUP_WORLD = COLLISION_GROUP_WORLD
 
 include('shared.lua')
 
 AddCSLuaFile('shared.lua')
 AddCSLuaFile('cl_init.lua')
+
+local FORCE_NO_COLLIDE = DLib.util.CreateSharedConvar('textscreens_force_nocollide', '0', 'Always No-collide textscreens (useful when no-collide property is disabled)')
 
 function ENT:InitializeSV()
 	self:SetMoveType(MOVETYPE_VPHYSICS)
@@ -27,6 +30,10 @@ function ENT:InitializeSV()
 	self:SetSolid(SOLID_VPHYSICS)
 
 	self:UpdatePhysics()
+
+	if FORCE_NO_COLLIDE:GetBool() then
+		self:SetCollisionGroup(COLLISION_GROUP_WORLD)
+	end
 end
 
 function ENT:UpdatePhysics()
@@ -40,6 +47,10 @@ function ENT:UpdatePhysics()
 		else
 			phys:EnableMotion(false)
 		end
+	end
+
+	if FORCE_NO_COLLIDE:GetBool() then
+		self:SetCollisionGroup(COLLISION_GROUP_WORLD)
 	end
 end
 

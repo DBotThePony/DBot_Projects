@@ -21,6 +21,8 @@ local SERVER = SERVER
 local pairs = pairs
 local RunConsoleCommand = RunConsoleCommand
 
+local FORCE_NO_COLLIDE = DLib.util.CreateSharedConvar('textscreens_force_nocollide', '0', 'Always No-collide textscreens (useful when no-collide property is disabled)')
+
 TOOL.Category = 'Construction'
 TOOL.Name = 'Textscreens'
 
@@ -476,6 +478,10 @@ function TOOL:LeftClick(tr)
 
 		undo.SetPlayer(ply)
 		undo.Finish()
+	end
+
+	if FORCE_NO_COLLIDE:GetBool() then
+		textscreen:SetCollisionGroup(COLLISION_GROUP_WORLD)
 	end
 
 	return true
