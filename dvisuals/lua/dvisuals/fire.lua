@@ -107,6 +107,7 @@ hook.Add('Think', 'DVisuals.ThinkFireParticles', function()
 end)
 
 net.receive('DVisuals.Fires', function()
+	if not DVisuals.ENABLE_FIRE() then return end
 	local score = net.ReadUInt(4)
 
 	for i = 1, score do
@@ -117,6 +118,7 @@ net.receive('DVisuals.Fires', function()
 end)
 
 net.receive('DVisuals.Frost', function()
+	if not DVisuals.ENABLE_FROZEN() then return end
 	local score = net.ReadUInt(8)
 
 	for i = 1, score do
