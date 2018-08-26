@@ -120,6 +120,7 @@ function ENT:PhysicsCollide(data)
 		self.Phys:EnableMotion(false)
 		self.Phys:Sleep()
 		self.SLEEPING = true
+		self:SetSolid(SOLID_NONE)
 		return
 	end
 
