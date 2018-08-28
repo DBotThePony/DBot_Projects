@@ -73,17 +73,22 @@ self.DISPLAY_FULL_TIME = false
 
 local GET_FULL_POSITION = DLib.HUDCommons.DefinePosition('ddaynight_timefull', 0.5, 0.07)
 local GET_FULL_POSITION_SCOREBOARD = DLib.HUDCommons.DefinePosition('ddaynight_timefull', 0.5, 0.4)
+local GET_FULL_POSITION_SCOREBOARD2 = DLib.HUDCommons.DefinePosition('ddaynight_timefull2', 0.5, 0.7)
 local GET_REGULAR_POSITION = DLib.HUDCommons.DefinePosition('ddaynight_time', 0.99, 0.99)
 
 local function HUDPaintFULL()
-	if not self.DISPLAY_FULL_TIME and not self.SCOREBOARD_IS_SHOWN then return end
-
 	local x, y
 
-	if self.SCOREBOARD_IS_SHOWN then
-		x, y = GET_FULL_POSITION_SCOREBOARD()
+	if not IsValid(g_SpawnMenu) or not g_SpawnMenu:IsVisible() then
+		if not self.DISPLAY_FULL_TIME and not self.SCOREBOARD_IS_SHOWN then return end
+
+		if self.SCOREBOARD_IS_SHOWN then
+			x, y = GET_FULL_POSITION_SCOREBOARD2()
+		else
+			x, y = GET_FULL_POSITION()
+		end
 	else
-		x, y = GET_FULL_POSITION()
+		x, y = GET_FULL_POSITION_SCOREBOARD()
 	end
 
 	surface.SetTextColor(255, 255, 255)
@@ -150,6 +155,10 @@ local function HUDPaintFULL()
 end
 
 local function HUDPaint()
+	if IsValid(g_SpawnMenu) and g_SpawnMenu:IsVisible() then
+		return
+	end
+
 	if self.DISPLAY_FULL_TIME or not ALWAYS_DISPLAY_TIME:GetBool() or self.SCOREBOARD_IS_SHOWN then return end
 
 	local x, y = GET_REGULAR_POSITION()
@@ -168,6 +177,7 @@ end
 local function ScoreboardHide()
 	self.SCOREBOARD_IS_SHOWN = false
 end
+
 hook.Add('HUDPaint', 'DDayNight_DisplayTimeFull', HUDPaintFULL)
 hook.Add('ScoreboardShow', 'DDayNight_DisplayTimeFull', ScoreboardShow, -10)
 hook.Add('ScoreboardHide', 'DDayNight_DisplayTimeFull', ScoreboardHide, -10)

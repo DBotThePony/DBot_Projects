@@ -121,7 +121,7 @@ end
 
 local function ReplicateTime()
 	net.Start('ddaynight.replicatetime')
-	net.WriteBigUInt(self.TIME, 64)
+	net.WriteBigUInt(self.TIME)
 	net.WriteDouble(timeSinceLastTick)
 	net.Broadcast()
 end
@@ -143,7 +143,7 @@ end
 net.Receive('ddaynight.replicatetime', function(len, ply)
 	if not IsValid(ply) then return end
 	net.Start('ddaynight.replicatetime')
-	net.WriteBigUInt(self.TIME, 64)
+	net.WriteBigUInt(self.TIME)
 	net.WriteDouble(timeSinceLastTick)
 	net.Send(ply)
 end)

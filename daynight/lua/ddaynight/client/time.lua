@@ -117,7 +117,7 @@ end
 
 net.receive('ddaynight.replicatetime', function()
 	self.INITIALIZE = true
-	local time = net.ReadUInt(64)
+	local time = net.ReadBigUInt()
 	local validAt = net.ReadDouble()
 
 	self.BOUND_TIME = time
