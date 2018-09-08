@@ -172,6 +172,12 @@ local function Draw(ply)
 end
 
 local function PrePlayerDraw(ply)
+	if ply.DConnecttt_Clip then
+		ply.DConnecttt_Clip = false
+		render.PopCustomClipPlane()
+		render.EnableClipping(ply.DConnecttt_oldClipping)
+	end
+
 	local delta = CurTimeL() - ply:DLibVar('DConnecttt.JoinTime', 0)
 
 	if delta < 0 or delta >= 20 then return end
@@ -263,7 +269,7 @@ DLib.nw.poolFloat('DConnecttt_Join', -1)
 
 hook.Add('PostDrawTranslucentRenderables', 'DConnecttt.Draw', PostDrawTranslucentRenderables)
 hook.Add('HUDPaint', 'DConnecttt.Draw', HUDPaint)
-hook.Add('PrePlayerDraw', 'DConnecttt.Draw', PrePlayerDraw)
+hook.Add('PrePlayerDraw', 'DConnecttt.Draw', PrePlayerDraw, 4)
 hook.Add('PostPlayerDraw', 'DConnecttt.Draw', PostPlayerDraw)
 
 timer.Create('DConnecttt.PlayerTick', 1, 0, function()
