@@ -171,12 +171,17 @@ local function Draw(ply)
 	cam.End3D2D()
 end
 
+local fail = false
+
 local function PrePlayerDraw(ply)
 	if ply.DConnecttt_Clip then
 		ply.DConnecttt_Clip = false
 		render.PopCustomClipPlane()
 		render.EnableClipping(ply.DConnecttt_oldClipping)
+		fail = true
 	end
+
+	if fail then return end
 
 	local delta = CurTimeL() - ply:DLibVar('DConnecttt.JoinTime', 0)
 
