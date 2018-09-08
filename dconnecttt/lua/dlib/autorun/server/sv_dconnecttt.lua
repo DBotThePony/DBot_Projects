@@ -113,7 +113,9 @@ local function PlayerAuthed(ply, steamid)
 	timer.Simple(0, function()
 		if not IsValid(ply) then return end
 
-		ply:SetNWFloat('DConnecttt.JoinTime', CurTimeL())
+		if ply:DLibVar('DConnecttt.JoinTime', -1) == -1 then
+			ply:SetDLibVar('DConnecttt.JoinTime', RealTimeL())
+		end
 
 		DConn.Query('SELECT * FROM dconnecttt WHERE steamid64 = "' .. steamid64 .. '";', function(data)
 			if not IsValid(ply) then return end
@@ -146,8 +148,8 @@ local function PlayerAuthed(ply, steamid)
 
 				ply.DConnecttt_Session = 0
 				ply.DConnecttt_Total = tonumber(totaltime)
-				ply:SetNWFloat('DConnecttt_Join', CurTimeL())
-				ply:SetNWFloat('DConnecttt_Total_OnJoin', ply.DConnecttt_Total)
+
+				ply:SetDLibVar('DConnecttt_Total_OnJoin', ply.DConnecttt_Total)
 
 				local PrintNick = nick
 
@@ -175,9 +177,9 @@ local function CheckPassword(steamid64, ip, svpass, clpass, nick)
 	local realip = string.Explode(':', ip)[1]
 	local steamid = util.SteamIDFrom64(steamid64)
 
-	IPBuffer[realip] = IPBuffer[realip] or {0, CurTimeL()}
+	IPBuffer[realip] = IPBuffer[realip] or {0, RealTimeL()}
 
-	if IPBuffer[realip][2] + SPAM_DELAY:GetInt() > CurTimeL() then
+	if IPBuffer[realip][2] + SPAM_DELAY:GetInt() > RealTimeL() then
 		IPBuffer[realip][1] = IPBuffer[realip][1] + 1
 	else
 		IPBuffer[realip][1] = 0
@@ -249,16 +251,16 @@ local function Timer()
 		if ply.DCONNECT_INITIALIZE then
 			ply.DConnecttt_Session = (ply.DConnecttt_Session or 0) + 1
 			ply.DConnecttt_Total = (ply.DConnecttt_Total or 0) + 1
-			ply.DConnecttt_LastTick = ply.DConnecttt_LastTick or CurTimeL()
+			ply.DConnecttt_LastTick = ply.DConnecttt_LastTick or RealTimeL()
 
 			if ply:IsBot() then
-				ply.DConnecttt_LastTick = CurTimeL()
+				ply.DConnecttt_LastTick = RealTimeL()
 			end
 
-			local deadTime = CurTimeL() - ply.DConnecttt_LastTick
+			local deadTime = RealTimeL() - ply.DConnecttt_LastTick
 			ply:SetNWBool('DConnecttt_Dead', deadTime > 5)
 
-			if KICK_NOT_RESPONDING and ply.DConnecttt_LastTick + KICK_TIMEOUT:GetFloat() < CurTimeL() then
+			if KICK_NOT_RESPONDING and ply.DConnecttt_LastTick + KICK_TIMEOUT:GetFloat() < RealTimeL() then
 				ply.DConnecttt_Kicked = true
 				ply:Kick(DLib.i18n.localizePlayer(ply, 'message.dconn.disconnected.noreply'))
 			end
@@ -275,21 +277,21 @@ local function SaveTimer()
 end
 
 local function PlayerTick(len, ply)
-	ply.DConnecttt_LastTick = CurTimeL()
+	ply.DConnecttt_LastTick = RealTimeL()
 
-	if ply:GetNWFloat('DConnecttt.FastInit', 0) == 0 then
-		ply:SetNWFloat('DConnecttt.FastInit', CurTimeL())
+	if ply:DLibVar('DConnecttt.FastInit', 0) == 0 then
+		ply:SetDLibVar('DConnecttt.FastInit', RealTimeL())
 	end
 end
 
 local plyMeta = FindMetaTable('Player')
 
 function plyMeta:TotalTimeConnected()
-	return self:SessionTime() + self:GetNWFloat('DConnecttt_Total_OnJoin')
+	return self:SessionTime() + self:DLibVar('DConnecttt_Total_OnJoin')
 end
 
 function plyMeta:SessionTime()
-	return CurTimeL() - self:GetNWFloat('DConnecttt_Join')
+	return RealTimeL() - self:DLibVar('DConnecttt_Join')
 end
 
 -- UTime interface
@@ -316,12 +318,17 @@ function plyMeta:SetUTimeStart()
 end
 
 function plyMeta:GetUTimeStart()
-	return self:GetNWFloat('DConnecttt_Join')
+	return self:DLibVar('DConnecttt_Join')
 end
 
 for k, v in pairs(player.GetAll()) do
 	PlayerAuthed(v, v:SteamID())
 end
+
+DLib.nw.poolFloat('DConnecttt.FastInit', -1)
+DLib.nw.poolFloat('DConnecttt.JoinTime', -1)
+DLib.nw.poolFloat('DConnecttt_Total_OnJoin', -1)
+DLib.nw.poolFloat('DConnecttt_Join', -1)
 
 timer.Create('DConnecttt.Timer', 1, 0, Timer)
 timer.Create('DConnecttt.SaveTimer', 60, 0, SaveTimer)

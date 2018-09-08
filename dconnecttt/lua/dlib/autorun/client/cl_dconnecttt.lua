@@ -27,11 +27,11 @@ local messaging = DLib.chat.registerWithMessages({}, 'DConnecttt')
 local plyMeta = FindMetaTable('Player')
 
 function plyMeta:TotalTimeConnected()
-	return self:SessionTime() + self:GetNWFloat('DConnecttt_Total_OnJoin')
+	return self:SessionTime() + self:DLibVar('DConnecttt_Total_OnJoin')
 end
 
 function plyMeta:SessionTime()
-	return CurTimeL() - self:GetNWFloat('DConnecttt_Join')
+	return RealTimeL() - self:DLibVar('DConnecttt_Join')
 end
 
 -- UTime interface
@@ -59,7 +59,7 @@ function plyMeta:SetUTimeStart()
 end
 
 function plyMeta:GetUTimeStart()
-	return self:GetNWFloat('DConnecttt_Join')
+	return self:DLibVar('DConnecttt_Join')
 end
 
 surface.CreateFont('DConnecttt.HUD', {
@@ -138,7 +138,7 @@ local disconnect = Material('icon16/disconnect.png')
 local connect = Material('icon16/connect.png')
 local currentmat = disconnect
 local current = false
-local lastchange = CurTimeL()
+local lastchange = RealTimeL()
 
 surface.CreateFont('DConnecttt.Disconnect', {
 	font = 'Roboto',
@@ -172,11 +172,11 @@ local function Draw(ply)
 end
 
 local function PrePlayerDraw(ply)
-	local delta = CurTimeL() - ply:GetNWFloat('DConnecttt.JoinTime', 0)
+	local delta = CurTimeL() - ply:DLibVar('DConnecttt.JoinTime', 0)
 
 	if delta < 0 or delta >= 20 then return end
 	local defaultMult = delta / 20
-	local fast = ply:GetNWFloat('DConnecttt.FastInit', 0)
+	local fast = ply:DLibVar('DConnecttt.FastInit', 0)
 
 	local multToUse = 0
 
@@ -237,9 +237,9 @@ local function PostDrawTranslucentRenderables(a, b)
 	if a or b then return end
 	if not DRAW_NOT_RESPONDING:GetBool() then return end
 
-	if lastchange < CurTimeL() then
+	if lastchange < RealTimeL() then
 		current = not current
-		lastchange = CurTimeL() + 2
+		lastchange = RealTimeL() + 2
 		currentmat = current and connect or disconnect
 	end
 
@@ -255,6 +255,11 @@ local function PostDrawTranslucentRenderables(a, b)
 		end
 	end
 end
+
+DLib.nw.poolFloat('DConnecttt.FastInit', -1)
+DLib.nw.poolFloat('DConnecttt.JoinTime', -1)
+DLib.nw.poolFloat('DConnecttt_Total_OnJoin', -1)
+DLib.nw.poolFloat('DConnecttt_Join', -1)
 
 hook.Add('PostDrawTranslucentRenderables', 'DConnecttt.Draw', PostDrawTranslucentRenderables)
 hook.Add('HUDPaint', 'DConnecttt.Draw', HUDPaint)
