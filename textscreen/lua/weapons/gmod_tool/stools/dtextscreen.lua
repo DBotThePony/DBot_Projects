@@ -465,8 +465,8 @@ function TOOL:LeftClick(tr)
 		if not movable then
 			textscreen:SetCollisionGroup(COLLISION_GROUP_WORLD)
 
-			if IsValid(ent) and not ent:IsRagdoll() then
-				local weld = constraint.Weld(ent, textscreen, 0, 0, 0, true)
+			if IsValid(ent) and not ent:IsRagdoll() and util.IsValidPhysicsObject(ent, tr.PhysicsBone) then
+				local weld = constraint.Weld(ent, textscreen, 0, tr.PhysicsBone, 0, true)
 
 				if weld then
 					textscreen:SetCollisionGroup(COLLISION_GROUP_NONE)
