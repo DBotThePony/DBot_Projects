@@ -20,7 +20,8 @@ local COLOR_TO_USE = DLib.HUDCommons.CreateColor('dconnecttt_bg', 'DConnecttt Ba
 local COLOR_TO_USE_TEXT = DLib.HUDCommons.CreateColor('dconnecttt', 'DConnecttt Background', 255, 255, 255)
 local DRAW_NOT_RESPONDING = CreateConVar('cl_dconn_draw', '1', {FCVAR_ARCHIVE}, 'Draw visual effect when player loses connection')
 local DRAW_TIME = CreateConVar('cl_dconn_drawtime', '1', {FCVAR_ARCHIVE}, 'Draw time played on server')
-local DISPLAY_NICKS = CreateConVar('sv_dconn_hoverdisplay', '1', {FCVAR_NOTIFY, FCVAR_ARCHIVE, FCVAR_REPLICATED}, 'Display players nicks on hovering')
+local DRAW_TIME_AT_ALL = CreateConVar('sv_dconn_drawtime', '1', {FCVAR_REPLICATED}, 'Draw time played on server')
+local DISPLAY_NICKS = CreateConVar('sv_dconn_hoverdisplay', '1', {FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Display players nicks on hovering')
 
 local messaging = DLib.chat.registerWithMessages({}, 'DConnecttt')
 
@@ -70,7 +71,7 @@ surface.CreateFont('DConnecttt.HUD', {
 })
 
 local function HUDPaint()
-	if not DRAW_TIME:GetBool() then return end
+	if not DRAW_TIME:GetBool() or not DRAW_TIME_AT_ALL:GetBool() then return end
 
 	local stime = LocalPlayer():SessionTime()
 	local ttime = LocalPlayer():TotalTimeConnected()
