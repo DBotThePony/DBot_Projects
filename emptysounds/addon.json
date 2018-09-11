@@ -1,0 +1,14 @@
+{
+	"title"		:	"DAFK - AFK Watcher and Notify",
+	"type"		:	"tool",
+	"tags"		:	[],
+	"ignore"	:
+	[
+		"*.psd",
+		"*.vcproj",
+		"*.svn*",
+		"*.git*",
+		"README.md",
+		"LICENSE"
+	]
+}
