@@ -45,9 +45,10 @@ local function EntityEmitSound(data)
 	if maxclip1 <= 0 or maxclip1 >= 70 then return end
 
 	local mult = clip1 / maxclip1
-	if mult >= 0.35 then return end
+	if mult >= 0.4 then return end
+	if mult == 0 then return end
 
-	data.Pitch = data.Pitch * (1 + (1 / mult) * 0.27)
+	data.Pitch = data.Pitch * (1 + 0.02 / mult)
 
 	return true
 end
