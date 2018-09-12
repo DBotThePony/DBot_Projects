@@ -1,8 +1,8 @@
 {
-	"title"		:	"DAFK - AFK Watcher and Notify",
-	"type"		:	"tool",
-	"tags"		:	[],
-	"ignore"	:
+	"title"     :   "Near-Empty clip sounds",
+	"type"      :   "effects",
+	"tags"      :   [],
+	"ignore"    :
 	[
 		"*.psd",
 		"*.vcproj",
