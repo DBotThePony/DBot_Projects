@@ -31,6 +31,107 @@ local rifles = {}
 local sniper_rifles = {}
 local sub_machine_guns = {}
 
+-- tfa_bms_crowbar has invalid type: weapon
+-- tfa_bms_glock has invalid type: 9mm semi automatic handgun
+-- tfa_bms_grenade has invalid type: grenade
+-- tfa_bms_mp5 has invalid type: 9mm smg with underbarrel grenade launcher (+zoom key to toggle)
+-- tfa_bms_rpg has invalid type: launcher
+-- tfa_cso_automagv has invalid type: machine pistol
+-- tfa_cso_beam_sword has invalid type: weapon
+-- tfa_cso_cake has invalid type: grenade
+-- tfa_cso_chaingrenade has invalid type: grenade
+-- tfa_cso_coldsteelblade has invalid type: weapon
+-- tfa_cso_crossbow has invalid type: designated marksman rifle
+-- tfa_cso_deagle has invalid type: machine pistol
+-- tfa_cso_deaglered has invalid type: machine pistol
+-- tfa_cso_divinelock has invalid type: weapon
+-- tfa_cso_dmp7a1 has invalid type: dual sub-machine guns
+-- tfa_cso_dragonblade has invalid type: weapon
+-- tfa_cso_dragonblade_expert has invalid type: weapon
+-- tfa_cso_dualinfinity has invalid type: dual pistols
+-- tfa_cso_dualinfinityfinal has invalid type: dual pistols
+-- tfa_cso_dualkrisscustom has invalid type: dual sub-machine guns
+-- tfa_cso_dualsword has invalid type: weapon
+-- tfa_cso_dualuzi has invalid type: dual sub-machine guns
+-- tfa_cso_fglauncher has invalid type: weapon
+-- tfa_cso_g_deagle has invalid type: machine pistol
+-- tfa_cso_infinityex1 has invalid type: dual pistols
+-- tfa_cso_m249ex has invalid type: designated marksman rifle
+-- tfa_cso_m24grenade has invalid type: grenade
+-- tfa_cso_m60craft has invalid type: designated marksman rifle
+-- tfa_cso_m79 has invalid type: weapon
+-- tfa_cso_m79_gold has invalid type: weapon
+-- tfa_cso_mk48 has invalid type: designated marksman rifle
+-- tfa_cso_mk48_expert has invalid type: designated marksman rifle
+-- tfa_cso_runebreaker has invalid type: weapon
+-- tfa_cso_runebreaker_expert has invalid type: weapon
+-- tfa_cso_serpent_blade has invalid type: weapon
+-- tfa_cso_skull3_b has invalid type: dual sub-machine guns
+-- tfa_cso_skull4 has invalid type: dual guns
+-- tfa_cso_skull5 has invalid type: designated marksman rifle
+-- tfa_cso_skull6 has invalid type: designated marksman rifle
+-- tfa_cso_skull9 has invalid type: weapon
+-- tfa_cso_stormgiant has invalid type: weapon
+-- tfa_cso_stormgiant_tw has invalid type: weapon
+-- tfa_cso_thanatos9 has invalid type: weapon
+-- tfa_cso_vulcanus1_a has invalid type: dual pistols
+-- tfa_cso_vulcanus1_b has invalid type: dual pistols
+-- tfa_elephant_ak47 has invalid type: one of, if not the most iconic gun in the world
+-- tfa_elephant_aks74 has invalid type: smaller calibre version of the classic ak-47 rifle
+-- tfa_elephant_bizon has invalid type: russian submachine gun with a unique helical magazine
+-- tfa_elephant_l110a1 has invalid type: standard issue lmg of the united kingdom
+-- tfa_elephant_l34a1 has invalid type: a silenced variant of the british sterling smg
+-- tfa_elephant_m14 has invalid type: a .30 caliber battle rifle manufactured in the united states of america
+-- tfa_elephant_m16a2 has invalid type: former service rifle of the united states of america
+-- tfa_elephant_m16a3 has invalid type: fully automatic variant of the m16a2 rifle
+-- tfa_elephant_m1911 has invalid type: an american made pistol that served in both world wars
+-- tfa_elephant_m249 has invalid type: standard issue lmg of the united states of america
+-- tfa_elephant_m4 has invalid type: carbine variant of the m16a4 rifle
+-- tfa_elephant_m4a1 has invalid type: current service rifle of the united states of america
+-- tfa_elephant_m79 has invalid type: an american grenade launcher used by the united states of america in vietnam
+-- tfa_elephant_m870 has invalid type: a 12 gauge, american shotgun and is currently in service of the united states of america
+-- tfa_elephant_mac11 has invalid type: a smaller version of the infamous mac-10 submachine-gun
+-- tfa_elephant_mk7 has invalid type: a sub-compact variant of the sterling smg
+-- tfa_elephant_ots33 has invalid type: russian machine-pistol designed by igor stechkin
+-- tfa_elephant_p226 has invalid type: a popular swiss-german pistol used by militaries around the world
+-- tfa_elephant_rpk has invalid type: machine gun variant of the ak-47 rifle
+-- tfa_elephant_sterling has invalid type: a submachine gun manufactured in the united kingdom
+-- tfa_ins2_ak5d has invalid type: swedish 5.56x45mm automatic carbine rifle
+-- tfa_ins2_akm has invalid type: russian 7.62x39mm automatic assault rifle
+-- tfa_ins2_aks74u has invalid type: russian 5.56x39mm automatic carbine rifle
+-- tfa_ins2_asval has invalid type: russian 9x39mm sp5 automatic special assault rifle
+-- tfa_ins2_d25s has invalid type: american .308 semi automatic designated marksman rifle
+-- tfa_ins2_doublebarrel has invalid type: russian 12 gauge break action shotgun
+-- tfa_ins2_epcwn has invalid type: belgian 7.62x115mm burst battle rifle
+-- tfa_ins2_f1 has invalid type: russian fragmentation hand grenade
+-- tfa_ins2_fnfal has invalid type: belgian 7.62x51mm automatic battle rifle
+-- tfa_ins2_g36c has invalid type: german 5.56x45mm automatic carbine rifle
+-- tfa_ins2_g3a3 has invalid type: german 7.62x51mm automatic assault rifle
+-- tfa_ins2_galil has invalid type: israeli 5.56x45mm automatic assault rifle
+-- tfa_ins2_glock17 has invalid type: austrian 9x19mm parabellum semi automatic pistol
+-- tfa_ins2_gurkha has invalid type: weapon
+-- tfa_ins2_kabar has invalid type: weapon
+-- tfa_ins2_m1014 has invalid type: italian 12 gauge semi-auto shotgun
+-- tfa_ins2_m1911 has invalid type: american .45 acp semi automatic pistol
+-- tfa_ins2_m40a1 has invalid type: american 7.62x51mm bolt-action sniper rifle
+-- tfa_ins2_m4a1 has invalid type: american 5.56x45mm automatic carbine rifle
+-- tfa_ins2_m590 has invalid type: american 12 gauge pump-action shotgun
+-- tfa_ins2_m67 has invalid type: american fragmentation hand grenade
+-- tfa_ins2_makm has invalid type: russian 7.62x39mm automatic assault rifle
+-- tfa_ins2_mosin has invalid type: russian 7.62x54mmr bolt-action sniper rifle
+-- tfa_ins2_mp5 has invalid type: german 9x19mm automatic sub machine gun
+-- tfa_ins2_p90 has invalid type: belgian 5.7x28mm automatic personal defence weapon
+-- tfa_ins2_pkp has invalid type: russian 7.62x54mm automatic light machine gun
+-- tfa_ins2_pm has invalid type: russian 9×18mm semi automatic pistol
+-- tfa_ins2_ppsh has invalid type: russian 7.62x25mm automatic sub machine gun
+-- tfa_ins2_rpk has invalid type: russian 7.62x39mm automatic light machine gun
+-- tfa_ins2_scarl has invalid type: belgian 5.56x45mm automatic assault rifle
+-- tfa_ins2_svd has invalid type: russian 7.62x54mmr semi automatic sniper rifle
+-- tfa_ins2_svt40 has invalid type: russian 7.62x54mmr semi automatic rifle
+-- tfa_ins2_tt33 has invalid type: russian 7.62x25mm semi automatic pistol
+-- tfa_ins2_uzi has invalid type: israeli 9x19mm automatic sub machine gun
+-- tfa_ins2_volk has invalid type: energy assault rifle
+-- tfa_l4d2_pipewrench has invalid type: weapon
 table.insert(miniguns, 'tfa_cso_ak_long')
 table.insert(miniguns, 'tfa_cso_avalanche')
 table.insert(miniguns, 'tfa_cso_balrog7')
