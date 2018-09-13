@@ -1,4 +1,3 @@
-
 -- Copyright (C) DBotThePony 2018
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,7 +25,7 @@ local hook = hook
 local pistols = {}
 local shotguns = {}
 local miniguns = {}
-local revolers = {}
+local revolvers = {}
 local rifles = {}
 local sniper_rifles = {}
 local sub_machine_guns = {}
@@ -201,15 +200,15 @@ table.insert(pistols, 'tfa_mwr_m1911')
 table.insert(pistols, 'tfa_mwr_m9')
 table.insert(pistols, 'tfa_mwr_prokolot')
 table.insert(pistols, 'tfa_mwr_usp45')
-table.insert(revolers, 'tfa_bms_357')
-table.insert(revolers, 'tfa_cso_anaconda')
-table.insert(revolers, 'tfa_cso_desperado')
-table.insert(revolers, 'tfa_cso_sapientia')
-table.insert(revolers, 'tfa_cso_skull1')
-table.insert(revolers, 'tfa_cso_skull2')
-table.insert(revolers, 'tfa_ins2_thanez_cobra')
-table.insert(revolers, 'tfa_l4d2_rhino')
-table.insert(revolers, 'tfa_mwr_44mag')
+table.insert(revolvers, 'tfa_bms_357')
+table.insert(revolvers, 'tfa_cso_anaconda')
+table.insert(revolvers, 'tfa_cso_desperado')
+table.insert(revolvers, 'tfa_cso_sapientia')
+table.insert(revolvers, 'tfa_cso_skull1')
+table.insert(revolvers, 'tfa_cso_skull2')
+table.insert(revolvers, 'tfa_ins2_thanez_cobra')
+table.insert(revolvers, 'tfa_l4d2_rhino')
+table.insert(revolvers, 'tfa_mwr_44mag')
 table.insert(rifles, 'tfa_cso_ak47_dragon')
 table.insert(rifles, 'tfa_cso_ak47')
 table.insert(rifles, 'tfa_cso_ak47red')
@@ -430,7 +429,7 @@ hook.Add('InitPostEntity', 'AddWeaponJam', function()
 		end
 	end
 
-	for i, classname in ipairs(revolers) do
+	for i, classname in ipairs(revolvers) do
 		if weaponMapping[classname] and (not weaponMapping[classname].CanJam or TFA_AUTOJAMMING_ENABLED) then
 			weaponMapping[classname].CanJam = true
 			weaponMapping[classname].JamChance = 0.17
