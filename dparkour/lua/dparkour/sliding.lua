@@ -94,7 +94,7 @@ function DParkour.HandleSlide(ply, movedata, data)
 		ply:SetDLibVar('slideSide', movedata:GetVelocity():Angle().yaw:angleDifference(ply:EyeAngles():Forward().yaw) >= 0)
 		data.slide_velocity_start = movedata:GetVelocity()
 		ply:EmitSound('DParkour.Sliding')
-	elseif data.first then
+	elseif data.first and data.slide_velocity_start:Length() > 350 then
 		local mins, maxs = ply:GetHull()
 		maxs.z = maxs.z * 0.4
 
@@ -114,7 +114,7 @@ function DParkour.HandleSlide(ply, movedata, data)
 			else
 				movedata:SetVelocity(Vector())
 
-				if data.slide_velocity_start:Length() > 350 and IsValid(tr.Entity) then
+				if IsValid(tr.Entity) then
 					if tr.Entity:IsNPC() or tr.Entity:IsPlayer() or tr.Entity:IsNextBot() then
 						ply:EmitSound('DParkour.NPCImpact')
 
