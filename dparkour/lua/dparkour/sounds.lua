@@ -37,10 +37,46 @@ sound.Add({
 })
 
 sound.Add({
-	name = 'DParkour.WallImpactHard',
+	name = 'DParkour.Sliding',
 	channel = CHAN_BODY,
 	level = SNDLVL_50dB,
+	sound = 'physics/body/body_medium_scrape_rough_loop1.wav',
+	volume = 1,
+	pitch = {60, 80},
+})
+
+sound.Add({
+	name = 'DParkour.SlidingInterrupt',
+	channel = CHAN_BODY,
+	level = SNDLVL_65dB,
+	sound = 'physics/metal/metal_box_scrape_rough_loop1.wav',
+	volume = 0.3,
+	pitch = {120, 150},
+})
+
+sound.Add({
+	name = 'DParkour.WallImpactHard',
+	channel = CHAN_BODY,
+	level = SNDLVL_80dB,
 	sound = table.construct2(function(i) return 'physics/cardboard/cardboard_box_impact_hard' .. i .. '.wav' end, 7),
+	volume = 1,
+	pitch = {85, 110},
+})
+
+sound.Add({
+	name = 'DParkour.NPCImpact',
+	channel = CHAN_BODY,
+	level = SNDLVL_80dB,
+	sound = table.construct2(function(i) return 'physics/body/body_medium_impact_hard' .. i .. '.wav' end, 7),
+	volume = 1,
+	pitch = {85, 110},
+})
+
+sound.Add({
+	name = 'DParkour.NPCImpactHard',
+	channel = CHAN_BODY,
+	level = SNDLVL_80dB,
+	sound = table.construct2(function(i) return 'physics/body/body_medium_break' .. (i + 1) .. '.wav' end, 3),
 	volume = 1,
 	pitch = {85, 110},
 })

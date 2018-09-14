@@ -52,6 +52,8 @@ local MOVETYPE_OBSERVER = MOVETYPE_OBSERVER
 local MOVETYPE_CUSTOM = MOVETYPE_CUSTOM
 local MOVETYPE_NONE = MOVETYPE_NONE
 local RealTimeL = RealTimeL
+local CurTime = CurTime
+local IsFirstTimePredicted = IsFirstTimePredicted
 
 local SuppressHostEvents = SuppressHostEvents or function() end
 
@@ -203,6 +205,36 @@ local function PlayerTick(ply, movedata)
 		data.IN_RELOAD_changes = false
 	end
 
+	data.IN_ALT1 = buttons:band(IN_ALT1) == IN_ALT1
+
+	if not data.IN_ALT1_time or data.IN_ALT1_time < rtime then
+		data.IN_ALT1_time = rtime + 0.1
+		data.IN_ALT1_changes = data.IN_ALT1 ~= data.IN_ALT1_last
+		data.IN_ALT1_last = data.IN_ALT1
+	else
+		data.IN_ALT1_changes = false
+	end
+
+	data.IN_ALT2 = buttons:band(IN_ALT2) == IN_ALT2
+
+	if not data.IN_ALT2_time or data.IN_ALT2_time < rtime then
+		data.IN_ALT2_time = rtime + 0.1
+		data.IN_ALT2_changes = data.IN_ALT2 ~= data.IN_ALT2_last
+		data.IN_ALT2_last = data.IN_ALT2
+	else
+		data.IN_ALT2_changes = false
+	end
+
+	data.IN_SPEED = buttons:band(IN_SPEED) == IN_SPEED
+
+	if not data.IN_SPEED_time or data.IN_SPEED_time < rtime then
+		data.IN_SPEED_time = rtime + 0.1
+		data.IN_SPEED_changes = data.IN_SPEED ~= data.IN_SPEED_last
+		data.IN_SPEED_last = data.IN_SPEED
+	else
+		data.IN_SPEED_changes = false
+	end
+
 	data.IN_WALK = buttons:band(IN_WALK) == IN_WALK
 
 	if not data.IN_WALK_time or data.IN_WALK_time < rtime then
@@ -213,10 +245,18 @@ local function PlayerTick(ply, movedata)
 		data.IN_WALK_changes = false
 	end
 
+	data.first = IsFirstTimePredicted()
+
 	local ground = ply:OnGround()
 
 	if not ground and data.IN_JUMP then
 		DParkour.HandleWallHang(ply, movedata, data)
+	end
+
+	if ground and data.IN_DUCK and data.IN_SPEED then
+		DParkour.HandleSlide(ply, movedata, data)
+	else
+		DParkour.HandleSlideStop(ply, movedata, data, true)
 	end
 end
 
@@ -226,4 +266,4 @@ local function PostDrawTranslucentRenderables()
 end
 
 hook.Add('PostDrawTranslucentRenderables', 'DParkourDrawDebug', PostDrawTranslucentRenderables)
-hook.Add('PlayerTick', 'DParkourEventLoop', PlayerTick)
+hook.Add('PlayerTick', 'DParkourEventLoop', PlayerTick, 3)

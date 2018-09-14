@@ -18,25 +18,29 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-_G.DParkour = DParkour or {}
+local CurTimeL = CurTimeL
+local RealFrameTime = RealFrameTime
+local tilt = 0
+local Lerp = Lerp
 
-local function shared(luafile)
-	include(luafile)
-	AddCSLuaFile(luafile)
-end
-
-local function client(luafile)
-	if CLIENT then
-		include(luafile)
+local function CalcView(self, origin, angles, fov, znear, zfar)
+	if self:DLibVar('isSliding') then
+		tilt = Lerp(RealFrameTime() * 4, tilt, 1):min(1)
 	else
-		AddCSLuaFile(luafile)
+		tilt = Lerp(RealFrameTime() * 4, tilt, 0):max(0)
 	end
+
+	if tilt == 0 then return end
+
+	angles.r = angles.r + tilt * (self:DLibVar('slideSide') and 30 or -30)
+
+	return {
+		origin = origin,
+		angles = angles,
+		fov = fov,
+		znear = znear,
+		zfar = zfar,
+	}
 end
 
-shared('dparkour/sounds.lua')
-shared('dparkour/eventloop.lua')
-shared('dparkour/wall_logic.lua')
-shared('dparkour/sliding.lua')
-client('dparkour/cl_sliding.lua')
-
---_G.DParkour = nil
+hook.Add('CalcView', 'DParkour.TiltSlide', CalcView, 1)
