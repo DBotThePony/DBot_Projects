@@ -34,7 +34,7 @@ function DParkour.HandleWallHang(ply, movedata, data)
 		if not data.IN_JUMP_changes then return end
 		if data.last_hung and data.last_hung > RealTimeL() then return end
 		ply:SetMoveType(MOVETYPE_WALK)
-		movedata:SetVelocity(data.hanging_trace.HitNormal * 150 * (1 / data.hanging_trace.Fraction:clamp(0.3, 1)):clamp(0.8, 3))
+		movedata:SetVelocity(data.hanging_trace.HitNormal * 200 * (1 / data.hanging_trace.Fraction:clamp(0.75, 1)):clamp(1, 3))
 		ply:EmitSound('DParkour.HangOver')
 		data.hanging_on_edge = false
 		data.last_hung = RealTimeL() + 0.4
@@ -46,19 +46,22 @@ function DParkour.HandleWallHang(ply, movedata, data)
 	local epos = ply:EyePos()
 	local eang = ply:EyeAngles()
 	local yaw = Angle(0, eang.y, 0)
-	local checkpos = epos + Vector(0, 0, 18) + yaw:Forward() * 32
+	local checkpos = epos + Vector(0, 0, 18) + yaw:Forward() * 40
+	local checkpos2 = epos + Vector(0, 0, 18) + yaw:Forward() * 32
 
-	local checkReach = util.TraceLine({
+	local checkReach = util.TraceHull({
 		start = epos + Vector(0, 0, 9),
 		endpos = checkpos,
+		mins = Vector(-8, -8, 0),
+		maxs = Vector(8, 8, 0),
 		filter = ply
 	})
 
 	if checkReach.Hit then return end
 
 	local checkWall = util.TraceHull({
-		start = checkpos,
-		endpos = checkpos - Vector(0, 0, 35),
+		start = checkpos2,
+		endpos = checkpos2 - Vector(0, 0, 35),
 		mins = Vector(-8, -8, 0),
 		maxs = Vector(8, 8, 0),
 		filter = ply
@@ -87,11 +90,14 @@ function DParkour.DrawWallHang()
 	local epos = ply:EyePos()
 	local eang = ply:EyeAngles()
 	local yaw = Angle(0, eang.y, 0)
-	local checkpos = epos + Vector(0, 0, 18) + yaw:Forward() * 32
+	local checkpos = epos + Vector(0, 0, 18) + yaw:Forward() * 40
+	local checkpos2 = epos + Vector(0, 0, 18) + yaw:Forward() * 32
 
-	local checkReach = util.TraceLine({
+	local checkReach = util.TraceHull({
 		start = epos + Vector(0, 0, 9),
 		endpos = checkpos,
+		mins = Vector(-8, -8, 0),
+		maxs = Vector(8, 8, 0),
 		filter = ply
 	})
 
@@ -103,16 +109,16 @@ function DParkour.DrawWallHang()
 	end
 
 	local checkWall = util.TraceHull({
-		start = checkpos,
-		endpos = checkpos - Vector(0, 0, 35),
+		start = checkpos2,
+		endpos = checkpos2 - Vector(0, 0, 35),
 		mins = Vector(-8, -8, 0),
 		maxs = Vector(8, 8, 0),
 		filter = ply
 	})
 
 	if not checkWall.Hit then
-		render.DrawLine(checkpos, checkpos - Vector(0, 0, 35), color_red)
+		render.DrawLine(checkpos2, checkpos2 - Vector(0, 0, 35), color_red)
 	else
-		render.DrawLine(checkpos, checkpos - Vector(0, 0, 35), color_green)
+		render.DrawLine(checkpos2, checkpos2 - Vector(0, 0, 35), color_green)
 	end
 end
