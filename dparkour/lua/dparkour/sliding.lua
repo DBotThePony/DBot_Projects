@@ -117,7 +117,7 @@ function DParkour.HandleSlide(ply, movedata, data)
 				movedata:SetVelocity(Vector())
 
 				if IsValid(tr.Entity) then
-					if tr.Entity:IsNPC() or tr.Entity:IsPlayer() or tr.Entity:IsNextBot() then
+					if tr.Entity:IsNPC() or tr.Entity:IsPlayer() then
 						ply:EmitSound('DParkour.NPCImpact')
 
 						if data.slide_velocity_start:Length() > 800 then
@@ -148,7 +148,11 @@ function DParkour.HandleSlide(ply, movedata, data)
 	)
 
 	if data.first then
-		data.slide_velocity_start = data.slide_velocity_start - data.slide_velocity_start:GetNormalized() * FrameTime() * 230
+		data.last_slide_origin = data.last_slide_origin or movedata:GetOrigin()
+		local delta = movedata:GetOrigin().z - data.last_slide_origin.z
+		data.last_slide_origin = movedata:GetOrigin()
+
+		data.slide_velocity_start = data.slide_velocity_start - data.slide_velocity_start:GetNormalized() * FrameTime() * (230 + delta * 256)
 	end
 
 	movedata:SetVelocity(data.slide_velocity_start)
@@ -159,6 +163,7 @@ function DParkour.HandleSlideStop(ply, movedata, data, standup)
 		ply:SetDLibVar('isSliding', false)
 		data.slide_velocity_start = Vector()
 		data.slide_hit = nil
+		data.last_slide_origin = nil
 
 		if standup then
 			--ply:EmitSound('DParkour.SlidingInterrupt')
