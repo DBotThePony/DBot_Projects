@@ -47,5 +47,5 @@ local function PreDrawViewModel(vm, ply, weapon)
 	if ply._parkour and ply._parkour.rolling then return true end
 end
 
-hook.Add('CalcView', 'DParkour.Rolling', CalcView, 1)
+hook.Add('CalcView', 'DParkour.Rolling', CalcView, -2)
 hook.Add('PreDrawViewModel', 'DParkour.Rolling', PreDrawViewModel, 4)

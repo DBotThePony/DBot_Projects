@@ -89,6 +89,11 @@ function DParkour.HandleRolling(ply, movedata, data)
 	movedata:SetVelocity(data.roll_dir)
 end
 
+function DParkour.InterruptRoll(ply, movedata, data)
+	data.rolling = false
+	data.rolls = 0
+end
+
 function DParkour.RollingCMD(ply, cmd, data)
 	if not data.rolling then return end
 	cmd:SetButtons(IN_DUCK)
