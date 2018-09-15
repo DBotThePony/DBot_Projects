@@ -84,3 +84,12 @@ sound.Add({
 	volume = 1,
 	pitch = {85, 110},
 })
+
+sound.Add({
+	name = 'DParkour.Roll',
+	channel = CHAN_SLOSH,
+	level = SNDLVL_80dB,
+	sound = table.construct2(function(i) return 'npc/combine_soldier/gear' .. i .. '.wav' end, 6),
+	volume = 1,
+	pitch = {85, 110},
+})

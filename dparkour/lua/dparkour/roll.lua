@@ -49,28 +49,10 @@ local IN_WEAPON2 = IN_WEAPON2
 local IN_ZOOM = IN_ZOOM
 
 local CurTime = CurTime
+local IsValid = IsValid
+local timer = timer
+local UnPredictedCurTime = UnPredictedCurTime
 local CurTimeL = CurTimeL
-
-local rollMask =
-	IN_FORWARD:bnot()
-	:band(IN_BACK:bnot())
-	:band(IN_LEFT:bnot())
-	:band(IN_RIGHT:bnot())
-	:band(IN_CANCEL:bnot())
-	:band(IN_SPEED:bnot())
-	:band(IN_WALK:bnot())
-	:band(IN_ZOOM:bnot())
-	:band(IN_WEAPON1:bnot())
-	:band(IN_WEAPON2:bnot())
-	:band(IN_GRENADE1:bnot())
-	:band(IN_GRENADE2:bnot())
-	:band(IN_ATTACK:bnot())
-	:band(IN_ATTACK2:bnot())
-	:band(IN_RUN:bnot())
-	:band(IN_RELOAD:bnot())
-	:band(IN_ALT1:bnot())
-	:band(IN_ALT2:bnot())
-	:bor(IN_DUCK)
 
 function DParkour.HandleRolling(ply, movedata, data)
 	data.rolls = data.rolls or 0
@@ -92,9 +74,17 @@ function DParkour.HandleRolling(ply, movedata, data)
 		data.rolling_start = UnPredictedCurTime()
 		data.rolling_end = UnPredictedCurTime() + 0.6
 		data.rolls = data.rolls - 1
+
+		data.nextRolling = UnPredictedCurTime() + 0.2
+		ply:EmitSound('DParkour.Roll')
 	end
 
 	if not data.rolling then return end
+
+	if data.nextRolling < UnPredictedCurTime() then
+		ply:EmitSound('DParkour.Roll')
+		data.nextRolling = UnPredictedCurTime() + 0.2
+	end
 
 	movedata:SetVelocity(data.roll_dir)
 end
