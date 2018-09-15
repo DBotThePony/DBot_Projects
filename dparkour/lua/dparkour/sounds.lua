@@ -93,3 +93,12 @@ sound.Add({
 	volume = 1,
 	pitch = {85, 110},
 })
+
+sound.Add({
+	name = 'DParkour.WallStep',
+	channel = CHAN_IMPACT,
+	level = SNDLVL_80dB,
+	sound = table.construct2(function(i) return 'physics/concrete/rock_impact_hard' .. i .. '.wav' end, 3),
+	volume = 0.4,
+	pitch = {60, 130},
+})

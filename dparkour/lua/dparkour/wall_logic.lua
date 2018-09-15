@@ -200,3 +200,46 @@ function DParkour.DrawWallHang()
 		render.DrawLine(checkpos2, checkpos2 - Vector(0, 0, 35), color_green)
 	end
 end
+
+local CurTimeL = CurTimeL
+
+function DParkour.WallJumpLoop(ply, movedata, data)
+	data.avaliable_jumps = data.avaliable_jumps or 3
+
+	if data.last_on_ground then
+		data.avaliable_jumps = 3
+	end
+
+	if not data.IN_JUMP_changes or not data.IN_JUMP_last then return end
+
+	if data.avaliable_jumps < 0 then return end
+
+	local eang = ply:EyeAngles()
+	eang.p = 0
+	eang.r = 0
+	local mins, maxs = ply:GetHull()
+
+	mins.z = 0
+	maxs.z = 0
+
+	local trWall = util.TraceHull({
+		start = ply:GetPos() + ply:OBBCenter(),
+		endpos = ply:GetPos() + ply:OBBCenter() - eang:Forward() * 30,
+		mins = mins,
+		maxs = maxs,
+		filter = ply
+	})
+
+	if not trWall.Hit then return end
+
+	eang.p = -70
+
+	if data.first then
+		data.avaliable_jumps = data.avaliable_jumps - 1
+		data.wall_jump_vel = eang:Forward() * 400
+		data.wall_pred_until = CurTimeL()
+	end
+
+	ply:EmitSound('DParkour.WallStep')
+	movedata:SetVelocity(data.wall_jump_vel)
+end

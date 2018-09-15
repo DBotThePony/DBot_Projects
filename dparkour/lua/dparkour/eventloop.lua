@@ -57,27 +57,8 @@ local IsFirstTimePredicted = IsFirstTimePredicted
 
 local SuppressHostEvents = SuppressHostEvents or function() end
 
-local function SetupMove(ply, movedata, cmd)
-	local mvtype = ply:GetMoveType()
-
-	local ptab = ply:GetTable()
-	ptab._parkour = ptab._parkour or {}
-	local data = ptab._parkour
-
-	if
-		mvtype == MOVETYPE_NOCLIP
-		or mvtype == MOVETYPE_FLY
-		or mvtype == MOVETYPE_OBSERVER
-		or mvtype == MOVETYPE_CUSTOM
-		-- or mvtype == MOVETYPE_NONE
-	then
-		DParkour.InterruptRoll(ply, movedata, data)
-		DParkour.HandleSlideStop(ply, movedata, data, true)
-		return
-	end
-
+local function updatebuttons(buttons, data)
 	local rtime = RealTimeL()
-	local buttons = movedata:GetButtons()
 
 	data.IN_ATTACK = buttons:band(IN_ATTACK) == IN_ATTACK
 
@@ -248,8 +229,32 @@ local function SetupMove(ply, movedata, cmd)
 	else
 		data.IN_WALK_changes = false
 	end
+end
+
+local function SetupMove(ply, movedata, cmd)
+	local mvtype = ply:GetMoveType()
+
+	local ptab = ply:GetTable()
+	ptab._parkour = ptab._parkour or {}
+	local data = ptab._parkour
+
+	if
+		mvtype == MOVETYPE_NOCLIP
+		or mvtype == MOVETYPE_FLY
+		or mvtype == MOVETYPE_OBSERVER
+		or mvtype == MOVETYPE_CUSTOM
+		-- or mvtype == MOVETYPE_NONE
+	then
+		DParkour.InterruptRoll(ply, movedata, data)
+		DParkour.HandleSlideStop(ply, movedata, data, true)
+		return
+	end
 
 	data.first = IsFirstTimePredicted()
+
+	if data.first then
+		updatebuttons(movedata:GetButtons(), data)
+	end
 
 	local ground = ply:OnGround()
 	local groundChange = data.last_on_ground ~= ground
@@ -272,6 +277,7 @@ local function SetupMove(ply, movedata, cmd)
 	end
 
 	DParkour.HangEventLoop(ply, movedata, data)
+	DParkour.WallJumpLoop(ply, movedata, data)
 
 	data.last_velocity = movedata:GetVelocity()
 end
