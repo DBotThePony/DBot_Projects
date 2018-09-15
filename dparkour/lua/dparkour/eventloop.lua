@@ -271,6 +271,8 @@ local function SetupMove(ply, movedata, cmd)
 		DParkour.HandleRollFall(ply, movedata, data)
 	end
 
+	DParkour.HangEventLoop(ply, movedata, data)
+
 	data.last_velocity = movedata:GetVelocity()
 end
 
@@ -292,6 +294,7 @@ local function StartCommand(ply, cmd)
 	local data = ptab._parkour
 
 	DParkour.RollingCMD(ply, cmd, data)
+	DParkour.HangEventLoop2(ply, cmd, data)
 end
 
 local function PostDrawTranslucentRenderables()

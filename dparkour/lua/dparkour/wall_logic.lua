@@ -26,8 +26,35 @@ local IsValid = IsValid
 local Angle = Angle
 local RealTimeL = RealTimeL
 
+local IN_ATTACK = IN_ATTACK
+local IN_JUMP = IN_JUMP
+local IN_DUCK = IN_DUCK
+local IN_FORWARD = IN_FORWARD
+local IN_BACK = IN_BACK
+local IN_USE = IN_USE
+local IN_CANCEL = IN_CANCEL
+local IN_LEFT = IN_LEFT
+local IN_RIGHT = IN_RIGHT
+local IN_MOVELEFT = IN_MOVELEFT
+local IN_MOVERIGHT = IN_MOVERIGHT
+local IN_ATTACK2 = IN_ATTACK2
+local IN_RUN = IN_RUN
+local IN_RELOAD = IN_RELOAD
+local IN_ALT1 = IN_ALT1
+local IN_ALT2 = IN_ALT2
+local IN_SCORE = IN_SCORE
+local IN_SPEED = IN_SPEED
+local IN_WALK = IN_WALK
+local IN_ZOOM = IN_ZOOM
+local IN_WEAPON1 = IN_WEAPON1
+local IN_WEAPON2 = IN_WEAPON2
+local IN_BULLRUSH = IN_BULLRUSH
+local IN_GRENADE1 = IN_GRENADE1
+local IN_GRENADE2 = IN_GRENADE2
+
 local MOVETYPE_NONE = MOVETYPE_NONE
 local MOVETYPE_WALK = MOVETYPE_WALK
+local WorldToLocal = WorldToLocal
 
 function DParkour.HandleWallHang(ply, movedata, data)
 	if data.hanging_on_edge then
@@ -68,18 +95,69 @@ function DParkour.HandleWallHang(ply, movedata, data)
 	})
 
 	if not checkWall.Hit then return end
-	local hangingOn = checkWall.ent
+	local hangingOn = checkWall.Entity
 
-	if IsValid(hangingOn) and (hangingOn:IsNPC() or hangingOn:IsPlayer() or hangingOn:IsNextBot()) then return end
+	if IsValid(hangingOn) and (hangingOn:IsNPC() or hangingOn:IsPlayer()) then return end
 
 	data.hanging_on_edge = true
 	data.hanging_on = hangingOn
+	data.hanging_on_valid = IsValid(hangingOn)
 	data.hanging_trace = checkWall
+	data.haning_ang = movedata:GetAngles()
+
+	if IsValid(hangingOn) then
+		data.local_origin, data.local_angle = WorldToLocal(movedata:GetOrigin(), movedata:GetAngles(), hangingOn:GetPos(), hangingOn:GetAngles())
+	else
+		data.local_origin, data.local_angle = nil, nil
+	end
 
 	data.last_hung = RealTimeL() + 0.4
 
-	ply:SetMoveType(MOVETYPE_NONE)
+	if not data.hanging_on_valid then
+		ply:SetMoveType(MOVETYPE_NONE)
+	else
+		ply:SetMoveType(MOVETYPE_WALK)
+		movedata:SetVelocity(Vector())
+	end
+
 	ply:EmitSound('DParkour.Hang')
+end
+
+local LocalToWorld = LocalToWorld
+
+function DParkour.HangEventLoop(ply, movedata, data)
+	if not data.hanging_on_edge then return end
+
+	if data.hanging_on_valid and not IsValid(data.hanging_on) then
+		ply:SetMoveType(MOVETYPE_WALK)
+		data.hanging_on_edge = false
+		return
+	end
+
+	if not data.hanging_on_valid then return end
+
+	local newpos, newang = LocalToWorld(data.local_origin, data.local_angle, data.hanging_on:GetPos(), data.hanging_on:GetAngles())
+	movedata:SetOrigin(newpos)
+	movedata:SetVelocity(Vector())
+
+	if newang.p < -40 or newang.p > 40 then
+		if SERVER then
+			ply:PrintMessage(HUD_PRINTCENTER, 'You slipped down from edge!')
+		end
+
+		ply:SetMoveType(MOVETYPE_WALK)
+		data.hanging_on_edge = false
+
+		movedata:SetVelocity(data.hanging_on:GetVelocity())
+	end
+end
+
+function DParkour.HangEventLoop2(ply, cmd, data)
+	if not data.hanging_on_edge then return end
+
+	cmd:SetButtons(cmd:GetButtons():band(
+		IN_FORWARD:bor(IN_LEFT, IN_RIGHT, IN_BACK, IN_ALT1, IN_ALT2, IN_DUCK, IN_USE):bnot()
+	))
 end
 
 local LocalPlayer = LocalPlayer
