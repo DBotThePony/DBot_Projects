@@ -60,7 +60,7 @@ function DParkour.HandleWallHang(ply, movedata, data)
 	if data.hanging_on_edge then
 		if not data.IN_JUMP_changes then return end
 		if data.last_hung and data.last_hung > RealTimeL() then return end
-		movedata:SetVelocity(data.hanging_trace.HitNormal * 200 * (1 / data.hanging_trace.Fraction:clamp(0.75, 1)):clamp(1, 3))
+		movedata:SetVelocity(data.hanging_trace.HitNormal * 200 * (1 / data.hanging_trace.Fraction:clamp(0.75, 1)):clamp(2, 3))
 		ply:EmitSound('DParkour.HangOver')
 		data.hanging_on_edge = false
 		data.last_hung = RealTimeL() + 0.4
