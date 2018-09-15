@@ -60,7 +60,6 @@ function DParkour.HandleWallHang(ply, movedata, data)
 	if data.hanging_on_edge then
 		if not data.IN_JUMP_changes then return end
 		if data.last_hung and data.last_hung > RealTimeL() then return end
-		ply:SetMoveType(MOVETYPE_WALK)
 		movedata:SetVelocity(data.hanging_trace.HitNormal * 200 * (1 / data.hanging_trace.Fraction:clamp(0.75, 1)):clamp(1, 3))
 		ply:EmitSound('DParkour.HangOver')
 		data.hanging_on_edge = false
@@ -114,11 +113,10 @@ function DParkour.HandleWallHang(ply, movedata, data)
 	data.last_hung = RealTimeL() + 0.4
 
 	if not data.hanging_on_valid then
-		ply:SetMoveType(MOVETYPE_NONE)
-	else
-		ply:SetMoveType(MOVETYPE_WALK)
-		movedata:SetVelocity(Vector())
+		data.hang_origin = movedata:GetOrigin()
 	end
+
+	movedata:SetVelocity(Vector())
 
 	ply:EmitSound('DParkour.Hang')
 end
@@ -129,12 +127,15 @@ function DParkour.HangEventLoop(ply, movedata, data)
 	if not data.hanging_on_edge then return end
 
 	if data.hanging_on_valid and not IsValid(data.hanging_on) then
-		ply:SetMoveType(MOVETYPE_WALK)
 		data.hanging_on_edge = false
 		return
 	end
 
-	if not data.hanging_on_valid then return end
+	if not data.hanging_on_valid then
+		movedata:SetOrigin(data.hang_origin)
+		movedata:SetVelocity(Vector())
+		return
+	end
 
 	local newpos, newang = LocalToWorld(data.local_origin, data.local_angle, data.hanging_on:GetPos(), data.hanging_on:GetAngles())
 	movedata:SetOrigin(newpos)
