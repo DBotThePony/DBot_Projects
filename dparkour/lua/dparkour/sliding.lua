@@ -85,6 +85,8 @@ function DParkour.HandleSlide(ply, movedata, data)
 	end
 
 	if not ply:DLibVar('isSliding') then
+		if ply:EyeAngles().p > 48 then return end
+
 		if movedata:GetVelocity():Length() < 400 then
 			movedata:SetVelocity(movedata:GetVelocity():GetNormalized() * 400)
 		end

@@ -18,33 +18,34 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-_G.DParkour = DParkour or {}
+local DParkour = DParkour
+local DLib = DLib
+local hook = hook
+local CurTimeL = CurTimeL
+local Angle = Angle
 
-local function shared(luafile)
-	include(luafile)
-	AddCSLuaFile(luafile)
+local function CalcView(self, origin, angles, fov, znear, zfar)
+	local data = self._parkour
+	if not data then return end
+	if not data.rolling then return end
+
+	local roll = UnPredictedCurTime():progression(data.rolling_start, data.rolling_end)
+
+	local ang = Angle((roll * 360 + 90):normalizeAngle(), data.roll_ang.y, 0)
+
+	return {
+		origin = origin,
+		angles = ang,
+		fov = fov,
+		znear = znear,
+		zfar = zfar,
+	}
 end
 
-local function client(luafile)
-	if CLIENT then
-		include(luafile)
-	else
-		AddCSLuaFile(luafile)
-	end
+local function PreDrawViewModel(vm, ply, weapon)
+	if not vm then return end
+	if ply._parkour and ply._parkour.rolling then return true end
 end
 
-local function server(luafile)
-	if CLIENT then return end
-	include(luafile)
-end
-
-shared('dparkour/sounds.lua')
-shared('dparkour/eventloop.lua')
-shared('dparkour/wall_logic.lua')
-shared('dparkour/sliding.lua')
-client('dparkour/cl_sliding.lua')
-shared('dparkour/roll.lua')
-client('dparkour/cl_roll.lua')
-server('dparkour/sv_roll.lua')
-
---_G.DParkour = nil
+hook.Add('CalcView', 'DParkour.Rolling', CalcView, 1)
+hook.Add('PreDrawViewModel', 'DParkour.Rolling', PreDrawViewModel, 4)

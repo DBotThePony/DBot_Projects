@@ -18,33 +18,16 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-_G.DParkour = DParkour or {}
+local DParkour = DParkour
+local DLib = DLib
+local hook = hook
+local IN_DUCK = IN_DUCK
 
-local function shared(luafile)
-	include(luafile)
-	AddCSLuaFile(luafile)
+local function GetFallDamage(ply, speed)
+	if not ply:KeyDown(IN_DUCK) then return end
+	if ply:EyeAngles().p < 45 then return end
+	if speed < 900 then return 0 end
+	return (speed - 600) / 10
 end
 
-local function client(luafile)
-	if CLIENT then
-		include(luafile)
-	else
-		AddCSLuaFile(luafile)
-	end
-end
-
-local function server(luafile)
-	if CLIENT then return end
-	include(luafile)
-end
-
-shared('dparkour/sounds.lua')
-shared('dparkour/eventloop.lua')
-shared('dparkour/wall_logic.lua')
-shared('dparkour/sliding.lua')
-client('dparkour/cl_sliding.lua')
-shared('dparkour/roll.lua')
-client('dparkour/cl_roll.lua')
-server('dparkour/sv_roll.lua')
-
---_G.DParkour = nil
+hook.Add('GetFallDamage', 'DParkour.RollFallDamage', GetFallDamage)

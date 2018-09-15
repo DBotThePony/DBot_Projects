@@ -20,31 +20,31 @@
 
 local DParkour = DParkour
 local hook = hook
-local IN_ATTACK = IN_ATTACK
-local IN_JUMP = IN_JUMP
-local IN_DUCK = IN_DUCK
-local IN_FORWARD = IN_FORWARD
-local IN_BACK = IN_BACK
-local IN_USE = IN_USE
-local IN_CANCEL = IN_CANCEL
-local IN_LEFT = IN_LEFT
-local IN_RIGHT = IN_RIGHT
-local IN_MOVELEFT = IN_MOVELEFT
-local IN_MOVERIGHT = IN_MOVERIGHT
-local IN_ATTACK2 = IN_ATTACK2
-local IN_RUN = IN_RUN
-local IN_RELOAD = IN_RELOAD
 local IN_ALT1 = IN_ALT1
 local IN_ALT2 = IN_ALT2
-local IN_SCORE = IN_SCORE
-local IN_SPEED = IN_SPEED
-local IN_WALK = IN_WALK
-local IN_ZOOM = IN_ZOOM
-local IN_WEAPON1 = IN_WEAPON1
-local IN_WEAPON2 = IN_WEAPON2
+local IN_ATTACK = IN_ATTACK
+local IN_ATTACK2 = IN_ATTACK2
+local IN_BACK = IN_BACK
 local IN_BULLRUSH = IN_BULLRUSH
+local IN_CANCEL = IN_CANCEL
+local IN_DUCK = IN_DUCK
+local IN_FORWARD = IN_FORWARD
 local IN_GRENADE1 = IN_GRENADE1
 local IN_GRENADE2 = IN_GRENADE2
+local IN_JUMP = IN_JUMP
+local IN_LEFT = IN_LEFT
+local IN_MOVELEFT = IN_MOVELEFT
+local IN_MOVERIGHT = IN_MOVERIGHT
+local IN_RELOAD = IN_RELOAD
+local IN_RIGHT = IN_RIGHT
+local IN_RUN = IN_RUN
+local IN_SCORE = IN_SCORE
+local IN_SPEED = IN_SPEED
+local IN_USE = IN_USE
+local IN_WALK = IN_WALK
+local IN_WEAPON1 = IN_WEAPON1
+local IN_WEAPON2 = IN_WEAPON2
+local IN_ZOOM = IN_ZOOM
 
 local MOVETYPE_NOCLIP = MOVETYPE_NOCLIP
 local MOVETYPE_FLY = MOVETYPE_FLY
@@ -57,7 +57,7 @@ local IsFirstTimePredicted = IsFirstTimePredicted
 
 local SuppressHostEvents = SuppressHostEvents or function() end
 
-local function PlayerTick(ply, movedata)
+local function SetupMove(ply, movedata, cmd)
 	local mvtype = ply:GetMoveType()
 
 	if
@@ -248,6 +248,8 @@ local function PlayerTick(ply, movedata)
 	data.first = IsFirstTimePredicted()
 
 	local ground = ply:OnGround()
+	local groundChange = data.last_on_ground ~= ground
+	data.last_on_ground = ground
 
 	if not ground and data.IN_JUMP then
 		DParkour.HandleWallHang(ply, movedata, data)
@@ -258,6 +260,32 @@ local function PlayerTick(ply, movedata)
 	else
 		DParkour.HandleSlideStop(ply, movedata, data, true)
 	end
+
+	DParkour.HandleRolling(ply, movedata, data)
+
+	if ground and groundChange then
+		DParkour.HandleRollFall(ply, movedata, data)
+	end
+
+	data.last_velocity = movedata:GetVelocity()
+end
+
+local function StartCommand(ply, cmd)
+	local mvtype = ply:GetMoveType()
+
+	if
+		mvtype == MOVETYPE_NOCLIP
+		or mvtype == MOVETYPE_FLY
+		or mvtype == MOVETYPE_OBSERVER
+		or mvtype == MOVETYPE_CUSTOM
+		-- or mvtype == MOVETYPE_NONE
+	then return end
+
+	local ptab = ply:GetTable()
+	ptab._parkour = ptab._parkour or {}
+	local data = ptab._parkour
+
+	DParkour.RollingCMD(ply, cmd, data)
 end
 
 local function PostDrawTranslucentRenderables()
@@ -266,4 +294,5 @@ local function PostDrawTranslucentRenderables()
 end
 
 hook.Add('PostDrawTranslucentRenderables', 'DParkourDrawDebug', PostDrawTranslucentRenderables)
-hook.Add('PlayerTick', 'DParkourEventLoop', PlayerTick, 3)
+hook.Add('SetupMove', 'DParkourEventLoop', SetupMove, 3)
+hook.Add('StartCommand', 'DParkourEventLoop', StartCommand, 3)
