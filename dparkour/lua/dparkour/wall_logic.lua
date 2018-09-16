@@ -68,6 +68,7 @@ function DParkour.HandleWallHang(ply, movedata, data)
 	end
 
 	if data.last_hung and data.last_hung > RealTimeL() then return end
+	if not data.first then return end
 
 	local epos = ply:EyePos()
 	local eang = ply:EyeAngles()
@@ -243,4 +244,68 @@ function DParkour.WallJumpLoop(ply, movedata, data)
 
 	ply:EmitSound('DParkour.WallStep')
 	movedata:SetVelocity(data.wall_jump_vel)
+end
+
+local FrameNumberL = FrameNumberL
+
+function DParkour.WallClimbLoop(ply, movedata, data)
+	if not data.IN_JUMP or not data.IN_FORWARD then
+		if data.first then
+			data.wall_climp_heatup = CurTimeL() + 0.2
+		end
+
+		return
+	elseif not data.wall_climp_heatup or data.wall_climp_heatup > CurTimeL() then
+		return
+	end
+
+	local mins, maxs = ply:GetHull()
+	maxs.z = 0
+	mins.z = 0
+
+	local trWall = util.TraceHull({
+		start = ply:GetPos() + ply:OBBCenter(),
+		endpos = ply:GetPos() + ply:OBBCenter() + ply:EyeAngles():Forward() * 20,
+		mins = mins / 2,
+		maxs = maxs / 2,
+		filter = ply
+	})
+
+	if not trWall.Hit then return end
+
+	if IsValid(trWall.Entity) then
+		if trWall.Entity:IsNPC() or trWall.Entity:IsRagdoll() or trWall.Entity:IsPlayer() then return end
+		local phys = trWall.Entity:GetPhysicsObject()
+
+		if not IsValid(phys) then return end
+		if phys:IsMoveable() and phys:IsMotionEnabled() and trWall.Entity:GetMoveType() ~= MOVETYPE_NONE then return end
+
+	else
+		local hit = -trWall.HitNormal
+		local dot = ply:EyeAngles():Forward():Dot(hit)
+		if dot < 0.8 then return end
+	end
+
+	data.next_wall_climb = data.next_wall_climb or 0
+
+	if data.first then
+		if data.next_wall_climb > CurTimeL() then
+			data.wall_climb_ignore = false
+			return
+		end
+
+		data.next_wall_climb = CurTimeL() + 0.24
+		data.wall_climb_ignore = true
+		data.wall_climb_lock = movedata:GetVelocity() + Vector(0, 0, 180)
+		data.remove_jump = data.IN_JUMP
+	elseif not data.wall_climb_ignore then
+		return
+	end
+
+	ply:EmitSound('DParkour.WallStep')
+	movedata:SetVelocity(data.wall_climb_lock)
+
+	if data.remove_jump then
+		movedata:SetButtons(movedata:GetButtons():band(IN_JUMP:bnot()))
+	end
 end

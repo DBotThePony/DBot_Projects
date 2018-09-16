@@ -61,6 +61,8 @@ local function updatebuttons(buttons, data)
 	local rtime = RealTimeL()
 
 	data.IN_ATTACK = buttons:band(IN_ATTACK) == IN_ATTACK
+	data.IN_ATTACK_changes2 = data.IN_ATTACK ~= data.IN_ATTACK_last2
+	data.IN_ATTACK_last2 = data.IN_ATTACK
 
 	if not data.IN_ATTACK_time or data.IN_ATTACK_time < rtime then
 		data.IN_ATTACK_time = rtime + 0.1
@@ -71,6 +73,8 @@ local function updatebuttons(buttons, data)
 	end
 
 	data.IN_JUMP = buttons:band(IN_JUMP) == IN_JUMP
+	data.IN_JUMP_changes2 = data.IN_JUMP ~= data.IN_JUMP_last2
+	data.IN_JUMP_last2 = data.IN_JUMP
 
 	if not data.IN_JUMP_time or data.IN_JUMP_time < rtime then
 		data.IN_JUMP_time = rtime + 0.1
@@ -81,6 +85,8 @@ local function updatebuttons(buttons, data)
 	end
 
 	data.IN_DUCK = buttons:band(IN_DUCK) == IN_DUCK
+	data.IN_DUCK_changes2 = data.IN_DUCK ~= data.IN_DUCK_last2
+	data.IN_DUCK_last2 = data.IN_DUCK
 
 	if not data.IN_DUCK_time or data.IN_DUCK_time < rtime then
 		data.IN_DUCK_time = rtime + 0.1
@@ -91,6 +97,8 @@ local function updatebuttons(buttons, data)
 	end
 
 	data.IN_FORWARD = buttons:band(IN_FORWARD) == IN_FORWARD
+	data.IN_FORWARD_changes2 = data.IN_FORWARD ~= data.IN_FORWARD_last2
+	data.IN_FORWARD_last2 = data.IN_FORWARD
 
 	if not data.IN_FORWARD_time or data.IN_FORWARD_time < rtime then
 		data.IN_FORWARD_time = rtime + 0.1
@@ -101,6 +109,8 @@ local function updatebuttons(buttons, data)
 	end
 
 	data.IN_BACK = buttons:band(IN_BACK) == IN_BACK
+	data.IN_BACK_changes2 = data.IN_BACK ~= data.IN_BACK_last2
+	data.IN_BACK_last2 = data.IN_BACK
 
 	if not data.IN_BACK_time or data.IN_BACK_time < rtime then
 		data.IN_BACK_time = rtime + 0.1
@@ -111,6 +121,8 @@ local function updatebuttons(buttons, data)
 	end
 
 	data.IN_USE = buttons:band(IN_USE) == IN_USE
+	data.IN_USE_changes2 = data.IN_USE ~= data.IN_USE_last2
+	data.IN_USE_last2 = data.IN_USE
 
 	if not data.IN_USE_time or data.IN_USE_time < rtime then
 		data.IN_USE_time = rtime + 0.1
@@ -121,6 +133,8 @@ local function updatebuttons(buttons, data)
 	end
 
 	data.IN_LEFT = buttons:band(IN_LEFT) == IN_LEFT
+	data.IN_LEFT_changes2 = data.IN_LEFT ~= data.IN_LEFT_last2
+	data.IN_LEFT_last2 = data.IN_LEFT
 
 	if not data.IN_LEFT_time or data.IN_LEFT_time < rtime then
 		data.IN_LEFT_time = rtime + 0.1
@@ -131,6 +145,8 @@ local function updatebuttons(buttons, data)
 	end
 
 	data.IN_RIGHT = buttons:band(IN_RIGHT) == IN_RIGHT
+	data.IN_RIGHT_changes2 = data.IN_RIGHT ~= data.IN_RIGHT_last2
+	data.IN_RIGHT_last2 = data.IN_RIGHT
 
 	if not data.IN_RIGHT_time or data.IN_RIGHT_time < rtime then
 		data.IN_RIGHT_time = rtime + 0.1
@@ -141,6 +157,8 @@ local function updatebuttons(buttons, data)
 	end
 
 	data.IN_MOVELEFT = buttons:band(IN_MOVELEFT) == IN_MOVELEFT
+	data.IN_MOVELEFT_changes2 = data.IN_MOVELEFT ~= data.IN_MOVELEFT_last2
+	data.IN_MOVELEFT_last2 = data.IN_MOVELEFT
 
 	if not data.IN_MOVELEFT_time or data.IN_MOVELEFT_time < rtime then
 		data.IN_MOVELEFT_time = rtime + 0.1
@@ -151,6 +169,8 @@ local function updatebuttons(buttons, data)
 	end
 
 	data.IN_MOVERIGHT = buttons:band(IN_MOVERIGHT) == IN_MOVERIGHT
+	data.IN_MOVERIGHT_changes2 = data.IN_MOVERIGHT ~= data.IN_MOVERIGHT_last2
+	data.IN_MOVERIGHT_last2 = data.IN_MOVERIGHT
 
 	if not data.IN_MOVERIGHT_time or data.IN_MOVERIGHT_time < rtime then
 		data.IN_MOVERIGHT_time = rtime + 0.1
@@ -161,6 +181,8 @@ local function updatebuttons(buttons, data)
 	end
 
 	data.IN_ATTACK2 = buttons:band(IN_ATTACK2) == IN_ATTACK2
+	data.IN_ATTACK2_changes2 = data.IN_ATTACK2 ~= data.IN_ATTACK2_last2
+	data.IN_ATTACK2_last2 = data.IN_ATTACK2
 
 	if not data.IN_ATTACK2_time or data.IN_ATTACK2_time < rtime then
 		data.IN_ATTACK2_time = rtime + 0.1
@@ -171,6 +193,8 @@ local function updatebuttons(buttons, data)
 	end
 
 	data.IN_RUN = buttons:band(IN_RUN) == IN_RUN
+	data.IN_RUN_changes2 = data.IN_RUN ~= data.IN_RUN_last2
+	data.IN_RUN_last2 = data.IN_RUN
 
 	if not data.IN_RUN_time or data.IN_RUN_time < rtime then
 		data.IN_RUN_time = rtime + 0.1
@@ -181,6 +205,8 @@ local function updatebuttons(buttons, data)
 	end
 
 	data.IN_RELOAD = buttons:band(IN_RELOAD) == IN_RELOAD
+	data.IN_RELOAD_changes2 = data.IN_RELOAD ~= data.IN_RELOAD_last2
+	data.IN_RELOAD_last2 = data.IN_RELOAD
 
 	if not data.IN_RELOAD_time or data.IN_RELOAD_time < rtime then
 		data.IN_RELOAD_time = rtime + 0.1
@@ -191,6 +217,8 @@ local function updatebuttons(buttons, data)
 	end
 
 	data.IN_ALT1 = buttons:band(IN_ALT1) == IN_ALT1
+	data.IN_ALT1_changes2 = data.IN_ALT1 ~= data.IN_ALT1_last2
+	data.IN_ALT1_last2 = data.IN_ALT1
 
 	if not data.IN_ALT1_time or data.IN_ALT1_time < rtime then
 		data.IN_ALT1_time = rtime + 0.1
@@ -201,6 +229,8 @@ local function updatebuttons(buttons, data)
 	end
 
 	data.IN_ALT2 = buttons:band(IN_ALT2) == IN_ALT2
+	data.IN_ALT2_changes2 = data.IN_ALT2 ~= data.IN_ALT2_last2
+	data.IN_ALT2_last2 = data.IN_ALT2
 
 	if not data.IN_ALT2_time or data.IN_ALT2_time < rtime then
 		data.IN_ALT2_time = rtime + 0.1
@@ -211,6 +241,8 @@ local function updatebuttons(buttons, data)
 	end
 
 	data.IN_SPEED = buttons:band(IN_SPEED) == IN_SPEED
+	data.IN_SPEED_changes2 = data.IN_SPEED ~= data.IN_SPEED_last2
+	data.IN_SPEED_last2 = data.IN_SPEED
 
 	if not data.IN_SPEED_time or data.IN_SPEED_time < rtime then
 		data.IN_SPEED_time = rtime + 0.1
@@ -221,6 +253,8 @@ local function updatebuttons(buttons, data)
 	end
 
 	data.IN_WALK = buttons:band(IN_WALK) == IN_WALK
+	data.IN_WALK_changes2 = data.IN_WALK ~= data.IN_WALK_last2
+	data.IN_WALK_last2 = data.IN_WALK
 
 	if not data.IN_WALK_time or data.IN_WALK_time < rtime then
 		data.IN_WALK_time = rtime + 0.1
@@ -277,6 +311,7 @@ local function SetupMove(ply, movedata, cmd)
 	end
 
 	DParkour.HangEventLoop(ply, movedata, data)
+	DParkour.WallClimbLoop(ply, movedata, data)
 	DParkour.WallJumpLoop(ply, movedata, data)
 
 	data.last_velocity = movedata:GetVelocity()
