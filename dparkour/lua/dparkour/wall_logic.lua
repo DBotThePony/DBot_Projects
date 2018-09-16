@@ -249,6 +249,12 @@ end
 local FrameNumberL = FrameNumberL
 
 function DParkour.WallClimbLoop(ply, movedata, data)
+	data.avaliable_climbs = data.avaliable_climbs or 3
+
+	if data.first and data.last_on_ground then
+		data.avaliable_climbs = 3
+	end
+
 	if not data.IN_JUMP or not data.IN_FORWARD then
 		if data.first then
 			data.wall_climp_heatup = CurTimeL() + 0.2
@@ -293,6 +299,10 @@ function DParkour.WallClimbLoop(ply, movedata, data)
 			data.wall_climb_ignore = false
 			return
 		end
+
+		if data.avaliable_climbs <= 0 then return end
+
+		data.avaliable_climbs = data.avaliable_climbs - 1
 
 		data.next_wall_climb = CurTimeL() + 0.24
 		data.wall_climb_ignore = true
