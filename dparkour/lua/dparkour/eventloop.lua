@@ -339,11 +339,5 @@ local function StartCommand(ply, cmd)
 	DParkour.HangEventLoop2(ply, cmd, data)
 end
 
-local function PostDrawTranslucentRenderables()
-	if true then return end
-	DParkour.DrawWallHang()
-end
-
-hook.Add('PostDrawTranslucentRenderables', 'DParkourDrawDebug', PostDrawTranslucentRenderables)
 hook.Add('SetupMove', 'DParkourEventLoop', SetupMove, 3)
 hook.Add('StartCommand', 'DParkourEventLoop', StartCommand, 3)

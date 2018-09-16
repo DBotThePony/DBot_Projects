@@ -40,7 +40,9 @@ end
 
 shared('dparkour/sounds.lua')
 shared('dparkour/eventloop.lua')
-shared('dparkour/wall_logic.lua')
+shared('dparkour/wall_climb.lua')
+shared('dparkour/wall_hang.lua')
+shared('dparkour/wall_jump.lua')
 shared('dparkour/sliding.lua')
 client('dparkour/cl_sliding.lua')
 shared('dparkour/roll.lua')
