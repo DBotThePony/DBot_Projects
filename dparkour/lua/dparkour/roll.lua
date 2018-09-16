@@ -63,6 +63,11 @@ function DParkour.HandleRolling(ply, movedata, data)
 		data.rolls = data.rolls:min(1)
 	end
 
+	if not data.alive then
+		DParkour.InterruptRoll(ply, movedata, data)
+		return
+	end
+
 	if data.first and data.rolling and data.rolling_end < UnPredictedCurTime() then
 		data.rolling = false
 	end
@@ -105,6 +110,7 @@ function DParkour.HandleRollFall(ply, movedata, data)
 	if not data.first then return end
 	if data.rolling then return end
 	if not data.IN_DUCK then return end
+	if not data.alive then return end
 	if ply:EyeAngles().p < 45 then return end
 	local velocity = data.last_velocity
 

@@ -76,13 +76,15 @@ function DParkour.HandleSlide(ply, movedata, data)
 	end
 
 	if ply:DLibVar('isSliding') then
-		if data.slide_velocity_start:Length() < 150 then
+		if data.slide_velocity_start:Length() < 150 or not data.alive then
 			DParkour.HandleSlideStop(ply, movedata, data, false)
 			return
 		end
 	elseif movedata:GetVelocity():Length() < 175 then
 		return
 	end
+
+	if not data.alive then return end
 
 	if not ply:DLibVar('isSliding') then
 		if ply:EyeAngles().p > 48 then return end

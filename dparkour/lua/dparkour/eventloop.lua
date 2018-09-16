@@ -287,6 +287,7 @@ local function SetupMove(ply, movedata, cmd)
 	data.first = IsFirstTimePredicted()
 
 	if data.first then
+		data.alive = ply:Alive()
 		updatebuttons(movedata:GetButtons(), data)
 	end
 

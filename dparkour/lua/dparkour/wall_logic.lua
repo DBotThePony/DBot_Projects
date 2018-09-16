@@ -139,6 +139,11 @@ local LocalToWorld = LocalToWorld
 function DParkour.HangEventLoop(ply, movedata, data)
 	if not data.hanging_on_edge then return end
 
+	if not data.alive then
+		data.hanging_on_edge = false
+		return
+	end
+
 	if data.hanging_on_valid and not IsValid(data.hanging_on) then
 		data.hanging_on_edge = false
 		return
@@ -159,7 +164,6 @@ function DParkour.HangEventLoop(ply, movedata, data)
 			ply:PrintMessage(HUD_PRINTCENTER, 'You slipped down from edge!')
 		end
 
-		ply:SetMoveType(MOVETYPE_WALK)
 		data.hanging_on_edge = false
 
 		movedata:SetVelocity(data.hanging_on:GetVelocity())
@@ -220,10 +224,11 @@ local CurTimeL = CurTimeL
 function DParkour.WallJumpLoop(ply, movedata, data)
 	data.avaliable_jumps = data.avaliable_jumps or 3
 
-	if data.last_on_ground then
+	if data.last_on_ground or not data.alive then
 		data.avaliable_jumps = 3
 	end
 
+	if not data.alive then return end
 	if not data.IN_JUMP_changes or not data.IN_JUMP_last then return end
 
 	if data.avaliable_jumps < 0 then return end
@@ -263,9 +268,11 @@ local FrameNumberL = FrameNumberL
 function DParkour.WallClimbLoop(ply, movedata, data)
 	data.avaliable_climbs = data.avaliable_climbs or 3
 
-	if data.first and data.last_on_ground then
+	if data.first and (data.last_on_ground or not data.alive) then
 		data.avaliable_climbs = 3
 	end
+
+	if not data.alive then return end
 
 	if not data.IN_JUMP or not data.IN_FORWARD then
 		if data.first then
