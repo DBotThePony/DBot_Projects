@@ -24,13 +24,15 @@ local tilt = 0
 local Lerp = Lerp
 
 local function CalcView(self, origin, angles, fov, znear, zfar)
-	if not self:DLibVar('isSliding') then
+	local data = self._parkour
+	if not data then return end
+
+	if not data.sliding then
 		tilt = Lerp(RealFrameTime() * 4, tilt, 0)
 		if tilt == 0 then return end
 	end
 
-	if self:DLibVar('isSliding') then
-		local data = self._parkour
+	if data.sliding then
 		local ang = data.slide_velocity_start:Angle()
 		ang.p = 0
 		ang.r = 0
@@ -42,7 +44,6 @@ local function CalcView(self, origin, angles, fov, znear, zfar)
 		end
 	end
 
-	--angles.r = angles.r + tilt * (self:DLibVar('slideSide') and 30 or -30)
 	angles.r = angles.r + tilt * 30
 
 	return {

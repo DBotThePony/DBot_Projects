@@ -27,10 +27,6 @@ local UnPredictedCurTime = UnPredictedCurTime
 local IsFirstTimePredicted = IsFirstTimePredicted
 local FrameNumberL = FrameNumberL
 
-DLib.nw.PoolBoolean('isSliding')
-DLib.nw.PoolBoolean('slideSide')
-DLib.nw.PoolFloat('slidingStart')
-
 local IN_ATTACK = IN_ATTACK
 local IN_JUMP = IN_JUMP
 local IN_DUCK = IN_DUCK
@@ -75,7 +71,7 @@ function DParkour.HandleSlide(ply, movedata, data)
 		return
 	end
 
-	if ply:DLibVar('isSliding') then
+	if data.sliding then
 		if data.slide_velocity_start:Length() < 150 or not data.alive then
 			DParkour.HandleSlideStop(ply, movedata, data, false)
 			return
@@ -86,16 +82,16 @@ function DParkour.HandleSlide(ply, movedata, data)
 
 	if not data.alive then return end
 
-	if not ply:DLibVar('isSliding') then
+	if not data.sliding then
 		if ply:EyeAngles().p > 48 then return end
 
 		if movedata:GetVelocity():Length() < 400 then
 			movedata:SetVelocity(movedata:GetVelocity():GetNormalized() * 400)
 		end
 
-		ply:SetDLibVar('isSliding', true)
-		ply:SetDLibVar('slidingStart', CurTimeL())
-		ply:SetDLibVar('slideSide', movedata:GetVelocity():Angle().yaw:angleDifference(ply:EyeAngles():Forward().yaw) >= 0)
+		data.sliding = true
+		data.sliding_start = CurTimeL()
+		data.slide_side = movedata:GetVelocity():Angle().yaw:angleDifference(ply:EyeAngles():Forward().yaw) >= 0
 		data.slide_velocity_start = movedata:GetVelocity()
 		ply:EmitSound('DParkour.Sliding')
 	elseif data.first and data.slide_velocity_start:Length() > 350 then
@@ -161,8 +157,8 @@ function DParkour.HandleSlide(ply, movedata, data)
 end
 
 function DParkour.HandleSlideStop(ply, movedata, data, standup)
-	if ply:DLibVar('isSliding') then
-		ply:SetDLibVar('isSliding', false)
+	if data.sliding then
+		data.sliding = false
 		data.slide_velocity_start = Vector()
 		data.slide_hit = nil
 		data.last_slide_origin = nil
