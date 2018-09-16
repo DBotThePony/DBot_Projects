@@ -84,7 +84,7 @@ function DParkour.HandleWallHang(ply, movedata, data)
 		filter = ply
 	})
 
-	if checkReach.Hit then return end
+	if checkReach.Hit or checkReach.HitSky then return end
 
 	local checkWall = util.TraceHull({
 		start = checkpos2,
@@ -94,10 +94,22 @@ function DParkour.HandleWallHang(ply, movedata, data)
 		filter = ply
 	})
 
-	if not checkWall.Hit then return end
+	if not checkWall.Hit or checkWall.HitSky then return end
 	local hangingOn = checkWall.Entity
 
+	local ourvel = movedata:GetVelocity()
+	local theirvel = Vector()
+
 	if IsValid(hangingOn) and (hangingOn:IsNPC() or hangingOn:IsPlayer()) then return end
+	if IsValid(hangingOn) then theirvel = hangingOn:GetVelocity() end
+
+	if theirvel:Distance(ourvel) > 700 then
+		if data.first then
+			ply:PrintMessage(HUD_PRINTCENTER, 'Torn off your hands then')
+		end
+
+		return
+	end
 
 	data.hanging_on_edge = true
 	data.hanging_on = hangingOn
