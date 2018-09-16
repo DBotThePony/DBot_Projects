@@ -152,12 +152,18 @@ function DParkour.HangEventLoop(ply, movedata, data)
 	if not data.hanging_on_valid then
 		movedata:SetOrigin(data.hang_origin)
 		movedata:SetVelocity(Vector())
+		movedata:SetButtons(movedata:GetButtons():band(
+			IN_FORWARD:bor(IN_LEFT, IN_RIGHT, IN_BACK, IN_SPEED, IN_DUCK, IN_RUN):bnot()
+		))
 		return
 	end
 
 	local newpos, newang = LocalToWorld(data.local_origin, data.local_angle, data.hanging_on:GetPos(), data.hanging_on:GetAngles())
 	movedata:SetOrigin(newpos)
 	movedata:SetVelocity(Vector())
+	movedata:SetButtons(movedata:GetButtons():band(
+		IN_FORWARD:bor(IN_LEFT, IN_RIGHT, IN_BACK, IN_SPEED, IN_DUCK, IN_RUN):bnot()
+	))
 
 	if newang.p < -40 or newang.p > 40 then
 		if SERVER then
