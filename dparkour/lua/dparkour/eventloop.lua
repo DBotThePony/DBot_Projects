@@ -315,6 +315,8 @@ local function SetupMove(ply, movedata, cmd)
 	DParkour.WallClimbLoop(ply, movedata, data)
 	DParkour.WallJumpLoop(ply, movedata, data)
 
+	DParkour.HandleWallRun(ply, movedata, data)
+
 	data.last_velocity = movedata:GetVelocity()
 end
 

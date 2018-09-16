@@ -89,6 +89,11 @@ function DParkour.WallJumpLoop(ply, movedata, data)
 
 	if not trWall.Hit then return end
 
+	local hit = -trWall.HitNormal
+	local dot = ply:EyeAngles():Forward():Dot(hit)
+
+	if dot > -0.3 then return end
+
 	eang.p = -70
 
 	if data.first then

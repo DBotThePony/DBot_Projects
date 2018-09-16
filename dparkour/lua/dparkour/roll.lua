@@ -111,7 +111,7 @@ function DParkour.HandleRollFall(ply, movedata, data)
 	if data.rolling then return end
 	if not data.IN_DUCK then return end
 	if not data.alive then return end
-	if ply:EyeAngles().p < 45 then return end
+	if ply:EyeAngles().p < 40 then return end
 	local velocity = data.last_velocity
 
 	if velocity:Length() < 300 then return end

@@ -59,75 +59,68 @@ local LocalToWorld = LocalToWorld
 local CurTimeL = CurTimeL
 local FrameNumberL = FrameNumberL
 
-function DParkour.WallClimbLoop(ply, movedata, data)
-	data.avaliable_climbs = data.avaliable_climbs or 3
+function DParkour.HandleWallRun(ply, movedata, data)
+	if data.hanging_on_edge then return end
+
+	data.avaliable_wall_run = data.avaliable_wall_run or 5
 
 	if data.first and (data.last_on_ground or not data.alive) then
-		data.avaliable_climbs = 3
+		data.avaliable_wall_run = 5
 	end
 
 	if not data.alive then return end
+	if data.last_on_ground then return end
+	if not data.IN_JUMP_changes2 or not data.IN_JUMP or not data.IN_SPEED then return end
+	if data.first then data.wall_run_status = false end
+	if not data.wall_run_status and data.avaliable_wall_run <= 0 then return end
 
-	if not data.IN_JUMP or not data.IN_FORWARD then
-		if data.first then
-			data.wall_climp_heatup = CurTimeL() + 0.2
-		end
-
-		return
-	elseif not data.wall_climp_heatup or data.wall_climp_heatup > CurTimeL() then
-		return
-	end
+	local center = ply:GetPos() + ply:OBBCenter()
+	local eyes = ply:EyeAngles():Right()
 
 	local mins, maxs = ply:GetHull()
 	maxs.z = 0
 	mins.z = 0
 
 	local trWall = util.TraceHull({
-		start = ply:GetPos() + ply:OBBCenter(),
-		endpos = ply:GetPos() + ply:OBBCenter() + ply:EyeAngles():Forward() * 20,
+		start = center,
+		endpos = center + eyes * 20,
 		mins = mins / 2,
 		maxs = maxs / 2,
 		filter = ply
 	})
 
-	if not trWall.Hit then return end
+	local trWall2 = util.TraceHull({
+		start = center,
+		endpos = center - eyes * 20,
+		mins = mins / 2,
+		maxs = maxs / 2,
+		filter = ply
+	})
 
-	if IsValid(trWall.Entity) then
-		if trWall.Entity:IsNPC() or trWall.Entity:IsRagdoll() or trWall.Entity:IsPlayer() then return end
-		local phys = trWall.Entity:GetPhysicsObject()
+	if not trWall.Hit and not trWall2.Hit then return end
+
+	local usetrace = trWall.Hit and trWall or trWall2
+
+	if IsValid(usetrace.Entity) then
+		if usetrace.Entity:IsNPC() or usetrace.Entity:IsRagdoll() or usetrace.Entity:IsPlayer() then return end
+		local phys = usetrace.Entity:GetPhysicsObject()
 
 		if not IsValid(phys) then return end
-		if phys:IsMoveable() and phys:IsMotionEnabled() and trWall.Entity:GetMoveType() ~= MOVETYPE_NONE then return end
+		if phys:IsMoveable() and phys:IsMotionEnabled() and usetrace.Entity:GetMoveType() ~= MOVETYPE_NONE then return end
 	else
-		local hit = -trWall.HitNormal
+		local hit = -usetrace.HitNormal
 		local dot = ply:EyeAngles():Forward():Dot(hit)
-		if dot < 0.8 then return end
+		if dot > 0.6 or dot < -0.2 then return end
 	end
 
-	data.next_wall_climb = data.next_wall_climb or 0
-
 	if data.first then
-		if data.next_wall_climb > CurTimeL() then
-			data.wall_climb_ignore = false
-			return
-		end
-
-		if data.avaliable_climbs <= 0 then return end
-
-		data.avaliable_climbs = data.avaliable_climbs - 1
-
-		data.next_wall_climb = CurTimeL() + 0.24
-		data.wall_climb_ignore = true
-		data.wall_climb_lock = movedata:GetVelocity() + Vector(0, 0, 180)
-		data.remove_jump = data.IN_JUMP
-	elseif not data.wall_climb_ignore then
-		return
+		if data.avaliable_wall_run <= 0 then return end
+		data.avaliable_wall_run = data.avaliable_wall_run - 1
+		data.wall_run_vel = movedata:GetVelocity()
+		data.wall_run_vel.z = 140
+		data.wall_run_status = true
 	end
 
 	ply:EmitSound('DParkour.WallStep')
-	movedata:SetVelocity(data.wall_climb_lock)
-
-	if data.remove_jump then
-		movedata:SetButtons(movedata:GetButtons():band(IN_JUMP:bnot()))
-	end
+	movedata:SetVelocity(data.wall_run_vel)
 end
