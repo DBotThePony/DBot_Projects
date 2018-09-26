@@ -79,6 +79,10 @@ local function Think()
 	end
 end
 
+function DParkour.__SendSlideStop() end
+function DParkour.__SendSlideStart(velocity) end
+function DParkour.__SendRolling(rolls, dir, ang) end
+
 net.Receive('dparkour.roll', roll)
 net.Receive('dparkour.slide', slide)
 hook.Add('Think', 'DParkour.FixSingleplayer', Think)
