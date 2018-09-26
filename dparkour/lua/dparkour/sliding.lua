@@ -93,6 +93,7 @@ function DParkour.HandleSlide(ply, movedata, data)
 		data.sliding_start = CurTimeL()
 		data.slide_side = movedata:GetVelocity():Angle().yaw:angleDifference(ply:EyeAngles():Forward().yaw) >= 0
 		data.slide_velocity_start = movedata:GetVelocity()
+		DParkour.__SendSlideStart(data.slide_velocity_start)
 		ply:EmitSound('DParkour.Sliding')
 	elseif data.first and data.slide_velocity_start:Length() > 350 then
 		local mins, maxs = ply:GetHull()
@@ -166,6 +167,8 @@ function DParkour.HandleSlideStop(ply, movedata, data, standup)
 		if standup then
 			--ply:EmitSound('DParkour.SlidingInterrupt')
 		end
+
+		DParkour.__SendSlideStop()
 
 		ply:StopSound('DParkour.Sliding')
 	end

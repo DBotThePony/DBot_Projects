@@ -132,5 +132,7 @@ function DParkour.HandleRollFall(ply, movedata, data)
 	data.roll_dir = direction:Forward() * 400
 	data.roll_ang = direction
 
+	DParkour.__SendRolling(data.rolls, data.roll_dir, data.roll_ang)
+
 	DParkour.HandleRolling(ply, movedata, data)
 end

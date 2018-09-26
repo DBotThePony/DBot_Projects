@@ -18,38 +18,36 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-_G.DParkour = DParkour or {}
+-- fix singleplayer
 
-local function shared(luafile)
-	include(luafile)
-	AddCSLuaFile(luafile)
+local DParkour = DParkour
+local util = util
+local net = net
+local game = game
+
+util.AddNetworkString('dparkour.slide')
+util.AddNetworkString('dparkour.roll')
+
+function DParkour.__SendSlideStop()
+	if not game.SinglePlayer() then return end
+	net.Start('dparkour.slide')
+	net.WriteBool(false)
+	net.Broadcast()
 end
 
-local function client(luafile)
-	if CLIENT then
-		include(luafile)
-	else
-		AddCSLuaFile(luafile)
-	end
+function DParkour.__SendSlideStart(velocity)
+	if not game.SinglePlayer() then return end
+	net.Start('dparkour.slide')
+	net.WriteBool(true)
+	net.WriteVectorDouble(velocity)
+	net.Broadcast()
 end
 
-local function server(luafile)
-	if CLIENT then return end
-	include(luafile)
+function DParkour.__SendRolling(rolls, dir, ang)
+	if not game.SinglePlayer() then return end
+	net.Start('dparkour.roll')
+	net.WriteUInt8(rolls)
+	net.WriteVectorDouble(dir)
+	net.WriteAngle(ang)
+	net.Broadcast()
 end
-
-shared('dparkour/sounds.lua')
-shared('dparkour/eventloop.lua')
-shared('dparkour/wall_climb.lua')
-shared('dparkour/wall_hang.lua')
-shared('dparkour/wall_jump.lua')
-shared('dparkour/wall_run.lua')
-shared('dparkour/sliding.lua')
-client('dparkour/cl_sliding.lua')
-shared('dparkour/roll.lua')
-client('dparkour/cl_roll.lua')
-server('dparkour/sv_roll.lua')
-client('dparkour/cl_messaging.lua')
-server('dparkour/sv_messaging.lua')
-
---_G.DParkour = nil
