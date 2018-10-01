@@ -377,7 +377,7 @@ local function request(ply)
 		net.WriteEntity(vehicle)
 		net.Broadcast()
 
-		DSIT_TRACKED_VEHICLES:insert(vehicle)
+		table.insert(DSIT_TRACKED_VEHICLES, vehicle)
 	end
 
 	if vehicle.dsit_player_root then
@@ -393,7 +393,7 @@ end
 local function dsit_getoff(ply)
 	if not IsValid(ply) then return end
 
-	for i, vehicle in DSIT_TRACKED_VEHICLES:ipairs() do
+	for i, vehicle in ipairs(DSIT_TRACKED_VEHICLES) do
 		if IsValid(vehicle) then
 			local ent = vehicle:DLibVar('dsit_target')
 
@@ -409,11 +409,11 @@ concommand.Add('dsit_getoff', dsit_getoff)
 
 _G.DSIT_REQUEST_DEBUG = request
 
-local attemptToFind = table()
+local attemptToFind = {}
 
 for x = -2, 2 do
 	for y = -2, 2 do
-		attemptToFind:insert(Vector(x * 40, y * 40, 5))
+		table.insert(attemptToFind, Vector(x * 40, y * 40, 5))
 	end
 end
 
@@ -447,7 +447,7 @@ local function PostLeave(ply, vehPos, upsideDown)
 		return
 	end
 
-	for i, shift in attemptToFind:ipairs() do
+	for i, shift in ipairs(attemptToFind) do
 		space:SetPos(vehPos + shift)
 		position = space:Search()
 

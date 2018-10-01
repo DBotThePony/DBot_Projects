@@ -20,7 +20,7 @@
 
 
 _G.DSitConVars = DLib.Convars('dsit')
-_G.DSIT_TRACKED_VEHICLES = _G.DSIT_TRACKED_VEHICLES or table()
+_G.DSIT_TRACKED_VEHICLES = _G.DSIT_TRACKED_VEHICLES or {}
 local DSitConVars = _G.DSitConVars
 local DSIT_TRACKED_VEHICLES = _G.DSIT_TRACKED_VEHICLES
 
@@ -69,9 +69,9 @@ local function Think()
 		end
 	end
 
-	for i, vehicle in DSIT_TRACKED_VEHICLES:ipairs() do
+	for i, vehicle in ipairs(DSIT_TRACKED_VEHICLES) do
 		if not IsValid(vehicle) then
-			DSIT_TRACKED_VEHICLES:remove(i)
+			table.remove(DSIT_TRACKED_VEHICLES, i)
 			return
 		end
 
@@ -80,7 +80,7 @@ local function Think()
 		if not IsValid(ent) or not ent:Alive() then
 			if SERVER then
 				vehicle:Remove()
-				DSIT_TRACKED_VEHICLES:remove(i)
+				table.remove(DSIT_TRACKED_VEHICLES, i)
 			end
 
 			goto CONTINUE

@@ -31,7 +31,7 @@ local DSIT_TRACKED_VEHICLES = _G.DSIT_TRACKED_VEHICLES
 
 net.receive('DSit.VehicleTick', function()
 	local vehicle = net.ReadEntity()
-	if IsValid(vehicle) then DSIT_TRACKED_VEHICLES:insert(vehicle) end
+	if IsValid(vehicle) then table.insert(DSIT_TRACKED_VEHICLES, vehicle) end
 end)
 
 local function PlayerBindPress(ply, bind, isPressed)
