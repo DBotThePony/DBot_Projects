@@ -29,19 +29,19 @@ local RED = Color(215, 64, 64)
 
 local function SayPVE(ply, attacker, weapon, pos, ...)
 	if hook.Run('TDeaths_Notify', ply, attacker, weapon, pos, false) ~= false then
-		DLib.chat.player(player.inRange(pos, RANGE_DEFAULT:GetInt()), RED, ...)
+		DLib.chat.player(player.InRange(pos, RANGE_DEFAULT:GetInt()), RED, ...)
 	end
 end
 
 local function SayEVE(ply, attacker, weapon, pos, ...)
 	if hook.Run('TDeaths_Notify', ply, attacker, weapon, pos, false) ~= false then
-		DLib.chat.player(player.inRange(pos, RANGE_NPC:GetInt()), RED, ...)
+		DLib.chat.player(player.InRange(pos, RANGE_NPC:GetInt()), RED, ...)
 	end
 end
 
 local function SayPVP(ply, attacker, weapon, pos, ...)
 	if hook.Run('TDeaths_Notify', ply, attacker, weapon, pos, true) ~= false then
-		DLib.chat.player(player.inRange(pos, RANGE_PLAYER:GetInt()), RED, ...)
+		DLib.chat.player(player.InRange(pos, RANGE_PLAYER:GetInt()), RED, ...)
 	end
 end
 
