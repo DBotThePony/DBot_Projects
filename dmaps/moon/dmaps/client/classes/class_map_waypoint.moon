@@ -87,7 +87,7 @@ class DMapWaypoint extends DMapPointer
 
 		return output
 
-	new: (name = "%WAYPOINT_#{@@UID}%", x = 0, y = 0, z = 0, color = DLib.RandomColor(), icon = Icon\GetDefaultIcon()) =>
+	new: (name = "%WAYPOINT_#{@@UID}%", x = 0, y = 0, z = 0, color = ColorRand(), icon = Icon\GetDefaultIcon()) =>
 		super(x, y, z)
 		@drawInWorld = true
 		@pointName = name
@@ -179,7 +179,7 @@ class DMapWaypoint extends DMapPointer
 		cam.End2D()
 
 	GetColor: => @color
-	SetColor: (color = DLib.RandomColor()) =>
+	SetColor: (color = ColorRand()) =>
 		@color = color
 		@OnDataChanged!
 	GetIsVisible: => @visible

@@ -104,7 +104,7 @@ class NetworkedWaypoint
 		waypoint\Remove()
 		hook.Run('NetworkedWaypointRemoved', waypoint)
 
-	new: (name = "%WAYPOINT_NAME_#{@@NEXT_NETWORK_ID}%", x = 0, y = 0, z = 0, color = DLib.RandomColor(), icon = DMaps.DefaultIconName) =>
+	new: (name = "%WAYPOINT_NAME_#{@@NEXT_NETWORK_ID}%", x = 0, y = 0, z = 0, color = ColorRand(), icon = DMaps.DefaultIconName) =>
 		-- Do not create clientside externally
 		if SERVER
 			@ID = @@NEXT_NETWORK_ID
@@ -188,7 +188,7 @@ class NetworkedWaypoint
 		@z = math.floor(val)
 		@WriteValString('z') if networkNow
 		@OnDataChanges()
-	SetColor: (val = DLib.RandomColor(), networkNow = @INITIALIZE) =>
+	SetColor: (val = ColorRand(), networkNow = @INITIALIZE) =>
 		@color = val
 		@WriteValString('color') if networkNow
 		@OnDataChanges()
