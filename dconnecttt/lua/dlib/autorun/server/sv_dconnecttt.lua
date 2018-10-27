@@ -121,8 +121,8 @@ local function PlayerAuthed(ply, steamid)
 	timer.Simple(0, function()
 		if not IsValid(ply) then return end
 
-		if ply:DLibVar('DConnecttt.JoinTime', -1) == -1 then
-			ply:SetDLibVar('DConnecttt.JoinTime', RealTimeL())
+		if ply:GetNW2Float('DConnecttt.JoinTime', -1) == -1 then
+			ply:SetNW2Float('DConnecttt.JoinTime', RealTimeL())
 		end
 
 		DConn.Query('SELECT * FROM dconnecttt WHERE steamid64 = "' .. steamid64 .. '";', function(data)
@@ -287,19 +287,19 @@ end
 local function PlayerTick(len, ply)
 	ply.DConnecttt_LastTick = RealTimeL()
 
-	if ply:DLibVar('DConnecttt.FastInit', 0) == 0 then
-		ply:SetDLibVar('DConnecttt.FastInit', RealTimeL())
+	if ply:GetNW2Float('DConnecttt.FastInit', 0) == 0 then
+		ply:SetNW2Float('DConnecttt.FastInit', RealTimeL())
 	end
 end
 
 local plyMeta = FindMetaTable('Player')
 
 function plyMeta:TotalTimeConnected()
-	return self:SessionTime() + self:DLibVar('DConnecttt_Total_OnJoin')
+	return self:SessionTime() + self:GetNW2Float('DConnecttt_Total_OnJoin')
 end
 
 function plyMeta:SessionTime()
-	return RealTimeL() - self:DLibVar('DConnecttt_Join')
+	return RealTimeL() - self:GetNW2Float('DConnecttt_Join')
 end
 
 -- UTime interface
@@ -326,17 +326,12 @@ function plyMeta:SetUTimeStart()
 end
 
 function plyMeta:GetUTimeStart()
-	return self:DLibVar('DConnecttt_Join')
+	return self:GetNW2Float('DConnecttt_Join')
 end
 
 for k, v in pairs(player.GetAll()) do
 	PlayerAuthed(v, v:SteamID())
 end
-
-DLib.nw.poolFloat('DConnecttt.FastInit', -1)
-DLib.nw.poolFloat('DConnecttt.JoinTime', -1)
-DLib.nw.poolFloat('DConnecttt_Total_OnJoin', -1)
-DLib.nw.poolFloat('DConnecttt_Join', -1)
 
 timer.Create('DConnecttt.Timer', 1, 0, Timer)
 timer.Create('DConnecttt.SaveTimer', 60, 0, SaveTimer)
