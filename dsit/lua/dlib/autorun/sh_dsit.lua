@@ -39,12 +39,8 @@ DSitConVars:create('entities_world', '0', {FCVAR_NOTIFY}, 'Allow to sit on non-o
 DSitConVars:create('players', '1', {FCVAR_NOTIFY}, 'Allow to sit on players (heads)')
 DSitConVars:create('players_legs', '1', {FCVAR_NOTIFY}, 'Allow to sit on players (legs/sit on sitting players)')
 
-DLib.nw.pool('dsit_flag', net.WriteBool, net.ReadBool, false)
-DLib.nw.pool('dsit_entity', net.WriteEntity, net.ReadEntity, NULL)
-DLib.nw.pool('dsit_target', net.WritePlayer, net.ReadPlayer, NULL)
-
 local function PhysgunPickup(ply, ent)
-	if IsValid(ply:DLibVar('dsit_entity')) then
+	if IsValid(ply:GetNW2Entity('dsit_entity')) then
 		return false
 	end
 
@@ -75,7 +71,7 @@ local function Think()
 			return
 		end
 
-		local ent = vehicle:DLibVar('dsit_target')
+		local ent = vehicle:GetNW2Entity('dsit_target')
 
 		if not IsValid(ent) or not ent:Alive() then
 			if SERVER then

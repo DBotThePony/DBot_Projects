@@ -37,7 +37,6 @@ local engine = engine
 local ENABLED = DLib.util.CreateSharedConvar('sv_touchme_enabled', '1', 'Enable Touch Me serverside')
 local ENABLED_SANDBOX = DLib.util.CreateSharedConvar('sv_touchme_sandbox', '1', 'Sandbox has no restrictions')
 local MAX_RANGE = DLib.util.CreateSharedConvar('sv_touchme_range', '1024', 'Maximal range to pickup friends. Set to 0 to disable.')
-DLib.nw.poolBoolean('touchme_nono', false)
 
 local schat
 
@@ -89,7 +88,7 @@ end
 
 local function StartCommand(ply, cmd)
 	if ply:GetActiveWeaponClass() == 'weapon_physgun' and cmd:KeyDown(IN_ATTACK) then
-		if ply:DLibVar('touchme_nono') then
+		if ply:GetNW2Bool('touchme_nono') then
 			cmd:RemoveKey(IN_ATTACK)
 			return
 		end
@@ -165,11 +164,11 @@ if SERVER then
 							if tr.Hit then
 								schat.LChatPlayer(pickuper, 'message.touchme.exploit_hit')
 								ply:SetPos(positions[1])
-								pickuper:SetDLibVar('touchme_nono', true)
+								pickuper:SetNW2Bool('touchme_nono', true)
 
 								timer.Create('DLib.touchmeno.' .. pickuper:SteamID(), 2, 1, function()
 									if IsValid(pickuper) then
-										pickuper:SetDLibVar('touchme_nono', false)
+										pickuper:SetNW2Bool('touchme_nono', false)
 									end
 								end)
 

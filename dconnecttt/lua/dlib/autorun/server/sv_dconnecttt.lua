@@ -157,7 +157,7 @@ local function PlayerAuthed(ply, steamid)
 				ply.DConnecttt_Session = 0
 				ply.DConnecttt_Total = tonumber(totaltime)
 
-				ply:SetDLibVar('DConnecttt_Total_OnJoin', ply.DConnecttt_Total)
+				ply:SetNW2Float('DConnecttt_Total_OnJoin', ply.DConnecttt_Total)
 
 				local PrintNick = nick
 

@@ -170,8 +170,6 @@ ENT.SimulateRepair = (thersold = 200, simulate = CLIENT) =>
 	weight += @SimulateUpgrade(thersold - weight, simulate)
 	return weight
 
-DLib.nw.poolEntity('dtf2_move')
-
 ENT.CanBeMoved = (byPlayer = NULL) =>
 	return IsValid(byPlayer) and byPlayer\IsPlayer() and
 		@GetPos()\Distance(byPlayer\GetPos()) < 200 and
@@ -180,5 +178,5 @@ ENT.CanBeMoved = (byPlayer = NULL) =>
 		@MoveCategory ~= -1 and
 		@IsAvaliable() and
 		IsValid(byPlayer\GetWeapon('dbot_tf_buildpda')) and
-		not IsValid(byPlayer\GetDLibVar('dtf2_move')) and
+		not IsValid(byPlayer\GetNW2Entity('dtf2_move')) and
 		not @GetAfterMove()

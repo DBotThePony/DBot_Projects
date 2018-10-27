@@ -40,8 +40,6 @@ weaponrystats.SKIP_NEXT = false
 
 local HL2WEP_MAPPING = DLib.hl2wdata
 
-DLib.nw.pool('wps_dps', net.GWriteUInt(32), net.GReadUInt(32), 0)
-
 local perEntityBullets = {
 	weapon_357 = 'dbot_bullet_357',
 	weapon_ar2 = 'dbot_bullet_pulse',

@@ -38,7 +38,7 @@ local function makeVehicle(owner, pos, ang)
 
 	ent:SetMoveType(MOVETYPE_NONE)
 	ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
-	ent:SetDLibVar('dsit_flag', true)
+	ent:SetNW2Bool('dsit_flag', true)
 	ent:SetNotSolid(true)
 	ent:DrawShadow(false)
 	ent:SetColor(TRANSLUCENT)
@@ -169,12 +169,12 @@ local function request(ply)
 			entSit = ent:GetVehicle()
 
 			if IsValid(entSit) then
-				isSitting = entSit:DLibVar('dsit_flag')
+				isSitting = entSit:GetNW2Bool('dsit_flag')
 			end
 
 			parent = false
 		else
-			isSitting = ent:DLibVar('dsit_flag')
+			isSitting = ent:GetNW2Bool('dsit_flag')
 			entSit = ent
 			parent = not isSitting
 		end
@@ -370,7 +370,7 @@ local function request(ply)
 		vehicle:SetParent(entSit)
 	elseif isPlayer then
 		ply.dsit_player_root = ent.dsit_player_root or ent
-		vehicle:SetDLibVar('dsit_target', ent)
+		vehicle:SetNW2Entity('dsit_target', ent)
 		vehicle.dsit_player_root = ent
 
 		net.Start('DSit.VehicleTick')
@@ -386,8 +386,8 @@ local function request(ply)
 
 	vehicle.dsit_upsideDown = upsideDown
 
-	vehicle:SetDLibVar('dsit_entity', ply)
-	ply:SetDLibVar('dsit_entity', vehicle)
+	vehicle:SetNW2Entity('dsit_entity', ply)
+	ply:SetNW2Entity('dsit_entity', vehicle)
 end
 
 local function dsit_getoff(ply)
@@ -395,7 +395,7 @@ local function dsit_getoff(ply)
 
 	for i, vehicle in ipairs(DSIT_TRACKED_VEHICLES) do
 		if IsValid(vehicle) then
-			local ent = vehicle:DLibVar('dsit_target')
+			local ent = vehicle:GetNW2Entity('dsit_target')
 
 			if ent == ply then
 				vehicle:GetDriver():ExitVehicle()
@@ -462,7 +462,7 @@ local function PostLeave(ply, vehPos, upsideDown)
 end
 
 local function PlayerLeaveVehicle(ply, vehicle)
-	if not vehicle:DLibVar('dsit_flag') then return end
+	if not vehicle:GetNW2Bool('dsit_flag') then return end
 
 	if IsValid(vehicle.dsit_player_root) then
 		vehicle.dsit_player_root.dsit_root_sitting_on = vehicle.dsit_player_root.dsit_root_sitting_on - 1
@@ -485,7 +485,7 @@ end
 
 local function PlayerDeath(ply)
 	ply.dsit_player_root = nil
-	ply:SetDLibVar('dsit_flag', false)
+	ply:SetNW2Bool('dsit_flag', false)
 end
 
 local function PlayerSay(ply, text)

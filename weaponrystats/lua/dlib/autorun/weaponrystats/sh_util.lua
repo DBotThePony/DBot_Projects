@@ -68,12 +68,9 @@ function weaponMeta:ApplyClipModifications()
 	end
 end
 
-DLib.nw.pool('wps_m', net.WriteString, net.ReadString, 0)
-DLib.nw.pool('wps_t', net.WriteString, net.ReadString, 0)
-
 function weaponMeta:GetWeaponModification()
 	if CLIENT then
-		return weaponrystats.modifications_hash[self:DLibVar('wps_m')]
+		return weaponrystats.modifications_hash[self:GetNW2String('wps_m')]
 	else
 		return self.weaponrystats and self.weaponrystats.modification
 	end
@@ -81,7 +78,7 @@ end
 
 function weaponMeta:GetWeaponType()
 	if CLIENT then
-		return weaponrystats.types_hash[self:DLibVar('wps_t')]
+		return weaponrystats.types_hash[self:GetNW2String('wps_t')]
 	else
 		return self.weaponrystats and self.weaponrystats.type
 	end

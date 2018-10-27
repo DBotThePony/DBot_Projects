@@ -76,8 +76,8 @@ weaponrystats.checkupOwner = checkupOwner
 
 function networkWeapon(self)
 	if not checkup(self) then return end
-	if self.weaponrystats.modification then self:SetDLibVar('wps_m', self.weaponrystats.modification.crc) end
-	if self.weaponrystats.type then self:SetDLibVar('wps_t', self.weaponrystats.type.crc) end
+	if self.weaponrystats.modification then self:SetNW2String('wps_m', self.weaponrystats.modification.crc) end
+	if self.weaponrystats.type then self:SetNW2String('wps_t', self.weaponrystats.type.crc) end
 end
 
 local function networkPlayer(self)
