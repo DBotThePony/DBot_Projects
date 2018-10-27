@@ -260,3 +260,9 @@ end
 weaponrystats.HUDPaint = HUDPaint
 
 hook.Add('HUDPaint', 'WeaponryStats.HUD', HUDPaint)
+
+hook.Add('StartCommand', 'WeaponryStats.HUD', function(ply, cmd)
+	if cmd:KeyDown(IN_RELOAD) then
+		lastChange = RealTimeL() + 4
+	end
+end)
