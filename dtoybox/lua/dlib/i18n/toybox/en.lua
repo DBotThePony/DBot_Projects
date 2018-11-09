@@ -29,5 +29,8 @@ gui.toybox.controls.button.browse = 'Open an addon page...'
 gui.toybox.controls.button.busy = '< ... >'
 gui.toybox.controls.button.enabled = 'Addon is already loaded!'
 gui.toybox.controls.button.shared_parts = 'INSTALL SHARED PARTS'
+gui.toybox.notify.text = 'Remember that not all (but very close to all) addons can be actually hotloaded!\n(due to how they work)\n\nAlso, if you loaded a weapon or an entity (or a vehicle), don\'t forget to spawnmenu_reload in your console!\nThis is not done automatically since it is very perfomance intence (unless you dont have much addons installed)\n\n--- WARNING ---\nIF ADDON REQUIRES A BASE, INSTALL IT FIRST, OTHERWISE YOU WOULD FAIL SO BAD\nYOU WERE WARNED'
+gui.toybox.notify.header = 'Notice about hotloading addons'
+gui.toybox.notify.button = 'Got it!'
 
 message.toybox.missing_access = 'No access!'

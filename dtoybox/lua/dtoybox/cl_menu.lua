@@ -36,6 +36,7 @@ surface.CreateFont('DToyBox.LoadButtonText', {
 
 local identifier = '__HAHAHAHA_BROKEN_HTML_IN_SPAWN_MENU_SUICIDE'
 local _current_canvas, _current_html, _current_htmlcontrols
+local displayedMessage = false
 
 function DToyBox.BuildMenu(token, anyURL, anyHistory)
 	local canvas = vgui.Create('EditablePanel')
@@ -120,6 +121,11 @@ function DToyBox.BuildMenu(token, anyURL, anyHistory)
 		if wsid == itemid then
 			self:SetText('gui.toybox.controls.button.enabled')
 			self:SetEnabled(false)
+
+			if not displayedMessage then
+				Derma_Message('gui.toybox.notify.text', 'gui.toybox.notify.header', 'gui.toybox.notify.button')
+				displayedMessage = true
+			end
 		end
 	end
 
