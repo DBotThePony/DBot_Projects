@@ -34,13 +34,41 @@ surface.CreateFont('DToyBox.LoadButtonText', {
 	weight = 500
 })
 
-function DToyBox.BuildMenu()
+local identifier = '__HAHAHAHA_BROKEN_HTML_IN_SPAWN_MENU_SUICIDE'
+local _current_canvas, _current_html, _current_htmlcontrols
+
+function DToyBox.BuildMenu(token, anyURL, anyHistory)
 	local canvas = vgui.Create('EditablePanel')
+
+	local currentURL = 'https://steamcommunity.com/app/4000/workshop/'
+
+	if token ~= identifier then
+		_current_canvas = canvas
+		local button = vgui.Create('DButton', canvas)
+		button:Dock(TOP)
+		button:SetFont('DToyBox.LoadButtonText')
+		button:SetText('gui.toybox.controls.open_full')
+		button:SetSize(0, 30)
+		button:DockMargin(ScreenSize(120), 4, ScreenSize(120), 4)
+
+		function button:DoClick()
+			local frame = vgui.Create('DLib_Window')
+			frame:SetTitle('gui.toybox.frame')
+			--local canvas = DToyBox.BuildMenu(identifier, currentURL, table.Copy(_current_htmlcontrols.History))
+			local canvas = DToyBox.BuildMenu(identifier, currentURL, _current_htmlcontrols.History)
+			canvas:SetParent(frame)
+			canvas:Dock(FILL)
+		end
+	end
+
 	local controls = vgui.Create('EditablePanel', canvas)
 	controls:Dock(TOP)
 	controls:SetSize(0, 34)
 
-	local currentURL = 'https://steamcommunity.com/app/4000/workshop/'
+	if token == identifier then
+		currentURL = anyURL or currentURL
+	end
+
 	local wsid
 
 	local loadThisAddon = vgui.Create('DButton', controls)
@@ -67,6 +95,9 @@ function DToyBox.BuildMenu()
 			if not DToyBox.ShouldLoadAddon(wsid) then
 				self:SetText('gui.toybox.controls.button.enabled')
 				self:SetEnabled(false)
+			elseif wsid == 866368346 then
+				self:SetText('gui.toybox.controls.button.shared_parts')
+				self:SetEnabled(true)
 			else
 				self:SetText('gui.toybox.controls.button.ready')
 				self:SetEnabled(true)
@@ -99,6 +130,10 @@ function DToyBox.BuildMenu()
 	HTML:OpenURL(currentURL)
 	HTML:DockMargin(0, 10, 0, 0)
 
+	if token ~= identifier then
+		_current_html = HTML
+	end
+
 	hook.Add('VGUIMousePressed', HTML, function(self, pnlFocus)
 		if self == pnlFocus then
 			self:RequestFocus()
@@ -109,12 +144,25 @@ function DToyBox.BuildMenu()
 	htmlcontrols:Dock(FILL)
 	htmlcontrols:SetHTML(HTML)
 	htmlcontrols.AddressBar:SetText(currentURL)
+	htmlcontrols.HomeURL = 'https://steamcommunity.com/app/4000/workshop/'
+
+	if token ~= identifier then
+		_current_htmlcontrols = htmlcontrols
+	end
+
+	if token == identifier and anyHistory then
+		htmlcontrols.History = anyHistory
+	end
 
 	local oldCallback = HTML.OnBeginLoadingDocument
 
 	HTML.OnBeginLoadingDocument = function(self, url)
 		oldCallback(self, url)
 		currentURL = url
+
+		if token == identifier and IsValid(_current_html) then
+			_current_html:OpenURL(url)
+		end
 
 		if url:startsWith('https://steamcommunity.com/sharedfiles/filedetails/?id=') then
 			wsid = tonumber(url:sub(56):match('^[0-9]+'))

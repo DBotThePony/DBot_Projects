@@ -20,10 +20,14 @@
 
 gui.toybox.tab = 'DToyBox'
 gui.toybox.tab_tip = 'Used to hotload any addon from the workshop'
+
+gui.toybox.frame = 'DToyBox addon browsing'
+gui.toybox.controls.open_full = 'Open in new window (has html keyboard focus fixed)'
 gui.toybox.controls.button.not_avaliable = 'No access!'
 gui.toybox.controls.button.ready = 'Load this addon!'
 gui.toybox.controls.button.browse = 'Open an addon page...'
 gui.toybox.controls.button.busy = '< ... >'
 gui.toybox.controls.button.enabled = 'Addon is already loaded!'
+gui.toybox.controls.button.shared_parts = 'INSTALL SHARED PARTS'
 
 message.toybox.missing_access = 'No access!'
