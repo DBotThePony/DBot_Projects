@@ -83,30 +83,34 @@ function DToyBox.LoadAddon(wsid)
 		net.Broadcast()
 	end
 
-	hook.Run('DToyBox.ItemAdded', wsid)
+	DToyBox.CreateWSObject(wsid):Then(function(ctor)
+		hook.Run('DToyBox.ItemAdded', wsid)
 
-	for i, value in ipairs(DToyBox.DownloadListing) do
-		if value.wsid == wsid then
-			table.remove(DToyBox.DownloadListing, i)
-			break
+		for i, value in ipairs(DToyBox.DownloadListing) do
+			if value.wsid == wsid then
+				table.remove(DToyBox.DownloadListing, i)
+				break
+			end
 		end
-	end
 
-	local fbundle = VLL2.WSBundle(tostring(wsid))
-	fbundle:DoNotReplicate()
-	fbundle:DoNotInitAfterLoad()
-	fbundle:DoNotMountAfterLoad()
+		local fbundle = ctor(tostring(wsid))
+		fbundle:DoNotReplicate()
+		fbundle:DoNotInitAfterLoad()
+		fbundle:DoNotMountAfterLoad()
 
-	fbundle:AddLoadedHook(DToyBox.CheckListing)
-	fbundle:Load()
+		fbundle:AddLoadedHook(DToyBox.CheckListing)
+		fbundle:Load()
 
-	local data = {
-		bundle = fbundle,
-		init = false,
-		wsid = wsid,
-		stamp = RealTimeL()
-	}
+		local data = {
+			bundle = fbundle,
+			init = false,
+			wsid = wsid,
+			stamp = RealTimeL()
+		}
 
-	table.insert(DToyBox.DownloadListing, data)
-	return data
+		table.insert(DToyBox.DownloadListing, data)
+	end):Catch(function(err)
+		DToyBox.Message('--- UNABLE TO GET FILEINFO DETAILS FOR ' .. wsid)
+		DToyBox.Message(err)
+	end)
 end

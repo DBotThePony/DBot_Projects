@@ -95,18 +95,32 @@ function DToyBox.BuildMenu(token, anyURL, anyHistory)
 		end
 
 		if wsid then
-			if not DToyBox.ShouldLoadAddon(wsid) then
-				self:SetText('gui.toybox.controls.button.enabled')
-				self:SetEnabled(false)
-			elseif wsid == 866368346 then
-				self:SetText('gui.toybox.controls.button.shared_parts')
-				loadThisAddon:SetTooltip('gui.toybox.controls.button.ready_tooltip')
+			self:SetText('gui.toybox.controls.button.busy')
+
+			DToyBox.GetFileInfo(wsid):Then(function(iteminfo)
+				if not DToyBox.ShouldLoadAddon(wsid) then
+					self:SetText('gui.toybox.controls.button.enabled')
+					self:SetEnabled(false)
+				elseif wsid == 866368346 then
+					self:SetText('gui.toybox.controls.button.shared_parts')
+					loadThisAddon:SetTooltip('gui.toybox.controls.button.ready_tooltip')
+					self:SetEnabled(true)
+				else
+					if iteminfo.isCollection then
+						self:SetText('gui.toybox.controls.button.ready_collection')
+					else
+						self:SetText('gui.toybox.controls.button.ready')
+					end
+
+					loadThisAddon:SetTooltip('gui.toybox.controls.button.ready_tooltip')
+					self:SetEnabled(true)
+				end
+			end):Catch(function(...)
+				DToyBox.Message('--- ERROR UPDATING WORKSHOP BUTTON STATUS')
+				DToyBox.Message(...)
+				self:SetText('gui.toybox.controls.button.error')
 				self:SetEnabled(true)
-			else
-				self:SetText('gui.toybox.controls.button.ready')
-				loadThisAddon:SetTooltip('gui.toybox.controls.button.ready_tooltip')
-				self:SetEnabled(true)
-			end
+			end)
 		else
 			self:SetText('gui.toybox.controls.button.browse')
 			loadThisAddon:SetTooltip('gui.toybox.controls.button.browse_tooltip')
@@ -177,6 +191,8 @@ function DToyBox.BuildMenu(token, anyURL, anyHistory)
 
 		if url:startsWith('https://steamcommunity.com/sharedfiles/filedetails/?id=') then
 			wsid = tonumber(url:sub(56):match('^[0-9]+'))
+		elseif url:startsWith('https://steamcommunity.com/workshop/filedetails/?id=') then
+			wsid = tonumber(url:sub(53):match('^[0-9]+'))
 		else
 			wsid = nil
 		end

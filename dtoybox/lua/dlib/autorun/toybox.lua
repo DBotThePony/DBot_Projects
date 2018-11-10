@@ -76,10 +76,13 @@ if SERVER then
 	AddCSLuaFile('dtoybox/cl_logic.lua')
 	AddCSLuaFile('dtoybox/cl_menu.lua')
 	AddCSLuaFile('dtoybox/sh_logic.lua')
+	AddCSLuaFile('dtoybox/sh_util.lua')
 	include('dtoybox/sh_logic.lua')
+	include('dtoybox/sh_util.lua')
 	include('dtoybox/sv_logic.lua')
 else
 	include('dtoybox/sh_logic.lua')
+	include('dtoybox/sh_util.lua')
 	include('dtoybox/cl_logic.lua')
 	include('dtoybox/cl_menu.lua')
 end
