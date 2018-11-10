@@ -71,9 +71,9 @@ function DToyBox.CreateWSObject(wsid)
 	return Promise(function(resolve, reject)
 		DToyBox.GetFileInfo(wsid):Then(function(itemdata)
 			if itemdata.isCollection then
-				return VLL2.WSCollection
+				resolve(VLL2.WSCollection)
 			else
-				return VLL2.WSBundle
+				resolve(VLL2.WSBundle)
 			end
 		end):Catch(reject)
 	end)
