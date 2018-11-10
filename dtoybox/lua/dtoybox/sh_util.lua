@@ -65,6 +65,9 @@ function DToyBox.GetFileInfo(wsid)
 end
 
 function DToyBox.CreateWSObject(wsid)
+	assert(type(wsid) == 'number', 'WorkshopID must be a number!')
+	assert(wsid > 0, 'Invalid workshopid')
+
 	return Promise(function(resolve, reject)
 		DToyBox.GetFileInfo(wsid):Then(function(itemdata)
 			if itemdata.isCollection then
