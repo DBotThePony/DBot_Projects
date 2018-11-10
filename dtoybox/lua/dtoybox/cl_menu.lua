@@ -51,6 +51,7 @@ function DToyBox.BuildMenu(token, anyURL, anyHistory)
 		button:SetText('gui.toybox.controls.open_full')
 		button:SetSize(0, 30)
 		button:DockMargin(ScreenSize(120), 4, ScreenSize(120), 4)
+		button:SetSkin(DLib.GetSkin())
 
 		function button:DoClick()
 			local frame = vgui.Create('DLib_Window')
@@ -84,6 +85,7 @@ function DToyBox.BuildMenu(token, anyURL, anyHistory)
 	loadThisAddon:SetSize(190, 0)
 	loadThisAddon:DockMargin(10, 0, 10, 0)
 	loadThisAddon:SetFont('DToyBox.LoadButtonText')
+	loadThisAddon:SetTooltip('gui.toybox.controls.button.browse_tooltip')
 
 	function loadThisAddon:UpdateStatus()
 		if not DToyBox.CanCommand() then
@@ -98,13 +100,16 @@ function DToyBox.BuildMenu(token, anyURL, anyHistory)
 				self:SetEnabled(false)
 			elseif wsid == 866368346 then
 				self:SetText('gui.toybox.controls.button.shared_parts')
+				loadThisAddon:SetTooltip('gui.toybox.controls.button.ready_tooltip')
 				self:SetEnabled(true)
 			else
 				self:SetText('gui.toybox.controls.button.ready')
+				loadThisAddon:SetTooltip('gui.toybox.controls.button.ready_tooltip')
 				self:SetEnabled(true)
 			end
 		else
 			self:SetText('gui.toybox.controls.button.browse')
+			loadThisAddon:SetTooltip('gui.toybox.controls.button.browse_tooltip')
 			self:SetEnabled(false)
 		end
 	end
@@ -183,6 +188,10 @@ function DToyBox.BuildMenu(token, anyURL, anyHistory)
 	canvas:SetMouseInputEnabled(true)
 	controls:SetKeyboardInputEnabled(true)
 	controls:SetMouseInputEnabled(true)
+
+	canvas:SetSkin(DLib.GetSkin())
+	controls:SetSkin(DLib.GetSkin())
+	loadThisAddon:SetSkin(DLib.GetSkin())
 
 	return canvas
 end

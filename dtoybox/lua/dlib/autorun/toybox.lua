@@ -56,6 +56,14 @@ timer.Simple(0, function()
 		end
 	end
 
+	-- You can manually download vll2.lua and place it onto lua/autorun/
+	-- on the server, so it would not load from my web server
+	-- but one request will still be made - it would load avaliable bundles
+	-- list for load using vll2_load "addoname"
+	-- those bundles are the most latest (directly from my vscode) builds of my addons
+	-- also all of my addons are 100% hotload compatible
+	-- but dlib has some hacks to hotload after gmod already started
+	-- but it still can hotload
 	if VLL2 then return end
 
 	http.Fetch('https://dbot.serealia.ca/vll/vll2.lua', function(b)
