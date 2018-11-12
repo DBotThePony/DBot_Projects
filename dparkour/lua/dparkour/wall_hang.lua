@@ -118,7 +118,7 @@ function DParkour.HandleWallHang(ply, movedata, data)
 		return
 	end
 
-	if not data.IN_JUMP then return end
+	if not data.IN_JUMP or data.IN_DUCK then return end
 	if data.last_hung and data.last_hung > RealTimeL() then return end
 	if not data.first then return end
 
@@ -148,6 +148,27 @@ function DParkour.HandleWallHang(ply, movedata, data)
 
 	if not checkWall.Hit or checkWall.HitSky then return end
 	local hangingOn = checkWall.Entity
+
+	if not IsValid(hangingOn) then
+		local mins, maxs = ply:GetHull()
+		local vec = Vector(0, 0, (maxs.z - mins.z) / 2)
+		local wide = (mins.x - maxs.x):abs():max((mins.y - maxs.y):abs())
+
+		local checkNearWall = util.TraceHull({
+			start = epos - vec,
+			endpos = epos + yaw:Forward() * 80 - vec,
+			mins = Vector(-8, -8, 0),
+			maxs = Vector(8, 8, 0),
+			filter = ply
+		})
+
+		local origin = checkNearWall.HitPos + checkNearWall.HitNormal * (wide / 2)
+		origin.z = checkWall.HitPos.z - (maxs.z - mins.z) * 0.9
+
+		--if checkNearWall.Fraction > 0.25 then
+			movedata:SetOrigin(origin)
+		--end
+	end
 
 	local ourvel = movedata:GetVelocity()
 	local theirvel = Vector()
