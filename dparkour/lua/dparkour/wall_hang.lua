@@ -62,19 +62,37 @@ local FrameNumberL = FrameNumberL
 function DParkour.WallHangInterrupt(ply, movedata, data)
 	if not data.hanging_on_edge then return end
 	movedata:SetVelocity(data.hanging_trace.HitNormal * 200 * (1 / data.hanging_trace.Fraction:clamp(0.75, 1)):clamp(2, 3))
+
+	-- fuck off sorse's prediction
+	data.fuckoff_velocity = true
+
+	if data.hanging_on_valid and not IsValid(data.hanging_on) then
+		movedata:SetVelocity(movedata:GetVelocity() + data.hanging_on:GetVelocity() * 3)
+	end
+
+	data.fuckoff_vel_amount = movedata:GetVelocity()
+
 	ply:EmitSound('DParkour.HangOver')
 	data.hanging_on_edge = false
 	data.last_hung = RealTimeL() + 0.4
 end
 
 function DParkour.HandleWallHang(ply, movedata, data)
+	if data.first then
+		data.fuckoff_velocity = false
+	elseif data.fuckoff_velocity then
+		movedata:SetVelocity(data.fuckoff_vel_amount)
+		return
+	end
+
 	if data.hanging_on_edge then
 		if not data.IN_JUMP_changes and not data.IN_DUCK then return end
 		if data.last_hung and data.last_hung > RealTimeL() then return end
-		movedata:SetVelocity(data.hanging_trace.HitNormal * 200 * (1 / data.hanging_trace.Fraction:clamp(0.75, 1)):clamp(2, 3))
-		ply:EmitSound('DParkour.HangOver')
-		data.hanging_on_edge = false
-		data.last_hung = RealTimeL() + 0.4
+
+		if data.first then
+			DParkour.WallHangInterrupt(ply, movedata, data)
+		end
+
 		return
 	end
 
