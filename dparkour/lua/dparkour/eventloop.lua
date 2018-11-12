@@ -281,6 +281,7 @@ local function SetupMove(ply, movedata, cmd)
 	then
 		DParkour.InterruptRoll(ply, movedata, data)
 		DParkour.HandleSlideStop(ply, movedata, data, true)
+		DParkour.WallHangInterrupt(ply, movedata, data)
 		return
 	end
 
@@ -288,14 +289,14 @@ local function SetupMove(ply, movedata, cmd)
 
 	if data.first then
 		data.alive = ply:Alive()
-		updatebuttons(movedata:GetButtons(), data)
+		updatebuttons(cmd:GetButtons(), data)
 	end
 
 	local ground = ply:OnGround()
 	local groundChange = data.last_on_ground ~= ground
 	data.last_on_ground = ground
 
-	if not ground and data.IN_JUMP then
+	if not ground and (data.IN_JUMP or data.IN_DUCK) then
 		DParkour.HandleWallHang(ply, movedata, data)
 	end
 

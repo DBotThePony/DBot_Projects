@@ -59,9 +59,17 @@ local LocalToWorld = LocalToWorld
 local CurTimeL = CurTimeL
 local FrameNumberL = FrameNumberL
 
+function DParkour.WallHangInterrupt(ply, movedata, data)
+	if not data.hanging_on_edge then return end
+	movedata:SetVelocity(data.hanging_trace.HitNormal * 200 * (1 / data.hanging_trace.Fraction:clamp(0.75, 1)):clamp(2, 3))
+	ply:EmitSound('DParkour.HangOver')
+	data.hanging_on_edge = false
+	data.last_hung = RealTimeL() + 0.4
+end
+
 function DParkour.HandleWallHang(ply, movedata, data)
 	if data.hanging_on_edge then
-		if not data.IN_JUMP_changes then return end
+		if not data.IN_JUMP_changes and not data.IN_DUCK then return end
 		if data.last_hung and data.last_hung > RealTimeL() then return end
 		movedata:SetVelocity(data.hanging_trace.HitNormal * 200 * (1 / data.hanging_trace.Fraction:clamp(0.75, 1)):clamp(2, 3))
 		ply:EmitSound('DParkour.HangOver')
@@ -154,7 +162,7 @@ function DParkour.HangEventLoop(ply, movedata, data)
 		movedata:SetOrigin(data.hang_origin)
 		movedata:SetVelocity(Vector())
 		movedata:SetButtons(movedata:GetButtons():band(
-			IN_FORWARD:bor(IN_LEFT, IN_RIGHT, IN_BACK, IN_SPEED, IN_DUCK, IN_RUN):bnot()
+			IN_FORWARD:bor(IN_LEFT, IN_RIGHT, IN_BACK, IN_SPEED, IN_RUN):bnot()
 		))
 		return
 	end
@@ -163,7 +171,7 @@ function DParkour.HangEventLoop(ply, movedata, data)
 	movedata:SetOrigin(newpos)
 	movedata:SetVelocity(Vector())
 	movedata:SetButtons(movedata:GetButtons():band(
-		IN_FORWARD:bor(IN_LEFT, IN_RIGHT, IN_BACK, IN_SPEED, IN_DUCK, IN_RUN):bnot()
+		IN_FORWARD:bor(IN_LEFT, IN_RIGHT, IN_BACK, IN_SPEED, IN_RUN):bnot()
 	))
 
 	if newang.p < -40 or newang.p > 40 then
@@ -181,6 +189,6 @@ function DParkour.HangEventLoop2(ply, cmd, data)
 	if not data.hanging_on_edge then return end
 
 	cmd:SetButtons(cmd:GetButtons():band(
-		IN_FORWARD:bor(IN_LEFT, IN_RIGHT, IN_BACK, IN_ALT1, IN_ALT2, IN_DUCK, IN_USE):bnot()
+		IN_FORWARD:bor(IN_LEFT, IN_RIGHT, IN_BACK, IN_ALT1, IN_ALT2, IN_USE):bnot()
 	))
 end
