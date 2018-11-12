@@ -59,6 +59,13 @@ local LocalToWorld = LocalToWorld
 local CurTimeL = CurTimeL
 local FrameNumberL = FrameNumberL
 
+local game = game
+local net = net
+
+if SERVER then
+	net.pool('dparkour.sendhang')
+end
+
 function DParkour.WallHangInterrupt(ply, movedata, data)
 	if not data.hanging_on_edge then return end
 	movedata:SetVelocity(data.hanging_trace.HitNormal * 200 * (1 / data.hanging_trace.Fraction:clamp(0.75, 1)):clamp(2, 3))
@@ -161,6 +168,57 @@ function DParkour.HandleWallHang(ply, movedata, data)
 	movedata:SetVelocity(Vector())
 
 	ply:EmitSound('DParkour.Hang')
+
+	if SERVER and not game.SinglePlayer() then
+		net.Start('dparkour.sendhang')
+		net.WriteEntity(data.hanging_on)
+		net.WriteAngleDouble(data.haning_ang)
+		net.WriteVectorDouble(movedata:GetOrigin())
+		net.WriteTable(checkWall)
+
+		net.WriteBool(data.local_origin ~= nil)
+
+		if data.local_origin then
+			net.WriteVectorDouble(data.local_origin)
+		end
+
+		net.WriteBool(data.local_angle ~= nil)
+
+		if data.local_angle then
+			net.WriteAngleDouble(data.local_angle)
+		end
+
+		net.Send(ply)
+	end
+end
+
+if CLIENT then
+	local LocalPlayer = LocalPlayer
+
+	net.receive('dparkour.sendhang', function()
+		local data = LocalPlayer()._parkour
+
+		data.hanging_on_edge = true
+		data.hanging_on = net.ReadEntity()
+		data.haning_ang = net.ReadAngleDouble()
+		data.hang_origin = net.ReadVectorDouble()
+
+		data.hanging_on_valid = IsValid(data.hanging_on)
+
+		data.hanging_trace = net.ReadTable()
+
+		if net.ReadBool() then
+			data.local_origin = net.ReadVectorDouble()
+		else
+			data.local_origin = nil
+		end
+
+		if net.ReadBool() then
+			data.local_angle = net.ReadAngleDouble()
+		else
+			data.local_angle = nil
+		end
+	end)
 end
 
 function DParkour.HangEventLoop(ply, movedata, data)
