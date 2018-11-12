@@ -281,7 +281,7 @@ local function SetupMove(ply, movedata, cmd)
 	then
 		DParkour.InterruptRoll(ply, movedata, data)
 		DParkour.HandleSlideStop(ply, movedata, data, true)
-		DParkour.WallHangInterrupt(ply, movedata, data)
+		DParkour.WallHangDrop(ply, movedata, data)
 		return
 	end
 

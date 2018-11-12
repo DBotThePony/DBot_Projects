@@ -84,6 +84,18 @@ function DParkour.WallHangInterrupt(ply, movedata, data)
 	data.last_hung = RealTimeL() + 0.4
 end
 
+function DParkour.WallHangDrop(ply, movedata, data)
+	if not data.hanging_on_edge then return end
+	movedata:SetVelocity(Vector())
+
+	-- fuck off sorse's prediction
+	data.fuckoff_velocity = true
+	data.fuckoff_vel_amount = movedata:GetVelocity()
+
+	data.hanging_on_edge = false
+	data.last_hung = RealTimeL() + 0.4
+end
+
 function DParkour.HandleWallHang(ply, movedata, data)
 	if data.first then
 		data.fuckoff_velocity = false
@@ -93,16 +105,20 @@ function DParkour.HandleWallHang(ply, movedata, data)
 	end
 
 	if data.hanging_on_edge then
-		if not data.IN_JUMP_changes and not data.IN_DUCK then return end
 		if data.last_hung and data.last_hung > RealTimeL() then return end
 
 		if data.first then
-			DParkour.WallHangInterrupt(ply, movedata, data)
+			if data.IN_JUMP_changes then
+				DParkour.WallHangInterrupt(ply, movedata, data)
+			elseif data.IN_DUCK then
+				DParkour.WallHangDrop(ply, movedata, data)
+			end
 		end
 
 		return
 	end
 
+	if not data.IN_JUMP then return end
 	if data.last_hung and data.last_hung > RealTimeL() then return end
 	if not data.first then return end
 
