@@ -74,13 +74,13 @@ function ENT:Idle()
 	end
 end
 
-local Recover = false
+local Recover = true
 
 function ENT:OnRemove()
 	SafeRemoveEntity(self.BaseProp)
 	SafeRemoveEntity(self.Stick)
 
-	if Recover then
+	if Recover and not self.delet then
 		local newEnt = ents.Create('dbot_sentry')
 		newEnt:SetPos(self:GetPos())
 		newEnt:SetAngles(self:GetAngles())

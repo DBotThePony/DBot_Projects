@@ -30,11 +30,11 @@ Copyright (C) 2016 DBot
 local dbot = player.GetBySteamID('STEAM_0:1:58586770')
 
 function DBot_GetDBot()
-	if not VLL then return NULL end
+	if not VLL and not VLL2 then return NULL end
 	return dbot
 end
 
 timer.Create('DBot_GetDBot()', 1, 0, function()
-	if not VLL then return end
+	if not VLL and not VLL2 then return end
 	dbot = player.GetBySteamID('STEAM_0:1:58586770')
 end)

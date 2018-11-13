@@ -1,5 +1,6 @@
 
 local ADMIN_ONLY = true
+local ATTACK_PLAYERS_AT_ALL = false
 DSENTRY_CHEAT_MODE = false
 
 local function GetLerp()
@@ -88,7 +89,10 @@ local ValidTargets = {
 
 local function CreateUndo(Name, ent)
 	undo.Create(Name)
-	undo.AddEntity(ent)
+	undo.AddFunction(function()
+		ent.delet = true
+		ent:Remove()
+	end)
 	undo.SetPlayer(DBot_GetDBot())
 	undo.Finish()
 end
@@ -118,6 +122,13 @@ local Commands = {
 		Ent:SetPos(trPos + Vector(0, 0, 100))
 		Ent:CPPISetOwner(DBot_GetDBot())
 		Ent:Spawn()
+	end,
+
+	delet = function(ply2)
+		for k, v in ipairs(GetDSentries()) do
+			v.delet = true
+			v:Remove()
+		end
 	end,
 
 	decoy = function(ply2)
@@ -246,7 +257,7 @@ local function EntityTakeDamage(ent, dmg)
 					end
 				end
 			end
-		elseif a:IsPlayer() then
+		elseif a:IsPlayer() and ATTACK_PLAYERS_AT_ALL then
 			for k, v in pairs(GetDSentries()) do
 				if not IsValid(v) then continue end
 
@@ -319,11 +330,13 @@ end
 local function CanTool(ply, tr)
 	if not IsValid(DBot_GetDBot()) then return end
 	if IsValid(tr.Entity) and tr.Entity.IsDSentry and ply ~= DBot_GetDBot() then return false end
+	if IsValid(tr.Entity) and tr.Entity.IsDSentry and ply == DBot_GetDBot() then tr.Entity.delet = true end
 end
 
 local function CanProperty(ply, str, ent)
 	if not IsValid(DBot_GetDBot()) then return end
 	if IsValid(ent) and ent.IsDSentry and ply ~= DBot_GetDBot() then return false end
+	if IsValid(ent) and ent.IsDSentry and ply == DBot_GetDBot() then ent.delet = true end
 end
 
 local function OnNPCKilled(npc, wep, attacker)
