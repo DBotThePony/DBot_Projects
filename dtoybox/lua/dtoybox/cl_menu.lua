@@ -189,10 +189,12 @@ function DToyBox.BuildMenu(token, anyURL, anyHistory)
 			_current_html:OpenURL(url)
 		end
 
-		if url:startsWith('https://steamcommunity.com/sharedfiles/filedetails/?id=') then
-			wsid = tonumber(url:sub(56):match('^[0-9]+'))
-		elseif url:startsWith('https://steamcommunity.com/workshop/filedetails/?id=') then
-			wsid = tonumber(url:sub(53):match('^[0-9]+'))
+		local url2 = url:gsub('%?l=%a+&', '?'):gsub('&l=%a+&', ''):gsub('&l=[a-zA-Z]+$', '')
+
+		if url2:startsWith('https://steamcommunity.com/sharedfiles/filedetails/?id=') then
+			wsid = url2:sub(56):match('^%d+'):tonumber()
+		elseif url2:startsWith('https://steamcommunity.com/workshop/filedetails/?id=') then
+			wsid = url2:sub(53):match('^%d+'):tonumber()
 		else
 			wsid = nil
 		end
