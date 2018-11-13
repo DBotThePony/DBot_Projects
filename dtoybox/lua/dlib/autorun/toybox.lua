@@ -64,6 +64,13 @@ timer.Simple(0, function()
 	-- also all of my addons are 100% hotload compatible
 	-- but dlib has some hacks to hotload after gmod already started
 	-- but it still can hotload
+
+	-- notice that manually placing vll2 into server's autorun is not supported
+	-- and since vll2 is not bundled with dtoybox it can break because of latest vll2
+	-- changes, and dtoybox will update but vll2 will stay outdated, hence the issues.
+	-- actully, you should not rely on dtoybox IN ANY WAY, since it is just a toy
+	-- which you can play with
+	-- and also look up at license.
 	if VLL2 then return end
 
 	http.Fetch('https://dbot.serealia.ca/vll/vll2.lua', function(b)
