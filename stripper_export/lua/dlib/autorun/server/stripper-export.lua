@@ -105,49 +105,25 @@ local safeValues = {
 	'ExplodeRadius',
 	'LightingOrigin',
 	'LightingOriginHack',
-	'PerformanceMode',
-	'PressureDelay',
 	'ResponseContext',
 	'SetBodyGroup',
-	'TeamNum',
-	'body',
 	'damagefilter',
 	'damagetoenablemotion',
-	'effects',
-	'fademaxdist',
-	'fademindist',
-	'fadescale',
 	'forcetoenablemotion',
 	'friction',
-	'globalname',
-	'gravity',
-	'hammerid',
 	'health',
-	'hitboxset',
-	'inertiascale',
-	'ltime',
 	'm_CollisionGroup',
-	'm_bAlternateSorting',
 	'm_bAnimatedEveryTick',
-	'm_bAwake',
 	'm_bBlockLOSSetByPropData',
 	'm_bClientSideAnimation',
 	'm_bClientSideFrameReset',
 	'm_bFirstCollisionAfterLaunch',
 	'm_bIsWalkableSetByPropData',
-	'm_bOriginalBlockLOS',
-	'm_bSequenceFinished',
-	'm_bSequenceLoops',
-	'm_bSimulatedEveryTick',
-	'm_bUsePuntSound',
 	'max_health',
-	'minhealthdmg',
 	'modelindex',
 	'modelscale',
 	'parentname',
 	'physdamagescale',
-	'playbackrate',
-	'puntsound',
 	'rendercolor',
 	'renderfx',
 	'rendermode',
@@ -155,11 +131,8 @@ local safeValues = {
 	'shadowcastdist',
 	'skin',
 	'spawnflags',
-	'speed',
 	'target',
 	'texframeindex',
-	'view_ofs',
-	'waterlevel',
 }
 
 local tostring2 = tostring
@@ -214,6 +187,14 @@ function stripper.PropTable(ent)
 
 	proplist.classname = ent:GetClass()
 
+	if proplist.classname == 'prop_physics' then
+		local phys = ent:GetPhysicsObject()
+
+		if IsValid(phys) and not phys:IsMotionEnabled() then
+			proplist.classname = 'prop_dynamic'
+		end
+	end
+
 	return proplist
 end
 
@@ -235,7 +216,7 @@ function stripper.Serialize(propStruct)
 	local stringbuilder = {}
 
 	for key, value in pairs(propStruct) do
-		table.insert(stringbuilder, escape(key) .. '\t' .. escape(value))
+		table.insert(stringbuilder, escape(key) .. ' ' .. escape(value))
 	end
 
 	return '{\n' .. table.concat(stringbuilder, '\n') .. '\n}\n'
