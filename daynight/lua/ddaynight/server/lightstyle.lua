@@ -55,7 +55,6 @@ end
 local STYLE_OVERALL = 0
 local STYLE_OUTSIDE = 33
 
-local defaultLighting = string.byte('m')
 local MINIMAL = string.byte('a')
 local MAXIMAL = string.byte('z')
 local NORMAL = string.byte('m')
