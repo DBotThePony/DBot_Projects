@@ -43,7 +43,7 @@ local function initializeEntity()
 	local paint = ents.FindByClass('env_skypaint')
 
 	if #paint > 1 then
-		error('wtf? There is ' .. #paint .. ' env_skypaint in total')
+		error('wtf? There are ' .. #paint .. ' env_skypaint in total')
 	elseif #paint == 0 then
 		return
 	end
