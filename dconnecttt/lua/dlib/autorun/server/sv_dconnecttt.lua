@@ -286,6 +286,12 @@ end
 
 local function PlayerTick(len, ply)
 	ply.DConnecttt_LastTick = RealTimeL()
+	ply.DConnecttt_LastPos = ply:GetPos()
+	ply.DConnecttt_LastAng = ply:EyeAngles()
+	ply.DConnecttt_Beat = true
+
+	net.Start('DConnecttt.PlayerTick')
+	net.Send(ply)
 
 	if ply:GetNW2Float('DConnecttt.FastInit', 0) == 0 then
 		ply:SetNW2Float('DConnecttt.FastInit', RealTimeL())
@@ -294,44 +300,25 @@ end
 
 local plyMeta = FindMetaTable('Player')
 
-function plyMeta:TotalTimeConnected()
-	return self:SessionTime() + self:GetNW2Float('DConnecttt_Total_OnJoin')
-end
-
-function plyMeta:SessionTime()
-	return RealTimeL() - self:GetNW2Float('DConnecttt_Join')
-end
-
--- UTime interface
-function plyMeta:GetUTimeSessionTime()
-	return self:SessionTime()
-end
-
--- ???
-function plyMeta:GetUTime()
-	return self:TotalTimeConnected()
-end
--- ???
-function plyMeta:GetUTimeTotalTime()
-	return self:TotalTimeConnected()
-end
--- ???
-
-function plyMeta:SetUTime()
-	-- Do nothing
-end
-
-function plyMeta:SetUTimeStart()
-	-- Do nothing
-end
-
-function plyMeta:GetUTimeStart()
-	return self:GetNW2Float('DConnecttt_Join')
-end
-
 for k, v in pairs(player.GetAll()) do
 	PlayerAuthed(v, v:SteamID())
 end
+
+hook.Add('StartCommand', 'DConnecttt.PreventMove', function(ply, cmd)
+	if ply:IsBot() then return end
+	if not ply.DConnecttt_LastTick then return end
+	if RealTimeL() - ply.DConnecttt_LastTick < 5 then return end
+
+	if ply.DConnecttt_Beat then
+		ply:SetPos(ply.DConnecttt_LastPos)
+		ply:SetEyeAngles(ply.DConnecttt_LastAng)
+		ply.DConnecttt_Beat = false
+	end
+
+	cmd:SetButtons(0)
+	cmd:SetMouseX(0)
+	cmd:SetMouseY(0)
+end)
 
 timer.Create('DConnecttt.Timer', 1, 0, Timer)
 timer.Create('DConnecttt.SaveTimer', 60, 0, SaveTimer)

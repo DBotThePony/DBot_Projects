@@ -31,44 +31,6 @@ local DISPLAY_NICKS = CreateConVar('sv_dconn_hoverdisplay', '1', {FCVAR_NOTIFY, 
 
 local messaging = DLib.chat.registerWithMessages({}, 'DConnecttt')
 
-local plyMeta = FindMetaTable('Player')
-
-function plyMeta:TotalTimeConnected()
-	return self:SessionTime() + self:GetNW2Float('DConnecttt_Total_OnJoin')
-end
-
-function plyMeta:SessionTime()
-	return RealTimeL() - self:GetNW2Float('DConnecttt_Join')
-end
-
--- UTime interface
-function plyMeta:GetUTimeSessionTime()
-	return self:SessionTime()
-end
-
--- ???
-function plyMeta:GetUTime()
-	return self:TotalTimeConnected()
-end
-
--- ???
-function plyMeta:GetUTimeTotalTime()
-	return self:TotalTimeConnected()
-end
-
--- ???
-function plyMeta:SetUTime()
-	-- Do nothing
-end
-
-function plyMeta:SetUTimeStart()
-	-- Do nothing
-end
-
-function plyMeta:GetUTimeStart()
-	return self:GetNW2Float('DConnecttt_Join')
-end
-
 surface.CreateFont('DConnecttt.HUD', {
 	font = 'Roboto',
 	size = 12,
@@ -283,6 +245,182 @@ timer.Create('DConnecttt.PlayerTick', 1, 0, function()
 	net.Start('DConnecttt.PlayerTick')
 	net.SendToServer()
 end)
+
+local LastTick = RealTimeL()
+local LastTick2 = RealTimeL()
+local lastOrigin = Vector()
+local lastViewAngle = Angle()
+local lastThink = RealTimeL()
+local lastAdmin = false
+local lastlag = false
+local connectionRestored = true
+local connectionRestored2 = RealTimeL()
+
+local calcposEnable = false
+local calcpos = Vector()
+local calcang = Angle()
+
+net.receive('DConnecttt.PlayerTick', function()
+	local ply = LocalPlayer()
+
+	LastTick2 = RealTimeL()
+
+	if connectionRestored and (not lastAdmin or connectionRestored2 > RealTimeL()) then
+		if lastlag then
+			if lastAdmin then
+				messaging.Message('Connection restored for real.')
+			else
+				messaging.Message('Connection restored.')
+			end
+		end
+
+		LastTick = LastTick2
+		lastViewAngle = ply:EyeAngles()
+		lastOrigin = ply:GetPos()
+		lastAdmin = ply:IsAdmin()
+		calcpos = ply:EyePos()
+		calcang = Angle(lastViewAngle)
+
+		calcposEnable = false
+		lastlag = false
+	else
+		connectionRestored2 = RealTimeL() + 2.5
+		connectionRestored = true
+
+		if lastlag then
+			messaging.Message('Connection seems to be restored, waiting for next heartbeat to make sure.')
+		end
+	end
+end)
+
+local IN_ALT1 = IN_ALT1
+local IN_ALT2 = IN_ALT2
+local IN_ATTACK = IN_ATTACK
+local IN_ATTACK2 = IN_ATTACK2
+local IN_BACK = IN_BACK
+local IN_BULLRUSH = IN_BULLRUSH
+local IN_CANCEL = IN_CANCEL
+local IN_DUCK = IN_DUCK
+local IN_FORWARD = IN_FORWARD
+local IN_GRENADE1 = IN_GRENADE1
+local IN_GRENADE2 = IN_GRENADE2
+local IN_JUMP = IN_JUMP
+local IN_LEFT = IN_LEFT
+local IN_MOVELEFT = IN_MOVELEFT
+local IN_MOVERIGHT = IN_MOVERIGHT
+local IN_RELOAD = IN_RELOAD
+local IN_RIGHT = IN_RIGHT
+local IN_RUN = IN_RUN
+local IN_SCORE = IN_SCORE
+local IN_SPEED = IN_SPEED
+local IN_USE = IN_USE
+local IN_WALK = IN_WALK
+local IN_WEAPON1 = IN_WEAPON1
+local IN_WEAPON2 = IN_WEAPON2
+local IN_ZOOM = IN_ZOOM
+
+hook.Add('CreateMove', 'DConnecttt.PreventMove', function(cmd)
+	local ctime = RealTimeL()
+	local delta = ctime - lastThink
+	lastThink = ctime
+	if RealTimeL() - LastTick < 3 then return end
+
+	local plag = lastlag
+
+	if not lastlag then
+		messaging.Message('Server froze i suppose')
+		lastlag = true
+	end
+
+	if not lastAdmin then
+		cmd:ClearButtons()
+		cmd:ClearMovement()
+		cmd:SetMouseX(0)
+		cmd:SetMouseY(0)
+		cmd:SetMouseWheel(0)
+		cmd:SetViewAngles(lastViewAngle)
+
+		if not plag then
+			messaging.Message('Youll go no further then')
+		end
+
+		if RealTimeL() - LastTick2 > 3 then
+			connectionRestored = true
+		end
+	else
+		if RealTimeL() - LastTick2 > 3 then
+			connectionRestored = false
+			connectionRestored2 = 0
+		end
+
+		local ply = LocalPlayer()
+
+		if not plag then
+			messaging.Message('We are gonna fake noclip around then')
+			calcpos = ply:EyePos()
+		end
+
+		calcposEnable = true
+		local up = 0
+		local left = 0
+		local fwd = 0
+
+		if cmd:KeyDown(IN_JUMP) then
+			up = 1600
+		end
+
+		if cmd:KeyDown(IN_MOVERIGHT) then
+			left = -1600
+		end
+
+		if cmd:KeyDown(IN_MOVELEFT) then
+			left = 1600
+		end
+
+		if cmd:KeyDown(IN_FORWARD) then
+			fwd = 1600
+		end
+
+		if cmd:KeyDown(IN_BACK) then
+			fwd = -1600
+		end
+
+		if cmd:KeyDown(IN_SPEED) then
+			fwd = fwd * 3
+			up = up * 3
+			left = left * 3
+		end
+
+		local newang = cmd:GetViewAngles()
+		local diff = newang - lastViewAngle
+		calcang = calcang + diff
+
+		cmd:ClearButtons()
+		cmd:ClearMovement()
+		cmd:SetMouseX(0)
+		cmd:SetMouseY(0)
+		cmd:SetMouseWheel(0)
+		cmd:SetViewAngles(lastViewAngle)
+
+		local mv = Vector(fwd, left, up) * delta * 0.5
+		mv:Rotate(calcang)
+
+		calcpos = calcpos + mv
+	end
+end)
+
+hook.Add('CalcView', 'DConnecttt.FakeMove', function(ply, origin, angles, fov, znear, zfar)
+	if not calcposEnable then return end
+
+	return {
+		origin = calcpos,
+		fov = fov,
+		angles = calcang,
+		--znear = znear,
+		--zfar = zfar,
+		drawviewer = true
+	}
+end, -5)
 
 hook.Add('PopulateToolMenu', 'DConnecttt.Menus', function()
 	spawnmenu.AddToolMenuOption('Utilities', 'User', 'DConnecttt.CVars', 'DConnecttt', '', '', Populate)
