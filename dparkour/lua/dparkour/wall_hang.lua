@@ -162,12 +162,14 @@ function DParkour.HandleWallHang(ply, movedata, data)
 			filter = ply
 		})
 
-		local origin = checkNearWall.HitPos + checkNearWall.HitNormal * (wide / 2)
-		origin.z = checkWall.HitPos.z - (maxs.z - mins.z) * 0.9
+		if checkNearWall.Hit then
+			local origin = checkNearWall.HitPos + checkNearWall.HitNormal * (wide / 2)
+			origin.z = checkWall.HitPos.z - (maxs.z - mins.z) * 0.9
 
-		--if checkNearWall.Fraction > 0.25 then
-			movedata:SetOrigin(origin)
-		--end
+			if checkNearWall.Fraction > 0.1 then
+				movedata:SetOrigin(origin)
+			end
+		end
 	end
 
 	local ourvel = movedata:GetVelocity()
