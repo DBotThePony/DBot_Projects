@@ -24,6 +24,9 @@ local KICK_TIMEOUT = CreateConVar('sv_dconn_kick_time', '360', {FCVAR_NOTIFY, FC
 local PREVENT_CONNECTION_SPAM = CreateConVar('sv_dconn_spam', '1', {FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Prevent connection spam')
 local SPAM_TRIES = CreateConVar('sv_dconn_spamtries', '3', {FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Max connection tries before ban player')
 local SPAM_DELAY = CreateConVar('sv_dconn_spamdelay', '60', {FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Connection spam delay in seconds')
+local ECHO_CONNECTS = CreateConVar('sv_dconn_echo', '1', {FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Display a message when someone connects to the server')
+local ECHO_JOINS = CreateConVar('sv_dconn_echo_join', '1', {FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Display a message when someone joins (enters the game)')
+local ECHO_DISCONNECT = CreateConVar('sv_dconn_echo_disconnect', '1', {FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Display a message when someone disconnects from the server')
 
 CreateConVar('sv_dconn_hoverdisplay', '1', {FCVAR_NOTIFY, FCVAR_ARCHIVE, FCVAR_REPLICATED}, 'Display players nicks on hovering')
 CreateConVar('sv_dconn_drawtime', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Draw time played on server')
@@ -48,17 +51,41 @@ local function Message(...)
 	DConn.LMessage(...)
 end
 
+local function MessageCONN(...)
+	if ECHO_CONNECTS:GetBool() then
+		DConn.LChatAll(...)
+	end
+
+	DConn.LMessage(...)
+end
+
+local function MessageJOIN(...)
+	if ECHO_JOINS:GetBool() then
+		DConn.LChatAll(...)
+	end
+
+	DConn.LMessage(...)
+end
+
+local function MessageDISC(...)
+	if ECHO_DISCONNECT:GetBool() then
+		DConn.LChatAll(...)
+	end
+
+	DConn.LMessage(...)
+end
+
 local PendingDisconnects = {}
 local PendingConnect
 
 local function PlayerConnect(nick, ip)
 	if not PendingConnect then
-		Message(nick, ' connected to the server')
+		MessageCONN(nick, ' connected to the server')
 	else
 		local PendingConnect = PendingConnect
 		DConn.Query('SELECT * FROM dconnecttt WHERE steamid64 = "' .. PendingConnect.steamid64 .. '";', function(data)
 			if not data[1] then
-				Message('message.dconn.player.connected', PendingConnect.nick .. '<' .. PendingConnect.steamid .. '>')
+				MessageCONN('message.dconn.player.connected', PendingConnect.nick .. '<' .. PendingConnect.steamid .. '>')
 			else
 				local db_steamid = data[1].steamid
 				local db_steamid64 = data[1].steamid64
@@ -71,7 +98,7 @@ local function PlayerConnect(nick, ip)
 					PrintNick = PrintNick .. string.format(' (known as %s)', steamname)
 				end
 
-				Message('message.dconn.player.connected', PrintNick .. '<' .. PendingConnect.steamid .. '>')
+				MessageCONN('message.dconn.player.connected', PrintNick .. '<' .. PendingConnect.steamid .. '>')
 			end
 		end)
 	end
@@ -115,7 +142,7 @@ local function PlayerAuthed(ply, steamid)
 		realnick = ply:SteamName()
 	end
 
-	DConn.Message(team.GetColor(ply:Team()), realnick, TEXT_COLOR, '<' .. steamid .. '>', 'message.dconn.player.authed')
+	DConn.LMessage(team.GetColor(ply:Team()), realnick, TEXT_COLOR, '<' .. steamid .. '>', 'message.dconn.player.authed')
 
 	-- Give player time to initialize
 	timer.Simple(0, function()
@@ -129,7 +156,7 @@ local function PlayerAuthed(ply, steamid)
 			if not IsValid(ply) then return end
 
 			if not data[1] then
-				Message(team.GetColor(ply:Team()), nick, TEXT_COLOR, '<' .. steamid .. '>', 'message.dconn.connected.first')
+				MessageJOIN(team.GetColor(ply:Team()), nick, TEXT_COLOR, '<' .. steamid .. '>', 'message.dconn.connected.first')
 
 				DConn.Query(
 					string.format(
@@ -165,8 +192,8 @@ local function PlayerAuthed(ply, steamid)
 					PrintNick = PrintNick .. string.format(' (known as %s)', steamname)
 				end
 
-				Message(team.GetColor(ply:Team()), PrintNick, TEXT_COLOR, '<' .. steamid .. '>', 'message.dconn.connected.join')
-				Message(team.GetColor(ply:Team()), PrintNick, TEXT_COLOR, '<' .. steamid .. '>', 'message.dconn.connected.lastseen', DLib.string.qdate(lastseen))
+				MessageJOIN(team.GetColor(ply:Team()), PrintNick, TEXT_COLOR, '<' .. steamid .. '>', 'message.dconn.connected.join')
+				MessageJOIN(team.GetColor(ply:Team()), PrintNick, TEXT_COLOR, '<' .. steamid .. '>', 'message.dconn.connected.lastseen', DLib.string.qdate(lastseen))
 
 				DConn.SavePlayerData(ply)
 			end
@@ -194,7 +221,7 @@ local function CheckPassword(steamid64, ip, svpass, clpass, nick)
 	end
 
 	if PREVENT_CONNECTION_SPAM:GetBool() and IPBuffer[realip][1] > SPAM_TRIES:GetInt() then
-		DConn.Message('message.dconn.kick.spam', nick .. '<' .. steamid .. '>')
+		DConn.LMessage('message.dconn.kick.spam', nick .. '<' .. steamid .. '>')
 		return false, '[DConnecttt] Connection Spam!'
 	end
 
@@ -236,7 +263,7 @@ local function player_disconnect(data)
 	local ply = player.GetBySteamID(steamid)
 
 	if not ply then
-		Message(name, '<' .. steamid .. '> ', 'message.dconn.disconnected.disconnected', ' (', reason, ')')
+		MessageDISC(name, '<' .. steamid .. '> ', 'message.dconn.disconnected.disconnected', ' (', reason, ')')
 		return
 	end
 
@@ -249,7 +276,7 @@ local function player_disconnect(data)
 		name = name .. ' (' .. ply:SteamName() .. ')'
 	end
 
-	Message(team.GetColor(ply:Team()), name, TEXT_COLOR, '<' .. steamid .. '>', 'message.dconn.disconnected.disconnected', ' (', reason, ')')
+	MessageDISC(team.GetColor(ply:Team()), name, TEXT_COLOR, '<' .. steamid .. '>', 'message.dconn.disconnected.disconnected', ' (', reason, ')')
 end
 
 local function Timer()
