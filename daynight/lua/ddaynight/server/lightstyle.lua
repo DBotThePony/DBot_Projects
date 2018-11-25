@@ -24,6 +24,7 @@ local DDayNight = DDayNight
 local hook = hook
 local math = math
 local string = string
+local type = type
 local engine = engine
 local net = net
 local light_environment
@@ -58,7 +59,10 @@ local STYLE_OUTSIDE = 33
 local MINIMAL = string.byte('a')
 local MAXIMAL = string.byte('z')
 local NORMAL = string.byte('m')
-local DARKER = string.byte('h')
+local DARKER = NORMAL - 5
+local LIGHTEN = NORMAL + 5
+local VERY_LIGHTEN = NORMAL + 10
+
 local DIFF_MIN_NORMAL = NORMAL - MINIMAL
 local DIFF_DARKER_NORMAL = NORMAL - DARKER
 local DIFF_NORMAL_MAX = MAXIMAL - NORMAL
@@ -67,6 +71,7 @@ local DIFF_NORMAL_DARKER = DARKER - NORMAL
 local dirty = false
 
 local function modifyAll(pattern)
+	if type(pattern) == 'number' then pattern = string.char(pattern) end
 	if lastStyleOverall == pattern then return end
 	if not light_environment then return end
 	lastStyleOverall = pattern
@@ -75,6 +80,7 @@ local function modifyAll(pattern)
 end
 
 local function modifyOutside(pattern)
+	if type(pattern) == 'number' then pattern = string.char(pattern) end
 	if lastStyleOutside == pattern then return end
 	lastStyleOutside = pattern
 	dirty = true
@@ -95,12 +101,16 @@ local function DDayNight_NewMinute()
 	local noNight = progression ~= 0 and progression ~= 1
 	local nightProgression = self:GetNightMultiplier()
 	local almostNightStart = progression > 0.9
+	local sunny = progression > 0.2 and progression < 0.8
+	local verysunny = progression > 0.35 and progression < 0.65
 	local isSunrise = self:IsBeforeMidday()
 	local darken = math.Clamp(1 - (0.15 - progression) * 6.6, 0, 1)
 	local darkenNight = math.Clamp((progression - 0.85) * 6.6, 0, 1)
 
 	-- these nights are usually really dark, so let's try to make even indoor light darker
-	local isDarkNight = self:GetDayLengthMultiplier() < 0.75
+	local isDarkNight = self:GetDayLengthMultiplier() < 0.7
+	local isBrightDay = self:GetDayLengthMultiplier() > 0.8 and sunny
+	local isVeryBrightDay = self:GetDayLengthMultiplier() > 0.85 and verysunny
 
 	if isSunrise then
 		if fullNight then
@@ -123,6 +133,12 @@ local function DDayNight_NewMinute()
 			if isDarkNight then
 				modifyAll(string.char(DARKER + math.floor(DIFF_DARKER_NORMAL * mult)))
 			end
+		elseif isVeryBrightDay then
+			modifyOutside(VERY_LIGHTEN)
+			modifyAll(VERY_LIGHTEN)
+		elseif isBrightDay then
+			modifyOutside(LIGHTEN)
+			modifyAll(LIGHTEN)
 		else
 			modifyOutside('m')
 			modifyAll('m')
@@ -144,6 +160,12 @@ local function DDayNight_NewMinute()
 			if isDarkNight then
 				modifyAll(string.char(NORMAL - math.floor(DIFF_DARKER_NORMAL * mult)))
 			end
+		elseif isVeryBrightDay then
+			modifyOutside(VERY_LIGHTEN)
+			modifyAll(VERY_LIGHTEN)
+		elseif isBrightDay then
+			modifyOutside(LIGHTEN)
+			modifyAll(LIGHTEN)
 		else
 			modifyOutside('m')
 			modifyAll('m')
