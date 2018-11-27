@@ -126,6 +126,7 @@ sinclude('common/temperature.lua')
 sinclude('common/temperature_date.lua')
 sinclude('common/wind.lua')
 
+clinclude('client/fog.lua')
 clinclude('client/hud.lua')
 
 hook.Run('DDayNight_SeedChanges', self.SEED_VALID, self.SEED_VALID)

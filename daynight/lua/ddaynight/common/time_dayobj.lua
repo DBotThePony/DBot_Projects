@@ -88,6 +88,10 @@ function meta:SetStamp(stamp)
 	self.dayLightDiffPost = self.dayEndLighting - self.dayEnd
 end
 
+function meta:Random(min, max, addSeed)
+	return DDayNight.frandom(min, max, 'dateDay', (addSeed or 0) + self.absoluteDay)
+end
+
 function meta:CalculateMonthsFraction(tableIn)
 	if self.monthProgress < 0.5 then
 		local old = DDayNight.NormalizeMonth(self.month - 1)

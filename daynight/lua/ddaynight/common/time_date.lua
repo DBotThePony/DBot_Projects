@@ -87,6 +87,14 @@ function meta:ClosestHour()
 	end
 end
 
+function meta:Random(min, max, addSeed)
+	return DDayNight.frandom(min, max, 'dateTime', (addSeed or 0) + math.floor(self.stamp))
+end
+
+function meta:RandomDay(min, max, addSeed)
+	return self.dayObject:Random(min, max, addSeed)
+end
+
 function meta:GetMonthTime()
 	local time = self.stamp % DDayNight.timeTypes.year
 	local month = self:GetMonth()
@@ -140,10 +148,6 @@ end
 
 function meta:GetAbsoluteSecond()
 	return math.floor(self.stamp)
-end
-
-function meta:GetDayProgression()
-	return (self.stamp % DDayNight.timeTypes.day) / DDayNight.timeTypes.day
 end
 
 function meta:GetDaySecond()
