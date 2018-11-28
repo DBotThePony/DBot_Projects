@@ -96,17 +96,17 @@ function DParkour.WallHangDrop(ply, movedata, data)
 	data.last_hung = RealTimeL() + 0.4
 end
 
-local function GetEdgeData(ply, movedata, data, eyeposIfAny)
-	eyeposIfAny = eyeposIfAny or ply:EyePos()
-	local eang = ply:EyeAngles()
+local function GetEdgeData(ply, movedata, data, epos, eang)
+	epos = epos or ply:EyePos()
+	eang = eang or ply:EyeAngles()
 	local yaw = Angle(0, eang.y, 0)
 	local mins, maxs = ply:GetHull()
 	local vec = Vector(0, 0, (maxs.z - mins.z) / 2)
 	local wide = (mins.x - maxs.x):abs():max((mins.y - maxs.y):abs())
 
 	return util.TraceHull({
-		start = eyeposIfAny - vec,
-		endpos = eyeposIfAny + yaw:Forward() * 80 - vec,
+		start = epos - vec,
+		endpos = epos + yaw:Forward() * 80 - vec,
 		mins = mins,
 		maxs = maxs,
 		filter = ply
@@ -325,7 +325,7 @@ local function tryToMoveOnEdge(ply, movedata, data, mult)
 
 		if trMoveLeft.Fraction > 0.1 then
 			-- Do we still got a wall in front of us?
-			local checkNearWall, mins, maxs, wide = GetEdgeData(ply, movedata, data, ply:EyePos() + mvVec * trMoveLeft.Fraction)
+			local checkNearWall, mins, maxs, wide = GetEdgeData(ply, movedata, data, ply:EyePos() + mvVec * trMoveLeft.Fraction, (-data.edge_tr.HitNormal):Angle())
 
 			if checkNearWall.Hit then
 				-- Do we got space to move?
