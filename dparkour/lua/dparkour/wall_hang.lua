@@ -343,7 +343,7 @@ local function tryToMoveOnEdge(ply, movedata, data, mult)
 
 					if SERVER and not game.SinglePlayer() then
 						timer.Create('DParkour.ReplyPlayerHang.' .. ply:EntIndex(), 1, 1, function()
-							if IsValid(ply) then
+							if IsValid(ply) and data.hanging_on_edge then
 								sendHangData(ply, movedata, data)
 							end
 						end)
