@@ -61,8 +61,10 @@ timer.Simple(0, function()
 		if code == 200 then
 			RunString(b, 'VLL2')
 		else
-			DToyBox.Message('VLL2 auto update filed.')
+			DToyBox.Message('VLL2 auto update failed, server replied: ', code)
 		end
+	end, function(reason)
+		DToyBox.Message('VLL2 auto update failed, reason: ', reason)
 	end)
 end)
 
