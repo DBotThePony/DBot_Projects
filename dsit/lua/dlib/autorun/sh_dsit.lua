@@ -68,6 +68,7 @@ local function Think()
 	for i, vehicle in ipairs(DSIT_TRACKED_VEHICLES) do
 		if not IsValid(vehicle) then
 			table.remove(DSIT_TRACKED_VEHICLES, i)
+			if CLIENT then DSit_RECALCULATE() end
 			return
 		end
 

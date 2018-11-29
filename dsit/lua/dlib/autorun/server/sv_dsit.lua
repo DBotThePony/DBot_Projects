@@ -373,15 +373,18 @@ local function request(ply)
 		vehicle:SetNW2Entity('dsit_target', ent)
 		vehicle.dsit_player_root = ent
 
-		net.Start('DSit.VehicleTick')
-		net.WriteEntity(vehicle)
-		net.Broadcast()
+		timer.Simple(0.5, function()
+			net.Start('DSit.VehicleTick')
+			net.WriteEntity(vehicle)
+			net.Broadcast()
+		end)
 
 		table.insert(DSIT_TRACKED_VEHICLES, vehicle)
 	end
 
 	if vehicle.dsit_player_root then
 		vehicle.dsit_player_root.dsit_root_sitting_on = vehicle.dsit_player_root.dsit_root_sitting_on + 1
+		vehicle:SetNW2Entity('dsit_player_root', vehicle.dsit_player_root)
 	end
 
 	vehicle.dsit_upsideDown = upsideDown
@@ -390,15 +393,31 @@ local function request(ply)
 	ply:SetNW2Entity('dsit_entity', vehicle)
 end
 
-local function dsit_getoff(ply)
+local tonumber = tonumber
+
+local function dsit_getoff(ply, cmd, args)
 	if not IsValid(ply) then return end
 
-	for i, vehicle in ipairs(DSIT_TRACKED_VEHICLES) do
-		if IsValid(vehicle) then
-			local ent = vehicle:GetNW2Entity('dsit_target')
+	local tokick = tonumber((args[1] or ''):trim())
+	local pkick = Entity(tokick or -1)
 
-			if ent == ply then
-				vehicle:GetDriver():ExitVehicle()
+	if pkick:IsValid() then
+		for i, vehicle in ipairs(DSIT_TRACKED_VEHICLES) do
+			if IsValid(vehicle) then
+				if vehicle:GetNW2Entity('dsit_player_root', NULL) == ply and vehicle:GetDriver() == pkick then
+					vehicle:GetDriver():ExitVehicle()
+					break
+				end
+			end
+		end
+	else
+		for i, vehicle in ipairs(DSIT_TRACKED_VEHICLES) do
+			if IsValid(vehicle) then
+				local ent = vehicle:GetNW2Entity('dsit_target')
+
+				if ent == ply then
+					vehicle:GetDriver():ExitVehicle()
+				end
 			end
 		end
 	end
