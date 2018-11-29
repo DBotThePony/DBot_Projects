@@ -97,20 +97,46 @@ function DParkour.WallHangDrop(ply, movedata, data)
 end
 
 local function GetEdgeData(ply, movedata, data, epos, eang)
-	epos = epos or ply:EyePos()
+	epos = epos or ply:OBBCenter() + ply:GetPos()
 	eang = eang or ply:EyeAngles()
 	local yaw = Angle(0, eang.y, 0)
 	local mins, maxs = ply:GetHull()
 	local vec = Vector(0, 0, (maxs.z - mins.z) / 2)
 	local wide = (mins.x - maxs.x):abs():max((mins.y - maxs.y):abs())
 
-	return util.TraceHull({
+	local tr = util.TraceHull({
 		start = epos - vec,
 		endpos = epos + yaw:Forward() * 80 - vec,
 		mins = mins,
 		maxs = maxs,
 		filter = ply
-	}), mins, maxs, wide
+	})
+
+	--debugoverlay.Sphere(epos, 5, 2, Color(140, 120, 180))
+	--debugoverlay.Sphere(tr.HitPos, 5, 2, Color(255, 120, 0))
+	--debugoverlay.Sphere(epos + yaw:Forward() * 80 - vec, 5, 2, Color(255, 120, 255))
+
+	return tr, mins, maxs, wide, (mins.z - maxs.z):abs()
+end
+
+local function RecalcEdgeHeight(ply, movedata, data, newTr)
+	newTr = newTr or data.edge_tr
+
+	for i = 1, 100 do
+		local trCheck = util.TraceLine({
+			start = newTr.HitPos + newTr.HitNormal + Vector(0, 0, i),
+			endpos = newTr.HitPos - newTr.HitNormal * 80 + Vector(0, 0, i),
+			filter = ply
+		})
+
+		if trCheck.Fraction >= 0.9 then
+			--debugoverlay.Box(newTr.HitPos + newTr.HitNormal + Vector(0, 0, i), Vector(-5, -5, -5), Vector(5, 5, 5), 2, Color(0, 150, 0))
+			--debugoverlay.Box(newTr.HitPos - newTr.HitNormal * 80 + Vector(0, 0, i), Vector(-5, -5, -5), Vector(5, 5, 5), 2, Color(0, 100, 50))
+			return i
+		end
+	end
+
+	return 80
 end
 
 local function sendHangData(ply, movedata, data, checkWall)
@@ -194,34 +220,34 @@ function DParkour.HandleWallHang(ply, movedata, data)
 	local hangingOn = checkWall.Entity
 
 	do
-		local checkNearWall, mins, maxs, wide = GetEdgeData(ply, movedata, data)
+		local checkNearWall, mins, maxs, wide, high = GetEdgeData(ply, movedata, data)
 
 		if checkNearWall.Hit then
 			data.edge_movable = true
 			data.edge_tr = checkNearWall
 			data.edge_height = 40
+			-- Allow to recalculate one time the edge trace on first hang move
+			data.edge_first_move = true
 
 			if not IsValid(hangingOn) then
 				local origin = checkNearWall.HitPos + checkNearWall.HitNormal * (wide / 2)
 				origin.z = checkWall.HitPos.z - (maxs.z - mins.z) * 0.9
+				local center = ply:OBBCenter()
 
-				if checkNearWall.Fraction > 0.1 then
-					movedata:SetOrigin(origin)
+				for i = 1, 100 do
+					data.edge_height = RecalcEdgeHeight(ply, movedata, data, checkNearWall)
 
-					for i = 1, 50 do
-						local trCheck = util.TraceLine({
-							start = checkNearWall.HitPos + checkNearWall.HitNormal + Vector(0, 0, i),
-							endpos = checkNearWall.HitPos - checkNearWall.HitNormal * 50 + Vector(0, 0, i),
-							filter = ply
-						})
-
-						if trCheck.Fraction >= 0.9 then
-							data.edge_height = i
-							--data.hang_origin = checkNearWall.HitPos - checkNearWall.HitNormal * 50 + Vector(0, 0, i)
-							break
-						end
+					if data.edge_height < high * 0.9 then
+						break
+					else
+						origin.z = origin.z + 3
+						checkNearWall, mins, maxs, wide = GetEdgeData(ply, movedata, data, origin + center)
+						data.edge_height = RecalcEdgeHeight(ply, movedata, data, checkNearWall)
 					end
 				end
+
+				data.hang_origin = origin
+				movedata:SetOrigin(origin)
 			end
 		else
 			data.edge_movable = false
@@ -305,13 +331,19 @@ local FrameTime = FrameTime
 local function tryToMoveOnEdge(ply, movedata, data, mult)
 	-- Calculate if we can look forward
 
-	local trMoveFwd = util.TraceLine({
-		start = data.edge_tr.HitPos + Vector(0, 0, data.edge_height) + data.edge_tr.HitNormal,
-		endpos = data.edge_tr.HitPos + Vector(0, 0, data.edge_height) - data.edge_tr.HitNormal * 10,
+	local tr = {
+		start = data.edge_tr.HitPos + Vector(0, 0, data.edge_height + 16) + data.edge_tr.HitNormal,
+		endpos = data.edge_tr.HitPos + Vector(0, 0, data.edge_height + 16) - data.edge_tr.HitNormal * 50,
 		filter = ply
-	})
+	}
 
-	if trMoveFwd.Fraction > 0.1 then
+	local trMoveFwd = util.TraceLine(tr)
+
+	--print(trMoveFwd.Fraction)
+	--debugoverlay.Box(tr.start, Vector(-5, -5, -5), Vector(5, 5, 5), 0.5, Color(150, 200, 200))
+	--debugoverlay.Box(tr.endpos, Vector(-5, -5, -5), Vector(5, 5, 5), 0.5, Color(0, 150, 0))
+
+	if trMoveFwd.Fraction > 0.5 then
 		local move = FrameTime() * 127
 		local mvVec = Vector(0, move * mult, 0)
 		mvVec:Rotate(data.edge_tr.HitNormal:Angle())
@@ -325,7 +357,8 @@ local function tryToMoveOnEdge(ply, movedata, data, mult)
 
 		if trMoveLeft.Fraction > 0.1 then
 			-- Do we still got a wall in front of us?
-			local checkNearWall, mins, maxs, wide = GetEdgeData(ply, movedata, data, ply:EyePos() + mvVec * trMoveLeft.Fraction, (-data.edge_tr.HitNormal):Angle())
+			local checkNearWall, mins, maxs, wide = GetEdgeData(ply, movedata, data, ply:OBBCenter() + ply:GetPos() + mvVec * trMoveLeft.Fraction, (-data.edge_tr.HitNormal):Angle())
+			--local checkNearWall, mins, maxs, wide = GetEdgeData(ply, movedata, data)
 
 			if checkNearWall.Hit then
 				-- Do we got space to move?
@@ -338,15 +371,21 @@ local function tryToMoveOnEdge(ply, movedata, data, mult)
 				})
 
 				if not trCheckSpace.Hit then
-					data.edge_tr = checkNearWall
-					data.hang_origin = data.hang_origin + mvVec * trMoveLeft.Fraction
+					local newPos = RecalcEdgeHeight(ply, movedata, data, checkNearWall)
 
-					if SERVER and not game.SinglePlayer() then
-						timer.Create('DParkour.ReplyPlayerHang.' .. ply:EntIndex(), 1, 1, function()
-							if IsValid(ply) and data.hanging_on_edge then
-								sendHangData(ply, movedata, data)
-							end
-						end)
+					if (newPos - data.edge_height):abs() <= 15 or data.edge_first_move then
+						data.edge_tr = checkNearWall
+						data.edge_first_move = false
+						data.edge_height = newPos
+						data.hang_origin = data.hang_origin + mvVec * trMoveLeft.Fraction
+
+						if SERVER and not game.SinglePlayer() then
+							timer.Create('DParkour.ReplyPlayerHang.' .. ply:EntIndex(), 1, 1, function()
+								if IsValid(ply) and data.hanging_on_edge then
+									sendHangData(ply, movedata, data)
+								end
+							end)
+						end
 					end
 				end
 			end
