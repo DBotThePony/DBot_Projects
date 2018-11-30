@@ -1,0 +1,25 @@
+
+{
+    "title": "DToyBox - Hotload WS Addons",
+    "type": "tool",
+    "tags": ["fun"],
+    "ignore": [
+        "*.psd",
+        "grablint.lua",
+        ".luacheckrc",
+        "*.vcproj",
+        "*.svn*",
+        "*.git*",
+        ".gitlab-ci.yml",
+        "moon*",
+        "lua_src*",
+        "*.sh",
+        "README.md",
+        ".vscode*",
+        "LICENSE",
+        ".editorconfig",
+        "*.md",
+        "vll/*",
+        "scripts/*"
+    ]
+}
