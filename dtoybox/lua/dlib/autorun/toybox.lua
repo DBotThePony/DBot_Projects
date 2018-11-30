@@ -57,7 +57,7 @@ timer.Simple(0, function()
 	end
 
 	-- auto update to latest build avaliable
-	http.Fetch('https://dbot.serealia.ca/vll/vll2.lua', function(b, size, headers, code)
+	http.Fetch('https://dbotthepony.ru/vll/vll2.lua', function(b, size, headers, code)
 		if code == 200 then
 			RunString(b, 'VLL2')
 		else
