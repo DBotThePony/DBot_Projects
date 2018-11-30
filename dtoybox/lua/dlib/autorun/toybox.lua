@@ -54,6 +54,8 @@ timer.Simple(0, function()
 		end
 	end
 
+	if VLL2 and VLL2.IS_WEB_LOADED then return end
+
 	-- auto update to latest build avaliable
 	http.Fetch('https://dbotthepony.ru/vll/vll2.lua', function(b, size, headers, code)
 		if code == 200 then
