@@ -27,7 +27,7 @@ function plyMeta:TotalTimeConnected()
 end
 
 function plyMeta:SessionTime()
-	return RealTimeL() - self:GetNW2Float('DConnecttt_Join')
+	return RealTimeL() - self:GetNW2Float('DConnecttt.JoinTime')
 end
 
 -- UTime interface
@@ -54,5 +54,5 @@ function plyMeta:SetUTimeStart()
 end
 
 function plyMeta:GetUTimeStart()
-	return self:GetNW2Float('DConnecttt_Join')
+	return self:GetNW2Float('DConnecttt.JoinTime')
 end
