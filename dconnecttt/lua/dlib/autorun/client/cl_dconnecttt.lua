@@ -268,9 +268,9 @@ net.receive('DConnecttt.PlayerTick', function()
 	if connectionRestored and (not lastAdmin or connectionRestored2 > RealTimeL()) then
 		if lastlag then
 			if lastAdmin then
-				messaging.Message('Connection restored for real.')
+				messaging.LMessage('message.dconn.connection.restored_real')
 			else
-				messaging.Message('Connection restored.')
+				messaging.LMessage('message.dconn.connection.restored')
 			end
 		end
 
@@ -288,7 +288,7 @@ net.receive('DConnecttt.PlayerTick', function()
 		connectionRestored = true
 
 		if lastlag then
-			messaging.Message('Connection seems to be restored, waiting for next heartbeat to make sure.')
+			messaging.LMessage('message.dconn.connection.restored_wait')
 		end
 	end
 end)
@@ -328,7 +328,7 @@ hook.Add('CreateMove', 'DConnecttt.PreventMove', function(cmd)
 	local plag = lastlag
 
 	if not lastlag then
-		messaging.Message('Server froze i suppose')
+		messaging.LMessage('message.dconn.connection.froze')
 		lastlag = true
 	end
 
@@ -341,7 +341,7 @@ hook.Add('CreateMove', 'DConnecttt.PreventMove', function(cmd)
 		cmd:SetViewAngles(lastViewAngle)
 
 		if not plag then
-			messaging.Message('Youll go no further then')
+			messaging.LMessage('message.dconn.connection.denied')
 		end
 
 		if RealTimeL() - LastTick2 > 3 then
@@ -356,7 +356,7 @@ hook.Add('CreateMove', 'DConnecttt.PreventMove', function(cmd)
 		local ply = LocalPlayer()
 
 		if not plag then
-			messaging.Message('We are gonna fake noclip around then')
+			messaging.LMessage('message.dconn.connection.granted')
 			calcpos = ply:EyePos()
 		end
 

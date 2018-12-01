@@ -39,3 +39,11 @@ gui.dconn.settings.cl_dconn_x = 'X позиция текста'
 gui.dconn.settings.cl_dconn_y = 'Y позиция текста'
 
 info.dconn.connection_lost = '? Соединение потеряно'
+
+message.dconn.connection.restored_real = 'Соединение действительно восстановленно.'
+message.dconn.connection.restored = 'Соединение восстановленно.'
+message.dconn.connection.restored_wait = 'Возможно, соединение восстановленно, ожидаю следующего сообщения что бы удостовериться.'
+
+message.dconn.connection.froze = 'Походу, сервер завис'
+message.dconn.connection.denied = 'Значит будем стоять прямо вот тут'
+message.dconn.connection.granted = 'Значит мы будем рыскать по картке в поисках причины'

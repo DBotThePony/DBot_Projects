@@ -39,3 +39,11 @@ gui.dconn.settings.cl_dconn_x = 'X Position of text'
 gui.dconn.settings.cl_dconn_y = 'Y Position of text'
 
 info.dconn.connection_lost = '? Connection lost'
+
+message.dconn.connection.restored_real = 'Connection restored for real.'
+message.dconn.connection.restored = 'Connection restored.'
+message.dconn.connection.restored_wait = 'Connection seems to be restored, waiting for next heartbeat to make sure.'
+
+message.dconn.connection.froze = 'Server froze i suppose'
+message.dconn.connection.denied = 'Youll go no further then'
+message.dconn.connection.granted = 'We are gonna fake noclip around then'
