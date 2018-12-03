@@ -199,7 +199,7 @@ function meta:FormatNightStart()
 end
 
 function meta:GetMonthString()
-	return DDayNight.monthNames[self.month]
+	return DLib.i18n.localize('gui.daynight.months.' .. self.month + 1)
 end
 
 function meta:Format()

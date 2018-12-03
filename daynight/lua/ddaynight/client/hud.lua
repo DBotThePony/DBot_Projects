@@ -100,7 +100,7 @@ local function HUDPaintFULL()
 	surface.SetTextColor(255, 255, 255)
 	surface.SetFont('DDayNight_TopTimeTip')
 
-	local text = 'HH:MM:SS'
+	local text = DLib.i18n.localize('gui.daynight.time.format')
 	local w2, h2 = surface.GetTextSize(text)
 	surface.SetTextPos(x - w2 / 2, y)
 	surface.DrawText(text)
@@ -124,7 +124,7 @@ local function HUDPaintFULL()
 	if not self.DISPLAY_SUNRISE and not self.SCOREBOARD_IS_SHOWN then return end
 
 	surface.SetFont('DDayNight_SunsetSunrise')
-	text = 'Sunrise: ' .. self.DATE_OBJECT_ACCURATE:FormatSunrise() .. '   Sunset: ' .. self.DATE_OBJECT_ACCURATE:FormatSunset()
+	text =  DLib.i18n.localize('gui.daynight.time.sun', self.DATE_OBJECT_ACCURATE:FormatSunrise(), self.DATE_OBJECT_ACCURATE:FormatSunset())
 	local w, h = surface.GetTextSize(text)
 
 	surface.SetTextPos(x - w / 2, y)
@@ -133,7 +133,7 @@ local function HUDPaintFULL()
 	y = y + h
 
 	surface.SetFont('DDayNight_Night')
-	text = 'Night end: ' .. self.DATE_OBJECT_ACCURATE:FormatNightEnd() .. '   Night start: ' .. self.DATE_OBJECT_ACCURATE:FormatNightStart()
+	text = DLib.i18n.localize('gui.daynight.time.night', self.DATE_OBJECT_ACCURATE:FormatNightEnd(), self.DATE_OBJECT_ACCURATE:FormatNightStart())
 	w, h = surface.GetTextSize(text)
 
 	surface.SetTextPos(x - w / 2, y)
@@ -142,7 +142,7 @@ local function HUDPaintFULL()
 	y = y + h + 2
 
 	surface.SetFont('DDayNight_Temperature')
-	text = string.format('Temperature: %.1f°C', self.DATE_OBJECT_ACCURATE:GetTemperature())
+	text = DLib.i18n.localize('gui.daynight.time.temperature', self.DATE_OBJECT_ACCURATE:GetTemperature())
 	w, h = surface.GetTextSize(text)
 
 	surface.SetTextPos(x - w / 2, y)
@@ -153,7 +153,7 @@ local function HUDPaintFULL()
 	y = y + h + 2
 
 	surface.SetFont('DDayNight_WindSpeed')
-	text = string.format('Wind speed: %.2f m/s; Beaufort Score: %i (%s)', self.DATE_OBJECT_ACCURATE:GetWindSpeedSI():GetMetres(), self.DATE_OBJECT_ACCURATE:GetBeaufortScore(), self.DATE_OBJECT_ACCURATE:GetBeaufortName())
+	text = DLib.i18n.localize('gui.daynight.time.wind', self.DATE_OBJECT_ACCURATE:GetWindSpeedSI():GetMetres(), self.DATE_OBJECT_ACCURATE:GetBeaufortScore(), self.DATE_OBJECT_ACCURATE:GetBeaufortName())
 	w, h = surface.GetTextSize(text)
 
 	surface.SetTextPos(x - w / 2, y)

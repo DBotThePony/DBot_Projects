@@ -28,28 +28,26 @@ local pairs = pairs
 local ipairs = ipairs
 
 DDayNight.beaufort = {
-	stille = 		{0, 0.3},
-	sillent = 		{1, 1.5},
-	light = 		{2, 3.3},
-	weak = 			{3, 5.4},
-	moderate = 		{4, 7.9},
-	fresh = 		{5, 10.7},
-	strong = 		{6, 13.8},
-	robust = 		{7, 17.1},
-	very_robust = 	{8, 20.7},
-	storm = 		{9, 24.4},
-	strong_storm = 	{10, 28.4},
+	stille =        {0, 0.3},
+	sillent =       {1, 1.5},
+	light =         {2, 3.3},
+	weak =          {3, 5.4},
+	moderate =      {4, 7.9},
+	fresh =         {5, 10.7},
+	strong =        {6, 13.8},
+	robust =        {7, 17.1},
+	very_robust =   {8, 20.7},
+	storm =         {9, 24.4},
+	strong_storm =  {10, 28.4},
 	violent_storm = {11, 32.6},
-	hurricane = 	{12, 999},
+	hurricane =     {12, 999},
 }
 
-DDayNight.beaufortLocalized = {}
 DDayNight.beaufortNumered = {}
 
 for id, data in pairs(DDayNight.beaufort) do
-	DDayNight.beaufortLocalized[data[1]] = id
 	data[3] = id
-	data[4] = id:sub(1, 1):upper() .. id:sub(2)
+	data[4] = 'gui.daynight.wind.' .. id
 	DDayNight.beaufortNumered[data[1] + 1] = data
 end
 
@@ -194,7 +192,7 @@ function meta:GetBeaufortScore()
 end
 
 function meta:GetBeaufortName()
-	return DDayNight.beaufortNumered[self:GetBeaufortScore() + 1][4]
+	return DLib.i18n.localize(DDayNight.beaufortNumered[self:GetBeaufortScore() + 1][4])
 end
 
 function meta:GetBeaufortID()
