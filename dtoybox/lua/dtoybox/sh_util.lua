@@ -19,7 +19,7 @@
 -- DEALINGS IN THE SOFTWARE.
 
 local HTTP = HTTP
-local Promise = Promise
+local Promise = DLib.Promise
 local DToyBox = DToyBox
 local DLib = DLib
 local util = util

@@ -59,12 +59,15 @@ timer.Simple(0, function()
 	-- auto update to latest build avaliable
 	http.Fetch('https://dbotthepony.ru/vll/vll2.lua', function(b, size, headers, code)
 		if code == 200 then
+			DToyBox.Message('Got VLL2 from the server')
 			RunString(b, 'VLL2')
 		else
 			DToyBox.Message('VLL2 auto update failed, server replied: ', code)
+			include('dtoybox/vll2.lua')
 		end
 	end, function(reason)
 		DToyBox.Message('VLL2 auto update failed, reason: ', reason)
+		include('dtoybox/vll2.lua')
 	end)
 end)
 
@@ -73,6 +76,7 @@ if SERVER then
 	AddCSLuaFile('dtoybox/cl_menu.lua')
 	AddCSLuaFile('dtoybox/sh_logic.lua')
 	AddCSLuaFile('dtoybox/sh_util.lua')
+	AddCSLuaFile('dtoybox/vll2.lua')
 	include('dtoybox/sh_logic.lua')
 	include('dtoybox/sh_util.lua')
 	include('dtoybox/sv_logic.lua')
