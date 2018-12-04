@@ -30,48 +30,56 @@ local ALWAYS_DISPLAY_TIME = CreateConVar('cl_ddaynight_display', '1', {FCVAR_ARC
 surface.CreateFont('DDayNight_TopTimeTip', {
 	font = 'Roboto Mono Medium',
 	weight = 500,
+	extended = true,
 	size = 34
 })
 
 surface.CreateFont('DDayNight_TopTime', {
 	font = 'Hack',
 	weight = 500,
+	extended = true,
 	size = 34
 })
 
 surface.CreateFont('DDayNight_BottomTime', {
 	font = 'Source Sans Pro',
 	weight = 500,
+	extended = true,
 	size = 46
 })
 
 surface.CreateFont('DDayNight_SunsetSunrise', {
 	font = 'Exo 2',
 	weight = 400,
+	extended = true,
 	size = 28
 })
 
 surface.CreateFont('DDayNight_Night', {
 	font = 'Exo 2',
 	weight = 400,
+	extended = true,
 	size = 20
 })
 
 surface.CreateFont('DDayNight_Temperature', {
 	font = 'Exo 2 Thin',
 	weight = 500,
+	extended = true,
 	size = 20
 })
 
 surface.CreateFont('DDayNight_WindSpeed', {
 	font = 'Exo 2',
 	weight = 500,
+	extended = true,
 	size = 20
 })
 
 surface.CreateFont('DDayNight_RegularTime', {
 	font = 'Roboto Mono Medium',
 	weight = 500,
+	extended = true,
 	size = 14
 })
 
