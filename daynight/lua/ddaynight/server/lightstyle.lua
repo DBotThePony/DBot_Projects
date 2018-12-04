@@ -146,15 +146,15 @@ local function DDayNight_NewMinute()
 	else
 		if fullNight then
 			modifyOutside('a')
-		elseif darkenNight < 1 then
-			local mult = darkenNight * 0.5
+		elseif semiNight then
+			local mult = nightProgression * 0.5 + 0.5
 			modifyOutside(string.char(NORMAL - math.floor(DIFF_MIN_NORMAL * mult)))
 
 			if isDarkNight then
 				modifyAll(string.char(NORMAL - math.floor(DIFF_DARKER_NORMAL * mult)))
 			end
-		elseif semiNight then
-			local mult = nightProgression * 0.5 + 0.5
+		elseif darkenNight < 1 then
+			local mult = darkenNight * 0.5
 			modifyOutside(string.char(NORMAL - math.floor(DIFF_MIN_NORMAL * mult)))
 
 			if isDarkNight then
