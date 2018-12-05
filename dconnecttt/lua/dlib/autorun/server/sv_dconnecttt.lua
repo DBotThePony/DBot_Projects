@@ -131,6 +131,8 @@ function DConn.SavePlayerData(ply)
 	)
 end
 
+local CurTimeL = CurTimeL
+
 local function PlayerAuthed(ply, steamid)
 	local steamid64 = ply:SteamID64()
 	local nick = ply:Nick()
@@ -149,7 +151,7 @@ local function PlayerAuthed(ply, steamid)
 		if not IsValid(ply) then return end
 
 		if ply:GetNW2Float('DConnecttt.JoinTime', -1) == -1 then
-			ply:SetNW2Float('DConnecttt.JoinTime', RealTimeL())
+			ply:SetNW2Float('DConnecttt.JoinTime', CurTimeL())
 		end
 
 		DConn.Query('SELECT * FROM dconnecttt WHERE steamid64 = "' .. steamid64 .. '";', function(data)
@@ -212,9 +214,9 @@ local function CheckPassword(steamid64, ip, svpass, clpass, nick)
 	local realip = string.Explode(':', ip)[1]
 	local steamid = util.SteamIDFrom64(steamid64)
 
-	IPBuffer[realip] = IPBuffer[realip] or {0, RealTimeL()}
+	IPBuffer[realip] = IPBuffer[realip] or {0, CurTimeL()}
 
-	if IPBuffer[realip][2] + SPAM_DELAY:GetInt() > RealTimeL() then
+	if IPBuffer[realip][2] + SPAM_DELAY:GetInt() > CurTimeL() then
 		IPBuffer[realip][1] = IPBuffer[realip][1] + 1
 	else
 		IPBuffer[realip][1] = 0
@@ -286,16 +288,16 @@ local function Timer()
 		if ply.DCONNECT_INITIALIZE then
 			ply.DConnecttt_Session = (ply.DConnecttt_Session or 0) + 1
 			ply.DConnecttt_Total = (ply.DConnecttt_Total or 0) + 1
-			ply.DConnecttt_LastTick = ply.DConnecttt_LastTick or RealTimeL()
+			ply.DConnecttt_LastTick = ply.DConnecttt_LastTick or CurTimeL()
 
 			if ply:IsBot() then
-				ply.DConnecttt_LastTick = RealTimeL()
+				ply.DConnecttt_LastTick = CurTimeL()
 			end
 
-			local deadTime = RealTimeL() - ply.DConnecttt_LastTick
+			local deadTime = CurTimeL() - ply.DConnecttt_LastTick
 			ply:SetNWBool('DConnecttt_Dead', deadTime > 5)
 
-			if KICK_NOT_RESPONDING and ply.DConnecttt_LastTick + KICK_TIMEOUT:GetFloat() < RealTimeL() then
+			if KICK_NOT_RESPONDING and ply.DConnecttt_LastTick + KICK_TIMEOUT:GetFloat() < CurTimeL() then
 				ply.DConnecttt_Kicked = true
 				ply:Kick(DLib.i18n.localizePlayer(ply, 'message.dconn.disconnected.noreply'))
 			end
@@ -312,7 +314,7 @@ local function SaveTimer()
 end
 
 local function PlayerTick(len, ply)
-	ply.DConnecttt_LastTick = RealTimeL()
+	ply.DConnecttt_LastTick = CurTimeL()
 	ply.DConnecttt_LastPos = ply:GetPos()
 	ply.DConnecttt_LastAng = ply:EyeAngles()
 	ply.DConnecttt_Beat = true
@@ -321,7 +323,7 @@ local function PlayerTick(len, ply)
 	net.Send(ply)
 
 	if ply:GetNW2Float('DConnecttt.FastInit', 0) == 0 then
-		ply:SetNW2Float('DConnecttt.FastInit', RealTimeL())
+		ply:SetNW2Float('DConnecttt.FastInit', CurTimeL())
 	end
 end
 
@@ -334,7 +336,7 @@ end
 hook.Add('StartCommand', 'DConnecttt.PreventMove', function(ply, cmd)
 	if ply:IsBot() then return end
 	if not ply.DConnecttt_LastTick then return end
-	if RealTimeL() - ply.DConnecttt_LastTick < 5 then return end
+	if CurTimeL() - ply.DConnecttt_LastTick < 5 then return end
 
 	if ply.DConnecttt_Beat then
 		ply:SetPos(ply.DConnecttt_LastPos)

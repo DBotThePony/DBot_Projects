@@ -18,7 +18,7 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-local RealTimeL = RealTimeL
+local CurTimeL = CurTimeL
 
 local plyMeta = FindMetaTable('Player')
 
@@ -27,7 +27,7 @@ function plyMeta:TotalTimeConnected()
 end
 
 function plyMeta:SessionTime()
-	return RealTimeL() - self:GetNW2Float('DConnecttt.JoinTime')
+	return CurTimeL() - self:GetNW2Float('DConnecttt.JoinTime')
 end
 
 -- UTime interface
