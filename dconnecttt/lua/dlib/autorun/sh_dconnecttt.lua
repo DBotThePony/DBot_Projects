@@ -23,11 +23,11 @@ local CurTimeL = CurTimeL
 local plyMeta = FindMetaTable('Player')
 
 function plyMeta:TotalTimeConnected()
-	return self:SessionTime() + self:GetNW2Float('DConnecttt_Total_OnJoin')
+	return self:SessionTime() + self:GetNWFloat('DConnecttt_Total_OnJoin')
 end
 
 function plyMeta:SessionTime()
-	return CurTimeL() - self:GetNW2Float('DConnecttt.JoinTime')
+	return CurTimeL() - self:GetNWFloat('DConnecttt.JoinTime')
 end
 
 -- UTime interface
@@ -54,5 +54,5 @@ function plyMeta:SetUTimeStart()
 end
 
 function plyMeta:GetUTimeStart()
-	return self:GetNW2Float('DConnecttt.JoinTime')
+	return self:GetNWFloat('DConnecttt.JoinTime')
 end

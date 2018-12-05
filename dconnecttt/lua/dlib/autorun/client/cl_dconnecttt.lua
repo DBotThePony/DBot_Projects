@@ -152,11 +152,11 @@ local function PrePlayerDraw(ply)
 
 	if fail then return end
 
-	local delta = CurTimeL() - ply:GetNW2Float('DConnecttt.JoinTime', 0)
+	local delta = CurTimeL() - ply:GetNWFloat('DConnecttt.JoinTime', 0)
 
 	if delta < 0 or delta >= 20 then return end
 	local defaultMult = delta / 20
-	local fast = ply:GetNW2Float('DConnecttt.FastInit', 0)
+	local fast = ply:GetNWFloat('DConnecttt.FastInit', 0)
 
 	local multToUse = 0
 

@@ -121,7 +121,7 @@ local function HUDPaint()
 	local bulletPenetration = 1
 	local additional = false
 	local add = 0
-	local dps = weapon:GetNW2Int('wps_dps')
+	local dps = weapon:GetNWInt('wps_dps')
 
 	if string.sub(name, 1, 1) == '#' then
 		name = language.GetPhrase(string.sub(name, 2))

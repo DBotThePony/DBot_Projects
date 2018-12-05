@@ -178,5 +178,5 @@ ENT.CanBeMoved = (byPlayer = NULL) =>
 		@MoveCategory ~= -1 and
 		@IsAvaliable() and
 		IsValid(byPlayer\GetWeapon('dbot_tf_buildpda')) and
-		not IsValid(byPlayer\GetNW2Entity('dtf2_move')) and
+		not IsValid(byPlayer\GetNWEntity('dtf2_move')) and
 		not @GetAfterMove()

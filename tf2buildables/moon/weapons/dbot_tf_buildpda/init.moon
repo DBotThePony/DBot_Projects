@@ -111,7 +111,7 @@ SWEP.TriggerBuild = =>
 				@SetBuildStatus(@BUILD_NONE)
 				return NULL
 
-			@GetOwner()\SetNW2Entity('dtf2_move', NULL)
+			@GetOwner()\SetNWEntity('dtf2_move', NULL)
 			@SetMovingEntity(NULL)
 
 			ent\SetPos(tr.HitPos)

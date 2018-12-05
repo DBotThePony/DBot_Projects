@@ -67,7 +67,7 @@ local function EntityTakeDamage(self, dmginfo)
 			avg.lastSend = CurTimeL() + 0.2
 		end
 
-		weapon:SetNW2String('wps_dps', math.ceil(avg:calculate()))
+		weapon:SetNWString('wps_dps', math.ceil(avg:calculate()))
 	end
 end
 

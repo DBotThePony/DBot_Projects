@@ -40,7 +40,7 @@ DSitConVars:create('players', '1', {FCVAR_NOTIFY}, 'Allow to sit on players (hea
 DSitConVars:create('players_legs', '1', {FCVAR_NOTIFY}, 'Allow to sit on players (legs/sit on sitting players)')
 
 local function PhysgunPickup(ply, ent)
-	if IsValid(ply:GetNW2Entity('dsit_entity')) then
+	if IsValid(ply:GetNWEntity('dsit_entity')) then
 		return false
 	end
 
@@ -72,7 +72,7 @@ local function Think()
 			return
 		end
 
-		local ent = vehicle:GetNW2Entity('dsit_target')
+		local ent = vehicle:GetNWEntity('dsit_target')
 
 		if not IsValid(ent) or not ent:Alive() then
 			if SERVER then

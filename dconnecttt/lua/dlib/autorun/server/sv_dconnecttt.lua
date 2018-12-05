@@ -150,8 +150,8 @@ local function PlayerAuthed(ply, steamid)
 	timer.Simple(0, function()
 		if not IsValid(ply) then return end
 
-		if ply:GetNW2Float('DConnecttt.JoinTime', -1) == -1 then
-			ply:SetNW2Float('DConnecttt.JoinTime', CurTimeL())
+		if ply:GetNWFloat('DConnecttt.JoinTime', -1) == -1 then
+			ply:SetNWFloat('DConnecttt.JoinTime', CurTimeL())
 		end
 
 		DConn.Query('SELECT * FROM dconnecttt WHERE steamid64 = "' .. steamid64 .. '";', function(data)
@@ -186,7 +186,7 @@ local function PlayerAuthed(ply, steamid)
 				ply.DConnecttt_Session = 0
 				ply.DConnecttt_Total = tonumber(totaltime)
 
-				ply:SetNW2Float('DConnecttt_Total_OnJoin', ply.DConnecttt_Total)
+				ply:SetNWFloat('DConnecttt_Total_OnJoin', ply.DConnecttt_Total)
 
 				local PrintNick = nick
 
@@ -322,8 +322,8 @@ local function PlayerTick(len, ply)
 	net.Start('DConnecttt.PlayerTick')
 	net.Send(ply)
 
-	if ply:GetNW2Float('DConnecttt.FastInit', 0) == 0 then
-		ply:SetNW2Float('DConnecttt.FastInit', CurTimeL())
+	if ply:GetNWFloat('DConnecttt.FastInit', 0) == 0 then
+		ply:SetNWFloat('DConnecttt.FastInit', CurTimeL())
 	end
 end
 

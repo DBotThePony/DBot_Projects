@@ -38,7 +38,7 @@ local function makeVehicle(owner, pos, ang)
 
 	ent:SetMoveType(MOVETYPE_NONE)
 	ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
-	ent:SetNW2Bool('dsit_flag', true)
+	ent:SetNWBool('dsit_flag', true)
 	ent:SetNotSolid(true)
 	ent:DrawShadow(false)
 	ent:SetColor(TRANSLUCENT)
@@ -169,12 +169,12 @@ local function request(ply)
 			entSit = ent:GetVehicle()
 
 			if IsValid(entSit) then
-				isSitting = entSit:GetNW2Bool('dsit_flag')
+				isSitting = entSit:GetNWBool('dsit_flag')
 			end
 
 			parent = false
 		else
-			isSitting = ent:GetNW2Bool('dsit_flag')
+			isSitting = ent:GetNWBool('dsit_flag')
 			entSit = ent
 			parent = not isSitting
 		end
@@ -370,7 +370,7 @@ local function request(ply)
 		vehicle:SetParent(entSit)
 	elseif isPlayer then
 		ply.dsit_player_root = ent.dsit_player_root or ent
-		vehicle:SetNW2Entity('dsit_target', ent)
+		vehicle:SetNWEntity('dsit_target', ent)
 		vehicle.dsit_player_root = ent
 
 		timer.Simple(0.5, function()
@@ -384,13 +384,13 @@ local function request(ply)
 
 	if vehicle.dsit_player_root then
 		vehicle.dsit_player_root.dsit_root_sitting_on = vehicle.dsit_player_root.dsit_root_sitting_on + 1
-		vehicle:SetNW2Entity('dsit_player_root', vehicle.dsit_player_root)
+		vehicle:SetNWEntity('dsit_player_root', vehicle.dsit_player_root)
 	end
 
 	vehicle.dsit_upsideDown = upsideDown
 
-	vehicle:SetNW2Entity('dsit_entity', ply)
-	ply:SetNW2Entity('dsit_entity', vehicle)
+	vehicle:SetNWEntity('dsit_entity', ply)
+	ply:SetNWEntity('dsit_entity', vehicle)
 end
 
 local tonumber = tonumber
@@ -404,7 +404,7 @@ local function dsit_getoff(ply, cmd, args)
 	if pkick:IsValid() then
 		for i, vehicle in ipairs(DSIT_TRACKED_VEHICLES) do
 			if IsValid(vehicle) then
-				if vehicle:GetNW2Entity('dsit_player_root', NULL) == ply and vehicle:GetDriver() == pkick then
+				if vehicle:GetNWEntity('dsit_player_root', NULL) == ply and vehicle:GetDriver() == pkick then
 					vehicle:GetDriver():ExitVehicle()
 					break
 				end
@@ -413,7 +413,7 @@ local function dsit_getoff(ply, cmd, args)
 	else
 		for i, vehicle in ipairs(DSIT_TRACKED_VEHICLES) do
 			if IsValid(vehicle) then
-				local ent = vehicle:GetNW2Entity('dsit_target')
+				local ent = vehicle:GetNWEntity('dsit_target')
 
 				if ent == ply then
 					vehicle:GetDriver():ExitVehicle()
@@ -481,7 +481,7 @@ local function PostLeave(ply, vehPos, upsideDown)
 end
 
 local function PlayerLeaveVehicle(ply, vehicle)
-	if not vehicle:GetNW2Bool('dsit_flag') then return end
+	if not vehicle:GetNWBool('dsit_flag') then return end
 
 	if IsValid(vehicle.dsit_player_root) then
 		vehicle.dsit_player_root.dsit_root_sitting_on = vehicle.dsit_player_root.dsit_root_sitting_on - 1
@@ -504,7 +504,7 @@ end
 
 local function PlayerDeath(ply)
 	ply.dsit_player_root = nil
-	ply:SetNW2Bool('dsit_flag', false)
+	ply:SetNWBool('dsit_flag', false)
 end
 
 local function PlayerSay(ply, text)

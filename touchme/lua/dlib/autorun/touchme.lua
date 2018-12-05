@@ -88,7 +88,7 @@ end
 
 local function StartCommand(ply, cmd)
 	if ply:GetActiveWeaponClass() == 'weapon_physgun' and cmd:KeyDown(IN_ATTACK) then
-		if ply:GetNW2Bool('touchme_nono') then
+		if ply:GetNWBool('touchme_nono') then
 			cmd:RemoveKey(IN_ATTACK)
 			return
 		end
@@ -164,11 +164,11 @@ if SERVER then
 							if tr.Hit then
 								schat.LChatPlayer(pickuper, 'message.touchme.exploit_hit')
 								ply:SetPos(positions[1])
-								pickuper:SetNW2Bool('touchme_nono', true)
+								pickuper:SetNWBool('touchme_nono', true)
 
 								timer.Create('DLib.touchmeno.' .. pickuper:SteamID(), 2, 1, function()
 									if IsValid(pickuper) then
-										pickuper:SetNW2Bool('touchme_nono', false)
+										pickuper:SetNWBool('touchme_nono', false)
 									end
 								end)
 

@@ -108,7 +108,7 @@ local function PopulateClient(Panel)
 		local lply = LocalPlayer()
 
 		for i, vehicle in ipairs(DSIT_TRACKED_VEHICLES) do
-			if vehicle:GetNW2Entity('dsit_player_root', NULL) == lply then
+			if vehicle:GetNWEntity('dsit_player_root', NULL) == lply then
 				local ply = vehicle:GetDriver()
 
 				if ply:IsValid() then
@@ -145,7 +145,7 @@ function DSit_RECALCULATE()
 	end
 
 	for i, ent in ipairs(ents.FindByClass('prop_vehicle_prisoner_pod')) do
-		if ent:GetNW2Bool('dsit_flag') then
+		if ent:GetNWBool('dsit_flag') then
 			table.insert(DSIT_TRACKED_VEHICLES, ent)
 		end
 	end
@@ -162,7 +162,7 @@ function DSit_RECALCULATE()
 
 	if HIDE_ON_ME:GetBool() then
 		for i, vehicle in ipairs(DSIT_TRACKED_VEHICLES) do
-			if vehicle:GetNW2Entity('dsit_player_root', NULL) == lply then
+			if vehicle:GetNWEntity('dsit_player_root', NULL) == lply then
 				local ply = vehicle:GetDriver()
 
 				if ply:IsValid() then

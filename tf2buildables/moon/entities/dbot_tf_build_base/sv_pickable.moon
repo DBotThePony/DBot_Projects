@@ -31,7 +31,7 @@ net.receive 'dtf2.movebuildable', (len, ply) ->
 	ent\SetSolid(SOLID_NONE)
 	ent\SetNoDraw(true)
 
-	ply\SetNW2Entity('dtf2_move', ent)
+	ply\SetNWEntity('dtf2_move', ent)
 	wep = ply\GetWeapon('dbot_tf_buildpda')
 	ply\SelectWeapon('dbot_tf_buildpda')
 
@@ -52,8 +52,8 @@ net.receive 'dtf2.movebuildable', (len, ply) ->
 
 hook.Add 'DoPlayerDeath', 'DTF2.CarryBuildables', (attacker = NULL, dmg) =>
 	return if not @IsPlayer()
-	return if not IsValid(@GetNW2Entity('dtf2_move'))
-	ent = @GetNW2Entity('dtf2_move')
+	return if not IsValid(@GetNWEntity('dtf2_move'))
+	ent = @GetNWEntity('dtf2_move')
 	with dmg
 		\SetDamage(math.pow(2, 31) - 1)
 		\SetInflictor(@GetActiveWeapon())
@@ -63,7 +63,7 @@ hook.Add 'DoPlayerDeath', 'DTF2.CarryBuildables', (attacker = NULL, dmg) =>
 
 hook.Add 'Think', 'DTF2.CarryBuildables', ->
 	for self in *player.GetAll()
-		ent = @GetNW2Entity('dtf2_move')
+		ent = @GetNWEntity('dtf2_move')
 		if IsValid(ent)
 			wep = @GetActiveWeapon()
 			if not IsValid(wep) or wep\GetClass() ~= 'dbot_tf_buildpda'
