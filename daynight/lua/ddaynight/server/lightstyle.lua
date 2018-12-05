@@ -38,7 +38,7 @@ local function initializeEntity()
 
 	if #find > 1 then
 		-- it is allowed on engine level, but... why?
-		error('wtf? There is ' .. #find .. ' light_environment in total')
+		error('wtf? There are ' .. #find .. ' light_environment in total')
 	elseif #find == 0 then
 		-- maybe inside?
 		return
