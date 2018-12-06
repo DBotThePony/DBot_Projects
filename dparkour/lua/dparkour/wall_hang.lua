@@ -119,39 +119,19 @@ local function GetEdgeData(ply, movedata, data, epos, eang)
 	return tr, mins, maxs, wide, (mins.z - maxs.z):abs()
 end
 
-local function RecalcEdgeHeight(ply, movedata, data, newTr)
-	newTr = newTr or data.edge_tr
-
-	for i = 1, 100 do
-		local trCheck = util.TraceLine({
-			start = newTr.HitPos + newTr.HitNormal + Vector(0, 0, i),
-			endpos = newTr.HitPos - newTr.HitNormal * 80 + Vector(0, 0, i),
-			filter = ply
-		})
-
-		if trCheck.Fraction >= 0.9 then
-			debugoverlay.Box(newTr.HitPos + newTr.HitNormal + Vector(0, 0, i), Vector(-5, -5, -5), Vector(5, 5, 5), 2, Color(0, 150, 0))
-			debugoverlay.Box(newTr.HitPos - newTr.HitNormal * 80 + Vector(0, 0, i), Vector(-5, -5, -5), Vector(5, 5, 5), 2, Color(0, 100, 50))
-			return i
-		end
-	end
-
-	return 80
-end
-
 local function RecalcEdgeHeightBackward(ply, movedata, data, newTr)
 	newTr = newTr or data.edge_tr
 
 	for i = data.edge_height + 5, 1, -1 do
 		local trCheck = util.TraceLine({
 			start = newTr.HitPos + newTr.HitNormal + Vector(0, 0, i),
-			endpos = newTr.HitPos - newTr.HitNormal * 80 + Vector(0, 0, i),
+			endpos = newTr.HitPos - newTr.HitNormal * data.edge_length + Vector(0, 0, i),
 			filter = ply
 		})
 
 		if trCheck.Fraction <= 0.9 then
-			--debugoverlay.Box(newTr.HitPos + newTr.HitNormal + Vector(0, 0, i), Vector(-5, -5, -5), Vector(5, 5, 5), 2, Color(0, 150, 0))
-			--debugoverlay.Box(newTr.HitPos - newTr.HitNormal * 80 + Vector(0, 0, i), Vector(-5, -5, -5), Vector(5, 5, 5), 2, Color(0, 100, 50))
+			debugoverlay.Box(newTr.HitPos + newTr.HitNormal + Vector(0, 0, i), Vector(-5, -5, -5), Vector(5, 5, 5), 2, Color(0, 150, 0))
+			debugoverlay.Box(newTr.HitPos - newTr.HitNormal * data.edge_length + Vector(0, 0, i), Vector(-5, -5, -5), Vector(5, 5, 5), 2, Color(0, 100, 50))
 			return i + 10
 		end
 	end
@@ -239,6 +219,8 @@ function DParkour.HandleWallHang(ply, movedata, data)
 	if not checkWall.Hit or checkWall.HitSky then return end
 	local hangingOn = checkWall.Entity
 
+	data.edge_length = 20
+
 	--debugoverlay.Box(checkWall.HitPos, Vector(-5, -5, -10), Vector(5, 5, 10), 2, Color(75, 150, 75))
 
 	do
@@ -257,6 +239,7 @@ function DParkour.HandleWallHang(ply, movedata, data)
 				local center = ply:OBBCenter()
 
 				data.edge_height = checkWall.HitPos.z - origin.z + 3
+				data.edge_length = math.sqrt(math.pow(checkWall.HitPos.x - origin.x, 2) + math.pow(checkWall.HitPos.y - origin.y, 2)) / 2
 				data.hang_origin = origin
 				movedata:SetOrigin(origin)
 			end
