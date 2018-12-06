@@ -130,8 +130,8 @@ local function RecalcEdgeHeightBackward(ply, movedata, data, newTr)
 		})
 
 		if trCheck.Fraction <= 0.9 then
-			debugoverlay.Box(newTr.HitPos + newTr.HitNormal + Vector(0, 0, i), Vector(-5, -5, -5), Vector(5, 5, 5), 2, Color(0, 150, 0))
-			debugoverlay.Box(newTr.HitPos - newTr.HitNormal * data.edge_length + Vector(0, 0, i), Vector(-5, -5, -5), Vector(5, 5, 5), 2, Color(0, 100, 50))
+			--debugoverlay.Box(newTr.HitPos + newTr.HitNormal + Vector(0, 0, i), Vector(-5, -5, -5), Vector(5, 5, 5), 2, Color(0, 150, 0))
+			--debugoverlay.Box(newTr.HitPos - newTr.HitNormal * data.edge_length + Vector(0, 0, i), Vector(-5, -5, -5), Vector(5, 5, 5), 2, Color(0, 100, 50))
 			return i + 10
 		end
 	end
