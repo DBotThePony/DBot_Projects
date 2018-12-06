@@ -130,13 +130,33 @@ local function RecalcEdgeHeight(ply, movedata, data, newTr)
 		})
 
 		if trCheck.Fraction >= 0.9 then
-			--debugoverlay.Box(newTr.HitPos + newTr.HitNormal + Vector(0, 0, i), Vector(-5, -5, -5), Vector(5, 5, 5), 2, Color(0, 150, 0))
-			--debugoverlay.Box(newTr.HitPos - newTr.HitNormal * 80 + Vector(0, 0, i), Vector(-5, -5, -5), Vector(5, 5, 5), 2, Color(0, 100, 50))
+			debugoverlay.Box(newTr.HitPos + newTr.HitNormal + Vector(0, 0, i), Vector(-5, -5, -5), Vector(5, 5, 5), 2, Color(0, 150, 0))
+			debugoverlay.Box(newTr.HitPos - newTr.HitNormal * 80 + Vector(0, 0, i), Vector(-5, -5, -5), Vector(5, 5, 5), 2, Color(0, 100, 50))
 			return i
 		end
 	end
 
 	return 80
+end
+
+local function RecalcEdgeHeightBackward(ply, movedata, data, newTr)
+	newTr = newTr or data.edge_tr
+
+	for i = data.edge_height + 5, 1, -1 do
+		local trCheck = util.TraceLine({
+			start = newTr.HitPos + newTr.HitNormal + Vector(0, 0, i),
+			endpos = newTr.HitPos - newTr.HitNormal * 80 + Vector(0, 0, i),
+			filter = ply
+		})
+
+		if trCheck.Fraction <= 0.9 then
+			--debugoverlay.Box(newTr.HitPos + newTr.HitNormal + Vector(0, 0, i), Vector(-5, -5, -5), Vector(5, 5, 5), 2, Color(0, 150, 0))
+			--debugoverlay.Box(newTr.HitPos - newTr.HitNormal * 80 + Vector(0, 0, i), Vector(-5, -5, -5), Vector(5, 5, 5), 2, Color(0, 100, 50))
+			return i + 10
+		end
+	end
+
+	return false
 end
 
 local function sendHangData(ply, movedata, data, checkWall)
@@ -219,6 +239,8 @@ function DParkour.HandleWallHang(ply, movedata, data)
 	if not checkWall.Hit or checkWall.HitSky then return end
 	local hangingOn = checkWall.Entity
 
+	--debugoverlay.Box(checkWall.HitPos, Vector(-5, -5, -10), Vector(5, 5, 10), 2, Color(75, 150, 75))
+
 	do
 		local checkNearWall, mins, maxs, wide, high = GetEdgeData(ply, movedata, data)
 
@@ -234,18 +256,7 @@ function DParkour.HandleWallHang(ply, movedata, data)
 				origin.z = checkWall.HitPos.z - (maxs.z - mins.z) * 0.9
 				local center = ply:OBBCenter()
 
-				for i = 1, 100 do
-					data.edge_height = RecalcEdgeHeight(ply, movedata, data, checkNearWall)
-
-					if data.edge_height < high * 0.9 then
-						break
-					else
-						origin.z = origin.z + 3
-						checkNearWall, mins, maxs, wide = GetEdgeData(ply, movedata, data, origin + center)
-						data.edge_height = RecalcEdgeHeight(ply, movedata, data, checkNearWall)
-					end
-				end
-
+				data.edge_height = checkWall.HitPos.z - origin.z + 3
 				data.hang_origin = origin
 				movedata:SetOrigin(origin)
 			end
@@ -344,8 +355,11 @@ local function tryToMoveOnEdge(ply, movedata, data, mult)
 	--debugoverlay.Box(tr.endpos, Vector(-5, -5, -5), Vector(5, 5, 5), 0.5, Color(0, 150, 0))
 
 	if trMoveFwd.Fraction > 0.5 then
+		local zChange = 0
+		::DO_MOVE::
+
 		local move = FrameTime() * 127
-		local mvVec = Vector(0, move * mult, 0)
+		local mvVec = Vector(0, move * mult, zChange)
 		mvVec:Rotate(data.edge_tr.HitNormal:Angle())
 
 		-- Can we have space at edge's side?
@@ -371,9 +385,15 @@ local function tryToMoveOnEdge(ply, movedata, data, mult)
 				})
 
 				if not trCheckSpace.Hit then
-					local newPos = RecalcEdgeHeight(ply, movedata, data, checkNearWall)
+					local newPos = RecalcEdgeHeightBackward(ply, movedata, data, checkNearWall)
+					if not newPos then return end
 
 					if (newPos - data.edge_height):abs() <= 15 or data.edge_first_move then
+						if (newPos - data.edge_height):abs() >= 1 and not data.edge_first_move and zChange == 0 then
+							zChange = newPos - data.edge_height
+							goto DO_MOVE
+						end
+
 						data.edge_tr = checkNearWall
 						data.edge_first_move = false
 						data.edge_height = newPos
