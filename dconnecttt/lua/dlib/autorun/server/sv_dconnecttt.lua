@@ -358,8 +358,11 @@ hook.Add('StartCommand', 'DConnecttt.PreventMove', function(ply, cmd)
 	if CurTimeL() - ply.DConnecttt_LastTick < 5 then return end
 
 	if ply.DConnecttt_Beat then
-		ply:SetPos(ply.DConnecttt_LastPos)
-		ply:SetEyeAngles(ply.DConnecttt_LastAng)
+		if not ply:InVehicle() then
+			ply:SetPos(ply.DConnecttt_LastPos)
+			ply:SetEyeAngles(ply.DConnecttt_LastAng)
+		end
+
 		ply.DConnecttt_Beat = false
 	end
 
