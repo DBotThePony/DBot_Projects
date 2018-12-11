@@ -281,6 +281,23 @@ local function player_disconnect(data)
 	MessageDISC(team.GetColor(ply:Team()), name, TEXT_COLOR, '<' .. steamid .. '>', 'message.dconn.disconnected.disconnected', ' (', reason, ')')
 end
 
+function DConn.FakeDisconnect(ply, reason)
+	reason = reason or 'Disconnect by user.'
+
+	if string.find(reason, 'timed out') then
+		reason = 'message.dconn.disconnected.crash'
+	end
+
+	local name = ply:Nick()
+	local steamid = ply:SteamID()
+
+	if ply.SteamName and ply:SteamName() ~= name then -- DarkRP
+		name = name .. ' (' .. ply:SteamName() .. ')'
+	end
+
+	MessageDISC(team.GetColor(ply:Team()), name, TEXT_COLOR, '<' .. steamid .. '>', 'message.dconn.disconnected.disconnected', ' (', reason, ')')
+end
+
 local function Timer()
 	local KICK_NOT_RESPONDING = KICK_NOT_RESPONDING:GetBool()
 
@@ -329,9 +346,11 @@ end
 
 local plyMeta = FindMetaTable('Player')
 
+--[[
 for k, v in pairs(player.GetAll()) do
 	PlayerAuthed(v, v:SteamID())
 end
+]]
 
 hook.Add('StartCommand', 'DConnecttt.PreventMove', function(ply, cmd)
 	if ply:IsBot() then return end
