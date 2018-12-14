@@ -41,7 +41,7 @@ gui.daynight.time.format = 'ЧЧ:ММ:СС'
 gui.daynight.time.sun = 'Рассвет: %s   Закат: %s'
 gui.daynight.time.night = 'Конец ночи: %s   Начало ночи: %s'
 gui.daynight.time.temperature = 'Температура: %.1f°C'
-gui.daynight.time.wind = 'Скорость ветра: %.2f m/s; по Бофорту: %i (%s)'
+gui.daynight.time.wind = 'Скорость ветра: %.2f m/s;\nпо Бофорту: %i (%s)'
 
 gui.daynight.wind.stille = 'Штиль'
 gui.daynight.wind.sillent = 'Тихий'

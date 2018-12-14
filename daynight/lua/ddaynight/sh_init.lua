@@ -128,5 +128,6 @@ sinclude('common/wind.lua')
 
 clinclude('client/fog.lua')
 clinclude('client/hud.lua')
+clinclude('client/menu.lua')
 
 hook.Run('DDayNight_SeedChanges', self.SEED_VALID, self.SEED_VALID)

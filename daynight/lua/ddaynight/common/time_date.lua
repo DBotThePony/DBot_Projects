@@ -194,6 +194,41 @@ function meta:GetNightMultiplier()
 	end
 end
 
+function meta:GetNightProgression()
+	local progressionDay = self:GetDayProgression()
+
+	if progressionDay ~= 1 and progressionDay ~= 0 then return 0 end
+
+	local seconds = self:GetDaySecond()
+
+	if 43200 > seconds then
+		return (1 + seconds / (self.dayObject.dayStart - self.dayObject.dayLightDiffPre)) / 2
+	else
+		return seconds:progression(self.dayObject.dayEnd + self.dayObject.dayLightDiffPost, 86400) / 2
+	end
+end
+
+meta.STATUS_NIGHT = 0
+meta.STATUS_DAY = 1
+meta.STATUS_SUNSET = 2
+meta.STATUS_SUNRISE = 3
+
+function meta:GetStatus()
+	local seconds = self:GetDaySecond()
+
+	if seconds < self.dayObject.dayStart - self.dayObject.dayLightDiffPre then
+		return self.STATUS_NIGHT
+	elseif seconds < self.dayObject.dayStart then
+		return self.STATUS_SUNRISE
+	elseif seconds < self.dayObject.dayEnd then
+		return self.STATUS_DAY
+	elseif seconds < self.dayObject.dayEnd+ self.dayObject.dayLightDiffPost then
+		return self.STATUS_SUNSET
+	else
+		return self.STATUS_NIGHT
+	end
+end
+
 function meta:GetStamp()
 	return self.stamp
 end
