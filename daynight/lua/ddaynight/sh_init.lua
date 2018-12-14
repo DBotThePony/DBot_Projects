@@ -26,6 +26,7 @@ local self = DDayNight
 local ipairs = ipairs
 local string = string
 local math = math
+local hook = hook
 local SharedRandom = util.SharedRandom
 
 DLib.MessageMaker(self, 'WeatherOverlord')
@@ -44,7 +45,12 @@ function self.CalcFastForward()
 	if not self.TIME_FAST_FORWARD then return 0 end
 	local delta = CurTime():min(self.TIME_FAST_FORWARD_END) - self.TIME_FAST_FORWARD_LAST
 	self.TIME_FAST_FORWARD_LAST = CurTime()
-	self.TIME_FAST_FORWARD = CurTime() < self.TIME_FAST_FORWARD_END
+
+	if CurTime() >= self.TIME_FAST_FORWARD_END then
+		self.TIME_FAST_FORWARD = false
+		hook.Run('DDayNight_FastForwardEnd')
+	end
+
 	return delta * self.TIME_FAST_FORWARD_SPEED
 end
 

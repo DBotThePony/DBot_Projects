@@ -53,10 +53,41 @@ end
 
 local CurTime = CurTimeL
 
+local function daynight_fastforward_ambient()
+	LocalPlayer():EmitSound('daynight_fastforward_ambient')
+end
+
+sound.Add({
+	name = 'daynight_fastforward_ambient',
+	channel = CHAN_AUTO,
+	volume = 0.15,
+	level = 75,
+	pitch = 100,
+	sound = 'ambient/brandon3055/sun_dial_effect.ogg'
+})
+
 net.receive('ddaynight.fastforward', function()
 	self.TIME_FAST_FORWARD = true
 	self.TIME_FAST_FORWARD_SPEED = net.ReadDouble()
 	self.TIME_FAST_FORWARD_START = net.ReadDouble()
 	self.TIME_FAST_FORWARD_END = net.ReadDouble()
 	self.TIME_FAST_FORWARD_LAST = self.TIME_FAST_FORWARD_START
+
+	hook.Run('DDayNight_FastForwardStart')
+
+	daynight_fastforward_ambient()
+	timer.Create('daynight_fastforward_ambient', 3.899, 0, daynight_fastforward_ambient)
+end)
+
+hook.Add('DDayNight_FastForwardEnd', 'DDayNight_Ambient', function()
+	LocalPlayer():StopSound('daynight_fastforward_ambient')
+	timer.Remove('daynight_fastforward_ambient')
+end)
+
+local startup = Sound('ambient/brandon3055/charge.ogg')
+local shutdown = Sound('ambient/brandon3055/discharge.ogg')
+
+net.receive('ddaynight.fastforward_sound', function()
+	local toplay = net.ReadBool()
+	LocalPlayer():EmitSound(toplay and startup or shutdown, 75, 100 + net.ReadInt16(), 0.2)
 end)

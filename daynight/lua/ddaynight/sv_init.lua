@@ -27,7 +27,7 @@ local IsValid = IsValid
 local self = DDayNight
 
 net.pool('ddaynight.replicateseed')
-net.pool('ddaynight.fastforward')
+net.pool('ddaynight.fastforward_sound')
 
 local function DDayNight_SeedChanges()
 	net.Start('ddaynight.replicateseed')
@@ -72,4 +72,27 @@ function self.FastForwardTime(inGameSeconds, realSeconds)
 	net.WriteDouble(self.TIME_FAST_FORWARD_START)
 	net.WriteDouble(self.TIME_FAST_FORWARD_END)
 	net.Broadcast()
+
+	hook.Run('DDayNight_FastForwardStart')
+
+	return realSeconds
+end
+
+function self.FastForwardSequence(inGameSeconds, realSeconds)
+	net.Start('ddaynight.fastforward_sound')
+	net.WriteBool(true)
+	local pitch = math.random(-20, 20)
+	net.WriteInt16(pitch)
+	net.Broadcast()
+
+	timer.Create('ddaynight.fastforward_sequence', 3.669 * (1 - pitch / 100), 1, function()
+		realSeconds = self.FastForwardTime(inGameSeconds, realSeconds)
+
+		timer.Create('ddaynight.fastforward_end_sequence', realSeconds, 1, function()
+			net.Start('ddaynight.fastforward_sound')
+			net.WriteBool(false)
+			net.WriteInt16(math.random(-20, 20))
+			net.Broadcast()
+		end)
+	end)
 end
