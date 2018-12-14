@@ -174,8 +174,11 @@ local function DDayNight_NewMinute()
 
 	if dirty then
 		dirty = false
-		net.Start('ddaynight.lightstyle')
-		net.Broadcast()
+
+		timer.Create('ddaynight.lightstyle', 0.5, 1, function()
+			net.Start('ddaynight.lightstyle')
+			net.Broadcast()
+		end)
 	end
 end
 

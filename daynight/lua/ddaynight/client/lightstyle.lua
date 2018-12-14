@@ -23,7 +23,5 @@ local render = render
 local timer = timer
 
 net.receive('ddaynight.lightstyle', function()
-	timer.Create('WO_DelayLightmapUpdate', 1, 1, function()
-		render.RedownloadAllLightmaps()
-	end)
+	render.RedownloadAllLightmaps()
 end)

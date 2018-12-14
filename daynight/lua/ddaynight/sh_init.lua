@@ -32,6 +32,22 @@ DLib.MessageMaker(self, 'WeatherOverlord')
 
 self.SEED = DLib.util.CreateSharedConvar('sv_daynight_seed', math.random(1, 100000), 'Seed of Weather Overlord. Two same seeds on different servers will produce same weather, rain, snow, wind strength, temperature on same time!')
 
+self.TIME_FAST_FORWARD = false
+self.TIME_FAST_FORWARD_SPEED = 0
+self.TIME_FAST_FORWARD_START = 0
+self.TIME_FAST_FORWARD_END = 0
+self.TIME_FAST_FORWARD_LAST = 0
+
+local CurTime = CurTimeL
+
+function self.CalcFastForward()
+	if not self.TIME_FAST_FORWARD then return 0 end
+	local delta = CurTime():min(self.TIME_FAST_FORWARD_END) - self.TIME_FAST_FORWARD_LAST
+	self.TIME_FAST_FORWARD_LAST = CurTime()
+	self.TIME_FAST_FORWARD = CurTime() < self.TIME_FAST_FORWARD_END
+	return delta * self.TIME_FAST_FORWARD_SPEED
+end
+
 if SERVER or not self.SEED_VALID then
 	self.SEED_VALID = self.SEED:GetInt()
 end

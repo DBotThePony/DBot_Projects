@@ -23,33 +23,31 @@ local DLib = DLib
 local DDayNight = DDayNight
 local timer = timer
 local hook = hook
-local CurTimeL = CurTimeL
+local CurTime = CurTimeL
 local self = DDayNight
 local math = math
 local net = net
 
 self.INITIALIZE = false
-self.BOUND_TIME = 0
-self.BOUND_TIME_TO = 0
+
 local lastThink = 0
+local _delta
 self.DATE_OBJECT = self.Date(0)
-self.DATE_OBJECT_ACCURATE = self.Date(self.TIME)
 
 function self.GetAccurateTime()
-	return self.BOUND_TIME + (CurTimeL() - self.BOUND_TIME_TO):max(0) * self.TIME_MULTIPLIER:GetInt() -- ???
+	return self.TIME
 end
 
 local sunset, sunrise = true, true
 
 local function Think()
 	if not self.INITIALIZE then return end
-	self.DATE_OBJECT_ACCURATE:SetStamp(self.GetAccurateTime())
-
-	if math.floor(lastThink) == math.floor(CurTimeL()) then return end
-	lastThink = CurTimeL()
+	_delta = _delta or CurTime()
+	local delta = CurTime() - _delta
+	_delta = CurTime()
 
 	local old = self.TIME
-	self.TIME = math.floor(self.GetAccurateTime())
+	self.TIME = self.TIME + self.CalcFastForward() + delta * self.TIME_MULTIPLIER:GetFloat()
 	local new = self.TIME
 	self.DATE_OBJECT:SetStamp(self.TIME)
 
@@ -64,6 +62,9 @@ local function Think()
 	if math.floor(old / self.timeTypes.minute) < math.floor(new / self.timeTypes.minute) then
 		hook.Run('DDayNight_NewMinute')
 	end
+
+	if math.floor(lastThink) == math.floor(CurTime()) then return end
+	lastThink = CurTime()
 
 	if math.floor(old / self.timeTypes.hour) < math.floor(new / self.timeTypes.hour) then
 		hook.Run('DDayNight_NewHour')
@@ -125,11 +126,10 @@ net.receive('ddaynight.replicatetime', function()
 	self.INITIALIZE = true
 	local time = net.ReadBigUInt()
 	local validAt = net.ReadDouble()
-
-	self.BOUND_TIME = time
-	self.TIME = time
-	self.BOUND_TIME_TO = validAt
-	lastThink = validAt
+	local delta = CurTime() - validAt
+	self.TIME = time + delta * self.TIME_MULTIPLIER:GetFloat()
+	lastThink = CurTime()
+	_delta = CurTime()
 end)
 
 net.receive('ddaynight.forcetimechange', function()

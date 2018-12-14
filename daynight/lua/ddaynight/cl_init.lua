@@ -23,6 +23,7 @@ local DDayNight = DDayNight
 local DLib = DLib
 local net = net
 local hook = hook
+local self = DDayNight
 
 net.receive('ddaynight.replicateseed', function()
 	local old = DDayNight.SEED_VALID
@@ -49,3 +50,13 @@ else
 		net.SendToServer()
 	end)
 end
+
+local CurTime = CurTimeL
+
+net.receive('ddaynight.fastforward', function()
+	self.TIME_FAST_FORWARD = true
+	self.TIME_FAST_FORWARD_SPEED = net.ReadDouble()
+	self.TIME_FAST_FORWARD_START = net.ReadDouble()
+	self.TIME_FAST_FORWARD_END = net.ReadDouble()
+	self.TIME_FAST_FORWARD_LAST = self.TIME_FAST_FORWARD_START
+end)

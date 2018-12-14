@@ -29,8 +29,8 @@ local MATERIAL_FOG_LINEAR = MATERIAL_FOG_LINEAR
 local TOKEN = 0x72ff2a8d
 
 local function SetupFog(scale)
-	local progression = self.DATE_OBJECT_ACCURATE:GetDayProgression()
-	local night = self.DATE_OBJECT_ACCURATE:GetNightMultiplier()
+	local progression = self.DATE_OBJECT:GetDayProgression()
+	local night = self.DATE_OBJECT:GetNightMultiplier()
 	if night >= 0.75 then return end
 	if progression > 0.1 then return end
 	if self.DATE_OBJECT:RandomDay(0, 100, TOKEN) > 80 * (0.5 + 0.5 * self.DATE_OBJECT:GetTemperature():progression(-15, 25, 15)) then return end

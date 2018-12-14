@@ -24,8 +24,10 @@ local DLib = DLib
 local net = net
 local hook = hook
 local IsValid = IsValid
+local self = DDayNight
 
 net.pool('ddaynight.replicateseed')
+net.pool('ddaynight.fastforward')
 
 local function DDayNight_SeedChanges()
 	net.Start('ddaynight.replicateseed')
@@ -42,3 +44,32 @@ net.receive('ddaynight.replicateseed', function(len, ply)
 end)
 
 hook.Add('DDayNight_SeedChanges', 'DDayNight_ReplicateSeed', DDayNight_SeedChanges)
+
+local assert = assert
+local type = type
+local CurTime = CurTimeL
+
+function self.FastForwardTime(inGameSeconds, realSeconds)
+	assert(not self.TIME_FAST_FORWARD, 'Already fast forwarding!')
+	assert(type(inGameSeconds) == 'number', 'Invalid in game seconds provided. typeof ' .. type(inGameSeconds))
+
+	if not realSeconds then
+		realSeconds = (inGameSeconds:sqrt() / self.TIME_MULTIPLIER:GetFloat()):max(10)
+	end
+
+	if realSeconds < 10 then
+		error('Too short fast forward time! ' .. realSeconds)
+	end
+
+	self.TIME_FAST_FORWARD = true
+	self.TIME_FAST_FORWARD_SPEED = inGameSeconds / realSeconds
+	self.TIME_FAST_FORWARD_START = CurTime()
+	self.TIME_FAST_FORWARD_END = CurTime() + realSeconds
+	self.TIME_FAST_FORWARD_LAST = CurTime()
+
+	net.Start('ddaynight.fastforward')
+	net.WriteDouble(self.TIME_FAST_FORWARD_SPEED)
+	net.WriteDouble(self.TIME_FAST_FORWARD_START)
+	net.WriteDouble(self.TIME_FAST_FORWARD_END)
+	net.Broadcast()
+end

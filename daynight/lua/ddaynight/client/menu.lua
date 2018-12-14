@@ -60,7 +60,7 @@ local lastday = 0
 local lastnight = 0
 
 local function paintprogress(self, w, h)
-	local date = DDayNight.DATE_OBJECT_ACCURATE
+	local date = DDayNight.DATE_OBJECT
 	local status = date:GetStatus()
 
 	if lastIcons then

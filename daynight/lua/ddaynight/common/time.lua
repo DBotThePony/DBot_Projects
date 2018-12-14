@@ -39,7 +39,7 @@ function self.GetCurrentDate()
 end
 
 function self.GetCurrentDateAccurate()
-	return self.DATE_OBJECT_ACCURATE
+	return self.DATE_OBJECT
 end
 
 self.WEEKS_IN_YEAR = 52

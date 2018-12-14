@@ -157,13 +157,13 @@ function self.HUDPaintFULL(x, y, useSmallerText)
 
 	surface.SetFont('DDayNight_TopTime' .. suffix)
 
-	text = self.DATE_OBJECT_ACCURATE:FormatTime()
+	text = self.DATE_OBJECT:FormatTime()
 	local w, h = surface.GetTextSize(text)
 	surface.SetTextPos(x - w / 2, y + h2)
 	surface.DrawText(text)
 
 	surface.SetFont('DDayNight_BottomTime' .. suffix)
-	text = self.DATE_OBJECT_ACCURATE:FormatDateYear()
+	text = self.DATE_OBJECT:FormatDateYear()
 	local w, h3 = surface.GetTextSize(text)
 
 	y = y + h + 4 + h2
@@ -172,7 +172,7 @@ function self.HUDPaintFULL(x, y, useSmallerText)
 	y = y + h3
 
 	surface.SetFont('DDayNight_SunsetSunrise' .. suffix)
-	text =  DLib.i18n.localize('gui.daynight.time.sun', self.DATE_OBJECT_ACCURATE:FormatSunrise(), self.DATE_OBJECT_ACCURATE:FormatSunset())
+	text =  DLib.i18n.localize('gui.daynight.time.sun', self.DATE_OBJECT:FormatSunrise(), self.DATE_OBJECT:FormatSunset())
 	local w, h = surface.GetTextSize(text)
 
 	surface.SetTextPos(x - w / 2, y)
@@ -181,7 +181,7 @@ function self.HUDPaintFULL(x, y, useSmallerText)
 	y = y + h
 
 	surface.SetFont('DDayNight_Night' .. suffix)
-	text = DLib.i18n.localize('gui.daynight.time.night', self.DATE_OBJECT_ACCURATE:FormatNightEnd(), self.DATE_OBJECT_ACCURATE:FormatNightStart())
+	text = DLib.i18n.localize('gui.daynight.time.night', self.DATE_OBJECT:FormatNightEnd(), self.DATE_OBJECT:FormatNightStart())
 	w, h = surface.GetTextSize(text)
 
 	surface.SetTextPos(x - w / 2, y)
@@ -190,7 +190,7 @@ function self.HUDPaintFULL(x, y, useSmallerText)
 	y = y + h + 2
 
 	surface.SetFont('DDayNight_Temperature' .. suffix)
-	text = DLib.i18n.localize('gui.daynight.time.temperature', self.DATE_OBJECT_ACCURATE:GetTemperature())
+	text = DLib.i18n.localize('gui.daynight.time.temperature', self.DATE_OBJECT:GetTemperature())
 	w, h = surface.GetTextSize(text)
 
 	surface.SetTextPos(x - w / 2, y)
@@ -198,7 +198,7 @@ function self.HUDPaintFULL(x, y, useSmallerText)
 
 	y = y + h + 2
 
-	text = DLib.i18n.localize('gui.daynight.time.wind', self.DATE_OBJECT_ACCURATE:GetWindSpeedSI():GetMetres(), self.DATE_OBJECT_ACCURATE:GetBeaufortScore(), self.DATE_OBJECT_ACCURATE:GetBeaufortName())
+	text = DLib.i18n.localize('gui.daynight.time.wind', self.DATE_OBJECT:GetWindSpeedSI():GetMetres(), self.DATE_OBJECT:GetBeaufortScore(), self.DATE_OBJECT:GetBeaufortName())
 	draw.DrawText(text, 'DDayNight_WindSpeed' .. suffix, x, y, color_white, TEXT_ALIGN_CENTER)
 end
 
@@ -212,7 +212,7 @@ local function HUDPaint()
 	local x, y = GET_REGULAR_POSITION()
 	surface.SetTextColor(255, 255, 255)
 	surface.SetFont('DDayNight_RegularTime')
-	local text = self.DATE_OBJECT_ACCURATE:Format()
+	local text = self.DATE_OBJECT:Format()
 	local w, h = surface.GetTextSize(text)
 	surface.SetTextPos(x - w, y - h)
 	surface.DrawText(text)

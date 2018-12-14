@@ -29,13 +29,13 @@ local function bridge(funcName, bridgeName)
 	end
 
 	DDayNight['Accurate' .. (bridgeName or funcName)] = function(...)
-		local targetFunction = DDayNight.DATE_OBJECT_ACCURATE[funcName]
-		return targetFunction(DDayNight.DATE_OBJECT_ACCURATE, ...)
+		local targetFunction = DDayNight.DATE_OBJECT[funcName]
+		return targetFunction(DDayNight.DATE_OBJECT, ...)
 	end
 
 	DDayNight[(bridgeName or funcName) .. 'Accurate'] = function(...)
-		local targetFunction = DDayNight.DATE_OBJECT_ACCURATE[funcName]
-		return targetFunction(DDayNight.DATE_OBJECT_ACCURATE, ...)
+		local targetFunction = DDayNight.DATE_OBJECT[funcName]
+		return targetFunction(DDayNight.DATE_OBJECT, ...)
 	end
 end
 
