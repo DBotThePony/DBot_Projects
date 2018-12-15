@@ -183,6 +183,10 @@ local function request(ply)
 			messaging.LChatPlayer2(ply, 'message.dsit.status.recursion')
 			return
 		end
+
+		if ent.dsit_player_root == ply and not ent:InVehicle() then
+			ent.dsit_player_root = nil
+		end
 	end
 
 	local targetPos, targetAngles
