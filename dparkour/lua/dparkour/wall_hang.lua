@@ -208,11 +208,22 @@ function DParkour.HandleWallHang(ply, movedata, data)
 
 	if checkReach.Hit or checkReach.HitSky then return end
 
+	local mins, maxs = ply:GetHull()
+	local phigh = maxs.z - mins.z
+
 	local checkWall = util.TraceHull({
 		start = checkpos2,
-		endpos = checkpos2 - Vector(0, 0, 35),
+		endpos = checkpos2 - Vector(0, 0, (phigh * 0.3):max(20)),
 		mins = Vector(-8, -8, 0),
 		maxs = Vector(8, 8, 0),
+		filter = ply
+	})
+
+	local checkGround = util.TraceHull({
+		start = ply:GetPos(),
+		endpos = ply:GetPos() - Vector(0, 0, 2000),
+		mins = mins,
+		maxs = maxs,
 		filter = ply
 	})
 
@@ -237,6 +248,10 @@ function DParkour.HandleWallHang(ply, movedata, data)
 				local origin = checkNearWall.HitPos + checkNearWall.HitNormal * (wide / 2)
 				origin.z = checkWall.HitPos.z - (maxs.z - mins.z) * 0.9
 				local center = ply:OBBCenter()
+
+				if origin.z - 10 < checkGround.HitPos.z then
+					return
+				end
 
 				data.edge_height = checkWall.HitPos.z - origin.z + 3
 				data.edge_length = math.sqrt(math.pow(checkWall.HitPos.x - origin.x, 2) + math.pow(checkWall.HitPos.y - origin.y, 2)) / 2
