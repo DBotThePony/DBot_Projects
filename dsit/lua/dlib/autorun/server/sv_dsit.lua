@@ -179,7 +179,7 @@ local function request(ply)
 			parent = not isSitting
 		end
 
-		if ent.dsit_player_root == ply then
+		if ent.dsit_player_root == ply and ent:InVehicle() then
 			messaging.LChatPlayer2(ply, 'message.dsit.status.recursion')
 			return
 		end
