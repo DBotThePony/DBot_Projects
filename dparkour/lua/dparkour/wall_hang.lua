@@ -213,7 +213,7 @@ function DParkour.HandleWallHang(ply, movedata, data)
 
 	local checkWall = util.TraceHull({
 		start = checkpos2,
-		endpos = checkpos2 - Vector(0, 0, (phigh * 0.3):max(20)),
+		endpos = checkpos2 - Vector(0, 0, (phigh * 0.3):max(15)),
 		mins = Vector(-8, -8, 0),
 		maxs = Vector(8, 8, 0),
 		filter = ply
@@ -225,6 +225,14 @@ function DParkour.HandleWallHang(ply, movedata, data)
 		mins = mins,
 		maxs = maxs,
 		filter = ply
+	})
+
+	local checkGroundLOS = util.TraceHull({
+		start = ply:GetPos(),
+		endpos = ply:GetPos() - Vector(0, 0, 2000),
+		mins = mins,
+		maxs = maxs,
+		mask = MASK_BLOCKLOS
 	})
 
 	if not checkWall.Hit or checkWall.HitSky then return end
@@ -261,6 +269,10 @@ function DParkour.HandleWallHang(ply, movedata, data)
 		else
 			data.edge_movable = false
 		end
+	end
+
+	if IsValid(hangingOn) and checkGroundLOS.HitPos:Distance(movedata:GetOrigin()) < 48 then
+		return
 	end
 
 	local ourvel = movedata:GetVelocity()
