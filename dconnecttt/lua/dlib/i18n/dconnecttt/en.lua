@@ -37,6 +37,10 @@ gui.dconn.settings.cl_dconn_draw = 'Draw visual effect when player loses connect
 gui.dconn.settings.cl_dconn_drawtime = 'Draw time played on server'
 gui.dconn.settings.cl_dconn_x = 'X Position of text'
 gui.dconn.settings.cl_dconn_y = 'Y Position of text'
+gui.dconn.settings.cl_dconn_echo_force = 'Force override echo settings of server'
+gui.dconn.settings.cl_dconn_echo = 'Echo connects'
+gui.dconn.settings.cl_dconn_echo_join = 'Echo joins (spawning -> active state change)'
+gui.dconn.settings.cl_dconn_echo_disconnect = 'Echo disconnects'
 
 info.dconn.connection_lost = '? Connection lost'
 

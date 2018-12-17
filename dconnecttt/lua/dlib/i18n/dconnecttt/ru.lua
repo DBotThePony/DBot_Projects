@@ -37,6 +37,10 @@ gui.dconn.settings.cl_dconn_draw = 'Отрисовывать визуальны�
 gui.dconn.settings.cl_dconn_drawtime = 'Отображать время игры на сервере'
 gui.dconn.settings.cl_dconn_x = 'X позиция текста'
 gui.dconn.settings.cl_dconn_y = 'Y позиция текста'
+gui.dconn.settings.cl_dconn_echo_force = 'Принудительно переопределить настройки сервера'
+gui.dconn.settings.cl_dconn_echo = 'Выводить в чат подключения'
+gui.dconn.settings.cl_dconn_echo_join = 'Выводить в чат заходы (spawning -> active)'
+gui.dconn.settings.cl_dconn_echo_disconnect = 'Выводить в чат отключения'
 
 info.dconn.connection_lost = '? Соединение потеряно'
 

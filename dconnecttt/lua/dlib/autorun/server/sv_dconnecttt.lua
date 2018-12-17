@@ -51,25 +51,39 @@ local function Message(...)
 	DConn.LMessage(...)
 end
 
+local function shouldEcho(serverSetting, playerSetting, playerOverride)
+	if playerOverride then
+		return playerSetting
+	end
+
+	return serverSetting and playerSetting
+end
+
 local function MessageCONN(...)
-	if ECHO_CONNECTS:GetBool() then
-		DConn.LChatAll(...)
+	for i, ply in ipairs(player.GetHumans()) do
+		if shouldEcho(ECHO_CONNECTS:GetBool(), ply:GetInfoBool('cl_dconn_echo'), ply:GetInfoBool('cl_dconn_echo_force')) then
+			DConn.LChatPlayer(ply, ...)
+		end
 	end
 
 	DConn.LMessage(...)
 end
 
 local function MessageJOIN(...)
-	if ECHO_JOINS:GetBool() then
-		DConn.LChatAll(...)
+	for i, ply in ipairs(player.GetHumans()) do
+		if shouldEcho(ECHO_JOINS:GetBool(), ply:GetInfoBool('cl_dconn_echo_join'), ply:GetInfoBool('cl_dconn_echo_force')) then
+			DConn.LChatPlayer(ply, ...)
+		end
 	end
 
 	DConn.LMessage(...)
 end
 
 local function MessageDISC(...)
-	if ECHO_DISCONNECT:GetBool() then
-		DConn.LChatAll(...)
+	for i, ply in ipairs(player.GetHumans()) do
+		if shouldEcho(ECHO_DISCONNECT:GetBool(), ply:GetInfoBool('cl_dconn_echo_disconnect'), ply:GetInfoBool('cl_dconn_echo_force')) then
+			DConn.LChatPlayer(ply, ...)
+		end
 	end
 
 	DConn.LMessage(...)

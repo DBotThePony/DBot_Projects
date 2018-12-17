@@ -29,6 +29,11 @@ local DRAW_TIME = CreateConVar('cl_dconn_drawtime', '1', {FCVAR_ARCHIVE}, 'Draw 
 local DRAW_TIME_AT_ALL = CreateConVar('sv_dconn_drawtime', '1', {FCVAR_REPLICATED}, 'Draw time played on server')
 local DISPLAY_NICKS = CreateConVar('sv_dconn_hoverdisplay', '1', {FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Display players nicks on hovering')
 
+CreateConVar('cl_dconn_echo_force', '0', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'Force override serverside setting (effective for showing messages when serverside it is turned off)')
+CreateConVar('cl_dconn_echo', '1', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'Display a message when someone connects to the server')
+CreateConVar('cl_dconn_echo_join', '1', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'Display a message when someone joins (enters the game)')
+CreateConVar('cl_dconn_echo_disconnect', '1', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'Display a message when someone disconnects from the server')
+
 local messaging = DLib.chat.registerWithMessages({}, 'DConnecttt')
 
 surface.CreateFont('DConnecttt.HUD', {
@@ -74,8 +79,18 @@ local function Populate(Panel)
 	Panel:AddItem(lab)
 	lab:SetDark(true)
 
-	Panel:CheckBox('gui.dconn.settings.cl_dconn_draw', 'cl_dconn_draw')
-	Panel:CheckBox('gui.dconn.settings.cl_dconn_drawtime', 'cl_dconn_drawtime')
+	local cvars = {
+		'cl_dconn_draw',
+		'cl_dconn_drawtime',
+		'cl_dconn_echo_force',
+		'cl_dconn_echo',
+		'cl_dconn_echo_join',
+		'cl_dconn_echo_disconnect',
+	}
+
+	for i, cvar in ipairs(cvars) do
+		Panel:CheckBox('gui.dconn.settings.' .. cvar, cvar)
+	end
 
 	Panel:NumSlider('gui.dconn.settings.cl_dconn_x', 'cl_dconn_x', 0, ScrWL(), 1)
 	Panel:NumSlider('gui.dconn.settings.cl_dconn_y', 'cl_dconn_y', 0, ScrHL(), 1)
