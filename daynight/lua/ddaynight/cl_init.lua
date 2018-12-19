@@ -89,5 +89,6 @@ local shutdown = Sound('ambient/brandon3055/discharge.ogg')
 
 net.receive('ddaynight.fastforward_sound', function()
 	local toplay = net.ReadBool()
+	self.TIME_FAST_FORWARD_SEQ = toplay
 	LocalPlayer():EmitSound(toplay and startup or shutdown, 75, 100 + net.ReadInt16(), 0.2)
 end)

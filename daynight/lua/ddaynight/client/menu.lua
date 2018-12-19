@@ -200,7 +200,7 @@ local function BuildServer(self)
 		end
 
 		function fwd:Think()
-			self:SetEnabled(perms:HasPermission('ddaynight_fastforward' .. suffix))
+			self:SetEnabled(perms:HasPermission('ddaynight_fastforward' .. suffix) and not DDayNight.TIME_FAST_FORWARD_SEQ and not DDayNight.TIME_FAST_FORWARD)
 		end
 	end
 
@@ -333,7 +333,7 @@ local function BuildServer(self)
 	end
 
 	function fwd:Think()
-		self:SetEnabled(perms:HasPermission('ddaynight_fastforward'))
+		self:SetEnabled(perms:HasPermission('ddaynight_fastforward') and not DDayNight.TIME_FAST_FORWARD_SEQ and not DDayNight.TIME_FAST_FORWARD)
 	end
 end
 
