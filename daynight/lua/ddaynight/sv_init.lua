@@ -27,6 +27,7 @@ local IsValid = IsValid
 local self = DDayNight
 
 net.pool('ddaynight.replicateseed')
+net.pool('ddaynight.fastforward')
 net.pool('ddaynight.fastforward_sound')
 
 local function DDayNight_SeedChanges()
@@ -52,6 +53,7 @@ local CurTime = CurTimeL
 function self.FastForwardTime(inGameSeconds, realSeconds)
 	assert(not self.TIME_FAST_FORWARD, 'Already fast forwarding!')
 	assert(type(inGameSeconds) == 'number', 'Invalid in game seconds provided. typeof ' .. type(inGameSeconds))
+	assert(inGameSeconds > 0, 'Negative numbers/zero are not allowed (wtf)')
 
 	if not realSeconds then
 		realSeconds = (inGameSeconds:sqrt() / self.TIME_MULTIPLIER:GetFloat()):max(10)
@@ -79,6 +81,11 @@ function self.FastForwardTime(inGameSeconds, realSeconds)
 end
 
 function self.FastForwardSequence(inGameSeconds, realSeconds)
+	if self.TIME_FAST_FORWARD then
+		error('Already playing sequence!')
+	end
+
+	self.TIME_FAST_FORWARD_SEQ = assert(not self.TIME_FAST_FORWARD_SEQ, 'Already playing sequence!')
 	net.Start('ddaynight.fastforward_sound')
 	net.WriteBool(true)
 	local pitch = math.random(-20, 20)
@@ -93,6 +100,7 @@ function self.FastForwardSequence(inGameSeconds, realSeconds)
 			net.WriteBool(false)
 			net.WriteInt16(math.random(-20, 20))
 			net.Broadcast()
+			self.TIME_FAST_FORWARD_SEQ = false
 		end)
 	end)
 end

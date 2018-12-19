@@ -136,13 +136,210 @@ local function BuildClient(self)
 	end
 end
 
+local perms = DLib.CAMIWatchdog('ddaynight_perms', nil,
+	'ddaynight_setseed',
+	'ddaynight_fastforward',
+	'ddaynight_fastforward12h',
+	'ddaynight_fastforward1',
+	'ddaynight_fastforward7',
+	'ddaynight_fastforward30'
+)
+
 local function BuildServer(self)
 	if not IsValid(self) then return end
+
+	local entry = self:TextEntry('gui.daynight.menu.sv.seed')
+
+	function entry:Think()
+		if self:GetText() ~= DDayNight.SEED_VALID:tostring() then
+			self:SetText(DDayNight.SEED_VALID:tostring())
+		end
+	end
+
+	local change = self:Button('gui.daynight.menu.sv.seed_change')
+
+	function change:OnClick()
+		Derma_StringRequest(
+			'gui.daynight.menu.sv.seed_change',
+			'gui.daynight.menu.sv.seed_desc',
+			DDayNight.SEED_VALID:tostring(),
+			function(seed)
+				if seed:tonumber() then
+					RunConsoleCommand('ddaynight_setseed', seed)
+				else
+					RunConsoleCommand('ddaynight_setseed', util.CRC(seed))
+				end
+			end,
+			nil,
+			'gui.misc.apply',
+			'gui.misc.cancel'
+		)
+	end
+
+	function change:Think()
+		self:SetEnabled(perms:HasPermission('ddaynight_setseed'))
+	end
+
+	local fwd = {43200, '12h', 86400, '1', 86400 * 7, '7', 86400 * 30, '30'}
+
+	for i = 1, #fwd - 1, 2 do
+		local time = fwd[i]
+		local suffix = fwd[i + 1]
+		if not suffix or not time then break end
+
+		local fwd = self:Button(DLib.i18n.localize('gui.daynight.menu.sv.forward_button', DLib.i18n.tformat(time)))
+
+		function fwd:DoClick()
+			Derma_Query(
+				DLib.i18n.localize('gui.daynight.menu.sv.forward_desc', DLib.i18n.tformat(time)),
+				'gui.daynight.menu.sv.forward_title',
+				'gui.misc.yes',
+				function() RunConsoleCommand('ddaynight_fwd' .. suffix) end,
+				'gui.misc.no'
+			)
+		end
+
+		function fwd:Think()
+			self:SetEnabled(perms:HasPermission('ddaynight_fastforward' .. suffix))
+		end
+	end
+
+	local fwd = self:Button('gui.daynight.menu.sv.forward_button2')
+
+	function fwd:DoClick()
+		local self = vgui.Create('DLib_Window')
+		local window = self
+
+		self:SetSize(400, 500)
+		self:Center()
+		self:SetTitle('gui.daynight.menu.sv.forward_button2')
+
+		local label = vgui.Create('DLabel', self)
+		label:SetText('gui.daynight.menu.sv.forward_menu')
+		label:Dock(TOP)
+		label:SizeToContents()
+		label:DockMargin(5, 5, 5, 5)
+
+		local types = {
+			'centuries',
+			'years',
+			'months',
+			'weeks',
+			'days',
+			'hours',
+			'minutes',
+			'seconds',
+		}
+
+		local inputs = {}
+
+		local seconds = vgui.Create('DTextEntry', self)
+		seconds:Dock(TOP)
+		seconds:SetText('0')
+		seconds:DockMargin(5, 5, 5, 5)
+
+		local lastseconds = '0'
+		local lastsecondsnum = 0
+		local recalculate = false
+		local lastcalc = math.tformat(0)
+
+		function seconds:Think()
+			if recalculate then
+				recalculate = false
+			end
+
+			local text = self:GetText()
+
+			if text ~= lastseconds then
+				local num = text:tonumber()
+
+				if num and num >= 0 then
+					lastsecondsnum = num:floor()
+					lastseconds = lastsecondsnum:tostring()
+					recalculate = true
+					lastcalc = math.tformat(lastsecondsnum)
+				else
+					self:SetText(lastseconds)
+				end
+			end
+		end
+
+		for i, tp in ipairs(types) do
+			local canvas = vgui.Create('EditablePanel', self)
+			canvas:Dock(TOP)
+			canvas:DockMargin(5, 5, 5, 5)
+
+			local label = vgui.Create('DLabel', canvas)
+			label:Dock(RIGHT)
+			label:SetText('info.dlib.tformat.' .. tp)
+			label:DockMargin(5, 0, 0, 0)
+			label:SizeToContents()
+
+			local entry = vgui.Create('DTextEntry', canvas)
+			entry:Dock(LEFT)
+			inputs[tp] = entry
+			entry:SetText('0')
+
+			local lastnum = 0
+			local lasttext = '0'
+
+			function entry:Think()
+				if recalculate then
+					lastnum = lastcalc[tp]
+					lasttext = lastcalc[tp]:tostring()
+					self:SetText(lasttext)
+					return
+				end
+
+				local text = self:GetText()
+
+				if text ~= lasttext then
+					local num = text:tonumber()
+
+					if num and num >= 0 then
+						lastnum = num:floor()
+						lasttext = lastnum:tostring()
+						lastcalc[tp] = lastnum
+						seconds:SetText(math.untformat(lastcalc))
+						lastseconds = seconds:GetText()
+						lastsecondsnum = seconds:GetText():tonumber()
+					else
+						self:SetText(lasttext)
+					end
+				end
+			end
+		end
+
+		local canvas = vgui.Create('EditablePanel', self)
+		canvas:Dock(BOTTOM)
+		canvas:DockMargin(5, 5, 5, 5)
+
+		local confirm = vgui.Create('DButton', canvas)
+		confirm:SetText('gui.misc.apply')
+		confirm:Dock(LEFT)
+
+		function confirm:DoClick()
+			RunConsoleCommand('ddaynight_fwd', seconds:GetText())
+			window:Close()
+		end
+
+		local cancel = vgui.Create('DButton', canvas)
+		cancel:SetText('gui.misc.cancel')
+		cancel:Dock(RIGHT)
+
+		function cancel:DoClick()
+			window:Close()
+		end
+	end
+
+	function fwd:Think()
+		self:SetEnabled(perms:HasPermission('ddaynight_fastforward'))
+	end
 end
 
 hook.Add('PopulateToolMenu', 'DDayNight', function()
 	spawnmenu.AddToolMenuOption('Utilities', 'User', 'daynight_client', 'DDayNight', '', '', BuildClient)
-	--spawnmenu.AddToolMenuOption('Utilities', 'Admin', 'daynight_server', 'DDayNight', '', '', BuildServer)
+	spawnmenu.AddToolMenuOption('Utilities', 'Admin', 'daynight_server', 'DDayNight', '', '', BuildServer)
 end)
 
 hook.Add('ContextMenuCreated', 'DDayNight', function(self)

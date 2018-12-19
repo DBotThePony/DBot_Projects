@@ -29,10 +29,11 @@ local math = math
 local hook = hook
 local SharedRandom = util.SharedRandom
 
-DLib.MessageMaker(self, 'WeatherOverlord')
+DLib.CMessageChat(self, 'DDayNight')
 
 self.SEED = DLib.util.CreateSharedConvar('sv_daynight_seed', math.random(1, 100000), 'Seed of Weather Overlord. Two same seeds on different servers will produce same weather, rain, snow, wind strength, temperature on same time!')
 
+self.TIME_FAST_FORWARD_SEQ = false
 self.TIME_FAST_FORWARD = false
 self.TIME_FAST_FORWARD_SPEED = 0
 self.TIME_FAST_FORWARD_START = 0
@@ -114,6 +115,42 @@ self.indexedMonths = {
 	[11] = 'december',
 }
 
+CAMI.RegisterPrivilege({
+	Name = 'ddaynight_setseed',
+	Description = 'Set seed of DDayNight',
+	MinAccess = 'superadmin',
+})
+
+CAMI.RegisterPrivilege({
+	Name = 'ddaynight_fastforward',
+	Description = 'Fast-forward random amount of time',
+	MinAccess = 'superadmin',
+})
+
+CAMI.RegisterPrivilege({
+	Name = 'ddaynight_fastforward12h',
+	Description = 'Fast-forward 12 hours',
+	MinAccess = 'superadmin',
+})
+
+CAMI.RegisterPrivilege({
+	Name = 'ddaynight_fastforward1',
+	Description = 'Fast-forward 1 day',
+	MinAccess = 'superadmin',
+})
+
+CAMI.RegisterPrivilege({
+	Name = 'ddaynight_fastforward7',
+	Description = 'Fast-forward 7 days',
+	MinAccess = 'superadmin',
+})
+
+CAMI.RegisterPrivilege({
+	Name = 'ddaynight_fastforward30',
+	Description = 'Fast-forward 30 days',
+	MinAccess = 'superadmin',
+})
+
 local function sinclude(file)
 	if SERVER then AddCSLuaFile(file) end
 	return include(file)
@@ -142,6 +179,7 @@ clinclude('client/time.lua')
 svinclude('server/sun_modifier.lua')
 svinclude('server/skypaint.lua')
 svinclude('server/lightstyle.lua')
+svinclude('server/commands.lua')
 clinclude('client/lightstyle.lua')
 
 sinclude('common/temperature.lua')
