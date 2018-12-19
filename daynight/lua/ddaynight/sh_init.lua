@@ -151,6 +151,18 @@ CAMI.RegisterPrivilege({
 	MinAccess = 'superadmin',
 })
 
+CAMI.RegisterPrivilege({
+	Name = 'ddaynight_fastforward90',
+	Description = 'Fast-forward 90 days',
+	MinAccess = 'superadmin',
+})
+
+CAMI.RegisterPrivilege({
+	Name = 'ddaynight_fastforward180',
+	Description = 'Fast-forward 180 days',
+	MinAccess = 'superadmin',
+})
+
 local function sinclude(file)
 	if SERVER then AddCSLuaFile(file) end
 	return include(file)

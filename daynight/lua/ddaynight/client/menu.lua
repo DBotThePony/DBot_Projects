@@ -142,7 +142,9 @@ local perms = DLib.CAMIWatchdog('ddaynight_perms', nil,
 	'ddaynight_fastforward12h',
 	'ddaynight_fastforward1',
 	'ddaynight_fastforward7',
-	'ddaynight_fastforward30'
+	'ddaynight_fastforward30',
+	'ddaynight_fastforward90',
+	'ddaynight_fastforward180'
 )
 
 local function BuildServer(self)
@@ -180,7 +182,7 @@ local function BuildServer(self)
 		self:SetEnabled(perms:HasPermission('ddaynight_setseed'))
 	end
 
-	local fwd = {43200, '12h', 86400, '1', 86400 * 7, '7', 86400 * 30, '30'}
+	local fwd = {43200, '12h', 86400, '1', 86400 * 7, '7', 86400 * 30, '30', 86400 * 90, '90', 86400 * 180, '180'}
 
 	for i = 1, #fwd - 1, 2 do
 		local time = fwd[i]
