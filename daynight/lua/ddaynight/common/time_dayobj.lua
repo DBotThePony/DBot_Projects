@@ -53,6 +53,10 @@ function meta:SetStamp(stamp)
 		end
 	end
 
+	if not self.month then
+		self.month = 11
+	end
+
 	if self.month == 0 then
 		self.monthTime = self.yearStamp
 	else
