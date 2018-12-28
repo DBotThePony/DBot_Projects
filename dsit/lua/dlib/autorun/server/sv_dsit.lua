@@ -455,7 +455,7 @@ local function PostLeave(ply, vehPos, upsideDown)
 		ply.dsit_weapons = nil
 	end
 
-	local space = DLib.Freespace(vehPos + Vector(0, 0, 1), 25, 5)
+	local space = DLib.Freespace(vehPos + Vector(0, 0, 5), 25, 5)
 	local mins, maxs = ply:GetHull()
 	space:SetAABB(mins, maxs)
 	space:SetSAABB(mins, maxs)
@@ -469,7 +469,7 @@ local function PostLeave(ply, vehPos, upsideDown)
 		return
 	end
 
-	for i, shift in ipairs(attemptToFind) do
+	--[[for i, shift in ipairs(attemptToFind) do
 		space:SetPos(vehPos + shift)
 		position = space:Search()
 
@@ -477,7 +477,7 @@ local function PostLeave(ply, vehPos, upsideDown)
 			ply:SetPos(position)
 			return
 		end
-	end
+	end]]
 
 	messaging.LChatPlayer2(ply, 'info.dsit.nopos')
 	ply:SetPos(ply.dsit_spos or vehPos)
@@ -495,9 +495,9 @@ local function PlayerLeaveVehicle(ply, vehicle)
 	ply.dsit_player_root = nil
 	local upsideDown = vehicle.dsit_upsideDown
 
-	vehicle:Remove()
-
 	local vehPos = vehicle:GetPos()
+
+	vehicle:Remove()
 
 	timer.Simple(0, function()
 		if not IsValid(ply) then return end
