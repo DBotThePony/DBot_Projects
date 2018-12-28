@@ -101,7 +101,6 @@ local function request(ply)
 	end
 
 	local mins, maxs = ply:GetHull()
-	maxs.z = maxs.z * 0.5
 	local eyes = ply:EyePos()
 	local spos = ply:GetPos()
 	local ppos = spos + ply:OBBCenter()
@@ -458,12 +457,12 @@ local function PostLeave(ply, vehPos, upsideDown)
 
 	local space = DLib.Freespace(vehPos + Vector(0, 0, 1), 25, 5)
 	local mins, maxs = ply:GetHull()
-	space:SetAABB(mins * 0.75, maxs * 0.75)
-	space:SetSAABB(mins * 0.75, maxs * 0.75)
-	space:SetStrict(true)
+	space:SetAABB(mins, maxs)
+	space:SetSAABB(mins, maxs)
+	space:SetStrict(false)
 	space:SetMaskReachable(MASK_VISIBLE_AND_NPCS)
 	space.filter:addArray(player.GetAll())
-	local position = space:Search()
+	local position = space:SearchOptimal()
 
 	if position then
 		ply:SetPos(position)
