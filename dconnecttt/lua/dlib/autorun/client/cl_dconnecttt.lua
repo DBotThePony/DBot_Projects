@@ -338,7 +338,7 @@ hook.Add('CreateMove', 'DConnecttt.PreventMove', function(cmd)
 	local ctime = RealTimeL()
 	local delta = ctime - lastThink
 	lastThink = ctime
-	if RealTimeL() - LastTick < 5 then return end
+	if RealTimeL() - LastTick < 5 / game.GetTimeScale() then return end
 
 	local plag = lastlag
 
@@ -359,7 +359,7 @@ hook.Add('CreateMove', 'DConnecttt.PreventMove', function(cmd)
 			messaging.LMessage('message.dconn.connection.denied')
 		end
 
-		if RealTimeL() - LastTick2 > 3 then
+		if RealTimeL() - LastTick2 > 3 / game.GetTimeScale() then
 			connectionRestored = true
 		end
 	else
