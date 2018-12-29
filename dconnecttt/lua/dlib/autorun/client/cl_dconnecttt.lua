@@ -338,7 +338,7 @@ hook.Add('CreateMove', 'DConnecttt.PreventMove', function(cmd)
 	local ctime = RealTimeL()
 	local delta = ctime - lastThink
 	lastThink = ctime
-	if RealTimeL() - LastTick < 3 then return end
+	if RealTimeL() - LastTick < 5 then return end
 
 	local plag = lastlag
 
