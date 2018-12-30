@@ -512,7 +512,7 @@ end
 
 local function PlayerSay(ply, text)
 	if ply:GetInfoBool('cl_dsit_message', true) and text:lower():find('get off') then
-		dsit_getoff(ply)
+		dsit_getoff(ply, 'dsit_getoff', {})
 	end
 end
 
