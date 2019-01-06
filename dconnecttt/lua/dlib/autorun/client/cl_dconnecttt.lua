@@ -25,6 +25,7 @@ local HUD_POSITION = DLib.HUDCommons.DefinePosition('dconnecttt', 0, 0)
 local COLOR_TO_USE = DLib.HUDCommons.CreateColor('dconnecttt_bg', 'DConnecttt Background', 0, 0, 0, 150)
 local COLOR_TO_USE_TEXT = DLib.HUDCommons.CreateColor('dconnecttt', 'DConnecttt Background', 255, 255, 255)
 local DRAW_NOT_RESPONDING = CreateConVar('cl_dconn_draw', '1', {FCVAR_ARCHIVE}, 'Draw visual effect when player loses connection')
+local FAKE_NOCLIP = CreateConVar('cl_dconn_fakenoclip', '1', {FCVAR_ARCHIVE}, 'Enable fake noclip when losing connection to the server')
 local DRAW_TIME = CreateConVar('cl_dconn_drawtime', '1', {FCVAR_ARCHIVE}, 'Draw time played on server')
 local DRAW_TIME_AT_ALL = CreateConVar('sv_dconn_drawtime', '1', {FCVAR_REPLICATED}, 'Draw time played on server')
 local DISPLAY_NICKS = CreateConVar('sv_dconn_hoverdisplay', '1', {FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Display players nicks on hovering')
@@ -269,6 +270,7 @@ local lastThink = RealTimeL()
 local lastAdmin = false
 local lastlag = false
 local connectionRestored = true
+local lastClientLag = false
 local connectionRestored2 = RealTimeL()
 
 local calcposEnable = false
@@ -276,6 +278,7 @@ local calcpos = Vector()
 local calcang = Angle()
 
 net.receive('DConnecttt.PlayerTick', function()
+	lastClientLag = false
 	local ply = LocalPlayer()
 
 	LastTick2 = RealTimeL()
@@ -338,7 +341,14 @@ hook.Add('CreateMove', 'DConnecttt.PreventMove', function(cmd)
 	local ctime = RealTimeL()
 	local delta = ctime - lastThink
 	lastThink = ctime
-	if RealTimeL() - LastTick < 5 / game.GetTimeScale() then return end
+	if RealTimeL() - LastTick < 7 / game.GetTimeScale() then return end
+
+	-- client froze
+	if not lastClientLag and RealFrameTime() > 0.4 then
+		lastClientLag = true
+		LastTick2 = RealTimeL()
+		return
+	end
 
 	local plag = lastlag
 
@@ -375,57 +385,60 @@ hook.Add('CreateMove', 'DConnecttt.PreventMove', function(cmd)
 			calcpos = ply:EyePos()
 		end
 
-		calcposEnable = true
-		local up = 0
-		local left = 0
-		local fwd = 0
+		if FAKE_NOCLIP:GetBool() then
+			calcposEnable = true
+			local up = 0
+			local left = 0
+			local fwd = 0
 
-		if cmd:KeyDown(IN_JUMP) then
-			up = 1600
+			if cmd:KeyDown(IN_JUMP) then
+				up = 1600
+			end
+
+			if cmd:KeyDown(IN_MOVERIGHT) then
+				left = -1600
+			end
+
+			if cmd:KeyDown(IN_MOVELEFT) then
+				left = 1600
+			end
+
+			if cmd:KeyDown(IN_FORWARD) then
+				fwd = 1600
+			end
+
+			if cmd:KeyDown(IN_BACK) then
+				fwd = -1600
+			end
+
+			if cmd:KeyDown(IN_SPEED) then
+				fwd = fwd * 3
+				up = up * 3
+				left = left * 3
+			end
+
+			local newang = cmd:GetViewAngles()
+			local diff = newang - lastViewAngle
+			calcang = calcang + diff
+
+			cmd:ClearButtons()
+			cmd:ClearMovement()
+			cmd:SetMouseX(0)
+			cmd:SetMouseY(0)
+			cmd:SetMouseWheel(0)
+			cmd:SetViewAngles(lastViewAngle)
+
+			local mv = Vector(fwd, left, up) * delta * 0.5
+			mv:Rotate(calcang)
+
+			calcpos = calcpos + mv
 		end
-
-		if cmd:KeyDown(IN_MOVERIGHT) then
-			left = -1600
-		end
-
-		if cmd:KeyDown(IN_MOVELEFT) then
-			left = 1600
-		end
-
-		if cmd:KeyDown(IN_FORWARD) then
-			fwd = 1600
-		end
-
-		if cmd:KeyDown(IN_BACK) then
-			fwd = -1600
-		end
-
-		if cmd:KeyDown(IN_SPEED) then
-			fwd = fwd * 3
-			up = up * 3
-			left = left * 3
-		end
-
-		local newang = cmd:GetViewAngles()
-		local diff = newang - lastViewAngle
-		calcang = calcang + diff
-
-		cmd:ClearButtons()
-		cmd:ClearMovement()
-		cmd:SetMouseX(0)
-		cmd:SetMouseY(0)
-		cmd:SetMouseWheel(0)
-		cmd:SetViewAngles(lastViewAngle)
-
-		local mv = Vector(fwd, left, up) * delta * 0.5
-		mv:Rotate(calcang)
-
-		calcpos = calcpos + mv
 	end
 end)
 
 hook.Add('CalcView', 'DConnecttt.FakeMove', function(ply, origin, angles, fov, znear, zfar)
 	if not calcposEnable then return end
+	if not FAKE_NOCLIP:GetBool() then return end
 
 	return {
 		origin = calcpos,
