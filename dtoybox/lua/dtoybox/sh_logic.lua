@@ -55,7 +55,12 @@ function DToyBox.CheckListing()
 			end
 
 			value.init = true
-			value.bundle:MountDelay()
+
+			if value.bundle.MountDelay then
+				value.bundle:MountDelay()
+			else
+				value.bundle:Mount()
+			end
 		end
 	end
 end
