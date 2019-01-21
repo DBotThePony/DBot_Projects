@@ -24,8 +24,6 @@
 -- http.Fetch('https://dbotthepony.ru/vll/vll2.lua',function(b)RunString(b,'VLL2')end,function(err)print('VLL2',err)end)
 -- ulx luarun "http.Fetch('https://dbotthepony.ru/vll/vll2.lua',function(b)RunString(b,'VLL2')end,function(err)print('VLL2',err)end)"
 
-if VLL2 then return end
-
 local __cloadStatus, _cloadError = pcall(function()
 
 if VLL2 then
@@ -220,14 +218,16 @@ if SERVER then
         local ply = _list_0[_index_0]
         ply:SendLua([[if VLL2 then return end http.Fetch('https://dbotthepony.ru/vll/vll2.lua',function(b)RunString(b,'VLL2')end,function(err)print('VLL2',err)end)]])
       end
-    else
+    end
+    if VLL2_FULL_RELOAD then
       local _list_0 = player.GetAll()
       for _index_0 = 1, #_list_0 do
         local ply = _list_0[_index_0]
-        ply:SendLua([[http.Fetch('https://dbotthepony.ru/vll/vll2.lua',function(b)RunString(b,'VLL2')end)]])
+        ply:SendLua([[http.Fetch('https://dbotthepony.ru/vll/vll2.lua',function(b)RunString(b,'VLL2')end,function(err)print('VLL2',err)end)]])
       end
-      local VLL2_GOING_TO_RELOAD = false
+      _G.VLL2_FULL_RELOAD = false
     end
+    _G.VLL2_GOING_TO_RELOAD = false
   else
     AddCSLuaFile()
     return hook.Remove('PlayerInitialSpawn', 'VLL2.LoadOnClient')
@@ -239,6 +239,8 @@ end)
 if not __cloadStatus then
 	print('UNABLE TO LOAD VLL2 CORE')
 	print('LOAD CAN NOT CONTINUE')
+	print('REASON:')
+	print(_cloadError)
 	return
 end
 
@@ -564,13 +566,10 @@ do
       file.Delete(self.outputPath)
       self.fstream = file.Open(self.outputPath, 'wb', 'DATA')
       self.status = self.__class.STATUS_DOWNLOADING
-      self:Msg('Allocating disk space for ' .. self.url .. ', this can take some time...')
-      for i = 1, (self.length - self.length % 4) / 4 do
-        self.fstream:WriteULong(0)
-      end
-      for i = 1, self.length % 4 do
-        self.fstream:WriteByte(0)
-      end
+      self:Msg('Allocating disk space for ' .. self.url .. '...')
+      self.fstream:Seek(self.length - 1)
+      self.fstream:WriteByte(0)
+      self.fstream:Seek(0)
       do
         local _accum_0 = { }
         local _len_0 = 1
@@ -727,49 +726,60 @@ do
   local _obj_0 = _G
   string, table, VLL2 = _obj_0.string, _obj_0.table, _obj_0.VLL2
 end
+local type = luatype or type
 do
   local _class_0
   local _base_0 = {
-    Open = function(self, directory)
+    Open = function(self, directory, lowered)
       if directory == '' or directory == '/' or directory:Trim() == '' then
         return self
       end
-      if string.find(directory, '/', 1, true) then
+      if not lowered then
+        directory = directory:lower()
+      end
+      do
         local startpos = string.find(directory, '/', 1, true)
-        local namedir = string.sub(directory, 1, startpos - 1):lower()
-        local nextdir = string.sub(directory, startpos + 1):lower()
-        if self.subdirs[namedir] then
-          return self.subdirs[namedir]:Open(nextdir)
+        if startpos then
+          local namedir = string.sub(directory, 1, startpos - 1)
+          local nextdir = string.sub(directory, startpos + 1)
+          if self.subdirs[namedir] then
+            return self.subdirs[namedir]:Open(nextdir)
+          end
+          local dir = VLL2.FSDirectory(namedir, self)
+          self.subdirs[namedir] = dir
+          return dir:Open(nextdir, true)
+        else
+          if self.subdirs[directory] then
+            return self.subdirs[directory]
+          end
+          local dir = VLL2.FSDirectory(directory, self)
+          self.subdirs[directory] = dir
+          return dir
         end
-        local dir = VLL2.FSDirectory(namedir, self)
-        self.subdirs[namedir] = dir
-        return dir:Open(nextdir)
-      else
-        if self.subdirs[directory] then
-          return self.subdirs[directory]
-        end
-        local dir = VLL2.FSDirectory(directory, self)
-        self.subdirs[directory] = dir
-        return dir
       end
     end,
-    OpenRaw = function(self, directory)
+    OpenRaw = function(self, directory, lowered)
       if directory == '' or directory == '/' or directory:Trim() == '' then
         return self
       end
-      if string.find(directory, '/', 1, true) then
+      if not lowered then
+        directory = directory:lower()
+      end
+      do
         local startpos = string.find(directory, '/', 1, true)
-        local namedir = string.sub(directory, 1, startpos - 1):lower()
-        local nextdir = string.sub(directory, startpos + 1):lower()
-        if self.subdirs[namedir] then
-          return self.subdirs[namedir]:OpenRaw(nextdir)
+        if startpos then
+          local namedir = string.sub(directory, 1, startpos - 1)
+          local nextdir = string.sub(directory, startpos + 1)
+          if self.subdirs[namedir] then
+            return self.subdirs[namedir]:OpenRaw(nextdir, true)
+          end
+          return false
+        else
+          if self.subdirs[directory] then
+            return self.subdirs[directory]
+          end
+          return false
         end
-        return false
-      else
-        if self.subdirs[directory] then
-          return self.subdirs[directory]
-        end
-        return false
       end
     end,
     GetName = function(self)
@@ -886,7 +896,7 @@ do
       assert(type(contents) == 'string', 'Contents must be a string - ' .. type(contents))
       assert(not string.find(path, '..', 1, true), 'Path must be absolute')
       local dname, fname = VLL2.FileSystem.StripFileName(path:lower())
-      local dir = self.root:Open(dname)
+      local dir = self.root:Open(dname, true)
       dir:Write(fname, contents)
       return self
     end,
@@ -894,20 +904,20 @@ do
       assert(type(path) == 'string', 'Invalid path to write - ' .. type(path))
       assert(not string.find(path, '..', 1, true), 'Path must be absolute')
       local dname, fname = VLL2.FileSystem.StripFileName(path:lower())
-      local dir = self.root:Open(dname)
+      local dir = self.root:Open(dname, true)
       return dir:Read(fname)
     end,
     Exists = function(self, path)
       assert(type(path) == 'string', 'Invalid path to write - ' .. type(path))
       assert(not string.find(path, '..', 1, true), 'Path must be absolute')
       local dname, fname = VLL2.FileSystem.StripFileName(path:lower())
-      return self.root:Open(dname):Exists(fname)
+      return self.root:Open(dname, true):Exists(fname)
     end,
     Find = function(self, pattern)
       assert(type(pattern) == 'string', 'Invalid pattern type provided: ' .. type(pattern))
       assert(not string.find(pattern, '..', 1, true), 'Path must be absolute')
       local dname, fname = VLL2.FileSystem.StripFileName(pattern:lower())
-      local dir = self.root:Open(dname)
+      local dir = self.root:Open(dname, true)
       if fname == '*' then
         return dir:ListFiles(), dir:ListDirs()
       end
@@ -1004,16 +1014,24 @@ do
   local _obj_0 = _G
   file, util, error, assert, HTTP, Entity, game = _obj_0.file, _obj_0.util, _obj_0.error, _obj_0.assert, _obj_0.HTTP, _obj_0.Entity, _obj_0.game
 end
+local DO_DOWNLOAD_WORKSHOP
 if SERVER then
   util.AddNetworkString('vll2.replicate_url')
   util.AddNetworkString('vll2.replicate_workshop')
   util.AddNetworkString('vll2.replicate_wscollection')
   util.AddNetworkString('vll2.replicate_all')
+else
+  DO_DOWNLOAD_WORKSHOP = CreateConVar('vll2_dl_workshop', '1', {
+    FCVAR_ARCHIVE
+  }, 'Actually download GMA files. Disabling this is VERY experemental, and can cause undesired behaviour of stuff. You were warned.')
+  cvars.AddChangeCallback('vll2_dl_workshop', (function()
+    return RunConsoleCommand('host_writeconfig')
+  end), 'VLL2')
 end
 file.CreateDir('vll2')
-file.CreateDir('vll2/lua_cache')
 file.CreateDir('vll2/ws_cache')
 file.CreateDir('vll2/gma_cache')
+sql.Query('CREATE TABLE IF NOT EXISTS vll2_lua_cache (fpath VARCHAR(400) PRIMARY KEY, tstamp BIGINT NOT NULL DEFAULT 0, contents BLOB NOT NULL)')
 do
   local _class_0
   local _base_0 = {
@@ -1171,61 +1189,48 @@ do
   self.STATUS_LOADED = 2
   self.STATUS_RUNNING = 3
   self.STATUS_ERROR = 4
-  do
-    local _tbl_0 = { }
-    local _list_0 = file.Find('vll2/lua_cache/*', 'DATA')
-    for _index_0 = 1, #_list_0 do
-      local fil = _list_0[_index_0]
-      _tbl_0[fil:sub(1, -5):Trim()] = file.Time('vll2/lua_cache/' .. fil, 'DATA')
-    end
-    self.DISK_CACHE = _tbl_0
-  end
-  self.DISK_CACHE_READ = { }
   self.Checkup = function(self, bname)
     if not self._S[bname] then
       return true
     end
     return not self._S[bname]:IsLoading()
   end
-  self.__FromCache = function(self, hash)
-    if self.DISK_CACHE_READ[hash] then
-      return self.DISK_CACHE_READ[hash]
-    end
-    self.DISK_CACHE_READ[hash] = file.Read('vll2/lua_cache/' .. hash .. '.dat', 'DATA')
-    local decompress = util.Decompress(self.DISK_CACHE_READ[hash] or '')
-    if decompress == '' then
-      self.DISK_CACHE_READ[hash] = nil
-      self.DISK_CACHE[hash] = nil
-      file.Delete('vll2/lua_cache/' .. hash .. '.dat')
-      return nil
-    else
-      self.DISK_CACHE_READ[hash] = decompress
-      return decompress
-    end
-  end
   self.FromCache = function(self, fname, fstamp)
-    local hash = util.CRC(fname)
-    if not self.DISK_CACHE[hash] then
-      return 
-    end
-    if fstamp then
-      if self.DISK_CACHE[hash] >= fstamp then
-        return self:__FromCache(hash)
-      else
-        self.DISK_CACHE_READ[hash] = nil
-        self.DISK_CACHE[hash] = nil
-        file.Delete('vll2/lua_cache/' .. hash .. '.dat')
+    if not fstamp then
+      local data = sql.Query('SELECT contents FROM vll2_lua_cache WHERE fpath = ' .. SQLStr(fname))
+      if not data then
         return 
       end
-    else
-      return self:__FromCache(hash)
+      return data[1].contents
     end
+    local data = sql.Query('SELECT contents FROM vll2_lua_cache WHERE tstamp >= ' .. fstamp .. ' AND fpath = ' .. SQLStr(fname))
+    if not data then
+      return 
+    end
+    return data[1].contents
   end
-  self.WriteCache = function(self, fname, contents)
-    local hash = util.CRC(fname)
-    self.DISK_CACHE[hash] = os.time()
-    self.DISK_CACHE_READ[fname] = contents
-    return file.Write('vll2/lua_cache/' .. hash .. '.dat', util.Compress(contents))
+  self.FromCacheMultiple = function(self, fnames, fstamp)
+    local format = '(' .. table.concat((function()
+      local _accum_0 = { }
+      local _len_0 = 1
+      for _index_0 = 1, #fnames do
+        local name = fnames[_index_0]
+        _accum_0[_len_0] = SQLStr(name)
+        _len_0 = _len_0 + 1
+      end
+      return _accum_0
+    end)(), ',') .. ')'
+    if not fstamp then
+      return sql.Query('SELECT fpath, contents FROM vll2_lua_cache WHERE fpath IN  ' .. format) or { }
+    end
+    return sql.Query('SELECT fpath, contents FROM vll2_lua_cache WHERE tstamp >= ' .. fstamp .. ' AND fpath IN ' .. format) or { }
+  end
+  self.WriteCache = function(self, fname, contents, fstamp)
+    if fstamp == nil then
+      fstamp = os.time()
+    end
+    sql.Query('DELETE FROM vll2_lua_cache WHERE fpath = ' .. SQLStr(fname))
+    return sql.Query('INSERT INTO vll2_lua_cache (fpath, tstamp, contents) VALUES (' .. SQLStr(fname) .. ', ' .. SQLStr(fstamp) .. ', ' .. SQLStr(contents) .. ')')
   end
   VLL2.AbstractBundle = _class_0
 end
@@ -1338,28 +1343,89 @@ do
       end
       self.toDownload = #self.bundleList
       self.downloaded = 0
-      local _list_0 = self.bundleList
-      for _index_0 = 1, #_list_0 do
-        local line = _list_0[_index_0]
-        if line ~= '' then
-          local fpath, url, fstamp
-          do
-            local _obj_0 = string.Explode(';', line)
-            fpath, url, fstamp = _obj_0[1], _obj_0[2], _obj_0[3]
-          end
-          if not url then
-            VLL2.MessageBundle(line)
-            error('wtf')
-          end
-          local cached = self.__class:FromCache(fpath, tonumber(fstamp))
-          if cached then
-            self.fs:Write(fpath, cached)
-            self.globalFS:Write(fpath, cached)
-            self.downloaded = self.downloaded + 1
-          else
-            self:DownloadFile(fpath, url)
+      local checkCache = { }
+      local lines
+      do
+        local _accum_0 = { }
+        local _len_0 = 1
+        local _list_0 = self.bundleList
+        for _index_0 = 1, #_list_0 do
+          local line = _list_0[_index_0]
+          if line ~= '' then
+            _accum_0[_len_0] = string.Explode(';', line)
+            _len_0 = _len_0 + 1
           end
         end
+        lines = _accum_0
+      end
+      for _index_0 = 1, #lines do
+        local _des_0 = lines[_index_0]
+        local fpath, url, fstamp
+        fpath, url, fstamp = _des_0[1], _des_0[2], _des_0[3]
+        if not url then
+          VLL2.MessageBundle(fpath, url, fstamp)
+          error('wtf')
+        end
+        local hit = false
+        for _index_1 = 1, #checkCache do
+          local _des_1 = checkCache[_index_1]
+          local stamp, listing
+          stamp, listing = _des_1[1], _des_1[2]
+          if stamp == fstamp then
+            hit = true
+            table.insert(listing, fpath)
+          end
+        end
+        if not hit then
+          table.insert(checkCache, {
+            fstamp,
+            {
+              fpath
+            }
+          })
+        end
+      end
+      local toload
+      do
+        local _accum_0 = { }
+        local _len_0 = 1
+        for _index_0 = 1, #lines do
+          local _des_0 = lines[_index_0]
+          local fpath, url
+          fpath, url = _des_0[1], _des_0[2]
+          _accum_0[_len_0] = {
+            fpath,
+            url
+          }
+          _len_0 = _len_0 + 1
+        end
+        toload = _accum_0
+      end
+      for _index_0 = 1, #checkCache do
+        local _des_0 = checkCache[_index_0]
+        local stamp, listing
+        stamp, listing = _des_0[1], _des_0[2]
+        local _list_0 = self.__class:FromCacheMultiple(listing, stamp)
+        for _index_1 = 1, #_list_0 do
+          local _des_1 = _list_0[_index_1]
+          local fpath, contents
+          fpath, contents = _des_1.fpath, _des_1.contents
+          self.fs:Write(fpath, contents)
+          self.globalFS:Write(fpath, contents)
+          self.downloaded = self.downloaded + 1
+          for i, entry in ipairs(toload) do
+            if entry[1] == fpath then
+              table.remove(toload, i)
+              break
+            end
+          end
+        end
+      end
+      for _index_0 = 1, #toload do
+        local _des_0 = toload[_index_0]
+        local fpath, url
+        fpath, url = _des_0[1], _des_0[2]
+        self:DownloadFile(fpath, url)
       end
       return self:CheckIfRunnable()
     end,
@@ -1719,6 +1785,12 @@ do
         self:Msg('Found GMA in cache, mounting in-place...')
         self:SpecifyPath(self._datapath_full)
         self:__Mount()
+        return 
+      end
+      if CLIENT and not DO_DOWNLOAD_WORKSHOP:GetBool() then
+        self:Msg('Not downloading workshop GMA file, since we have it disabled')
+        self.status = self.__class.STATUS_ERROR
+        self:CallError('Restricted by user')
         return 
       end
       self.status = self.__class.STATUS_LOADING
@@ -2461,6 +2533,10 @@ do
                 if file.Exists(path, 'GAME') then
                   self:SpecifyPath(path)
                   self:__Mount()
+                elseif not DO_DOWNLOAD_WORKSHOP:GetBool() then
+                  self:Msg('Not downloading workshop GMA file, since we have it disabled')
+                  self.status = self.__class.STATUS_ERROR
+                  self:CallError('Restricted by user')
                 else
                   self:Msg('Downloading from workshop')
                   local msgid = 'vll2_dl_' .. self.workshopID
@@ -2991,7 +3067,7 @@ do
   local _class_0
   local _base_0 = {
     FileExists = function(self, fpath)
-      return fpath and (self.localFS:Exists(fpath) or self.globalFS and self.globalFS:Exists(fpath)) or file.Exists(fpath, 'LUA')
+      return fpath and (self.localFS:Exists(fpath) or self.globalFS and self.globalFS:Exists(fpath) or file.Exists(fpath, 'LUA'))
     end,
     ReadFile = function(self, fpath)
       if not self:FileExists(fpath) then
@@ -3746,10 +3822,30 @@ vll2_reload = function(ply, cmd, args)
     return VLL2.MessagePlayer(ply, 'Not a super admin!')
   end
   VLL2.MessagePlayer(ply, 'Reloading VLL2, this can take some time...')
-  local VLL2_GOING_TO_RELOAD = true
+  _G.VLL2_GOING_TO_RELOAD = true
   return http.Fetch("https://dbotthepony.ru/vll/vll2.lua", function(b)
     return _G.RunString(b, "VLL2")
   end)
+end
+local vll2_reload_full
+vll2_reload_full = function(ply, cmd, args)
+  if disallow(ply) then
+    return VLL2.MessagePlayer(ply, 'Not a super admin!')
+  end
+  VLL2.MessagePlayer(ply, 'Flly Reloading VLL2, this can take some time...')
+  _G.VLL2_GOING_TO_RELOAD = true
+  _G.VLL2_FULL_RELOAD = true
+  return http.Fetch("https://dbotthepony.ru/vll/vll2.lua", function(b)
+    return _G.RunString(b, "VLL2")
+  end)
+end
+local vll2_clear_lua_cache
+vll2_clear_lua_cache = function(ply, cmd, args)
+  if disallow(ply) then
+    return VLL2.MessagePlayer(ply, 'Not a super admin!')
+  end
+  sql.Query('DELETE FROM vll2_lua_cache')
+  return VLL2.MessagePlayer(ply, 'Lua cache has been cleared.')
 end
 return timer.Simple(0, function()
   if not game.SinglePlayer() or CLIENT then
@@ -3760,6 +3856,8 @@ return timer.Simple(0, function()
     concommand.Add('vll2_workshop_silent', vll2_workshop_silent)
     concommand.Add('vll2_workshop_content_silent', vll2_workshop_content_silent)
     concommand.Add('vll2_reload', vll2_reload)
+    concommand.Add('vll2_reload_full', vll2_reload_full)
+    concommand.Add('vll2_clear_lua_cache', vll2_clear_lua_cache)
   end
   if SERVER then
     net.Receive('vll2_cmd_load_server', function(_, ply)
@@ -3773,7 +3871,9 @@ return timer.Simple(0, function()
     concommand.Add('vll2_workshop_content_server', vll2_workshop_content)
     concommand.Add('vll2_workshop_silent_server', vll2_workshop_silent)
     concommand.Add('vll2_workshop_content_silent_server', vll2_workshop_content_silent)
-    return concommand.Add('vll2_reload_server', vll2_reload)
+    concommand.Add('vll2_reload_server', vll2_reload)
+    concommand.Add('vll2_reload_full_server', vll2_reload_full)
+    return concommand.Add('vll2_clear_lua_cache_server', vll2_clear_lua_cache)
   else
     local vll2_load_server
     vll2_load_server = function(ply, cmd, args)
