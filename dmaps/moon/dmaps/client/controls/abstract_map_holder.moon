@@ -1,19 +1,19 @@
 
 --
--- Copyright (C) 2017 DBot
--- 
+-- Copyright (C) 2017-2019 DBot
+--
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
 -- You may obtain a copy of the License at
--- 
+--
 --     http://www.apache.org/licenses/LICENSE-2.0
--- 
+--
 -- Unless required by applicable law or agreed to in writing, software
 -- distributed under the License is distributed on an "AS IS" BASIS,
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
--- 
+--
 
 -- A panel that holds the map
 -- And user controls
@@ -50,25 +50,25 @@ PANEL.Init = =>
 	@UpdateMapSizes!
 	@SetCursor('hand')
 	@hold = false
-	
+
 	@mapX = 0
 	@mapY = 0
-	
+
 	@compass = vgui.Create('DMapsMapCompass', @)
 	@compass\SetMap(@mapObject)
-	
+
 	@arrows = vgui.Create('DMapsMapArrows', @)
 	@arrows\SetMap(@mapObject)
-	
+
 	@zoom = vgui.Create('DMapsMapZoom', @)
 	@zoom\SetMap(@mapObject)
-	
+
 	@bottomClip = vgui.Create('DMapsMapClipBottom', @)
 	@bottomClip\SetMap(@mapObject)
-	
+
 	@topClip = vgui.Create('DMapsMapClipTop', @)
 	@topClip\SetMap(@mapObject)
-	
+
 	@mapObject\AddObject(DMapLocalPlayerPointer!)
 	@mapObject\CloneNetworkWaypoints()
 	@mapObject\ListenNetworkWaypoints()
@@ -99,12 +99,12 @@ PANEL.Init = =>
 	@pressedButtons = {}
 
 	@notifications = {}
-	
+
 	@SetMouseInputEnabled(true)
 	@SetKeyboardInputEnabled(true)
-	
+
 	@Spectating = LocalPlayer!
-	
+
 	@cursor_lastX = 0
 	@cursor_lastY = 0
 PANEL.GetMap = => @mapObject
@@ -131,7 +131,7 @@ PANEL.OnKeyCodePressed = (code = KEY_NONE) =>
 
 	tr = @mapObject\Trace2DPoint(x, y)
 	z = math.floor(tr.HitPos.z + 10)
-	
+
 	if DMaps.IsBindDown('help')
 		@showHelp = not @showHelp
 		return
@@ -171,7 +171,7 @@ PANEL.OnKeyCodePressed = (code = KEY_NONE) =>
 		SetClipboardText("Vector(#{x}, #{y}, #{z})")
 		@AddNotification("Copied Vector(#{x}, #{y}, #{z})")
 		return
-	
+
 
 PANEL.OnMousePressed = (code) =>
 	if code == MOUSE_RIGHT
@@ -258,16 +258,16 @@ PANEL.OnMousePressed = (code) =>
 		@hold = true
 		x, y = gui.MousePos()
 		@SetCursor('sizeall')
-		
+
 		@cursor_lastX = x
 		@cursor_lastY = y
-		
+
 		@mapObject\LockView(true)
 
 PANEL.Release = =>
 	@hold = false
 	@SetCursor('hand')
-	
+
 	@cursor_lastX = 0
 	@cursor_lastY = 0
 
@@ -282,30 +282,30 @@ PANEL.OnMouseWheeled = (deltaWheel) =>
 	if ENABLE_SMOOTH\GetBool() and ENABLE_SMOOTH_ZOOM\GetBool()
 		@mapObject\AddLerpZoom(addZoom)
 	else
-		@mapObject\AddZoom(addZoom) 
-	
+		@mapObject\AddZoom(addZoom)
+
 	mult = @mapObject\GetZoomMultiplier! * 0.05
 	yawDeg = @mapObject\GetYaw!
 	w, h = @GetSize!
 	centerX, centerY = @LocalToScreen(w / 2, h / 2)
-	
+
 	yaw = math.rad(-yawDeg)
 	sin, cos = math.sin(yaw), math.cos(yaw)
 	x, y = gui.MousePos()
-	
+
 	deltaX = x - centerX
 	deltaY = y - centerY
-	
+
 	bMoveX = deltaX * mult
 	bMoveY = deltaY * mult
-	
+
 	moveX = bMoveX * cos - bMoveY * sin
 	moveY = bMoveY * cos + bMoveX * sin
-	
+
 	if yawDeg < -180
 		moveX = -moveX
 		moveY = -moveY
-	
+
 	if ENABLE_SMOOTH\GetBool() and ENABLE_SMOOTH_MOVE\GetBool()
 		if deltaWheel < 0
 			@mapObject\AddLerpX(-moveX)
@@ -327,7 +327,7 @@ PANEL.UpdateMapSizes = =>
 PANEL.PerformLayout = (w, h) =>
 	@mapObject\SetSize(w, h)
 	@mapObject\SetDrawPos(@LocalToScreen(0, 0))
-	
+
 	min = math.min(w, h)
 	guiMult = min / 800
 	@arrows\SetSizeMult(guiMult)
@@ -346,13 +346,13 @@ PANEL.PerformLayout = (w, h) =>
 PANEL.Think = =>
 	if not @IsHovered!
 		@Release!
-	
+
 	mouseX, mouseY = gui.MousePos()
 	w, h = @GetSize!
 	cX, cY = @LocalToScreen(w / 2, h / 2)
-	
+
 	sw, sh = ScrW!, ScrH!
-	
+
 	with @mapObject
 		getX, getY = \ScreenToMap((mouseX - cX) / w * sw, (cY - mouseY) / h * sh)
 		\SetMousePos(getX, getY)
@@ -360,32 +360,32 @@ PANEL.Think = =>
 		\Think!
 		\StandartThink!
 		\ThinkPlayer(@Spectating)
-		
+
 		@mapX, @mapY = math.floor(getX), math.floor(getY)
-	
+
 	if @hold
 		x, y = mouseX, mouseY
 		deltaX = x - @cursor_lastX
 		deltaY = y - @cursor_lastY
-		
+
 		if deltaX ~= 0 or deltaY ~= 0
 			yawDeg = @mapObject\GetYaw!
 			yaw = math.rad(yawDeg)
 			sin, cos = math.sin(yaw), math.cos(yaw)
-			
+
 			@cursor_lastX = x
 			@cursor_lastY = y
-			
+
 			bMoveX = -deltaX * @mapObject.xHUPerPixel * (@mapObject\DeltaZoomMultiplier! ^ 2) * @mapObject.__class.CONSTANT_ZOOM_MOVE
 			bMoveY = deltaY * @mapObject.yHUPerPixel * (@mapObject\DeltaZoomMultiplier! ^ 2) * @mapObject.__class.CONSTANT_ZOOM_MOVE
-			
+
 			moveX = bMoveX * cos - bMoveY * sin
 			moveY = bMoveX * sin + bMoveY * cos
-			
+
 			if yawDeg < -180
 				moveX = -moveX
 				moveY = -moveY
-			
+
 			if ENABLE_SMOOTH\GetBool() and ENABLE_SMOOTH_MOVE\GetBool()
 				@mapObject\AddLerpX(moveX)
 				@mapObject\AddLerpY(moveY)
@@ -406,13 +406,13 @@ PANEL.Think = =>
 
 		if DMaps.IsBindDown('duck')
 			mult *= CTRL_MULT\GetFloat()
-		
+
 		if DMaps.IsBindDown('zoomin')
 			deltaZoom = -FrameTime() * ZOOM_BIND_MULT\GetInt()
-		
+
 		if DMaps.IsBindDown('zoomout')
 			deltaZoom = FrameTime() * ZOOM_BIND_MULT\GetInt()
-		
+
 		if DMaps.IsBindDown('left')
 			bMoveX -= FrameTime() * MOVE_MULT\GetInt()
 		if DMaps.IsBindDown('right')
@@ -421,7 +421,7 @@ PANEL.Think = =>
 			bMoveY += FrameTime() * MOVE_MULT\GetInt()
 		if DMaps.IsBindDown('down')
 			bMoveY -= FrameTime() * MOVE_MULT\GetInt()
-		
+
 		bMoveX *= mult
 		bMoveY *= mult
 		deltaZoom *= mult
@@ -431,17 +431,17 @@ PANEL.Think = =>
 			yawDeg = @mapObject\GetYaw!
 			yaw = math.rad(yawDeg)
 			sin, cos = math.sin(yaw), math.cos(yaw)
-			
+
 			bMoveX *= @mapObject.xHUPerPixel * (@mapObject\DeltaZoomMultiplier! ^ 2) * @mapObject.__class.CONSTANT_ZOOM_MOVE
 			bMoveY *= @mapObject.yHUPerPixel * (@mapObject\DeltaZoomMultiplier! ^ 2) * @mapObject.__class.CONSTANT_ZOOM_MOVE
 
 			moveX = bMoveX * cos - bMoveY * sin
 			moveY = bMoveX * sin + bMoveY * cos
-			
+
 			if yawDeg < -180
 				moveX = -moveX
 				moveY = -moveY
-			
+
 			if ENABLE_SMOOTH\GetBool() and ENABLE_SMOOTH_MOVE\GetBool()
 				@mapObject\AddLerpX(moveX)
 				@mapObject\AddLerpY(moveY)
@@ -455,20 +455,20 @@ PANEL.Think = =>
 			if ENABLE_SMOOTH\GetBool() and ENABLE_SMOOTH_ZOOM\GetBool()
 				@mapObject\AddLerpZoom(addZoom)
 			else
-				@mapObject\AddZoom(addZoom) 
-	
+				@mapObject\AddZoom(addZoom)
+
 PANEL.Paint = (w, h) =>
 	with surface
 		.SetDrawColor(0, 0, 0)
 		.DrawRect(0, 0, w, h)
-	
+
 	@mapObject\IsDrawnInPanel(true)
 	@mapObject\SetWidth(w)
 	@mapObject\SetHeight(h)
-	
+
 	@mapObject\SetDrawPos(@LocalToScreen(0, 0))
 	@mapObject\DrawHook!
-	
+
 	with surface
 		.SetDrawColor(0, 0, 0, 100)
 		.SetTextColor(255, 255, 255)
@@ -486,7 +486,7 @@ PANEL.Paint = (w, h) =>
 			.SetDrawColor(0, 0, 0, 100 * @helpAlpha)
 			.DrawRect(w / 2 - tw / 2 - 4, 0, tw + 8, th + 8)
 			draw.DrawText(text, 'Default', w / 2, 4, Color(255, 255, 255, 255 * @helpAlpha), TEXT_ALIGN_CENTER)
-	
+
 	rTime = RealTime()
 	shiftY = 0
 	for i, {:text, :time, :start, :endTime, :fadeStart, :startTime} in pairs @notifications
@@ -501,7 +501,7 @@ PANEL.Paint = (w, h) =>
 		surface.DrawRect(6, 0, tw + 8, th + 8 + shiftY)
 		draw.DrawText(text, 'Default', 10, 4 + shiftY, Color(255, 255, 255, 255 * alpha))
 		shiftY += th + 8
-	
+
 PANEL.OnRemove = =>
 	@mapObject\Remove!
 

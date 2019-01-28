@@ -1,19 +1,19 @@
 
 --
--- Copyright (C) 2017 DBot
--- 
+-- Copyright (C) 2017-2019 DBot
+--
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
 -- You may obtain a copy of the License at
--- 
+--
 --     http://www.apache.org/licenses/LICENSE-2.0
--- 
+--
 -- Unless required by applicable law or agreed to in writing, software
 -- distributed under the License is distributed on an "AS IS" BASIS,
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
--- 
+--
 
 CONTROL_LOCKED = DMaps.CreateColor(230, 230, 230, 'clip_locked', 'Clip control "Locked"')
 CONTROL_UNLOCKED = DMaps.CreateColor(170, 170, 170, 'clip_unlocked', 'Clip control "Unlocked"')
@@ -63,7 +63,7 @@ PANEL =
 			if @holdstart + 0.1 > RealTime()
 				@lock = false
 				@mapObject\LockClip(false)
-		
+
 	SetMap: (map) =>
 		@mapObject = map
 		@level = @mapObject\GetClipLevelBottom()
@@ -76,28 +76,28 @@ PANEL =
 		@START = @MAXIMAL - @LIMIT
 		@END = @LIMIT
 		@DELTA = @END - @START
-		
+
 		holdingEnough = @hold and @holdstart + 0.1 < RealTime!
-			
+
 		if not @IsHovered()
 			@hold = false
 			holdingEnough = false
-		
+
 		if holdingEnough
 			@lock = true
 			@mapObject\LockClip(true)
-		
+
 		if @lock
 			if holdingEnough
 				w, h = @GetSize()
 				hw, hh = w / 2, h / 2
-				
+
 				centerX, centerY = @LocalToScreen(hw, h)
 				x, y = gui.MousePos()
-				
+
 				deltaX = x - centerX
 				deltaY = centerY - y
-				
+
 				if deltaX < hw and deltaX > -hw and deltaY > 0 and deltaY < h
 					@level = math.Clamp(@START + @DELTA * deltaY / h, @START, @END)
 					if IsSmooth()
@@ -108,7 +108,7 @@ PANEL =
 				@level = @mapObject\GetClipLevelBottom()
 		else
 			@level = @mapObject\GetClipLevelBottom()
-		
+
 		if IsSmooth()
 			@displayLevel = Lerp(0.1, @displayLevel, @level)
 		else
@@ -116,26 +116,26 @@ PANEL =
 
 	Paint: (w, h) =>
 		draw.NoTexture()
-		
+
 		-- Background
 		surface.SetDrawColor(CONTROL_BACKGROUND())
 		surface.DrawRect(3, 0, w - 6, h)
-		
+
 		step = h / 14
-		
+
 		surface.SetDrawColor(0, 0, 0)
-		
+
 		-- Visual step markers
 		for i = step, h, step
 			surface.DrawRect(5, i, w - 10, 4 * @sizeMult)
-		
+
 		if @lock
 			surface.SetDrawColor(CONTROL_LOCKED())
 		else
 			surface.SetDrawColor(CONTROL_UNLOCKED())
-		
+
 		mult = (1 - (@displayLevel - @START) / @DELTA) - .2
-		
+
 		if mult >= -0.2
 			surface.DrawRect(0, math.min(mult * h + 30, h - @sizeMult * 10), w, 4 * @sizeMult)
 		else
@@ -183,7 +183,7 @@ PANEL =
 			if @holdstart + 0.1 > RealTime()
 				@lock = false
 				@mapObject\LockClip(false)
-		
+
 	SetMap: (map) =>
 		@mapObject = map
 		@level = @mapObject\GetClipLevelTop()
@@ -196,28 +196,28 @@ PANEL =
 		@START = @LIMIT
 		@END = @LIMIT + @MAXIMAL
 		@DELTA = @END - @START
-		
+
 		holdingEnough = @hold and @holdstart + 0.1 < RealTime!
-			
+
 		if not @IsHovered()
 			@hold = false
 			holdingEnough = false
-		
+
 		if holdingEnough
 			@lock = true
 			@mapObject\LockClip(true)
-		
+
 		if @lock
 			if holdingEnough
 				w, h = @GetSize()
 				hw, hh = w / 2, h / 2
-				
+
 				centerX, centerY = @LocalToScreen(hw, h)
 				x, y = gui.MousePos()
-				
+
 				deltaX = x - centerX
 				deltaY = centerY - y
-				
+
 				if deltaX < hw and deltaX > -hw and deltaY > 0 and deltaY < h
 					@level = math.Clamp(@START + @DELTA * deltaY / h, @START, @END)
 					if IsSmooth()
@@ -228,7 +228,7 @@ PANEL =
 				@level = @mapObject\GetClipLevelTop()
 		else
 			@level = @mapObject\GetClipLevelTop()
-		
+
 		if IsSmooth()
 			@displayLevel = Lerp(0.1, @displayLevel, @level)
 		else
@@ -236,26 +236,26 @@ PANEL =
 
 	Paint: (w, h) =>
 		draw.NoTexture()
-		
+
 		-- Background
 		surface.SetDrawColor(CONTROL_BACKGROUND())
 		surface.DrawRect(3, 0, w - 6, h)
-		
+
 		step = h / 14
-		
+
 		surface.SetDrawColor(0, 0, 0)
-		
+
 		-- Visual step markers
 		for i = step, h, step
 			surface.DrawRect(5, i, w - 10, 4 * @sizeMult)
-		
+
 		if @lock
 			surface.SetDrawColor(CONTROL_LOCKED())
 		else
 			surface.SetDrawColor(CONTROL_UNLOCKED())
-		
+
 		mult = (1 - (@displayLevel - @START) / @DELTA) - .2
-		
+
 		if mult >= -0.2
 			surface.DrawRect(0, math.min(mult * h + 30, h - @sizeMult * 10), w, 4 * @sizeMult)
 		else

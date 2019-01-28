@@ -1,19 +1,19 @@
 
 --
--- Copyright (C) 2017 DBot
--- 
+-- Copyright (C) 2017-2019 DBot
+--
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
 -- You may obtain a copy of the License at
--- 
+--
 --     http://www.apache.org/licenses/LICENSE-2.0
--- 
+--
 -- Unless required by applicable law or agreed to in writing, software
 -- distributed under the License is distributed on an "AS IS" BASIS,
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
--- 
+--
 
 MINIMAP_ZOOM = CreateConVar('cl_dmaps_minimap_zoom', '1000', {FCVAR_ARCHIVE}, 'Minimal "minimap mode" zoom')
 MINIMAP_SIZE = CreateConVar('cl_dmaps_minimap_size', '25', {FCVAR_ARCHIVE}, 'Size in percents of minimap')
@@ -102,11 +102,11 @@ DFRAME_ON_CLOSE = =>
 DMaps.CreateMainFrame = ->
 	if IsValid(DMaps.MainFrame)
 		DMaps.MainFrame\Remove!
-	
+
 	DMaps.MainFrame = vgui.Create('DFrame')
 	self = DMaps.MainFrame
 	@GetMap = => @mapHolder\GetMap()
-	
+
 	w, h = ScrW() - 100, ScrH() - 100
 	@SetSize(w, h)
 	@Center!
@@ -117,17 +117,17 @@ DMaps.CreateMainFrame = ->
 	@OnKeyCodePressed = (code = KEY_NONE) => @mapHolder\OnKeyCodePressed(code)
 	@LAST_MINIMAP_STATUS = false
 	@OnClose = DFRAME_ON_CLOSE
-	
+
 	@mapHolder = vgui.Create('DMapsMapHolder', @)
 	@mapHolder\Dock(FILL)
-	
+
 	@topMenu = vgui.Create('DButton', @)
 	@topMenu.frame = @
 	@topMenu\SetPos(4, 4)
 	@topMenu\SetSize(80, 20)
 	@topMenu\SetText('≡ DMaps')
 	@topMenu.DoClick = DBUTTON_DO_CLICK
-	
+
 	@buttons = vgui.Create('DMapButtons', @)
 	@buttons\AddMultiButton(@mapHolder\GetButtons())
 	@buttons\DoSetup(w, h, -5)
@@ -158,7 +158,7 @@ DMaps.CreateMainFrame = ->
 				\SetText('Display as minimap')
 				\SetTooltip('Display as minimap')
 			.WhatToDo = not .WhatToDo
-	
+
 	@oldThink = @Think
 	@Think = =>
 		@oldThink() if @oldThink
@@ -173,7 +173,7 @@ DMaps.CreateMainFrame = ->
 DMaps.OpenMap = ->
 	if not IsValid(DMaps.MainFrame)
 		DMaps.CreateMainFrame!
-	
+
 	DMaps.DISPLAY_AS_MINIMAP = false
 	with DMaps.MainFrame
 		\SetVisible(true)
@@ -218,7 +218,7 @@ hook.Add 'Think', 'DMaps.DrawAsMinimap', ->
 		map\SetMinimalAutoZoom(MINIMAP_ZOOM\GetInt() * math.Clamp(average, min, max))
 	else
 		map\SetMinimalAutoZoom(MINIMAP_ZOOM\GetInt())
-	
+
 	compass\Think()
 	map\StandartThink()
 	map\ThinkPlayer()

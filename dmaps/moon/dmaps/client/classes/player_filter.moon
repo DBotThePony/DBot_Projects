@@ -1,19 +1,19 @@
 
 --
--- Copyright (C) 2017 DBot
--- 
+-- Copyright (C) 2017-2019 DBot
+--
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
 -- You may obtain a copy of the License at
--- 
+--
 --     http://www.apache.org/licenses/LICENSE-2.0
--- 
+--
 -- Unless required by applicable law or agreed to in writing, software
 -- distributed under the License is distributed on an "AS IS" BASIS,
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
--- 
+--
 
 import DMaps from _G
 
@@ -55,14 +55,14 @@ class SandboxPlayerFilter extends PlayerFilterBase
 		@TRIGGER_FADE_DIST = START_HIDE\GetInt()
 		@SREET_DISTANCE = STREET_CHECK_DIST\GetInt()
 		@CHECK_TRACE = ENABLE_STREET_CHECK\GetBool()
-	
+
 	new: (ply, waypoint) =>
 		super(ply, waypoint)
-	
+
 	Filter: (map) =>
 		return false if not POINTS_ENABLED\GetBool()
 		dh = @waypoint\GetDeltaHeight()
-		
+
 		if dh > @@MAX_DELTA_HEIGHT or dh < -@@MAX_DELTA_HEIGHT
 			return false
 		elseif map.abstractSetup
@@ -76,9 +76,9 @@ class SandboxPlayerFilter extends PlayerFilterBase
 						start: pos
 						endpos: pos + @@UP_VECTOR
 					}
-					
+
 					tr = util.TraceLine(trData)
-					
+
 					if not tr.Hit or tr.HitSky
 						return true
 					else
@@ -93,7 +93,7 @@ class SandboxPlayerFilter extends PlayerFilterBase
 class DarkRPPlayerFilter extends SandboxPlayerFilter
 	new: (ply, waypoint) =>
 		super(ply, waypoint)
-	
+
 	Filter: (map) =>
 		return false if @ply.isWanted and @ply\isWanted()
 		return false if @ply.isArrested and @ply\isArrested()
@@ -103,7 +103,7 @@ class ZSPlayerFilter extends SandboxPlayerFilter
 	new: (ply, waypoint) =>
 		super(ply, waypoint)
 		@lc = LocalPlayer()
-	
+
 	Filter: =>
 		if @lc\Team() ~= @ply\Team() return false
 		return super()

@@ -1,19 +1,19 @@
 
 --
--- Copyright (C) 2017 DBot
--- 
+-- Copyright (C) 2017-2019 DBot
+--
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
 -- You may obtain a copy of the License at
--- 
+--
 --     http://www.apache.org/licenses/LICENSE-2.0
--- 
+--
 -- Unless required by applicable law or agreed to in writing, software
 -- distributed under the License is distributed on an "AS IS" BASIS,
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
--- 
+--
 
 import DMaps from _G
 import DMapEntityPointer from DMaps
@@ -41,12 +41,12 @@ HU_IN_METER = 40
 class AppenableString
 	new: (str = '') =>
 		@str = str
-	
+
 	GetString: => @str
-	
+
 	append: (str = '') =>
 		@str ..= '\n' .. str
-	
+
 	add: (...) => @append(...)
 	Append: (...) => @append(...)
 	Add: (...) => @append(...)
@@ -70,9 +70,9 @@ class DMapPlayerPointer extends DMapEntityPointer
 	@HPBarW = 200
 	@HPBarH = 10
 	@HPBarShift = 90
-	
+
 	@__type = 'player'
-	
+
 	new: (ply = NULL, filter = DMaps.GetPlayerFilter()) =>
 		@filter = filter(ply, @)
 		super(ply)
@@ -82,7 +82,7 @@ class DMapPlayerPointer extends DMapEntityPointer
 		@steamid = ply\SteamID()
 		@steamid64 = ply\SteamID64()
 		@uniqueid = ply\UniqueID()
-	
+
 	OpenMenu: (menu = DermaMenu()) =>
 		if not @GetEntity()\Alive() return false
 		super(menu)
@@ -106,7 +106,7 @@ class DMapPlayerPointer extends DMapEntityPointer
 	SetEntity: (ply) =>
 		super(ply)
 		@filter\SetPlayer(ply)
-	
+
 	ShouldDraw: => @draw and SHOULD_DRAW\GetBool()
 
 	GetEyeX: => @eyeX
@@ -118,21 +118,21 @@ class DMapPlayerPointer extends DMapEntityPointer
 	GetEyePos: => Vector(@eyeX, @eyeY, @eyeZ)
 	EyePos: => Vector(@eyeX, @eyeY, @eyeZ)
 	GetRenderPriority: => 100
-	
+
 	CalcPlayerData: (map) =>
 		ply = @entity
-		
+
 		ang = ply\EyeAngles!
 		@playerName = ply\Nick()
 		@SteamName = ply\SteamName() if ply.SteamName
 		@teamID = ply\Team!
 		@color = team.GetColor(@teamID)
 		@teamName = team.GetName(@teamID)
-		
+
 		@hp = ply\Health!
 		@armor = ply\Armor!
 		@maxhp = ply\GetMaxHealth!
-		
+
 		@pitch = ang.p
 		@yaw = -ang.y
 		@roll = ang.r
@@ -141,15 +141,15 @@ class DMapPlayerPointer extends DMapEntityPointer
 		@eyeX = x
 		@eyeY = y
 		@eyeZ = z
-		
+
 	Think: (map) =>
 		@CURRENT_MAP = map
 		super(map)
-		
+
 		if not IsValid(@entity) return
 		@CalcPlayerData(map)
 		@draw = @filter\Filter(map)
-	
+
 	GetPlayerInfo: =>
 		str = @playerName
 		if @IsNearMouse()
@@ -158,52 +158,52 @@ class DMapPlayerPointer extends DMapEntityPointer
 			str ..= "\nArmor: #{@armor}" if SHOULD_DRAW_ARMOR\GetBool() and SV_SHOULD_DRAW_ARMOR\GetBool()
 		text = AppenableString(str)
 		hook.Run('DMaps.AddPlayerInfo', @, text)
-		
+
 		newStr = text\GetString!
 		delta = @GetDeltaHeight!
-		
+
 		if delta > 100
 			newStr ..= "\n#{math.floor(delta / HU_IN_METER * 10) / 10} meters higher"
 		elseif delta < -100
 			newStr ..= "\n#{math.floor(-delta / HU_IN_METER * 10) / 10} meters lower"
-		
+
 		return newStr
-	
+
 	DrawPlayerInfo: (map, x = 0, y = 0, alpha = 1) =>
 		return if not SHOULD_DRAW_INFO\GetBool() or not SV_SHOULD_DRAW_INFO\GetBool()
 		y += 90
 		surface.SetFont(@@FONT)
-		
+
 		text = @GetPlayerInfo!
 		w, h = surface.GetTextSize(text)
-		
+
 		surface.SetDrawColor(@@BACKGROUND_COLOR.r, @@BACKGROUND_COLOR.g, @@BACKGROUND_COLOR.b, @@BACKGROUND_COLOR.a * alpha)
 		surface.DrawRect(x - @@BACKGROUND_SHIFT - w / 2, y - @@BACKGROUND_SHIFT, w + @@BACKGROUND_SHIFT * 2, h + @@BACKGROUND_SHIFT * 2)
 		draw.DrawText(text, @@FONT, x, y, Color(@@TEXT_COLOR.r, @@TEXT_COLOR.g, @@TEXT_COLOR.b, @@TEXT_COLOR.a * alpha), TEXT_ALIGN_CENTER)
-	
+
 	GetDeltaHeight: => @z - @CURRENT_MAP\GetZ!
-	
+
 	Draw: (map) =>
 		if not @GetEntity()\Alive() return
 		if @entity\InVehicle()
 			veh = @entity\GetVehicle()
 			if IsValid(veh) and veh\GetClass() ~= 'prop_vehicle_prisoner_pod' return
 		@CURRENT_MAP = map
-		
+
 		trig = @@generateTriangle(@DRAW_X, @DRAW_Y, @yaw, 40, 50, 130)
-		
+
 		newAlpha = 1
 		delta = @z - map\GetZ!
 		deltaAbs = math.abs(delta)
-		
+
 		if deltaAbs > @@MAX_DELTA_HEIGHT
 			return
 		elseif deltaAbs > @@START_FADE_HEIGHT
 			newAlpha = math.Clamp((@@FADE_VALUE_HEIGHT - deltaAbs) / @@FADE_VALUE_HEIGHT_DIV, 0.2, 1)
-		
+
 		surface.SetDrawColor(@color.r, @color.g, @color.b, @color.a * newAlpha)
 		surface.DrawPoly(trig)
-		
+
 		x, y = @DRAW_X, @DRAW_Y
 		@DrawPlayerInfo(map, x, y, newAlpha)
 
@@ -222,7 +222,7 @@ class DMapPlayerPointer extends DMapEntityPointer
 			colr.a *= newAlpha
 			surface.SetDrawColor(colr)
 			surface.DrawRect(x - w / 2, y, w * @divRLerp, h)
-		
+
 		@CURRENT_MAP = nil
 
 DMaps.DMapPlayerPointer = DMapPlayerPointer

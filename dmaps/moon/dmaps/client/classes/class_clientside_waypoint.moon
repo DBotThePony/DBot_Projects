@@ -1,19 +1,19 @@
 
 --
--- Copyright (C) 2017 DBot
--- 
+-- Copyright (C) 2017-2019 DBot
+--
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
 -- You may obtain a copy of the License at
--- 
+--
 --     http://www.apache.org/licenses/LICENSE-2.0
--- 
+--
 -- Unless required by applicable law or agreed to in writing, software
 -- distributed under the License is distributed on an "AS IS" BASIS,
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
--- 
+--
 
 import DMaps, sql, Color, DermaMenu from _G
 import DMapWaypoint, WaypointsDataContainer, Icon from DMaps
@@ -34,7 +34,7 @@ class ClientsideWaypoint extends DMapWaypoint
 	@WAYPOINTS = {}
 	@WAYPOINTS_ALL = {}
 	@nosave = false
-	
+
 	@RegisterWaypoints = (map) =>
 		error('ClientsideWaypoint Data is not loaded!') if not @DataContainer
 		map\AddObject(ClientsideWaypoint(data)) for k, data in pairs @DataContainer\GetData!
@@ -98,7 +98,7 @@ class ClientsideWaypoint extends DMapWaypoint
 			newData\SetCreateTrigger((container, id, data) -> @OnDataAdded(id, data))
 			newData\SetDeleteTrigger((container, id, data) -> @OnDataRemoved(id, data))
 		return newData
-	
+
 	-- Static methods end
 	new: (savedata) =>
 		if not savedata then error('No savedata was passed to the constructor of DMapClientsideWaypoint!')
@@ -110,7 +110,7 @@ class ClientsideWaypoint extends DMapWaypoint
 		@tableID = table.insert(@@WAYPOINTS_ALL, @)
 		@nosave = false
 		@SetupSaveData(savedata)
-	
+
 	SetupSaveData: (savedata) =>
 		@nosave = true
 		@savedata = savedata
@@ -124,7 +124,7 @@ class ClientsideWaypoint extends DMapWaypoint
 			@visible = tobool(.visible)
 			@icon = Icon(.icon)
 		@nosave = false
-	
+
 	OnDataChanged: =>
 		if not @nosave then timer.Create("DMaps.SaveClientsideWaypointData.#{@SAVEID}", 0.5, 1, -> @@OnWaypointUpdates(@))
 		super!

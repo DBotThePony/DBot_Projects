@@ -1,19 +1,19 @@
 
 --
--- Copyright (C) 2017 DBot
--- 
+-- Copyright (C) 2017-2019 DBot
+--
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
 -- You may obtain a copy of the License at
--- 
+--
 --     http://www.apache.org/licenses/LICENSE-2.0
--- 
+--
 -- Unless required by applicable law or agreed to in writing, software
 -- distributed under the License is distributed on an "AS IS" BASIS,
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
--- 
+--
 
 PANEL =
 	Init: =>
@@ -29,7 +29,7 @@ PANEL =
 			\SetSize(20, 20)
 			\SetColor(color_white)
 			\SetMouseInputEnabled(false)
-		
+
 		@name = vgui.Create('DLabel', @)
 		with @name
 			\SetText('%WAYPOINTNAME%')
@@ -37,7 +37,7 @@ PANEL =
 			\DockMargin(5, 0, 5, 0)
 			\SetSize(200, 100)
 			\SetColor(color_white)
-		
+
 		@posx = vgui.Create('DLabel', @)
 		with @posx
 			\SetText("X: #{@data.posx}")
@@ -45,7 +45,7 @@ PANEL =
 			\DockMargin(5, 0, 5, 0)
 			\SetSize(60, 60)
 			\SetColor(color_white)
-		
+
 		@posy = vgui.Create('DLabel', @)
 		with @posy
 			\SetText("Y: #{@data.posy}")
@@ -53,7 +53,7 @@ PANEL =
 			\DockMargin(5, 0, 5, 0)
 			\SetSize(60, 60)
 			\SetColor(color_white)
-		
+
 		@posz = vgui.Create('DLabel', @)
 		with @posz
 			\SetText("Z: #{@data.posz}")
@@ -61,7 +61,7 @@ PANEL =
 			\DockMargin(5, 0, 5, 0)
 			\SetSize(60, 60)
 			\SetColor(color_white)
-		
+
 		@color = vgui.Create('EditablePanel', @)
 		with @color
 			\Dock(LEFT)
@@ -72,7 +72,7 @@ PANEL =
 				if not pnl.data.red return
 				surface.SetDrawColor(pnl.data.red, pnl.data.green, pnl.data.blue)
 				surface.DrawRect(0, 0, w, h)
-		
+
 		@edit = vgui.Create('DButton', @)
 		with @edit
 			\Dock(RIGHT)
@@ -80,7 +80,7 @@ PANEL =
 			\SetSize(100, 60)
 			\SetText('Edit Waypoint...')
 			.DoClick = -> DMaps.OpenWaypointEditMenu(@id, @container, nil, -> @OnUpdate())
-		
+
 		@visible = vgui.Create('DButton', @)
 		with @visible
 			\Dock(RIGHT)
@@ -97,7 +97,7 @@ PANEL =
 					\SetText('Make visible')
 				else
 					\SetText('Make invisible')
-		
+
 		@delete = vgui.Create('DButton', @)
 		with @delete
 			\Dock(RIGHT)

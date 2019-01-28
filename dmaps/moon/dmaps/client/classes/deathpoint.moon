@@ -1,19 +1,19 @@
 
 --
--- Copyright (C) 2017 DBot
--- 
+-- Copyright (C) 2017-2019 DBot
+--
 -- Licensed under the Apache License, Version 2.0 (the 'License');
 -- you may not use this file except in compliance with the License.
 -- You may obtain a copy of the License at
--- 
+--
 --     http://www.apache.org/licenses/LICENSE-2.0
--- 
+--
 -- Unless required by applicable law or agreed to in writing, software
 -- distributed under the License is distributed on an 'AS IS' BASIS,
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
--- 
+--
 
 import DMaps, timer, CreateConVar, draw, surface, Color from _G
 import EventPointer, Icon, DMapWaypoint from DMaps
@@ -120,7 +120,7 @@ class DeathPointer extends EventPointer
 			'%s was oxidized'
 			'%s tried to swin in acid'
 		}
-		
+
 		Slash: {
 			'%s got snapped in half'
 			'%s was cut down the middle'
@@ -135,7 +135,7 @@ class DeathPointer extends EventPointer
 			"%s was torn in half"
 			"%s got pulverizered"
 		}
-		
+
 		Electricity: {
 			'%s was hit by lighting'
 			'%s played and died because of electricity'
@@ -151,7 +151,7 @@ class DeathPointer extends EventPointer
 			'%s\'s heart got wrong electricity'
 			'%s got cooked'
 		}
-		
+
 		Laser: {
 			'%s got snapped in half'
 			'%s received much heat and melted'
@@ -161,7 +161,7 @@ class DeathPointer extends EventPointer
 			'%s fell at open laser'
 			'%s was cut by a laser'
 		}
-		
+
 		Disintegrated: {
 			"%s gone from this world"
 			"%s was terminated"
@@ -171,7 +171,7 @@ class DeathPointer extends EventPointer
 			"%s's body was divided into atoms"
 			"%s's atmos disintegrated"
 		}
-		
+
 		Explosion: {
 			'%s was blown up'
 			'%s\' organs is flying around'
@@ -189,19 +189,19 @@ class DeathPointer extends EventPointer
 	@DeathReasonsDamage = {
 		[DMG_BLAST]: @DeathReasonsDict.Explosion
 		[DMG_BLAST_SURFACE]: @DeathReasonsDict.Explosion
-		
+
 		[DMG_SLASH]: @DeathReasonsDict.Slash
 		[DMG_CLUB]: @DeathReasonsDict.Slash
 		[DMG_ENERGYBEAM]: @DeathReasonsDict.Laser
 		[DMG_PLASMA]: @DeathReasonsDict.Laser
 		[DMG_DISSOLVE]: @DeathReasonsDict.Disintegrated
 		[DMG_SHOCK]: @DeathReasonsDict.Electricity
-		
+
 		[DMG_GENERIC]: @DeathReasonsDict.Default
 		[DMG_BULLET]: @DeathReasonsDict.Default
 		[DMG_BUCKSHOT]: @DeathReasonsDict.Default
 		[DMG_DIRECT]: @DeathReasonsDict.Default
-		
+
 		[DMG_CRUSH]: @DeathReasonsDict.Prop
 		[DMG_PHYSGUN]: @DeathReasonsDict.Prop
 		[DMG_BURN]: @DeathReasonsDict.Fire
@@ -305,7 +305,7 @@ netDMGTable = {
 class DMapsLocalDeathPoint extends DMapWaypoint
 	new: (x = 0, y = 0, z = 0) =>
 		super('Latest death', x, y, z, Color(DEATH_POINT_COLOR()), 'skull_old')
-	
+
 	OpenMenu: (menu = DermaMenu()) =>
 		super(menu)
 		with menu
@@ -326,7 +326,7 @@ net.Receive 'DMaps.PlayerDeath', ->
 		hook.Run 'DMaps.PlayerDeath', ply, LAST_DEATH_POINT
 		DMaps.ChatPrint('You died at X: ', x, ' Y: ', y, ' Z: ', z)
 		return
-	
+
 	hasDMG = net.ReadBool()
 	dmgType = netDMGTable[net.ReadUInt(8)] if hasDMG
 	point = PlayerDeathPointer(ply, x, y, z, dmgType)

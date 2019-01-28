@@ -1,19 +1,19 @@
 
 --
--- Copyright (C) 2017 DBot
--- 
+-- Copyright (C) 2017-2019 DBot
+--
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
 -- You may obtain a copy of the License at
--- 
+--
 --     http://www.apache.org/licenses/LICENSE-2.0
--- 
+--
 -- Unless required by applicable law or agreed to in writing, software
 -- distributed under the License is distributed on an "AS IS" BASIS,
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
--- 
+--
 
 import DMaps, pairs, table, string from _G
 import Icon, WaypointsDataContainer from DMaps
@@ -38,7 +38,7 @@ class WaypointDataContainerUsergroup extends WaypointsDataContainer
 
 	new: (map) =>
 		super(map)
-	
+
 	@WriteNetworkData: (data, writeID = true) =>
 		super(data, writeID)
 		net.WriteString(data.ugroups)
@@ -46,7 +46,7 @@ class WaypointDataContainerUsergroup extends WaypointsDataContainer
 		read = super()
 		read.ugroups = net.ReadString()
 		return read
-	
+
 	GetGroups: (id = 0) =>
 		data = @SaveData[id]
 		error("No such a waypoint with ID: #{id}") if not data
@@ -59,7 +59,7 @@ class WaypointDataContainerUsergroup extends WaypointsDataContainer
 		data.ugroups = table.concat(val,  ',')
 		@SetSaveData(id, data, triggerSave)
 	SetUserGroups: (...) => @SetGroups(...)
-	
+
 	AddGroup: (id = 0, val = 'user', triggerSave = true) =>
 		data = @GetPoint(id)
 		error("No such a waypoint with ID: #{id}") if not data
@@ -71,12 +71,12 @@ class WaypointDataContainerUsergroup extends WaypointsDataContainer
 		data = @GetPoint(id)
 		error("No such a waypoint with ID: #{id}") if not data
 		ugroupVals = string.Explode(',', data.ugroups)
-		
+
 		for i, v in pairs ugroupVals
 			if v == val
 				table.remove(ugroupVals, i)
 				break
-		
+
 		data.ugroups = table.concat(ugroupVals,  ',')
 		@SetSaveData(id, data, triggerSave)
 	CreateSaveData: (ugroups = {}, ...) =>
@@ -84,6 +84,6 @@ class WaypointDataContainerUsergroup extends WaypointsDataContainer
 		ugroups = {ugroups} if type(ugroups) ~= 'table'
 		newData.ugroups = table.concat(ugroups, ',')
 		return newData
-		
+
 DMaps.WaypointDataContainerUsergroup = WaypointDataContainerUsergroup
 return WaypointDataContainerUsergroup

@@ -1,19 +1,19 @@
 
 --
--- Copyright (C) 2017 DBot
--- 
+-- Copyright (C) 2017-2019 DBot
+--
 -- Licensed under the Apache License, Version 2.0 (the 'License');
 -- you may not use this file except in compliance with the License.
 -- You may obtain a copy of the License at
--- 
+--
 --     http://www.apache.org/licenses/LICENSE-2.0
--- 
+--
 -- Unless required by applicable law or agreed to in writing, software
 -- distributed under the License is distributed on an 'AS IS' BASIS,
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
--- 
+--
 
 import hook, DMaps, DarkRP, net, surface, draw from _G
 import EventPointer, Icon from DMaps
@@ -94,7 +94,7 @@ class ArrestEventPointer extends EventPointer
 			@actioner_uniqueid = actioner\UniqueID()
 			@actioner_team = actioner\Team()
 			@actioner_SteamName = actioner\SteamName() if actioner.SteamName
-		
+
 		super(@nick, x, y, z, team.GetColor(@team))
 		@_dPointID = table.insert(@@ARREST_POINTS, @)
 		@SetLiveTime(SV_ARREST_DURATION\GetFloat() * 60)
@@ -161,7 +161,7 @@ class UnArrestEventPointer extends EventPointer
 			@actioner_uniqueid = actioner\UniqueID()
 			@actioner_team = actioner\Team()
 			@actioner_SteamName = actioner\SteamName() if actioner.SteamName
-		
+
 		super(@nick, x, y, z, team.GetColor(@team))
 		@_dPointID = table.insert(@@UNARREST_POINTS, @)
 		@SetLiveTime(SV_ARREST_DURATION\GetFloat() * 60)

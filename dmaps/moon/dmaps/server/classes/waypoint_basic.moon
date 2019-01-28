@@ -1,19 +1,19 @@
 
 --
--- Copyright (C) 2017 DBot
--- 
+-- Copyright (C) 2017-2019 DBot
+--
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
 -- You may obtain a copy of the License at
--- 
+--
 --     http://www.apache.org/licenses/LICENSE-2.0
--- 
+--
 -- Unless required by applicable law or agreed to in writing, software
 -- distributed under the License is distributed on an "AS IS" BASIS,
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
--- 
+--
 
 import DMaps, Color from _G
 import WaypointsDataContainer, Icon, NetworkedWaypoint from DMaps
@@ -79,7 +79,7 @@ class BasicWaypoint extends NetworkedWaypoint
 		net.Receive(@SNETWORK_STRING_CREATE, (...) -> @NetworkOnCreate(...))
 		net.Receive(@SNETWORK_STRING_DELETE, (...) -> @NetworkOnRemove(...))
 		net.Receive(@SNETWORK_STRING_MODIFY, (...) -> @NetworkOnModify(...))
-	
+
 	@RegisterNetwork()
 
 	WriteNetworkData: =>
@@ -93,7 +93,7 @@ class BasicWaypoint extends NetworkedWaypoint
 			net.WriteUInt(.green, 8)
 			net.WriteUInt(.blue, 8)
 			net.WriteUInt(Icon\GetNetworkID(.icon), 16)
-	
+
 	@ReadNetworkData: => -- Static function!
 		read = {}
 		-- read.id = net.ReadUInt(32)
@@ -110,17 +110,17 @@ class BasicWaypoint extends NetworkedWaypoint
 	@STORED_WAYPOINTS = {}
 	@WAYPOINTS_SAVED = {} -- Redefine in subclasses
 	@CONTAINER = WaypointsDataContainer()
-	
+
 	@RegisterContainerFunctions = => -- Call in subclasses
 		@CONTAINER.CreateTrigger = (container, id, data) ->
 			waypoint = @(data)
 			waypoint\InitPoint()
 		@CONTAINER.UpdateTrigger = (container, id, data) -> @WAYPOINTS_SAVED[id]\SetupSaveData(data) if @WAYPOINTS_SAVED[id]
 		@CONTAINER.RemoveTrigger = (container, id, data) -> @WAYPOINTS_SAVED[id]\Remove() if @WAYPOINTS_SAVED[id]
-	
+
 	@RegisterContainerFunctions()
 	@CONTAINER\LoadWaypoints()
-	
+
 	new: (savedata) =>
 		super(savedata.name, savedata.posx, savedata.posy, savedata.posz, Color(savedata.red, savedata.green, savedata.blue), savedata.icon)
 		@@STORED_WAYPOINTS[@ID] = @
@@ -130,7 +130,7 @@ class BasicWaypoint extends NetworkedWaypoint
 
 	SaveID: => @SAVEID
 	GetSaveID: => @SAVEID
-	
+
 	SetupSaveData: (data) =>
 		@savedata = data
 		with data
@@ -140,7 +140,7 @@ class BasicWaypoint extends NetworkedWaypoint
 			@SetZ(.posz)
 			@SetColor(Color(.red, .green, .blue))
 			@SetIcon(.icon)
-	
+
 	Remove: =>
 		super!
 		@@STORED_WAYPOINTS[@ID] = nil

@@ -1,19 +1,19 @@
 
 --
--- Copyright (C) 2017 DBot
--- 
+-- Copyright (C) 2017-2019 DBot
+--
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
 -- You may obtain a copy of the License at
--- 
+--
 --     http://www.apache.org/licenses/LICENSE-2.0
--- 
+--
 -- Unless required by applicable law or agreed to in writing, software
 -- distributed under the License is distributed on an "AS IS" BASIS,
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
--- 
+--
 
 CONTROL_LOCKED = DMaps.CreateColor(230, 230, 230, 'zoom_locked', 'Zoom control "Locked"')
 CONTROL_UNLOCKED = DMaps.CreateColor(170, 170, 170, 'zoom_unlocked', 'Zoom control "Unlocked"')
@@ -65,7 +65,7 @@ PANEL.OnMouseReleased = (code) =>
 		if @holdstart + 0.1 > RealTime!
 			@lock = false
 			@mapObject\LockZoom(false)
-	
+
 PANEL.SetMap = (map) =>
 	@mapObject = map
 	@zoom = @mapObject\GetZoom!
@@ -77,28 +77,28 @@ PANEL.OnYawChanges = =>
 
 PANEL.Think = =>
 	@lock = @mapObject\GetLockZoom!
-	
+
 	holdingEnough = @hold and @holdstart + 0.1 < RealTime!
-		
+
 	if not @IsHovered!
 		@hold = false
 		holdingEnough = false
-	
+
 	if holdingEnough
 		@lock = true
 		@mapObject\LockZoom(true)
-	
+
 	if @lock
 		if holdingEnough
 			w, h = @GetSize!
 			hw, hh = w / 2, h / 2
-			
+
 			centerX, centerY = @LocalToScreen(hw, h)
 			x, y = gui.MousePos()
-			
+
 			deltaX = x - centerX
 			deltaY = centerY - y
-			
+
 			if deltaX < hw and deltaX > -hw and deltaY > 0 and deltaY < h
 				@zoom = @DELTA_ZOOM * deltaY / h + @MIN_ZOOM
 				if IsSmooth()
@@ -109,7 +109,7 @@ PANEL.Think = =>
 			@zoom = @mapObject\GetZoom!
 	else
 		@zoom = @mapObject\GetZoom!
-	
+
 	if IsSmooth()
 		@displayZoom = Lerp(0.1, @displayZoom, @zoom)
 	else
@@ -117,26 +117,26 @@ PANEL.Think = =>
 
 PANEL.Paint = (w, h) =>
 	draw.NoTexture!
-	
+
 	-- Background
 	surface.SetDrawColor(CONTROL_BACKGROUND())
 	surface.DrawRect(3, 0, w - 6, h)
-	
+
 	step = h / 14
-	
+
 	surface.SetDrawColor(0, 0, 0)
-	
+
 	-- Visual step markers
 	for i = step, h, step
 		surface.DrawRect(5, i, w - 10, 4 * @sizeMult)
-	
+
 	if @lock
 		surface.SetDrawColor(CONTROL_LOCKED())
 	else
 		surface.SetDrawColor(CONTROL_UNLOCKED())
-	
+
 	mult = (1 - @displayZoom / @DELTA_ZOOM)
-	
+
 	if mult >= -0.1
 		surface.DrawRect(0, math.min(mult * h + 30, h - @sizeMult * 10), w, 10 * @sizeMult)
 	else

@@ -1,19 +1,19 @@
 
 --
--- Copyright (C) 2017 DBot
--- 
+-- Copyright (C) 2017-2019 DBot
+--
 -- Licensed under the Apache License, Version 2.0 (the "License");
 -- you may not use this file except in compliance with the License.
 -- You may obtain a copy of the License at
--- 
+--
 --     http://www.apache.org/licenses/LICENSE-2.0
--- 
+--
 -- Unless required by applicable law or agreed to in writing, software
 -- distributed under the License is distributed on an "AS IS" BASIS,
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
--- 
+--
 
 import DMaps from _G
 import Icon from DMaps
@@ -144,7 +144,7 @@ class ServerWaypointsContainer
 	OpenMenu: =>
 		@frame = vgui.Create('DFrame')
 		frame = @frame
-		
+
 		w, h = ScrW! - 200, ScrH! - 200
 		frame\SetSize(w, h)
 		frame\SetTitle("DMap #{@@DISPLAY_NAME} waypoints menu")
@@ -154,7 +154,7 @@ class ServerWaypointsContainer
 		@topButtons = vgui.Create('EditablePanel', frame)
 		@topButtons\Dock(TOP)
 		@topButtons\SetSize(0, 20)
-		
+
 		@createButton = vgui.Create('DButton', @topButtons)
 		@createButton\Dock(LEFT)
 		@createButton\SetText('Create waypoint')
@@ -172,7 +172,7 @@ class ServerWaypointsContainer
 		@scrollPanel\Dock(FILL)
 		v\Remove() for i, v in pairs @points
 		@points = {}
-		
+
 		for point in *@list
 			str = vgui.Create(@@ROW_PART_NAME, @scrollPanel)
 			str\Dock(TOP)
@@ -189,7 +189,7 @@ class ServerWaypointsContainer
 		Self = self
 		self = frame
 		confirmed = false
-		
+
 		w, h = 300, 500
 		@SetSize(w, h)
 		@SetTitle("Waypoint №#{data.id or '...'} edit menu")
@@ -198,7 +198,7 @@ class ServerWaypointsContainer
 		@OnKeyCodePressed = (code = KEY_NONE) => @Close() if code == KEY_ESCAPE
 
 		local newData
-		
+
 		@OnClose = ->
 			return if not confirmed
 			newData.id = data.id if newData
@@ -213,18 +213,18 @@ class ServerWaypointsContainer
 				net.Start(@@NETWORK_STRING_MODIFY)
 				@WriteWaypointData(newData, true)
 				net.SendToServer()
-			
-		
+
+
 		fieldsData = {
 			{"Waypoint name", data.name}
 			{"Position X", data.posx}
 			{"Position Y", data.posy}
 			{"Position Z", data.posz}
 		}
-		
+
 		@labels = {}
 		@fields = {}
-		
+
 		for field in *fieldsData
 			str = vgui.Create('EditablePanel', @)
 			with str
@@ -233,7 +233,7 @@ class ServerWaypointsContainer
 				.Paint = (w, h) =>
 					surface.SetDrawColor(100, 100, 100)
 					surface.DrawRect(0, 0, w, h)
-			
+
 			label = vgui.Create('DLabel', str)
 			with label
 				\Dock(LEFT)
@@ -242,14 +242,14 @@ class ServerWaypointsContainer
 				\SetColor(color_white)
 				\SizeToContents()
 			table.insert(@labels, label)
-			
+
 			fieldPanel = vgui.Create('DTextEntry', str)
 			with fieldPanel
 				\Dock(FILL)
 				\DockMargin(5, 0, 5, 0)
 				\SetText(tostring(field[2]))
 			table.insert(@fields, fieldPanel)
-		
+
 		timer.Simple 0.1, ->
 			if IsValid(@) and IsValid(@fields[1])
 				input.SetCursorPos(@fields[1]\LocalToScreen(5, 10))
@@ -262,7 +262,7 @@ class ServerWaypointsContainer
 		@iconStr.Paint = (w, h) =>
 			surface.SetDrawColor(100, 100, 100)
 			surface.DrawRect(0, 0, w, h)
-		
+
 		@iconStrLab = vgui.Create('DLabel', @iconStr)
 		with @iconStrLab
 			\SetColor(color_white)
@@ -270,9 +270,9 @@ class ServerWaypointsContainer
 			\SetText('Waypoint Icon:')
 			\SizeToContents()
 			\DockMargin(5, 0, 5, 0)
-		
+
 		dataColor = Color(data.red, data.green, data.blue)
-		
+
 		@icon = vgui.Create('DMapsIcon', @iconStr)
 		@OnIconPress = (nIcon) =>
 			if nIcon == @icon
@@ -288,7 +288,7 @@ class ServerWaypointsContainer
 				@IconList\Close()
 				@icon\SetIcon(nIcon\GetIconName())
 		@iconStr.OnIconPress = (s, icon) -> @OnIconPress(icon)
-		
+
 		@icon\SetIcon(data.icon)
 		@icon\Dock(RIGHT)
 		@icon\DockMargin(5, 0, 5, 0)
@@ -301,7 +301,7 @@ class ServerWaypointsContainer
 			\Dock(BOTTOM)
 			\SetSize(0, 20)
 			.DoClick = -> @Close()
-		
+
 		confirm = vgui.Create('DButton', @)
 		with confirm
 			\SetText('Save')
@@ -311,7 +311,7 @@ class ServerWaypointsContainer
 				newData = Self\GrabData(@)
 				confirmed = true
 				@Close()
-		
+
 		Self\CreateAdditionalMenus(@, data)
 
 		@picker = vgui.Create('DColorMixer', @)

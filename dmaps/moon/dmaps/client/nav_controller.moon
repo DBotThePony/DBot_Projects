@@ -1,6 +1,6 @@
 
 --
--- Copyright (C) 2017 DBot
+-- Copyright (C) 2017-2019 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -68,7 +68,7 @@ hook.Add 'DrawDMap2D', 'DMaps.Navigation', =>
 	colorR, colorG, colorB = NAV_ARROW_COLOR()
 	dist = DMaps.NavigationEnd\Distance(LocalPlayer()\GetPos())
 	Z = @GetZ()
-	
+
 	for {point, nDist, :approx} in *DMaps.NavigationPoints
 		for {node, deltaAng} in *approx
 			{:x, :y, :z} = node
@@ -123,7 +123,7 @@ hook.Add 'DrawDMapWorld', 'DMaps.Navigation', =>
 				surface.DrawPoly(ARROW_DATA_1)
 				surface.DrawPoly(ARROW_DATA_2)
 				cam.End3D2D()
-	
+
 	cam.IgnoreZ(false)
 	render.EnableClipping(prevClip)
 	render.SetBlend(oldBlend)
@@ -205,7 +205,7 @@ DMaps.RequireNavigation = (target = Vector(0, 0, 0), displayWindow = true, dontD
 		@OnClose = ->
 			net.Start('DMaps.Navigation.Stop')
 			net.SendToServer()
-		
+
 		@oldPaint = @Paint
 		@alpha = 0
 		@Paint = (pnl, w, h) ->
@@ -217,7 +217,7 @@ DMaps.RequireNavigation = (target = Vector(0, 0, 0), displayWindow = true, dontD
 			surface.DrawRect(-x, -y, sw, sh)
 			surface.DisableClipping(false)
 			@oldPaint(w, h) if @oldPaint
-		
+
 		@label = vgui.Create('DLabel', @)
 		@label\SetText('The Server is calculating')
 		@label\SetFont('Trebuchet24')
@@ -370,7 +370,7 @@ class DMapsNavigationTarget extends DMapWaypoint
 	new: (x = 0, y = 0, z = 0) =>
 		x, y, z = math.floor(x), math.floor(y), math.floor(z)
 		super('Navigation target', x, y, z, Color(NAV_POINT_COLOR()), 'gear_in')
-	
+
 	OpenMenu: (menu = DermaMenu()) =>
 		super(menu)
 		with menu
