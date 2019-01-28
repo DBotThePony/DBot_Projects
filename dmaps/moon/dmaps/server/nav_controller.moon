@@ -21,7 +21,6 @@
 
 
 import DMaps, navmesh, net from _G
-import AStarTracer from DLib
 
 NAV_ENABLE = CreateConVar('sv_dmaps_nav_enable', '1', {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Enable navigation support (if map has nav file)')
 
@@ -43,7 +42,7 @@ net.Receive 'DMaps.Navigation.Require', (len, ply) ->
 	pos = ply\GetPos()
 	endPos = Vector(net.ReadInt(32), net.ReadInt(32), net.ReadInt(32))
 	sendInfos = net.ReadBool()
-	tracer = AStarTracer(pos, endPos)
+	tracer = DLib.AStarTracer(pos, endPos)
 	ply.__DMaps_AStarTracer = tracer
 	ply.__DMaps_SendTracingInfos = sendInfos
 

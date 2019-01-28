@@ -454,7 +454,7 @@ class DMap
 	-- To the map object itself
 	PrefferDraw: (x = 0, y = 0, z = 0, zMult = 1) =>
 		--if not @PointIsVisible(x, y)
-		--	return false
+		--  return false
 
 		if z < @clipLevelBottom or z > @clipLevelTop
 			return false
