@@ -34,24 +34,27 @@ function plyMeta:IsAFK()
 end
 
 function plyMeta:SetIsAFK(status)
+	if self:IsBot() then return end
 	if status then self:SetAFKTime(DAFK_MINTIMER:GetInt()) end
 	self:SetNWBool('DAFK.IsAFK', status)
 end
 
 function plyMeta:SetAFKTime(time)
+	if self:IsBot() then return end
 	self:SetNWInt('DAFK.TimerStart', math.floor(CurTimeL() - time))
 end
 
 function plyMeta:GetAFKTime()
+	if self:IsBot() then return 0 end
 	return math.floor(CurTimeL() - self:GetNWInt('DAFK.TimerStart'))
 end
 
 function plyMeta:IsEvenAFK()
-	return self:IsAFK() or self:IsTabbedOut()
+	return not self:IsBot() and (self:IsAFK() or self:IsTabbedOut())
 end
 
 function plyMeta:IsTabbedOut()
-	return self.__DAFK_TabbedOut
+	return self.__DAFK_TabbedOut or false
 end
 
 function plyMeta:HasWindowFocus()

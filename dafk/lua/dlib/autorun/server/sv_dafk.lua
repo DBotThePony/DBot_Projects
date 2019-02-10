@@ -59,7 +59,7 @@ end
 local function Timer()
 	local min = DAFK_MINTIMER:GetInt()
 
-	for i, ply in pairs(player.GetAll()) do
+	for i, ply in pairs(player.GetHumans()) do
 		ply.__DAFK_SLEEP = (ply.__DAFK_SLEEP or 0) + 1
 
 		if not ply:IsAFK() and ply.__DAFK_SLEEP >= min then
