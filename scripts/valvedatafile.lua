@@ -21,27 +21,138 @@ local print = print
 local error = error
 local string = string
 
-local function decode(lines)
-	assert(type(tableIn) == 'lines', 'Invalid argument passed: ' .. type(lines) .. '. You must pass array containing file\'s lines')
+local function nextCondition(line)
+	local lastPos = 1
+	local valid = true
+	local lastbor = true
+
+	return function()
+		local findStart1, findEnd1 = string.find(line, '||', lastPos, true)
+		local findStart2, findEnd2 = string.find(line, '&&', lastPos, true)
+		local findStart, findEnd
+		local bor = true
+
+		if findStart2 and (not findStart1 or findStart2 < findStart1) then
+			bor = false
+			findStart, findEnd = findStart2, findEnd2
+		elseif findStart1 and (not findStart2 or findStart1 < findStart2) then
+			findStart, findEnd = findStart1, findEnd1
+		end
+
+		if not findStart then
+			if not valid then return end
+			valid = false
+			return lastbor, string.sub(line, lastPos):match('^%s*(.-)%s*$'), true
+		end
+
+		lastbor = bor
+
+		local str = string.sub(line, lastPos, findStart - 1):match('^%s*(.-)%s*$')
+		lastPos = findEnd + 1
+
+		return bor, str, false
+	end
+end
+
+local function decode(lines, isPC, isWindows, isOSX, isLinux, isPOSIX, isXBox)
+	if isPC == nil then isPC = true end
+	if isWindows == nil then isWindows = true end
+	if isOSX == nil then isOSX = false end
+	if isLinux == nil then isLinux = false end
+	if isPOSIX == nil then isPOSIX = false end
+	if isXBox == nil then isXBox = false end
+
+	assert(type(lines) == 'table', 'Invalid argument passed: ' .. type(lines) .. '. You must pass array containing file\'s lines')
 	local construct = {}
 	local currentData = construct
 	local literalName
 	local stack = {construct}
-	local i = 0
 
-	for line in ipairs(lines) do
+	for i, line in ipairs(lines) do
 		if #stack == 0 then
 			error('data stack got empty (after line' .. i .. ')')
 		end
 
-		i = i + 1
 		local trim = line:match('^%s*(.-)%s*$')
 
 		if trim:find('//') then
 			trim = trim:gsub('%s*//.*$', '')
 		end
 
-		if trim == '' or trim:sub(1, 2) == '//' then
+		local condition = trim ~= '' and trim:sub(1, 2) ~= '//'
+		local conditional = false
+
+		if condition and trim:sub(#trim) == ']' then
+			condition = false
+			conditional = true
+			local startpos
+
+			for seek = #trim, 1, -1 do
+				if trim:sub(seek, seek) == '[' then
+					startpos = seek
+					break
+				end
+			end
+
+			if not startpos then
+				error('expected opening ([) conditional token at line ' .. i .. ' but none found')
+			end
+
+			local conditions = {}
+			local prevCond
+
+			for bor, conditionStr, ending in nextCondition(trim:sub(startpos + 1, #trim - 1)) do
+				local bNot = false
+
+				if conditionStr:sub(1, 1) == '!' then
+					bNot = true
+					conditionStr = conditionStr:sub(2)
+				end
+
+				local elevate = false
+
+				if conditionStr == '$X360' then
+					elevate = isXBox
+				elseif conditionStr == '$WIN32' then
+					elevate = isPC
+				elseif conditionStr == '$WINDOWS' then
+					elevate = isWindows
+				elseif conditionStr == '$OSX' then
+					elevate = isOSX
+				elseif conditionStr == '$LINUX' then
+					elevate = isLinux
+				elseif conditionStr == '$POSIX' then
+					elevate = isPOSIX
+				end
+
+				if bNot then
+					elevate = not elevate
+				end
+
+				if prevCond ~= nil then
+					elevate = elevate and prevCond
+					prevCond = nil
+				end
+
+				if not bor and not ending then
+					prevCond = elevate
+				else
+					table.insert(conditions, elevate)
+				end
+			end
+
+			if prevCond ~= nil then
+				error('malformed condition at line ' .. i)
+			end
+
+			for i, cond in ipairs(conditions) do
+				condition = condition or cond
+			end
+
+			trim = trim:sub(1, startpos - 1):match('^%s*(.-)%s*$')
+		end
+
+		if not condition then
 
 		elseif trim:sub(1, 1) == '"' then
 			assert(trim:sub(#trim) == '"', 'malformed name token/key-value pair at line ' .. i)
@@ -95,7 +206,7 @@ local function decode(lines)
 			end
 
 			if valueFinished then
-				if currentData[key] == nil then
+				if currentData[key] == nil or conditional then
 					currentData[key] = value
 				elseif type(currentData[key]) ~= 'table' then
 					local val = currentData[key]
