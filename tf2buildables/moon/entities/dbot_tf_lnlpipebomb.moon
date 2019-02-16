@@ -1,6 +1,6 @@
 
 --
--- Copyright (C) 2017-2018 DBot
+-- Copyright (C) 2017-2019 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +41,7 @@ if SERVER
 			eff\SetOrigin(@GetPos())
 			util.Effect('StunstickImpact', eff)
 			return false
-	
+
 	ENT.OnHitAfter = (attacker, ent, dmg) ->
 		if ent.IsTF2Building
 			dmg\ScaleDamage(1.25)

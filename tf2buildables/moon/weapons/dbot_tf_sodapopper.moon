@@ -1,6 +1,6 @@
 
 --
--- Copyright (C) 2017-2018 DBot
+-- Copyright (C) 2017-2019 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -65,7 +65,7 @@ if SERVER
 		wep = attacker\GetWeapon('dbot_tf_sodapopper')
 		return if not IsValid(wep)
 		wep\SetSodaDamageDealt(math.min(wep\GetSodaDamageDealt() + math.max(dmg\GetDamage(), 0), wep.SodaDamageRequired))
-	
+
 	SWEP.OnRemove = => @miniCritBuffer\Remove() if IsValid(@miniCritBuffer)
 
 	SWEP.Think = =>
@@ -86,7 +86,7 @@ if SERVER
 			\SetParent(ply)
 			\SetOwner(ply)
 			\SetEnableBuff(true)
-		
+
 		@sodaPopperEnd = CurTime() + @SodaPopperDuration
 		timer.Create "DTF2.SodaPopper.#{@EntIndex()}", @SodaPopperDuration, 1, ->
 			@miniCritBuffer\Remove() if IsValid(@) and IsValid(@miniCritBuffer)

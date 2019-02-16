@@ -1,6 +1,6 @@
 
 --
--- Copyright (C) 2017-2018 DBot
+-- Copyright (C) 2017-2019 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -87,7 +87,7 @@ if SERVER
 		@SetHideVM(true)
 		timer.Simple DTF2.GrabFloat(@MELT_RESTORE), -> @SetHideVM(false) if @IsValid()
 		@EmitSound(@MELT_SOUND)
-	
+
 	hook.Add 'DTF2.BurnTarget', 'DTF2.Spycicle', =>
 		return if not @GetWeapon
 		wep = @GetWeapon('dbot_tf_icecicle')

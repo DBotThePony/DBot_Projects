@@ -1,6 +1,6 @@
 
 --
--- Copyright (C) 2017-2018 DBot
+-- Copyright (C) 2017-2019 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -72,7 +72,7 @@ SWEP.SecondaryAttack = =>
 		ent = trace.Entity
 		dir = ent\GetPos() - lpos
 		dir\Normalize()
-		
+
 		vel = dir * 300 + Vector(0, 0, 200)
 		DTF2.ApplyVelocity(ent, vel)
 	@EmitSound('DTF2_Player.ScoutShove')

@@ -1,7 +1,7 @@
 
 
 --
--- Copyright (C) 2017-2018 DBot
+-- Copyright (C) 2017-2019 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -81,7 +81,7 @@ SWEP.Think = =>
 		@lastProjectileThink = CurTime()
 		if @GetProjectileReady() < @ProjectileRestoreTime
 			@SetProjectileReady(math.Clamp(@GetProjectileReady() + delta, 0, @ProjectileRestoreTime))
-	
+
 	old = @lastProjectileStatus
 	newStatus = @ProjectileIsReady()
 	doDraw = not newStatus and @GetHideProjectile() < CurTime()

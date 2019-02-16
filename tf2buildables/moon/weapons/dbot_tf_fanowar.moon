@@ -1,7 +1,7 @@
 
 
 --
--- Copyright (C) 2017-2018 DBot
+-- Copyright (C) 2017-2019 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +41,7 @@ SWEP.PreOnHit = (hitEntity = NULL, tr = {}, dmginfo) =>
 	@BaseClass.PreOnHit(@, hitEntity, tr, dmginfo)
 	if IsValid(hitEntity) and hitEntity\IsMarkedForDeath()
 		@ThatWasCrit(hitEntity, dmginfo)
-	
+
 	return if CLIENT
 	if IsValid(hitEntity) and (hitEntity\IsNPC() or hitEntity\IsPlayer())
 		if IsValid(@deathMark)

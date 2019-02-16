@@ -1,6 +1,6 @@
 
 --
--- Copyright (C) 2017-2018 DBot
+-- Copyright (C) 2017-2019 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -114,7 +114,7 @@ hook.Add 'Think', 'DTF2.StickyBombs', ->
 
 entMeta = FindMetaTable('Entity')
 
-EntityClass = 
+EntityClass =
 	RefreshTFStickies: (mclass = 'dbot_tf_stickybomb') =>
 		dict = 'DTF2_Stickies_' .. mclass
 		@[dict] = @[dict] or {}

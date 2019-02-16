@@ -1,5 +1,5 @@
 
--- Copyright (C) 2018 DBot
+-- Copyright (C) 2018-2019 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -195,7 +195,7 @@ end
 VLL2.MessagePlayer = function(ply, ...)
   if CLIENT or ply == NULL or ply == nil then
     VLL2.Message(...)
-    return 
+    return
   end
   net.Start('vll2.message')
   WriteArray({
@@ -253,14 +253,14 @@ do
 end
 VLL2.RecursiveMergeBase = function(mergeMeta)
   if not mergeMeta then
-    return 
+    return
   end
   local metaGet = baseclass.Get(mergeMeta)
   if not metaGet.Base then
-    return 
+    return
   end
   if metaGet.Base == mergeMeta then
-    return 
+    return
   end
   VLL2.RecursiveMergeBase(metaGet.Base)
   local metaBase = baseclass.Get(metaGet.Base)
@@ -481,7 +481,7 @@ do
       end
       if self.inProgressParts ~= 0 then
         self:Msg('Downloaded ' .. string.NiceSize(self.downloaded) .. ' / ' .. string.NiceSize(self.length) .. ' of ' .. self.url)
-        return 
+        return
       end
       self.status = self.__class.STATUS_FINISHED
       self.fstream:Flush()
@@ -514,7 +514,7 @@ do
           reason = 'failure'
         end
         if self.status == self.__class.STATUS_ERROR then
-          return 
+          return
         end
         self:Msg('Failed to GET the part of file! ' .. self.url .. ' part ' .. partid .. ' out from ' .. self.parts)
         self:Msg('Reason: ' .. reason)
@@ -530,7 +530,7 @@ do
           body = ''
         end
         if self.status == self.__class.STATUS_ERROR then
-          return 
+          return
         end
         if code ~= 206 and code ~= 200 then
           self:Msg('Failed to GET the part of file! ' .. self.url .. ' part ' .. partid .. ' out from ' .. self.parts)
@@ -538,7 +538,7 @@ do
           self.status = self.__class.STATUS_ERROR
           self:CallError('Server replied: ' .. code)
           self.__class:Recalc()
-          return 
+          return
         end
         for hname, hvalue in pairs(headers) do
           if hname:lower() == 'content-length' then
@@ -549,7 +549,7 @@ do
               self.status = self.__class.STATUS_ERROR
               self:CallError('Length mismatch')
               self.__class:Recalc()
-              return 
+              return
             end
           end
         end
@@ -633,7 +633,7 @@ do
           self.status = self.__class.STATUS_ERROR
           self:CallError('Server replied: ' .. code)
           self.__class:Recalc()
-          return 
+          return
         end
         self.headers = headers
         for hname, hvalue in pairs(headers) do
@@ -650,7 +650,7 @@ do
           self.status = self.__class.STATUS_ERROR
           self:CallError('Server lacks content-length')
           self.__class:Recalc()
-          return 
+          return
         end
         self.status = self.__class.STATUS_WAITING
         return self.__class:Recalc()
@@ -701,7 +701,7 @@ do
     for _index_0 = 1, #_list_0 do
       local instance = _list_0[_index_0]
       if instance:IsDownloading() then
-        return 
+        return
       end
     end
     local _list_1 = self.PENDING
@@ -709,7 +709,7 @@ do
       local instance = _list_1[_index_0]
       if instance:IsWaiting() then
         instance:Download()
-        return 
+        return
       end
     end
   end
@@ -971,7 +971,7 @@ do
     end
     local starts = string.find(fpath, '..', 1, true)
     if starts == 1 then
-      return 
+      return
     end
     local split
     do
@@ -992,7 +992,7 @@ do
       end
       if value == '..' then
         if i == 1 then
-          return 
+          return
         else
           splice(split, i - 1, 2)
           i = i - 2
@@ -1134,7 +1134,7 @@ do
         ply = player.GetAll()
       end
       if CLIENT then
-        return 
+        return
       end
       return error('Not implemented')
     end,
@@ -1199,13 +1199,13 @@ do
     if not fstamp then
       local data = sql.Query('SELECT contents FROM vll2_lua_cache WHERE fpath = ' .. SQLStr(fname))
       if not data then
-        return 
+        return
       end
       return data[1].contents
     end
     local data = sql.Query('SELECT contents FROM vll2_lua_cache WHERE tstamp >= ' .. fstamp .. ' AND fpath = ' .. SQLStr(fname))
     if not data then
-      return 
+      return
     end
     return data[1].contents
   end
@@ -1243,10 +1243,10 @@ do
         ply = player.GetAll()
       end
       if CLIENT then
-        return 
+        return
       end
       if player.GetHumans() == 0 then
-        return 
+        return
       end
       net.Start('vll2.replicate_url')
       net.WriteString(self.name)
@@ -1254,16 +1254,16 @@ do
     end,
     CheckIfRunnable = function(self)
       if self.toDownload == -1 then
-        return 
+        return
       end
       if self.toDownload > self.downloaded then
-        return 
+        return
       end
       self.status = self.__class.STATUS_LOADED
       self:Msg('Bundle got downloaded')
       self:CallLoaded()
       if not self.initAfterLoad then
-        return 
+        return
       end
       return self:Run()
     end,
@@ -1273,14 +1273,14 @@ do
           fpath,
           url
         })
-        return 
+        return
       end
       self:DownloadNextFile(fpath, url)
       return self
     end,
     __DownloadCallback = function(self)
       if #self.downloadQueue == 0 then
-        return 
+        return
       end
       local fpath, url
       do
@@ -1326,7 +1326,7 @@ do
           self.status = self.__class.STATUS_ERROR
           self:__DownloadCallback()
           self:CallError()
-          return 
+          return
         end
         self.downloaded = self.downloaded + 1
         self:__DownloadCallback()
@@ -1459,7 +1459,7 @@ do
           self:Msg('download of index file failed, server returned: ' .. code)
           self.status = self.__class.STATUS_ERROR
           self:CallError()
-          return 
+          return
         end
         self.bundleList = string.Explode('\n', body:Trim())
         self:Msg('Received index file, total ' .. #self.bundleList .. ' files to load')
@@ -1506,7 +1506,7 @@ do
   self.LISTING = { }
   self.GetMessage = function(self)
     if SERVER then
-      return 
+      return
     end
     local downloading = 0
     for _, bundle in pairs(self.LISTING) do
@@ -1515,7 +1515,7 @@ do
       end
     end
     if downloading == 0 then
-      return 
+      return
     end
     return 'VLL2 Is downloading ' .. downloading .. ' URL bundles'
   end
@@ -1523,7 +1523,7 @@ do
     net.Receive('vll2.replicate_url', function()
       local graburl = net.ReadString()
       if not self:Checkup(graburl) then
-        return 
+        return
       end
       VLL2.MessageBundle('Server requires URL bundle to be loaded: ' .. graburl)
       return VLL2.URLBundle(graburl):Load()
@@ -1582,7 +1582,7 @@ do
     end,
     MountDelay = function(self)
       if self:IsGoingToMount() then
-        return 
+        return
       end
       self.status = self.__class.STATUS_GONNA_MOUNT
       return timer.Simple(3, function()
@@ -1600,7 +1600,7 @@ do
         self:Msg('Unable to mount gma!')
         self.status = self.__class.STATUS_ERROR
         self:CallError()
-        return 
+        return
       end
       if #filelist == 0 then
         self:Msg('GMA IS EMPTY???!!!')
@@ -1683,12 +1683,12 @@ do
   self.STATUS_GONNA_MOUNT = 734
   self.GetMessage = function(self)
     if SERVER then
-      return 
+      return
     end
     local msg1 = self:GetMessage1()
     local msg2 = self:GetMessage2()
     if not msg1 and not msg2 then
-      return 
+      return
     end
     if msg1 and not msg2 then
       return msg1
@@ -1703,7 +1703,7 @@ do
   end
   self.GetMessage1 = function(self)
     if SERVER then
-      return 
+      return
     end
     local downloading = 0
     for _, bundle in pairs(self.LISTING) do
@@ -1712,13 +1712,13 @@ do
       end
     end
     if downloading == 0 then
-      return 
+      return
     end
     return 'VLL2 Is downloading ' .. downloading .. ' GMA bundles'
   end
   self.GetMessage2 = function(self)
     if SERVER then
-      return 
+      return
     end
     local downloading = 0
     for _, bundle in pairs(self.LISTING) do
@@ -1727,7 +1727,7 @@ do
       end
     end
     if downloading == 0 then
-      return 
+      return
     end
     return 'VLL2 going to mount ' .. downloading .. ' GMA bundles\nFreeze (or crash) may occur\nthat\'s fine'
   end
@@ -1757,7 +1757,7 @@ do
       self.status = self.__class.STATUS_LOADED
       self:CallLoaded()
       if not self.mountAfterLoad then
-        return 
+        return
       end
       return self:MountDelay()
     end,
@@ -1779,19 +1779,19 @@ do
           net.WriteString(self._datapath)
           return net.Send(Entity(1))
         end)
-        return 
+        return
       end
       if file.Exists(self._datapath, 'DATA') then
         self:Msg('Found GMA in cache, mounting in-place...')
         self:SpecifyPath(self._datapath_full)
         self:__Mount()
-        return 
+        return
       end
       if CLIENT and not DO_DOWNLOAD_WORKSHOP:GetBool() then
         self:Msg('Not downloading workshop GMA file, since we have it disabled')
         self.status = self.__class.STATUS_ERROR
         self:CallError('Restricted by user')
-        return 
+        return
       end
       self.status = self.__class.STATUS_LOADING
       self.gmadownloader = VLL2.LargeFileLoader(self.url, self._datapath)
@@ -1860,13 +1860,13 @@ do
         ply = NULL
       end
       if not ply:IsValid() then
-        return 
+        return
       end
       if game.IsDedicated() then
-        return 
+        return
       end
       if ply:EntIndex() ~= 1 then
-        return 
+        return
       end
       local url = net.ReadString()
       local status = net.ReadBool()
@@ -1881,7 +1881,7 @@ do
             self:Msg('Failed to download the GMA! Reason: ' .. reason)
             self:CallError()
           end
-          return 
+          return
         end
       end
       VLL2.Message('Received URL bundle path from clientside, but no associated bundle found.')
@@ -1904,7 +1904,7 @@ do
           else
             bundle.shouldNotifyServerside = true
           end
-          return 
+          return
         end
       end
       local gmadownloader = VLL2.LargeFileLoader(url, _datapath)
@@ -1944,12 +1944,12 @@ do
         if SERVER and not game.IsDedicated() and clientload then
           self:SpecifyPath(self._datapath_full)
           self:__Mount()
-          return 
+          return
         end
         self.status = self.__class.STATUS_ERROR
         self:Msg('Failed to decompress the GMA! Did tranfer got interrupted?')
         self:CallError()
-        return 
+        return
       end
       self:Msg(string.format('Decompression took %.2f ms', (SysTime() - stime) * 1000))
       stime = SysTime()
@@ -2002,10 +2002,10 @@ do
         ply = player.GetAll()
       end
       if CLIENT then
-        return 
+        return
       end
       if player.GetHumans() == 0 then
-        return 
+        return
       end
       net.Start('vll2.replicate_wscollection')
       net.WriteUInt(self.workshopID, 32)
@@ -2058,13 +2058,13 @@ do
       for _index_0 = 1, #_list_0 do
         local fbundle = _list_0[_index_0]
         if not fbundle:IsLoaded() then
-          return 
+          return
         end
       end
       self.status = self.__class.STATUS_LOADED
       self:CallLoaded()
       if not self.mountAfterLoad then
-        return 
+        return
       end
       return self:Mount()
     end,
@@ -2076,7 +2076,7 @@ do
           end
         end
         self:OnAddonLoads()
-        return 
+        return
       end
       self.status = self.__class.STATUS_ERROR
       self:Msg('One of collection addons has failed to load! Uh oh!')
@@ -2118,7 +2118,7 @@ do
           self:Msg('Failed to grab collection info! Server returned: ' .. code)
           self:Msg(body)
           self:CallError()
-          return 
+          return
         end
         local resp = util.JSONToTable(body)
         self.steamResponse = resp
@@ -2182,7 +2182,7 @@ do
           self:Msg('Failed to grab GMA info! Server returned: ' .. code)
           self:Msg(body)
           self:CallError()
-          return 
+          return
         end
         local resp = util.JSONToTable(body)
         self.steamResponse = resp
@@ -2266,7 +2266,7 @@ do
     net.Receive('vll2.replicate_wscollection', function()
       local graburl = net.ReadUInt(32)
       if not self:Checkup(graburl) then
-        return 
+        return
       end
       local loadLua = net.ReadBool()
       local mountAfterLoad = net.ReadBool()
@@ -2279,12 +2279,12 @@ do
   end
   self.GetMessage = function(self)
     if SERVER then
-      return 
+      return
     end
     local msg1 = self:GetMessage1()
     local msg2 = self:GetMessage2()
     if not msg1 and not msg2 then
-      return 
+      return
     end
     if msg1 and not msg2 then
       return msg1
@@ -2299,7 +2299,7 @@ do
   end
   self.GetMessage1 = function(self)
     if SERVER then
-      return 
+      return
     end
     local downloading = 0
     for _, bundle in pairs(self.LISTING) do
@@ -2308,13 +2308,13 @@ do
       end
     end
     if downloading == 0 then
-      return 
+      return
     end
     return 'VLL2 Is downloading ' .. downloading .. ' Workshop COLLECTIONS'
   end
   self.GetMessage2 = function(self)
     if SERVER then
-      return 
+      return
     end
     local downloading = 0
     for _, bundle in pairs(self.LISTING) do
@@ -2323,7 +2323,7 @@ do
       end
     end
     if downloading == 0 then
-      return 
+      return
     end
     return 'Getting info of ' .. downloading .. ' workshop COLLECTIONS'
   end
@@ -2364,7 +2364,7 @@ do
         self.shouldNotifyServerside = false
       end
       if not self.mountAfterLoad then
-        return 
+        return
       end
       return self:MountDelay()
     end,
@@ -2384,10 +2384,10 @@ do
         ply = player.GetAll()
       end
       if CLIENT then
-        return 
+        return
       end
       if player.GetHumans() == 0 then
-        return 
+        return
       end
       net.Start('vll2.replicate_workshop')
       net.WriteUInt(self.workshopID, 32)
@@ -2409,7 +2409,7 @@ do
           self:SpecifyPath(path2 or path)
           return self:__Mount()
         end)
-        return 
+        return
       end
       local fdir, fname = VLL2.FileSystem.StripFileName(filename)
       local fadd = ''
@@ -2421,7 +2421,7 @@ do
         self:Msg('Found GMA in cache, mounting in-place...')
         self:SpecifyPath('data/' .. fpath)
         self:__Mount()
-        return 
+        return
       end
       if not game.IsDedicated() then
         self:Msg('Singleplayer detected, waiting for client realm to download...')
@@ -2431,7 +2431,7 @@ do
           net.WriteString(self.hcontent_file)
           return net.Send(Entity(1))
         end)
-        return 
+        return
       end
       self.gmadownloader = VLL2.LargeFileLoader(url, fpath)
       self.gmadownloader:AddFinishHook(function()
@@ -2442,7 +2442,7 @@ do
           self.status = self.__class.STATUS_ERROR
           self:Msg('Failed to decompress the GMA! Did tranfer got interrupted?')
           self:CallError()
-          return 
+          return
         end
         self:Msg(string.format('Decompression took %.2f ms', (SysTime() - stime) * 1000))
         stime = SysTime()
@@ -2468,7 +2468,7 @@ do
       if CLIENT and steamworks.IsSubscribed(tostring(id)) and not self.loadLua then
         self:Msg('Not downloading addon ' .. id .. ' since it is already mounted on client.')
         self.status = self.__class.STATUS_LOADED
-        return 
+        return
       end
       if CLIENT then
         self.status = self.__class.STATUS_GETTING_INFO
@@ -2504,7 +2504,7 @@ do
             self:Msg('Failed to grab GMA info! Server returned: ' .. code)
             self:Msg(body)
             self:CallError()
-            return 
+            return
           end
           local resp = util.JSONToTable(body)
           self.steamResponse = resp
@@ -2605,7 +2605,7 @@ do
             self:Msg('Failed to grab GMA info! Server returned: ' .. code)
             self:Msg(body)
             self:CallError()
-            return 
+            return
           end
           local resp = util.JSONToTable(body)
           self.steamResponse = resp
@@ -2696,13 +2696,13 @@ do
   end
   self.GetMessage = function(self)
     if SERVER then
-      return 
+      return
     end
     local msg1 = self:GetMessage1()
     local msg2 = self:GetMessage2()
     local msgOld = VLL2.GMABundle.GetMessage2(self)
     if not msg1 and not msg2 and not msgOld then
-      return 
+      return
     end
     local output = { }
     if msg1 then
@@ -2718,7 +2718,7 @@ do
   end
   self.GetMessage1 = function(self)
     if SERVER then
-      return 
+      return
     end
     local downloading = 0
     for _, bundle in pairs(self.LISTING) do
@@ -2727,13 +2727,13 @@ do
       end
     end
     if downloading == 0 then
-      return 
+      return
     end
     return 'VLL2 Is downloading ' .. downloading .. ' Workshop addons'
   end
   self.GetMessage2 = function(self)
     if SERVER then
-      return 
+      return
     end
     local downloading = 0
     for _, bundle in pairs(self.LISTING) do
@@ -2742,7 +2742,7 @@ do
       end
     end
     if downloading == 0 then
-      return 
+      return
     end
     return 'Getting info of ' .. downloading .. ' workshop addons'
   end
@@ -2750,7 +2750,7 @@ do
     net.Receive('vll2.replicate_workshop', function()
       local graburl = net.ReadUInt(32)
       if not self:Checkup(graburl) then
-        return 
+        return
       end
       local loadLua = net.ReadBool()
       local addToSpawnMenu = net.ReadBool()
@@ -2771,13 +2771,13 @@ do
         ply = NULL
       end
       if not ply:IsValid() then
-        return 
+        return
       end
       if game.IsDedicated() then
-        return 
+        return
       end
       if ply:EntIndex() ~= 1 then
-        return 
+        return
       end
       local wsid = net.ReadUInt(32)
       local path = net.ReadString()
@@ -2785,7 +2785,7 @@ do
         if bundle.workshopID == wsid then
           bundle:SpecifyPath(path)
           bundle:__Mount()
-          return 
+          return
         end
       end
       VLL2.Message('Received bundle path from clientside, but no associated bundle found.')
@@ -2810,7 +2810,7 @@ do
             bundle.shouldNotifyServerside = true
             bundle:Msg('We are still downloading bundle. Will notify server realm when we are done.')
           end
-          return 
+          return
         end
       end
       local msgid = 'vll2_dl_' .. wsid
@@ -2876,18 +2876,18 @@ end
 VLL2.ENV_TEMPLATE = {
   AddCSLuaFile = function(fpath)
     if not fpath then
-      return 
+      return
     end
     local def = getdef()
     if def:FindRelative(fpath) then
-      return 
+      return
     end
     if file.Exists(fpath, 'LUA') then
-      return 
+      return
     end
     local canonize = VLL2.FileSystem.Canonize(def:Dir(fpath))
     if file.Exists(canonize, 'LUA') then
-      return 
+      return
     end
     return def:Msg('Unable to find specified file for AddCSLuaFile: ' .. fpath)
   end,
@@ -3268,10 +3268,10 @@ do
     LoadToolguns = function(self)
       local files, dirs = self.localFS:Find('weapons/gmod_tool/stools/*.lua')
       if #files == 0 then
-        return 
+        return
       end
       if not weapons.Get('gmod_tool') then
-        return 
+        return
       end
       _G.SWEP = { }
       SWEP.Folder = 'weapons/gmod_tool'
@@ -3559,7 +3559,7 @@ return hook.Add('HUDPaint', 'VLL2.HUDMessages', function()
     end
   end
   if not messages then
-    return 
+    return
   end
   local x, y = ScrW() / 2, ScrH() * 0.11
   for _index_0 = 1, #messages do
@@ -3608,7 +3608,7 @@ timer.Simple(0, function()
       code = 400
     end
     if code ~= 200 then
-      return 
+      return
     end
     do
       local _accum_0 = { }
@@ -3647,7 +3647,7 @@ local vll2_mkautocomplete
 vll2_mkautocomplete = function(commandToReg)
   return function(cmd, args)
     if not args then
-      return 
+      return
     end
     args = args:Trim():lower()
     if args == '' then

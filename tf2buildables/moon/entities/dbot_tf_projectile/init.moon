@@ -1,6 +1,6 @@
- 
+
 --
--- Copyright (C) 2017-2018 DBot
+-- Copyright (C) 2017-2019 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -78,7 +78,7 @@ ENT.Initialize = =>
 		\SetMass(@ProjectileMass)
 		\EnableGravity(@Gravity)
 		\Wake()
-	
+
 	@SetDirection(Vector(0, 0, 0))
 
 ENT.SetDirectionFunc = ENT.SetDirection
@@ -104,7 +104,7 @@ ENT.PhysicsCollide = (data = {}, colldier) =>
 	return false if HitEntity == @GetAttacker()
 
 	@OnCollision(HitEntity, HitNormal, HitPos)
-	
+
 	return unless @IsValid() and @GetIsFlying()
 	status = @OnHit(HitEntity, HitNormal, HitPos)
 	return if status == false
@@ -121,7 +121,7 @@ ENT.PhysicsCollide = (data = {}, colldier) =>
 				@Explode(HitEntity, HitNormal, HitPos) if @ExplodeOnWorldImpact
 		else
 			if IsValid(HitEntity)
-				@EmitSound(@GetImpactFleshSound()) 
+				@EmitSound(@GetImpactFleshSound())
 			else
 				@EmitSound(@GetImpactWorldSound())
 	else

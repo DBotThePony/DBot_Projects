@@ -1,6 +1,6 @@
 
 --
--- Copyright (C) 2017-2018 DBot
+-- Copyright (C) 2017-2019 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -53,5 +53,5 @@ hook.Add 'Think', 'DTF2.OverhealThink', ->
 				@DTF2_OverhealParticleSystem\StopEmission()
 				@DTF2_OverhealParticleSystem = nil
 			hitUpdate = true
-		
+
 	REBUILD_TRACKED_ENTS() if hitUpdate

@@ -1,5 +1,5 @@
 
--- Copyright (C) 2018 DBot
+-- Copyright (C) 2018-2019 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -42,7 +42,7 @@ class IMagic.VisMap
 		@empty = true
 		@map = map
 		@dirty = false
-	
+
 	MapToVis: (pos) =>
 		return if @empty
 		x, y = pos.x, pos.y
@@ -52,7 +52,7 @@ class IMagic.VisMap
 		celly = math.floor(y / @@CELL_STEP_Y)
 		return @heap[(cellx * @@X_SHIFT) + celly]
 
-	Generate: (consoleMessages = true) => 
+	Generate: (consoleMessages = true) =>
 		@heap = {}
 		@iterable = {}
 		@dirty = true
@@ -70,17 +70,17 @@ class IMagic.VisMap
 				flux = util.SharedRandom(@map, @@MIN_FLUX_LEVEL, @@MAX_FLUX_LEVEL, (x * @@X_SHIFT) + y + 0xFF33)
 				@heap[(x * @@X_SHIFT) + y] = IMagic.VisCell(x, y, vis, flux, vis, @)
 				table.insert(@iterable, @heap[(x * @@X_SHIFT) + y])
-		
+
 		IMagic.Message('Distributing...')
 
 		for _, cell in pairs(@heap)
 			cell\Distribute()
-		
+
 		IMagic.Message('Smoothing...')
 
 		for _, cell in pairs(@heap)
 			cell\Smooth()
-		
+
 		@empty = false
 
 import Vector from _G
@@ -95,7 +95,7 @@ class IMagic.VisCell
 		@map = map
 		@heap = map.heap
 		@key = x\lshift(16) + y
-	
+
 	GetUp: => @heap[(@x * IMagic.VisMap.X_SHIFT) + @y + 1]
 	GetLeft: => @heap[(@x - 1) * IMagic.VisMap.X_SHIFT + @y]
 	GetRight: => @heap[(@x + 1) * IMagic.VisMap.X_SHIFT + @y]

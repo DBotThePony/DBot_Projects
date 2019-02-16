@@ -1,7 +1,7 @@
 
 
 --
--- Copyright (C) 2017-2018 DBot
+-- Copyright (C) 2017-2019 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -58,7 +58,7 @@ with ENT
 		@NetworkVar('Entity', 1, 'Inflictor')
 		@NetworkVar('Float', 0, 'HitDelay')
 		@NetworkVar('Float', 1, 'Damage')
-	
+
 	.Initialize = =>
 		@SetNoDraw(true)
 		@SetNotSolid(true)
@@ -69,7 +69,7 @@ with ENT
 		@duration = 4
 		@burnEnd = @burnStart + 4
 		@SetMoveType(MOVETYPE_NONE)
-	
+
 	.UpdateDuration = (newtime = 0) =>
 		return if @burnEnd - CurTime() > newtime
 		@duration = newtime
@@ -98,10 +98,10 @@ with ENT
 			util.Effect('dtf2_minicrit', effData)
 			@GetAttacker()\EmitSound('DTF2_TFPlayer.CritHitMini')
 			owner\EmitSound('DTF2_TFPlayer.CritHitMini')
-		
+
 		@NextThink(CurTime() + @GetHitDelay())
 		return true
-	
+
 	.OnRemove = => @particles\StopEmission() if @particles and @particles\IsValid()
 	.Draw = =>
 		return if @particles

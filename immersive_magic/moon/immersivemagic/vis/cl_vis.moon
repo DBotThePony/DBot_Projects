@@ -1,5 +1,5 @@
 
--- Copyright (C) 2018 DBot
+-- Copyright (C) 2018-2019 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -53,7 +53,7 @@ HUDPaint = ->
 	visMult = (math.log10(cell\GetVis()) / 5)\clamp(0, 1)
 	visLimitMult = (math.log10(cell\GetVisLimit()) / 5)\clamp(0, 1)
 	fluxMult = (math.log10(cell\GetFlux()) / 12)\clamp(0, 1)
-	
+
 	surface.SetDrawColor(VIS_COLOR)
 	surface.DrawRect(x + paddingX, y + height2 - height2 * visMult, width2, height2 * visMult)
 

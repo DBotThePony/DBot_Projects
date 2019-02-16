@@ -1,7 +1,7 @@
 
 
 --
--- Copyright (C) 2017-2018 DBot
+-- Copyright (C) 2017-2019 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -46,7 +46,7 @@ if SERVER
 		@__dtf2_madmilk_logic\UpdateDuration(duration)
 		@SetNWEntity('DTF2.MadMilkLogic', @__dtf2_madmilk_logic)
 		return @__dtf2_madmilk_logic
-	
+
 	hook.Add 'PlayerDeath', 'DTF2.MadMilkLogic', => @__dtf2_madmilk_logic\Remove() if IsValid(@__dtf2_madmilk_logic)
 	hook.Add 'OnNPCKilled', 'DTF2.MadMilkLogic', => @__dtf2_madmilk_logic\Remove() if IsValid(@__dtf2_madmilk_logic)
 	hook.Add 'EntityTakeDamage', 'DTF2.MadMilkLogic', (ent, dmg) ->

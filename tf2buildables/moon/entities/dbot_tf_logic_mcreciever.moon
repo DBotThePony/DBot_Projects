@@ -1,7 +1,7 @@
 
 
 --
--- Copyright (C) 2017-2018 DBot
+-- Copyright (C) 2017-2019 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@ entMeta.IsMarkedForDeath = => @GetNWInt('DTF2.MarksForDeath') > 0
 with ENT
 	.SetupDataTables = =>
 		@NetworkVar('Entity', 0, 'MarkOwner')
-	
+
 	.Initialize = =>
 		@SetNoDraw(true)
 		@SetNotSolid(true)
@@ -45,12 +45,12 @@ with ENT
 		@duration = 4
 		@markEnd = @markStart + 4
 		@SetMoveType(MOVETYPE_NONE)
-	
+
 	.UpdateDuration = (newtime = 0) =>
 		return if @markEnd - CurTime() > newtime
 		@duration = newtime
 		@markEnd = CurTime() + newtime
-	
+
 	.SetupOwner = (owner) =>
 		@SetPos(owner\GetPos())
 		return if owner == @GetOwner()
@@ -64,7 +64,7 @@ with ENT
 		return if CLIENT
 		return @Remove() if @markEnd < CurTime()
 		return @Remove() if not IsValid(@GetOwner())
-	
+
 	.OnRemove = =>
 		owner = @GetOwner()
 		return if not IsValid(owner)

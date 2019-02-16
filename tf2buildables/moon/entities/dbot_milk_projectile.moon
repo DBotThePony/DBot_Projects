@@ -1,6 +1,6 @@
 
 --
--- Copyright (C) 2017-2018 DBot
+-- Copyright (C) 2017-2019 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -95,7 +95,7 @@ ENT.PhysicsCollide = (data = {}, colldier) =>
 			if tr.Entity == ent
 				with ent\TF2MadMilk(@GetMilkTime())
 					\SetAttacker(@GetAttacker())
-	
+
 	@EmitSound('DTF2_Jar.Explode')
 	ParticleEffect('peejar_impact_milk', HitPos - HitNormal, Angle(0, 0, 0))
 	@Remove()

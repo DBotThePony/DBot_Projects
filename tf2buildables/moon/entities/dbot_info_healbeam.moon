@@ -1,6 +1,6 @@
 
 --
--- Copyright (C) 2017-2018 DBot
+-- Copyright (C) 2017-2019 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -82,7 +82,7 @@ if CLIENT
 				\SetModelScale(0.01)
 				\SetMaterial('!DTF2_Translucent_Beam')
 			return
-		
+
 		with @GetDummyTarget()
 				\SetNoDraw(true)
 				\DrawShadow(false)
@@ -100,5 +100,5 @@ if CLIENT
 		}
 
 		@particleEffect = @CreateParticleEffect(@GetBeamType() and 'dispenser_heal_blue' or 'dispenser_heal_red', {pointOne, pointTwo})
-	
+
 	ENT.Think = ENT.Draw

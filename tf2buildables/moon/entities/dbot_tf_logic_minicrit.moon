@@ -1,6 +1,6 @@
 
 --
--- Copyright (C) 2017-2018 DBot
+-- Copyright (C) 2017-2019 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@ with ENT
 		@NetworkVar('Bool', 1, 'AffectNPCs')
 		@NetworkVar('Bool', 2, 'AffectNextBots')
 		@NetworkVar('Bool', 3, 'AffectEverything')
-	
+
 	.Initialize = =>
 		@SetNoDraw(true)
 		@SetNotSolid(true)
@@ -81,13 +81,13 @@ with ENT
 			if not hit
 				newTarget\AddMiniCritBuffer()
 				newTarget\UpdateMiniCritBuffers()
-		
+
 		@NextThink(CurTime() + .25)
 		return true
-	
+
 	.OnRemove = =>
 		for newTarget in *@BuffedTargets
 			newTarget\RemoveMiniCritBuffer()
 			newTarget\UpdateMiniCritBuffers()
-	
+
 	.Draw = => false

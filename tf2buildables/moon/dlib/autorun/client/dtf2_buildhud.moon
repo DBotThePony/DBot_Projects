@@ -1,6 +1,6 @@
 
 --
--- Copyright (C) 2017-2018 DBot
+-- Copyright (C) 2017-2019 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -172,7 +172,7 @@ DTF2.DrawSentryHUD = (sentry, x, y, centered = false, isHUD = false) ->
 				surface.SetMaterial(hud_obj_status_ammo_64)
 				surface.DrawTexturedRect(x, y, 16, 16)
 				DLib.HUDCommons.SoftBarMult(x + 22, y, 130, 16, math.Clamp(sentry\GetAmmoAmount() / sentry\GetMaxAmmo(), 0, 1), AMMO_BAR(), BAR_BACKGROUND(), 'tf_sentry_ammo')
-				
+
 				y += 24
 				surface.SetDrawColor(UPGRADE_BAR())
 				surface.SetMaterial(ico_metal_mask)
@@ -183,7 +183,7 @@ DTF2.DrawSentryHUD = (sentry, x, y, centered = false, isHUD = false) ->
 				surface.SetMaterial(hud_obj_status_ammo_64)
 				surface.DrawTexturedRect(x, y, 16, 16)
 				DLib.HUDCommons.SoftBarMult(x + 22, y, 130, 16, math.Clamp(sentry\GetAmmoAmount() / sentry\GetMaxAmmo(), 0, 1), AMMO_BAR(), BAR_BACKGROUND(), 'tf_sentry_ammo')
-				
+
 				y += 24
 				surface.SetDrawColor(ROCKETS_BAR())
 				surface.SetMaterial(hud_obj_status_rockets_64)
@@ -237,7 +237,7 @@ DTF2.DrawDispenserHUD = (dispenser, x, y, centered = false, isHUD = false) ->
 				surface.SetMaterial(hud_obj_status_ammo_64)
 				surface.DrawTexturedRect(x, y, 16, 16)
 				DLib.HUDCommons.SoftBarMult(x + 22, y, 130, 16, math.Clamp(dispenser\GetRessuplyAmount() / dispenser\GetMaxRessuply(), 0, 1), DISPERNSER_AMMO_BAR(), BAR_BACKGROUND(), 'tf_dispenser_ammo')
-				
+
 				y += 24
 				surface.SetDrawColor(UPGRADE_BAR())
 				surface.SetMaterial(ico_metal_mask)
@@ -299,7 +299,7 @@ DTF2.DrawTeleporterEntranceHUD = (teleporter, x, y, centered = false, isHUD = fa
 			y += 24
 		else
 			y += 9
-		
+
 		surface.SetDrawColor(TELEPORTER_BAR())
 		surface.SetMaterial(hud_obj_status_teleport_64)
 		surface.DrawTexturedRect(x, y, 16, 16)
@@ -516,7 +516,7 @@ DTF2.DrawPDAHUD = (ply = LocalPlayer(), sentryStatus = IsValid(ply\GetBuildedSen
 		surface.SetTextPos(x + ICON_WIDTH / 2 - w / 2, y)
 		LDrawText(text)
 		surface.DrawRect(x, y + h + 2, ICON_WIDTH, ICON_HEIGHT)
-		
+
 		if not status
 			surface.SetMaterial(mat)
 			surface.SetDrawColor(255, 255, 255)
@@ -528,7 +528,7 @@ DTF2.DrawPDAHUD = (ply = LocalPlayer(), sentryStatus = IsValid(ply\GetBuildedSen
 			surface.SetTextPos(x + 33, y + ICON_HEIGHT / 2 + h)
 			LDrawText('gui.tf2.hud.main.built')
 			surface.SetTextColor(BUILD_FONT_COLOR_INACTIVE())
-		
+
 		lx, ly = x, y
 		if DTF2.PDA_CONSUMES_METAL\GetBool()
 			surface.SetTextColor(ply\CanAffordTF2Metal(cost) and BUILD_FONT_AFFORD() or BUILD_FONT_NOT_AFFORD())
@@ -537,7 +537,7 @@ DTF2.DrawPDAHUD = (ply = LocalPlayer(), sentryStatus = IsValid(ply\GetBuildedSen
 			LDrawText('gui.tf2.hud.main.cost', cost)
 			ly += 22
 			surface.SetTextColor(BUILD_FONT_COLOR())
-		
+
 		surface.SetFont('DTF2.BuildMediumFont')
 		surface.SetDrawColor(DTF2.BACKGROUND_COLOR())
 		surface.DrawRect(lx + ICON_WIDTH / 2 - 10, ly + ICON_HEIGHT + 23, 20, 22)
@@ -589,7 +589,7 @@ DTF2.DestructionPDAHUD = (ply = LocalPlayer(), sentryStatus = IsValid(ply\GetBui
 		surface.SetTextPos(x + ICON_WIDTH / 2 - w / 2, y)
 		LDrawText(text)
 		surface.DrawRect(x, y + h + 2, ICON_WIDTH, ICON_HEIGHT)
-		
+
 		if status
 			surface.SetMaterial(ico_demolish)
 			surface.SetDrawColor(255, 255, 255)
@@ -603,7 +603,7 @@ DTF2.DestructionPDAHUD = (ply = LocalPlayer(), sentryStatus = IsValid(ply\GetBui
 			surface.SetTextPos(x + 33, y + ICON_HEIGHT / 2 + h)
 			LDrawText('gui.tf2.hud.main.built')
 			surface.SetTextColor(BUILD_FONT_COLOR_INACTIVE())
-		
+
 		surface.SetFont('DTF2.BuildMediumFont')
 		surface.SetDrawColor(DTF2.BACKGROUND_COLOR())
 		surface.DrawRect(x + ICON_WIDTH / 2 - 10, y + ICON_HEIGHT + 23, 20, 22)

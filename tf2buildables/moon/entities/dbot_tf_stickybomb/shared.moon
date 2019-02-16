@@ -1,6 +1,6 @@
 
 --
--- Copyright (C) 2017-2018 DBot
+-- Copyright (C) 2017-2019 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -76,7 +76,7 @@ ENT.ZAddition = 0.18
 
 entMeta = FindMetaTable('Entity')
 
-EntityClass = 
+EntityClass =
 	GetTFStickiesCount: (mclass = 'dbot_tf_stickybomb', def = 0) => @GetNWInt('DTF2.Stickies.' .. mclass, def)
 	GetTFStickCount: (mclass = 'dbot_tf_stickybomb', def = 0) => @GetNWInt('DTF2.Stickies.' .. mclass, def)
 	GetTFStickyBombCount: (mclass = 'dbot_tf_stickybomb', def = 0) => @GetNWInt('DTF2.Stickies.' .. mclass, def)

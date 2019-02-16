@@ -1,6 +1,6 @@
 
 --
--- Copyright (C) 2017-2018 DBot
+-- Copyright (C) 2017-2019 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -168,11 +168,11 @@ SWEP.PrimaryAttack = =>
 			return false
 	else
 		return false if @GetOwner()\GetAmmoCount(@Primary.Ammo) <= 0
-	
+
 	status = BaseClass.PrimaryAttack(@)
 	return status if status == false
-	
+
 	@isReloading = false
 	@TakePrimaryAmmo(@TakeBulletsOnFire)
-	
+
 	return true

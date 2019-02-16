@@ -1,6 +1,6 @@
- 
+
 --
--- Copyright (C) 2017-2018 DBot
+-- Copyright (C) 2017-2019 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@ ENT.Draw = =>
 	@particlesSetup = true
 	for eff in *@DrawEffects
 		CreateParticleSystem(@, eff, PATTACH_ABSORIGIN_FOLLOW) if type(eff) == 'string'
-	
+
 	if @GetIsCritical() and @DisplayCriticalEffects
 		for eff in *@DrawEffects
 			CreateParticleSystem(@, eff, PATTACH_ABSORIGIN_FOLLOW) if type(eff) == 'string'

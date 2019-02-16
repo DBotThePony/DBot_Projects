@@ -1,6 +1,6 @@
 
 --
--- Copyright (C) 2017-2018 DBot
+-- Copyright (C) 2017-2019 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -101,7 +101,7 @@ ENT.OnHit = (ent, data = {}) =>
 		util.Effect('dtf2_minicrit', effData)
 		@GetAttacker()\EmitSound('DTF2_TFPlayer.CritHitMini')
 		ent\EmitSound('DTF2_TFPlayer.CritHitMini')
-	
+
 	if ent\IsNPC() or ent\IsPlayer()
 		bleed = ent\TF2Bleed(math.Clamp(dist / 256, 5, 10))
 		bleed\SetAttacker(@GetAttacker())
@@ -110,7 +110,7 @@ ENT.OnHit = (ent, data = {}) =>
 		@GetAttacker()\EmitSound('DTF2_Cleaver.ImpactFlesh')
 	else
 		ent\EmitSound('DTF2_Cleaver.ImpactWorld')
-	
+
 	@Remove()
 
 ENT.PhysicsCollide = (data = {}, colldier) =>
