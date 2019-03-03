@@ -269,7 +269,7 @@ checkFriendlyFire = (dmg) =>
 		dmg\SetMaxDamage(0)
 		return true
 
-hook.Add 'EntityTakeDamage', 'DTF2.BuildablesFriendlyFire', checkFriendlyFire
+hook.Add 'EntityTakeDamage', 'DTF2.BuildablesFriendlyFire', checkFriendlyFire, -3
 
 sbox_playershurtplayers = GetConVar('sbox_playershurtplayers')
 
