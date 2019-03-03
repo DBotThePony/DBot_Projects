@@ -121,16 +121,31 @@ SWEP.Initialize = =>
 SWEP.CalcAndCheckBuildSpot = =>
 	ply = @GetOwner()
 	return false, {HitPos: Vector()} if not IsValid(ply) or not ply\IsPlayer()
+
 	ang = ply\EyeAngles()
 	newAng = Angle(0, ang.y, 0)
 	fwd = newAng\Forward() * @BUILD_FORWARD
+
 	pos = ply\GetPos() + fwd
+
 	trData = {
-		start: pos + Vector(0, 0, 20)
-		endpos: pos - Vector(0, 0, 20)
-		filter: {ply}
-		mins: Vector(20, 20, 0)
-		maxs: Vector(20, 20, 64)
+		start: ply\GetPos() + Vector(0, 0, 10)
+		endpos: pos + Vector(0, 0, 10) + newAng\Forward() * 20
+		filter: ply
+		mins: Vector(-10, -10, 0)
+		maxs: Vector(10, 10, 64)
+	}
+
+	trC = util.TraceHull(trData)
+
+	return false, trC if trC.Hit
+
+	trData = {
+		start: pos + Vector(0, 0, 8)
+		endpos: pos - Vector(0, 0, 8)
+		filter: ply
+		mins: Vector(-10, -10, 0)
+		maxs: Vector(10, 10, 64)
 	}
 
 	tr1 = util.TraceHull(trData)
