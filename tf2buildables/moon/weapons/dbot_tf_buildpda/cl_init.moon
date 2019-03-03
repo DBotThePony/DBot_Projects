@@ -100,7 +100,7 @@ PlayerBindPress = (bind, isPressed) =>
 
 hook.Add 'PlayerBindPress', 'DTF2.BuildPDACapture', PlayerBindPress, -2
 
-hook.Add 'PostDrawOpaqueRenderables', 'DTF2.BuildPDABlueprint', (a, b) ->
+PostDrawTranslucentRenderables = (a, b) ->
 	return if a or b
 	ply = LocalPlayer()
 	wep = ply\GetActiveWeapon()
@@ -117,3 +117,5 @@ hook.Add 'PostDrawOpaqueRenderables', 'DTF2.BuildPDABlueprint', (a, b) ->
 		\SetPos(pos)
 		\SetAngles(diff)
 		\DrawModel()
+
+hook.Add 'PostDrawTranslucentRenderables', 'DTF2.BuildPDABlueprint', PostDrawTranslucentRenderables, -2
