@@ -85,7 +85,7 @@ ENT.PlayScanSound = =>
 			@EmitSound('weapons/sentry_scan3.wav')
 
 ENT.BulletHit = (tr, dmg) =>
-	dmg\SetDamage(DTF2.GrabFloat(@BULLET_DAMAGE))
+	dmg\SetDamage(@nextBulletDamage)
 	dmg\SetAttacker(@SelectAttacker())
 	dmg\SetInflictor(@)
 	dmg\SetDamageType(DMG_BULLET)
@@ -145,6 +145,8 @@ ENT.FireBullet = (force = false) =>
 		Dir: dir
 		Src: srcPos
 	}
+
+	@nextBulletDamage = grabDamage
 
 	@RestartGesture(ACT_RANGE_ATTACK1)
 	@DelayGestureRemove(ACT_RANGE_ATTACK1, @GetBulletAnimTime())
