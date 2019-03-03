@@ -470,6 +470,7 @@ ENT.GetAlliesVisible = =>
 
 	for {target, tpos, dist, center} in *output
 		trData = {
+			mask: MASK_ALL
 			filter: trFilter
 			start: @obbcenter + pos
 			endpos: tpos + center
@@ -512,6 +513,7 @@ ENT.GetTargetsVisible = =>
 
 	for {target, tpos, dist, center} in *output
 		trData = {
+			mask: MASK_ALL
 			filter: trFilter
 			start: @obbcenter + pos
 			endpos: tpos + center
@@ -576,6 +578,7 @@ ENT.GetFirstVisible = (checkFor) =>
 
 	for {target, tpos, dist, center} in *output
 		trData = {
+			mask: MASK_ALL
 			filter: trFilter
 			start: @obbcenter + pos
 			endpos: tpos + center

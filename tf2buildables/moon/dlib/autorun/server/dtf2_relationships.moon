@@ -42,6 +42,7 @@ NPC_CLASSIFY = NPCMETA.Classify
 
 DTF2.IS_ENEMY_CLASS = (entClass, def = false) ->
 	entClass = ENT_GETCLASS(entClass) if type(entClass) ~= 'string'
+	return true if entClass\startsWith('nz_zombie')
 	switch entClass
 		when 'replicator_queen_hive', 'replicator_queen', 'replicator_worker'
 			return true
