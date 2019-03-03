@@ -53,6 +53,10 @@ ENT.OnInjured = (dmg) =>
 	if dmg\GetAttacker() == @ or dmg\GetAttacker()\IsValid() and @IsAlly(dmg\GetAttacker())
 		dmg\SetDamage(0)
 		dmg\SetMaxDamage(0)
+	elseif @Health() <= 0
+		@OnKilled(dmg)
+
+	print(dmg, dmg\GetDamage())
 
 ENT.CallDestroy = (attacker = NULL, inflictor = NULL, dmg) =>
 ENT.OnKilled = (dmg) =>
