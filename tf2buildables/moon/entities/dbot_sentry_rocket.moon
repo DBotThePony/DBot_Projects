@@ -67,13 +67,16 @@ else
 			--right = ang\Right()
 			--\AddAngleVelocity((up + right) * 400)
 
-
-
+ENT.ROCKET_DAMAGE = CreateConVar('tf_dbg_srocket_damage', '128', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Sentry rockets damage')
 ENT.PhysicsCollide = (data = {}, colldier) =>
 	{:HitPos, :HitEntity, :HitNormal} = data
 	return false if HitEntity == @attacker
 	@SetSolid(SOLID_NONE)
-	util.BlastDamage(IsValid(@GetInflictor()) and @GetInflictor() or @, IsValid(@GetAttacker()) and @GetAttacker() or @, HitPos + HitNormal, 64, 128)
+
+	grabDamage = DTF2.GrabFloat(@ROCKET_DAMAGE)
+	grabDamage = hook.Run('DTF2_GetSentryRocketDamage', @, grabDamage) or grabDamage
+
+	util.BlastDamage(IsValid(@GetInflictor()) and @GetInflictor() or @, IsValid(@GetAttacker()) and @GetAttacker() or @, HitPos + HitNormal, 64, grabDamage)
 	effData = EffectData()
 	effData\SetNormal(-HitNormal)
 	effData\SetOrigin(HitPos - HitNormal)

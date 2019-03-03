@@ -133,10 +133,13 @@ ENT.FireBullet = (force = false) =>
 	dir = @currentTargetPosition - srcPos
 	dir\Normalize()
 
+	grabDamage = DTF2.GrabFloat(@BULLET_DAMAGE)
+	grabDamage = hook.Run('DTF2_GetSentryBulletDamage', @, grabDamage) or grabDamage
+
 	bulletData = {
 		Attacker: @
 		Callback: @BulletHit
-		Damage: DTF2.GrabFloat(@BULLET_DAMAGE)
+		Damage: grabDamage
 		--Dir: srcAng
 		--Src: srcPos
 		Dir: dir
