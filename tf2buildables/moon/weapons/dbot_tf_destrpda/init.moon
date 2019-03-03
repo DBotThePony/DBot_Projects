@@ -45,7 +45,7 @@ SWEP.SwitchToWrench = =>
 	dbot_tf_wrench = false
 	ply = @GetOwner()
 	return false if not IsValid(ply) or not ply\IsPlayer()
-	for wep in *ply\GetWeapons()
+	for _, wep in pairs ply\GetWeapons()
 		switch wep\GetClass()
 			when 'weapon_crowbar'
 				weapon_crowbar = true
