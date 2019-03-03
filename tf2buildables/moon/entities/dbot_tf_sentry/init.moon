@@ -34,7 +34,7 @@ ENT.CallDestroy = (attacker = NULL, inflictor = NULL, dmg) => hook.Run('TF2Sentr
 ENT.OnOtherKilled = (victim, dmg) =>
 	if dmg\GetAttacker() == @ or dmg\GetInflictor() == @ or IsValid(dmg\GetInflictor()) and dmg\GetInflictor().IsBuildingPart and dmg\GetInflictor().IsBuildingPart and dmg\GetInflictor()\GetBuildableOwner() == @
 		@SetKills(@GetKills() + 1)
-		@lastSpotSoundTarget = CurTime() + 0.3
+		@lastSpotSoundTarget = CurTime() + 0.8 if @lastSpotSoundTarget <= CurTime()
 		@currentTarget = NULL
 
 ENT.Initialize = =>
