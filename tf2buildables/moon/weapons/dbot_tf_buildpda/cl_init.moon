@@ -91,12 +91,14 @@ SWEP.TriggerPlayerInput = (key = KEY_1) =>
 			surface.PlaySound(@INVALID_INPUT_SOUND) if not reply
 			return reply
 
-hook.Add 'PlayerBindPress', 'DTF2.BuildPDACapture', (bind, isPressed) =>
+PlayerBindPress = (bind, isPressed) =>
 	return if not isPressed
 	if bind == 'slot1' or bind == 'slot2' or bind == 'slot3' or bind == 'slot4'
 		wep = @GetActiveWeapon()
 		return if not IsValid(wep) or wep\GetClass() ~= 'dbot_tf_buildpda'
 		return true if wep\TriggerPlayerInput(bind)
+
+hook.Add 'PlayerBindPress', 'DTF2.BuildPDACapture', PlayerBindPress, -2
 
 hook.Add 'PostDrawOpaqueRenderables', 'DTF2.BuildPDABlueprint', (a, b) ->
 	return if a or b
