@@ -216,11 +216,11 @@ UpdateTargetListLight = ->
 		{ent, ENT_GETPOS(ent), mins, maxs, center1, center, pointer}
 
 hook.Add 'Think', 'DTF2.FetchTagrets', UpdateTargetListLight
-hook.Add 'PlayerSpawn', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTargetList', 0.5, 1, UpdateTargetList
-hook.Add 'PlayerDisconnected', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTargetList', 0.5, 1, UpdateTargetList
-hook.Add 'OnEntityCreated', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTargetList', 0.5, 1, UpdateTargetList
-hook.Add 'EntityRemoved', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTargetList', 0.5, 1, UpdateTargetList
-hook.Add 'OnNPCKilled', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTargetList', 0.5, 1, UpdateTargetList
+hook.Add 'PlayerSpawn', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTargetListPlayer', 0.1, 1, UpdateTargetList
+hook.Add 'PlayerDisconnected', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTargetListPlayer', 0.1, 1, UpdateTargetList
+hook.Add 'OnEntityCreated', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTargetListEntity', 0.1, 1, UpdateTargetList
+hook.Add 'EntityRemoved', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTargetListEntityRemoved', 0.1, 1, UpdateTargetList
+hook.Add 'OnNPCKilled', 'DTF2.UpdateTargetList', -> timer.Create 'DTF2.UpdateTargetListNPCKilled', 0.1, 1, UpdateTargetList
 
 RemoveTFTarget = (target) ->
 	for ent in *ents.FindByClass('dbot_tf_*')
