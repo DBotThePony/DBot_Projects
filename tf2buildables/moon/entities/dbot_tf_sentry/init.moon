@@ -263,10 +263,13 @@ ENT.Think = =>
 		@SetBodygroup(2, 0)
 		return
 
+	SENTRY_ANGLE_CHANGE_MULT = DTF2.GrabFloat(@SENTRY_ANGLE_CHANGE_MULT)
+	SENTRY_ANGLE_CHANGE_MULT = hook.Run('DTF2_GetSentryTurnSpeed', @ , SENTRY_ANGLE_CHANGE_MULT) or SENTRY_ANGLE_CHANGE_MULT
+
 	diffPitch = math.Clamp(math.AngleDifference(@currentAngle.p, @targetAngle.p), -2, 2)
 	diffYaw = math.Clamp(math.AngleDifference(@currentAngle.y, @targetAngle.y), -2, 2)
-	newPitch = @currentAngle.p - diffPitch * delta * DTF2.GrabFloat(@SENTRY_ANGLE_CHANGE_MULT)
-	newYaw = @currentAngle.y - diffYaw * delta * DTF2.GrabFloat(@SENTRY_ANGLE_CHANGE_MULT)
+	newPitch = @currentAngle.p - diffPitch * delta * SENTRY_ANGLE_CHANGE_MULT
+	newYaw = @currentAngle.y - diffYaw * delta * SENTRY_ANGLE_CHANGE_MULT
 	@currentAngle = Angle(newPitch, newYaw, 0)
 	{p: cp, y: cy, r: cr} = @GetAngles()
 	posePitch = math.floor(math.NormalizeAngle(cp - newPitch))
