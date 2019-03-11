@@ -43,6 +43,7 @@ function DConn.Query(q, callback)
 end
 
 -- Listen for advanced disconnect event
+gameevent.Listen('player_connect')
 gameevent.Listen('player_disconnect')
 
 local TEXT_COLOR = Color(221, 186, 80)
@@ -90,35 +91,6 @@ local function MessageDISC(...)
 end
 
 local PendingDisconnects = {}
-local PendingConnect
-
-local function PlayerConnect(nick, ip)
-	if not PendingConnect then
-		MessageCONN(nick, ' connected to the server')
-	else
-		local PendingConnect = PendingConnect
-		DConn.Query('SELECT * FROM dconnecttt WHERE steamid64 = "' .. PendingConnect.steamid64 .. '";', function(data)
-			if not data[1] then
-				MessageCONN('message.dconn.player.connected', PendingConnect.nick .. '<' .. PendingConnect.steamid .. '>')
-			else
-				local db_steamid = data[1].steamid
-				local db_steamid64 = data[1].steamid64
-				local lastname = data[1].lastname
-				local steamname = data[1].steamname
-
-				local PrintNick = PendingConnect.nick
-
-				if steamname ~= nick then
-					PrintNick = PrintNick .. string.format(' (known as %s)', steamname)
-				end
-
-				MessageCONN('message.dconn.player.connected', PrintNick .. '<' .. PendingConnect.steamid .. '>')
-			end
-		end)
-	end
-
-	PendingConnect = nil
-end
 
 function DConn.SavePlayerData(ply)
 	if ply:IsBot() then return end
@@ -221,47 +193,51 @@ end
 
 local IPBuffer = {}
 
-local RUNNING = false
+local function player_connect(data)
+	local steamid = data.networkid
+	local nick = data.name
+	local ip = data.address
+
+	if data.bot == 1 or ip == 'loopback' then
+		return
+	end
+
+	local realip = string.Explode(':', ip)[1]
+
+	DConn.Query('SELECT * FROM dconnecttt WHERE steamid64 = "' .. util.SteamIDTo64(steamid) .. '";', function(data)
+		if not data[1] then
+			MessageCONN('message.dconn.player.connected', nick .. '<' .. steamid .. '>')
+			return
+		end
+
+		local db_steamid = data[1].steamid
+		local db_steamid64 = data[1].steamid64
+		local lastname = data[1].lastname
+		local steamname = data[1].steamname
+
+		local PrintNick = nick
+
+		if steamname ~= nick then
+			PrintNick = PrintNick .. string.format(' (known as %s)', steamname)
+		end
+
+		MessageCONN('message.dconn.player.connected', PrintNick .. '<' .. steamid .. '>')
+	end)
+end
 
 local function CheckPassword(steamid64, ip, svpass, clpass, nick)
-	if RUNNING then return end
+	if ip == 'loopback' or ip == 'bot' then return end
+
 	local realip = string.Explode(':', ip)[1]
-	local steamid = util.SteamIDFrom64(steamid64)
 
-	IPBuffer[realip] = IPBuffer[realip] or {0, CurTimeL()}
+	IPBuffer[realip] = IPBuffer[realip] or {0, RealTimeL()}
+	local pdata = IPBuffer[realip]
+	pdata[1] = pdata[2] + SPAM_DELAY:GetInt() >= RealTimeL() and (pdata[1] + 1) or 0
 
-	if IPBuffer[realip][2] + SPAM_DELAY:GetInt() > CurTimeL() then
-		IPBuffer[realip][1] = IPBuffer[realip][1] + 1
-	else
-		IPBuffer[realip][1] = 0
-	end
-
-	if PREVENT_CONNECTION_SPAM:GetBool() and IPBuffer[realip][1] > SPAM_TRIES:GetInt() then
+	if PREVENT_CONNECTION_SPAM:GetBool() and pdata[1] > SPAM_TRIES:GetInt() then
 		DConn.LMessage('message.dconn.kick.spam', nick .. '<' .. steamid .. '>')
-		return false, '[DConnecttt] Connection Spam!'
+		return false, '[DConnecttt] Spam connecting. Please wait some time and then try to reconnect again.'
 	end
-
-	RUNNING = true
-	local can, reason = hook.Run('CheckPassword', steamid64, ip, svpass, clpass, nick)
-	RUNNING = false
-
-	local can2, reason2
-
-	if can == false then
-		return false, reason
-	else
-		can2, reason2 = svpass == '' or svpass == clpass, 'Server Password ~= Client Password!\nIf you are connecting from console,\nuse "password" console command to set clientside password.'
-	end
-
-	PendingConnect = {
-		steamid = steamid,
-		steamid64 = steamid64,
-		nick = nick,
-		ip = ip,
-	}
-
-	--  Fixing GMod bug
-	return can2, reason2
 end
 
 local function player_disconnect(data)
@@ -388,9 +364,9 @@ end)
 timer.Create('DConnecttt.Timer', 1, 0, Timer)
 timer.Create('DConnecttt.SaveTimer', 60, 0, SaveTimer)
 net.Receive('DConnecttt.PlayerTick', PlayerTick)
+hook.Add('player_connect', 'DConnecttt', player_connect)
 hook.Add('player_disconnect', 'DConnecttt', player_disconnect)
 hook.Add('CheckPassword', 'DConnecttt', CheckPassword)
-hook.Add('PlayerConnect', 'DConnecttt', PlayerConnect)
 hook.Add('PlayerAuthed', 'DConnecttt', PlayerAuthed)
 
 DConn.Query([[
