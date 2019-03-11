@@ -343,6 +343,8 @@ hook.Add('CreateMove', 'DConnecttt.PreventMove', function(cmd)
 	lastThink = ctime
 	if RealTimeL() - LastTick < 7 / game.GetTimeScale() then return end
 
+	if game.SinglePlayer() then return end
+
 	-- client froze
 	if not lastClientLag and RealFrameTime() > 0.4 then
 		lastClientLag = true
@@ -438,6 +440,7 @@ end)
 
 hook.Add('CalcView', 'DConnecttt.FakeMove', function(ply, origin, angles, fov, znear, zfar)
 	if not calcposEnable then return end
+	if game.SinglePlayer() then return end
 	if not FAKE_NOCLIP:GetBool() then return end
 
 	return {

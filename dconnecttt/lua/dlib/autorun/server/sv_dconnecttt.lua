@@ -289,6 +289,7 @@ function DConn.FakeDisconnect(ply, reason)
 end
 
 local function Timer()
+	if game.SinglePlayer() then return end
 	local KICK_NOT_RESPONDING = KICK_NOT_RESPONDING:GetBool()
 
 	for k, ply in pairs(player.GetAll()) do
@@ -346,6 +347,7 @@ hook.Add('StartCommand', 'DConnecttt.PreventMove', function(ply, cmd)
 	if ply:IsBot() then return end
 	if not ply.DConnecttt_LastTick then return end
 	if CurTimeL() - ply.DConnecttt_LastTick < 5 then return end
+	if game.SinglePlayer() then return end
 
 	if ply.DConnecttt_Beat then
 		if not ply:InVehicle() then
