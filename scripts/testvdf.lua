@@ -15,7 +15,7 @@
 
 local vdfFuncs = require('./valvedatafile')
 local decode = vdfFuncs[1]
-local open = io.open('./cso2_english.txt', 'rb')
+local open = io.open('./vdffile.vdf', 'rb')
 
 local lines = {}
 
@@ -36,5 +36,3 @@ for k, v in pairs(decoded) do
 		end
 	end
 end
-
-print(decoded.lang.Tokens.CSO2_UI_MENU_TOTURIAL)

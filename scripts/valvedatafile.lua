@@ -75,12 +75,16 @@ local function decode(lines, isPC, isWindows, isOSX, isLinux, isPOSIX, isXBox)
 
 		local trim = line:match('^%s*(.-)%s*$')
 
-		if trim:find('//') then
-			trim = trim:gsub('%s*//.*$', '')
-		end
-
 		local condition = trim ~= '' and trim:sub(1, 2) ~= '//'
 		local conditional = false
+
+		--[[if condition then
+			local findCommentary = trim:find('//', 1, false)
+
+			if findCommentary then
+				trim = trim:gsub('%s*//.*$', '')
+			end
+		end]]
 
 		if condition and trim:sub(#trim) == ']' then
 			condition = false
@@ -155,10 +159,11 @@ local function decode(lines, isPC, isWindows, isOSX, isLinux, isPOSIX, isXBox)
 		if not condition then
 
 		elseif trim:sub(1, 1) == '"' then
-			assert(trim:sub(#trim) == '"', 'malformed name token/key-value pair at line ' .. i)
+			--assert(trim:sub(#trim) == '"', 'malformed name token/key-value pair at line ' .. i)
 
 			local key, value = '', ''
-			local atKey, keyFinished, atValue, valueFinished = false, false, false
+			local atKey, keyFinished, atValue, valueFinished = false, false, false, false
+			local tryCommentary = false
 
 			for char in trim:gmatch('.') do
 				if char == '"' then
@@ -182,17 +187,29 @@ local function decode(lines, isPC, isWindows, isOSX, isLinux, isPOSIX, isXBox)
 							atKey = true
 						end
 					end
+
+					tryCommentary = false
 				elseif char == ' ' then
 					if atKey then
 						key = key .. ' '
 					elseif atValue then
 						value = value .. ' '
 					end
+
+					tryCommentary = false
 				elseif char == '\t' then
 					if atKey then
 						key = key .. '\t'
 					elseif atValue then
 						value = value .. '\t'
+					end
+
+					tryCommentary = false
+				elseif char == '/' and valueFinished then
+					if not tryCommentary then
+						tryCommentary = true
+					else
+						break
 					end
 				else
 					if atKey then
@@ -202,6 +219,8 @@ local function decode(lines, isPC, isWindows, isOSX, isLinux, isPOSIX, isXBox)
 					else
 						error('malformed key-value pair/header at line ' .. i)
 					end
+
+					tryCommentary = false
 				end
 			end
 
