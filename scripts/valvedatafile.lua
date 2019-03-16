@@ -163,10 +163,46 @@ local function decode(lines, isPC, isWindows, isOSX, isLinux, isPOSIX, isXBox)
 
 			local key, value = '', ''
 			local atKey, keyFinished, atValue, valueFinished = false, false, false, false
-			local tryCommentary = false
+			local tryCommentary, escapeNext = false, false
 
 			for char in trim:gmatch('.') do
-				if char == '"' then
+				if char == '"' and escapeNext then
+					if atKey then
+						key = key .. '"'
+					elseif atValue then
+						value = value .. '"'
+					end
+
+					tryCommentary = false
+					escapeNext = false
+				elseif char == 'n' and escapeNext then
+					if atKey then
+						key = key .. '\n'
+					elseif atValue then
+						value = value .. '\n'
+					end
+
+					tryCommentary = false
+					escapeNext = false
+				elseif char == 'r' and escapeNext then
+					if atKey then
+						key = key .. '\r'
+					elseif atValue then
+						value = value .. '\r'
+					end
+
+					tryCommentary = false
+					escapeNext = false
+				elseif char == 't' and escapeNext then
+					if atKey then
+						key = key .. '\t'
+					elseif atValue then
+						value = value .. '\t'
+					end
+
+					tryCommentary = false
+					escapeNext = false
+				elseif char == '"' then
 					if valueFinished and keyFinished then
 						print('VDF: extra (junk) data at line ' .. i)
 						break
@@ -186,6 +222,18 @@ local function decode(lines, isPC, isWindows, isOSX, isLinux, isPOSIX, isXBox)
 						else
 							atKey = true
 						end
+					end
+
+					tryCommentary = false
+				elseif char == '\\' then
+					if escapeNext then
+						if atKey then
+							key = key .. '\\'
+						elseif atValue then
+							value = value .. '\\'
+						end
+					else
+						escapeNext = true
 					end
 
 					tryCommentary = false
@@ -235,8 +283,10 @@ local function decode(lines, isPC, isWindows, isOSX, isLinux, isPOSIX, isXBox)
 				else
 					table.insert(currentData[key], value)
 				end
-			elseif keyFinished then
+			elseif keyFinished and not atValue then
 				literalName = key
+			elseif atValue or atKey then
+				error('line is lacking closing/start quote ' .. i)
 			else
 				error('unable to parse line ' .. i)
 			end

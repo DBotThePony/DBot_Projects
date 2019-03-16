@@ -53,7 +53,7 @@
 	"volume"        "VOL_NORM"
 	"soundlevel"    "SNDLVL_NONE"
 	"pitch"         "PITCH_NORM" // Commentary
-	"url"           "some kind of https://steamcommunity.com" // Fuck You
+	"url"           "some kind of https://steamcommunity.com\nalso a new line\n\nand here" // Fuck You
 	"wave"          "vo/null.mp3"//You too
 	"wave"          "vo/null.m4a" [$OSX]
 	"wave"          "vo/null.ogg" [$WIN32&&$LINUX]
