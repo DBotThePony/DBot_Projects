@@ -310,4 +310,4 @@ local function encode(name, tableIn, explicitString)
 	return lines
 end
 
-return {decode, encode}
+return {decode, encode, decode = decode, encode = encode}
