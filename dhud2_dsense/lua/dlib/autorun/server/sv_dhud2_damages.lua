@@ -173,4 +173,4 @@ local function EntityTakeDamage(ent, dmg)
 	end
 end
 
-hook.Add('EntityTakeDamage', 'DHUD2.DamageDisplay', EntityTakeDamage)
+hook.Add('EntityTakeDamage', 'DHUD2.DamageSense', EntityTakeDamage)
