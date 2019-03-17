@@ -68,103 +68,25 @@ local function decode(lines, isPC, isWindows, isOSX, isLinux, isPOSIX, isXBox)
 	local literalName
 	local stack = {construct}
 
+	local key, value, platformCondition = '', '', ''
+	local atKey, keyFinished, atValue, valueFinished, atCondition, conditionFinished = false, false, false, false, false, false
+	local allowedToStartNewValue = true
+	local currentLineWithValues = 0
+	local tryCommentary, escapeNext = false, false
+	local currentLineCommentary = false
+
 	for i, line in ipairs(lines) do
 		if #stack == 0 then
 			error('data stack got empty (after line' .. i .. ')')
 		end
 
+		allowedToStartNewValue = true
+		currentLineCommentary = false
+		tryCommentary = false
+
 		local trim = line:match('^%s*(.-)%s*$')
 
-		local condition = trim ~= '' and trim:sub(1, 2) ~= '//'
-		local conditional = false
-
-		--[[if condition then
-			local findCommentary = trim:find('//', 1, false)
-
-			if findCommentary then
-				trim = trim:gsub('%s*//.*$', '')
-			end
-		end]]
-
-		if condition and trim:sub(#trim) == ']' then
-			condition = false
-			conditional = true
-			local startpos
-
-			for seek = #trim, 1, -1 do
-				if trim:sub(seek, seek) == '[' then
-					startpos = seek
-					break
-				end
-			end
-
-			if not startpos then
-				error('expected opening ([) conditional token at line ' .. i .. ' but none found')
-			end
-
-			local conditions = {}
-			local prevCond
-
-			for bor, conditionStr, ending in nextCondition(trim:sub(startpos + 1, #trim - 1)) do
-				local bNot = false
-
-				if conditionStr:sub(1, 1) == '!' then
-					bNot = true
-					conditionStr = conditionStr:sub(2)
-				end
-
-				local elevate = false
-
-				if conditionStr == '$X360' then
-					elevate = isXBox
-				elseif conditionStr == '$WIN32' then
-					elevate = isPC
-				elseif conditionStr == '$WINDOWS' then
-					elevate = isWindows
-				elseif conditionStr == '$OSX' then
-					elevate = isOSX
-				elseif conditionStr == '$LINUX' then
-					elevate = isLinux
-				elseif conditionStr == '$POSIX' then
-					elevate = isPOSIX
-				end
-
-				if bNot then
-					elevate = not elevate
-				end
-
-				if prevCond ~= nil then
-					elevate = elevate and prevCond
-					prevCond = nil
-				end
-
-				if not bor and not ending then
-					prevCond = elevate
-				else
-					table.insert(conditions, elevate)
-				end
-			end
-
-			if prevCond ~= nil then
-				error('malformed condition at line ' .. i)
-			end
-
-			for i, cond in ipairs(conditions) do
-				condition = condition or cond
-			end
-
-			trim = trim:sub(1, startpos - 1):match('^%s*(.-)%s*$')
-		end
-
-		if not condition then
-
-		elseif trim:sub(1, 1) == '"' then
-			--assert(trim:sub(#trim) == '"', 'malformed name token/key-value pair at line ' .. i)
-
-			local key, value = '', ''
-			local atKey, keyFinished, atValue, valueFinished = false, false, false, false
-			local tryCommentary, escapeNext = false, false
-
+		if trim:sub(1, 1) == '"' or atValue or atKey or atCondition or trim:sub(1, 1) == '/' then
 			for char in trim:gmatch('.') do
 				if char == '"' and escapeNext then
 					if atKey then
@@ -182,6 +104,9 @@ local function decode(lines, isPC, isWindows, isOSX, isLinux, isPOSIX, isXBox)
 						value = value .. '\n'
 					end
 
+					tryCommentary = false
+					escapeNext = false
+				elseif (char == '\n' or char == '\t' or char == '\r') and escapeNext then
 					tryCommentary = false
 					escapeNext = false
 				elseif char == 'r' and escapeNext then
@@ -203,9 +128,9 @@ local function decode(lines, isPC, isWindows, isOSX, isLinux, isPOSIX, isXBox)
 					tryCommentary = false
 					escapeNext = false
 				elseif char == '"' then
-					if valueFinished and keyFinished then
-						print('VDF: extra (junk) data at line ' .. i)
-						break
+					if not allowedToStartNewValue then
+						print(allowedToStartNewValue, atValue, atKey)
+						error('Extra quote at line ' .. i .. ' whereas previous pair were finished!')
 					end
 
 					if atKey then
@@ -214,11 +139,16 @@ local function decode(lines, isPC, isWindows, isOSX, isLinux, isPOSIX, isXBox)
 					elseif atValue then
 						atValue = false
 						valueFinished = true
+						allowedToStartNewValue = false
+					elseif atCondition then
+						error('invalid symbol is used in platform condition at line ' .. i)
 					else
+						currentLineWithValues = i
+
 						if keyFinished then
 							atValue = true
 						elseif valueFinished then
-							error('malformed data at line ' .. i .. ' - extra quote pointing at unknown data')
+							error('wtf? at line ' .. i)
 						else
 							atKey = true
 						end
@@ -231,6 +161,8 @@ local function decode(lines, isPC, isWindows, isOSX, isLinux, isPOSIX, isXBox)
 							key = key .. '\\'
 						elseif atValue then
 							value = value .. '\\'
+						elseif atCondition then
+							error('invalid symbol is used in platform condition at line ' .. i)
 						end
 					else
 						escapeNext = true
@@ -242,6 +174,8 @@ local function decode(lines, isPC, isWindows, isOSX, isLinux, isPOSIX, isXBox)
 						key = key .. ' '
 					elseif atValue then
 						value = value .. ' '
+					elseif atCondition then
+						error('invalid symbol is used in platform condition at line ' .. i)
 					end
 
 					tryCommentary = false
@@ -250,13 +184,41 @@ local function decode(lines, isPC, isWindows, isOSX, isLinux, isPOSIX, isXBox)
 						key = key .. '\t'
 					elseif atValue then
 						value = value .. '\t'
+					elseif atCondition then
+						error('invalid symbol is used in platform condition at line ' .. i)
 					end
 
 					tryCommentary = false
-				elseif char == '/' and valueFinished then
+				elseif char == '[' then
+					if atKey then
+						key = key .. '['
+					elseif atValue then
+						value = value .. '['
+					elseif atCondition then
+						error('invalid symbol is used in platform condition at line ' .. i)
+					else
+						atCondition = true
+					end
+
+					tryCommentary = false
+				elseif char == ']' then
+					if atKey then
+						key = key .. ']'
+					elseif atValue then
+						value = value .. ']'
+					elseif atCondition then
+						atCondition = false
+						conditionFinished = true
+					else
+						error('unexpected ] at line ' .. i)
+					end
+
+					tryCommentary = false
+				elseif char == '/' and (valueFinished or not keyFinished and not atKey) then
 					if not tryCommentary then
 						tryCommentary = true
 					else
+						currentLineCommentary = true
 						break
 					end
 				else
@@ -264,31 +226,115 @@ local function decode(lines, isPC, isWindows, isOSX, isLinux, isPOSIX, isXBox)
 						key = key .. char
 					elseif atValue then
 						value = value .. char
+					elseif atCondition then
+						platformCondition = platformCondition .. char
 					else
-						error('malformed key-value pair/header at line ' .. i)
+						error('malformed key-value pair/header at line ' .. i .. ' or just a junk data')
 					end
 
 					tryCommentary = false
 				end
 			end
 
-			if valueFinished then
-				if currentData[key] == nil or conditional then
-					currentData[key] = value
-				elseif type(currentData[key]) ~= 'table' then
-					local val = currentData[key]
-					currentData[key] = {}
-					table.insert(currentData[key], value)
-					table.insert(currentData[key], val)
-				else
-					table.insert(currentData[key], value)
+			local shouldAddLine = keyFinished and not atValue or valueFinished and not atCondition or conditionFinished
+
+			if conditionFinished and shouldAddLine then
+				local conditions = {}
+				local prevCond
+
+				for bor, conditionStr, ending in nextCondition(platformCondition) do
+					local bNot = false
+
+					if conditionStr:sub(1, 1) == '!' then
+						bNot = true
+						conditionStr = conditionStr:sub(2)
+					end
+
+					local elevate = false
+
+					if conditionStr == '$X360' then
+						elevate = isXBox
+					elseif conditionStr == '$WIN32' then
+						elevate = isPC
+					elseif conditionStr == '$WINDOWS' then
+						elevate = isWindows
+					elseif conditionStr == '$OSX' then
+						elevate = isOSX
+					elseif conditionStr == '$LINUX' then
+						elevate = isLinux
+					elseif conditionStr == '$POSIX' then
+						elevate = isPOSIX
+					end
+
+					if bNot then
+						elevate = not elevate
+					end
+
+					if prevCond ~= nil then
+						elevate = elevate and prevCond
+						prevCond = nil
+					end
+
+					if not bor and not ending then
+						prevCond = elevate
+					else
+						table.insert(conditions, elevate)
+					end
 				end
-			elseif keyFinished and not atValue then
-				literalName = key
-			elseif atValue or atKey then
-				error('line is lacking closing/start quote at ' .. i)
-			else
-				error('unable to parse line ' .. i)
+
+				if prevCond ~= nil then
+					error('malformed condition at line ' .. i)
+				end
+
+				local condition = false
+
+				for i, cond in ipairs(conditions) do
+					condition = condition or cond
+				end
+
+				shouldAddLine = condition
+				platformCondition = ''
+				atCondition = false
+				conditionFinished = false
+
+				if not shouldAddLine then
+					keyFinished = false
+					valueFinished = false
+					key, value = '', ''
+				end
+			end
+
+			if shouldAddLine then
+				if valueFinished then
+					if currentData[key] == nil then
+						currentData[key] = value
+					elseif type(currentData[key]) ~= 'table' then
+						local val = currentData[key]
+						currentData[key] = {}
+						table.insert(currentData[key], value)
+						table.insert(currentData[key], val)
+					else
+						table.insert(currentData[key], value)
+					end
+
+					keyFinished = false
+					valueFinished = false
+					key, value = '', ''
+				elseif keyFinished and not atValue then
+					literalName = key
+					keyFinished = false
+					key = ''
+				elseif atValue or atKey then
+					error('line is lacking closing/start quote at ' .. i)
+				else
+					error('unable to parse line ' .. i)
+				end
+			end
+
+			if atKey then
+				key = key .. '\n'
+			elseif atValue then
+				value = value .. '\n'
 			end
 		elseif trim == '{' then
 			assert(literalName, 'creating a table without name at line ' .. i)
@@ -298,12 +344,13 @@ local function decode(lines, isPC, isWindows, isOSX, isLinux, isPOSIX, isXBox)
 		elseif trim == '}' then
 			currentData = table.remove(stack)
 			literalName = nil
-		else
-			print('-----------')
-			print(trim)
-			print('-----------')
-			error('junk data at line ' .. i .. '.')
+		elseif trim ~= '' and not currentLineCommentary then
+			error('junk data at line ' .. i)
 		end
+	end
+
+	if atKey or atValue or atCondition then
+		error('Unexpected EOF at line ' .. currentLineWithValues)
 	end
 
 	assert(#stack == 1, 'stack size after parse finish is not 1! ' .. #stack)
