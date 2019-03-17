@@ -286,7 +286,7 @@ local function decode(lines, isPC, isWindows, isOSX, isLinux, isPOSIX, isXBox)
 			elseif keyFinished and not atValue then
 				literalName = key
 			elseif atValue or atKey then
-				error('line is lacking closing/start quote ' .. i)
+				error('line is lacking closing/start quote at ' .. i)
 			else
 				error('unable to parse line ' .. i)
 			end
