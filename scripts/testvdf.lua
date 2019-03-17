@@ -15,7 +15,7 @@
 
 local vdfFuncs = require('./valvedatafile')
 local decode = vdfFuncs[1]
-local open = io.open('./csgo_english.txt', 'rb')
+local open = io.open('./vdffile.vdf', 'rb')
 
 local lines = {}
 

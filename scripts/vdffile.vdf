@@ -74,4 +74,8 @@ real"
 	"soundlevel"    "SNDLVL_NONE"
 	"pitch"     "PITCH_NORM"
 	"wave"      "items/smallmedkit1.wav"
+
+	"some multilined
+ key"            "multilined
+value \nwith shit in it" [$WIN32||$X360] // yeah fuck you too
 }
