@@ -78,4 +78,7 @@ real"
 	"some multilined
  key"            "multilined
 value \nwith shit in it" [$WIN32||$X360] // yeah fuck you too
+
+        "Cstrike_TitlesTXT_Alias_Not_Avail"                                    "The \"%s1\"
+        is not available for your team to buy."
 }
