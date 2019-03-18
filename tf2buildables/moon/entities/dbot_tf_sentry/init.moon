@@ -121,7 +121,7 @@ ENT.FireBullet = (force = false) =>
 		net.Start('DTF2.SentryFire', true)
 		net.WriteEntity(@)
 		net.WriteBool(false)
-		net.Broadcast()
+		net.SendPAS(@GetPos() + Vector(0, 0, 4))
 		return false
 
 	@SetAmmoAmount(@GetAmmoAmount() - 1)
@@ -155,7 +155,7 @@ ENT.FireBullet = (force = false) =>
 	net.Start('DTF2.SentryFire', true)
 	net.WriteEntity(@)
 	net.WriteBool(true)
-	net.Broadcast()
+	net.SendPAS(@GetPos() + Vector(0, 0, 4))
 	return true
 
 ENT.FireRocket = (force = false) =>
