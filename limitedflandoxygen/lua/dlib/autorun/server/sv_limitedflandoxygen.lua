@@ -22,7 +22,7 @@ Copyright (C) 2016-2018 DBot
 
 ]]
 
-util.AddNetworkString('DBot_LimitedFlashlightAndOxygen')
+net.pool('DBot_LFAO')
 
 local WATER = CreateConVar('sv_limited_oxygen', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Enable limited oxygen')
 local WATER_RESTORE = CreateConVar('sv_limited_oxygen_restore', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Restore health that player lost while drowing')
@@ -39,6 +39,10 @@ local FLASHLIGHT_RATIO = CreateConVar('sv_limited_flashlight_ratio', '100', {FCV
 local FLASHLIGHT_RRATIO = CreateConVar('sv_limited_flashlight_restore_ratio', '500', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Ratio of restoring power of flashlight')
 local FLASHLIGHT_PAUSE = CreateConVar('sv_limited_flashlight_pause', '4', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Seconds to wait before starting restoring power of flashlight')
 local FLASHLIGHT_EPAUSE = CreateConVar('sv_limited_flashlight_epause', '2', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Seconds to wait before granting player ability to enable his flashlight after starting power restoring')
+
+local math = math
+local FrameTime = FrameTime
+local hook = hook
 
 local function Water(ply)
 	local fldata = ply._fldata
@@ -179,7 +183,7 @@ local function PlayerPostThink(ply)
 
 	if fldata.ox_Value_Send == fldata.ox_Value and fldata.fl_Value_Send == fldata.fl_Value then return end
 
-	net.Start('DBot_LimitedFlashlightAndOxygen', true)
+	net.Start('DBot_LFAO', true)
 	net.WriteFloat(fldata.ox_Value or 100)
 	net.WriteFloat(fldata.fl_Value or 100)
 	net.Send(ply)
@@ -188,6 +192,38 @@ local function PlayerPostThink(ply)
 	fldata.fl_Value_Send = fldata.fl_Value
 end
 
-hook.Add('PlayerPostThink', 'DBot_LimitedFlashlightAndOxygen', PlayerPostThink)
-hook.Add('PlayerSwitchFlashlight', 'DBot_LimitedFlashlightAndOxygen', PlayerSwitchFlashlight)
-hook.Add('PlayerSpawn', 'DBot_LimitedFlashlightAndOxygen', PlayerSpawn)
+local plyMeta = FindMetaTable('Player')
+
+function plyMeta:LFAOGetOxygenFillage()
+	if not self._fldata then return 1 end
+	return self._fldata.ox_Value / 100
+end
+
+function plyMeta:LFAOGetFlashlightFillage()
+	if not self._fldata then return 1 end
+	return self._fldata.fl_Value / 100
+end
+
+function plyMeta:LFAOGetOxygen()
+	if not self._fldata then return 100 end
+	return self._fldata.ox_Value
+end
+
+function plyMeta:LFAOGetFlashlight()
+	if not self._fldata then return 100 end
+	return self._fldata.fl_Value
+end
+
+function plyMeta:LFAOSetOxygen(value)
+	if not self._fldata then self._fldata = {} end
+	self._fldata.ox_Value = assert(type(value) == 'number' and value, 'Value must be a number!'):floor():clamp(0, 100)
+end
+
+function plyMeta:LFAOSetFlashlight(value)
+	if not self._fldata then self._fldata = {} end
+	self._fldata.fl_Value = assert(type(value) == 'number' and value, 'Value must be a number!'):floor():clamp(0, 100)
+end
+
+hook.Add('PlayerPostThink', 'DBot_LFAO', PlayerPostThink)
+hook.Add('PlayerSwitchFlashlight', 'DBot_LFAO', PlayerSwitchFlashlight)
+hook.Add('PlayerSpawn', 'DBot_LFAO', PlayerSpawn)

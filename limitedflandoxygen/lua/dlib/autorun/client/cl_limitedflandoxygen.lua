@@ -25,21 +25,50 @@ Copyright (C) 2016-2018 DBot
 local WATER = CreateConVar('sv_limited_oxygen', '1', {FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Enable limited oxygen')
 local FLASHLIGHT = CreateConVar('sv_limited_flashlight', '1', {FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Enable limited flashlight')
 
+local LocalPlayer = LocalPlayer
+local hook = hook
+local net = net
+local math = math
+local Lerp = Lerp
+local surface = surface
+
 local Flashlight = 100
 local RFlashlight = 100
 local Oxygen = 100
 local ROxygen = 100
 
+local plyMeta = FindMetaTable('Player')
+
+function plyMeta:LFAOGetOxygenFillage()
+	if self ~= LocalPlayer() then return 1 end
+	return ROxygen / 100
+end
+
+function plyMeta:LFAOGetFlashlightFillage()
+	if self ~= LocalPlayer() then return 1 end
+	return RFlashlight / 100
+end
+
+function plyMeta:LFAOGetOxygen()
+	if self ~= LocalPlayer() then return 100 end
+	return ROxygen
+end
+
+function plyMeta:LFAOGetFlashlight()
+	if self ~= LocalPlayer() then return 100 end
+	return RFlashlight
+end
+
 DLib.RegisterAddonName('LimitedOxygen&Flashlight')
 
-surface.CreateFont('DBot_LimitedFlashlightAndOxygen', {
+surface.CreateFont('DBot_LFAO', {
 	font = 'Roboto',
 	size = 14,
 	weight = 500,
 	extended = true,
 })
 
-net.Receive('DBot_LimitedFlashlightAndOxygen', function()
+net.Receive('DBot_LFAO', function()
 	ROxygen = net.ReadFloat()
 	RFlashlight = net.ReadFloat()
 end)
@@ -51,7 +80,7 @@ local function GetAddition()
 end
 
 local function FlashlightFunc()
-	if not FLASHLIGHT:GetBool() or hook.Run('HUDShouldDraw', 'DBot_LimitedFlashlightAndOxygen_Flashlight') == false then return end
+	if not FLASHLIGHT:GetBool() or hook.Run('HUDShouldDraw', 'LFAOFlashlight') == false then return end
 	local x, y = DEFINED_POSITION()
 
 	surface.SetDrawColor(0, 0, 0, 150)
@@ -65,7 +94,7 @@ local function FlashlightFunc()
 end
 
 local function OxygenFunc()
-	if not WATER:GetBool() or hook.Run('HUDShouldDraw', 'DBot_LimitedFlashlightAndOxygen_Oxygen') == false then return end
+	if not WATER:GetBool() or hook.Run('HUDShouldDraw', 'FLAOOxygen') == false then return end
 	local x, y = DEFINED_POSITION()
 
 	surface.SetDrawColor(0, 0, 0, 150)
@@ -82,8 +111,9 @@ end
 
 local function HUDPaint()
 	if not FLASHLIGHT:GetBool() and not WATER:GetBool() then return end
+
 	surface.SetDrawColor(255, 255, 255)
-	surface.SetFont('DBot_LimitedFlashlightAndOxygen')
+	surface.SetFont('DBot_LFAO')
 	surface.SetTextColor(255, 255, 255)
 
 	if RFlashlight ~= 100 then
@@ -95,9 +125,10 @@ local function HUDPaint()
 	end
 end
 
-hook.Add('Think', 'DBot_LimitedFlashlightAndOxygen', function()
+local function Think()
 	Flashlight = Lerp(0.5, Flashlight, RFlashlight)
 	Oxygen = Lerp(0.5, Oxygen, ROxygen)
-end)
+end
 
-hook.Add('HUDPaint', 'DBot_LimitedFlashlightAndOxygen', HUDPaint)
+hook.Add('Think', 'DBot_LFAO', Think)
+hook.Add('HUDPaint', 'DBot_LFAO', HUDPaint)
