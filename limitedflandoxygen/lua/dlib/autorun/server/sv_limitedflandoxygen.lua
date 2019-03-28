@@ -120,9 +120,6 @@ local function Flashlight(ply)
 	local plyt = ply:GetTable()
 	plyt.__Limited_Flashlight_Value = math.Clamp(plyt.__Limited_Flashlight_Value or 100, 0, 100)
 	plyt.__Limited_Flashlight_Wait = plyt.__Limited_Flashlight_Wait or 0
-	plyt.__Limited_Flashlight_EWait = plyt.__Limited_Flashlight_EWait or 0
-
-	--ply:PrintMessage(HUD_PRINTCONSOLE, tostring(plyt.__Limited_Flashlight_Value))
 
 	local isOn = ply:FlashlightIsOn()
 	local toAdd = FrameTime()
@@ -137,11 +134,6 @@ local function Flashlight(ply)
 
 		plyt.__Limited_Flashlight_Wait = CurTimeL() + FLASHLIGHT_PAUSE:GetFloat()
 	else
-		if plyt.__Limited_Flashlight_DisabledByMe and plyt.__Limited_Flashlight_EWait < CurTimeL() then
-			ply:AllowFlashlight(true)
-			plyt.__Limited_Flashlight_DisabledByMe = nil
-		end
-
 		if plyt.__Limited_Flashlight_Value == 100 then return end
 		if plyt.__Limited_Flashlight_Wait > CurTimeL() then return end
 		toAdd = toAdd * FLASHLIGHT_RRATIO:GetFloat() / 200 * math.pow(plyt.__Limited_Flashlight_Value / 50 + 1, 2)
@@ -152,12 +144,17 @@ local function Flashlight(ply)
 
 	plyt.__Limited_Flashlight_Value = math.Clamp(plyt.__Limited_Flashlight_Value + toAdd, 0, 100)
 
-	if plyt.__Limited_Flashlight_Value == 0 and ply:CanUseFlashlight() and not plyt.__Limited_Flashlight_DisabledByMe then
+	if plyt.__Limited_Flashlight_Value == 0 and ply:FlashlightIsOn() then
 		ply:Flashlight(false)
-		ply:AllowFlashlight(false)
 		plyt.__Limited_Flashlight_EWait = plyt.__Limited_Flashlight_Wait + FLASHLIGHT_EPAUSE:GetFloat()
-		plyt.__Limited_Flashlight_DisabledByMe = true
 	end
+end
+
+local function PlayerSwitchFlashlight(ply, enabled)
+	if not FLASHLIGHT:GetBool() then return end
+	if not enabled then return end
+	if ply.__Limited_Flashlight_Value == 0 then return false end
+	if ply.__Limited_Flashlight_EWait and ply.__Limited_Flashlight_EWait > CurTimeL() then return false end
 end
 
 local function PlayerSpawn(ply)
@@ -170,11 +167,6 @@ local function PlayerSpawn(ply)
 	ply.__Limited_Flashlight_Value = 100
 	ply.__Limited_Flashlight_Wait = 0
 	ply.__Limited_Flashlight_EWait = 0
-
-	if ply.__Limited_Flashlight_DisabledByMe then
-		ply:AllowFlashlight(true)
-		ply.__Limited_Flashlight_DisabledByMe = nil
-	end
 end
 
 local function PlayerPostThink(ply)
@@ -194,4 +186,5 @@ local function PlayerPostThink(ply)
 end
 
 hook.Add('PlayerPostThink', 'DBot_LimitedFlashlightAndOxygen', PlayerPostThink)
+hook.Add('PlayerSwitchFlashlight', 'DBot_LimitedFlashlightAndOxygen', PlayerSwitchFlashlight)
 hook.Add('PlayerSpawn', 'DBot_LimitedFlashlightAndOxygen', PlayerSpawn)
