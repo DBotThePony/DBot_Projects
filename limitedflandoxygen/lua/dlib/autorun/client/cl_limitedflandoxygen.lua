@@ -51,7 +51,7 @@ local function GetAddition()
 end
 
 local function FlashlightFunc()
-	if not FLASHLIGHT:GetBool() then return end
+	if not FLASHLIGHT:GetBool() or hook.Run('HUDShouldDraw', 'DBot_LimitedFlashlightAndOxygen_Flashlight') == false then return end
 	local x, y = DEFINED_POSITION()
 
 	surface.SetDrawColor(0, 0, 0, 150)
@@ -65,7 +65,7 @@ local function FlashlightFunc()
 end
 
 local function OxygenFunc()
-	if not WATER:GetBool() then return end
+	if not WATER:GetBool() or hook.Run('HUDShouldDraw', 'DBot_LimitedFlashlightAndOxygen_Oxygen') == false then return end
 	local x, y = DEFINED_POSITION()
 
 	surface.SetDrawColor(0, 0, 0, 150)
