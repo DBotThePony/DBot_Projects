@@ -94,7 +94,7 @@ local function FlashlightFunc()
 end
 
 local function OxygenFunc()
-	if not WATER:GetBool() or hook.Run('HUDShouldDraw', 'FLAOOxygen') == false then return end
+	if not WATER:GetBool() or hook.Run('HUDShouldDraw', 'LFAOOxygen') == false then return end
 	local x, y = DEFINED_POSITION()
 
 	surface.SetDrawColor(0, 0, 0, 150)
