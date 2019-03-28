@@ -177,24 +177,21 @@ local function PlayerSpawn(ply)
 	end
 end
 
-local function Tick()
-	for k, ply in ipairs(player.GetAll()) do
-		if ply:Alive() then
-			if WATER:GetBool() then Water(ply) end
-			if FLASHLIGHT:GetBool() then Flashlight(ply) end
+local function PlayerPostThink(ply)
+	if not ply:Alive() then return end
+	if WATER:GetBool() then Water(ply) end
+	if FLASHLIGHT:GetBool() then Flashlight(ply) end
 
-			if ply.__Limited_Oxygen_Value_Send ~= ply.__Limited_Oxygen_Value or ply.__Limited_Flashlight_Value_Send ~= ply.__Limited_Flashlight_Value then
-				net.Start('DBot_LimitedFlashlightAndOxygen', true)
-				net.WriteFloat(ply.__Limited_Oxygen_Value or 100)
-				net.WriteFloat(ply.__Limited_Flashlight_Value or 100)
-				net.Send(ply)
+	if ply.__Limited_Oxygen_Value_Send == ply.__Limited_Oxygen_Value and ply.__Limited_Flashlight_Value_Send == ply.__Limited_Flashlight_Value then return end
 
-				ply.__Limited_Oxygen_Value_Send = ply.__Limited_Oxygen_Value
-				ply.__Limited_Flashlight_Value_Send = ply.__Limited_Flashlight_Value
-			end
-		end
-	end
+	net.Start('DBot_LimitedFlashlightAndOxygen', true)
+	net.WriteFloat(ply.__Limited_Oxygen_Value or 100)
+	net.WriteFloat(ply.__Limited_Flashlight_Value or 100)
+	net.Send(ply)
+
+	ply.__Limited_Oxygen_Value_Send = ply.__Limited_Oxygen_Value
+	ply.__Limited_Flashlight_Value_Send = ply.__Limited_Flashlight_Value
 end
 
-hook.Add('Tick', 'DBot_LimitedFlashlightAndOxygen', Tick)
+hook.Add('PlayerPostThink', 'DBot_LimitedFlashlightAndOxygen', PlayerPostThink)
 hook.Add('PlayerSpawn', 'DBot_LimitedFlashlightAndOxygen', PlayerSpawn)
