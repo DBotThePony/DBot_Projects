@@ -97,8 +97,18 @@ local function Think()
 		pos.z = pos.z + 10
 		ang:Normalize()
 
-		if vehicle:GetPos() ~= pos then vehicle:SetPos(pos) end
-		if vehicle:GetAngles() ~= ang then vehicle:SetAngles(ang) end
+		if vehicle:GetPos() ~= pos then
+			vehicle:SetPos(pos)
+			local driver = vehicle:GetDriver()
+
+			if IsValid(driver) then
+				driver:SetPos(pos)
+			end
+		end
+
+		if vehicle:GetAngles() ~= ang then
+			vehicle:SetAngles(ang)
+		end
 
 		if CLIENT then
 			vehicle:SetRenderOrigin(pos)
