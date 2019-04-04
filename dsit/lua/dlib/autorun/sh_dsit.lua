@@ -102,7 +102,7 @@ local function Think()
 			local driver = vehicle:GetDriver()
 
 			if IsValid(driver) then
-				driver:SetPos(pos)
+				driver:SetPos(Vector())
 			end
 		end
 
