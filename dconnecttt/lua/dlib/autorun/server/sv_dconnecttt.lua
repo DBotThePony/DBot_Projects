@@ -235,7 +235,7 @@ local function CheckPassword(steamid64, ip, svpass, clpass, nick)
 	pdata[1] = pdata[2] + SPAM_DELAY:GetInt() >= RealTimeL() and (pdata[1] + 1) or 0
 
 	if PREVENT_CONNECTION_SPAM:GetBool() and pdata[1] > SPAM_TRIES:GetInt() then
-		DConn.LMessage('message.dconn.kick.spam', nick .. '<' .. steamid .. '>')
+		DConn.LMessage('message.dconn.kick.spam', nick .. '<' .. util.SteamIDFrom64(steamid64) .. '>')
 		return false, '[DConnecttt] Spam connecting. Please wait some time and then try to reconnect again.'
 	end
 end
