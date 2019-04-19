@@ -111,6 +111,7 @@ end
 
 local function HUDPaint()
 	if not FLASHLIGHT:GetBool() and not WATER:GetBool() then return end
+	if not LocalPlayer():Alive() then return end
 
 	surface.SetDrawColor(255, 255, 255)
 	surface.SetFont('DBot_LFAO')
