@@ -73,7 +73,7 @@ net.Receive('DBot_LFAO', function()
 	RFlashlight = net.ReadFloat()
 end)
 
-local DEFINED_POSITION = DLib.HUDCommons.DefinePosition('loaf', 0.5, 0.4)
+local DEFINED_POSITION = DLib.HUDCommons.Position2.DefinePosition('loaf', 0.5, 0.4)
 
 local function GetAddition()
 	return DHUD2 and DHUD2.GetDamageShift(3) or 0
