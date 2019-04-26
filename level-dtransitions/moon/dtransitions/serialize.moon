@@ -21,6 +21,8 @@
 import NBT from DLib
 
 class DTransitions.SaveInstance
+	@REMOVED_MAP_ENTITIES = {}
+
 	new: =>
 		@serializers = {}
 		@entMapping = {}
@@ -45,6 +47,8 @@ class DTransitions.SaveInstance
 		tag = NBT.TagCompound()
 		@nbttag = tag
 		entList = tag\AddTagList('entities', NBT.TYPEID.TAG_Compound)
+
+		entListRemoved = tag\AddTagList('map_entities_removed', NBT.TYPEID.TAG_Short, @@REMOVED_MAP_ENTITIES)
 
 		for serializer in *@serializers
 			serializer\Ask(tag)
@@ -76,6 +80,10 @@ class DTransitions.SaveInstance
 		game.CleanUpMap()
 
 		@entMapping = {}
+
+		for entID in *@nbttag\GetTagValue('map_entities_removed')
+			getent = ents.GetMapCreatedEntity(entID)
+			getent\Remove() if IsValid(getent)
 
 		for serializer in *@serializers
 			serializer\Tell(@nbttag)
@@ -122,3 +130,10 @@ class DTransitions.SaveInstance
 				DTransitions.MessageError('Serializer ', serializer.__class.__name, ' failed to [post] deserialize an entity!')
 
 		return @
+
+hook.Add 'EntityRemoved', 'DTransitions.RemovedMapEntities', (ent) ->
+	return if not ent\CreatedByMap()
+	table.insert(DTransitions.SaveInstance.REMOVED_MAP_ENTITIES, ent\MapCreationID()) if not table.qhasValue(DTransitions.SaveInstance.REMOVED_MAP_ENTITIES, ent\MapCreationID())
+
+hook.Add 'PostCleanupMap', 'DTransitions.RemovedMapEntities', ->
+	DTransitions.SaveInstance.REMOVED_MAP_ENTITIES = {}

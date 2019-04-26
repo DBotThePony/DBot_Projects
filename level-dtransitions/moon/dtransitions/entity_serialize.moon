@@ -46,6 +46,8 @@ class DTransitions.EntitySerializerBase
 			\SetColor(tag\GetColor('color')) if tag\HasTag('color')
 			\SetModel(tag\GetTagValue('model')) if setmodel
 			\SetFlexScale(tag\GetTagValue('flex_scale'))
+			\SetSolid(tag\GetTagValue('solid'))
+			\SetMoveType(tag\GetTagValue('movetype'))
 
 			flex = tag\GetTag('flex')
 			\SetFlexWeight(i, flex\ExtractValue(i)\GetValue()) for i = 0, \GetFlexNum() when flex\ExtractValue(i)
@@ -74,6 +76,8 @@ class DTransitions.EntitySerializerBase
 			tag\SetColor('color', color) if color
 			tag\SetShort('skin', \GetSkin())
 			tag\SetFloat('flex_scale', \GetFlexScale())
+			tag\SetByte('movetype', \GetMoveType())
+			tag\SetByte('solid', \GetSolid())
 
 			tag\AddTagList('flex', NBT.TYPEID.TAG_Float, [\GetFlexWeight(i) for i = 0, \GetFlexNum()])
 
@@ -108,8 +112,8 @@ class DTransitions.EntitySerializerBase
 			owner = \GetOwner()
 			parent = \GetParent()
 
-			tag\SetShort('owner', @saveInstance\GetEntityID(owner)) if IsValid(owner)
-			tag\SetShort('parent', @saveInstance\GetEntityID(parent)) if IsValid(parent)
+			tag\SetInt('owner', @saveInstance\GetEntityID(owner)) if IsValid(owner)
+			tag\SetInt('parent', @saveInstance\GetEntityID(parent)) if IsValid(parent)
 
 	DeserializePosition: (ent, tag) =>
 		ent\SetPos(tag\GetVector('pos'))
@@ -165,11 +169,11 @@ class DTransitions.EntitySerializerBase
 		physobj\EnableGravity(tag\GetTagValue('gravity') == 1)
 		physobj\EnableMotion(tag\GetTagValue('motion') == 1)
 		physobj\SetMass(tag\GetTagValue('mass') + 30000)
-		physobj\SetContents(tag\GetTagValue('contents'))
+		--physobj\SetContents(tag\GetTagValue('contents'))
 		physobj\SetPos(tag\GetVector('pos'))
 		physobj\SetVelocity(tag\GetVector('velocity'))
 		physobj\SetAngles(tag\GetAngle('angle'))
-		physobj\SetDamping(tag\GetTagValue('damping_linear'), tag\GetTagValue('damping_angular'))
+		--physobj\SetDamping(tag\GetTagValue('damping_linear'), tag\GetTagValue('damping_angular'))
 
 		physobj\Sleep() if tag\GetTagValue('asleep') == 1
 		physobj\Wake() if tag\GetTagValue('asleep') == 0
@@ -218,7 +222,7 @@ class DTransitions.EntitySerializerBase
 					when 'Angle'
 						tag\SetAngle(k, v)
 					when 'Entity'
-						tag\SetShort(k, @saveInstance\GetEntityID(v)) if IsValid(v)
+						tag\SetInt(k, @saveInstance\GetEntityID(v)) if IsValid(v)
 					else
 						error('GetNetworkVars returned unknown value type: ' .. type(v) .. ' at index ' .. k)
 
@@ -315,9 +319,9 @@ class DTransitions.PlayerSerializer extends DTransitions.EntitySerializerBase
 		tag\SetShort('walk_speed', ply\GetWalkSpeed())
 		tag\SetShort('walk_speed_duck', ply\GetCrouchedWalkSpeed())
 		tag\SetShort('run_speed', ply\GetRunSpeed())
-		tag\SetShort('active_weapon', @saveInstance\GetEntityID(ply\GetActiveWeapon())) if IsValid(ply\GetActiveWeapon())
+		tag\SetInt('active_weapon', @saveInstance\GetEntityID(ply\GetActiveWeapon())) if IsValid(ply\GetActiveWeapon())
 
-		tag\SetShort('vehicle', @saveInstance\GetEntityID(ply\GetVehicle())) if IsValid(ply\GetVehicle())
+		tag\SetInt('vehicle', @saveInstance\GetEntityID(ply\GetVehicle())) if IsValid(ply\GetVehicle())
 
 		mins, maxs = ply\GetHull()
 		tag\SetVector('hull_mins', mins)
@@ -371,7 +375,7 @@ class DTransitions.PlayerSerializer extends DTransitions.EntitySerializerBase
 		ply\SetHull(tag\GetVector('hull_mins'), tag\GetVector('hull_maxs'))
 		ply\SetHullDuck(tag\GetVector('hull_duck_mins'), tag\GetVector('hull_duck_maxs'))
 
-		ply\SetVelocity(tag\GetVector('velocity'))
+		ply\SetVelocity(tag\GetVector('velocity') - ply\GetVelocity())
 
 		return ply
 
@@ -457,7 +461,7 @@ class DTransitions.WeaponSerializer extends DTransitions.PropSerializer
 		owner = ent\GetOwner()
 
 		if IsValid(owner)
-			tag\SetShort('weapon_owner', @saveInstance\GetEntityID(owner))
+			tag\SetInt('weapon_owner', @saveInstance\GetEntityID(owner))
 			tag\SetString('player_owner', owner\SteamID()) if owner\IsPlayer()
 
 		tag\SetShort('clip1', ent\Clip1())

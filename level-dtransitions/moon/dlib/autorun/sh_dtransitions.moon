@@ -26,5 +26,14 @@ DLib.CMessage(DTransitions, 'DTransitions')
 if SERVER
 	include('dtransitions/serialize.lua')
 	include('dtransitions/entity_serialize.lua')
+	local sertest
+
+	concommand.Add 'serialize_test', (ply) ->
+		sertest = DTransitions.SaveInstance()\Serialize()
+		return
+
+	concommand.Add 'deserialize_test', (ply) ->
+		return if not sertest
+		sertest\Deserialize()
 
 return
