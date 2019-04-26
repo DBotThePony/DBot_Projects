@@ -24,6 +24,7 @@ class DTransitions.SaveInstance
 	new: =>
 		@serializers = {}
 		@RegisterSerializer(DTransitions.PlayerSerializer(@))
+		@RegisterSerializer(DTransitions.PropSerializer(@))
 
 	RegisterSerializer: (serializer) =>
 		table.insert(@serializers, serializer)
@@ -32,7 +33,8 @@ class DTransitions.SaveInstance
 	SortSerializers: =>
 		table.sort @serializers, (a, b) -> a\GetPriority() > b\GetPriority()
 
-	GetEntityID: (ent) => ent\EntIndex()
+	GetEntityID: (ent) => ent\GetCreationID()
+	GetEntity: (id) => NULL
 
 	Serialize: =>
 		@SortSerializers()
@@ -47,7 +49,9 @@ class DTransitions.SaveInstance
 					tag2 = serializer\Serialize(ent)
 					if tag2
 						entList\AddValue(tag2)
-						tag2\SetString('SAVENAME', serializer.__class.SAVENAME)
+						tag2\SetString('__savename', serializer.__class.SAVENAME)
+						tag2\SetInt('__creation_id', ent\GetCreationID())
+					break
 
 		buff = DLib.BytesBuffer()
 		tag\WriteFile(buff)
