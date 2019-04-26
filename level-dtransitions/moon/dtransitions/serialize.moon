@@ -25,6 +25,7 @@ class DTransitions.SaveInstance
 		@serializers = {}
 		@RegisterSerializer(DTransitions.PlayerSerializer(@))
 		@RegisterSerializer(DTransitions.PropSerializer(@))
+		@RegisterSerializer(DTransitions.WeaponSerializer(@))
 
 	RegisterSerializer: (serializer) =>
 		table.insert(@serializers, serializer)
@@ -42,6 +43,9 @@ class DTransitions.SaveInstance
 		tag = NBT.TagCompound()
 		@nbttag = tag
 		entList = tag\AddTagList('entities', NBT.TYPEID.TAG_Compound)
+
+		for serializer in *@serializers
+			serializer\Ask(tag)
 
 		for ent in *ents.GetAll()
 			for serializer in *@serializers

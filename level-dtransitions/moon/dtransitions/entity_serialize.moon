@@ -19,6 +19,7 @@
 -- DEALINGS IN THE SOFTWARE.
 
 import NBT from DLib
+import luatype from _G
 
 class DTransitions.EntitySerializerBase
 	new: (saveInstance) =>
@@ -31,11 +32,23 @@ class DTransitions.EntitySerializerBase
 	DeserializePre: (tag) => error('Not implemented')
 	DeserializePost: (ent, tag) =>
 
+	Ask: (tag) =>
+
 	DeserializeGeneric: (ent, tag) =>
-		ent\SetRenderFX(tag\GetTagValue('fx')) if tag\HasTag('fx')
-		ent\SetRenderMode(tag\GetTagValue('rmode')) if tag\HasTag('rmode')
-		ent\SetColor(tag\GetColor('color')) if tag\HasTag('color')
-		ent\SetModel(tag\GetString('model'))
+		with ent
+			\SetRenderFX(tag\GetTagValue('fx')) if tag\HasTag('fx')
+			\SetRenderMode(tag\GetTagValue('rmode')) if tag\HasTag('rmode')
+			\SetColor(tag\GetColor('color')) if tag\HasTag('color')
+			\SetModel(tag\GetString('model'))
+			\SetFlexScale(tag\GetTagValue('flex_scale'))
+
+			flex = tag\GetTag('flex')
+			\SetFlexWeight(i, flex\ExtractValue(i)) for i = 0, \GetFlexNum() when flex\ExtractValue(i)
+
+			if bodygroups = tag\GetTag('bodygroups')
+				if bg = ent\GetBodyGroups()
+					for data in *bg
+						\SetBodygroup(data.id, bodygroups\GetTagValue(data.name)) if bodygroups\HasTag(data.name)
 
 	SerializeGeneric: (ent, tag) =>
 		with ent
@@ -46,6 +59,13 @@ class DTransitions.EntitySerializerBase
 			tag\SetByte('fx', fx) if fx
 			tag\SetByte('rmode', rmode) if rmode
 			tag\SetColor('color', color) if color
+			tag\SetShort('skin', \GetSkin())
+			tag\SetFloat('flex_scale', \GetFlexScale())
+
+			tag\AddTagList('flex', NBT.TYPEID.TAG_Float, [\GetFlexWeight(i) for i = 0, \GetFlexNum()])
+
+			if bg = ent\GetBodyGroups()
+				tag\AddTagCompound('bodygroups', {data.name, \GetBodygroup(data.id) for data in *bg})
 
 			tag\SetString('model', \GetModel())
 
@@ -141,11 +161,112 @@ class DTransitions.EntitySerializerBase
 	DeserializePhysics: (ent, taglist) =>
 		@DeserializePhysObject(ent\GetPhysicsObjectNum(i), taglist\ExtractValue(i + 1)) for i = 0, ent\GetPhysicsObjectCount() - 1
 
+	SerializeBones: (ent) =>
+		return if not ent\HasBoneManipulations()
+		tag = NBT.TagCompound()
+
+		for boneid = 0, ent\GetBoneCount() - 1
+			tag2 = NBT.TagCompound()
+			tag2\SetVector('scale', ent\GetManipulateBoneScale(boneid))
+			tag2\SetVector('pos', ent\GetManipulateBonePosition(boneid))
+			tag2\SetAngle('ang', ent\GetManipulateBoneAngles(boneid))
+			tag\SetTag(ent\GetBoneName(boneid), tag2)
+
+		return tag
+
+	DeserializeBones: (ent, tag) =>
+		for boneid = 0, ent\GetBoneCount() - 1
+			if tag2 = tag\GetTag(ent\GetBoneName(boneid))
+				ent\ManipulateBoneScale(tag2\GetVector('scale'))
+				ent\ManipulateBonePosition(tag2\GetVector('pos'))
+				ent\ManipulateBoneAngles(tag2\GetAngle('ang'))
+
+	SerializeGNetVars: (ent) =>
+		return if not ent.GetNetworkVars
+		if vars = ent\GetNetworkVars()
+			tag = NBT.TagCompound()
+
+			for k, v in pairs(vars)
+				switch type(v)
+					when 'number'
+						if v % 1 == 0
+							tag\SetInt(k, v)
+						else
+							tag\SetFloat(k, v)
+					when 'string'
+						tag\SetString(k, v)
+					when 'boolean'
+						tag\SetByte(k, v and 1 or 0)
+					when 'Vector'
+						tag\SetVector(k, v)
+					when 'Angle'
+						tag\SetAngle(k, v)
+					when 'Entity'
+						tag\SetShort(k, @saveInstance\GetEntityID(v)) if IsValid(v)
+					else
+						error('GetNetworkVars returned unknown value type: ' .. type(v) .. ' at index ' .. k)
+
+			return tag
+
+	DeserializeGNetVars: (ent, tag, state = true) =>
+		return if not tag
+		return if not ent.dt
+		meta = getmetatable(ent.dt)
+		return if not meta
+		return if not meta.__index
+
+		i = 1
+		upvalueName, upvalue = debug.getupvalue(meta.__index, i)
+
+		while upvalueName
+			if upvalueName == 'datatable'
+				break
+
+			i += 1
+			upvalueName, upvalue = debug.getupvalue(meta.__index, i)
+
+		return if upvalueName ~= 'datatable'
+		for k, data in pairs(upvalue)
+			if tag\HasTag(k)
+				if state
+					switch data.typename
+						when 'Int', 'Float', 'String'
+							ent['Set' .. k](ent, tag\GetTagValue(k))
+						when 'Bool'
+							ent['Set' .. k](ent, tag\GetTagValue(k) == 1)
+						when 'Angle'
+							ent['Set' .. k](ent, tag\GetAngle(k))
+						when 'Vector'
+							ent['Set' .. k](ent, tag\GetVector(k))
+				else
+					switch data.typename
+						when 'Entity'
+							ent['Set' .. k](ent, @saveInstance\GetEntity(tag\GetTagValue(k)))
+
 class DTransitions.PlayerSerializer extends DTransitions.EntitySerializerBase
 	@SAVENAME = 'player'
 
 	CanSerialize: (ent) => ent\IsPlayer()
 	GetPriority: => 1000
+
+	Ask: (tag) =>
+		@ammoTypesRaw = {}
+		i = 1
+		ammotype = game.GetAmmoName(i)
+
+		while ammotype
+			@ammoTypesRaw[i] = ammotype
+			i += 1
+			ammotype = game.GetAmmoName(i)
+
+		@maxAmmoTypes = i - 1
+
+		list = NBT.TagCompound()
+
+		for id, name in ipairs(@ammoTypesRaw)
+			list\SetShort(name, id)
+
+		tag\AddTag('ammotypes', list)
 
 	Serialize: (ply) =>
 		tag = NBT.TagCompound()
@@ -177,6 +298,9 @@ class DTransitions.PlayerSerializer extends DTransitions.EntitySerializerBase
 		tag\SetVector('hull_duck_maxs', maxs)
 
 		tag\SetVector('velocity', ply\GetVelocity())
+
+		ammo = tag\AddTagList('ammo', NBT.TYPEID.TAG_Short)
+		ammo\AddValue(ply\GetAmmoCount(i)) for i = 1, @maxAmmoTypes
 
 		return tag
 
@@ -251,6 +375,12 @@ class DTransitions.PropSerializer extends DTransitions.EntitySerializerBase
 		@SerializeCombatState(ent, tag)
 		tag\SetTag('physics', @SerializePhysics(ent))
 
+		tag\SetFloat('model_scale', ent\GetModelScale()) if ent\GetModelScale() ~= 1
+
+		mins, maxs = ent\GetCollisionBounds()
+		tag\SetVector('collision_mins', mins)
+		tag\SetVector('collision_maxs', maxs)
+
 		return tag
 
 	DeserializePre: (tag) =>
@@ -270,7 +400,46 @@ class DTransitions.PropSerializer extends DTransitions.EntitySerializerBase
 		ent\Spawn()
 		ent\Activate()
 
+		mins, maxs = tag\GetVector('collision_mins'), tag\GetVector('collision_maxs')
+		ent\SetCollisionBounds(mins, maxs)
+
+		ent\SetModelScale(tag\GetTagValue('model_scale')) if tag\HasTag('model_scale')
+
 		@DeserializePhysics(ent, tag\GetTag('physics'))
+
+		return ent
+
+	DeserializePost: (ent, tag) =>
+
+class DTransitions.WeaponSerializer extends DTransitions.PropSerializer
+	@SAVENAME = 'weapons'
+
+	CanSerialize: (ent) => ent\IsWeapon()
+	GetPriority: => 900
+
+	Serialize: (ent) =>
+		tag = super(ent)
+
+		tag\SetShort('clip1', ent\Clip1())
+		tag\SetShort('clip2', ent\Clip2())
+		tag\SetString('holdtype', ent\GetHoldType())
+
+		tag2 = @SerializeGNetVars(ent)
+		tag\SetTag('dt', tag2) if tag2
+
+		return tag
+
+	DeserializePost: (tag) =>
+		@DeserializeGNetVars(ent, tag\GetTag('dt'), false)
+
+	DeserializePre: (tag) =>
+		ent = super(tag)
+
+		ent\SetClip1(tag\GetTagValue('clip1'))
+		ent\SetClip2(tag\GetTagValue('clip2'))
+		ent\SetHoldType(tag\GetTagValue('holdtype'))
+
+		@DeserializeGNetVars(ent, tag\GetTag('dt'), true)
 
 		return ent
 
