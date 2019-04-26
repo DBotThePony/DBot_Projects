@@ -21,6 +21,8 @@
 export DTransitions
 DTransitions = DTransitions or {}
 
+DLib.CMessage(DTransitions, 'DTransitions')
+
 if SERVER
 	include('dtransitions/serialize.lua')
 	include('dtransitions/entity_serialize.lua')

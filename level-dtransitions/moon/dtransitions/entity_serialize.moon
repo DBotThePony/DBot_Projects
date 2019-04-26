@@ -50,6 +50,14 @@ class DTransitions.EntitySerializerBase
 					for data in *bg
 						\SetBodygroup(data.id, bodygroups\GetTagValue(data.name)) if bodygroups\HasTag(data.name)
 
+			if tag\HasTag('entitymods')
+				ent.EntityMods = util.JSONToTable(tag\GetTagValue('entitymods'))
+
+				for mtype, mfunc in pairs(duplicator.EntityModifiers)
+					if ent.EntityMods[mtype]
+						status = ProtectedCall -> mfunc(ply, ent, ent.EntityMods[mtype])
+						DTransitions.MessageError('Unable to restore ', mtype, ' entity modifier from duplicator table. ', DTransitions.textcolor, 'Maybe this modificator expect actual player? (since we cant provide one.)') if not status
+
 	SerializeGeneric: (ent, tag) =>
 		with ent
 			fx = \GetRenderFX()
@@ -68,6 +76,9 @@ class DTransitions.EntitySerializerBase
 				tag\AddTagCompound('bodygroups', {data.name, \GetBodygroup(data.id) for data in *bg})
 
 			tag\SetString('model', \GetModel())
+
+			if .EntityMods
+				tag\SetString('entitymods', util.TableToJSON(.EntityMods) or '[]')
 
 	SerializeCombatState: (ent, tag) =>
 		with ent
