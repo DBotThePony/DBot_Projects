@@ -23,6 +23,7 @@ import NBT from DLib
 class DTransitions.SaveInstance
 	new: =>
 		@serializers = {}
+		@entMapping = {}
 		@RegisterSerializer(DTransitions.PlayerSerializer(@))
 		@RegisterSerializer(DTransitions.PropSerializer(@))
 		@RegisterSerializer(DTransitions.WeaponSerializer(@))
@@ -33,9 +34,10 @@ class DTransitions.SaveInstance
 
 	SortSerializers: =>
 		table.sort @serializers, (a, b) -> a\GetPriority() > b\GetPriority()
+		@serializersMapping = {serializer.__class.SAVENAME, serializer for serializer in *@serializers}
 
 	GetEntityID: (ent) => ent\GetCreationID()
-	GetEntity: (id) => NULL
+	GetEntity: (id) => @entMapping[id] or NULL
 
 	Serialize: =>
 		@SortSerializers()
@@ -63,3 +65,60 @@ class DTransitions.SaveInstance
 		fstream = file.Open('savetest.dat', 'wb', 'DATA')
 		buff\ToFileStream(fstream)
 		fstream\Close()
+
+		return @
+
+	Deserialize: =>
+		@SortSerializers()
+
+		error('No NBT tag specified!') if not @nbttag
+
+		game.CleanUpMap()
+
+		@entMapping = {}
+
+		for serializer in *@serializers
+			serializer\Tell(@nbttag)
+
+		entList = @nbttag\GetTag('entities')
+		post = {}
+		middle = {}
+
+		for i, tag in entList\ipairs()
+			if serializer = @serializersMapping[tag\GetTagValue('__savename')]
+				status = ProtectedCall ->
+					if ent = serializer\DeserializePre(tag)
+						@entMapping[tag\GetTagValue('__creation_id')] = ent
+						table.insert(post, {ent, serializer, tag})
+						table.insert(middle, {ent, serializer, tag})
+						return
+					else
+						table.insert(middle, {nil, serializer, tag})
+						return
+
+				if not status
+					DTransitions.MessageError('Serializer ', serializer.__class.__name, ' failed to [pre] deserialize an entity!')
+
+		for {ent, serializer, tag} in *middle
+			status = ProtectedCall ->
+				if ent
+					serializer\DeserializeMiddle(ent, tag)
+					return
+				else
+					if ent = serializer\DeserializeMiddle(ent, tag)
+						@entMapping[tag\GetTagValue('__creation_id')] = ent
+						table.insert(post, {ent, serializer, tag})
+						return
+
+			if not status
+				DTransitions.MessageError('Serializer ', serializer.__class.__name, ' failed to [middle] deserialize an entity!')
+
+		for {ent, serializer, tag} in *post
+			status = ProtectedCall ->
+				serializer\DeserializePost(ent, tag)
+				return
+
+			if not status
+				DTransitions.MessageError('Serializer ', serializer.__class.__name, ' failed to [post] deserialize an entity!')
+
+		return @

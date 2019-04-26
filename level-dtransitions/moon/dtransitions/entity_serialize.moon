@@ -30,20 +30,25 @@ class DTransitions.EntitySerializerBase
 	Serialize: (ent) => error('Not implemented')
 
 	DeserializePre: (tag) => error('Not implemented')
+	DeserializeMiddle: (ent, tag) => -- Hack for :Give() function, since gmod is stupid
 	DeserializePost: (ent, tag) =>
 
+	-- When saving
 	Ask: (tag) =>
 
-	DeserializeGeneric: (ent, tag) =>
+	-- When loading
+	Tell: (tag) =>
+
+	DeserializeGeneric: (ent, tag, setmodel = true) =>
 		with ent
 			\SetRenderFX(tag\GetTagValue('fx')) if tag\HasTag('fx')
 			\SetRenderMode(tag\GetTagValue('rmode')) if tag\HasTag('rmode')
 			\SetColor(tag\GetColor('color')) if tag\HasTag('color')
-			\SetModel(tag\GetString('model'))
+			\SetModel(tag\GetTagValue('model')) if setmodel
 			\SetFlexScale(tag\GetTagValue('flex_scale'))
 
 			flex = tag\GetTag('flex')
-			\SetFlexWeight(i, flex\ExtractValue(i)) for i = 0, \GetFlexNum() when flex\ExtractValue(i)
+			\SetFlexWeight(i, flex\ExtractValue(i)\GetValue()) for i = 0, \GetFlexNum() when flex\ExtractValue(i)
 
 			if bodygroups = tag\GetTag('bodygroups')
 				if bg = ent\GetBodyGroups()
@@ -148,7 +153,7 @@ class DTransitions.EntitySerializerBase
 		return tag
 
 	SerializePhysics: (ent) =>
-		return NBT.TagList(NBT.TYPEID.TAG_Compound, [ent\GetPhysicsObjectNum(i) for i = 0, ent\GetPhysicsObjectCount() - 1])
+		return NBT.TagList(NBT.TYPEID.TAG_Compound, [@SerializePhysObject(ent\GetPhysicsObjectNum(i)) for i = 0, ent\GetPhysicsObjectCount() - 1])
 
 	DeserializePhysObject: (physobj, tag) =>
 		return if not tag
@@ -260,7 +265,7 @@ class DTransitions.PlayerSerializer extends DTransitions.EntitySerializerBase
 	CanSerialize: (ent) => ent\IsPlayer()
 	GetPriority: => 1000
 
-	Ask: (tag) =>
+	BuildAmmoTypes: =>
 		@ammoTypesRaw = {}
 		i = 1
 		ammotype = game.GetAmmoName(i)
@@ -272,6 +277,20 @@ class DTransitions.PlayerSerializer extends DTransitions.EntitySerializerBase
 
 		@maxAmmoTypes = i - 1
 
+
+	Tell: (tag) =>
+		@BuildAmmoTypes()
+		@ammoMapping = {}
+		return if not tag\HasTag('ammotypes')
+
+		for name, index in pairs(tag\GetTagValue('ammotypes'))
+			for index2, name2 in ipairs(@ammoTypesRaw)
+				if name2 == name
+					@ammoMapping[index] = index2
+					break
+
+	Ask: (tag) =>
+		@BuildAmmoTypes()
 		list = NBT.TagCompound()
 
 		for id, name in ipairs(@ammoTypesRaw)
@@ -329,6 +348,10 @@ class DTransitions.PlayerSerializer extends DTransitions.EntitySerializerBase
 		ply\StripAmmo()
 		ply\StripWeapons()
 
+		for i, ammoAmount in ipairs(tag\GetTagValue('ammo'))
+			if realAmmoID = @ammoMapping[i]
+				ply\GiveAmmo(ammoAmount, realAmmoID, true)
+
 		@DeserializePosition(ply, tag)
 		@DeserializeGeneric(ply, tag)
 		@DeserializeCombatState(ply, tag)
@@ -359,7 +382,7 @@ class DTransitions.PlayerSerializer extends DTransitions.EntitySerializerBase
 
 		if tag\HasTag('active_weapon')
 			active_weapon = @saveInstance\GetEntity(tag\GetTagValue('active_weapon'))
-			ply\SelectWeapon(active_weapon) if IsValid(active_weapon)
+			ply\SelectWeapon(active_weapon\GetClass()) if IsValid(active_weapon)
 
 class DTransitions.PropSerializer extends DTransitions.EntitySerializerBase
 	@SAVENAME = 'props'
@@ -400,16 +423,17 @@ class DTransitions.PropSerializer extends DTransitions.EntitySerializerBase
 		if tag\HasTag('map_id')
 			ent = ents.GetMapCreatedEntity(tag\GetTagValue('map_id'))
 		else
-			ent = ents.Create(tag\GetString('classname'))
+			ent = ents.Create(tag\GetTagValue('classname'))
 
 		return if not IsValid(ent)
 
-		@DeserializePosition(ply, tag)
-		@DeserializeGeneric(ply, tag)
-		@DeserializeCombatState(ply, tag)
+		@DeserializePosition(ent, tag)
+		@DeserializeGeneric(ent, tag)
 
 		ent\Spawn()
 		ent\Activate()
+
+		@DeserializeCombatState(ent, tag)
 
 		mins, maxs = tag\GetVector('collision_mins'), tag\GetVector('collision_maxs')
 		ent\SetCollisionBounds(mins, maxs)
@@ -430,6 +454,11 @@ class DTransitions.WeaponSerializer extends DTransitions.PropSerializer
 
 	Serialize: (ent) =>
 		tag = super(ent)
+		owner = ent\GetOwner()
+
+		if IsValid(owner)
+			tag\SetShort('weapon_owner', @saveInstance\GetEntityID(owner))
+			tag\SetString('player_owner', owner\SteamID()) if owner\IsPlayer()
 
 		tag\SetShort('clip1', ent\Clip1())
 		tag\SetShort('clip2', ent\Clip2())
@@ -440,10 +469,49 @@ class DTransitions.WeaponSerializer extends DTransitions.PropSerializer
 
 		return tag
 
-	DeserializePost: (tag) =>
+	DeserializePost: (ent, tag) =>
 		@DeserializeGNetVars(ent, tag\GetTag('dt'), false)
+		super(ent, tag)
+
+	DeserializeMiddle: (ent, tag) =>
+		return if not tag\HasTag('weapon_owner')
+		npc = @saveInstance\GetEntity(tag\GetTagValue('weapon_owner'))
+		return if not IsValid(npc)
+		ent = npc\Give(tag\GetTagValue('classname'))
+		return if not IsValid(ent)
+
+		@DeserializeGeneric(ent, tag, false)
+		@DeserializeCombatState(ent, tag)
+
+		ent\SetModelScale(tag\GetTagValue('model_scale')) if tag\HasTag('model_scale')
+
+		@DeserializeGNetVars(ent, tag\GetTag('dt'), true)
+
+		return ent
 
 	DeserializePre: (tag) =>
+		if tag\HasTag('player_owner')
+			ply = player.GetBySteamID(tag\GetTagValue('player_owner'))
+			return if not ply
+			ent = ply\Give(tag\GetTagValue('classname'), false)
+			--ent = ents.Create(tag\GetTagValue('classname'))
+			return if not IsValid(ent)
+
+			@DeserializeGeneric(ent, tag, false)
+			@DeserializeCombatState(ent, tag)
+
+			ent\SetModelScale(tag\GetTagValue('model_scale')) if tag\HasTag('model_scale')
+
+			ent\SetClip1(tag\GetTagValue('clip1'))
+			ent\SetClip2(tag\GetTagValue('clip2'))
+			ent\SetHoldType(tag\GetTagValue('holdtype'))
+
+			@DeserializeGNetVars(ent, tag\GetTag('dt'), true)
+
+			return ent
+
+		return if tag\HasTag('weapon_owner')
+
 		ent = super(tag)
 
 		ent\SetClip1(tag\GetTagValue('clip1'))
@@ -453,5 +521,3 @@ class DTransitions.WeaponSerializer extends DTransitions.PropSerializer
 		@DeserializeGNetVars(ent, tag\GetTag('dt'), true)
 
 		return ent
-
-	DeserializePost: (ent, tag) =>
