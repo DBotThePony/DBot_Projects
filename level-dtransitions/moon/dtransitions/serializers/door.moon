@@ -21,11 +21,17 @@
 import NBT from DLib
 import luatype from _G
 
-class DTransitions.VehicleSerializer extends DTransitions.PropSerializer
-	@SAVENAME = 'vehicles'
+class DTransitions.DoorSerializer extends DTransitions.PropSerializer
+	@SAVENAME = 'doors'
 
-	CanSerialize: (ent) => ent\IsVehicle()
-	GetPriority: => 600
+	CanSerialize: (ent) =>
+		switch ent\GetClass()
+			when 'prop_door_rotating'
+				return true
+			else
+				return false
+
+	GetPriority: => 300
 
 	Serialize: (ent) =>
 		tag = super(ent)
@@ -49,6 +55,9 @@ class DTransitions.VehicleSerializer extends DTransitions.PropSerializer
 
 		if tag\HasTag('map_id')
 			ent = ents.GetMapCreatedEntity(tag\GetTagValue('map_id'))
+			return if not IsValid(ent)
+			ent\Remove()
+			ent = ents.Create(tag\GetTagValue('classname'))
 		else
 			ent = ents.Create(tag\GetTagValue('classname'))
 
@@ -56,11 +65,14 @@ class DTransitions.VehicleSerializer extends DTransitions.PropSerializer
 
 		@DeserializePreSpawn(ent, tag)
 		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'))
-		@DeserializeSavetable(ent, tag\GetTag('savetable'))
 
-		if not tag\HasTag('map_id')
-			ent\Spawn()
-			ent\Activate()
+		if savetable = tag\GetTag('savetable')
+			@DeserializeSavetable(ent, savetable)
+			if savetable\HasTag('m_angRotationClosed')
+				ent\SetAngles(savetable\GetAngle('m_angRotationClosed'))
+
+		ent\Spawn()
+		ent\Activate()
 
 		@DeserializePostSpawn(ent, tag)
 

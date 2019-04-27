@@ -51,6 +51,8 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 	table.insert(@SAVETABLE_IGNORANCE, 'm_vecAbsVelocity')
 	table.insert(@SAVETABLE_IGNORANCE, 'm_HackedGunPos')
 	table.insert(@SAVETABLE_IGNORANCE, 'model')
+	table.insert(@SAVETABLE_IGNORANCE, 'm_angRotation')
+	table.insert(@SAVETABLE_IGNORANCE, 'm_angAbsRotation')
 
 -- 	{
 -- 		AlwaysTransition       =     0,
