@@ -27,7 +27,6 @@ class DTransitions.BuiltinSoftSerializer extends DTransitions.PropSerializer
 	@SAVETABLE_IGNORANCE = {}
 
 	@_HANDLE = {
-		'func_button' -- partly working
 		'env_sprite'
 		'env_fire'
 		'env_firesource'
