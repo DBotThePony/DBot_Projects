@@ -123,17 +123,20 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 	CanSerialize: (ent) => false
 	GetPriority: => 0
 
+	GetKeyValuesTypeName: => @@SAVENAME .. '_keyvalue_types'
+	GetSavetableTypeName: => @@SAVENAME .. '_savetable_types'
+
 	-- When saving
 	Ask: (tag) =>
 		super(tag)
-		@keyValuesTypesNBT = tag\AddTagCompound(@@SAVENAME .. '_keyvalue_types')
-		@saveTableTypesNBT = tag\AddTagCompound(@@SAVENAME .. '_savetable_types')
+		@keyValuesTypesNBT = tag\AddTagCompound(@GetKeyValuesTypeName())
+		@saveTableTypesNBT = tag\AddTagCompound(@GetSavetableTypeName())
 
 	-- When loading
 	Tell: (tag) =>
 		super(tag)
-		@keyValuesTypesNBT = tag\GetTag(@@SAVENAME .. '_keyvalue_types')
-		@saveTableTypesNBT = tag\GetTag(@@SAVENAME .. '_savetable_types')
+		@keyValuesTypesNBT = tag\GetTag(@GetKeyValuesTypeName())
+		@saveTableTypesNBT = tag\GetTag(@GetSavetableTypeName())
 		@ReadKeyValueTypes()
 		@ReadSavetableTypes()
 
@@ -166,46 +169,59 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 	DeserializeKeyValues: (ent, tag, allowEnts = false) =>
 		return if not tag
 
-		for key, value in tag\pairs()
-			if allowEnts
-				if @keyValuesTypes[key] == 'Entity'
-					ent2 = @saveInstance\GetEntity(value\GetValue())
+		if allowEnts
+			for key, mtype in pairs(@keyValuesTypes)
+				if mtype == 'Entity' and tag\HasTag(key)
+					ent2 = @saveInstance\GetEntity(tag\GetTagValue(key))
 
 					if IsValid(ent2)
 						ent\SetKeyValue(key, ent2\EntIndex())
 					else
 						ent\SetKeyValue(key, '')
-			else
+		else
+			for key, value in tag\pairs()
 				switch @keyValuesTypes[key]
 					when 'Vector'
 						ent\SetKeyValue(key, tostring(tag\GetVector(key)))
 					when 'Angle'
 						ent\SetKeyValue(key, tostring(tag\GetAngle(key)))
 					when 'boolean'
-						ent\SetKeyValue(key, value\GetValue() == 1)
+						status = pcall(ent.SetKeyValue, ent, key, value\GetValue() == 1)
+						if not status
+							DTransitions.MessageWarning(ent, ' rejected boolean for ', key, ' KeyValyes value, using number instead')
+							ent\SetKeyValue(key, value\GetValue())
 					else
 						ent\SetKeyValue(key, value\GetValue()) if @keyValuesTypes[key] ~= 'Entity'
 
 	DeserializeSavetable: (ent, tag, allowEnts = false) =>
 		return if not tag
 
-		for key, value in tag\pairs()
-			if allowEnts
-				if @saveTableTypes[key] == 'Entity'
-					ent2 = @saveInstance\GetEntity(value\GetValue())
+		if allowEnts
+			for key, mtype in pairs(@saveTableTypes)
+				if mtype == 'Entity' and tag\HasTag(key)
+					ent2 = @saveInstance\GetEntity(tag\GetTagValue(key))
 
 					if IsValid(ent2)
-						ent\SetSaveValue(key, ent2\EntIndex())
+						ent\SetSaveValue(key, ent2)
 					else
 						ent\SetSaveValue(key, '')
-			else
+		else
+			for key, value in tag\pairs()
 				switch @saveTableTypes[key]
 					when 'Vector'
 						ent\SetSaveValue(key, tostring(tag\GetVector(key)))
 					when 'Angle'
 						ent\SetSaveValue(key, tostring(tag\GetAngle(key)))
+					when 'table'
+						tab = util.JSONToTable(value\GetValue())
+						if tab
+							status = pcall(ent.SetSaveValue, ent, key, tab)
+							DTransitions.MessageWarning(ent, ' rejected table for ', key, ' Savetable value') if not status
 					when 'boolean'
-						ent\SetSaveValue(key, value\GetValue() == 1)
+						status = pcall(ent.SetSaveValue, ent, key, value\GetValue() == 1)
+						if not status
+							DTransitions.MessageWarning(ent, ' rejected boolean for ', key, ' Savetable value, using number instead')
+							ent\SetSaveValue(key, value\GetValue())
 					else
 						ent\SetSaveValue(key, value\GetValue()) if @saveTableTypes[key] ~= 'Entity'
 
@@ -318,6 +334,15 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 
 				tag\SetBool(key, value)
 				return
+			when 'table'
+				error('ambiguous Savetable type : got table when expected ' .. @saveTableTypes[key]) if @saveTableTypes[key] and @saveTableTypes[key] ~= 'table'
+
+				if not @saveTableTypes[key]
+					@saveTableTypes[key] = 'table'
+					@WriteSavetableTypes()
+
+				tag\SetString(key, util.TableToJSON(value) or '[]')
+				return
 			when 'number'
 				if value\floor() ~= value
 					tag\SetDouble(key, value)
@@ -339,7 +364,7 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 				tag\SetString(key, value)
 				return
 			else
-				error('Unknown type for Savetable table : ' .. type(value)) if type(value) ~= 'table'
+				error('Unknown type for Savetable table : ' .. type(value))
 				return
 
 	SerializeSavetable: (ent, lookupKeyValues = true) =>
@@ -401,7 +426,7 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 				tag2 = tag\AddTagCompound('bodygroups')
 				tag2\SetInt(data.name, \GetBodygroup(data.id)) for data in *bg
 
-			tag\SetString('model', \GetModel()) if not \GetModel()\startsWith('*')
+			tag\SetString('model', \GetModel()) if \GetModel()
 
 			if .EntityMods
 				tag\SetString('entitymods', util.TableToJSON(.EntityMods) or '[]')

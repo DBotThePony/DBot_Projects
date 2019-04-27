@@ -21,60 +21,38 @@
 import NBT from DLib
 import luatype from _G
 
-class DTransitions.PropSerializer extends DTransitions.EntitySerializerBase
-	@SAVENAME = 'props'
+class DTransitions.GenericBuiltinSerializer extends DTransitions.PropSerializer
+	@SAVENAME = 'generic'
+	@BLACKLIST = {
+		'_firesmoke'
+	}
 
 	CanSerialize: (ent) =>
-		switch ent\GetClass()
-			when 'prop_physics', 'prop_dynamic', 'prop_ragdoll'
-				return true
-			else
-				return false
+		return false if ent\IsScripted()
+		classname = ent\GetClass()
+		return false if table.qhasValue(@@BLACKLIST, classname)
+		return not classname\startsWith('manipulate_')
 
-	GetPriority: => 500
+	GetPriority: => -10000
 
-	Serialize: (ent, manual = false) =>
-		tag = NBT.TagCompound()
+	-- GetKeyValuesTypeName: => @@SAVENAME .. '_keyvalue_types'
+	-- GetSavetableTypeName: => @@SAVENAME .. '_savetable_types'
 
-		tag\SetString('classname', ent.ClassOverride or ent\GetClass())
+	Serialize: (ent) =>
+		tag = super(ent)
+		return if not tag
 
-		if ent\CreatedByMap()
-			tag\SetShort('map_id', ent\MapCreationID())
+		if kv = @SerializeKeyValues(ent)
+			tag\SetTag('keyvalues', kv)
 
-		if not manual
-			@SerializePosition(ent, tag)
-			@SerializeGeneric(ent, tag)
-			@SerializeCombatState(ent, tag)
-			@SerializeOwner(ent, tag)
-			tag\SetTag('physics', @SerializePhysics(ent))
-
-			tag\SetFloat('model_scale', ent\GetModelScale()) if ent\GetModelScale() ~= 1
-
-			mins, maxs = ent\GetCollisionBounds()
-			tag\SetVector('collision_mins', mins)
-			tag\SetVector('collision_maxs', maxs)
-
-			if bones = @SerializeBones(ent)
-				tag\SetTag('bones', bones)
+		if sv = @SerializeSavetable(ent)
+			tag\SetTag('savetable', sv)
 
 		return tag
 
-	DeserializePreSpawn: (ent, tag) =>
-		@DeserializePosition(ent, tag)
-		@DeserializeGeneric(ent, tag)
-
-	DeserializePostSpawn: (ent, tag) =>
-		@DeserializeCombatState(ent, tag)
-
-		mins, maxs = tag\GetVector('collision_mins'), tag\GetVector('collision_maxs')
-		ent\SetCollisionBounds(mins, maxs)
-
-		ent\SetModelScale(tag\GetTagValue('model_scale')) if tag\HasTag('model_scale')
-
-		@DeserializePhysics(ent, tag\GetTag('physics'))
-
-		if bones = tag\GetTag('bones')
-			@DeserializeBones(ent, bones)
+	DeserializePost: (ent, tag) =>
+		super(ent, tag)
+		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'), true)
 
 	DeserializePre: (tag) =>
 		local ent
@@ -86,15 +64,15 @@ class DTransitions.PropSerializer extends DTransitions.EntitySerializerBase
 
 		return if not IsValid(ent)
 
+		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'))
+		@DeserializeSavetable(ent, tag\GetTag('savetable'))
 		@DeserializePreSpawn(ent, tag)
 
 		if not tag\HasTag('map_id')
 			ent\Spawn()
 			ent\Activate()
 
-		@DeserializeOwner(ent, tag)
 		@DeserializePostSpawn(ent, tag)
 
 		return ent
 
-	DeserializePost: (ent, tag) =>

@@ -21,11 +21,68 @@
 import NBT from DLib
 import luatype from _G
 
-class DTransitions.DoorSerializer extends DTransitions.PropSerializer
-	@SAVENAME = 'doors'
+class DTransitions.BuiltinSoftSerializer extends DTransitions.PropSerializer
+	@SAVENAME = 'builtin'
 
-	CanSerialize: (ent) => ent\GetClass() == 'prop_door_rotating'
-	GetPriority: => 300
+	@SAVETABLE_IGNORANCE = {}
+
+	@_HANDLE = {
+		'func_button' -- partly working
+		'env_sprite'
+		'env_fire'
+		'env_firesource'
+		'func_rot_button' -- partly working
+		'env_lightglow'
+		'func_brush'
+		'env_tonemap_controller'
+	}
+
+	@HANDLE = {v, v for v in *@_HANDLE}
+
+	CanSerialize: (ent) => @@HANDLE[ent\GetClass()] ~= nil
+	GetPriority: => 0
+
+	Serialize: (ent) =>
+		tag = super(ent, true)
+		return if not tag
+
+		if sv = @SerializeSavetable(ent, false)
+			tag\SetTag('savetable', sv)
+
+		return tag
+
+	DeserializePost: (ent, tag) =>
+		super(ent, tag, true)
+		@DeserializeSavetable(ent, tag\GetTag('savetable'), true)
+
+	DeserializePre: (tag) =>
+		local ent
+
+		if tag\HasTag('map_id')
+			ent = ents.GetMapCreatedEntity(tag\GetTagValue('map_id'))
+			--return if not IsValid(ent)
+			--ent\Remove()
+			--ent = ents.Create(tag\GetTagValue('classname'))
+		else
+			ent = ents.Create(tag\GetTagValue('classname'))
+
+		return if not IsValid(ent)
+
+		@DeserializeSavetable(ent, tag\GetTag('savetable'))
+
+		if not tag\HasTag('map_id')
+			ent\Spawn()
+			ent\Activate()
+
+		return ent
+
+class DTransitions.ButtonSerializer extends DTransitions.PropSerializer
+	@SAVENAME = 'func_button'
+
+	-- unstable, button functionality breaks, needs testing
+	--CanSerialize: (ent) => ent\GetClass() == 'func_button'
+	CanSerialize: (ent) => false
+	GetPriority: => 10
 
 	Serialize: (ent) =>
 		tag = super(ent)
@@ -59,12 +116,9 @@ class DTransitions.DoorSerializer extends DTransitions.PropSerializer
 
 		@DeserializePreSpawn(ent, tag)
 		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'))
+		@DeserializeSavetable(ent, tag\GetTag('savetable'))
 
-		if savetable = tag\GetTag('savetable')
-			@DeserializeSavetable(ent, savetable)
-			if savetable\HasTag('m_angRotationClosed')
-				ent\SetAngles(savetable\GetAngle('m_angRotationClosed'))
-
+		--if not tag\HasTag('map_id')
 		ent\Spawn()
 		ent\Activate()
 
@@ -72,56 +126,3 @@ class DTransitions.DoorSerializer extends DTransitions.PropSerializer
 
 		return ent
 
-class DTransitions.FuncDoorRotatingSerializer extends DTransitions.PropSerializer
-	@SAVENAME = 'func_door_rotating'
-
-	CanSerialize: (ent) =>
-		switch ent\GetClass()
-			when 'func_door_rotating', 'func_door'
-				return true
-
-		return false
-
-	GetPriority: => 280
-
-	Serialize: (ent) =>
-		tag = super(ent)
-		return if not tag
-
-		if kv = @SerializeKeyValues(ent)
-			tag\SetTag('keyvalues', kv)
-
-		if sv = @SerializeSavetable(ent)
-			tag\SetTag('savetable', sv)
-
-		return tag
-
-	DeserializePost: (ent, tag) =>
-		super(ent, tag)
-		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'), true)
-		@DeserializeSavetable(ent, tag\GetTag('savetable'), true)
-
-	DeserializePre: (tag) =>
-		local ent
-
-		if tag\HasTag('map_id')
-			ent = ents.GetMapCreatedEntity(tag\GetTagValue('map_id'))
-		else
-			ent = ents.Create(tag\GetTagValue('classname'))
-
-		return if not IsValid(ent)
-
-		@DeserializePreSpawn(ent, tag)
-		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'))
-
-		if savetable = tag\GetTag('savetable')
-			@DeserializeSavetable(ent, savetable)
-			if savetable\HasTag('m_vecAngle1')
-				ent\SetAngles(savetable\GetAngle('m_vecAngle1'))
-
-		ent\Spawn()
-		ent\Activate()
-
-		@DeserializePostSpawn(ent, tag)
-
-		return ent

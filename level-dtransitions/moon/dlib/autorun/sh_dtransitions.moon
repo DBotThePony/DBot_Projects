@@ -33,6 +33,8 @@ if SERVER
 	include('dtransitions/serializers/npc.lua')
 	include('dtransitions/serializers/vehicle.lua')
 	include('dtransitions/serializers/door.lua')
+	include('dtransitions/serializers/generic_engine.lua')
+	include('dtransitions/serializers/builtin_logic.lua')
 	local sertest
 
 	concommand.Add 'serialize_test', (ply) ->

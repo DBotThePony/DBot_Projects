@@ -33,6 +33,9 @@ class DTransitions.SaveInstance
 		@RegisterSerializer(DTransitions.VehicleSerializer(@))
 		@RegisterSerializer(DTransitions.DoorSerializer(@))
 		@RegisterSerializer(DTransitions.FuncDoorRotatingSerializer(@))
+		-- @RegisterSerializer(DTransitions.GenericBuiltinSerializer(@))
+		@RegisterSerializer(DTransitions.BuiltinSoftSerializer(@))
+		@RegisterSerializer(DTransitions.ButtonSerializer(@))
 
 	RegisterSerializer: (serializer) =>
 		table.insert(@serializers, serializer)
@@ -44,6 +47,52 @@ class DTransitions.SaveInstance
 
 	GetEntityID: (ent) => ent\GetCreationID()
 	GetEntity: (id) => @entMapping[id] or NULL
+
+	@ENT_BLACKLIST = {
+		'network',
+		'info_player_start',
+		'worldspawn',
+		'water_lod_control',
+		'sky_camera',
+		'soundent',
+		'spotlight_end',
+		'info_spotlight',
+		'env_sun',
+		'gmod_hands',
+		'light',
+		'player_manager',
+		'predicted_viewmodel',
+		'math_counter',
+		'path_corner',
+		'beam',
+
+		'func_areaportal',
+		'func_usableladder',
+		'func_smokevolume',
+		'func_platrot',
+		'env_skypaint',
+
+		'_firesmoke', -- go away
+
+		'env_smokestack',
+		'ambient_generic',
+		'gmod_gamerules', -- not sure
+
+		'info_target',
+		'info_ladder_dismount',
+		'manipulate_bone',
+		'manipulate_flex',
+
+		'env_fog_controller', -- not sure
+		'shadow_control', -- not sure
+
+		-- 'env_fire', -- ?
+		-- 'env_firesource', -- ?
+
+		-- 'scene_manager',
+		-- 'point_camera',
+		-- 'point_viewcontrol',
+	}
 
 	Serialize: =>
 		@SortSerializers()
@@ -57,20 +106,33 @@ class DTransitions.SaveInstance
 		for serializer in *@serializers
 			serializer\Ask(tag)
 
+		noSerializers = {}
+
 		for ent in *ents.GetAll()
-			for serializer in *@serializers
-				if serializer\CanSerialize(ent)
-					status = ProtectedCall ->
-						tag2 = serializer\Serialize(ent)
-						if tag2
-							entList\AddValue(tag2)
-							tag2\SetString('__savename', serializer.__class.SAVENAME)
-							tag2\SetInt('__creation_id', ent\GetCreationID())
+			classname = ent\GetClass()
+			if not table.qhasValue(@@ENT_BLACKLIST, classname)
+				hit = false
 
-					if not status
-						DTransitions.MessageError('Serializer ', serializer.__class.__name, ' failed to serialize ', ent, '! This entity would not appear in save.')
+				for serializer in *@serializers
+					if serializer\CanSerialize(ent)
+						status = ProtectedCall ->
+							tag2 = serializer\Serialize(ent)
+							if tag2
+								entList\AddValue(tag2)
+								tag2\SetString('__savename', serializer.__class.SAVENAME)
+								tag2\SetInt('__creation_id', ent\GetCreationID())
+								hit = true
 
-					break
+						if not status
+							DTransitions.MessageError('Serializer ', serializer.__class.__name, ' failed to serialize ', ent, '! This entity would not appear in save.')
+
+						break
+
+				noSerializers[classname] = true if not hit
+
+		sortable = [ent for ent in pairs(noSerializers)]
+		table.sort(sortable)
+		DTransitions.MessageWarning(ent, ' lack a serializer.') for ent in *sortable
 
 		buff = DLib.BytesBuffer()
 		tag\WriteFile(buff)
