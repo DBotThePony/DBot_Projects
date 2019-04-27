@@ -57,11 +57,16 @@ class DTransitions.SaveInstance
 		for ent in *ents.GetAll()
 			for serializer in *@serializers
 				if serializer\CanSerialize(ent)
-					tag2 = serializer\Serialize(ent)
-					if tag2
-						entList\AddValue(tag2)
-						tag2\SetString('__savename', serializer.__class.SAVENAME)
-						tag2\SetInt('__creation_id', ent\GetCreationID())
+					status = ProtectedCall ->
+						tag2 = serializer\Serialize(ent)
+						if tag2
+							entList\AddValue(tag2)
+							tag2\SetString('__savename', serializer.__class.SAVENAME)
+							tag2\SetInt('__creation_id', ent\GetCreationID())
+
+					if not status
+						DTransitions.MessageError('Serializer ', serializer.__class.__name, ' failed to serialize ', ent, '!')
+
 					break
 
 		buff = DLib.BytesBuffer()

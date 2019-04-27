@@ -22,8 +22,187 @@ import NBT from DLib
 import luatype from _G
 
 class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
+	new: (...) =>
+		super(...)
+		@keyValuesTypes = {}
+		@saveTableTypes = {}
+
+	@KEY_VALUES_IGNORANCE = {
+		'classname',
+		'rendercolor',
+		'renderfx',
+		'rendermode',
+		'velocity',
+		'waterlevel',
+		'health',
+		'max_health',
+		'avelocity',
+		'basevelocity',
+		-- 'parentname',
+	}
+
+-- 	{
+-- 		AlwaysTransition       =     0,
+-- 		DontPickupWeapons      =     0,
+-- 		DontUseSpeechSemaphore =     0,
+-- 		ExpressionOverride     = "",
+-- 		GameEndAlly            =     0,
+-- 		LightingOrigin         = "",
+-- 		LightingOriginHack     = "",
+-- 		Relationship           = "",
+-- 		ResponseContext        = "",
+-- 		SetBodyGroup           =     0,
+-- 		TeamNum                =     0,
+-- 		additionalequipment    = "weapon_smg1",
+-- 		ammoamount             =     0,
+-- 		ammosupply             = "",
+-- 		avelocity              = Vector (    0               ,     0               ,     0               ),
+-- 		basevelocity           = Vector (    0               ,     0               ,     0               ),
+-- 		body                   =     0,
+-- 		citizentype            =     3,
+-- 		classname              = "npc_citizen",
+-- 		cycle                  =     0.25630095601082,
+-- 		damagefilter           = "",
+-- 		denycommandconcept     = "",
+-- 		effects                =     0,
+-- 		enemyfilter            = "",
+-- 		expressiontype         =     1,
+-- 		fademaxdist            =     0,
+-- 		fademindist            =     0,
+-- 		fadescale              =     0,
+-- 		friction               =     1,
+-- 		globalname             = "",
+-- 		gravity                =     1,
+-- 		hammerid               =     0,
+-- 		health                 =    40,
+-- 		hintgroup              = "",
+-- 		hintlimiting           =     0,
+-- 		hitboxset              =     0,
+-- 		ignoreunseenenemies    =     0,
+-- 		ltime                  =     0,
+-- 		max_health             =    40,
+-- 		modelindex             =     0,
+-- 		modelscale             =     1,
+-- 		neverleaveplayersquad  =     0,
+-- 		notifynavfailblocked   =     0,
+-- 		parentname             = "",
+-- 		physdamagescale        =     1,
+-- 		playbackrate           =     1,
+-- 		rendercolor            = "255 255 255 255",
+-- 		renderfx               =     0,
+-- 		rendermode             =     0,
+-- 		sequence               =     2,
+-- 		shadowcastdist         =     0,
+-- 		skin                   =     0,
+-- 		sleepstate             =     0,
+-- 		spawnflags             =  1536,
+-- 		speed                  =     0,
+-- 		squadname              = "resistance",
+-- 		target                 = "",
+-- 		texframeindex          =     0,
+-- 		velocity               = Vector (    0               ,     0               ,     0               ),
+-- 		view_ofs               = Vector (-   0               ,     0               ,    70               ),
+-- 		wakeradius             =     0,
+-- 		wakesquad              =     0,
+-- 		waterlevel             =     0
+-- 	}
+
 	CanSerialize: (ent) => false
 	GetPriority: => 0
+
+	-- When saving
+	Ask: (tag) =>
+		super(tag)
+		@keyValuesTypesNBT = tag\AddTagCompound(@@SAVENAME .. '_keyvalue_types')
+
+	-- When loading
+	Tell: (tag) =>
+		super(tag)
+		@keyValuesTypesNBT = tag\GetTag(@@SAVENAME .. '_keyvalue_types')
+		@ReadKeyValueTypes()
+
+	ReadKeyValueTypes: =>
+		if not @keyValuesTypesNBT
+			@keyValuesTypes = {}
+			return
+
+		@keyValuesTypes = @keyValuesTypesNBT\GetValue()
+
+	WriteKeyValueTypes: =>
+		return if not @keyValuesTypesNBT
+
+		for key, ttype in pairs(@keyValuesTypes)
+			@keyValuesTypesNBT\SetString(key, ttype)
+
+	DeserializeKeyValues: (ent, tag, allowEnts = false) =>
+		return if not tag
+
+		for key, value in tag\pairs()
+			if allowEnts
+				if @keyValuesTypes[key] == 'Entity'
+					ent2 = @saveInstance\GetEntity(value\GetValue())
+					if IsValid(ent2)
+						ent\SetKeyValue(key, ent2\EntIndex())
+					else
+						ent\SetKeyValue(key, '')
+			else
+				switch @keyValuesTypes[key]
+					when 'Vector'
+						ent\SetKeyValue(key, tostring(tag\GetVector(key)))
+					when 'Angle'
+						ent\SetKeyValue(key, tostring(tag\GetAngle(key)))
+					else
+						ent\SetKeyValue(key, value\GetValue()) if @keyValuesTypes[key] ~= 'Entity'
+
+	SerializeKeyValues: (ent) =>
+		kv = ent\GetKeyValues()
+		return if not kv
+		tag = NBT.TagCompound()
+
+		for key, value in pairs(kv)
+			if not table.qhasValue(@@KEY_VALUES_IGNORANCE, key)
+				switch type(value)
+					when 'Entity'
+						error('ambiguous KeyValue type : got Entity when expected ' .. @keyValuesTypes[key]) if @keyValuesTypes[key] and @keyValuesTypes[key] ~= 'Entity'
+
+						if not @keyValuesTypes[key]
+							@keyValuesTypes[key] = 'Entity'
+							@WriteKeyValueTypes()
+
+						tag\SetInt(key, @saveInstance\GetEntityID(value)) if IsValid(value)
+					when 'Vector'
+						error('ambiguous KeyValue type : got Vector when expected ' .. @keyValuesTypes[key]) if @keyValuesTypes[key] and @keyValuesTypes[key] ~= 'Vector'
+
+						if not @keyValuesTypes[key]
+							@keyValuesTypes[key] = 'Vector'
+							@WriteKeyValueTypes()
+
+						tag\SetVector(key, value)
+					when 'Angle'
+						error('ambiguous KeyValue type : got Angle when expected ' .. @keyValuesTypes[key]) if @keyValuesTypes[key] and @keyValuesTypes[key] ~= 'Angle'
+
+						if not @keyValuesTypes[key]
+							@keyValuesTypes[key] = 'Angle'
+							@WriteKeyValueTypes()
+
+						tag\SetAngle(key, value)
+					when 'number'
+						if value % 1 ~= 0
+							tag\SetDouble(key, value)
+						elseif value > -0x7F and value < 0x7F
+							tag\SetByte(key, value)
+						elseif value > -0x7FFF and value < 0x7FFF
+							tag\SetShort(key, value)
+						elseif value > -0x7FFFFFFF and value < 0x7FFFFFFF
+							tag\SetInt(key, value)
+						else
+							tag\SetLong(key, value)
+					when 'string'
+						tag\SetString(key, value)
+					else
+						error('Unknown type for KeyValues table : ' .. type(value))
+
+		return tag
 
 	DeserializeGeneric: (ent, tag, setmodel = true) =>
 		with ent
@@ -408,6 +587,20 @@ class DTransitions.PropSerializer extends DTransitions.EntitySerializerBase
 
 		return tag
 
+	DeserializePreSpawn: (ent, tag) =>
+		@DeserializePosition(ent, tag)
+		@DeserializeGeneric(ent, tag)
+
+	DeserializePostSpawn: (ent, tag) =>
+		@DeserializeCombatState(ent, tag)
+
+		mins, maxs = tag\GetVector('collision_mins'), tag\GetVector('collision_maxs')
+		ent\SetCollisionBounds(mins, maxs)
+
+		ent\SetModelScale(tag\GetTagValue('model_scale')) if tag\HasTag('model_scale')
+
+		@DeserializePhysics(ent, tag\GetTag('physics'))
+
 	DeserializePre: (tag) =>
 		local ent
 
@@ -418,20 +611,12 @@ class DTransitions.PropSerializer extends DTransitions.EntitySerializerBase
 
 		return if not IsValid(ent)
 
-		@DeserializePosition(ent, tag)
-		@DeserializeGeneric(ent, tag)
+		@DeserializePreSpawn(ent, tag)
 
 		ent\Spawn()
 		ent\Activate()
 
-		@DeserializeCombatState(ent, tag)
-
-		mins, maxs = tag\GetVector('collision_mins'), tag\GetVector('collision_maxs')
-		ent\SetCollisionBounds(mins, maxs)
-
-		ent\SetModelScale(tag\GetTagValue('model_scale')) if tag\HasTag('model_scale')
-
-		@DeserializePhysics(ent, tag\GetTag('physics'))
+		@DeserializePostSpawn(ent, tag)
 
 		return ent
 
@@ -516,6 +701,9 @@ class DTransitions.WeaponSerializer extends DTransitions.PropSerializer
 class DTransitions.NPCSerializer extends DTransitions.PropSerializer
 	@SAVENAME = 'npcs'
 
+	@KEY_VALUES_IGNORANCE = [v for v in *DTransitions.PropSerializer.KEY_VALUES_IGNORANCE]
+	table.insert(@KEY_VALUES_IGNORANCE, 'additionalequipment')
+
 	CanSerialize: (ent) => ent\IsNPC()
 	GetPriority: => 800
 
@@ -546,16 +734,40 @@ class DTransitions.NPCSerializer extends DTransitions.PropSerializer
 
 		@QuickSerializeObj(tag, ent, @@NPC_ACTIVITY)
 
+		kv = @SerializeKeyValues(ent)
+		tag\SetTag('keyvalues', kv) if kv
+
+		tag2 = @SerializeGNetVars(ent)
+		tag\SetTag('dt', tag2) if tag2
+
 		return tag
 
 	DeserializePost: (ent, tag) =>
 		super(ent, tag)
+
 		@QuickDeserializeObj(tag, ent, @@NPC_ACTIVITY, true)
+		@DeserializeGNetVars(ent, tag\GetTag('dt'), false)
+
+		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'), true)
 
 	DeserializePre: (tag) =>
-		ent = super(tag)
-		return if not ent
+		local ent
 
+		if tag\HasTag('map_id')
+			ent = ents.GetMapCreatedEntity(tag\GetTagValue('map_id'))
+		else
+			ent = ents.Create(tag\GetTagValue('classname'))
+
+		return if not IsValid(ent)
+
+		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'))
+		@DeserializePreSpawn(ent, tag)
+
+		ent\Spawn()
+		ent\Activate()
+
+		@DeserializePostSpawn(ent, tag)
 		@QuickDeserializeObj(tag, ent, @@NPC_ACTIVITY)
+		@DeserializeGNetVars(ent, tag\GetTag('dt'), true)
 
 		return ent
