@@ -44,6 +44,12 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 	@SAVETABLE_IGNORANCE = [value for value in *@KEY_VALUES_IGNORANCE]
 	table.insert(@SAVETABLE_IGNORANCE, 'm_flTimePlayerStare')
 	table.insert(@SAVETABLE_IGNORANCE, 'm_flStopMoveShootTime')
+	table.insert(@SAVETABLE_IGNORANCE, 'm_vecLean')
+	table.insert(@SAVETABLE_IGNORANCE, 'm_vecOrigin')
+	table.insert(@SAVETABLE_IGNORANCE, 'm_vecForcedWorldPosition')
+	table.insert(@SAVETABLE_IGNORANCE, 'm_vecAbsOrigin')
+	table.insert(@SAVETABLE_IGNORANCE, 'm_vecAbsVelocity')
+	table.insert(@SAVETABLE_IGNORANCE, 'm_HackedGunPos')
 
 -- 	{
 -- 		AlwaysTransition       =     0,
