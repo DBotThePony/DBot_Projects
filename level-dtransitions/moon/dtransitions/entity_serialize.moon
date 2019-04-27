@@ -188,7 +188,7 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 					when 'boolean'
 						status = pcall(ent.SetKeyValue, ent, key, value\GetValue() == 1)
 						if not status
-							DTransitions.MessageWarning(ent, ' rejected boolean for ', key, ' KeyValyes value, using number instead')
+							--DTransitions.MessageWarning(ent, ' rejected boolean for ', key, ' KeyValyes value, using number instead')
 							ent\SetKeyValue(key, value\GetValue())
 					else
 						ent\SetKeyValue(key, value\GetValue()) if @keyValuesTypes[key] ~= 'Entity'
@@ -216,11 +216,11 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 						tab = util.JSONToTable(value\GetValue())
 						if tab
 							status = pcall(ent.SetSaveValue, ent, key, tab)
-							DTransitions.MessageWarning(ent, ' rejected table for ', key, ' Savetable value') if not status
+							--DTransitions.MessageWarning(ent, ' rejected table for ', key, ' Savetable value') if not status
 					when 'boolean'
 						status = pcall(ent.SetSaveValue, ent, key, value\GetValue() == 1)
 						if not status
-							DTransitions.MessageWarning(ent, ' rejected boolean for ', key, ' Savetable value, using number instead')
+							--DTransitions.MessageWarning(ent, ' rejected boolean for ', key, ' Savetable value, using number instead')
 							ent\SetSaveValue(key, value\GetValue())
 					else
 						ent\SetSaveValue(key, value\GetValue()) if @saveTableTypes[key] ~= 'Entity'
@@ -386,12 +386,12 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 			\SetRenderMode(tag\GetTagValue('rmode')) if tag\HasTag('rmode')
 			\SetColor(tag\GetColor('color')) if tag\HasTag('color')
 			\SetModel(tag\GetTagValue('model')) if setmodel and tag\HasTag('model')
-			\SetFlexScale(tag\GetTagValue('flex_scale'))
+			\SetFlexScale(tag\GetTagValue('flex_scale')) if tag\HasTag('flex_scale')
 			\SetSolid(tag\GetTagValue('solid'))
 			\SetMoveType(tag\GetTagValue('movetype'))
 
-			flex = tag\GetTag('flex')
-			\SetFlexWeight(i, flex\ExtractValue(i)\GetValue()) for i = 0, \GetFlexNum() when flex\ExtractValue(i)
+			if flex = tag\GetTag('flex')
+				\SetFlexWeight(i, flex\ExtractValue(i)\GetValue()) for i = 0, \GetFlexNum() when flex\ExtractValue(i)
 
 			if bodygroups = tag\GetTag('bodygroups')
 				if bg = ent\GetBodyGroups()
@@ -416,11 +416,12 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 			tag\SetByte('rmode', rmode) if rmode
 			tag\SetColor('color', color) if color
 			tag\SetShort('skin', \GetSkin())
-			tag\SetFloat('flex_scale', \GetFlexScale())
 			tag\SetByte('movetype', \GetMoveType())
 			tag\SetByte('solid', \GetSolid())
 
-			tag\AddTagList('flex', NBT.TYPEID.TAG_Float, [\GetFlexWeight(i) for i = 0, \GetFlexNum()])
+			if \HasFlexManipulatior()
+				tag\SetFloat('flex_scale', \GetFlexScale())
+				tag\AddTagList('flex', NBT.TYPEID.TAG_Float, [\GetFlexWeight(i) for i = 0, \GetFlexNum()])
 
 			if bg = ent\GetBodyGroups()
 				tag2 = tag\AddTagCompound('bodygroups')

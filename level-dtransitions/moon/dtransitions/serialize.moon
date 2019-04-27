@@ -36,6 +36,9 @@ class DTransitions.SaveInstance
 		-- @RegisterSerializer(DTransitions.GenericBuiltinSerializer(@))
 		@RegisterSerializer(DTransitions.BuiltinSoftSerializer(@))
 		@RegisterSerializer(DTransitions.ButtonSerializer(@))
+		@RegisterSerializer(DTransitions.WeaponProjectilesSerializer(@))
+		@RegisterSerializer(DTransitions.TripmineSerializer(@))
+		@RegisterSerializer(DTransitions.FragSerializer(@))
 
 	RegisterSerializer: (serializer) =>
 		table.insert(@serializers, serializer)

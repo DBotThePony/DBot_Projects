@@ -28,7 +28,11 @@ class DTransitions.BuiltinSoftSerializer extends DTransitions.PropSerializer
 
 	@_HANDLE = {
 		'env_sprite'
+		'env_spritetrail'
+		'env_rockettrail'
+		'env_laserdot'
 		'env_fire'
+		'env_smoketrail'
 		'env_firesource'
 		'func_rot_button' -- partly working
 		'env_lightglow'

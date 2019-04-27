@@ -96,3 +96,112 @@ class DTransitions.WeaponSerializer extends DTransitions.PropSerializer
 		@DeserializeGNetVars(ent, tag\GetTag('dt'), true)
 
 		return ent
+
+class DTransitions.WeaponProjectilesSerializer extends DTransitions.PropSerializer
+	@SAVENAME = 'weaponproj'
+
+	@_HANDLE = {
+		'crossbow_bolt'
+		'prop_combine_ball'
+		'grenade_ar2'
+		'rpg_missile'
+	}
+
+	@HANDLE = {v, v for v in *@_HANDLE}
+
+	@SAVETABLE_IGNORANCE = {
+		'classname',
+		'rendercolor',
+		'renderfx',
+		'rendermode',
+		'waterlevel',
+		'health',
+		'max_health',
+		'm_flTimePlayerStare',
+		'm_flStopMoveShootTime',
+		'm_vecOrigin',
+	}
+
+	CanSerialize: (ent) => @@HANDLE[ent\GetClass()] ~= nil
+	GetPriority: => 50
+
+	Serialize: (ent) =>
+		tag = super(ent)
+		return if not tag
+
+		if kv = @SerializeKeyValues(ent)
+			tag\SetTag('keyvalues', kv)
+
+		if sv = @SerializeSavetable(ent)
+			tag\SetTag('savetable', sv)
+
+		return tag
+
+	DeserializePost: (ent, tag) =>
+		super(ent, tag)
+		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'), true)
+		@DeserializeSavetable(ent, tag\GetTag('savetable'), true)
+
+	DeserializePre: (tag) =>
+		local ent
+		classname = tag\GetTagValue('classname')
+
+		if tag\HasTag('map_id')
+			ent = ents.GetMapCreatedEntity(tag\GetTagValue('map_id'))
+		else
+			ent = ents.Create(classname)
+
+		return if not IsValid(ent)
+
+		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'))
+		@DeserializeSavetable(ent, tag\GetTag('savetable'))
+		@DeserializePreSpawn(ent, tag)
+
+		if not tag\HasTag('map_id')
+			ent\Spawn()
+			ent\Activate()
+
+		@DeserializePostSpawn(ent, tag)
+
+		return ent
+
+class DTransitions.FragSerializer extends DTransitions.WeaponProjectilesSerializer
+	@SAVENAME = 'fraggrenade'
+	CanSerialize: (ent) => ent\GetClass() == 'npc_grenade_frag'
+
+	@SAVETABLE_IGNORANCE = [v for v in *DTransitions.EntitySerializerBase.SAVETABLE_IGNORANCE]
+
+	DeserializePre: (tag) =>
+		ent = super(tag)
+		return if not ent
+
+		ent\Fire('wake')
+		ent\Fire('SetTimer', 2)
+
+		return ent
+
+class DTransitions.TripmineSerializer extends DTransitions.WeaponProjectilesSerializer
+	@SAVENAME = 'tripmine'
+	CanSerialize: (ent) => ent\GetClass() == 'npc_tripmine'
+
+	DeserializePre: (tag) =>
+		local ent
+
+		if tag\HasTag('map_id')
+			ent = ents.GetMapCreatedEntity(tag\GetTagValue('map_id'))
+		else
+			ent = ents.Create('npc_tripmine')
+
+		return if not IsValid(ent)
+
+		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'))
+		@DeserializePreSpawn(ent, tag)
+
+		if not tag\HasTag('map_id')
+			ent\Spawn()
+			ent\Activate()
+
+		@DeserializeSavetable(ent, tag\GetTag('savetable'))
+		@DeserializePostSpawn(ent, tag)
+
+		return ent
