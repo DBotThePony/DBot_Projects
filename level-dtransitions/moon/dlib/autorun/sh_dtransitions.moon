@@ -25,6 +25,7 @@ DLib.CMessage(DTransitions, 'DTransitions')
 
 if SERVER
 	include('dtransitions/serialize.lua')
+	include('dtransitions/serializer_base.lua')
 	include('dtransitions/entity_serialize.lua')
 	local sertest
 

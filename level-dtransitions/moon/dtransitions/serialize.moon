@@ -29,6 +29,7 @@ class DTransitions.SaveInstance
 		@RegisterSerializer(DTransitions.PlayerSerializer(@))
 		@RegisterSerializer(DTransitions.PropSerializer(@))
 		@RegisterSerializer(DTransitions.WeaponSerializer(@))
+		@RegisterSerializer(DTransitions.NPCSerializer(@))
 
 	RegisterSerializer: (serializer) =>
 		table.insert(@serializers, serializer)

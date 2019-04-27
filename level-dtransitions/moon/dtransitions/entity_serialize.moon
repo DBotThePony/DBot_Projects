@@ -21,23 +21,9 @@
 import NBT from DLib
 import luatype from _G
 
-class DTransitions.EntitySerializerBase
-	new: (saveInstance) =>
-		@saveInstance = saveInstance
-
+class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 	CanSerialize: (ent) => false
 	GetPriority: => 0
-	Serialize: (ent) => error('Not implemented')
-
-	DeserializePre: (tag) => error('Not implemented')
-	DeserializeMiddle: (ent, tag) => -- Hack for :Give() function, since gmod is stupid
-	DeserializePost: (ent, tag) =>
-
-	-- When saving
-	Ask: (tag) =>
-
-	-- When loading
-	Tell: (tag) =>
 
 	DeserializeGeneric: (ent, tag, setmodel = true) =>
 		with ent
@@ -82,7 +68,8 @@ class DTransitions.EntitySerializerBase
 			tag\AddTagList('flex', NBT.TYPEID.TAG_Float, [\GetFlexWeight(i) for i = 0, \GetFlexNum()])
 
 			if bg = ent\GetBodyGroups()
-				tag\AddTagCompound('bodygroups', {data.name, \GetBodygroup(data.id) for data in *bg})
+				tag2 = tag\AddTagCompound('bodygroups')
+				tag2\SetInt(data.name, \GetBodygroup(data.id)) for data in *bg
 
 			tag\SetString('model', \GetModel())
 
@@ -398,7 +385,7 @@ class DTransitions.PropSerializer extends DTransitions.EntitySerializerBase
 			else
 				return false
 
-	GetPriority: => 800
+	GetPriority: => 500
 
 	Serialize: (ent) =>
 		tag = NBT.TagCompound()
@@ -523,5 +510,52 @@ class DTransitions.WeaponSerializer extends DTransitions.PropSerializer
 		ent\SetHoldType(tag\GetTagValue('holdtype'))
 
 		@DeserializeGNetVars(ent, tag\GetTag('dt'), true)
+
+		return ent
+
+class DTransitions.NPCSerializer extends DTransitions.PropSerializer
+	@SAVENAME = 'npcs'
+
+	CanSerialize: (ent) => ent\IsNPC()
+	GetPriority: => 800
+
+	@NPC_ACTIVITY = {
+		--{'ActiveWeapon', 'Entity'}
+		{'Activity', 'Short'}
+		--{'AimVector', 'Vector'}
+		{'ArrivalActivity', 'Short'}
+		{'ArrivalSequence', 'Short'}
+		{'BlockingEntity', 'Entity'}
+		{'CurrentSchedule', 'Short'}
+		{'CurrentWeaponProficiency', 'Byte'}
+		{'Enemy', 'Entity'}
+		{'Expression', 'String'}
+		{'HullType', 'Byte'}
+		{'MovementActivity', 'Short'}
+		{'MovementSequence', 'Short'}
+		{'NPCState', 'Byte'}
+		{'PathDistanceToGoal', 'Short'}
+		{'PathTimeToGoal', 'Int'}
+		--{'ShootPos', 'Vector'}
+		{'Target', 'Entity'}
+	}
+
+	Serialize: (ent) =>
+		tag = super(ent)
+		return if not tag
+
+		@QuickSerializeObj(tag, ent, @@NPC_ACTIVITY)
+
+		return tag
+
+	DeserializePost: (ent, tag) =>
+		super(ent, tag)
+		@QuickDeserializeObj(tag, ent, @@NPC_ACTIVITY, true)
+
+	DeserializePre: (tag) =>
+		ent = super(tag)
+		return if not ent
+
+		@QuickDeserializeObj(tag, ent, @@NPC_ACTIVITY)
 
 		return ent
