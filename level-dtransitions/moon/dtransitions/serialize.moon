@@ -32,6 +32,7 @@ class DTransitions.SaveInstance
 		@RegisterSerializer(DTransitions.NPCSerializer(@))
 		@RegisterSerializer(DTransitions.VehicleSerializer(@))
 		@RegisterSerializer(DTransitions.DoorSerializer(@))
+		@RegisterSerializer(DTransitions.FuncDoorRotatingSerializer(@))
 
 	RegisterSerializer: (serializer) =>
 		table.insert(@serializers, serializer)

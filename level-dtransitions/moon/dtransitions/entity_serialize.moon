@@ -360,7 +360,7 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 			\SetRenderFX(tag\GetTagValue('fx')) if tag\HasTag('fx')
 			\SetRenderMode(tag\GetTagValue('rmode')) if tag\HasTag('rmode')
 			\SetColor(tag\GetColor('color')) if tag\HasTag('color')
-			\SetModel(tag\GetTagValue('model')) if setmodel
+			\SetModel(tag\GetTagValue('model')) if setmodel and tag\HasTag('model')
 			\SetFlexScale(tag\GetTagValue('flex_scale'))
 			\SetSolid(tag\GetTagValue('solid'))
 			\SetMoveType(tag\GetTagValue('movetype'))
@@ -401,7 +401,7 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 				tag2 = tag\AddTagCompound('bodygroups')
 				tag2\SetInt(data.name, \GetBodygroup(data.id)) for data in *bg
 
-			tag\SetString('model', \GetModel())
+			tag\SetString('model', \GetModel()) if not \GetModel()\startsWith('*')
 
 			if .EntityMods
 				tag\SetString('entitymods', util.TableToJSON(.EntityMods) or '[]')
