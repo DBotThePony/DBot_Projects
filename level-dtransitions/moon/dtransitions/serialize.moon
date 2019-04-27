@@ -40,6 +40,8 @@ class DTransitions.SaveInstance
 		@RegisterSerializer(DTransitions.TripmineSerializer(@))
 		@RegisterSerializer(DTransitions.FragSerializer(@))
 		@RegisterSerializer(DTransitions.BuiltinSerializer(@))
+		@RegisterSerializer(DTransitions.BuiltinHardSerializer(@))
+		@RegisterSerializer(DTransitions.BuiltinSingleSerializer(@))
 
 	RegisterSerializer: (serializer) =>
 		table.insert(@serializers, serializer)
@@ -71,6 +73,10 @@ class DTransitions.SaveInstance
 		'env_soundscape',
 		'beam',
 		'hint',
+		'npc_barnacle_tongue_tip',
+
+		'info_node_link',
+		'info_node_link_controller',
 
 		'func_areaportal',
 		'func_usableladder',
@@ -78,6 +84,12 @@ class DTransitions.SaveInstance
 		'func_platrot',
 		'func_areaportalwindow',
 		'env_skypaint',
+		'func_lod',
+		'game_gib_manager',
+		'env_hudhint',
+		'color_correction',
+		'changehitngroup',
+		--'func_clip_vphysics',
 
 		'info_landmark',
 		'trigger_changelevel',
@@ -118,9 +130,11 @@ class DTransitions.SaveInstance
 			serializer\Ask(tag)
 
 		noSerializers = {}
+		counter = {}
 
 		for ent in *ents.GetAll()
 			classname = ent\GetClass()
+			counter[classname] = (counter[classname] or 0) + 1
 			if not table.qhasValue(@@ENT_BLACKLIST, classname)
 				hit = false
 
@@ -144,6 +158,11 @@ class DTransitions.SaveInstance
 		sortable = [ent for ent in pairs(noSerializers)]
 		table.sort(sortable)
 		DTransitions.MessageWarning(ent, ' lack a serializer.') for ent in *sortable
+
+		ctag = tag\AddTagCompound('ent_count')
+
+		for ent, c in pairs(counter)
+			ctag\SetShort(ent, c)
 
 		buff = DLib.BytesBuffer()
 		tag\WriteFile(buff)

@@ -66,6 +66,13 @@ class DTransitions.NPCSerializer extends DTransitions.PropSerializer
 		if dt = @SerializeGNetVars(ent)
 			tag\SetTag('dt', dt)
 
+		--if ent\GetClass() == 'npc_barnacle' and ent\Health() < 1
+		--	if kv = tag\GetTag('keyvalues')
+		--		kv\SetInt('spawnflags', tag\GetTagValue('spawnflags')\bor(65536))
+
+		--	if sv = tag\GetTag('savetable')
+		--		sv\SetInt('spawnflags', tag\GetTagValue('spawnflags')\bor(65536))
+
 		return tag
 
 	DeserializePost: (ent, tag) =>
@@ -77,6 +84,7 @@ class DTransitions.NPCSerializer extends DTransitions.PropSerializer
 		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'), true)
 
 	DeserializePre: (tag) =>
+		return if tag\GetTagValue('classname') == 'npc_barnacle' and tag\GetTagValue('health') < 1
 		local ent
 
 		if tag\HasTag('map_id')

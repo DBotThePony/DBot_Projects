@@ -44,20 +44,43 @@ class DTransitions.BuiltinSoftSerializer extends DTransitions.PropSerializer
 		'func_brush'
 		'env_tonemap_controller'
 
+		'ally_speech_manager'
+
 		'func_illusionary'
 		'aiscripted_schedule'
 
-		'npc_barnacle_tongue_tip'
 		'relationship'
 
 		'logic_relay'
 		'logic_timer'
+		'logic_auto'
+		'logic_case'
+		'logic_compare'
 		'trigger_multiple'
 		'trigger_once'
+		'trigger_playermovement'
+		'trigger_serverragdoll'
+		'info_particle_system'
+		'func_clip_vphysics'
+
+		'math_remap'
+		'momentary_rot_button'
+		'point_velocitysensor'
+
+		'point_template'
 
 		'npc_maker'
 		'npc_template_maker'
 		'entityflame'
+
+		'func_breakable'
+		'func_physbox'
+		--'func_breakable_surf'
+		'filter_activator_name'
+		'func_rotating'
+
+		'npc_antlion_grub'
+		'scripted_sequence'
 	}
 
 	@HANDLE = {v, v for v in *@_HANDLE}
@@ -96,6 +119,72 @@ class DTransitions.BuiltinSoftSerializer extends DTransitions.PropSerializer
 			--return if not IsValid(ent)
 			--ent\Remove()
 			--ent = ents.Create(tag\GetTagValue('classname'))
+		else
+			ent = ents.Create(tag\GetTagValue('classname'))
+
+		return if not IsValid(ent)
+
+		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'))
+		@DeserializeSavetable(ent, tag\GetTag('savetable'))
+
+		if not tag\HasTag('map_id')
+			ent\Spawn()
+			ent\Activate()
+
+		if tag\GetTagValue('classname') == 'npc_antlion_grub'
+			if sv = ent\GetSaveTable()
+				sv.m_hGlowSprite\Remove() if IsValid(sv.m_hGlowSprite)
+
+		return ent
+
+class DTransitions.BuiltinSingleSerializer extends DTransitions.BuiltinSoftSerializer
+	@SAVENAME = 'builtin_singleton'
+
+	@SAVETABLE_IGNORANCE = {}
+
+	@_HANDLE = {
+		'scene_manager'
+	}
+
+	@HANDLE = {v, v for v in *@_HANDLE}
+
+	DeserializePre: (tag) =>
+		ent = ents.FindByClass(tag\GetTagValue('classname'))
+		return if not IsValid(ent)
+
+		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'))
+		@DeserializeSavetable(ent, tag\GetTag('savetable'))
+
+		if not tag\HasTag('map_id')
+			ent\Spawn()
+			ent\Activate()
+
+		return ent
+
+
+class DTransitions.BuiltinHardSerializer extends DTransitions.BuiltinSoftSerializer
+	@SAVENAME = 'builtin_logic2'
+
+	@SAVETABLE_IGNORANCE = {}
+
+	@_HANDLE = {
+		--'func_breakable'
+		'func_breakable_surf'
+	}
+
+	@HANDLE = {v, v for v in *@_HANDLE}
+
+	CanSerialize: (ent) => @@HANDLE[ent\GetClass()] ~= nil
+	GetPriority: => 0
+
+	DeserializePre: (tag) =>
+		local ent
+
+		if tag\HasTag('map_id')
+			ent = ents.GetMapCreatedEntity(tag\GetTagValue('map_id'))
+			return if not IsValid(ent)
+			ent\Remove()
+			ent = ents.Create(tag\GetTagValue('classname'))
 		else
 			ent = ents.Create(tag\GetTagValue('classname'))
 

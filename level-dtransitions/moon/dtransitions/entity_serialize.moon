@@ -524,8 +524,9 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 		physobj\SetAngles(tag\GetAngle('angle'))
 		--physobj\SetDamping(tag\GetTagValue('damping_linear'), tag\GetTagValue('damping_angular'))
 
-		physobj\Sleep() if tag\GetTagValue('asleep') == 1
-		physobj\Wake() if tag\GetTagValue('asleep') == 0
+		--physobj\Sleep() if tag\GetTagValue('asleep') == 1
+		--physobj\Wake() if tag\GetTagValue('asleep') == 0
+		physobj\Wake()
 
 	DeserializePhysics: (ent, taglist) =>
 		etype = type(ent)
@@ -547,9 +548,9 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 	DeserializeBones: (ent, tag) =>
 		for boneid = 0, ent\GetBoneCount() - 1
 			if tag2 = tag\GetTag(ent\GetBoneName(boneid))
-				ent\ManipulateBoneScale(tag2\GetVector('scale'))
-				ent\ManipulateBonePosition(tag2\GetVector('pos'))
-				ent\ManipulateBoneAngles(tag2\GetAngle('ang'))
+				ent\ManipulateBoneScale(boneid, tag2\GetVector('scale'))
+				ent\ManipulateBonePosition(boneid, tag2\GetVector('pos'))
+				ent\ManipulateBoneAngles(boneid, tag2\GetAngle('ang'))
 
 	SerializeGNetVars: (ent) =>
 		return if not ent.GetNetworkVars

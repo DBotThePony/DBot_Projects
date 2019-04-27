@@ -66,6 +66,7 @@ class DTransitions.PropSerializer extends DTransitions.EntitySerializerBase
 	DeserializePreSpawn: (ent, tag) =>
 		@DeserializePosition(ent, tag)
 		@DeserializeGeneric(ent, tag)
+		@DeserializePhysics(ent, tag\GetTag('physics'))
 
 	DeserializePostSpawn: (ent, tag) =>
 		@DeserializeCombatState(ent, tag)
