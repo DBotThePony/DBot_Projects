@@ -45,7 +45,6 @@ class DTransitions.SerializerBase
 				val = getter(obj)
 				if val ~= nil
 					writer = row[2]
-					writer = 'Byte' if writer == 'Bool'
 
 					if writer == 'Entity'
 						if IsValid(val)
