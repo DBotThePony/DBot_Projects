@@ -134,12 +134,7 @@ class DTransitions.PlayerSerializer extends DTransitions.EntitySerializerBase
 		elseif tag\GetTagValue('alive') == 1 and not ply\Alive()
 			ply\Spawn()
 
-		ply\StripAmmo()
 		ply\StripWeapons()
-
-		for i, ammoAmount in ipairs(tag\GetTagValue('ammo'))
-			if realAmmoID = @ammoMapping[i]
-				ply\GiveAmmo(ammoAmount, realAmmoID, true)
 
 		@DeserializePosition(ply, tag)
 		@DeserializeGeneric(ply, tag)
@@ -170,6 +165,12 @@ class DTransitions.PlayerSerializer extends DTransitions.EntitySerializerBase
 		return ply
 
 	DeserializePost: (ply, tag) =>
+		ply\StripAmmo()
+
+		for i, ammoAmount in ipairs(tag\GetTagValue('ammo'))
+			if realAmmoID = @ammoMapping[i]
+				ply\GiveAmmo(ammoAmount, realAmmoID, true)
+
 		if tag\HasTag('vehicle')
 			vehicle = @saveInstance\GetEntity(tag\GetTagValue('vehicle'))
 			ply\EnterVehicle(vehicle) if IsValid(vehicle)
