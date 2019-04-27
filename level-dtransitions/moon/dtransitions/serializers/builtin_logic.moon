@@ -22,13 +22,18 @@ import NBT from DLib
 import luatype from _G
 
 class DTransitions.BuiltinSoftSerializer extends DTransitions.PropSerializer
-	@SAVENAME = 'builtin'
+	@SAVENAME = 'builtin_logic'
 
 	@SAVETABLE_IGNORANCE = {}
 
 	@_HANDLE = {
 		'env_sprite'
 		'env_spritetrail'
+		'env_ar2explosion'
+		'env_shooter'
+		'env_physimpact'
+		'env_shake'
+		'env_physexplosion'
 		'env_rockettrail'
 		'env_laserdot'
 		'env_fire'
@@ -38,6 +43,21 @@ class DTransitions.BuiltinSoftSerializer extends DTransitions.PropSerializer
 		'env_lightglow'
 		'func_brush'
 		'env_tonemap_controller'
+
+		'func_illusionary'
+		'aiscripted_schedule'
+
+		'npc_barnacle_tongue_tip'
+		'relationship'
+
+		'logic_relay'
+		'logic_timer'
+		'trigger_multiple'
+		'trigger_once'
+
+		'npc_maker'
+		'npc_template_maker'
+		'entityflame'
 	}
 
 	@HANDLE = {v, v for v in *@_HANDLE}
@@ -49,6 +69,10 @@ class DTransitions.BuiltinSoftSerializer extends DTransitions.PropSerializer
 		tag = super(ent, true)
 		return if not tag
 
+		if ent\GetClass() == 'entityflame'
+			if kv = @SerializeKeyValues(ent)
+				tag\SetTag('keyvalues', kv)
+
 		if sv = @SerializeSavetable(ent, false)
 			tag\SetTag('savetable', sv)
 
@@ -56,7 +80,13 @@ class DTransitions.BuiltinSoftSerializer extends DTransitions.PropSerializer
 
 	DeserializePost: (ent, tag) =>
 		super(ent, tag, true)
-		@DeserializeSavetable(ent, tag\GetTag('savetable'), true)
+		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'), true)
+
+		if sv = tag\GetTag('savetable')
+			@DeserializeSavetable(ent, sv, true)
+
+			if ent\GetClass() == 'entityflame' and IsValid(ent\GetParent()) and sv\HasTag('lifetime')
+				ent\GetParent()\Ignite(sv\GetTagValue('lifetime'))
 
 	DeserializePre: (tag) =>
 		local ent
@@ -71,6 +101,7 @@ class DTransitions.BuiltinSoftSerializer extends DTransitions.PropSerializer
 
 		return if not IsValid(ent)
 
+		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'))
 		@DeserializeSavetable(ent, tag\GetTag('savetable'))
 
 		if not tag\HasTag('map_id')

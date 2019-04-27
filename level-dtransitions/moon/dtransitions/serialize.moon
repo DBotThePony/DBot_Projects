@@ -39,6 +39,7 @@ class DTransitions.SaveInstance
 		@RegisterSerializer(DTransitions.WeaponProjectilesSerializer(@))
 		@RegisterSerializer(DTransitions.TripmineSerializer(@))
 		@RegisterSerializer(DTransitions.FragSerializer(@))
+		@RegisterSerializer(DTransitions.BuiltinSerializer(@))
 
 	RegisterSerializer: (serializer) =>
 		table.insert(@serializers, serializer)
@@ -67,13 +68,20 @@ class DTransitions.SaveInstance
 		'predicted_viewmodel',
 		'math_counter',
 		'path_corner',
+		'env_soundscape',
 		'beam',
+		'hint',
 
 		'func_areaportal',
 		'func_usableladder',
 		'func_smokevolume',
 		'func_platrot',
+		'func_areaportalwindow',
 		'env_skypaint',
+
+		'info_landmark',
+		'trigger_changelevel',
+		'trigger_hurt', -- idk
 
 		'_firesmoke', -- go away
 

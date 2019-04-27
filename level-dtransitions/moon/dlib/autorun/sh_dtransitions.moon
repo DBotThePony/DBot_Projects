@@ -35,6 +35,7 @@ if SERVER
 	include('dtransitions/serializers/door.lua')
 	include('dtransitions/serializers/generic_engine.lua')
 	include('dtransitions/serializers/builtin_logic.lua')
+	include('dtransitions/serializers/builtin.lua')
 	local sertest
 
 	concommand.Add 'serialize_test', (ply) ->

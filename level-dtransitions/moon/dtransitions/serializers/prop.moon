@@ -57,6 +57,10 @@ class DTransitions.PropSerializer extends DTransitions.EntitySerializerBase
 			if bones = @SerializeBones(ent)
 				tag\SetTag('bones', bones)
 
+			if sv = ent\GetSaveTable()
+				tag\SetInt('last_attacker', @saveInstance\GetEntityID(sv.m_hLastAttacker)) if IsValid(sv.m_hLastAttacker)
+				tag\SetInt('physics_attacker', @saveInstance\GetEntityID(sv.m_hPhysicsAttacker)) if IsValid(sv.m_hPhysicsAttacker)
+
 		return tag
 
 	DeserializePreSpawn: (ent, tag) =>
@@ -97,4 +101,11 @@ class DTransitions.PropSerializer extends DTransitions.EntitySerializerBase
 
 		return ent
 
-	DeserializePost: (ent, tag) =>
+	DeserializePost: (ent, tag, manual = false) =>
+		if tag\HasTag('last_attacker')
+			ent2 = @saveInstance\GetEntity(tag\GetTagValue('last_attacker'))
+			ent\SetSaveValue('m_hLastAttacker', ent2) if IsValid(ent2)
+
+		if tag\HasTag('physics_attacker')
+			ent2 = @saveInstance\GetEntity(tag\GetTagValue('physics_attacker'))
+			ent\SetSaveValue('m_hPhysicsAttacker', ent2) if IsValid(ent2)
