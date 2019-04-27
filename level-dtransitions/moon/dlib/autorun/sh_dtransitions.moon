@@ -27,6 +27,11 @@ if SERVER
 	include('dtransitions/serialize.lua')
 	include('dtransitions/serializer_base.lua')
 	include('dtransitions/entity_serialize.lua')
+	include('dtransitions/serializers/player.lua')
+	include('dtransitions/serializers/prop.lua')
+	include('dtransitions/serializers/weapon.lua')
+	include('dtransitions/serializers/npc.lua')
+	include('dtransitions/serializers/vehicle.lua')
 	local sertest
 
 	concommand.Add 'serialize_test', (ply) ->
