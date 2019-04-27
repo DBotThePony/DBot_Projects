@@ -50,6 +50,7 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 	table.insert(@SAVETABLE_IGNORANCE, 'm_vecAbsOrigin')
 	table.insert(@SAVETABLE_IGNORANCE, 'm_vecAbsVelocity')
 	table.insert(@SAVETABLE_IGNORANCE, 'm_HackedGunPos')
+	table.insert(@SAVETABLE_IGNORANCE, 'model')
 
 -- 	{
 -- 		AlwaysTransition       =     0,
@@ -417,11 +418,11 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 			\SetArmor(tag\GetTagValue('armor')) if tag\HasTag('armor') and .SetArmor
 			\SetMaxArmor(tag\GetTagValue('max_armor')) if tag\HasTag('max_armor') and .SetMaxArmor
 
-	DeserializeMeta: (ent, tag) =>
+	DeserializeOwner: (ent, tag) =>
 		ent\SetOwner(@saveInstance\GetEntity(tag\GetTagValue('owner'))) if tag\HasTag('owner')
 		ent\SetParent(@saveInstance\GetEntity(tag\GetTagValue('parent'))) if tag\HasTag('parent')
 
-	SerializeMeta: (ent, tag) =>
+	SerializeOwner: (ent, tag) =>
 		with ent
 			owner = \GetOwner()
 			parent = \GetParent()
@@ -438,7 +439,12 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 		with ent
 			tag\SetVector('pos', \GetPos())
 			tag\SetAngle('ang', \GetAngles())
-			tag\SetAngle('eang', \EyeAngles()) if .EyeAngles
+
+			if .EyeAngles
+				tag\SetAngle('eang', \EyeAngles())
+
+				if .InVehicle and \InVehicle() and IsValid(\GetVehicle())
+					tag\SetAngle('eang', \EyeAngles() - \GetVehicle()\GetAngles())
 
 	SerializePhysObject: (physobj) =>
 		tag = NBT.TagCompound()
@@ -473,13 +479,14 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 	SerializePhysics: (ent) =>
 		return NBT.TagList(NBT.TYPEID.TAG_Compound, [@SerializePhysObject(ent\GetPhysicsObjectNum(i)) for i = 0, ent\GetPhysicsObjectCount() - 1])
 
-	DeserializePhysObject: (physobj, tag) =>
+	DeserializePhysObject: (etype, physobj, tag) =>
 		return if not tag
 		return if not IsValid(physobj)
 		return if tag\GetTagValue('valid') == 0
+		--return if etype == 'Vehicle'
 
-		physobj\EnableCollisions(tag\GetTagValue('collisions') == 1)
-		physobj\EnableDrag(tag\GetTagValue('drag') == 1)
+		physobj\EnableCollisions(tag\GetTagValue('collisions') == 1) --if etype ~= 'Vehicle'
+		physobj\EnableDrag(tag\GetTagValue('drag') == 1) --if etype ~= 'Vehicle'
 		physobj\EnableGravity(tag\GetTagValue('gravity') == 1)
 		physobj\EnableMotion(tag\GetTagValue('motion') == 1)
 		physobj\SetMass(tag\GetTagValue('mass') + 30000)
@@ -493,7 +500,8 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 		physobj\Wake() if tag\GetTagValue('asleep') == 0
 
 	DeserializePhysics: (ent, taglist) =>
-		@DeserializePhysObject(ent\GetPhysicsObjectNum(i), taglist\ExtractValue(i + 1)) for i = 0, ent\GetPhysicsObjectCount() - 1
+		etype = type(ent)
+		@DeserializePhysObject(etype, ent\GetPhysicsObjectNum(i), taglist\ExtractValue(i + 1)) for i = 0, ent\GetPhysicsObjectCount() - 1
 
 	SerializeBones: (ent) =>
 		return if not ent\HasBoneManipulations()
@@ -616,6 +624,30 @@ class DTransitions.PlayerSerializer extends DTransitions.EntitySerializerBase
 
 		tag\AddTag('ammotypes', list)
 
+	@PLAYER_STRUCT = {
+		{'AllowFullRotation', 'Bool'}
+		{'AllowWeaponsInVehicle', 'Bool'}
+		{'AvoidPlayers', 'Bool'}
+		{'CanWalk', 'Bool'}
+		{'CanZoom', 'Bool'}
+		{'FOV', 'Short', nil, 0}
+		{'EntityInUse', 'Entity'}
+		{'DrivingEntity', 'Entity'}
+		{'DrivingMode', 'Byte'}
+		{'JumpPower', 'Short'}
+		{'LaggedMovementValue', 'Float'}
+		{'ObserverMode', 'Byte'}
+		{'ObserverTarget', 'Entity'}
+		{'PlayerColor', 'Vector'}
+		{'StepSize', 'Short'}
+		{'ViewEntity', 'Entity'}
+		{'ViewModel', 'Entity'}
+		{'ViewOffset', 'Vector'}
+		{'ViewOffsetDucked', 'Vector'}
+		{'ViewPunchAngles', 'Angle'}
+		{'WeaponColor', 'Vector'}
+	}
+
 	Serialize: (ply) =>
 		tag = NBT.TagCompound()
 		@SerializePosition(ply, tag)
@@ -629,6 +661,7 @@ class DTransitions.PlayerSerializer extends DTransitions.EntitySerializerBase
 		tag\SetShort('deaths', ply\Deaths())
 		tag\SetByte('alive', ply\Alive() and 1 or 0)
 		tag\SetByte('suit', ply\IsSuitEquipped() and 1 or 0)
+		tag\SetBool('godmode', ply\HasGodMode())
 
 		tag\SetShort('walk_speed', ply\GetWalkSpeed())
 		tag\SetShort('walk_speed_duck', ply\GetCrouchedWalkSpeed())
@@ -649,6 +682,8 @@ class DTransitions.PlayerSerializer extends DTransitions.EntitySerializerBase
 
 		ammo = tag\AddTagList('ammo', NBT.TYPEID.TAG_Short)
 		ammo\AddValue(ply\GetAmmoCount(i)) for i = 1, @maxAmmoTypes
+
+		@QuickSerializeObj(tag, ply, @@PLAYER_STRUCT)
 
 		return tag
 
@@ -682,6 +717,9 @@ class DTransitions.PlayerSerializer extends DTransitions.EntitySerializerBase
 		ply\EquipSuit() if tag\GetTagValue('suit') == 1
 		ply\RemoveSuit() if tag\GetTagValue('suit') == 0
 
+		ply\GodEnable() if tag\GetTagValue('godmode') == 1
+		ply\GodDisable() if tag\GetTagValue('godmode') == 0
+
 		ply\SetWalkSpeed(tag\GetTagValue('walk_speed'))
 		ply\SetCrouchedWalkSpeed(tag\GetTagValue('walk_speed_duck'))
 		ply\SetRunSpeed(tag\GetTagValue('run_speed'))
@@ -690,6 +728,8 @@ class DTransitions.PlayerSerializer extends DTransitions.EntitySerializerBase
 		ply\SetHullDuck(tag\GetVector('hull_duck_mins'), tag\GetVector('hull_duck_maxs'))
 
 		ply\SetVelocity(tag\GetVector('velocity') - ply\GetVelocity())
+
+		@QuickDeserializeObj(tag, ply, @@PLAYER_STRUCT, false)
 
 		return ply
 
@@ -701,6 +741,8 @@ class DTransitions.PlayerSerializer extends DTransitions.EntitySerializerBase
 		if tag\HasTag('active_weapon')
 			active_weapon = @saveInstance\GetEntity(tag\GetTagValue('active_weapon'))
 			ply\SelectWeapon(active_weapon\GetClass()) if IsValid(active_weapon)
+
+		@QuickDeserializeObj(tag, ply, @@PLAYER_STRUCT, true)
 
 class DTransitions.PropSerializer extends DTransitions.EntitySerializerBase
 	@SAVENAME = 'props'
@@ -717,7 +759,7 @@ class DTransitions.PropSerializer extends DTransitions.EntitySerializerBase
 	Serialize: (ent) =>
 		tag = NBT.TagCompound()
 
-		tag\SetString('classname', ent\GetClass())
+		tag\SetString('classname', ent.ClassOverride or ent\GetClass())
 
 		if ent\CreatedByMap()
 			tag\SetShort('map_id', ent\MapCreationID())
@@ -725,6 +767,7 @@ class DTransitions.PropSerializer extends DTransitions.EntitySerializerBase
 		@SerializePosition(ent, tag)
 		@SerializeGeneric(ent, tag)
 		@SerializeCombatState(ent, tag)
+		@SerializeOwner(ent, tag)
 		tag\SetTag('physics', @SerializePhysics(ent))
 
 		tag\SetFloat('model_scale', ent\GetModelScale()) if ent\GetModelScale() ~= 1
@@ -732,6 +775,9 @@ class DTransitions.PropSerializer extends DTransitions.EntitySerializerBase
 		mins, maxs = ent\GetCollisionBounds()
 		tag\SetVector('collision_mins', mins)
 		tag\SetVector('collision_maxs', maxs)
+
+		if bones = @SerializeBones(ent)
+			tag\SetTag('bones', bones)
 
 		return tag
 
@@ -749,6 +795,9 @@ class DTransitions.PropSerializer extends DTransitions.EntitySerializerBase
 
 		@DeserializePhysics(ent, tag\GetTag('physics'))
 
+		if bones = tag\GetTag('bones')
+			@DeserializeBones(ent, bones)
+
 	DeserializePre: (tag) =>
 		local ent
 
@@ -761,9 +810,11 @@ class DTransitions.PropSerializer extends DTransitions.EntitySerializerBase
 
 		@DeserializePreSpawn(ent, tag)
 
-		ent\Spawn()
-		ent\Activate()
+		if not tag\HasTag('map_id')
+			ent\Spawn()
+			ent\Activate()
 
+		@DeserializeOwner(ent, tag)
 		@DeserializePostSpawn(ent, tag)
 
 		return ent
@@ -915,11 +966,60 @@ class DTransitions.NPCSerializer extends DTransitions.PropSerializer
 		@DeserializeSavetable(ent, tag\GetTag('savetable'))
 		@DeserializePreSpawn(ent, tag)
 
-		ent\Spawn()
-		ent\Activate()
+		if not tag\HasTag('map_id')
+			ent\Spawn()
+			ent\Activate()
 
 		@DeserializePostSpawn(ent, tag)
 		@QuickDeserializeObj(tag, ent, @@NPC_ACTIVITY)
 		@DeserializeGNetVars(ent, tag\GetTag('dt'), true)
+
+		return ent
+
+class DTransitions.VehicleSerializer extends DTransitions.PropSerializer
+	@SAVENAME = 'vehicles'
+
+	CanSerialize: (ent) => ent\IsVehicle()
+	GetPriority: => 600
+
+	Serialize: (ent) =>
+		tag = super(ent)
+		return if not tag
+
+		if kv = @SerializeKeyValues(ent)
+			tag\SetTag('keyvalues', kv)
+
+		if sv = @SerializeSavetable(ent)
+			tag\SetTag('savetable', sv)
+
+		if dt = @SerializeGNetVars(ent)
+			tag\SetTag('dt', dt)
+
+		return tag
+
+	DeserializePost: (ent, tag) =>
+		super(ent, tag)
+
+		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'), true)
+
+	DeserializePre: (tag) =>
+		local ent
+
+		if tag\HasTag('map_id')
+			ent = ents.GetMapCreatedEntity(tag\GetTagValue('map_id'))
+		else
+			ent = ents.Create(tag\GetTagValue('classname'))
+
+		return if not IsValid(ent)
+
+		@DeserializePreSpawn(ent, tag)
+		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'))
+		@DeserializeSavetable(ent, tag\GetTag('savetable'))
+
+		if not tag\HasTag('map_id')
+			ent\Spawn()
+			ent\Activate()
+
+		@DeserializePostSpawn(ent, tag)
 
 		return ent

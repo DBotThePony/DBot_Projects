@@ -59,12 +59,17 @@ class DTransitions.SerializerBase
 
 			if tag\HasTag(savename)
 				if setter = obj['Set' .. row[1]]
-					val = tag['GetTagValue'](tag, savename)
+					val = tag\GetTagValue(savename)
 					val = val == 1 if row[2] == 'Bool'
+					val = tag\GetVector(savename) if row[2] == 'Vector'
+					val = tag\GetAngle(savename) if row[2] == 'Angle'
 
 					if row[2] == 'Entity'
 						if allowEnts
 							ent = @saveInstance\GetEntity(val)
-							setter(obj, ent) if IsValid(ent)
+							if IsValid(ent)
+								status, err = pcall(setter, obj, ent, unpack(row, 4))
+								error('Setter ' .. row[1] .. ' failed: ' .. err) if not status
 					else
-						setter(obj, val)
+						status, err = pcall(setter, obj, val, unpack(row, 4))
+						error('Setter ' .. row[1] .. ' failed: ' .. err) if not status
