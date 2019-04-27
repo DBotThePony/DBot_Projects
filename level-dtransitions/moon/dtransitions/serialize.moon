@@ -65,7 +65,7 @@ class DTransitions.SaveInstance
 							tag2\SetInt('__creation_id', ent\GetCreationID())
 
 					if not status
-						DTransitions.MessageError('Serializer ', serializer.__class.__name, ' failed to serialize ', ent, '!')
+						DTransitions.MessageError('Serializer ', serializer.__class.__name, ' failed to serialize ', ent, '! This entity would not appear in save.')
 
 					break
 

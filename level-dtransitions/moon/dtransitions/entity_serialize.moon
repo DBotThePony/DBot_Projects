@@ -41,6 +41,10 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 		-- 'parentname',
 	}
 
+	@SAVETABLE_IGNORANCE = [value for value in *@KEY_VALUES_IGNORANCE]
+	table.insert(@SAVETABLE_IGNORANCE, 'm_flTimePlayerStare')
+	table.insert(@SAVETABLE_IGNORANCE, 'm_flStopMoveShootTime')
+
 -- 	{
 -- 		AlwaysTransition       =     0,
 -- 		DontPickupWeapons      =     0,
@@ -114,12 +118,15 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 	Ask: (tag) =>
 		super(tag)
 		@keyValuesTypesNBT = tag\AddTagCompound(@@SAVENAME .. '_keyvalue_types')
+		@saveTableTypesNBT = tag\AddTagCompound(@@SAVENAME .. '_savetable_types')
 
 	-- When loading
 	Tell: (tag) =>
 		super(tag)
 		@keyValuesTypesNBT = tag\GetTag(@@SAVENAME .. '_keyvalue_types')
+		@saveTableTypesNBT = tag\GetTag(@@SAVENAME .. '_savetable_types')
 		@ReadKeyValueTypes()
+		@ReadSavetableTypes()
 
 	ReadKeyValueTypes: =>
 		if not @keyValuesTypesNBT
@@ -128,11 +135,24 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 
 		@keyValuesTypes = @keyValuesTypesNBT\GetValue()
 
+	ReadSavetableTypes: =>
+		if not @saveTableTypesNBT
+			@saveTableTypes = {}
+			return
+
+		@saveTableTypes = @saveTableTypesNBT\GetValue()
+
 	WriteKeyValueTypes: =>
 		return if not @keyValuesTypesNBT
 
 		for key, ttype in pairs(@keyValuesTypes)
 			@keyValuesTypesNBT\SetString(key, ttype)
+
+	WriteSavetableTypes: =>
+		return if not @saveTableTypesNBT
+
+		for key, ttype in pairs(@saveTableTypes)
+			@saveTableTypesNBT\SetString(key, ttype)
 
 	DeserializeKeyValues: (ent, tag, allowEnts = false) =>
 		return if not tag
@@ -141,6 +161,7 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 			if allowEnts
 				if @keyValuesTypes[key] == 'Entity'
 					ent2 = @saveInstance\GetEntity(value\GetValue())
+
 					if IsValid(ent2)
 						ent\SetKeyValue(key, ent2\EntIndex())
 					else
@@ -151,8 +172,33 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 						ent\SetKeyValue(key, tostring(tag\GetVector(key)))
 					when 'Angle'
 						ent\SetKeyValue(key, tostring(tag\GetAngle(key)))
+					when 'boolean'
+						ent\SetKeyValue(key, value\GetValue() == 1)
 					else
 						ent\SetKeyValue(key, value\GetValue()) if @keyValuesTypes[key] ~= 'Entity'
+
+	DeserializeSavetable: (ent, tag, allowEnts = false) =>
+		return if not tag
+
+		for key, value in tag\pairs()
+			if allowEnts
+				if @saveTableTypes[key] == 'Entity'
+					ent2 = @saveInstance\GetEntity(value\GetValue())
+
+					if IsValid(ent2)
+						ent\SetSaveValue(key, ent2\EntIndex())
+					else
+						ent\SetSaveValue(key, '')
+			else
+				switch @saveTableTypes[key]
+					when 'Vector'
+						ent\SetSaveValue(key, tostring(tag\GetVector(key)))
+					when 'Angle'
+						ent\SetSaveValue(key, tostring(tag\GetAngle(key)))
+					when 'boolean'
+						ent\SetSaveValue(key, value\GetValue() == 1)
+					else
+						ent\SetSaveValue(key, value\GetValue()) if @saveTableTypes[key] ~= 'Entity'
 
 	SerializeKeyValues: (ent) =>
 		kv = ent\GetKeyValues()
@@ -186,14 +232,22 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 							@WriteKeyValueTypes()
 
 						tag\SetAngle(key, value)
+					when 'boolean'
+						error('ambiguous KeyValue type : got boolean when expected ' .. @keyValuesTypes[key]) if @keyValuesTypes[key] and @keyValuesTypes[key] ~= 'boolean'
+
+						if not @keyValuesTypes[key]
+							@keyValuesTypes[key] = 'boolean'
+							@WriteKeyValueTypes()
+
+						tag\SetBool(key, value)
 					when 'number'
-						if value % 1 ~= 0
+						if value\floor() ~= value
 							tag\SetDouble(key, value)
-						elseif value > -0x7F and value < 0x7F
+						elseif value < -0x7F and value > 0x7F
 							tag\SetByte(key, value)
-						elseif value > -0x7FFF and value < 0x7FFF
+						elseif value < -0x7FFF and value > 0x7FFF
 							tag\SetShort(key, value)
-						elseif value > -0x7FFFFFFF and value < 0x7FFFFFFF
+						elseif value < -0x7FFFFFFF and value > 0x7FFFFFFF
 							tag\SetInt(key, value)
 						else
 							tag\SetLong(key, value)
@@ -202,6 +256,94 @@ class DTransitions.EntitySerializerBase extends DTransitions.SerializerBase
 					else
 						error('Unknown type for KeyValues table : ' .. type(value))
 
+		return tag
+
+	__SerializeSavetableValue: (ent, kv, tag, key, value) =>
+		return if table.qhasValue(@@SAVETABLE_IGNORANCE, key)
+
+		if kv
+			kvValue = kv[key\lower()]
+
+			switch type(value)
+				when 'boolean'
+					return if (kvValue == true or kvValue == 1) == value
+				else
+					return if kvValue == value
+
+		return if key\startsWith('m_GMOD')
+
+		switch type(value)
+			when 'Entity', 'Weapon', 'Vehicle', 'NPC', 'NextBot', 'Player'
+				error('ambiguous Savetable type : got Entity when expected ' .. @saveTableTypes[key]) if @saveTableTypes[key] and @saveTableTypes[key] ~= 'Entity'
+
+				if not @saveTableTypes[key]
+					@saveTableTypes[key] = 'Entity'
+					@WriteSavetableTypes()
+
+				tag\SetInt(key, @saveInstance\GetEntityID(value)) if IsValid(value)
+				return
+			when 'Vector'
+				error('ambiguous Savetable type : got Vector when expected ' .. @saveTableTypes[key]) if @saveTableTypes[key] and @saveTableTypes[key] ~= 'Vector'
+
+				if not @saveTableTypes[key]
+					@saveTableTypes[key] = 'Vector'
+					@WriteSavetableTypes()
+
+				tag\SetVector(key, value)
+				return
+			when 'Angle'
+				error('ambiguous Savetable type : got Angle when expected ' .. @saveTableTypes[key]) if @saveTableTypes[key] and @saveTableTypes[key] ~= 'Angle'
+
+				if not @saveTableTypes[key]
+					@saveTableTypes[key] = 'Angle'
+					@WriteSavetableTypes()
+
+				tag\SetAngle(key, value)
+				return
+			when 'boolean'
+				error('ambiguous Savetable type : got boolean when expected ' .. @saveTableTypes[key]) if @saveTableTypes[key] and @saveTableTypes[key] ~= 'boolean'
+
+				if not @saveTableTypes[key]
+					@saveTableTypes[key] = 'boolean'
+					@WriteSavetableTypes()
+
+				tag\SetBool(key, value)
+				return
+			when 'number'
+				if value\floor() ~= value
+					tag\SetDouble(key, value)
+					return
+				elseif value > -0x7F and value < 0x7F
+					tag\SetByte(key, value)
+					return
+				elseif value > -0x7FFF and value < 0x7FFF
+					tag\SetShort(key, value)
+					return
+				elseif value > -0x7FFFFFFF and value < 0x7FFFFFFF
+					tag\SetInt(key, value)
+					return
+				elseif value > -0x7FFFFFFFFFFFF and value < 0x7FFFFFFFFFF
+					--DTransitions.MessageError(key, ' savevalue has value of ', value, '. Give up on life')
+					tag\SetLong(key, value)
+					return
+			when 'string'
+				tag\SetString(key, value)
+				return
+			else
+				error('Unknown type for Savetable table : ' .. type(value)) if type(value) ~= 'table'
+				return
+
+	SerializeSavetable: (ent, lookupKeyValues = true) =>
+		savetable = ent\GetSaveTable()
+		return if not savetable
+		local kv
+
+		if lookupKeyValues
+			kv = ent\GetKeyValues() or {}
+			kv = {key\lower(), value for key, value in pairs(kv)}
+
+		tag = NBT.TagCompound()
+		@__SerializeSavetableValue(ent, kv, tag, key, value) for key, value in pairs(savetable)
 		return tag
 
 	DeserializeGeneric: (ent, tag, setmodel = true) =>
@@ -734,11 +876,14 @@ class DTransitions.NPCSerializer extends DTransitions.PropSerializer
 
 		@QuickSerializeObj(tag, ent, @@NPC_ACTIVITY)
 
-		kv = @SerializeKeyValues(ent)
-		tag\SetTag('keyvalues', kv) if kv
+		if kv = @SerializeKeyValues(ent)
+			tag\SetTag('keyvalues', kv)
 
-		tag2 = @SerializeGNetVars(ent)
-		tag\SetTag('dt', tag2) if tag2
+		if sv = @SerializeSavetable(ent)
+			tag\SetTag('savetable', sv)
+
+		if dt = @SerializeGNetVars(ent)
+			tag\SetTag('dt', dt)
 
 		return tag
 
@@ -761,6 +906,7 @@ class DTransitions.NPCSerializer extends DTransitions.PropSerializer
 		return if not IsValid(ent)
 
 		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'))
+		@DeserializeSavetable(ent, tag\GetTag('savetable'))
 		@DeserializePreSpawn(ent, tag)
 
 		ent\Spawn()
