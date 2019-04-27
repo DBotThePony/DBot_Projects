@@ -35,10 +35,12 @@ if SERVER
 	local sertest
 
 	concommand.Add 'serialize_test', (ply) ->
+		return if IsValid(ply) and not ply\IsSuperAdmin()
 		sertest = DTransitions.SaveInstance()\Serialize()
 		return
 
 	concommand.Add 'deserialize_test', (ply) ->
+		return if IsValid(ply) and not ply\IsSuperAdmin()
 		return if not sertest
 		sertest\Deserialize()
 
