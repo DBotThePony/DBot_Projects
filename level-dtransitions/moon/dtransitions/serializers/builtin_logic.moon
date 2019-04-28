@@ -106,7 +106,12 @@ class DTransitions.BuiltinSoftSerializer extends DTransitions.AbstractSerializer
 
 		'point_viewcontrol'
 
+		'trigger_multiple'
+		'trigger_once'
+		'trigger_playermovement'
+		'trigger_serverragdoll'
 		'trigger_push'
+
 		'npc_antlion_template_maker'
 		'npc_eventresponsesystem'
 		'point_camera'
@@ -200,11 +205,6 @@ class DTransitions.BuiltinHardSerializer extends DTransitions.BuiltinSoftSeriali
 		'filter_activator_name'
 		'filter_enemy'
 		'filter_activator_class'
-
-		'trigger_multiple'
-		'trigger_once'
-		'trigger_playermovement'
-		'trigger_serverragdoll'
 
 		'filter_enemy'
 		'filter_activator_class'

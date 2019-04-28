@@ -131,11 +131,11 @@ class DTransitions.BuiltinNPCSerializer extends DTransitions.AbstractSerializer
 
 	DeserializePre: (tag) =>
 		return if tag\GetTagValue('classname') == 'npc_barnacle' and tag\GetTagValue('health') < 1
-		ent = @GetEntityReplace(tag)
+		ent = @GetEntityPersistent(tag)
 		return if not IsValid(ent)
 
+		@DeserializePreSpawn(ent, tag)
 		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'))
 		@DeserializeSavetable(ent, tag\GetTag('savetable'))
-		@DeserializePreSpawn(ent, tag)
 
 		return ent
