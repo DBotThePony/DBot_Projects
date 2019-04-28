@@ -21,7 +21,7 @@
 import NBT from DLib
 import luatype from _G
 
-class DTransitions.WeaponSerializer extends DTransitions.PropSerializer
+class DTransitions.WeaponSerializer extends DTransitions.AbstractSerializer
 	@SAVENAME = 'weapons'
 
 	CanSerialize: (ent) => ent\IsWeapon()
@@ -97,7 +97,7 @@ class DTransitions.WeaponSerializer extends DTransitions.PropSerializer
 
 		return ent
 
-class DTransitions.WeaponProjectilesSerializer extends DTransitions.PropSerializer
+class DTransitions.WeaponProjectilesSerializer extends DTransitions.AbstractSerializer
 	@SAVENAME = 'weaponproj'
 
 	@_HANDLE = {
@@ -128,9 +128,6 @@ class DTransitions.WeaponProjectilesSerializer extends DTransitions.PropSerializ
 	Serialize: (ent) =>
 		tag = super(ent)
 		return if not tag
-
-		if kv = @SerializeKeyValues(ent)
-			tag\SetTag('keyvalues', kv)
 
 		if sv = @SerializeSavetable(ent)
 			tag\SetTag('savetable', sv)

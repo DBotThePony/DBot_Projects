@@ -21,8 +21,17 @@
 import NBT from DLib
 import luatype from _G
 
-class DTransitions.PropSerializer extends DTransitions.EntitySerializerBase
+class DTransitions.PropSerializer extends DTransitions.AbstractSerializer
 	@SAVENAME = 'props'
+
+	@KEY_VALUES_IGNORANCE = {
+		'classname',
+		'velocity',
+		'avelocity',
+		'basevelocity',
+	}
+
+	@SAVETABLE_IGNORANCE = [value for value in *@KEY_VALUES_IGNORANCE]
 
 	CanSerialize: (ent) =>
 		switch ent\GetClass()
@@ -33,80 +42,41 @@ class DTransitions.PropSerializer extends DTransitions.EntitySerializerBase
 
 	GetPriority: => 500
 
-	Serialize: (ent, manual = false) =>
-		tag = NBT.TagCompound()
+	Serialize: (ent) =>
+		tag = super(ent, true)
+		return if not tag
 
-		tag\SetString('classname', ent.ClassOverride or ent\GetClass())
+		if kv = @SerializeKeyValues(ent)
+			tag\SetTag('keyvalues', kv) -- ?
 
-		if ent\CreatedByMap()
-			tag\SetShort('map_id', ent\MapCreationID())
+		if sv = @SerializeSavetable(ent)
+			tag\SetTag('savetable', sv)
 
-		if not manual
-			@SerializePosition(ent, tag)
-			@SerializeGeneric(ent, tag)
-			@SerializeCombatState(ent, tag)
-			@SerializeOwner(ent, tag)
-			tag\SetTag('physics', @SerializePhysics(ent))
-
-			tag\SetFloat('model_scale', ent\GetModelScale()) if ent\GetModelScale() ~= 1
-
-			mins, maxs = ent\GetCollisionBounds()
-			tag\SetVector('collision_mins', mins)
-			tag\SetVector('collision_maxs', maxs)
-
-			if bones = @SerializeBones(ent)
-				tag\SetTag('bones', bones)
-
-			if sv = ent\GetSaveTable()
-				tag\SetInt('last_attacker', @saveInstance\GetEntityID(sv.m_hLastAttacker)) if IsValid(sv.m_hLastAttacker)
-				tag\SetInt('physics_attacker', @saveInstance\GetEntityID(sv.m_hPhysicsAttacker)) if IsValid(sv.m_hPhysicsAttacker)
+		tag\SetTag('physics', @SerializePhysics(ent))
 
 		return tag
 
-	DeserializePreSpawn: (ent, tag) =>
-		@DeserializePosition(ent, tag)
-		@DeserializeGeneric(ent, tag)
+	DeserializePost: (ent, tag) =>
+		super(ent, tag, true)
+
+		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'), true)
+
+		if sv = tag\GetTag('savetable')
+			@DeserializeSavetable(ent, sv, true)
+
+			if ent\GetClass() == 'entityflame' and IsValid(ent\GetParent()) and sv\HasTag('lifetime')
+				ent\GetParent()\Ignite(sv\GetTagValue('lifetime'))
+
+		ent\Spawn()
+		ent\Activate()
+
 		@DeserializePhysics(ent, tag\GetTag('physics'))
-
-	DeserializePostSpawn: (ent, tag) =>
-		@DeserializeCombatState(ent, tag)
-
-		mins, maxs = tag\GetVector('collision_mins'), tag\GetVector('collision_maxs')
-		ent\SetCollisionBounds(mins, maxs)
-
-		ent\SetModelScale(tag\GetTagValue('model_scale')) if tag\HasTag('model_scale')
-
-		@DeserializePhysics(ent, tag\GetTag('physics'))
-
-		if bones = tag\GetTag('bones')
-			@DeserializeBones(ent, bones)
 
 	DeserializePre: (tag) =>
-		local ent
-
-		if tag\HasTag('map_id')
-			ent = ents.GetMapCreatedEntity(tag\GetTagValue('map_id'))
-		else
-			ent = ents.Create(tag\GetTagValue('classname'))
-
+		ent = @GetEntityReplace(tag)
 		return if not IsValid(ent)
 
-		@DeserializePreSpawn(ent, tag)
-
-		if not tag\HasTag('map_id')
-			ent\Spawn()
-			ent\Activate()
-
-		@DeserializeOwner(ent, tag)
-		@DeserializePostSpawn(ent, tag)
+		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'))
+		@DeserializeSavetable(ent, tag\GetTag('savetable'))
 
 		return ent
-
-	DeserializePost: (ent, tag, manual = false) =>
-		if tag\HasTag('last_attacker')
-			ent2 = @saveInstance\GetEntity(tag\GetTagValue('last_attacker'))
-			ent\SetSaveValue('m_hLastAttacker', ent2) if IsValid(ent2)
-
-		if tag\HasTag('physics_attacker')
-			ent2 = @saveInstance\GetEntity(tag\GetTagValue('physics_attacker'))
-			ent\SetSaveValue('m_hPhysicsAttacker', ent2) if IsValid(ent2)

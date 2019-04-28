@@ -21,7 +21,7 @@
 import NBT from DLib
 import luatype from _G
 
-class DTransitions.DoorSerializer extends DTransitions.PropSerializer
+class DTransitions.DoorSerializer extends DTransitions.AbstractSerializer
 	@SAVENAME = 'doors'
 
 	CanSerialize: (ent) => ent\GetClass() == 'prop_door_rotating'
@@ -72,7 +72,7 @@ class DTransitions.DoorSerializer extends DTransitions.PropSerializer
 
 		return ent
 
-class DTransitions.FuncDoorRotatingSerializer extends DTransitions.PropSerializer
+class DTransitions.FuncDoorRotatingSerializer extends DTransitions.AbstractSerializer
 	@SAVENAME = 'func_door_rotating'
 
 	CanSerialize: (ent) =>

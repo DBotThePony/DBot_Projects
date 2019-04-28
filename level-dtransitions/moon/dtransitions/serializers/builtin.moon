@@ -21,7 +21,7 @@
 import NBT from DLib
 import luatype from _G
 
-class DTransitions.BuiltinSerializer extends DTransitions.PropSerializer
+class DTransitions.BuiltinSerializer extends DTransitions.AbstractSerializer
 	@SAVENAME = 'builtin'
 
 	CanSerialize: (ent) =>

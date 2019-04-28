@@ -21,7 +21,7 @@
 import NBT from DLib
 import luatype from _G
 
-class DTransitions.VehicleSerializer extends DTransitions.PropSerializer
+class DTransitions.VehicleSerializer extends DTransitions.AbstractSerializer
 	@SAVENAME = 'vehicles'
 
 	CanSerialize: (ent) => ent\IsVehicle()
@@ -43,6 +43,11 @@ class DTransitions.VehicleSerializer extends DTransitions.PropSerializer
 		super(ent, tag)
 
 		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'), true)
+		@DeserializeSavetable(ent, tag\GetTag('keyvalues'), true)
+
+		ent\Spawn()
+		ent\Activate()
+
 
 	DeserializePre: (tag) =>
 		local ent
@@ -57,10 +62,6 @@ class DTransitions.VehicleSerializer extends DTransitions.PropSerializer
 		@DeserializePreSpawn(ent, tag)
 		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'))
 		@DeserializeSavetable(ent, tag\GetTag('savetable'))
-
-		if not tag\HasTag('map_id')
-			ent\Spawn()
-			ent\Activate()
 
 		@DeserializePostSpawn(ent, tag)
 

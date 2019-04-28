@@ -21,13 +21,13 @@
 import NBT from DLib
 import luatype from _G
 
-class DTransitions.NPCSerializer extends DTransitions.PropSerializer
-	@SAVENAME = 'npcs'
+class DTransitions.GModNPCSerializer extends DTransitions.AbstractSerializer
+	@SAVENAME = 'gmod_npcs'
 
 	@KEY_VALUES_IGNORANCE = [v for v in *DTransitions.PropSerializer.KEY_VALUES_IGNORANCE]
 	table.insert(@KEY_VALUES_IGNORANCE, 'additionalequipment')
 
-	CanSerialize: (ent) => ent\IsNPC()
+	CanSerialize: (ent) => ent\IsNPC() and ent\IsScripted()
 	GetPriority: => 800
 
 	@NPC_ACTIVITY = {
@@ -66,13 +66,6 @@ class DTransitions.NPCSerializer extends DTransitions.PropSerializer
 		if dt = @SerializeGNetVars(ent)
 			tag\SetTag('dt', dt)
 
-		--if ent\GetClass() == 'npc_barnacle' and ent\Health() < 1
-		--	if kv = tag\GetTag('keyvalues')
-		--		kv\SetInt('spawnflags', tag\GetTagValue('spawnflags')\bor(65536))
-
-		--	if sv = tag\GetTag('savetable')
-		--		sv\SetInt('spawnflags', tag\GetTagValue('spawnflags')\bor(65536))
-
 		return tag
 
 	DeserializePost: (ent, tag) =>
@@ -84,14 +77,7 @@ class DTransitions.NPCSerializer extends DTransitions.PropSerializer
 		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'), true)
 
 	DeserializePre: (tag) =>
-		return if tag\GetTagValue('classname') == 'npc_barnacle' and tag\GetTagValue('health') < 1
-		local ent
-
-		if tag\HasTag('map_id')
-			ent = ents.GetMapCreatedEntity(tag\GetTagValue('map_id'))
-		else
-			ent = ents.Create(tag\GetTagValue('classname'))
-
+		ent = @GetEntityPersistent(tag)
 		return if not IsValid(ent)
 
 		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'))
@@ -105,5 +91,51 @@ class DTransitions.NPCSerializer extends DTransitions.PropSerializer
 		@DeserializePostSpawn(ent, tag)
 		@QuickDeserializeObj(tag, ent, @@NPC_ACTIVITY)
 		@DeserializeGNetVars(ent, tag\GetTag('dt'), true)
+
+		return ent
+
+class DTransitions.BuiltinNPCSerializer extends DTransitions.AbstractSerializer
+	@SAVENAME = 'builtin_npcs'
+
+	@KEY_VALUES_IGNORANCE = [v for v in *DTransitions.PropSerializer.KEY_VALUES_IGNORANCE]
+	table.insert(@KEY_VALUES_IGNORANCE, 'additionalequipment')
+
+	@_HANDLE = {
+		'combine_mine'
+	}
+
+	@HANDLE = {v, v for v in *@_HANDLE}
+
+	CanSerialize: (ent) => ent\IsNPC() and not ent\IsScripted() or @@HANDLE[ent\GetClass()]
+	GetPriority: => 800
+
+	Serialize: (ent) =>
+		tag = super(ent)
+		return if not tag
+
+		if sv = @SerializeSavetable(ent)
+			tag\SetTag('savetable', sv)
+
+		return tag
+
+	DeserializePost: (ent, tag) =>
+		super(ent, tag)
+
+		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'), true)
+		@DeserializeSavetable(ent, tag\GetTag('keyvalues'), true)
+
+		ent\Spawn()
+		ent\Activate()
+
+		@DeserializePostSpawn(ent, tag) -- ???
+
+	DeserializePre: (tag) =>
+		return if tag\GetTagValue('classname') == 'npc_barnacle' and tag\GetTagValue('health') < 1
+		ent = @GetEntityReplace(tag)
+		return if not IsValid(ent)
+
+		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'))
+		@DeserializeSavetable(ent, tag\GetTag('savetable'))
+		@DeserializePreSpawn(ent, tag)
 
 		return ent

@@ -21,7 +21,7 @@
 import NBT from DLib
 import luatype from _G
 
-class DTransitions.GenericBuiltinSerializer extends DTransitions.PropSerializer
+class DTransitions.GenericBuiltinSerializer extends DTransitions.AbstractSerializer
 	@SAVENAME = 'generic'
 	@BLACKLIST = {
 		'_firesmoke'

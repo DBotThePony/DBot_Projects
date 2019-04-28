@@ -29,7 +29,8 @@ class DTransitions.SaveInstance
 		@RegisterSerializer(DTransitions.PlayerSerializer(@))
 		@RegisterSerializer(DTransitions.PropSerializer(@))
 		@RegisterSerializer(DTransitions.WeaponSerializer(@))
-		@RegisterSerializer(DTransitions.NPCSerializer(@))
+		@RegisterSerializer(DTransitions.GModNPCSerializer(@))
+		@RegisterSerializer(DTransitions.BuiltinNPCSerializer(@))
 		@RegisterSerializer(DTransitions.VehicleSerializer(@))
 		@RegisterSerializer(DTransitions.DoorSerializer(@))
 		@RegisterSerializer(DTransitions.FuncDoorRotatingSerializer(@))
@@ -42,6 +43,7 @@ class DTransitions.SaveInstance
 		@RegisterSerializer(DTransitions.BuiltinSerializer(@))
 		@RegisterSerializer(DTransitions.BuiltinHardSerializer(@))
 		@RegisterSerializer(DTransitions.BuiltinSingleSerializer(@))
+		@RegisterSerializer(DTransitions.BuiltinFilterSerializer(@))
 
 	RegisterSerializer: (serializer) =>
 		table.insert(@serializers, serializer)
@@ -74,6 +76,8 @@ class DTransitions.SaveInstance
 		'beam',
 		'hint',
 		'npc_barnacle_tongue_tip',
+
+		'env_sprite', -- most entities recreate it by themselves
 
 		'info_node_link',
 		'info_node_link_controller',
@@ -115,6 +119,10 @@ class DTransitions.SaveInstance
 		-- 'scene_manager',
 		-- 'point_camera',
 		-- 'point_viewcontrol',
+
+		'info_target_command_point',
+		'assault_assaultpoint',
+		'assault_rallypoint',
 	}
 
 	Serialize: =>
@@ -173,16 +181,23 @@ class DTransitions.SaveInstance
 
 		return @
 
+	WasEntityRemoved: (mapIndex) => @removedEnts and table.qhasValue(@removedEnts, mapIndex)
+
 	Deserialize: =>
 		@SortSerializers()
 
 		error('No NBT tag specified!') if not @nbttag
 
+		-- Shut The Fucking Up
+		ent\Remove() for ent in *ents.FindByClass('point_viewcontrol')
+		ent\Remove() for ent in *ents.FindByClass('env_zoom')
+
 		game.CleanUpMap()
 
 		@entMapping = {}
+		@removedEnts = @nbttag\GetTagValue('map_entities_removed')
 
-		for entID in *@nbttag\GetTagValue('map_entities_removed')
+		for entID in *@removedEnts
 			getent = ents.GetMapCreatedEntity(entID)
 			getent\Remove() if IsValid(getent)
 
