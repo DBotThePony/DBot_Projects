@@ -633,6 +633,10 @@ class DTransitions.AbstractSerializer extends DTransitions.EntitySerializerBase
 		if ent\CreatedByMap()
 			tag\SetShort('map_id', ent\MapCreationID())
 
+		if name = ent\GetTargetName()
+			if name ~= ''
+				tag\SetString('targetname', name)
+
 		if not manual
 			@SerializePosition(ent, tag)
 			@SerializeGeneric(ent, tag)
@@ -677,6 +681,13 @@ class DTransitions.AbstractSerializer extends DTransitions.EntitySerializerBase
 		if tag\HasTag('map_id')
 			return ents.GetMapCreatedEntity(tag\GetTagValue('map_id'))
 
+		if tag\HasTag('targetname')
+			name = tag\GetTagValue('targetname')
+
+			for ent in *@saveInstance.allents
+				if ent\IsValid() and ent\GetTargetName() == name
+					return ent
+
 		classname = tag\HasTag('real_classname') and tag\GetTagValue('real_classname') or tag\GetTagValue('classname')
 		ent = ents.Create(classname)
 
@@ -694,6 +705,13 @@ class DTransitions.AbstractSerializer extends DTransitions.EntitySerializerBase
 			ent = ents.GetMapCreatedEntity(tag\GetTagValue('map_id'))
 			return if not IsValid(ent)
 			ent\Remove()
+
+		if tag\HasTag('targetname')
+			name = tag\GetTagValue('targetname')
+
+			for ent in *@saveInstance.allents
+				if ent\IsValid() and ent\GetTargetName() == name
+					ent\Remove()
 
 		ent = ents.Create(classname)
 

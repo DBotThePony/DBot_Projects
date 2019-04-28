@@ -53,7 +53,7 @@ class DTransitions.SaveInstance
 		table.sort @serializers, (a, b) -> a\GetPriority() > b\GetPriority()
 		@serializersMapping = {serializer.__class.SAVENAME, serializer for serializer in *@serializers}
 
-	GetEntityID: (ent) => ent\GetCreationID()
+	GetEntityID: (ent) => IsValid(ent) and ent\GetCreationID() or -1
 	GetEntity: (id) => @entMapping[id] or NULL
 
 	@ENT_BLACKLIST = {
@@ -171,6 +171,51 @@ class DTransitions.SaveInstance
 
 		for ent, c in pairs(counter)
 			ctag\SetShort(ent, c)
+--
+--		history = tag\AddTagList('history', NBT.TYPEID.TAG_Compound)
+--
+--		for row in *DTransitions.TrackScene
+--			tag2 = NBT.TagCompound()
+--
+--			tag2\SetInt('target', row.target)
+--			tag2\SetInt('inflictor', row.inflictor)
+--			tag2\SetInt('backtrace', row.backtrace)
+--			tag2\SetString('funcName', row.funcName)
+--
+--			vpassed = NBT.TagCompound()
+--			ttype = type(row.valuePassed)
+--			vpassed\SetString('type', ttype)
+--
+--			switch ttype
+--				when 'string'
+--					vpassed\SetString('value', row.valuePassed)
+--				when 'number'
+--					if row.valuePassed\floor() ~= row.valuePassed
+--						vpassed\SetDouble('value', row.valuePassed)
+--					elseif row.valuePassed > -0x7F and row.valuePassed < 0x7F
+--						vpassed\SetByte('value', row.valuePassed)
+--					elseif row.valuePassed > -0x7FFF and row.valuePassed < 0x7FFF
+--						vpassed\SetShort('value', row.valuePassed)
+--					elseif row.valuePassed > -0x7FFFFFFF and row.valuePassed < 0x7FFFFFFF
+--						vpassed\SetInt('value', row.valuePassed)
+--					elseif row.valuePassed > -0x7FFFFFFFFFFFF and row.valuePassed < 0x7FFFFFFFFFF
+--						vpassed\SetLong('value', row.valuePassed)
+--				when 'table'
+--					vpassed\SetString('value', util.TableToJSON(row.valuePassed) or '[]')
+--				when 'Angle'
+--					vpassed\SetAngle('value', row.valuePassed)
+--				when 'Vector'
+--					vpassed\SetVector('value', row.valuePassed)
+--				when 'boolean'
+--					vpassed\SetBool('value', row.valuePassed)
+--				when 'Entity', 'Player', 'Vehicle', 'NextBot', 'Weapon', 'NPC'
+--					vpassed\SetInt('value', @GetEntityID(row.valuePassed))
+--				else
+--					DTransitions.MessageWarning(row.funcName, ' received input typeof ', ttype, ', which is unknown to me. This input will not be registered in savefile.') if ttype ~= 'nil'
+--
+--			if vpassed\HasTag('value') or ttype == 'nil'
+--				tag2\SetTag('valuePassed', vpassed)
+--				history\AddValue(tag2)
 
 		buff = DLib.BytesBuffer()
 		tag\WriteFile(buff)
@@ -193,6 +238,8 @@ class DTransitions.SaveInstance
 		ent\Remove() for ent in *ents.FindByClass('env_zoom')
 
 		game.CleanUpMap()
+
+		@allents = ents.GetAll()
 
 		@entMapping = {}
 		@removedEnts = @nbttag\GetTagValue('map_entities_removed')
@@ -244,6 +291,35 @@ class DTransitions.SaveInstance
 
 			if not status
 				DTransitions.MessageError('Serializer ', serializer.__class.__name, ' failed to [post] deserialize an entity!')
+--
+--		for i, tag2 in @nbttag\GetTag('history')\ipairs()
+--			target = @GetEntity(tag2\GetTagValue('target'))
+--
+--			if IsValid(target)
+--				inflictor = @GetEntity(tag2\GetTagValue('inflictor'))
+--				backtrace = @GetEntity(tag2\GetTagValue('backtrace'))
+--				funcName = tag2\GetTagValue('funcName')
+--				valuePassed = tag2\GetTag('valuePassed')
+--
+--				switch valuePassed\GetTagValue('type')
+--					when 'table'
+--						valuePassed = util.JSONToTable(valuePassed\GetTagValue('value'))
+--					when 'boolean'
+--						valuePassed = valuePassed\GetTagValue('value') == 1
+--					when 'Vector'
+--						valuePassed = valuePassed\GetVector('value')
+--					when 'Angle'
+--						valuePassed = valuePassed\GetAngle('value')
+--					when 'Entity', 'Player', 'Vehicle', 'NextBot', 'Weapon', 'NPC'
+--						valuePassed = @GetEntity(valuePassed\GetTagValue('value'))
+--					else
+--						if valuePassed\HasTag('value')
+--							valuePassed = valuePassed\GetTagValue('value')
+--						else
+--							valuePassed = nil
+--
+--				status = pcall(target.Input, target, funcName, inflictor, backtrace, valuePassed)
+--				DTransitions.MessageError(target, ' rejected input ', funcName, ' from ', inflictor, ' called by ', backtrace, ' with param ', valuePassed) if not status
 
 		return @
 
@@ -253,3 +329,23 @@ hook.Add 'EntityRemoved', 'DTransitions.RemovedMapEntities', (ent) ->
 
 hook.Add 'PostCleanupMap', 'DTransitions.RemovedMapEntities', ->
 	DTransitions.SaveInstance.REMOVED_MAP_ENTITIES = {}
+
+DTransitions.TrackScene = DTransitions.TrackScene or {}
+
+hook.Add 'AcceptInput', 'DTransitions.TrackScene', (target = NULL, funcName = '', inflictor = NULL, backtrace = NULL, valuePassed) ->
+	target = -1 if not IsValid(target)
+	target = target\GetCreationID() if IsValid(target)
+	inflictor = -1 if not IsValid(inflictor)
+	inflictor = inflictor\GetCreationID() if IsValid(inflictor)
+	backtrace = -1 if not IsValid(backtrace)
+	backtrace = backtrace\GetCreationID() if IsValid(backtrace)
+
+	table.insert(DTransitions.TrackScene, {
+		:target
+		:funcName
+		:inflictor
+		:backtrace
+		:valuePassed
+	})
+
+hook.Add 'PostCleanupMap', 'DTransitions.TrackScene', -> DTransitions.TrackScene = {}
