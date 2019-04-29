@@ -85,25 +85,8 @@ class DTransitions.GenericPropSerializer extends DTransitions.AbstractSerializer
 
 	GetPriority: => 500
 
-	Serialize: (ent) =>
-		tag = super(ent)
-		return if not tag
-
-		if kv = @SerializeKeyValues(ent)
-			tag\SetTag('keyvalues', kv)
-
-		if sv = @SerializeSavetable(ent)
-			tag\SetTag('savetable', sv)
-
-		tag\SetTag('physics', @SerializePhysics(ent))
-
-		return tag
-
 	DeserializePost: (ent, tag) =>
 		super(ent, tag)
-
-		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'), true)
-		@DeserializeSavetable(ent, tag\GetTag('savetable'), true)
 
 		if not tag\HasTag('map_id')
 			ent\Spawn()
@@ -115,9 +98,5 @@ class DTransitions.GenericPropSerializer extends DTransitions.AbstractSerializer
 	DeserializePre: (tag) =>
 		ent = @GetEntityPersistent(tag)
 		return if not IsValid(ent)
-
 		@DeserializePreSpawn(ent, tag)
-		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'))
-		@DeserializeSavetable(ent, tag\GetTag('savetable'))
-
 		return ent
