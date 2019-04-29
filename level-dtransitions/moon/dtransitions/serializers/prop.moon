@@ -36,7 +36,7 @@ class DTransitions.PropSerializer extends DTransitions.AbstractSerializer
 	CanSerialize: (ent) =>
 		switch ent\GetClass()
 			when 'prop_physics', 'prop_dynamic', 'prop_ragdoll'
-				return true
+				return ent\GetTargetName() == ''
 			else
 				return false
 
@@ -45,9 +45,6 @@ class DTransitions.PropSerializer extends DTransitions.AbstractSerializer
 	Serialize: (ent) =>
 		tag = super(ent, true)
 		return if not tag
-
-		if kv = @SerializeKeyValues(ent)
-			tag\SetTag('keyvalues', kv) -- ?
 
 		if sv = @SerializeSavetable(ent)
 			tag\SetTag('savetable', sv)
@@ -60,12 +57,7 @@ class DTransitions.PropSerializer extends DTransitions.AbstractSerializer
 		super(ent, tag, true)
 
 		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'), true)
-
-		if sv = tag\GetTag('savetable')
-			@DeserializeSavetable(ent, sv, true)
-
-			if ent\GetClass() == 'entityflame' and IsValid(ent\GetParent()) and sv\HasTag('lifetime')
-				ent\GetParent()\Ignite(sv\GetTagValue('lifetime'))
+		@DeserializeSavetable(ent, tag\GetTag('savetable'), true)
 
 		ent\Spawn()
 		ent\Activate()
@@ -76,6 +68,55 @@ class DTransitions.PropSerializer extends DTransitions.AbstractSerializer
 		ent = @GetEntityReplace(tag)
 		return if not IsValid(ent)
 
+		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'))
+		@DeserializeSavetable(ent, tag\GetTag('savetable'))
+
+		return ent
+
+class DTransitions.GenericPropSerializer extends DTransitions.AbstractSerializer
+	@SAVENAME = 'props_generic'
+
+	CanSerialize: (ent) =>
+		switch ent\GetClass()
+			when 'prop_physics', 'prop_dynamic', 'prop_ragdoll'
+				return ent\GetTargetName() ~= ''
+			else
+				return false
+
+	GetPriority: => 500
+
+	Serialize: (ent) =>
+		tag = super(ent)
+		return if not tag
+
+		if kv = @SerializeKeyValues(ent)
+			tag\SetTag('keyvalues', kv)
+
+		if sv = @SerializeSavetable(ent)
+			tag\SetTag('savetable', sv)
+
+		tag\SetTag('physics', @SerializePhysics(ent))
+
+		return tag
+
+	DeserializePost: (ent, tag) =>
+		super(ent, tag)
+
+		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'), true)
+		@DeserializeSavetable(ent, tag\GetTag('savetable'), true)
+
+		if not tag\HasTag('map_id')
+			ent\Spawn()
+			ent\Activate()
+
+		@DeserializeOwner(ent, tag)
+		@DeserializePostSpawn(ent, tag)
+
+	DeserializePre: (tag) =>
+		ent = @GetEntityPersistent(tag)
+		return if not IsValid(ent)
+
+		@DeserializePreSpawn(ent, tag)
 		@DeserializeKeyValues(ent, tag\GetTag('keyvalues'))
 		@DeserializeSavetable(ent, tag\GetTag('savetable'))
 

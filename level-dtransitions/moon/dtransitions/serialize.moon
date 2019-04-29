@@ -44,6 +44,7 @@ class DTransitions.SaveInstance
 		@RegisterSerializer(DTransitions.BuiltinHardSerializer(@))
 		@RegisterSerializer(DTransitions.BuiltinSingleSerializer(@))
 		@RegisterSerializer(DTransitions.BuiltinFilterSerializer(@))
+		@RegisterSerializer(DTransitions.GenericPropSerializer(@))
 
 	RegisterSerializer: (serializer) =>
 		table.insert(@serializers, serializer)
@@ -172,50 +173,50 @@ class DTransitions.SaveInstance
 		for ent, c in pairs(counter)
 			ctag\SetShort(ent, c)
 --
---		history = tag\AddTagList('history', NBT.TYPEID.TAG_Compound)
+--      history = tag\AddTagList('history', NBT.TYPEID.TAG_Compound)
 --
---		for row in *DTransitions.TrackScene
---			tag2 = NBT.TagCompound()
+--      for row in *DTransitions.TrackScene
+--          tag2 = NBT.TagCompound()
 --
---			tag2\SetInt('target', row.target)
---			tag2\SetInt('inflictor', row.inflictor)
---			tag2\SetInt('backtrace', row.backtrace)
---			tag2\SetString('funcName', row.funcName)
+--          tag2\SetInt('target', row.target)
+--          tag2\SetInt('inflictor', row.inflictor)
+--          tag2\SetInt('backtrace', row.backtrace)
+--          tag2\SetString('funcName', row.funcName)
 --
---			vpassed = NBT.TagCompound()
---			ttype = type(row.valuePassed)
---			vpassed\SetString('type', ttype)
+--          vpassed = NBT.TagCompound()
+--          ttype = type(row.valuePassed)
+--          vpassed\SetString('type', ttype)
 --
---			switch ttype
---				when 'string'
---					vpassed\SetString('value', row.valuePassed)
---				when 'number'
---					if row.valuePassed\floor() ~= row.valuePassed
---						vpassed\SetDouble('value', row.valuePassed)
---					elseif row.valuePassed > -0x7F and row.valuePassed < 0x7F
---						vpassed\SetByte('value', row.valuePassed)
---					elseif row.valuePassed > -0x7FFF and row.valuePassed < 0x7FFF
---						vpassed\SetShort('value', row.valuePassed)
---					elseif row.valuePassed > -0x7FFFFFFF and row.valuePassed < 0x7FFFFFFF
---						vpassed\SetInt('value', row.valuePassed)
---					elseif row.valuePassed > -0x7FFFFFFFFFFFF and row.valuePassed < 0x7FFFFFFFFFF
---						vpassed\SetLong('value', row.valuePassed)
---				when 'table'
---					vpassed\SetString('value', util.TableToJSON(row.valuePassed) or '[]')
---				when 'Angle'
---					vpassed\SetAngle('value', row.valuePassed)
---				when 'Vector'
---					vpassed\SetVector('value', row.valuePassed)
---				when 'boolean'
---					vpassed\SetBool('value', row.valuePassed)
---				when 'Entity', 'Player', 'Vehicle', 'NextBot', 'Weapon', 'NPC'
---					vpassed\SetInt('value', @GetEntityID(row.valuePassed))
---				else
---					DTransitions.MessageWarning(row.funcName, ' received input typeof ', ttype, ', which is unknown to me. This input will not be registered in savefile.') if ttype ~= 'nil'
+--          switch ttype
+--              when 'string'
+--                  vpassed\SetString('value', row.valuePassed)
+--              when 'number'
+--                  if row.valuePassed\floor() ~= row.valuePassed
+--                      vpassed\SetDouble('value', row.valuePassed)
+--                  elseif row.valuePassed > -0x7F and row.valuePassed < 0x7F
+--                      vpassed\SetByte('value', row.valuePassed)
+--                  elseif row.valuePassed > -0x7FFF and row.valuePassed < 0x7FFF
+--                      vpassed\SetShort('value', row.valuePassed)
+--                  elseif row.valuePassed > -0x7FFFFFFF and row.valuePassed < 0x7FFFFFFF
+--                      vpassed\SetInt('value', row.valuePassed)
+--                  elseif row.valuePassed > -0x7FFFFFFFFFFFF and row.valuePassed < 0x7FFFFFFFFFF
+--                      vpassed\SetLong('value', row.valuePassed)
+--              when 'table'
+--                  vpassed\SetString('value', util.TableToJSON(row.valuePassed) or '[]')
+--              when 'Angle'
+--                  vpassed\SetAngle('value', row.valuePassed)
+--              when 'Vector'
+--                  vpassed\SetVector('value', row.valuePassed)
+--              when 'boolean'
+--                  vpassed\SetBool('value', row.valuePassed)
+--              when 'Entity', 'Player', 'Vehicle', 'NextBot', 'Weapon', 'NPC'
+--                  vpassed\SetInt('value', @GetEntityID(row.valuePassed))
+--              else
+--                  DTransitions.MessageWarning(row.funcName, ' received input typeof ', ttype, ', which is unknown to me. This input will not be registered in savefile.') if ttype ~= 'nil'
 --
---			if vpassed\HasTag('value') or ttype == 'nil'
---				tag2\SetTag('valuePassed', vpassed)
---				history\AddValue(tag2)
+--          if vpassed\HasTag('value') or ttype == 'nil'
+--              tag2\SetTag('valuePassed', vpassed)
+--              history\AddValue(tag2)
 
 		buff = DLib.BytesBuffer()
 		tag\WriteFile(buff)
@@ -292,34 +293,34 @@ class DTransitions.SaveInstance
 			if not status
 				DTransitions.MessageError('Serializer ', serializer.__class.__name, ' failed to [post] deserialize an entity!')
 --
---		for i, tag2 in @nbttag\GetTag('history')\ipairs()
---			target = @GetEntity(tag2\GetTagValue('target'))
+--      for i, tag2 in @nbttag\GetTag('history')\ipairs()
+--          target = @GetEntity(tag2\GetTagValue('target'))
 --
---			if IsValid(target)
---				inflictor = @GetEntity(tag2\GetTagValue('inflictor'))
---				backtrace = @GetEntity(tag2\GetTagValue('backtrace'))
---				funcName = tag2\GetTagValue('funcName')
---				valuePassed = tag2\GetTag('valuePassed')
+--          if IsValid(target)
+--              inflictor = @GetEntity(tag2\GetTagValue('inflictor'))
+--              backtrace = @GetEntity(tag2\GetTagValue('backtrace'))
+--              funcName = tag2\GetTagValue('funcName')
+--              valuePassed = tag2\GetTag('valuePassed')
 --
---				switch valuePassed\GetTagValue('type')
---					when 'table'
---						valuePassed = util.JSONToTable(valuePassed\GetTagValue('value'))
---					when 'boolean'
---						valuePassed = valuePassed\GetTagValue('value') == 1
---					when 'Vector'
---						valuePassed = valuePassed\GetVector('value')
---					when 'Angle'
---						valuePassed = valuePassed\GetAngle('value')
---					when 'Entity', 'Player', 'Vehicle', 'NextBot', 'Weapon', 'NPC'
---						valuePassed = @GetEntity(valuePassed\GetTagValue('value'))
---					else
---						if valuePassed\HasTag('value')
---							valuePassed = valuePassed\GetTagValue('value')
---						else
---							valuePassed = nil
+--              switch valuePassed\GetTagValue('type')
+--                  when 'table'
+--                      valuePassed = util.JSONToTable(valuePassed\GetTagValue('value'))
+--                  when 'boolean'
+--                      valuePassed = valuePassed\GetTagValue('value') == 1
+--                  when 'Vector'
+--                      valuePassed = valuePassed\GetVector('value')
+--                  when 'Angle'
+--                      valuePassed = valuePassed\GetAngle('value')
+--                  when 'Entity', 'Player', 'Vehicle', 'NextBot', 'Weapon', 'NPC'
+--                      valuePassed = @GetEntity(valuePassed\GetTagValue('value'))
+--                  else
+--                      if valuePassed\HasTag('value')
+--                          valuePassed = valuePassed\GetTagValue('value')
+--                      else
+--                          valuePassed = nil
 --
---				status = pcall(target.Input, target, funcName, inflictor, backtrace, valuePassed)
---				DTransitions.MessageError(target, ' rejected input ', funcName, ' from ', inflictor, ' called by ', backtrace, ' with param ', valuePassed) if not status
+--              status = pcall(target.Input, target, funcName, inflictor, backtrace, valuePassed)
+--              DTransitions.MessageError(target, ' rejected input ', funcName, ' from ', inflictor, ' called by ', backtrace, ' with param ', valuePassed) if not status
 
 		return @
 
