@@ -33,4 +33,4 @@ SOFTWARE.
 There are three repositories hosted
 * https://git.dbot.serealia.ca/dbot/dbot_projects - This is my Gitlab server aaaaaand this is main host
 * https://github.com/roboderpy/dbot_projects - GitHub
-* https://bitbucket.org/DBotThePony/dbot_projects - BitBucket
+* https://gitlab.com/DBotThePony/DBotProjects - GitLab

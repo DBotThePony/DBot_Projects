@@ -329,9 +329,9 @@ local function PopulateClient(Panel)
 		gui.OpenURL('steamcommunity.com/sharedfiles/filedetails/?id=768912833')
 	end
 
-	local button = Panel:Button('BitBucket')
+	local button = Panel:Button('GitLab')
 	button.DoClick = function()
-		gui.OpenURL('https://bitbucket.org/DBotThePony/dafk')
+		gui.OpenURL('https://gitlab.com/DBotThePony/DBotProjects')
 	end
 end
 
