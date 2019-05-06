@@ -1,6 +1,6 @@
 <?php
 
-// Copyright (C) 2016 DBot
+// Copyright (C) 2016-2019 DBotThePony
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation
 // files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy,
@@ -42,7 +42,7 @@ function dummy() {
 
         foreach (scandir($path) as $value) {
             if ($value[0] === '.') continue;
-            
+
             if (is_dir($path . '/' . $value)) {
                 $findFiles = Search($path . '/' . $value);
 
@@ -100,7 +100,7 @@ function dummy() {
 
         $OutputJSON = [];
         $RebuildFileCache = true;
-        
+
         foreach ($Files as $value) {
             array_push($OutputJSON, [
                 'file' => $value,
@@ -108,7 +108,7 @@ function dummy() {
                 'stamp' => filemtime($value),
             ]);
         }
-        
+
         file_put_contents($metap, json_encode($OutputJSON));
         unlink($LockFileName);
         return $OutputJSON;
@@ -140,7 +140,7 @@ function dummy() {
 
         file_put_contents($LockFileName, '');
         $output = '';
-        
+
         foreach ($readMeta as $val) {
             $output = $output . $val['pfile'] . $Separator;
             $output = $output . file_get_contents($val['file']);
@@ -167,7 +167,7 @@ function dummy() {
                 break;
             }
         }
-        
+
         foreach ($Files as $val2) {
             $hit = false;
 

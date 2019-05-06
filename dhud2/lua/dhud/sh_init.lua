@@ -2,7 +2,7 @@
 --DHUD2 v2.0
 
 --[[
-Copyright (C) 2016-2018 DBot
+Copyright (C) 2016-2019 DBotThePony
 
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy

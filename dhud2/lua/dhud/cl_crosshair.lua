@@ -2,7 +2,7 @@
 --Crossharirs!
 
 --[[
-Copyright (C) 2016-2018 DBot
+Copyright (C) 2016-2019 DBotThePony
 
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -87,7 +87,7 @@ local function Draw()
 	local tr = ply:GetEyeTrace()
 	local d = tr.HitPos:ToScreen()
 	local x, y = math.ceil(d.x / 1.1) * 1.1, math.ceil(d.y / 1.1) * 1.1 --Prevent shaking
-	
+
 	if wep.DoDrawCrosshair then
 		local status = wep:DoDrawCrosshair(x, y)
 		if status == true then return end
