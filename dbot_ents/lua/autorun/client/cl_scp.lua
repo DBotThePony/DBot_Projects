@@ -1,3 +1,4 @@
+-- public domain - DBotThePony
 
 local FIND1 = {}
 local FIND2 = {}
@@ -15,36 +16,36 @@ local RED = Color(255, 0, 0)
 --This hook shows for /me/ what entity is being attacked by SCP
 hook.Add('PostDrawTranslucentRenderables', 'dbot_scp173', function()
 	if DBot_GetDBot() ~= LocalPlayer() then return end
-	
+
 	for k, v in ipairs(FIND1) do
 		local see = v:GetNWEntity('SeeMe')
 		local attack = v:GetNWEntity('AttackingEntity')
-		
+
 		if IsValid(see) then
 			render.DrawLine(v:GetPos() + Vector(0, 0, 40), see:EyePos(), color_white, true)
 		end
-		
+
 		if IsValid(attack) then
 			render.DrawLine(v:GetPos() + Vector(0, 0, 40), attack:EyePos(), RED, true)
 		end
 	end
-	
+
 	for k, v in ipairs(FIND2) do
 		local see = v:GetNWEntity('SeeMe')
-		
+
 		if IsValid(see) then
 			render.DrawLine(v:GetPos() + Vector(0, 0, 40), see:EyePos(), color_white, true)
 		end
 	end
-	
+
 	for k, v in ipairs(FIND3) do
 		local see = v:GetNWEntity('SeeMe')
 		local attack = v:GetNWEntity('AttackingEntity')
-		
+
 		if IsValid(see) then
 			render.DrawLine(v:GetPos() + Vector(0, 0, 40), see:EyePos(), color_white, true)
 		end
-		
+
 		if IsValid(attack) then
 			render.DrawLine(v:GetPos() + Vector(0, 0, 40), attack:EyePos(), RED, true)
 		end

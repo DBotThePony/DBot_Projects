@@ -1,5 +1,4 @@
-
---Pic
+-- public domain - DBotThePony
 
 local function BuildMenuFor(ent)
 	local x, y, xs, ys = DLib.GenerateWindow(100, 100)
@@ -9,22 +8,22 @@ local function BuildMenuFor(ent)
 	frame:SetTitle('Picture selection')
 	frame:SetDraggable( true )
 	frame:MakePopup()
-	
+
 	local Button = vgui.Create('DButton', frame)
-	
+
 	Button:SetText('')
 	Button.Paint = function() end
 	Button:Dock(BOTTOM)
 	Button:SetSize(0, 256)
-	
+
 	local HTML = vgui.Create('HTML', Button)
 	HTML:Dock(FILL)
-	
+
 	HTML:SetMouseInputEnabled(false)
 	HTML:SetKeyBoardInputEnabled(false)
-	
+
 	local currenturl = ''
-	
+
 	function Button:DoClick()
 		local frame = vgui.Create('DFrame')
 		frame:SetPos( x, y )
@@ -32,12 +31,12 @@ local function BuildMenuFor(ent)
 		frame:SetTitle( 'Picture view' )
 		frame:SetDraggable( true )
 		frame:MakePopup()
-		
+
 		local HTML = vgui.Create('HTML', frame)
 		HTML:Dock(FILL)
-		
+
 		local url = currenturl
-		
+
 		local width = xs
 		local height = ys
 		local page = [[
@@ -56,7 +55,7 @@ local function BuildMenuFor(ent)
 			  vertical-align: middle;
 			}
 			</style>
-			
+
 			<script type='text/javascript'>
 			var keepResizing = true;
 			function resize(obj) {
@@ -87,31 +86,31 @@ local function BuildMenuFor(ent)
 			</body>
 			</html>
 		]]
-		
+
 		HTML:SetHTML(page)
 	end
-	
+
 	local List = vgui.Create('DListView', frame)
 	List:Dock(FILL)
 	List:AddColumn('URL')
-	
+
 	List.DoDoubleClick = function(self, index, row)
 		if not IsValid(ent) then
 			frame:Remove()
 			return
 		end
-		
+
 		net.Start('DPictureSet')
 		net.WriteEntity(ent)
 		net.WriteInt(index, 16)
 		net.SendToServer()
-		
+
 		frame:Remove()
 	end
-	
+
 	List.OnRowSelected = function(self, index, row)
 		local url = row:GetValue(1)
-		
+
 		local width = xs
 		local height = 256
 		local page = [[
@@ -130,7 +129,7 @@ local function BuildMenuFor(ent)
 			  vertical-align: middle;
 			}
 			</style>
-			
+
 			<script type='text/javascript'>
 			var keepResizing = true;
 			function resize(obj) {
@@ -161,12 +160,12 @@ local function BuildMenuFor(ent)
 			</body>
 			</html>
 		]]
-		
+
 		HTML:SetHTML(page)
-		
+
 		currenturl = url
 	end
-	
+
 	for k, v in pairs(__DPicturePics) do
 		List:AddLine(v)
 	end
@@ -174,8 +173,8 @@ end
 
 net.Receive('DPictureSet', function()
 	local ent = net.ReadEntity()
-	
+
 	if not IsValid(ent) then return end
-	
+
 	BuildMenuFor(ent)
 end)

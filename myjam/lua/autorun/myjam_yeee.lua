@@ -1,6 +1,6 @@
 
 -- The Unlicense (no Copyright) DBotThePony
--- do whatever you want, including this notice
+-- do whatever you want, including removal of this notice
 
 local table = table
 local weapons = weapons

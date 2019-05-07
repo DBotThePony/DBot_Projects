@@ -1,3 +1,4 @@
+-- public domain - DBotThePony
 
 local ADMIN_ONLY = true
 local ATTACK_PLAYERS_AT_ALL = false
