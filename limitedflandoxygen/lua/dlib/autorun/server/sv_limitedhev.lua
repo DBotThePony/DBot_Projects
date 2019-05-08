@@ -12,6 +12,7 @@ local WATER_PAUSE = CreateConVar('sv_limited_oxygen_pause', '1', {FCVAR_ARCHIVE,
 local WATER_CHOKE_RATIO = CreateConVar('sv_limited_oxygen_choke', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Delay of choke in seconds')
 local WATER_CHOKE_DMG = CreateConVar('sv_limited_oxygen_choke_dmg', '4', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Damage of choke')
 local WATER_RATIO = CreateConVar('sv_limited_oxygen_ratio', '100', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Ratio of draining oxygen from player')
+local WATER_RATIO_MUL = CreateConVar('sv_limited_oxygen_ratio_mul', '3', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Multiplier of oxygen drain when player is without a suit')
 local WATER_RRATIO = CreateConVar('sv_limited_oxygen_restore_ratio', '500', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Ratio of restoring oxygen')
 
 local FLASHLIGHT = CreateConVar('sv_limited_flashlight', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Enable limited flashlight')
@@ -39,16 +40,17 @@ local function Water(ply)
 
 	if restoring then
 		if WATER_RESTORE:GetBool() and fldata.ox_Restore > 0 and fldata.ox_RestoreNext < CurTimeL() then
-			if hook.Run('CanRestoreOxygenHealth', ply, fldata.ox_Restore) ~= false then
-				fldata.ox_RestoreNext = CurTimeL() + 1
-				local hp, mhp = ply:Health(), ply:GetMaxHealth()
-				local percent = hp / mhp
-				local toRestore = math.min(fldata.ox_Restore, WATER_RESTORE_SPEED:GetFloat())
-				fldata.ox_Restore = math.max(fldata.ox_Restore - WATER_RESTORE_SPEED:GetFloat(), 0)
+			local hp, mhp = ply:Health(), ply:GetMaxHealth()
+			local toRestore = fldata.ox_Restore:min(WATER_RESTORE_SPEED:GetFloat(), mhp - hp):max(0)
 
-				if percent < 1 then
-					ply:SetHealth(math.min(hp + toRestore, mhp))
+			if toRestore > 0 then
+				if hook.Run('CanRestoreOxygenHealth', ply, fldata.ox_Restore, toRestore) ~= false then
+					fldata.ox_RestoreNext = CurTimeL() + 1
+					fldata.ox_Restore = fldata.ox_Restore - toRestore
+					ply:SetHealth(mhp:min(hp + toRestore))
 				end
+			else
+				fldata.ox_Restore = 0
 			end
 		end
 
@@ -56,20 +58,24 @@ local function Water(ply)
 		if fldata.ox_Next > CurTimeL() then return end
 
 		toAdd = toAdd * WATER_RRATIO:GetFloat() / 25
+
 		if hook.Run('CanRestoreOxygen', ply, fldata.ox_Value, toAdd) == false then return end
 	else
 		toAdd = -toAdd * WATER_RATIO:GetFloat() / 25
 
+		if not ply:IsSuitEquipped() then
+			toAdd = toAdd * WATER_RATIO_MUL:GetFloat()
+		end
+
 		if fldata.ox_Value ~= 0 then
-			if hook.Run('CanLooseOxygen', ply, fldata.ox_Value, toAdd) == false then return end
+			if hook.Run('CanLoseOxygen', ply, fldata.ox_Value, -toAdd) == false then return end
 		end
 
 		fldata.ox_Next = CurTimeL() + WATER_PAUSE:GetFloat()
 		fldata.ox_RestoreNext = fldata.ox_Next + 1
 	end
 
-	fldata.ox_Value = math.clamp(fldata.ox_Value + toAdd, 0, 100)
-
+	fldata.ox_Value = (fldata.ox_Value + toAdd):clamp(0, 100)
 	if fldata.ox_Value ~= 0 then return end
 	if fldata.ox_NextChoke > CurTimeL() then return end
 
@@ -91,7 +97,6 @@ local function Water(ply)
 	end
 
 	ply:EmitSound('player/pl_drown' .. math.random(1, 3) .. '.wav', 55)
-
 	fldata.ox_NextChoke = CurTimeL() + WATER_CHOKE_RATIO:GetFloat()
 end
 
@@ -121,7 +126,7 @@ local function Flashlight(ply)
 		if can == false then return end
 	end
 
-	fldata.fl_Value = math.clamp(fldata.fl_Value + toAdd, 0, 100)
+	fldata.fl_Value = (fldata.fl_Value + toAdd):clamp(0, 100)
 
 	if fldata.fl_Value == 0 and ply:FlashlightIsOn() then
 		ply:Flashlight(false)
@@ -132,6 +137,7 @@ end
 local function PlayerSwitchFlashlight(ply, enabled)
 	if not FLASHLIGHT:GetBool() then return end
 	if not enabled then return end
+	if not ply:IsSuitEquipped() then return false end
 	local fldata = ply._fldata
 	if not fldata then return end
 	if fldata.fl_Value == 0 then return false end
