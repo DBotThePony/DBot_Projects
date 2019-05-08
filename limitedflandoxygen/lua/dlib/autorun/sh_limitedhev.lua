@@ -66,7 +66,7 @@ local function StartCommand(ply, cmd)
 	if not SPRINT:GetBool() then return end
 	if not ply:Alive() or (not ply:OnGround() and ply:WaterLevel() == 0) or ply:GetMoveType() ~= MOVETYPE_WALK then return end
 
-	if cmd:GetButtons():band(IN_FORWARD:bor(IN_BACK)) == 0 then
+	if cmd:GetButtons():band(IN_FORWARD:bor(IN_BACK, IN_MOVELEFT, IN_MOVERIGHT)) == 0 then
 		lastPressHEV = false
 		return
 	end
