@@ -278,14 +278,6 @@ function _PlayerPostThink(ply)
 	fldata.fl_Value_Send = fldata.fl_Value]]
 end
 
-if CLIENT and game.SinglePlayer() then
-	hook.Remove('PlayerPostThink', 'LimitedHEVPower')
-
-	hook.Add('Think', 'LimitedHEVPower Сингл От Сорса Сука', function()
-		_PlayerPostThink(LocalPlayer())
-	end)
-end
-
 local plyMeta = FindMetaTable('Player')
 
 function plyMeta:LimitedHEVGetPowerFillage()
@@ -322,3 +314,11 @@ end
 
 hook.Add('PlayerPostThink', 'LimitedHEVPower', PlayerPostThink, 2)
 hook.Add('StartCommand', 'LimitedHEV', StartCommand, 3)
+
+if CLIENT and game.SinglePlayer() then
+	hook.Remove('PlayerPostThink', 'LimitedHEVPower')
+
+	hook.Add('Think', 'LimitedHEVPower Сингл От Сорса Сука', function()
+		_PlayerPostThink(LocalPlayer())
+	end)
+end
