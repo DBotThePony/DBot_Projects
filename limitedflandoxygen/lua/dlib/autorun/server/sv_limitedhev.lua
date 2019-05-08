@@ -1,19 +1,41 @@
 
--- The Unlicense (no Copyright) DBotThePony
--- do whatever you want, including removal of this notice
+-- Copyright (C) 2016-2019 DBot
 
-net.pool('DBot_LFAO')
+-- Permission is hereby granted, free of charge, to any person obtaining a copy
+-- of this software and associated documentation files (the "Software"), to deal
+-- in the Software without restriction, including without limitation the rights
+-- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+-- of the Software, and to permit persons to whom the Software is furnished to do so,
+-- subject to the following conditions:
+
+-- The above copyright notice and this permission notice shall be included in all copies
+-- or substantial portions of the Software.
+
+-- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+-- INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+-- PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+-- FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+-- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+-- DEALINGS IN THE SOFTWARE.
+
+net.pool('LimitedHEVPower')
 
 local WATER = CreateConVar('sv_limited_oxygen', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Enable limited oxygen')
 local WATER_RESTORE = CreateConVar('sv_limited_oxygen_restore', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Restore health that player lost while drowing')
-local WATER_RESTORE_RATIO = CreateConVar('sv_limited_oxygen_restorer', '0.8', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Multipler of returned health')
-local WATER_RESTORE_SPEED = CreateConVar('sv_limited_oxygen_restores', '4', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Speed for restoring health in HP/s')
-local WATER_PAUSE = CreateConVar('sv_limited_oxygen_pause', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Seconds to wait before starting restoring oxygen')
-local WATER_CHOKE_RATIO = CreateConVar('sv_limited_oxygen_choke', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Delay of choke in seconds')
+
+local WATER_RESTORE_RATIO = CreateConVar('sv_limited_oxygen_restorer', '0.8', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Multipler of recovering health from drown')
+local WATER_RESTORE_SPEED = CreateConVar('sv_limited_oxygen_restores', '4', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Speed for recovering health in HP/s')
+local WATER_RESTORE_PAUSE = CreateConVar('sv_limited_oxygen_restorep', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Pause in seconds before startint to recover HP')
+
+local WATER_CHOKE_RATIO = CreateConVar('sv_limited_oxygen_choke', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Time between drown damage in seconds')
 local WATER_CHOKE_DMG = CreateConVar('sv_limited_oxygen_choke_dmg', '4', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Damage of choke')
-local WATER_RATIO = CreateConVar('sv_limited_oxygen_ratio', '100', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Ratio of draining oxygen from player')
-local WATER_RATIO_MUL = CreateConVar('sv_limited_oxygen_ratio_mul', '3', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Multiplier of oxygen drain when player is without a suit')
-local WATER_RRATIO = CreateConVar('sv_limited_oxygen_restore_ratio', '500', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Ratio of restoring oxygen')
+
+local WATER_RATIO = CreateConVar('sv_limited_oxygen_r', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Ratio of draining power for oxygen from player')
+local WATER_RATIO_MUL = CreateConVar('sv_limited_oxygen_r_mul', '3', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Multiplier of "power" drain when player is not wearing a suit')
+
+local POWER_RESTORE_DELAY = CreateConVar('sv_limited_hev_rd', '0', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Delay before starting to restore power of suit')
+local POWER_RESTORE_MUL = CreateConVar('sv_limited_hev_rmul', '1', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Multiplier of power restore speed')
+local SPRINT_DELAY = CreateConVar('sv_limited_hev_sd', '3', {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Delay in seconds before player can use sprint again after running out of power to do so')
 
 local FLASHLIGHT = CreateConVar('sv_limited_flashlight', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Enable limited flashlight')
 local FLASHLIGHT_RATIO = CreateConVar('sv_limited_flashlight_ratio', '100', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Ratio of draining power from flashlight')
@@ -25,59 +47,53 @@ local math = math
 local FrameTime = FrameTime
 local hook = hook
 
-local function Water(ply)
-	local fldata = ply._fldata
+local function ProcessWater(ply, fldata, ctime)
 	local waterLevel = ply:InVehicle() and ply:GetVehicle():WaterLevel() or ply:WaterLevel()
 	local restoring = waterLevel <= 2
 
 	fldata.ox_Value = (fldata.ox_Value or 100):clamp(0, 100)
-	fldata.ox_Next = fldata.ox_Next or 0
-	fldata.ox_NextChoke = fldata.ox_NextChoke or 0
-	fldata.ox_Restore = fldata.ox_Restore or 0
-	fldata.ox_RestoreNext = fldata.ox_RestoreNext or 0
-
-	local toAdd = FrameTime()
+	fldata.oxygen_next_choke = fldata.oxygen_next_choke or 0
+	fldata.oxygen_hp_lost = fldata.oxygen_hp_lost or 0
+	fldata.oxygen_hp_restore_next = fldata.oxygen_hp_restore_next or 0
 
 	if restoring then
-		if WATER_RESTORE:GetBool() and fldata.ox_Restore > 0 and fldata.ox_RestoreNext < CurTimeL() then
+		if WATER_RESTORE:GetBool() and fldata.oxygen_hp_lost > 0 and fldata.oxygen_hp_restore_next < CurTimeL() then
 			local hp, mhp = ply:Health(), ply:GetMaxHealth()
-			local toRestore = fldata.ox_Restore:min(WATER_RESTORE_SPEED:GetFloat(), mhp - hp):max(0)
+			local toRestore = fldata.oxygen_hp_lost:min(WATER_RESTORE_SPEED:GetFloat(), mhp - hp):max(0)
 
 			if toRestore > 0 then
-				if hook.Run('CanRestoreOxygenHealth', ply, fldata.ox_Restore, toRestore) ~= false then
-					fldata.ox_RestoreNext = CurTimeL() + 1
-					fldata.ox_Restore = fldata.ox_Restore - toRestore
+				if hook.Run('CanRestoreOxygenHealth', ply, fldata.oxygen_hp_lost, toRestore) ~= false then
+					fldata.oxygen_hp_restore_next = CurTimeL() + 1
+					fldata.oxygen_hp_lost = fldata.oxygen_hp_lost - toRestore
 					ply:SetHealth(mhp:min(hp + toRestore))
 				end
 			else
-				fldata.ox_Restore = 0
+				fldata.oxygen_hp_lost = 0
 			end
 		end
 
-		if fldata.ox_Value >= 100 then return end
-		if fldata.ox_Next > CurTimeL() then return end
-
-		toAdd = toAdd * WATER_RRATIO:GetFloat() / 25
-
-		if hook.Run('CanRestoreOxygen', ply, fldata.ox_Value, toAdd) == false then return end
-	else
-		toAdd = -toAdd * WATER_RATIO:GetFloat() / 25
-
-		if not ply:IsSuitEquipped() then
-			toAdd = toAdd * WATER_RATIO_MUL:GetFloat()
-		end
-
-		if fldata.ox_Value ~= 0 then
-			if hook.Run('CanLoseOxygen', ply, fldata.ox_Value, -toAdd) == false then return end
-		end
-
-		fldata.ox_Next = CurTimeL() + WATER_PAUSE:GetFloat()
-		fldata.ox_RestoreNext = fldata.ox_Next + 1
+		return
 	end
 
-	fldata.ox_Value = (fldata.ox_Value + toAdd):clamp(0, 100)
-	if fldata.ox_Value ~= 0 then return end
-	if fldata.ox_NextChoke > CurTimeL() then return end
+	local toRemove = FrameTime() * WATER_RATIO:GetFloat() * 4
+
+	if not ply:IsSuitEquipped() then
+		toRemove = toRemove * WATER_RATIO_MUL:GetFloat()
+	end
+
+	toRemove = toRemove:min(fldata.suit_power)
+
+	if fldata.suit_power > 0 then
+		if hook.Run('CanLoseHEVPower', ply, fldata.suit_power, toRemove) == false then return end
+	end
+
+	fldata.suit_last_frame = false
+	fldata.suit_restore_start = ctime + POWER_RESTORE_DELAY:GetFloat()
+	fldata.oxygen_hp_restore_next = ctime + WATER_RESTORE_PAUSE:GetFloat()
+	fldata.suit_power = (fldata.suit_power - toRemove):clamp(0, 100)
+
+	if fldata.suit_power > 0 then return end
+	if fldata.oxygen_next_choke > ctime then return end
 
 	local can = hook.Run('CanChoke', ply)
 	if can == false then return end
@@ -93,15 +109,25 @@ local function Water(ply)
 	local newhp = ply:Health()
 
 	if WATER_RESTORE:GetBool() then
-		fldata.ox_Restore = fldata.ox_Restore + math.max(0, oldhp - newhp) * WATER_RESTORE_RATIO:GetFloat()
+		fldata.oxygen_hp_lost = fldata.oxygen_hp_lost + math.max(0, oldhp - newhp) * WATER_RESTORE_RATIO:GetFloat()
 	end
 
 	ply:EmitSound('player/pl_drown' .. math.random(1, 3) .. '.wav', 55)
-	fldata.ox_NextChoke = CurTimeL() + WATER_CHOKE_RATIO:GetFloat()
+	fldata.oxygen_next_choke = ctime + WATER_CHOKE_RATIO:GetFloat()
 end
 
-local function Flashlight(ply)
-	local fldata = ply._fldata
+local function ProcessSuit(ply, fldata, ctime)
+	fldata.suit_power = (fldata.suit_power or 100):clamp(0, 100)
+	fldata.suit_restore_start = fldata.suit_restore_start or 0
+
+	if fldata.suit_restore_start < ctime and fldata.suit_last_frame then
+		fldata.suit_power = (fldata.suit_power + FrameTime() * POWER_RESTORE_MUL:GetFloat() * 3):clamp(0, 100)
+	end
+
+	fldata.suit_last_frame = true
+end
+
+local function ProcessFlashlight(ply, fldata, ctime)
 	fldata.fl_Value = (fldata.fl_Value or 100):clamp(0, 100)
 	fldata.fl_Wait = fldata.fl_Wait or 0
 
@@ -116,10 +142,10 @@ local function Flashlight(ply)
 			if can == false then return end
 		end
 
-		fldata.fl_Wait = CurTimeL() + FLASHLIGHT_PAUSE:GetFloat()
+		fldata.fl_Wait = ctime + FLASHLIGHT_PAUSE:GetFloat()
 	else
 		if fldata.fl_Value >= 100 then return end
-		if fldata.fl_Wait > CurTimeL() then return end
+		if fldata.fl_Wait > ctime then return end
 		toAdd = toAdd * FLASHLIGHT_RRATIO:GetFloat() / 200 * math.pow(fldata.fl_Value / 50 + 1, 2)
 
 		local can = hook.Run('CanChargeFlashlight', ply, fldata.fl_Value, toAdd)
@@ -148,11 +174,13 @@ local function PlayerSpawn(ply)
 	ply._fldata = ply._fldata or {}
 	local fldata = ply._fldata
 
-	fldata.ox_Value = 100
-	fldata.ox_Next = 0
-	fldata.ox_NextChoke = 0
-	fldata.ox_Restore = 0
-	fldata.ox_RestoreNext = 0
+	fldata.suit_power = 100
+	fldata.suit_restore_start = 0
+	fldata.suit_last_frame = true
+
+	fldata.oxygen_next_choke = 0
+	fldata.oxygen_hp_lost = 0
+	fldata.oxygen_hp_restore_next = 0
 
 	fldata.fl_Value = 100
 	fldata.fl_Wait = 0
@@ -163,53 +191,61 @@ local function PlayerPostThink(ply)
 	if not ply:Alive() then return end
 	ply._fldata = ply._fldata or {}
 	local fldata = ply._fldata
+	local ctime = CurTimeL()
 
-	if WATER:GetBool() then Water(ply) end
-	if FLASHLIGHT:GetBool() then Flashlight(ply) end
+	if WATER:GetBool() then
+		ProcessWater(ply, fldata, ctime)
+	end
 
-	if fldata.ox_Value_Send == fldata.ox_Value and fldata.fl_Value_Send == fldata.fl_Value then return end
+	ProcessSuit(ply, fldata, ctime)
 
-	net.Start('DBot_LFAO', true)
-	net.WriteFloat(fldata.ox_Value or 100)
+	if FLASHLIGHT:GetBool() then
+		ProcessFlashlight(ply, fldata, ctime)
+	end
+
+	if fldata._suit_power == fldata.suit_power and fldata.fl_Value_Send == fldata.fl_Value then return end
+
+	net.Start('LimitedHEVPower', true)
+	net.WriteFloat(fldata.suit_power or 100)
 	net.WriteFloat(fldata.fl_Value or 100)
 	net.Send(ply)
 
-	fldata.ox_Value_Send = fldata.ox_Value
+	fldata._suit_power = fldata.suit_power
 	fldata.fl_Value_Send = fldata.fl_Value
 end
 
 local plyMeta = FindMetaTable('Player')
 
-function plyMeta:LFAOGetOxygenFillage()
+function plyMeta:LimitedHEVGetPowerFillage()
 	if not self._fldata then return 1 end
-	return self._fldata.ox_Value / 100
+	return self._fldata.suit_power / 100
 end
 
-function plyMeta:LFAOGetFlashlightFillage()
+function plyMeta:LimitedHEVGetFlashlightFillage()
 	if not self._fldata then return 1 end
 	return self._fldata.fl_Value / 100
 end
 
-function plyMeta:LFAOGetOxygen()
+function plyMeta:LimitedHEVGetPower()
 	if not self._fldata then return 100 end
-	return self._fldata.ox_Value
+	return self._fldata.suit_power
 end
 
-function plyMeta:LFAOGetFlashlight()
+function plyMeta:LimitedHEVGetFlashlight()
 	if not self._fldata then return 100 end
 	return self._fldata.fl_Value
 end
 
-function plyMeta:LFAOSetOxygen(value)
+function plyMeta:LimitedHEVSetPower(value)
 	if not self._fldata then self._fldata = {} end
-	self._fldata.ox_Value = assert(type(value) == 'number' and value, 'Value must be a number!'):floor():clamp(0, 100)
+	self._fldata.suit_power = assert(type(value) == 'number' and value, 'Value must be a number!'):floor():clamp(0, 100)
 end
 
-function plyMeta:LFAOSetFlashlight(value)
+function plyMeta:LimitedHEVSetFlashlight(value)
 	if not self._fldata then self._fldata = {} end
 	self._fldata.fl_Value = assert(type(value) == 'number' and value, 'Value must be a number!'):floor():clamp(0, 100)
 end
 
-hook.Add('PlayerPostThink', 'DBot_LFAO', PlayerPostThink)
-hook.Add('PlayerSwitchFlashlight', 'DBot_LFAO', PlayerSwitchFlashlight)
-hook.Add('PlayerSpawn', 'DBot_LFAO', PlayerSpawn)
+hook.Add('PlayerPostThink', 'LimitedHEVPower', PlayerPostThink)
+hook.Add('PlayerSwitchFlashlight', 'LimitedHEVPower', PlayerSwitchFlashlight)
+hook.Add('PlayerSpawn', 'LimitedHEVPower', PlayerSpawn)
