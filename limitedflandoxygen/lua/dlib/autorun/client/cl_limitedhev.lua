@@ -28,34 +28,7 @@ local math = math
 local Lerp = Lerp
 local surface = surface
 
-local FLASHLIGHT_POWER, REAL_FLASHLIGHT_POWER = 100, 100
-local SUIT_POWER, REAL_SUIT_POWER = 100, 100
-
 local plyMeta = FindMetaTable('Player')
-
-function plyMeta:LimitedHEVGetPowerFillage()
-	if self ~= LocalPlayer() then return 1 end
-	return REAL_SUIT_POWER / 100
-end
-
-function plyMeta:LimitedHEVGetFlashlightFillage()
-	if self ~= LocalPlayer() then return 1 end
-	return REAL_FLASHLIGHT_POWER / 100
-end
-
-function plyMeta:LimitedHEVGetPower()
-	if self ~= LocalPlayer() then return 100 end
-	return REAL_SUIT_POWER
-end
-
-function __LimitedHev_SetSuitPower(num)
-	REAL_SUIT_POWER = num:clamp(0, 100)
-end
-
-function plyMeta:LimitedHEVGetFlashlight()
-	if self ~= LocalPlayer() then return 100 end
-	return REAL_FLASHLIGHT_POWER
-end
 
 DLib.RegisterAddonName('Limited HEV')
 
@@ -67,8 +40,8 @@ surface.DLibCreateFont('LimitedHEVPowerFont', {
 })
 
 net.Receive('LimitedHEVPower', function()
-	REAL_SUIT_POWER = net.ReadFloat()
-	REAL_FLASHLIGHT_POWER = net.ReadFloat()
+	LocalPlayer():LimitedHEVSetPower(net.ReadFloat())
+	LocalPlayer():LimitedHEVSetFlashlight(net.ReadFloat())
 end)
 
 local DEFINED_POSITION = DLib.HUDCommons.Position2.DefinePosition('limitedhev', 0.5, 0.4)
@@ -87,7 +60,7 @@ local function FlashlightFunc(x, y)
 	surface.DrawRect(x - bw / 2 - wpadding, y - padding, bw + wpadding * 2, h + padding * 2)
 
 	surface.SetDrawColor(200, 200, 0, 150)
-	surface.DrawRect(x - bw / 2, y, bw * FLASHLIGHT_POWER / 100, h)
+	surface.DrawRect(x - bw / 2, y, bw * LocalPlayer():LimitedHEVGetFlashlightFillage(), h)
 
 	surface.SetTextPos(x - w / 2, y + padding)
 	surface.DrawText(text)
@@ -108,7 +81,7 @@ local function PowerFunc(x, y)
 	surface.DrawRect(x - bw / 2 - wpadding, y - padding, bw + wpadding * 2, h + padding * 2)
 
 	surface.SetDrawColor(181, 217, 83, 150)
-	surface.DrawRect(x - bw / 2, y, bw * SUIT_POWER / 100, h)
+	surface.DrawRect(x - bw / 2, y, bw * LocalPlayer():LimitedHEVGetPowerFillage(), h)
 
 	surface.SetTextPos(x - w / 2, y + padding)
 	surface.DrawText(text)
@@ -127,20 +100,13 @@ local function HUDPaint()
 
 	local x, y = DEFINED_POSITION()
 
-	if REAL_FLASHLIGHT_POWER ~= 100 then
+	if LocalPlayer():LimitedHEVGetFlashlight() ~= 100 then
 		x, y = FlashlightFunc(x, y)
 	end
 
-	if REAL_SUIT_POWER ~= 100 then
+	if LocalPlayer():LimitedHEVGetPower() ~= 100 then
 		PowerFunc(x, y)
 	end
 end
 
-local function Think()
-	local ftime = FrameTime() * 22
-	FLASHLIGHT_POWER = Lerp(ftime, FLASHLIGHT_POWER, REAL_FLASHLIGHT_POWER)
-	SUIT_POWER = Lerp(ftime, SUIT_POWER, REAL_SUIT_POWER)
-end
-
-hook.Add('Think', 'LimitedHEVPower', Think)
 hook.Add('HUDPaint', 'LimitedHEVPower', HUDPaint)
