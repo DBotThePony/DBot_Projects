@@ -229,9 +229,14 @@ local function ProcessFlashlight(ply, fldata, ctime)
 	end
 end
 
+local _PlayerPostThink
+
 local function PlayerPostThink(ply)
 	if CLIENT and not IsFirstTimePredicted() then return end
+	_PlayerPostThink(ply)
+end
 
+function _PlayerPostThink(ply)
 	ply._fldata = ply._fldata or {}
 	local fldata = ply._fldata
 
@@ -271,6 +276,14 @@ local function PlayerPostThink(ply)
 
 	fldata._suit_power = fldata.suit_power
 	fldata.fl_Value_Send = fldata.fl_Value]]
+end
+
+if CLIENT and game.SinglePlayer() then
+	hook.Remove('PlayerPostThink', 'LimitedHEVPower')
+
+	hook.Add('Think', 'LimitedHEVPower Сингл От Сорса Сука', function()
+		_PlayerPostThink(LocalPlayer())
+	end)
 end
 
 local plyMeta = FindMetaTable('Player')
