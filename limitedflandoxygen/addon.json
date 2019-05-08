@@ -1,8 +1,8 @@
 {
-	"title"		:	"Limited Oxygen and Flashlight",
-	"type"		:	"effects",
-	"tags"		:	[ "realism" ],
-	"ignore"	:
+	"title"     :   "Limited HEV",
+	"type"      :   "effects",
+	"tags"      :   [ "realism" ],
+	"ignore"    :
 	[
 		"*.psd",
 		"*.vcproj",
