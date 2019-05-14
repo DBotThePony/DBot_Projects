@@ -67,6 +67,7 @@ local function decode(lines, isPC, isWindows, isOSX, isLinux, isPOSIX, isXBox)
 	local currentData = construct
 	local literalName
 	local stack = {construct}
+	local stackLiterals = {'<root>'}
 
 	local key, value, platformCondition = '', '', ''
 	local atKey, keyFinished, atValue, valueFinished, atCondition, conditionFinished = false, false, false, false, false, false
@@ -339,10 +340,12 @@ local function decode(lines, isPC, isWindows, isOSX, isLinux, isPOSIX, isXBox)
 		elseif trim == '{' then
 			assert(literalName, 'creating a table without name at line ' .. i)
 			table.insert(stack, currentData)
+			table.insert(stackLiterals, literalName)
 			currentData = {}
 			stack[#stack][literalName] = currentData
 		elseif trim == '}' then
 			currentData = table.remove(stack)
+			table.remove(stackLiterals)
 			literalName = nil
 		elseif trim ~= '' and not currentLineCommentary then
 			error('junk data at line ' .. i)
@@ -350,10 +353,10 @@ local function decode(lines, isPC, isWindows, isOSX, isLinux, isPOSIX, isXBox)
 	end
 
 	if atKey or atValue or atCondition then
-		error('Unexpected EOF at line ' .. currentLineWithValues)
+		error('Unexpected EOF at line ' .. currentLineWithValues .. string.format('\n%s\n(at key? %s, at value? %s, at condition? %s)\nkey: %s\nvalue: %s\ncondition: %s', lines[currentLineWithValues], atKey, atValue, atCondition, key, value, condition))
 	end
 
-	assert(#stack == 1, 'stack size after parse finish is not 1! ' .. #stack)
+	assert(#stack == 1, 'stack size after parse finish is not 1! ' .. #stack .. '. Missing }? ' .. table.concat(stackLiterals, '->'))
 
 	return construct
 end
@@ -366,11 +369,15 @@ local function tabs()
 end
 
 local function spaces(len)
-	return string.rep(' ', 22 - len)
+	return string.rep(' ', math.max(4, 40 - len))
 end
 
 local function supportsToVDF(object)
 	return object:GetVDFValue()
+end
+
+local function escapeValue(value)
+	return '"' .. string.gsub(string.gsub(string.gsub(tostring(value), '\\', '\\\\'), '"', '\\"'), '\n', '\\n') .. '"'
 end
 
 local function diveInto(name, tableIn, explicitString)
@@ -381,28 +388,28 @@ local function diveInto(name, tableIn, explicitString)
 
 	for key, value in pairs(tableIn) do
 		assert(type(key) == 'string' or type(key) == 'number', 'Table index must be string (or a number)! ' .. type(key) .. ' (' .. tostring(key) .. ')')
-		local key2 = tostring(key)
+		local key2 = escapeValue(key)
 
 		local valtype = type(value)
 
 		if valtype == 'string' or valtype == 'number' then
-			table.insert(lines, string.format('%s%q%s%q', tabs(), key2, spaces(#key2), tostring(value)))
+			table.insert(lines, string.format('%s%s%s%s', tabs(), key2, spaces(#key2), escapeValue(value)))
 		elseif valtype == 'boolean' then
-			table.insert(lines, string.format('%s%q%s%q', tabs(), key2, spaces(#key2), value and '1' or '0'))
+			table.insert(lines, string.format('%s%s%s%q', tabs(), key2, spaces(#key2), value and '1' or '0'))
 		elseif valtype == 'table' then
-			diveInto(key2, value, explicitString)
+			diveInto(tostring(key), value, explicitString)
 		else
 			local meta = getmetatable(value)
 
 			if type(meta) == 'table' and meta.__tostring then
-				table.insert(lines, string.format('%s%q%s%q', tabs(), key2, spaces(#key2), tostring(value)))
+				table.insert(lines, string.format('%s%s%s%s', tabs(), key2, spaces(#key2), escapeValue(value)))
 			else
 				local status, value2 = pcall(supportsToVDF, value)
 
 				if status and type(value2) == 'string' then
-					table.insert(lines, string.format('%s%q%s%q', tabs(), key2, spaces(#key2), value2))
+					table.insert(lines, string.format('%s%s%s%s', tabs(), key2, spaces(#key2), escapeValue(value2)))
 				elseif explicitString then
-					table.insert(lines, string.format('%s%q%s%q', tabs(), key2, spaces(#key2), tostring(value)))
+					table.insert(lines, string.format('%s%s%s%s', tabs(), key2, spaces(#key2), escapeValue(value)))
 				else
 					error('Value of type ' .. type(value) .. ' does not support either __tostring metamethod and does not have :GetVDFValue() method and explicitString flag is false! To force write of this, use `true` as third argument to encoder')
 				end
