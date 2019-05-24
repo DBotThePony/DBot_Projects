@@ -23,8 +23,8 @@ gui.dsit.friend = 'DSit Freund'
 
 message.dsit.sit.toofast = 'Du bewegst dich zu schnell!'
 
-message.dsit.check.pitch = 'Ungültiger Sitzwinkel (Neigung ist %i  wenn sollte <> +-20 oder -180)'
-message.dsit.check.roll = 'Ungültiger Sitzwinkel (Roll ist %i wenn sollte <> +-20)'
+message.dsit.check.pitch = 'Ungültiger Sitzwinkel (Neigung ist #i  wenn sollte <> +-20 oder -180)'
+message.dsit.check.roll = 'Ungültiger Sitzwinkel (Roll ist #i wenn sollte <> +-20)'
 message.dsit.check.unreachable = 'Position ist unerreichbar'
 
 message.dsit.status.entities = 'Das Sitzen auf Entities ist deaktiviert.'

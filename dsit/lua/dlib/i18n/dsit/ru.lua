@@ -23,8 +23,8 @@ gui.dsit.friend = 'DSit друг'
 
 message.dsit.sit.toofast = 'Вы двигаетесь слишком быстро!'
 
-message.dsit.check.pitch = 'Неверный угол поверхности (питч %i, когда должен быть <> +-20 или -180)'
-message.dsit.check.roll = 'Неверный угол поверхности (ролл %i, когда должен быть <> +-20)'
+message.dsit.check.pitch = 'Неверный угол поверхности (питч #i, когда должен быть <> +-20 или -180)'
+message.dsit.check.roll = 'Неверный угол поверхности (ролл #i, когда должен быть <> +-20)'
 message.dsit.check.unreachable = 'Целевая позиция недоступна'
 
 message.dsit.status.entities = 'Возможность сидеть на ентити отключена'

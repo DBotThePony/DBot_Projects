@@ -23,8 +23,8 @@ gui.dsit.friend = 'DSit Friend'
 
 message.dsit.sit.toofast = 'You are moving too fast!'
 
-message.dsit.check.pitch = 'Invalid sitting angle (pitch is %i when should <> +-20 or -180)'
-message.dsit.check.roll = 'Invalid sitting angle (roll is %i when should <> +-20)'
+message.dsit.check.pitch = 'Invalid sitting angle (pitch is #i when should <> +-20 or -180)'
+message.dsit.check.roll = 'Invalid sitting angle (roll is #i when should <> +-20)'
 message.dsit.check.unreachable = 'Position is unreachable'
 
 message.dsit.status.entities = 'Sitting on entities is disabled'
