@@ -90,7 +90,7 @@ local function StartCommand(ply, cmd)
 		return
 	end
 
-	if ply:LimitedHEVGetPower() < 10 then
+	if ply:LimitedHEVGetPower() <= 0.5 then
 		cmd:SetButtons(cmd:GetButtons():band(IN_SPEED:bnot()))
 		ply.__fl_sdelay = CurTimeL() + SPRINT_DELAY:GetFloat()
 		return
