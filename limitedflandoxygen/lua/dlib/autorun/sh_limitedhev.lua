@@ -40,7 +40,7 @@ local WATER_RATIO_MUL = CreateConVar('sv_limited_oxygen_r_mul', '3', 'Multiplier
 
 local POWER_RESTORE_DELAY = CreateConVar('sv_limited_hev_rd', '0', 'Delay before starting to restore power of suit')
 local POWER_RESTORE_MUL = CreateConVar('sv_limited_hev_rmul', '1', 'Multiplier of power restore speed')
-local SPRINT_DELAY = CreateConVar('sv_limited_hev_sd', '3', 'Delay in seconds before player can use sprint again after running out of power to do so')
+local SPRINT_LIMIT_ACT = CreateConVar('sv_limited_hev_slim', '10', 'Minimum % of HEV power to enter sprint mode')
 local SPRINT_MUL = CreateConVar('sv_limited_hev_sprint', '1', 'Sprint power drain multiplier')
 
 local FLASHLIGHT = CreateConVar('sv_limited_flashlight', '1', 'Enable limited flashlight')
@@ -76,7 +76,7 @@ local function StartCommand(ply, cmd)
 	ply.__lastPressHEV = newHev
 	ply.__lastPressHEV2 = newHev
 
-	if newHev and ply:LimitedHEVGetPower() <= 10 and statusChanged then
+	if newHev and ply:LimitedHEVGetPower() <= SPRINT_LIMIT_ACT:GetFloat() and statusChanged then
 		cmd:SetButtons(cmd:GetButtons():band(IN_SPEED:bnot()))
 		ply.__lastPressHEV = false
 
