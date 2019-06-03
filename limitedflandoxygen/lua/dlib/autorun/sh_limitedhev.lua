@@ -49,8 +49,6 @@ local FLASHLIGHT_RRATIO = CreateConVar('sv_limited_flashlight_restore_ratio', '5
 local FLASHLIGHT_PAUSE = CreateConVar('sv_limited_flashlight_pause', '4', 'Seconds to wait before starting restoring power of flashlight')
 local FLASHLIGHT_EPAUSE = CreateConVar('sv_limited_flashlight_epause', '2', 'Seconds to wait before granting player ability to enable his flashlight after starting power restoring')
 
-local lastPressHEV = false
-
 local lastCommandCall = CurTime()
 
 -- IsFirstTimePredicted is always false on client realm
@@ -67,18 +65,22 @@ local function StartCommand(ply, cmd)
 	if not ply:Alive() or (not ply:OnGround() and ply:WaterLevel() == 0) or ply:GetMoveType() ~= MOVETYPE_WALK then return end
 
 	if cmd:GetButtons():band(IN_FORWARD:bor(IN_BACK, IN_MOVELEFT, IN_MOVERIGHT)) == 0 then
-		lastPressHEV = false
+		ply.__lastPressHEV = false
+		ply.__lastPressHEV2 = false
 		return
 	end
 
 	local newHev = cmd:GetButtons():band(IN_SPEED) ~= 0
-	local statusChanged = newHev ~= lastPressHEV
-	lastPressHEV = newHev
+	local statusChanged = newHev ~= ply.__lastPressHEV
+	local statusChanged2 = newHev ~= ply.__lastPressHEV2
+	ply.__lastPressHEV = newHev
+	ply.__lastPressHEV2 = newHev
 
-	if ply.__fl_sdelay and ply.__fl_sdelay > CurTimeL() then
+	if newHev and ply:LimitedHEVGetPower() <= 10 and statusChanged then
 		cmd:SetButtons(cmd:GetButtons():band(IN_SPEED:bnot()))
+		ply.__lastPressHEV = false
 
-		if statusChanged and CLIENT and newHev then
+		if statusChanged2 then
 			ply:EmitSound('HL2Player.SprintNoPower')
 		end
 
@@ -90,14 +92,15 @@ local function StartCommand(ply, cmd)
 		return
 	end
 
-	if ply:LimitedHEVGetPower() <= 0.5 then
+	if ply:LimitedHEVGetPower() <= 0 then
 		cmd:SetButtons(cmd:GetButtons():band(IN_SPEED:bnot()))
-		ply.__fl_sdelay = CurTimeL() + SPRINT_DELAY:GetFloat()
+		ply.__lastPressHEV = false
+		ply.__lastPressHEV2 = true
 		return
 	end
 
 	if cmd:GetButtons():band(IN_SPEED) ~= 0 then
-		if statusChanged and CLIENT then
+		if statusChanged then
 			ply:EmitSound('HL2Player.SprintStart')
 		end
 
