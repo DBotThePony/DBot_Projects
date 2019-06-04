@@ -115,7 +115,7 @@ local math = math
 local FrameTime = FrameTime
 local hook = hook
 
-local function ProcessWater(ply, fldata, ctime)
+local function ProcessWater(ply, fldata, ctime, toRemove)
 	local waterLevel = ply:InVehicle() and ply:GetVehicle():WaterLevel() or ply:WaterLevel()
 	local restoring = waterLevel <= 2
 
@@ -143,7 +143,7 @@ local function ProcessWater(ply, fldata, ctime)
 		return
 	end
 
-	local toRemove = FrameTime() * WATER_RATIO:GetFloat() * 7
+	toRemove = toRemove * WATER_RATIO:GetFloat() * 7
 
 	if not ply:IsSuitEquipped() then
 		toRemove = toRemove * WATER_RATIO_MUL:GetFloat()
@@ -185,7 +185,7 @@ local function ProcessWater(ply, fldata, ctime)
 	end
 end
 
-local function ProcessSuit(ply, fldata, ctime)
+local function ProcessSuit(ply, fldata, ctime, toAdd)
 	fldata.suit_power = (fldata.suit_power or 100):clamp(0, 100)
 	fldata.suit_restore_start = fldata.suit_restore_start or 0
 
@@ -196,12 +196,11 @@ local function ProcessSuit(ply, fldata, ctime)
 	fldata.suit_last_frame = true
 end
 
-local function ProcessFlashlight(ply, fldata, ctime)
+local function ProcessFlashlight(ply, fldata, ctime, toAdd)
 	fldata.fl_Value = (fldata.fl_Value or 100):clamp(0, 100)
 	fldata.fl_Wait = fldata.fl_Wait or 0
 
 	local isOn = ply:FlashlightIsOn()
-	local toAdd = FrameTime()
 
 	if isOn then
 		toAdd = -toAdd * FLASHLIGHT_RATIO:GetFloat() / 50 * (1 + math.pow((100 - fldata.fl_Value) / 75, 2))
@@ -243,6 +242,8 @@ function _PlayerPostThink(ply)
 	ply._fldata = ply._fldata or {}
 	local fldata = ply._fldata
 
+	local ctime = CurTimeL()
+
 	if not ply:Alive() then
 		fldata.suit_power = 100
 		fldata.suit_restore_start = 0
@@ -258,16 +259,18 @@ function _PlayerPostThink(ply)
 		return
 	end
 
-	local ctime = CurTimeL()
+	ply._fldata.last = ply._fldata.last or ctime
+	local delta = ctime - ply._fldata.last
+	ply._fldata.last = ctime
 
 	if WATER:GetBool() then
-		ProcessWater(ply, fldata, ctime)
+		ProcessWater(ply, fldata, ctime, delta)
 	end
 
-	ProcessSuit(ply, fldata, ctime)
+	ProcessSuit(ply, fldata, ctime, delta)
 
 	if FLASHLIGHT:GetBool() then
-		ProcessFlashlight(ply, fldata, ctime)
+		ProcessFlashlight(ply, fldata, ctime, delta)
 	end
 
 	--[[if fldata._suit_power == fldata.suit_power and fldata.fl_Value_Send == fldata.fl_Value then return end
