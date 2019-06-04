@@ -49,6 +49,8 @@ local FLASHLIGHT_RRATIO = CreateConVar('sv_limited_flashlight_restore_ratio', '5
 local FLASHLIGHT_PAUSE = CreateConVar('sv_limited_flashlight_pause', '4', 'Seconds to wait before starting restoring power of flashlight')
 local FLASHLIGHT_EPAUSE = CreateConVar('sv_limited_flashlight_epause', '2', 'Seconds to wait before granting player ability to enable his flashlight after starting power restoring')
 
+LIMITEDHEV_FLASHLIGHT_EPAUSE = FLASHLIGHT_EPAUSE
+
 local lastCommandCall = CurTime()
 
 -- IsFirstTimePredicted is always false on client realm
@@ -214,7 +216,7 @@ local function ProcessFlashlight(ply, fldata, ctime, toAdd)
 	else
 		if fldata.fl_Value >= 100 then return end
 		if fldata.fl_Wait > ctime then return end
-		toAdd = toAdd * FLASHLIGHT_RRATIO:GetFloat() / 200 * math.pow(fldata.fl_Value / 50 + 1, 2)
+		toAdd = toAdd * FLASHLIGHT_RRATIO:GetFloat() / 200 * math.pow(fldata.fl_Value / 35 + 1, 2)
 
 		local can = hook.Run('CanChargeFlashlight', ply, fldata.fl_Value, toAdd)
 		if can == false then return end
@@ -225,6 +227,9 @@ local function ProcessFlashlight(ply, fldata, ctime, toAdd)
 	if fldata.fl_Value == 0 and ply:FlashlightIsOn() then
 		if SERVER then
 			ply:Flashlight(false)
+			net.Start('LimitedHEV.SyncFlashLight')
+			net.WriteBool(false)
+			net.Send(ply)
 		end
 
 		fldata.fl_EWait = fldata.fl_Wait + FLASHLIGHT_EPAUSE:GetFloat()

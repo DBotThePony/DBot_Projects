@@ -19,6 +19,7 @@
 -- DEALINGS IN THE SOFTWARE.
 
 net.pool('LimitedHEVPower')
+net.pool('LimitedHEV.SyncFlashLight')
 
 local FLASHLIGHT = CreateConVar('sv_limited_flashlight', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Enable limited flashlight')
 

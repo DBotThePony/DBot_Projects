@@ -44,6 +44,18 @@ net.Receive('LimitedHEVPower', function()
 	LocalPlayer():LimitedHEVSetFlashlight(net.ReadFloat())
 end)
 
+net.Receive('LimitedHEV.SyncFlashLight', function()
+	local status = net.ReadBool()
+	local ply = LocalPlayer()
+	ply._fldata = ply._fldata or {}
+	local fldata = ply._fldata
+
+	if not status then
+		fldata.fl_EWait = fldata.fl_Wait + LIMITEDHEV_FLASHLIGHT_EPAUSE:GetFloat()
+		fldata.fl_Value = 0
+	end
+end)
+
 local DEFINED_POSITION = DLib.HUDCommons.Position2.DefinePosition('limitedhev', 0.5, 0.4)
 local BAR_WIDTH = 120
 
