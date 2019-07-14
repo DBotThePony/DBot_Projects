@@ -191,7 +191,7 @@ local function ProcessSuit(ply, fldata, ctime, toAdd)
 	fldata.suit_power = (fldata.suit_power or 100):clamp(0, 100)
 	fldata.suit_restore_start = fldata.suit_restore_start or 0
 
-	if fldata.suit_restore_start < ctime and fldata.suit_last_frame then
+	if fldata.suit_restore_start < ctime and fldata.suit_last_frame and ply:OnGround() then
 		fldata.suit_power = (fldata.suit_power + FrameTime() * POWER_RESTORE_MUL:GetFloat() * 7):clamp(0, 100)
 	end
 
