@@ -77,60 +77,47 @@ local MAX_AMOUNT = CreateConVar('sv_longjump_amount', '3', 'Long Jump amount')
 local COOLDOWN = CreateConVar('sv_longjump_cooldown', '5', 'Long Jump recharge time in seconds')
 local DELAY = CreateConVar('sv_longjump_delay', '0.2', 'Delay between two Long Jumps in seconds')
 
-local BANK = DLib.PredictedVarList('limitedhev_longjumps')
-	:AddVar('key', 0)
-	:AddVar('ground', false)
-	:AddVar('jumps', MAX_AMOUNT:GetInt(3))
-	:AddVar('recharging', false)
-	:AddVar('jumpbreak', false)
-	:AddVar('next', 0)
-	:AddVar('start', 0)
-	:AddVar('delay', 0)
+DLib.pred.Define('LongJumpKey', 'Int', 0)
+DLib.pred.Define('LongJumpCount', 'Int', 3)
+DLib.pred.Define('LongJumpNextR', 'Float', 0)
+DLib.pred.Define('LongJumpStartR', 'Float', 0)
+DLib.pred.Define('LongJumpDelay', 'Float', 0)
+
+DLib.pred.Define('LongJumpGround', 'Bool', false)
+DLib.pred.Define('LongJumpIsRecharging', 'Bool', false)
+DLib.pred.Define('LongJumpBreak', 'Bool', false)
 
 local plyMeta = FindMetaTable('Player')
 
-function plyMeta:LimitedHEVSyncJumps()
-	return BANK:Sync(self)
-end
-
-function plyMeta:LimitedHEVGetMaxJumps()
+function plyMeta:GetMaxLongJumps()
 	return self:GetNWUInt('limitedhev.maxjumps', MAX_AMOUNT:GetInt(3):abs())
 end
 
-function plyMeta:LimitedHEVSetMaxJumps(maxValue)
+function plyMeta:SetMaxLongJumps(maxValue)
 	return self:SetNWUInt('limitedhev.maxjumps', maxValue)
 end
 
-function plyMeta:LimitedHEVResetMaxJumps()
-	return self:LimitedHEVSetMaxJumps(MAX_AMOUNT:GetInt(3):abs())
+function plyMeta:ResetMaxLongJumps()
+	return self:SetMaxLongJumps(MAX_AMOUNT:GetInt(3):abs())
 end
 
-function plyMeta:LimitedHEVResetJumps()
-	BANK:Invalidate(self)
-	BANK:Set(self, 'key', 0)
-	BANK:Set(self, 'ground', false)
-	BANK:Set(self, 'jumps', MAX_AMOUNT:GetInt(3))
-	BANK:Set(self, 'recharging', false)
-	BANK:Set(self, 'jumpbreak', false)
-	BANK:Set(self, 'next', 0)
-	BANK:Set(self, 'start', 0)
-	BANK:Set(self, 'delay', 0)
+function plyMeta:ResetLongJumpValues()
+	self:ResetLongJumpKey()
+	self:ResetLongJumpCount()
+	self:ResetLongJumpNextR()
+	self:ResetLongJumpStartR()
+	self:ResetLongJumpDelay()
+	self:ResetLongJumpGround()
+	self:ResetLongJumpIsRecharging()
+	self:ResetLongJumpBreak()
 end
 
 function plyMeta:LimitedHEVGetJumps()
-	return BANK:Get(self, 'jumps')
+	return self:GetLongJumpCount()
 end
 
-function plyMeta:LimitedHEVNextJumpRecharge()
-	return BANK:Get(self, 'next')
-end
-
-function plyMeta:LimitedHEVJumpRechargeProgress()
-	return CurTime():progression(BANK:Get(self, 'start'), BANK:Get(self, 'next'))
-end
-
-function plyMeta:LimitedHEVIsJumpRecharging()
-	return BANK:Get(self, 'recharging')
+function plyMeta:LongJumpRechargeProgress()
+	return CurTime():progression(self:GetLongJumpStartR(), self:GetLongJumpNextR())
 end
 
 function plyMeta:IsLongJumpsModuleEquipped()
@@ -149,57 +136,44 @@ if SERVER then
 	end
 end
 
-local function SetupMove(ply, movedata)
-	if ply:GetMoveType() ~= MOVETYPE_WALK then return end
-	if not ply:IsLongJumpsModuleEquipped() then return end
+local function SetupMove(self, movedata)
+	if self:GetMoveType() ~= MOVETYPE_WALK then return end
+	if not self:IsLongJumpsModuleEquipped() then return end
 
-	local onground = ply:OnGround()
-	local water = ply:WaterLevel() <= 0
+	local onground = self:OnGround()
+	local water = self:WaterLevel() <= 0
 	local jump = movedata:KeyPressed(IN_JUMP)
-	local invalidated = false
 
-	if BANK:Get(ply, 'recharging') and BANK:Get(ply, 'next') < CurTime() then
-		BANK:Invalidate(ply)
-		invalidated = true
+	if self:GetLongJumpIsRecharging() and self:GetLongJumpNextR() < CurTime() then
+		self:SetLongJumpCount(self:GetLongJumpCount() + 1)
+		self:EmitSoundPredicted('LimitedHEV.LongJumpReady')
 
-		BANK:Set(ply, 'jumps', BANK:Get(ply, 'jumps') + 1)
-		ply:EmitSoundPredicted('LimitedHEV.LongJumpReady')
-
-		if ply:LimitedHEVGetMaxJumps() <= BANK:Get(ply, 'jumps') then
-			BANK:Set(ply, 'recharging', false)
+		if self:GetMaxLongJumps() <= self:GetLongJumpCount() then
+			self:SetLongJumpIsRecharging(false)
 		else
-			BANK:Set(ply, 'next', CurTime() + COOLDOWN:GetFloat())
-			BANK:Set(ply, 'start', CurTime())
+			self:SetLongJumpNextR(CurTime() + COOLDOWN:GetFloat())
+			self:SetLongJumpStartR(CurTime())
 		end
 	end
 
-	if not onground and not BANK:Get(ply, 'jumpbreak') and movedata:KeyPressed(IN_BACK) then
-		if not invalidated then
-			BANK:Invalidate(ply)
-			invalidated = true
-		end
-
-		BANK:Set(ply, 'jumpbreak', true)
-		ply:EmitSoundPredicted('LimitedHEV.JumpBreak')
+	if not onground and not self:GetLongJumpBreak() and movedata:KeyPressed(IN_BACK) then
+		self:SetLongJumpBreak(true)
+		self:EmitSoundPredicted('LimitedHEV.JumpBreak')
 	end
 
 	if not movedata:KeyPressed(IN_JUMP) or not water then return end
 
-	if not invalidated then
-		BANK:Invalidate(ply)
-	end
-
 	if onground then
-		BANK:Set(ply, 'key', 0)
-		BANK:Set(ply, 'ground', true)
-		BANK:Set(ply, 'jumpbreak', true)
+		self:SetLongJumpKey(0)
+		self:SetLongJumpGround(true)
+		self:SetLongJumpBreak(true)
 	end
 
-	BANK:Set(ply, 'key', BANK:Get(ply, 'key') + 1)
+	self:SetLongJumpKey(self:GetLongJumpKey() + 1)
 
-	if BANK:Get(ply, 'key') >= 2 and BANK:Get(ply, 'ground') then
-		if BANK:Get(ply, 'jumps') > 0 and BANK:Get(ply, 'delay') < CurTime() then
-			local ang = ply:EyeAngles()
+	if self:GetLongJumpKey() >= 2 and self:GetLongJumpGround() then
+		if self:GetLongJumpCount() > 0 and self:GetLongJumpDelay() < CurTime() then
+			local ang = self:EyeAngles()
 			ang.p = (-ang.p):max(-3, 7) * -1
 			ang.r = 0
 
@@ -209,20 +183,21 @@ local function SetupMove(ply, movedata)
 
 			movedata:SetVelocity(old + vel)
 
-			BANK:Set(ply, 'ground', false)
-			BANK:Set(ply, 'jumpbreak', false)
-			BANK:Set(ply, 'jumps', BANK:Get(ply, 'jumps') - 1)
-			BANK:Set(ply, 'delay', CurTime() + DELAY:GetFloat())
+			self:SetLongJumpKey(0)
+			self:SetLongJumpGround(false)
+			self:SetLongJumpBreak(false)
+			self:SetLongJumpCount(self:GetLongJumpCount() - 1)
+			self:SetLongJumpDelay(CurTime() + DELAY:GetFloat())
 
-			if not BANK:Get(ply, 'recharging') then
-				BANK:Set(ply, 'recharging', true)
-				BANK:Set(ply, 'next', CurTime() + COOLDOWN:GetFloat())
-				BANK:Set(ply, 'start', CurTime())
+			if not self:GetLongJumpIsRecharging() then
+				self:SetLongJumpIsRecharging(true)
+				self:SetLongJumpNextR(CurTime() + COOLDOWN:GetFloat())
+				self:SetLongJumpStartR(CurTime())
 			end
 
-			ply:EmitSoundPredicted('LimitedHEV.LongJump')
+			self:EmitSoundPredicted('LimitedHEV.LongJump')
 		else
-			ply:EmitSoundPredicted('LimitedHEV.LongJumpDeny')
+			self:EmitSoundPredicted('LimitedHEV.LongJumpDeny')
 		end
 	end
 end

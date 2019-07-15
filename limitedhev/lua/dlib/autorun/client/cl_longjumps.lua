@@ -51,13 +51,13 @@ local function HUDPaint()
 	x, y = x:floor(), y:floor()
 	local color = DASH_COLOR()
 	local color2 = DASH_RECHARGING_COLOR()
-	local num = ply:LimitedHEVGetMaxJumps() - ply:LimitedHEVGetJumps()
-	local pr = ply:LimitedHEVJumpRechargeProgress()
+	local num = ply:GetMaxLongJumps() - ply:GetLongJumpCount()
+	local pr = ply:LongJumpRechargeProgress()
 	local w, h = ScreenSize(DASH_WIDTH):floor(), ScreenSize(DASH_HEIGHT):floor()
 	local wide = (w + ScreenSize(DASH_WIDTH2):max(1) + ScreenSize(DASH_PADDING_OUTLINE * 4):max(1)):floor()
 
-	if ply:LimitedHEVGetMaxJumps() < 6 then
-		for i = 0, ply:LimitedHEVGetMaxJumps() - 1 do
+	if ply:GetMaxLongJumps() < 6 then
+		for i = 0, ply:GetMaxLongJumps() - 1 do
 			if (i + 1) == num then
 				surface.SetDrawColor(color2)
 				DrawOutline(x + i * wide, y)
