@@ -71,10 +71,11 @@ sound.Add({
 	sound = 'bms/jumpmod_pickup.wav'
 })
 
-local ENABLED = CreateConVar('sv_longjumps_enabled', '1', 'Enable Long Jumps from LimitedHEV addon')
-local POWER = CreateConVar('sv_longjumps_power', '1', 'Power multiplier of Long Jumps')
-local MAX_AMOUNT = CreateConVar('sv_longjumps_amount', '3', 'Long Jumps amount')
-local COOLDOWN = CreateConVar('sv_longjumps_cooldown', '5', 'Long Jumps recharge time in seconds')
+local ENABLED = CreateConVar('sv_longjump_enabled', '1', 'Enable Long Jump from LimitedHEV addon')
+local POWER = CreateConVar('sv_longjump_power', '1', 'Power multiplier of Long Jump')
+local MAX_AMOUNT = CreateConVar('sv_longjump_amount', '3', 'Long Jump amount')
+local COOLDOWN = CreateConVar('sv_longjump_cooldown', '5', 'Long Jump recharge time in seconds')
+local DELAY = CreateConVar('sv_longjump_delay', '0.2', 'Delay between two Long Jumps in seconds')
 
 local BANK = DLib.PredictedVarList('limitedhev_longjumps')
 	:AddVar('key', 0)
@@ -84,6 +85,7 @@ local BANK = DLib.PredictedVarList('limitedhev_longjumps')
 	:AddVar('jumpbreak', false)
 	:AddVar('next', 0)
 	:AddVar('start', 0)
+	:AddVar('delay', 0)
 
 local plyMeta = FindMetaTable('Player')
 
@@ -111,6 +113,7 @@ function plyMeta:LimitedHEVResetJumps()
 	BANK:Set(self, 'jumpbreak', false)
 	BANK:Set(self, 'next', 0)
 	BANK:Set(self, 'start', 0)
+	BANK:Set(self, 'delay', 0)
 end
 
 function plyMeta:LimitedHEVGetJumps()
@@ -194,7 +197,7 @@ local function SetupMove(ply, movedata)
 	BANK:Set(ply, 'key', BANK:Get(ply, 'key') + 1)
 
 	if BANK:Get(ply, 'key') >= 2 and BANK:Get(ply, 'ground') then
-		if BANK:Get(ply, 'jumps') > 0 then
+		if BANK:Get(ply, 'jumps') > 0 and BANK:Get(ply, 'delay') < CurTime() then
 			local ang = ply:EyeAngles()
 			ang.p = (-ang.p):max(-3, 7) * -1
 			ang.r = 0
@@ -208,6 +211,7 @@ local function SetupMove(ply, movedata)
 			BANK:Set(ply, 'ground', false)
 			BANK:Set(ply, 'jumpbreak', false)
 			BANK:Set(ply, 'jumps', BANK:Get(ply, 'jumps') - 1)
+			BANK:Set(ply, 'delay', CurTime() + DELAY:GetFloat())
 
 			if not BANK:Get(ply, 'recharging') then
 				BANK:Set(ply, 'recharging', true)
