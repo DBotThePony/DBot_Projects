@@ -71,15 +71,15 @@ sound.Add({
 	sound = 'bms/jumpmod_pickup.wav'
 })
 
-local ENABLED = CreateConVar('sv_longjump_enabled', '1', 'Enable Long Jump from LimitedHEV addon')
-local POWER = CreateConVar('sv_longjump_power', '1', 'Power multiplier of Long Jump')
-local MAX_AMOUNT = CreateConVar('sv_longjump_amount', '3', 'Long Jump amount')
-local COOLDOWN = CreateConVar('sv_longjump_cooldown', '5', 'Long Jump recharge time in seconds')
+local ENABLED = CreateConVar('sv_longjumps_enabled', '1', 'Enable Long Jumps from LimitedHEV addon')
+local POWER = CreateConVar('sv_longjumps_power', '1', 'Power multiplier of Long Jumps')
+local MAX_AMOUNT = CreateConVar('sv_longjumps_amount', '3', 'Long Jumps amount')
+local COOLDOWN = CreateConVar('sv_longjumps_cooldown', '5', 'Long Jumps recharge time in seconds')
 
-local BANK = DLib.PredictedVarList('limitedhev_longjump')
+local BANK = DLib.PredictedVarList('limitedhev_longjumps')
 	:AddVar('key', 0)
 	:AddVar('ground', false)
-	:AddVar('jump', MAX_AMOUNT:GetInt(3))
+	:AddVar('jumps', MAX_AMOUNT:GetInt(3))
 	:AddVar('recharging', false)
 	:AddVar('jumpbreak', false)
 	:AddVar('next', 0)
@@ -87,34 +87,34 @@ local BANK = DLib.PredictedVarList('limitedhev_longjump')
 
 local plyMeta = FindMetaTable('Player')
 
-function plyMeta:LimitedHEVSyncJump()
+function plyMeta:LimitedHEVSyncJumps()
 	return BANK:Sync(self)
 end
 
-function plyMeta:LimitedHEVGetMaxJump()
-	return self:GetNWUInt('limitedhev.maxjump', MAX_AMOUNT:GetInt(3):abs())
+function plyMeta:LimitedHEVGetMaxJumps()
+	return self:GetNWUInt('limitedhev.maxjumps', MAX_AMOUNT:GetInt(3):abs())
 end
 
-function plyMeta:LimitedHEVSetMaxJump(maxValue)
-	return self:SetNWUInt('limitedhev.maxjump', maxValue)
+function plyMeta:LimitedHEVSetMaxJumps(maxValue)
+	return self:SetNWUInt('limitedhev.maxjumps', maxValue)
 end
 
-function plyMeta:LimitedHEVResetMaxJump()
-	return self:LimitedHEVSetMaxJump(MAX_AMOUNT:GetInt(3):abs())
+function plyMeta:LimitedHEVResetMaxJumps()
+	return self:LimitedHEVSetMaxJumps(MAX_AMOUNT:GetInt(3):abs())
 end
 
-function plyMeta:LimitedHEVResetJump()
+function plyMeta:LimitedHEVResetJumps()
 	BANK:Set(self, 'key', 0)
 	BANK:Set(self, 'ground', false)
-	BANK:Set(self, 'jump', MAX_AMOUNT:GetInt(3))
+	BANK:Set(self, 'jumps', MAX_AMOUNT:GetInt(3))
 	BANK:Set(self, 'recharging', false)
 	BANK:Set(self, 'jumpbreak', false)
 	BANK:Set(self, 'next', 0)
 	BANK:Set(self, 'start', 0)
 end
 
-function plyMeta:LimitedHEVGetJump()
-	return BANK:Get(self, 'jump')
+function plyMeta:LimitedHEVGetJumps()
+	return BANK:Get(self, 'jumps')
 end
 
 function plyMeta:LimitedHEVNextJumpRecharge()
@@ -129,25 +129,25 @@ function plyMeta:LimitedHEVIsJumpRecharging()
 	return BANK:Get(self, 'recharging')
 end
 
-function plyMeta:IsLongJumpModuleEquipped()
-	return self:GetNWBool('limitedhev.longjump', false)
+function plyMeta:IsLongJumpsModuleEquipped()
+	return self:GetNWBool('limitedhev.longjumps', false)
 end
 
 if SERVER then
-	function plyMeta:EquipLongJumpModule()
-		if self:IsLongJumpModuleEquipped() then return end
+	function plyMeta:EquipLongJumpsModule()
+		if self:IsLongJumpsModuleEquipped() then return end
 		self:EmitSound('LimitedHEV.LongJumpPickup')
-		self:SetNWBool('limitedhev.longjump', true)
+		self:SetNWBool('limitedhev.longjumps', true)
 	end
 
-	function plyMeta:RemoveLongJumpModule()
-		self:SetNWBool('limitedhev.longjump', false)
+	function plyMeta:RemoveLongJumpsModule()
+		self:SetNWBool('limitedhev.longjumps', false)
 	end
 end
 
 local function SetupMove(ply, movedata)
 	if ply:GetMoveType() ~= MOVETYPE_WALK then return end
-	if not ply:IsLongJumpModuleEquipped() then return end
+	if not ply:IsLongJumpsModuleEquipped() then return end
 
 	local onground = ply:OnGround()
 	local water = ply:WaterLevel() <= 0
@@ -158,10 +158,10 @@ local function SetupMove(ply, movedata)
 		BANK:Invalidate(ply)
 		invalidated = true
 
-		BANK:Set(ply, 'jump', BANK:Get(ply, 'jump') + 1)
+		BANK:Set(ply, 'jumps', BANK:Get(ply, 'jumps') + 1)
 		ply:EmitSoundPredicted('LimitedHEV.LongJumpReady')
 
-		if ply:LimitedHEVGetMaxJump() <= BANK:Get(ply, 'jump') then
+		if ply:LimitedHEVGetMaxJumps() <= BANK:Get(ply, 'jumps') then
 			BANK:Set(ply, 'recharging', false)
 		else
 			BANK:Set(ply, 'next', CurTime() + COOLDOWN:GetFloat())
@@ -194,7 +194,7 @@ local function SetupMove(ply, movedata)
 	BANK:Set(ply, 'key', BANK:Get(ply, 'key') + 1)
 
 	if BANK:Get(ply, 'key') >= 2 and BANK:Get(ply, 'ground') then
-		if BANK:Get(ply, 'jump') > 0 then
+		if BANK:Get(ply, 'jumps') > 0 then
 			local ang = ply:EyeAngles()
 			ang.p = (-ang.p):max(-3, 7) * -1
 			ang.r = 0
@@ -207,7 +207,7 @@ local function SetupMove(ply, movedata)
 
 			BANK:Set(ply, 'ground', false)
 			BANK:Set(ply, 'jumpbreak', false)
-			BANK:Set(ply, 'jump', BANK:Get(ply, 'jump') - 1)
+			BANK:Set(ply, 'jumps', BANK:Get(ply, 'jumps') - 1)
 
 			if not BANK:Get(ply, 'recharging') then
 				BANK:Set(ply, 'recharging', true)
@@ -222,11 +222,11 @@ local function SetupMove(ply, movedata)
 	end
 end
 
-hook.Add('SetupMove', 'LimitedHEV_LongJump', SetupMove)
+hook.Add('SetupMove', 'LimitedHEV_LongJumps', SetupMove)
 
 local ENT = {}
 
-ENT.PrintName = 'Long Jump module'
+ENT.PrintName = 'Long jumps module'
 ENT.Spawnable = true
 ENT.AdminSpawnable = true
 ENT.AdminOnly = false
@@ -254,14 +254,14 @@ if SERVER then
 
 	function ENT:StartTouch(ent)
 		if not IsValid(ent) or not ent:IsPlayer() then return end
-		if ent:IsLongJumpModuleEquipped() or not ent:IsSuitEquipped() then return end
+		if ent:IsLongJumpsModuleEquipped() or not ent:IsSuitEquipped() then return end
 
 		if hook.Run('PlayerCanPickupItem', ent, self) == false then return end
 
 		SafeRemoveEntity(self)
 
-		ent:SendLua([[hook.Run("HUDItemPickedUp", "dbot_longjump_module")]])
-		ent:EquipLongJumpModule()
+		ent:SendLua([[hook.Run("HUDItemPickedUp", "dbot_longjumps_module")]])
+		ent:EquipLongJumpsModule()
 	end
 else
 	function ENT:Initialize()
@@ -269,17 +269,17 @@ else
 	end
 end
 
-hook.Add('ShouldCollide', 'LongJumpModule', function(ent1, ent2)
-	if ent1:GetClass() ~= 'dbot_longjump_module' and ent2:GetClass() ~= 'dbot_longjump_module' then return end
+hook.Add('ShouldCollide', 'LongJumpsModule', function(ent1, ent2)
+	if ent1:GetClass() ~= 'dbot_longjumps_module' and ent2:GetClass() ~= 'dbot_longjumps_module' then return end
 	if not ent1:IsPlayer() and not ent2:IsPlayer() then return end
 
 	--[[local ply = ent1:IsPlayer() and ent1 or ent2
 
-	if SERVER and not ply:IsLongJumpModuleEquipped() and ply:IsSuitEquipped() then
+	if SERVER and not ply:IsLongJumpsModuleEquipped() and ply:IsSuitEquipped() then
 		(ent1:IsPlayer() and ent2 or ent1):EquipOnNextFrame(ply)
 	end]]
 
 	return false
 end)
 
-scripted_ents.Register(ENT, 'dbot_longjump_module')
+scripted_ents.Register(ENT, 'dbot_longjumps_module')
