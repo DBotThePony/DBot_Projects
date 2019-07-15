@@ -106,6 +106,7 @@ function plyMeta:LimitedHEVResetMaxJumps()
 end
 
 function plyMeta:LimitedHEVResetJumps()
+	BANK:Invalidate(self)
 	BANK:Set(self, 'key', 0)
 	BANK:Set(self, 'ground', false)
 	BANK:Set(self, 'jumps', MAX_AMOUNT:GetInt(3))
