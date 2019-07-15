@@ -140,6 +140,8 @@ local function SetupMove(self, movedata)
 	if self:GetMoveType() ~= MOVETYPE_WALK then return end
 	if not self:IsLongJumpsModuleEquipped() then return end
 
+	self:DLibInvalidatePrediction(true)
+
 	local onground = self:OnGround()
 	local water = self:WaterLevel() <= 0
 	local jump = movedata:KeyPressed(IN_JUMP)
@@ -161,7 +163,10 @@ local function SetupMove(self, movedata)
 		self:EmitSoundPredicted('LimitedHEV.JumpBreak')
 	end
 
-	if not movedata:KeyPressed(IN_JUMP) or not water then return end
+	if not movedata:KeyPressed(IN_JUMP) or not water then
+		self:DLibInvalidatePrediction(false)
+		return
+	end
 
 	if onground then
 		self:SetLongJumpKey(0)
@@ -200,6 +205,8 @@ local function SetupMove(self, movedata)
 			self:EmitSoundPredicted('LimitedHEV.LongJumpDeny')
 		end
 	end
+
+	self:DLibInvalidatePrediction(false)
 end
 
 hook.Add('SetupMove', 'LimitedHEV_LongJumps', SetupMove)
