@@ -226,7 +226,7 @@ hook.Add('SetupMove', 'LimitedHEV_LongJumps', SetupMove)
 
 local ENT = {}
 
-ENT.PrintName = 'Long jumps module'
+ENT.PrintName = 'Long Jump module'
 ENT.Spawnable = true
 ENT.AdminSpawnable = true
 ENT.AdminOnly = false
@@ -260,7 +260,7 @@ if SERVER then
 
 		SafeRemoveEntity(self)
 
-		ent:SendLua([[hook.Run("HUDItemPickedUp", "dbot_longjumps_module")]])
+		ent:SendLua([[hook.Run("HUDItemPickedUp", "dbot_longjump_module")]])
 		ent:EquipLongJumpsModule()
 	end
 else
@@ -270,7 +270,7 @@ else
 end
 
 hook.Add('ShouldCollide', 'LongJumpsModule', function(ent1, ent2)
-	if ent1:GetClass() ~= 'dbot_longjumps_module' and ent2:GetClass() ~= 'dbot_longjumps_module' then return end
+	if ent1:GetClass() ~= 'dbot_longjump_module' and ent2:GetClass() ~= 'dbot_longjump_module' then return end
 	if not ent1:IsPlayer() and not ent2:IsPlayer() then return end
 
 	--[[local ply = ent1:IsPlayer() and ent1 or ent2
@@ -282,4 +282,4 @@ hook.Add('ShouldCollide', 'LongJumpsModule', function(ent1, ent2)
 	return false
 end)
 
-scripted_ents.Register(ENT, 'dbot_longjumps_module')
+scripted_ents.Register(ENT, 'dbot_longjump_module')
