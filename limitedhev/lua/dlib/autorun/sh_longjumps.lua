@@ -77,17 +77,38 @@ local MAX_AMOUNT = CreateConVar('sv_longjump_amount', '3', 'Long Jump amount')
 local COOLDOWN = CreateConVar('sv_longjump_cooldown', '5', 'Long Jump recharge time in seconds')
 local DELAY = CreateConVar('sv_longjump_delay', '0.2', 'Delay between two Long Jumps in seconds')
 
-DLib.pred.Define('LongJumpKey', 'Int', 0)
-DLib.pred.Define('LongJumpCount', 'Int', 3)
-DLib.pred.Define('LongJumpNextR', 'Float', 0)
-DLib.pred.Define('LongJumpStartR', 'Float', 0)
-DLib.pred.Define('LongJumpDelay', 'Float', 0)
-
-DLib.pred.Define('LongJumpGround', 'Bool', false)
-DLib.pred.Define('LongJumpIsRecharging', 'Bool', false)
-DLib.pred.Define('LongJumpBreak', 'Bool', false)
-
 local plyMeta = FindMetaTable('Player')
+
+--[[local function Define(name, mtype, def)
+	plyMeta['Get' .. name] = function(self)
+		return self['GetNW2' .. mtype](self, name, def)
+	end
+
+	plyMeta['Set' .. name] = function(self, val)
+		return self['SetNW2' .. mtype](self, name, val)
+	end
+
+	plyMeta['Reset' .. name] = function(self)
+		return self['SetNW2' .. mtype](self, name, def)
+	end
+end]]
+
+local BANK = DLib.PredictedVarList('LongJumps')
+
+local function Define(name, mtype, def)
+	BANK:AddVar(name, def)
+end
+
+Define('LongJumpKey', 'Int', 0)
+Define('LongJumpCount', 'Int', 3)
+Define('LongJumpNextR', 'Float', 0)
+Define('LongJumpStartR', 'Float', 0)
+Define('LongJumpDelay', 'Float', 0)
+Define('LongJumpGround', 'Bool', false)
+Define('LongJumpIsRecharging', 'Bool', false)
+Define('LongJumpBreak', 'Bool', false)
+
+BANK:RegisterMeta('PredictLongJump', 'SyncLongJump')
 
 function plyMeta:GetMaxLongJumps()
 	return self:GetNWUInt('limitedhev.maxjumps', MAX_AMOUNT:GetInt(3):abs())
@@ -136,17 +157,22 @@ if SERVER then
 	end
 end
 
+local whut = true
+
+hook.Add('SetupMove', 'movetest', function()
+	whut = IsFirstTimePredicted()
+end, -9)
+
 local function SetupMove(self, movedata)
 	if self:GetMoveType() ~= MOVETYPE_WALK then return end
 	if not self:IsLongJumpsModuleEquipped() then return end
-
-	self:DLibInvalidatePrediction(true)
 
 	local onground = self:OnGround()
 	local water = self:WaterLevel() <= 0
 	local jump = movedata:KeyPressed(IN_JUMP)
 
 	if self:GetLongJumpIsRecharging() and self:GetLongJumpNextR() < CurTime() then
+		self:PredictLongJump(true)
 		self:SetLongJumpCount(self:GetLongJumpCount() + 1)
 		self:EmitSoundPredicted('LimitedHEV.LongJumpReady')
 
@@ -168,6 +194,9 @@ local function SetupMove(self, movedata)
 		return
 	end
 
+	self:DLibInvalidatePrediction(true)
+	self:PredictLongJump(true)
+
 	if onground then
 		self:SetLongJumpKey(0)
 		self:SetLongJumpGround(true)
@@ -177,8 +206,8 @@ local function SetupMove(self, movedata)
 	self:SetLongJumpKey(self:GetLongJumpKey() + 1)
 
 	if self:GetLongJumpKey() >= 2 and self:GetLongJumpGround() then
-		if self:GetLongJumpCount() > 0 and self:GetLongJumpDelay() < CurTime() then
-			local ang = self:EyeAngles()
+		if self:GetLongJumpCount() > 0 then
+			local ang = movedata:GetAngles()
 			ang.p = (-ang.p):max(-3, 7) * -1
 			ang.r = 0
 
