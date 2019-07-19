@@ -56,7 +56,7 @@ function DToyBox.GetFileInfo(wsid)
 
 			resolve({
 				item = resp.response.publishedfiledetails[1],
-				isCollection = resp.response.publishedfiledetails[1].filename:find('.gma', 1, true) == nil
+				isCollection = resp.response.publishedfiledetails[1].creator_app_id == 766
 			})
 		end
 
