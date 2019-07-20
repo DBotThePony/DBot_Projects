@@ -103,8 +103,6 @@ function DParkour.HandleSlide(ply, movedata, data)
 		ply:SetDParkourSlideVelStart(movedata:GetVelocity())
 		ply:SetDParkourSlideLastOrigin(movedata:GetOrigin())
 
-		-- DParkour.__SendSlideStart(data.slide_velocity_start)
-
 		ply:EmitSoundPredicted('DParkour.Sliding')
 	elseif ply:GetDParkourSlideVelStart():Length() > 350 then
 		local mins, maxs = ply:GetHull()
@@ -172,8 +170,6 @@ function DParkour.HandleSlideStop(ply, movedata, data, standup)
 		if standup then
 			--ply:EmitSound('DParkour.SlidingInterrupt')
 		end
-
-		-- DParkour.__SendSlideStop()
 
 		ply:StopSound('DParkour.Sliding')
 	end

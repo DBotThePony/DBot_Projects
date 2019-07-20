@@ -74,30 +74,33 @@ function DParkour.HandleRolling(ply, movedata, data)
 		return
 	end
 
-	if ply:GetDParkourRolling() then
-		--print(ply:GetDParkourRollEnd(), ply:GetDParkourRollStart(), IsFirstTimePredicted())
-	end
-
 	if ply:GetDParkourRolling() and ply:GetDParkourRollEnd() < CurTime() then
 		ply:SetDParkourRolling(false)
+		data.rolling = false
 	end
 
 	if ply:GetDParkourRolls() <= 0 and not ply:GetDParkourRolling() then return end
 
 	if not ply:GetDParkourRolling() then
-		--print('set', IsFirstTimePredicted())
 		ply:SetDParkourRolling(true)
 		ply:SetDParkourRollStart(CurTime())
 		ply:SetDParkourRollEnd(CurTime() + 0.6)
 		ply:SetDParkourRolls(ply:GetDParkourRolls() - 1)
 		ply:SetDParkourNextRoll(CurTime() + 0.2)
+
+		if CLIENT and IsFirstTimePredicted() then
+			data.rolling = true
+			data.roll_start = RealTime()
+			data.roll_end = RealTime() + 0.6
+		end
+
 		ply:EmitSoundPredicted('DParkour.Roll')
 	end
 
 	if not ply:GetDParkourRolling() then return end
 
 	if ply:GetDParkourNextRoll() < CurTime() then
-		ply:EmitSound('DParkour.Roll')
+		ply:EmitSoundPredicted('DParkour.Roll')
 		ply:SetDParkourNextRoll(CurTime() + 0.2)
 	end
 
@@ -107,6 +110,12 @@ end
 function DParkour.InterruptRoll(ply, movedata, data)
 	ply:SetDParkourRolls(0)
 	ply:SetDParkourRolling(false)
+
+	if CLIENT then
+		data.rolling = false
+		data.roll_start = 0
+		data.roll_end = 0
+	end
 end
 
 function DParkour.RollingCMD(ply, cmd, data)
@@ -138,10 +147,7 @@ function DParkour.HandleRollFall(ply, movedata, data)
 
 	local rolls = (velocity:Length() / 1400):ceil():max(1)
 
-	--print(IsFirstTimePredicted())
 	ply:SetDParkourRolls(rolls)
 	ply:SetDParkourRollDir(direction:Forward() * 400)
 	ply:SetDParkourRollAng(direction)
-
-	-- DParkour.__SendRolling(data.rolls, data.roll_dir, data.roll_ang)
 end

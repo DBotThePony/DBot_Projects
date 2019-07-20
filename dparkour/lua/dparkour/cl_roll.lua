@@ -26,10 +26,24 @@ local Angle = Angle
 
 local function CalcView(self, origin, angles, fov, znear, zfar)
 	local data = self._parkour
-	if not data then return end
-	if not self:GetDParkourRolling() then return end
+	if not data or not data.rolling then return end
 
-	local roll = CurTime():progression(self:GetDParkourRollStart(), self:GetDParkourRollEnd())
+	local roll = RealTime():progression(data.roll_start, data.roll_end)
+
+	local ang = Angle((roll * 360 + 90):normalizeAngle(), self:GetDParkourRollAng().y, 0)
+
+	return {
+		origin = origin,
+		angles = ang,
+		fov = fov,
+		znear = znear,
+		zfar = zfar,
+	}
+end
+
+local function CalcViewSinglePlayer(self, origin, angles, fov, znear, zfar)
+	if not ply:GetDParkourRolling() then end
+	local roll = CurTime():progression(ply:GetDParkourRollStart(), ply:GetDParkourRollEnd())
 
 	local ang = Angle((roll * 360 + 90):normalizeAngle(), self:GetDParkourRollAng().y, 0)
 
@@ -47,5 +61,10 @@ local function PreDrawViewModel(vm, ply, weapon)
 	if ply:GetDParkourRolling() then return true end
 end
 
-hook.Add('CalcView', 'DParkour.Rolling', CalcView, -2)
+if not game.SinglePlayer() then
+	hook.Add('CalcView', 'DParkour.Rolling', CalcView, -2)
+else
+	hook.Add('CalcView', 'DParkour.Rolling', CalcViewSinglePlayer, -2)
+end
+
 hook.Add('PreDrawViewModel', 'DParkour.Rolling', PreDrawViewModel, 4)
