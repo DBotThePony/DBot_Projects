@@ -42,6 +42,11 @@ local function DrawOutline(x, y)
 	surface.DrawRect(x - padding, y + h + padding, w + padding * 2, lineWidth)
 end
 
+surface.DLibCreateFont('MaxLongJumpsCounter', {
+	size = 14,
+	font = 'Roboto'
+})
+
 local function HUDPaint()
 	local ply = LocalPlayer()
 	if not ply:Alive() then return end
@@ -59,18 +64,55 @@ local function HUDPaint()
 	if ply:GetMaxLongJumps() < 6 then
 		for i = 0, ply:GetMaxLongJumps() - 1 do
 			if (i + 1) == num then
+				surface.SetDrawColor(color_black)
+				DrawOutline(x + i * wide + 1, y + 1)
+
 				surface.SetDrawColor(color2)
 				DrawOutline(x + i * wide, y)
+
 				surface.DrawRect(x + i * wide, y + (h * (1 - pr)):ceil(), w, (h * pr):floor())
 			elseif i < num then
+				surface.SetDrawColor(color_black)
+				DrawOutline(x + i * wide + 1, y + 1)
+
 				surface.SetDrawColor(color2)
 				DrawOutline(x + i * wide, y)
 			else
+				surface.SetDrawColor(color_black)
+				DrawOutline(x + i * wide + 1, y + 1)
+
 				surface.SetDrawColor(color)
 				DrawOutline(x + i * wide, y)
+
 				surface.DrawRect(x + i * wide, y, w, h)
 			end
 		end
+	else
+		if num == 0 then
+			surface.SetDrawColor(color_black)
+			DrawOutline(x + 1, y + 1)
+
+			surface.SetDrawColor(color)
+			DrawOutline(x, y)
+			surface.DrawRect(x, y, w, h)
+		else
+			surface.SetDrawColor(color_black)
+			DrawOutline(x + 1, y + 1)
+
+			surface.SetDrawColor(color2)
+			DrawOutline(x, y)
+			surface.DrawRect(x, y + (h * (1 - pr)):ceil(), w, (h * pr):floor())
+		end
+
+		surface.SetFont('MaxLongJumpsCounter')
+
+		surface.SetTextColor(color_black)
+		surface.SetTextPos(x + wide + 2, y + wide / 2 + 2)
+		surface.DrawText('x' .. ply:GetLongJumpCount())
+
+		surface.SetTextColor(color_white)
+		surface.SetTextPos(x + wide, y + wide / 2)
+		surface.DrawText('x' .. ply:GetLongJumpCount())
 	end
 end
 

@@ -104,7 +104,7 @@ local function Define(name, mtype, def)
 end
 
 Define('LongJumpKey', 'Int', 0)
-Define('LongJumpCount', 'Int', 3)
+Define('LongJumpCount', 'Int', MAX_AMOUNT:GetInt())
 Define('LongJumpNextR', 'Float', 0)
 Define('LongJumpStartR', 'Float', 0)
 Define('LongJumpDelay', 'Float', 0)
