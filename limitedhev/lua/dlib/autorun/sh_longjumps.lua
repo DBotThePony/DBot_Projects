@@ -209,7 +209,7 @@ local function SetupMove(self, movedata)
 
 	self:SetLongJumpKey(self:GetLongJumpKey() + 1)
 
-	if self:GetLongJumpKey() >= 2 and self:GetLongJumpGround() then
+	if self:GetLongJumpKey() >= 2 and self:GetLongJumpGround() and self:GetLongJumpDelay() < CurTime() then
 		if self:GetLongJumpCount() > 0 then
 			local ang = movedata:GetAngles()
 			ang.p = (-ang.p):max(-3, 7) * -1

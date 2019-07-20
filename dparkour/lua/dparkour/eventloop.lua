@@ -139,5 +139,5 @@ local function StartCommand(ply, cmd)
 	ply:DLibInvalidatePrediction(false)
 end
 
-hook.Add('SetupMove', 'DParkourEventLoop', SetupMove, -3)
-hook.Add('StartCommand', 'DParkourEventLoop', StartCommand, -3)
+hook.Add('SetupMove', 'DParkourEventLoop', SetupMove, -1)
+hook.Add('StartCommand', 'DParkourEventLoop', StartCommand, -1)

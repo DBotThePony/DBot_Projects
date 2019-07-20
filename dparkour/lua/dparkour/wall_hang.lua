@@ -89,6 +89,10 @@ function DParkour.WallHangInterrupt(ply, movedata, data)
 	ply:EmitSoundPredicted('DParkour.HangOver')
 	ply:SetDParkourHangingOnEdge(false)
 	ply:SetDParkourLastHung(RealTimeL() + 0.4)
+
+	if ply.SetLongJumpDelay then
+		ply:SetLongJumpDelay(CurTime() + 0.1)
+	end
 end
 
 function DParkour.WallHangDrop(ply, movedata, data)
