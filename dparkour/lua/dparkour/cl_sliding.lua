@@ -24,18 +24,16 @@ local tilt = 0
 local Lerp = Lerp
 
 local function CalcView(self, origin, angles, fov, znear, zfar)
-	local data = self._parkour
-	if not data then return end
-
-	if not data.sliding then
+	if not self:GetDParkourSliding() then
 		tilt = Lerp(RealFrameTime() * 4, tilt, 0)
-		if tilt == 0 then return end
+		if tilt:abs() <= 0.01 then return end
 	end
 
-	if data.sliding then
-		local ang = data.slide_velocity_start:Angle()
+	if self:GetDParkourSliding() then
+		local ang = self:GetDParkourSlideVelStart():Angle()
 		ang.p = 0
 		ang.r = 0
+		--print(ang)
 
 		if ang.y:angleDifference(angles.y) >= 0 then
 			tilt = Lerp(RealFrameTime() * 4, tilt, 1)

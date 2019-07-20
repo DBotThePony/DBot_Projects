@@ -59,23 +59,20 @@ local LocalToWorld = LocalToWorld
 local CurTimeL = CurTimeL
 local FrameNumberL = FrameNumberL
 
+DLib.pred.Define('DParkourAWallRun', 'Int', 5)
+
 function DParkour.HandleWallRun(ply, movedata, data)
-	if data.hanging_on_edge then return end
+	if ply:GetDParkourHangingOnEdge() then return end
 
-	data.avaliable_wall_run = data.avaliable_wall_run or 5
-
-	if data.first and (data.last_on_ground or not data.alive) then
-		data.avaliable_wall_run = 5
+	if data.last_on_ground or not data.alive then
+		ply:SetDParkourAWallRun(5)
 	end
 
-	if not data.alive then return end
-	if data.last_on_ground then return end
-	if not data.IN_JUMP_changes2 or not data.IN_JUMP or not data.IN_SPEED then return end
-	if data.first then data.wall_run_status = false end
-	if not data.wall_run_status and data.avaliable_wall_run <= 0 then return end
+	if not data.alive or data.last_on_ground then return end
+	if not movedata:KeyPressed(IN_JUMP) or not movedata:KeyDown(IN_JUMP) or not movedata:KeyDown(IN_SPEED) then return end
 
-	local center = ply:GetPos() + ply:OBBCenter()
-	local eyes = ply:EyeAngles():Right()
+	local center = movedata:GetOrigin() + ply:OBBCenter()
+	local eyes = movedata:GetAngles():Right()
 
 	local mins, maxs = ply:GetHull()
 	maxs.z = 0
@@ -109,18 +106,16 @@ function DParkour.HandleWallRun(ply, movedata, data)
 		if phys:IsMoveable() and phys:IsMotionEnabled() and usetrace.Entity:GetMoveType() ~= MOVETYPE_NONE then return end
 	else
 		local hit = -usetrace.HitNormal
-		local dot = ply:EyeAngles():Forward():Dot(hit)
+		local dot = movedata:GetAngles():Forward():Dot(hit)
 		if dot > 0.6 or dot < -0.2 then return end
 	end
 
-	if data.first then
-		if data.avaliable_wall_run <= 0 then return end
-		data.avaliable_wall_run = data.avaliable_wall_run - 1
-		data.wall_run_vel = movedata:GetVelocity()
-		data.wall_run_vel.z = 140
-		data.wall_run_status = true
-	end
+	if ply:GetDParkourAWallRun() <= 0 then return end
+	ply:AddDParkourAWallRun(-1)
 
-	ply:EmitSound('DParkour.WallStep')
-	movedata:SetVelocity(data.wall_run_vel)
+	local wall_run_vel = movedata:GetVelocity()
+	wall_run_vel.z = 140
+
+	ply:EmitSoundPredicted('DParkour.WallStep')
+	movedata:SetVelocity(wall_run_vel)
 end

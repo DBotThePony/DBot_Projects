@@ -59,19 +59,19 @@ local LocalToWorld = LocalToWorld
 local CurTimeL = CurTimeL
 local FrameNumberL = FrameNumberL
 
-function DParkour.WallJumpLoop(ply, movedata, data)
-	data.avaliable_jumps = data.avaliable_jumps or 3
+DLib.pred.Define('DParkourAvailableWallJumps', 'Int', 3)
 
+function DParkour.WallJumpLoop(ply, movedata, data)
 	if data.last_on_ground or not data.alive then
-		data.avaliable_jumps = 3
+		ply:SetDParkourAvailableWallJumps(3)
 	end
 
 	if not data.alive then return end
-	if not data.IN_JUMP_changes or not data.IN_JUMP_last then return end
+	if not ply:KeyPressed(IN_JUMP) then return end
 
 	if data.avaliable_jumps < 0 then return end
 
-	local eang = ply:EyeAngles()
+	local eang = movedata:GetAngles()
 	eang.p = 0
 	eang.r = 0
 	local mins, maxs = ply:GetHull()
@@ -80,8 +80,8 @@ function DParkour.WallJumpLoop(ply, movedata, data)
 	maxs.z = 0
 
 	local trWall = util.TraceHull({
-		start = ply:GetPos() + ply:OBBCenter(),
-		endpos = ply:GetPos() + ply:OBBCenter() - eang:Forward() * 30,
+		start = movedata:GetOrigin() + ply:OBBCenter(),
+		endpos = movedata:GetOrigin() + ply:OBBCenter() - eang:Forward() * 30,
 		mins = mins,
 		maxs = maxs,
 		filter = ply
@@ -90,18 +90,13 @@ function DParkour.WallJumpLoop(ply, movedata, data)
 	if not trWall.Hit then return end
 
 	local hit = -trWall.HitNormal
-	local dot = ply:EyeAngles():Forward():Dot(hit)
+	local dot = movedata:GetAngles():Forward():Dot(hit)
 
 	if dot > -0.3 then return end
 
 	eang.p = -70
 
-	if data.first then
-		data.avaliable_jumps = data.avaliable_jumps - 1
-		data.wall_jump_vel = eang:Forward() * 400
-		data.wall_pred_until = CurTimeL()
-	end
-
-	ply:EmitSound('DParkour.WallStep')
-	movedata:SetVelocity(data.wall_jump_vel)
+	ply:AddDParkourAvailableWallJumps(-1)
+	ply:EmitSoundPredicted('DParkour.WallStep')
+	movedata:SetVelocity(eang:Forward() * 400)
 end

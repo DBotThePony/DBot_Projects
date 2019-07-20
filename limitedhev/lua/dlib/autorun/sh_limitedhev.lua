@@ -101,9 +101,9 @@ local function StartCommand(ply, cmd)
 		return
 	end
 
-	if cmd:GetButtons():band(IN_SPEED) ~= 0 then
+	if newHev then
 		if statusChanged then
-			ply:EmitSoundPredicted('HL2Player.SprintStart')
+			ply:EmitSoundPredictedR('HL2Player.SprintStart')
 		end
 
 		local fldata = ply._fldata

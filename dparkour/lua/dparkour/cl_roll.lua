@@ -27,11 +27,11 @@ local Angle = Angle
 local function CalcView(self, origin, angles, fov, znear, zfar)
 	local data = self._parkour
 	if not data then return end
-	if not data.rolling then return end
+	if not self:GetDParkourRolling() then return end
 
-	local roll = UnPredictedCurTime():progression(data.rolling_start, data.rolling_end)
+	local roll = CurTime():progression(self:GetDParkourRollStart(), self:GetDParkourRollEnd())
 
-	local ang = Angle((roll * 360 + 90):normalizeAngle(), data.roll_ang.y, 0)
+	local ang = Angle((roll * 360 + 90):normalizeAngle(), self:GetDParkourRollAng().y, 0)
 
 	return {
 		origin = origin,
@@ -44,7 +44,7 @@ end
 
 local function PreDrawViewModel(vm, ply, weapon)
 	if not vm then return end
-	if ply._parkour and ply._parkour.rolling then return true end
+	if ply:GetDParkourRolling() then return true end
 end
 
 hook.Add('CalcView', 'DParkour.Rolling', CalcView, -2)

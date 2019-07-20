@@ -93,10 +93,14 @@ local plyMeta = FindMetaTable('Player')
 	end
 end]]
 
-local BANK = DLib.PredictedVarList('LongJumps')
+--local BANK = DLib.PredictedVarList('LongJumps')
+
+--[[local function Define(name, mtype, def)
+	BANK:AddVar(name, def)
+end]]
 
 local function Define(name, mtype, def)
-	BANK:AddVar(name, def)
+	DLib.pred.Define(name, mtype, def)
 end
 
 Define('LongJumpKey', 'Int', 0)
@@ -108,7 +112,7 @@ Define('LongJumpGround', 'Bool', false)
 Define('LongJumpIsRecharging', 'Bool', false)
 Define('LongJumpBreak', 'Bool', false)
 
-BANK:RegisterMeta('PredictLongJump', 'SyncLongJump')
+--BANK:RegisterMeta('PredictLongJump', 'SyncLongJump')
 
 function plyMeta:GetMaxLongJumps()
 	return self:GetNWUInt('limitedhev.maxjumps', MAX_AMOUNT:GetInt(3):abs())

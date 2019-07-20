@@ -57,8 +57,16 @@ local IsValid = IsValid
 local DMG_CRUSH = DMG_CRUSH
 local DMG_CLUB = DMG_CLUB
 
+DLib.pred.Define('DParkourSliding', 'Bool', false)
+DLib.pred.Define('DParkourSlideHit', 'Float', 0)
+DLib.pred.Define('DParkourSlideVelStart', 'Vector', Vector())
+DLib.pred.Define('DParkourSlideLastOrigin', 'Vector', Vector())
+DLib.pred.Define('DParkourSlideStart', 'Float', 0)
+DLib.pred.Define('DParkourSlideSide', 'Bool', 0)
+DLib.pred.Define('DParkourSlideHit', 'Float', 0)
+
 function DParkour.HandleSlide(ply, movedata, data)
-	if CLIENT and data.slide_hit and data.slide_hit > UnPredictedCurTime() then
+	--[[if CLIENT and ply:GetDParkourSlideHit() > CurTime() then
 		movedata:SetButtons(movedata:GetButtons()
 			:band(IN_FORWARD:bnot())
 			:band(IN_BACK:bnot())
@@ -69,10 +77,10 @@ function DParkour.HandleSlide(ply, movedata, data)
 		movedata:SetVelocity(Vector())
 
 		return
-	end
+	end]]
 
-	if data.sliding then
-		if data.slide_velocity_start:Length() < 150 or not data.alive then
+	if ply:GetDParkourSliding() then
+		if ply:GetDParkourSlideVelStart():Length() < 150 or not data.alive then
 			DParkour.HandleSlideStop(ply, movedata, data, false)
 			return
 		end
@@ -82,26 +90,29 @@ function DParkour.HandleSlide(ply, movedata, data)
 
 	if not data.alive then return end
 
-	if not data.sliding then
+	if not ply:GetDParkourSliding() then
 		if ply:EyeAngles().p > 48 then return end
 
 		if movedata:GetVelocity():Length() < 400 then
 			movedata:SetVelocity(movedata:GetVelocity():GetNormalized() * 400)
 		end
 
-		data.sliding = true
-		data.sliding_start = CurTimeL()
-		data.slide_side = movedata:GetVelocity():Angle().yaw:angleDifference(ply:EyeAngles():Forward().yaw) >= 0
-		data.slide_velocity_start = movedata:GetVelocity()
-		DParkour.__SendSlideStart(data.slide_velocity_start)
-		ply:EmitSound('DParkour.Sliding')
-	elseif data.first and data.slide_velocity_start:Length() > 350 then
+		ply:SetDParkourSliding(true)
+		ply:SetDParkourSlideStart(CurTime())
+		ply:SetDParkourSlideSide(movedata:GetVelocity():Angle().yaw:angleDifference(ply:EyeAngles():Forward().yaw) >= 0)
+		ply:SetDParkourSlideVelStart(movedata:GetVelocity())
+		ply:SetDParkourSlideLastOrigin(movedata:GetOrigin())
+
+		-- DParkour.__SendSlideStart(data.slide_velocity_start)
+
+		ply:EmitSoundPredicted('DParkour.Sliding')
+	elseif ply:GetDParkourSlideVelStart():Length() > 350 then
 		local mins, maxs = ply:GetHull()
 		maxs.z = maxs.z * 0.4
 
 		local tr = util.TraceHull({
 			start = ply:GetPos() + Vector(0, 0, 6),
-			endpos = ply:GetPos() + Vector(0, 0, 6) + data.slide_velocity_start:GetNormalized() * 30,
+			endpos = ply:GetPos() + Vector(0, 0, 6) + ply:GetDParkourSlideVelStart():GetNormalized() * 30,
 			filter = ply,
 			mins = mins,
 			maxs = maxs
@@ -111,7 +122,7 @@ function DParkour.HandleSlide(ply, movedata, data)
 			ply:EmitSound('DParkour.WallImpactHard')
 
 			if CLIENT then
-				data.slide_hit = CurTime()
+				ply:SetDParkourSlideHit(CurTime())
 			else
 				movedata:SetVelocity(Vector())
 
@@ -119,7 +130,7 @@ function DParkour.HandleSlide(ply, movedata, data)
 					if tr.Entity:IsNPC() or tr.Entity:IsPlayer() then
 						ply:EmitSound('DParkour.NPCImpact')
 
-						if data.slide_velocity_start:Length() > 800 then
+						if ply:GetDParkourSlideVelStart():Length() > 800 then
 							ply:EmitSound('DParkour.NPCImpactHard')
 						end
 					end
@@ -146,29 +157,23 @@ function DParkour.HandleSlide(ply, movedata, data)
 		:band(IN_RIGHT:bnot())
 	)
 
-	if data.first then
-		data.last_slide_origin = data.last_slide_origin or movedata:GetOrigin()
-		local delta = movedata:GetOrigin().z - data.last_slide_origin.z
-		data.last_slide_origin = movedata:GetOrigin()
+	local delta = movedata:GetOrigin().z - ply:GetDParkourSlideLastOrigin().z
+	ply:SetDParkourSlideLastOrigin(movedata:GetOrigin())
+	ply:SetDParkourSlideVelStart(ply:GetDParkourSlideVelStart() - ply:GetDParkourSlideVelStart():GetNormalized() * FrameTime() * (230 + delta * 256))
 
-		data.slide_velocity_start = data.slide_velocity_start - data.slide_velocity_start:GetNormalized() * FrameTime() * (230 + delta * 256)
-	end
-
-	movedata:SetVelocity(data.slide_velocity_start)
+	movedata:SetVelocity(ply:GetDParkourSlideVelStart())
 end
 
 function DParkour.HandleSlideStop(ply, movedata, data, standup)
-	if data.sliding then
-		data.sliding = false
-		data.slide_velocity_start = Vector()
-		data.slide_hit = nil
-		data.last_slide_origin = nil
+	if ply:GetDParkourSliding() then
+		ply:SetDParkourSliding(false)
+		ply:SetDParkourSlideVelStart(Vector())
 
 		if standup then
 			--ply:EmitSound('DParkour.SlidingInterrupt')
 		end
 
-		DParkour.__SendSlideStop()
+		-- DParkour.__SendSlideStop()
 
 		ply:StopSound('DParkour.Sliding')
 	end

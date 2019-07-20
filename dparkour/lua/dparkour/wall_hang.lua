@@ -66,39 +66,42 @@ if SERVER then
 	net.pool('dparkour.sendhang')
 end
 
+DLib.pred.Define('DParkourHangingOnEdge', 'Bool', false)
+DLib.pred.Define('DParkourHangingOnValid', 'Bool', false)
+DLib.pred.Define('DParkourHangingOnEnt', 'Entity', NULL)
+DLib.pred.Define('DParkourLastHung', 'Float', 0)
+DLib.pred.Define('DParkourHangLocalAng', 'Angle', Angle())
+DLib.pred.Define('DParkourHangLocalPos', 'Vector', Vector())
+DLib.pred.Define('DParkourHangOrigin', 'Vector', Vector())
+DLib.pred.Define('DParkourEdgeHeight', 'Float', 0)
+DLib.pred.Define('DParkourEdgeLength', 'Float', 0)
+DLib.pred.Define('DParkourEdgeMoveable', 'Bool', false)
+DLib.pred.Define('DParkourEdgeFirstMove', 'Bool', false)
+
 function DParkour.WallHangInterrupt(ply, movedata, data)
-	if not data.hanging_on_edge then return end
+	if not ply:GetDParkourHangingOnEdge() then return end
 	movedata:SetVelocity(data.hanging_trace.HitNormal * 200 * (1 / data.hanging_trace.Fraction:clamp(0.75, 1)):clamp(2, 3))
 
-	-- fuck off sorse's prediction
-	data.fuckoff_velocity = true
-
-	if data.hanging_on_valid and not IsValid(data.hanging_on) then
-		movedata:SetVelocity(movedata:GetVelocity() + data.hanging_on:GetVelocity() * 3)
+	if ply:GetDParkourHangingOnValid() and not IsValid(ply:GetDParkourHangingOnEnt()) then
+		movedata:SetVelocity(movedata:GetVelocity() + ply:GetDParkourHangingOnEnt():GetVelocity() * 3)
 	end
 
-	data.fuckoff_vel_amount = movedata:GetVelocity()
-
-	ply:EmitSound('DParkour.HangOver')
-	data.hanging_on_edge = false
-	data.last_hung = RealTimeL() + 0.4
+	ply:EmitSoundPredicted('DParkour.HangOver')
+	ply:SetDParkourHangingOnEdge(false)
+	ply:SetDParkourLastHung(RealTimeL() + 0.4)
 end
 
 function DParkour.WallHangDrop(ply, movedata, data)
-	if not data.hanging_on_edge then return end
+	if not ply:GetDParkourHangingOnEdge() then return end
 	movedata:SetVelocity(Vector())
 
-	-- fuck off sorse's prediction
-	data.fuckoff_velocity = true
-	data.fuckoff_vel_amount = movedata:GetVelocity()
-
-	data.hanging_on_edge = false
-	data.last_hung = RealTimeL() + 0.4
+	ply:SetDParkourHangingOnEdge(false)
+	ply:SetDParkourLastHung(RealTimeL() + 0.4)
 end
 
 local function GetEdgeData(ply, movedata, data, epos, eang)
-	epos = epos or ply:OBBCenter() + ply:GetPos()
-	eang = eang or ply:EyeAngles()
+	epos = epos or ply:OBBCenter() + movedata:GetOrigin()
+	eang = eang or movedata:GetAngles()
 	local yaw = Angle(0, eang.y, 0)
 	local mins, maxs = ply:GetHull()
 	local vec = Vector(0, 0, (maxs.z - mins.z) / 2)
@@ -122,16 +125,16 @@ end
 local function RecalcEdgeHeightBackward(ply, movedata, data, newTr)
 	newTr = newTr or data.edge_tr
 
-	for i = data.edge_height + 5, 1, -1 do
+	for i = ply:GetDParkourEdgeHeight() + 5, 1, -1 do
 		local trCheck = util.TraceLine({
 			start = newTr.HitPos + newTr.HitNormal + Vector(0, 0, i),
-			endpos = newTr.HitPos - newTr.HitNormal * data.edge_length + Vector(0, 0, i),
+			endpos = newTr.HitPos - newTr.HitNormal * ply:GetDParkourEdgeLength() + Vector(0, 0, i),
 			filter = ply
 		})
 
 		if trCheck.Fraction <= 0.9 then
 			--debugoverlay.Box(newTr.HitPos + newTr.HitNormal + Vector(0, 0, i), Vector(-5, -5, -5), Vector(5, 5, 5), 2, Color(0, 150, 0))
-			--debugoverlay.Box(newTr.HitPos - newTr.HitNormal * data.edge_length + Vector(0, 0, i), Vector(-5, -5, -5), Vector(5, 5, 5), 2, Color(0, 100, 50))
+			--debugoverlay.Box(newTr.HitPos - newTr.HitNormal * ply:GetDParkourEdgeLength() + Vector(0, 0, i), Vector(-5, -5, -5), Vector(5, 5, 5), 2, Color(0, 100, 50))
 			return i + 10
 		end
 	end
@@ -139,11 +142,10 @@ local function RecalcEdgeHeightBackward(ply, movedata, data, newTr)
 	return false
 end
 
-local function sendHangData(ply, movedata, data, checkWall)
+--[[local function sendHangData(ply, movedata, data, checkWall)
 	net.Start('dparkour.sendhang')
-	net.WriteEntity(data.hanging_on)
-	net.WriteAngleDouble(data.haning_ang)
-	net.WriteVectorDouble(data.hang_origin)
+	net.WriteEntity(ply:GetDParkourHangingOnEnt())
+	net.WriteVectorDouble(ply:GetDParkourHangOrigin())
 
 	net.WriteBool(checkWall ~= nil)
 
@@ -164,36 +166,26 @@ local function sendHangData(ply, movedata, data, checkWall)
 	end
 
 	net.Send(ply)
-end
+end]]
 
 function DParkour.HandleWallHang(ply, movedata, data)
-	if data.first then
-		data.fuckoff_velocity = false
-	elseif data.fuckoff_velocity then
-		movedata:SetVelocity(data.fuckoff_vel_amount)
-		return
-	end
+	if ply:GetDParkourHangingOnEdge() then
+		if ply:GetDParkourLastHung() > RealTimeL() then return end
 
-	if data.hanging_on_edge then
-		if data.last_hung and data.last_hung > RealTimeL() then return end
-
-		if data.first then
-			if data.IN_JUMP_changes then
-				DParkour.WallHangInterrupt(ply, movedata, data)
-			elseif data.IN_DUCK then
-				DParkour.WallHangDrop(ply, movedata, data)
-			end
+		if movedata:KeyPressed(IN_JUMP) then
+			DParkour.WallHangInterrupt(ply, movedata, data)
+		elseif movedata:KeyPressed(IN_JUMP) then
+			DParkour.WallHangDrop(ply, movedata, data)
 		end
 
 		return
 	end
 
-	if not data.IN_JUMP or data.IN_DUCK then return end
-	if data.last_hung and data.last_hung > RealTimeL() then return end
-	if not data.first then return end
+	if not movedata:KeyDown(IN_JUMP) or movedata:KeyDown(IN_DUCK) then return end
+	if ply:GetDParkourLastHung() > RealTimeL() then return end
 
-	local epos = ply:EyePos()
-	local eang = ply:EyeAngles()
+	local epos = movedata:GetOrigin() + ply:GetViewOffset()
+	local eang = movedata:GetAngles()
 	local yaw = Angle(0, eang.y, 0)
 	local checkpos = epos + Vector(0, 0, 18) + yaw:Forward() * 40
 	local checkpos2 = epos + Vector(0, 0, 18) + yaw:Forward() * 32
@@ -220,16 +212,16 @@ function DParkour.HandleWallHang(ply, movedata, data)
 	})
 
 	local checkGround = util.TraceHull({
-		start = ply:GetPos(),
-		endpos = ply:GetPos() - Vector(0, 0, 2000),
+		start = movedata:GetOrigin(),
+		endpos = movedata:GetOrigin() - Vector(0, 0, 2000),
 		mins = mins,
 		maxs = maxs,
 		filter = ply
 	})
 
 	local checkGroundLOS = util.TraceHull({
-		start = ply:GetPos(),
-		endpos = ply:GetPos() - Vector(0, 0, 2000),
+		start = movedata:GetOrigin(),
+		endpos = movedata:GetOrigin() - Vector(0, 0, 2000),
 		mins = mins,
 		maxs = maxs,
 		mask = MASK_BLOCKLOS
@@ -238,7 +230,7 @@ function DParkour.HandleWallHang(ply, movedata, data)
 	if not checkWall.Hit or checkWall.HitSky then return end
 	local hangingOn = checkWall.Entity
 
-	data.edge_length = 20
+	ply:SetDParkourEdgeLength(20)
 
 	--debugoverlay.Box(checkWall.HitPos, Vector(-5, -5, -10), Vector(5, 5, 10), 2, Color(75, 150, 75))
 
@@ -246,11 +238,11 @@ function DParkour.HandleWallHang(ply, movedata, data)
 		local checkNearWall, mins, maxs, wide, high = GetEdgeData(ply, movedata, data)
 
 		if checkNearWall.Hit then
-			data.edge_movable = true
+			ply:SetDParkourEdgeMoveable(true)
 			data.edge_tr = checkNearWall
-			data.edge_height = 40
+			ply:SetDParkourEdgeHeight(40)
 			-- Allow to recalculate one time the edge trace on first hang move
-			data.edge_first_move = true
+			ply:SetDParkourEdgeFirstMove(true)
 
 			if not IsValid(hangingOn) then
 				local origin = checkNearWall.HitPos + checkNearWall.HitNormal * (wide / 2)
@@ -261,13 +253,13 @@ function DParkour.HandleWallHang(ply, movedata, data)
 					return
 				end
 
-				data.edge_height = checkWall.HitPos.z - origin.z + 3
-				data.edge_length = math.sqrt(math.pow(checkWall.HitPos.x - origin.x, 2) + math.pow(checkWall.HitPos.y - origin.y, 2)) / 2
-				data.hang_origin = origin
+				ply:SetDParkourEdgeHeight(checkWall.HitPos.z - origin.z + 3)
+				ply:SetDParkourEdgeLength(math.sqrt(math.pow(checkWall.HitPos.x - origin.x, 2) + math.pow(checkWall.HitPos.y - origin.y, 2)) / 2)
+				ply:SetDParkourHangOrigin(origin)
 				movedata:SetOrigin(origin)
 			end
 		else
-			data.edge_movable = false
+			ply:SetDParkourEdgeMoveable(false)
 		end
 	end
 
@@ -289,45 +281,46 @@ function DParkour.HandleWallHang(ply, movedata, data)
 		return
 	end
 
-	data.hanging_on_edge = true
-	data.hanging_on = hangingOn
-	data.hanging_on_valid = IsValid(hangingOn)
+	ply:SetDParkourHangingOnEdge(true)
+	ply:SetDParkourHangingOnEnt(hangingOn)
+	ply:SetDParkourHangingOnValid(IsValid(hangingOn))
 	data.hanging_trace = checkWall
-	data.haning_ang = movedata:GetAngles()
 
 	if IsValid(hangingOn) then
-		data.local_origin, data.local_angle = WorldToLocal(movedata:GetOrigin(), movedata:GetAngles(), hangingOn:GetPos(), hangingOn:GetAngles())
+		local local_origin, local_angle = WorldToLocal(movedata:GetOrigin(), movedata:GetAngles(), hangingOn:GetPos(), hangingOn:GetAngles())
+		ply:SetDParkourHangLocalAng(local_angle)
+		ply:SetDParkourHangLocalPos(local_origin)
 	else
-		data.local_origin, data.local_angle = nil, nil
+		ply:SetDParkourHangLocalAng(Angle())
+		ply:SetDParkourHangLocalPos(Vector())
 	end
 
-	data.last_hung = RealTimeL() + 0.4
+	ply:SetDParkourLastHung(RealTimeL() + 0.4)
 
-	if not data.hanging_on_valid then
-		data.hang_origin = movedata:GetOrigin()
+	if not ply:GetDParkourHangingOnValid() then
+		ply:SetDParkourHangOrigin(movedata:GetOrigin())
 	end
 
 	movedata:SetVelocity(Vector())
 
-	ply:EmitSound('DParkour.Hang')
+	ply:EmitSoundPredicted('DParkour.Hang')
 
-	if SERVER and not game.SinglePlayer() then
+	--[[if SERVER and not game.SinglePlayer() then
 		sendHangData(ply, movedata, data, checkWall)
-	end
+	end]]
 end
 
-if CLIENT then
+--[[if CLIENT then
 	local LocalPlayer = LocalPlayer
 
 	net.receive('dparkour.sendhang', function()
 		local data = LocalPlayer()._parkour
 
-		data.hanging_on_edge = true
-		data.hanging_on = net.ReadEntity()
-		data.haning_ang = net.ReadAngleDouble()
-		data.hang_origin = net.ReadVectorDouble()
+		ply:SetDParkourHangingOnEdge(true)
+		ply:GetDParkourHangingOnEnt(net.ReadEntity())
+		ply:GetDParkourHangOrigin() = net.ReadVectorDouble()
 
-		data.hanging_on_valid = IsValid(data.hanging_on)
+		ply:GetDParkourHangingOnValid() = IsValid(ply:GetDParkourHangingOnEnt())
 
 		if net.ReadBool() then
 			data.hanging_trace = net.ReadTable()
@@ -345,7 +338,7 @@ if CLIENT then
 			data.local_angle = nil
 		end
 	end)
-end
+end]]
 
 local FrameTime = FrameTime
 
@@ -353,8 +346,8 @@ local function tryToMoveOnEdge(ply, movedata, data, mult)
 	-- Calculate if we can look forward
 
 	local tr = {
-		start = data.edge_tr.HitPos + Vector(0, 0, data.edge_height + 16) + data.edge_tr.HitNormal,
-		endpos = data.edge_tr.HitPos + Vector(0, 0, data.edge_height + 16) - data.edge_tr.HitNormal * 50,
+		start = data.edge_tr.HitPos + Vector(0, 0, ply:GetDParkourEdgeHeight() + 16) + data.edge_tr.HitNormal,
+		endpos = data.edge_tr.HitPos + Vector(0, 0, ply:GetDParkourEdgeHeight() + 16) - data.edge_tr.HitNormal * 50,
 		filter = ply
 	}
 
@@ -381,7 +374,7 @@ local function tryToMoveOnEdge(ply, movedata, data, mult)
 
 		if trMoveLeft.Fraction > 0.1 then
 			-- Do we still got a wall in front of us?
-			local checkNearWall, mins, maxs, wide = GetEdgeData(ply, movedata, data, ply:OBBCenter() + ply:GetPos() + mvVec * trMoveLeft.Fraction, (-data.edge_tr.HitNormal):Angle())
+			local checkNearWall, mins, maxs, wide = GetEdgeData(ply, movedata, data, ply:OBBCenter() + movedata:Getorigin() + mvVec * trMoveLeft.Fraction, (-data.edge_tr.HitNormal):Angle())
 			--local checkNearWall, mins, maxs, wide = GetEdgeData(ply, movedata, data)
 
 			if checkNearWall.Hit then
@@ -398,24 +391,24 @@ local function tryToMoveOnEdge(ply, movedata, data, mult)
 					local newPos = RecalcEdgeHeightBackward(ply, movedata, data, checkNearWall)
 					if not newPos then return end
 
-					if (newPos - data.edge_height):abs() <= 15 or data.edge_first_move then
-						if (newPos - data.edge_height):abs() >= 1 and not data.edge_first_move and zChange == 0 then
-							zChange = newPos - data.edge_height
+					if (newPos - ply:GetDParkourEdgeHeight()):abs() <= 15 or ply:GetDParkourEdgeFirstMove() then
+						if (newPos - ply:GetDParkourEdgeHeight()):abs() >= 1 and not ply:GetDParkourEdgeFirstMove() and zChange == 0 then
+							zChange = newPos - ply:GetDParkourEdgeHeight()
 							goto DO_MOVE
 						end
 
 						data.edge_tr = checkNearWall
-						data.edge_first_move = false
-						data.edge_height = newPos
-						data.hang_origin = data.hang_origin + mvVec * trMoveLeft.Fraction
+						ply:SetDParkourEdgeFirstMove(false)
+						ply:SetDParkourEdgeHeight(newPos)
+						ply:SetDParkourHangOrigin(ply:GetDParkourHangOrigin() + mvVec * trMoveLeft.Fraction)
 
-						if SERVER and not game.SinglePlayer() then
+						--[[if SERVER and not game.SinglePlayer() then
 							timer.Create('DParkour.ReplyPlayerHang.' .. ply:EntIndex(), 1, 1, function()
-								if IsValid(ply) and data.hanging_on_edge then
+								if IsValid(ply) and ply:GetDParkourHangingOnEdge() then
 									sendHangData(ply, movedata, data)
 								end
 							end)
-						end
+						end]]
 					end
 				end
 			end
@@ -424,20 +417,20 @@ local function tryToMoveOnEdge(ply, movedata, data, mult)
 end
 
 function DParkour.HangEventLoop(ply, movedata, data)
-	if not data.hanging_on_edge then return end
+	if not ply:GetDParkourHangingOnEdge() then return end
 
 	if not data.alive then
-		data.hanging_on_edge = false
+		ply:SetDParkourHangingOnEdge(false)
 		return
 	end
 
-	if data.hanging_on_valid and not IsValid(data.hanging_on) then
-		data.hanging_on_edge = false
+	if ply:GetDParkourHangingOnValid() and not IsValid(ply:GetDParkourHangingOnEnt()) then
+		ply:SetDParkourHangingOnEdge(false)
 		return
 	end
 
-	if not data.hanging_on_valid then
-		if data.edge_movable and data.first then
+	if not ply:GetDParkourHangingOnValid() then
+		if ply:GetDParkourEdgeMoveable() and data.first then
 			if data.IN_MOVELEFT then
 				tryToMoveOnEdge(ply, movedata, data, -1)
 			elseif data.IN_MOVERIGHT then
@@ -445,7 +438,7 @@ function DParkour.HangEventLoop(ply, movedata, data)
 			end
 		end
 
-		movedata:SetOrigin(data.hang_origin)
+		movedata:SetOrigin(ply:GetDParkourHangOrigin())
 		movedata:SetVelocity(Vector())
 		movedata:SetButtons(movedata:GetButtons():band(
 			IN_FORWARD:bor(IN_MOVELEFT, IN_MOVERIGHT, IN_BACK, IN_SPEED, IN_RUN):bnot()
@@ -454,7 +447,7 @@ function DParkour.HangEventLoop(ply, movedata, data)
 		return
 	end
 
-	local newpos, newang = LocalToWorld(data.local_origin, data.local_angle, data.hanging_on:GetPos(), data.hanging_on:GetAngles())
+	local newpos, newang = LocalToWorld(ply:GetDParkourHangLocalPos(), ply:GetDParkourHangLocalAng(), ply:GetDParkourHangingOnEnt():GetPos(), ply:GetDParkourHangingOnEnt():GetAngles())
 	movedata:SetOrigin(newpos)
 	movedata:SetVelocity(Vector())
 	movedata:SetButtons(movedata:GetButtons():band(
@@ -466,14 +459,14 @@ function DParkour.HangEventLoop(ply, movedata, data)
 			ply:PrintMessage(HUD_PRINTCENTER, 'You slipped down from edge!')
 		end
 
-		data.hanging_on_edge = false
+		ply:SetDParkourHangingOnEdge(false)
 
-		movedata:SetVelocity(data.hanging_on:GetVelocity())
+		movedata:SetVelocity(ply:GetDParkourHangingOnEnt():GetVelocity())
 	end
 end
 
 function DParkour.HangEventLoop2(ply, cmd, data)
-	if not data.hanging_on_edge then return end
+	if not ply:GetDParkourHangingOnEdge() then return end
 
 	cmd:SetButtons(cmd:GetButtons():band(
 		IN_FORWARD:bor(IN_LEFT, IN_RIGHT, IN_BACK, IN_ALT1, IN_ALT2, IN_USE):bnot()

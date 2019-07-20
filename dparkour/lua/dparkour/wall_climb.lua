@@ -56,25 +56,25 @@ local MOVETYPE_NONE = MOVETYPE_NONE
 local MOVETYPE_WALK = MOVETYPE_WALK
 local WorldToLocal = WorldToLocal
 local LocalToWorld = LocalToWorld
+local CurTime = CurTime
 local CurTimeL = CurTimeL
 local FrameNumberL = FrameNumberL
 
-function DParkour.WallClimbLoop(ply, movedata, data)
-	data.avaliable_climbs = data.avaliable_climbs or 3
+DLib.pred.Define('DParkourAvailableClimbs', 'Int', 3)
+DLib.pred.Define('DParkourClimbHeatup', 'Float', 0)
+DLib.pred.Define('DParkourNextWallClimb', 'Float', 0)
 
-	if data.first and (data.last_on_ground or not data.alive) then
-		data.avaliable_climbs = 3
+function DParkour.WallClimbLoop(ply, movedata, data)
+	if data.last_on_ground or not data.alive then
+		ply:SetDParkourAvailableClimbs(3)
 	end
 
 	if not data.alive then return end
 
-	if not data.IN_JUMP or not data.IN_FORWARD then
-		if data.first then
-			data.wall_climp_heatup = CurTimeL() + 0.2
-		end
-
+	if not movedata:KeyDown(IN_JUMP) or not movedata:KeyDown(IN_FORWARD) then
+		ply:SetDParkourClimbHeatup(CurTime() + 0.2)
 		return
-	elseif not data.wall_climp_heatup or data.wall_climp_heatup > CurTimeL() then
+	elseif ply:GetDParkourClimbHeatup() == 0 or ply:GetDParkourClimbHeatup() > CurTime() then
 		return
 	end
 
@@ -83,8 +83,8 @@ function DParkour.WallClimbLoop(ply, movedata, data)
 	mins.z = 0
 
 	local trWall = util.TraceHull({
-		start = ply:GetPos() + ply:OBBCenter(),
-		endpos = ply:GetPos() + ply:OBBCenter() + ply:EyeAngles():Forward() * 20,
+		start = movedata:GetOrigin() + ply:OBBCenter(),
+		endpos = movedata:GetOrigin() + ply:OBBCenter() + movedata:GetAngles():Forward() * 20,
 		mins = mins / 2,
 		maxs = maxs / 2,
 		filter = ply
@@ -100,34 +100,18 @@ function DParkour.WallClimbLoop(ply, movedata, data)
 		if phys:IsMoveable() and phys:IsMotionEnabled() and trWall.Entity:GetMoveType() ~= MOVETYPE_NONE then return end
 	else
 		local hit = -trWall.HitNormal
-		local dot = ply:EyeAngles():Forward():Dot(hit)
+		local dot = movedata:GetAngles():Forward():Dot(hit)
 		if dot < 0.8 then return end
 	end
 
-	data.next_wall_climb = data.next_wall_climb or 0
-
-	if data.first then
-		if data.next_wall_climb > CurTimeL() then
-			data.wall_climb_ignore = false
-			return
-		end
-
-		if data.avaliable_climbs <= 0 then return end
-
-		data.avaliable_climbs = data.avaliable_climbs - 1
-
-		data.next_wall_climb = CurTimeL() + 0.24
-		data.wall_climb_ignore = true
-		data.wall_climb_lock = movedata:GetVelocity() + Vector(0, 0, 180)
-		data.remove_jump = data.IN_JUMP
-	elseif not data.wall_climb_ignore then
+	if ply:GetDParkourNextWallClimb() > CurTime() then
 		return
 	end
 
-	ply:EmitSound('DParkour.WallStep')
-	movedata:SetVelocity(data.wall_climb_lock)
+	if ply:GetDParkourAvailableClimbs() <= 0 then return end
 
-	if data.remove_jump then
-		movedata:SetButtons(movedata:GetButtons():band(IN_JUMP:bnot()))
-	end
+	ply:SetDParkourAvailableClimbs(ply:GetDParkourAvailableClimbs() - 1)
+	ply:SetDParkourNextWallClimb(CurTime() + 0.24)
+	ply:EmitSoundPredicted('DParkour.WallStep')
+	movedata:SetVelocity(movedata:GetVelocity() + Vector(0, 0, 180))
 end
