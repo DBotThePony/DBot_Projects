@@ -58,27 +58,12 @@ local DMG_CRUSH = DMG_CRUSH
 local DMG_CLUB = DMG_CLUB
 
 DLib.pred.Define('DParkourSliding', 'Bool', false)
-DLib.pred.Define('DParkourSlideHit', 'Float', 0)
 DLib.pred.Define('DParkourSlideVelStart', 'Vector', Vector())
 DLib.pred.Define('DParkourSlideLastOrigin', 'Vector', Vector())
 DLib.pred.Define('DParkourSlideStart', 'Float', 0)
 DLib.pred.Define('DParkourSlideSide', 'Bool', 0)
-DLib.pred.Define('DParkourSlideHit', 'Float', 0)
 
 function DParkour.HandleSlide(ply, movedata, data)
-	--[[if CLIENT and ply:GetDParkourSlideHit() > CurTime() then
-		movedata:SetButtons(movedata:GetButtons()
-			:band(IN_FORWARD:bnot())
-			:band(IN_BACK:bnot())
-			:band(IN_LEFT:bnot())
-			:band(IN_RIGHT:bnot())
-		)
-
-		movedata:SetVelocity(Vector())
-
-		return
-	end]]
-
 	if ply:GetDParkourSliding() then
 		if ply:GetDParkourSlideVelStart():Length() < 150 or not data.alive then
 			DParkour.HandleSlideStop(ply, movedata, data, false)
@@ -117,29 +102,25 @@ function DParkour.HandleSlide(ply, movedata, data)
 		})
 
 		if tr.Hit then
-			ply:EmitSound('DParkour.WallImpactHard')
+			ply:EmitSoundPredicted('DParkour.WallImpactHard')
 
-			if CLIENT then
-				ply:SetDParkourSlideHit(CurTime())
-			else
-				movedata:SetVelocity(Vector())
+			movedata:SetVelocity(Vector())
 
-				if IsValid(tr.Entity) then
-					if tr.Entity:IsNPC() or tr.Entity:IsPlayer() then
-						ply:EmitSound('DParkour.NPCImpact')
+			if SERVER and IsValid(tr.Entity) then
+				if tr.Entity:IsNPC() or tr.Entity:IsPlayer() then
+					ply:EmitSoundPredicted('DParkour.NPCImpact')
 
-						if ply:GetDParkourSlideVelStart():Length() > 800 then
-							ply:EmitSound('DParkour.NPCImpactHard')
-						end
+					if ply:GetDParkourSlideVelStart():Length() > 800 then
+						ply:EmitSoundPredicted('DParkour.NPCImpactHard')
 					end
-
-					local info = DamageInfo()
-					info:SetAttacker(ply)
-					info:SetInflictor(ply)
-					info:SetDamageType(DMG_CRUSH:bor(DMG_CLUB))
-					info:SetDamage((data.slide_velocity_start:Length() - 300) / 20)
-					tr.Entity:TakeDamageInfo(info)
 				end
+
+				local info = DamageInfo()
+				info:SetAttacker(ply)
+				info:SetInflictor(ply)
+				info:SetDamageType(DMG_CRUSH:bor(DMG_CLUB))
+				info:SetDamage((data.slide_velocity_start:Length() - 300) / 20)
+				tr.Entity:TakeDamageInfo(info)
 			end
 
 			DParkour.HandleSlideStop(ply, movedata, data, false)
