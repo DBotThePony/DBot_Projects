@@ -66,6 +66,10 @@ if SERVER then
 	net.pool('dparkour.sendhang')
 end
 
+local ENABLED = DLib.util.CreateSharedConvar('sv_dparkour_hang', '1', 'Enable hanging')
+local HANG_JUMP_STRENGTH = DLib.util.CreateSharedConvar('sv_dparkour_hang_vel', '200', 'Jump from wall hang strength')
+local HANG_MAX_VEL = DLib.util.CreateSharedConvar('sv_dparkour_hang_maxvel', '700', 'Maximal velocity at which player can hang on entity')
+
 DLib.pred.Define('DParkourHangingOnEdge', 'Bool', false)
 DLib.pred.Define('DParkourHangingOnValid', 'Bool', false)
 DLib.pred.Define('DParkourHangingOnEnt', 'Entity', NULL)
@@ -80,7 +84,7 @@ DLib.pred.Define('DParkourEdgeFirstMove', 'Bool', false)
 
 function DParkour.WallHangInterrupt(ply, movedata, data)
 	if not ply:GetDParkourHangingOnEdge() then return end
-	movedata:SetVelocity(data.hanging_trace.HitNormal * 200 * (1 / data.hanging_trace.Fraction:clamp(0.75, 1)):clamp(2, 3))
+	movedata:SetVelocity(data.hanging_trace.HitNormal * HANG_JUMP_STRENGTH:GetFloat() * (1 / data.hanging_trace.Fraction:clamp(0.75, 1)):clamp(2, 3))
 
 	if ply:GetDParkourHangingOnValid() and not IsValid(ply:GetDParkourHangingOnEnt()) then
 		movedata:SetVelocity(movedata:GetVelocity() + ply:GetDParkourHangingOnEnt():GetVelocity() * 3)
@@ -98,6 +102,10 @@ end
 function DParkour.WallHangDrop(ply, movedata, data)
 	if not ply:GetDParkourHangingOnEdge() then return end
 	movedata:SetVelocity(Vector())
+
+	if ply:GetDParkourHangingOnValid() and not IsValid(ply:GetDParkourHangingOnEnt()) then
+		movedata:SetVelocity(movedata:GetVelocity() + ply:GetDParkourHangingOnEnt():GetVelocity())
+	end
 
 	ply:SetDParkourHangingOnEdge(false)
 	ply:SetDParkourLastHung(RealTimeL() + 0.4)
@@ -173,6 +181,8 @@ end
 end]]
 
 function DParkour.HandleWallHang(ply, movedata, data)
+	if not ENABLED:GetBool() then return end
+
 	if ply:GetDParkourHangingOnEdge() then
 		if ply:GetDParkourLastHung() > RealTimeL() then return end
 
@@ -277,7 +287,7 @@ function DParkour.HandleWallHang(ply, movedata, data)
 	if IsValid(hangingOn) and (hangingOn:IsNPC() or hangingOn:IsPlayer()) then return end
 	if IsValid(hangingOn) then theirvel = hangingOn:GetVelocity() end
 
-	if theirvel:Distance(ourvel) > 700 then
+	if theirvel:Distance(ourvel) > HANG_MAX_VEL:GetFloat() then
 		if data.first then
 			ply:PrintMessage(HUD_PRINTCENTER, 'Torn off your hands then')
 		end

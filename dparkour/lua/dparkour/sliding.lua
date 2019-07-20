@@ -57,6 +57,13 @@ local IsValid = IsValid
 local DMG_CRUSH = DMG_CRUSH
 local DMG_CLUB = DMG_CLUB
 
+local ENABLED = DLib.util.CreateSharedConvar('sv_dparkour_sliding', '1', 'Enable sliding')
+local MIN_SLIDING_VELOCITY = DLib.util.CreateSharedConvar('sv_dparkour_sliding_initvel', '400', 'Minimal sliding velocity for sliding. If player got less than this velocity, his velocity is boosted.')
+local DSLIDING_VELOCITY = DLib.util.CreateSharedConvar('sv_dparkour_sliding_sp', '350', 'If player velocity is higher than this value, he can damage on hit entities in front of his sliding.')
+local FRITCTION_MUL = DLib.util.CreateSharedConvar('sv_dparkour_sliding_friction', '1', 'Adjuct this to set desired friction.')
+
+local sv_friction = GetConVar('sv_friction')
+
 DLib.pred.Define('DParkourSliding', 'Bool', false)
 DLib.pred.Define('DParkourSlideVelStart', 'Vector', Vector())
 DLib.pred.Define('DParkourSlideLastOrigin', 'Vector', Vector())
@@ -64,6 +71,8 @@ DLib.pred.Define('DParkourSlideStart', 'Float', 0)
 DLib.pred.Define('DParkourSlideSide', 'Bool', 0)
 
 function DParkour.HandleSlide(ply, movedata, data)
+	if not ENABLED:GetBool() then return end
+
 	if ply:GetDParkourSliding() then
 		if ply:GetDParkourSlideVelStart():Length() < 150 or not data.alive then
 			DParkour.HandleSlideStop(ply, movedata, data, false)
@@ -78,8 +87,8 @@ function DParkour.HandleSlide(ply, movedata, data)
 	if not ply:GetDParkourSliding() then
 		if ply:EyeAngles().p > 48 then return end
 
-		if movedata:GetVelocity():Length() < 400 then
-			movedata:SetVelocity(movedata:GetVelocity():GetNormalized() * 400)
+		if movedata:GetVelocity():Length() < MIN_SLIDING_VELOCITY:GetFloat() then
+			movedata:SetVelocity(movedata:GetVelocity():GetNormalized() * MIN_SLIDING_VELOCITY:GetFloat())
 		end
 
 		ply:SetDParkourSliding(true)
@@ -89,7 +98,7 @@ function DParkour.HandleSlide(ply, movedata, data)
 		ply:SetDParkourSlideLastOrigin(movedata:GetOrigin())
 
 		ply:EmitSoundPredicted('DParkour.Sliding')
-	elseif ply:GetDParkourSlideVelStart():Length() > 350 then
+	elseif ply:GetDParkourSlideVelStart():Length() > DSLIDING_VELOCITY:GetFloat() then
 		local mins, maxs = ply:GetHull()
 		maxs.z = maxs.z * 0.4
 
@@ -138,7 +147,7 @@ function DParkour.HandleSlide(ply, movedata, data)
 
 	local delta = movedata:GetOrigin().z - ply:GetDParkourSlideLastOrigin().z
 	ply:SetDParkourSlideLastOrigin(movedata:GetOrigin())
-	ply:SetDParkourSlideVelStart(ply:GetDParkourSlideVelStart() - ply:GetDParkourSlideVelStart():GetNormalized() * FrameTime() * (230 + delta * 256))
+	ply:SetDParkourSlideVelStart(ply:GetDParkourSlideVelStart() - ply:GetDParkourSlideVelStart():GetNormalized() * FrameTime() * (230 * sv_friction:GetFloat() / 8 * FRITCTION_MUL:GetFloat() + delta * 256))
 
 	movedata:SetVelocity(ply:GetDParkourSlideVelStart())
 end

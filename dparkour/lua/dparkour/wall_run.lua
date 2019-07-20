@@ -59,13 +59,17 @@ local LocalToWorld = LocalToWorld
 local CurTimeL = CurTimeL
 local FrameNumberL = FrameNumberL
 
-DLib.pred.Define('DParkourAWallRun', 'Int', 5)
+local ENABLED = DLib.util.CreateSharedConvar('sv_dparkour_wallrun', '1', 'Enable wallrun')
+local AMOUNT = DLib.util.CreateSharedConvar('sv_dparkour_wallrun_num', '5', 'Max wallrun jumps')
+local STRENGTH = DLib.util.CreateSharedConvar('sv_dparkour_wallrun_strength', '140', 'Wallrun strength')
+
+DLib.pred.Define('DParkourAWallRun', 'Int', AMOUNT:GetInt())
 
 function DParkour.HandleWallRun(ply, movedata, data)
 	if ply:GetDParkourHangingOnEdge() then return end
 
 	if data.last_on_ground or not data.alive then
-		ply:SetDParkourAWallRun(5)
+		ply:SetDParkourAWallRun(AMOUNT:GetInt())
 	end
 
 	if not data.alive or data.last_on_ground then return end
@@ -114,7 +118,7 @@ function DParkour.HandleWallRun(ply, movedata, data)
 	ply:AddDParkourAWallRun(-1)
 
 	local wall_run_vel = movedata:GetVelocity()
-	wall_run_vel.z = 140
+	wall_run_vel.z = STRENGTH:GetFloat()
 
 	ply:EmitSoundPredicted('DParkour.WallStep')
 	movedata:SetVelocity(wall_run_vel)

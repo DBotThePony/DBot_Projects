@@ -62,7 +62,13 @@ DLib.pred.Define('DParkourNextRoll', 'Float', 0)
 DLib.pred.Define('DParkourRollDir', 'Vector', Vector())
 DLib.pred.Define('DParkourRollAng', 'Angle', Angle())
 
+local ENABLE_ROLLING = DLib.util.CreateSharedConvar('sv_dparkour_rolling', '1', 'Enable ability to roll on ground')
+local ROLLING_TIMING_BETWEEN = DLib.util.CreateSharedConvar('sv_dparkour_roll_timing_b', '0.2', 'Time between roll sounds')
+local ROLLING_TIME = DLib.util.CreateSharedConvar('sv_dparkour_roll_time', '0.6', 'time required for one roll')
+
 function DParkour.HandleRolling(ply, movedata, data)
+	if not ENABLE_ROLLING:GetBool() then return end
+
 	if not ply:OnGround() and ply:GetDParkourRolling() then
 		ply:SetDParkourRolls(0)
 	elseif not ply:OnGround() and not ply:GetDParkourRolling() then
@@ -84,14 +90,14 @@ function DParkour.HandleRolling(ply, movedata, data)
 	if not ply:GetDParkourRolling() then
 		ply:SetDParkourRolling(true)
 		ply:SetDParkourRollStart(CurTime())
-		ply:SetDParkourRollEnd(CurTime() + 0.6)
+		ply:SetDParkourRollEnd(CurTime() + ROLLING_TIME:GetFloat())
 		ply:SetDParkourRolls(ply:GetDParkourRolls() - 1)
-		ply:SetDParkourNextRoll(CurTime() + 0.2)
+		ply:SetDParkourNextRoll(CurTime() + ROLLING_TIMING_BETWEEN:GetFloat())
 
 		if CLIENT and IsFirstTimePredicted() then
 			data.rolling = true
 			data.roll_start = RealTime()
-			data.roll_end = RealTime() + 0.6
+			data.roll_end = RealTime() + ROLLING_TIME:GetFloat()
 		end
 
 		ply:EmitSoundPredicted('DParkour.Roll')
@@ -101,7 +107,7 @@ function DParkour.HandleRolling(ply, movedata, data)
 
 	if ply:GetDParkourNextRoll() < CurTime() then
 		ply:EmitSoundPredicted('DParkour.Roll')
-		ply:SetDParkourNextRoll(CurTime() + 0.2)
+		ply:SetDParkourNextRoll(CurTime() + ROLLING_TIMING_BETWEEN:GetFloat())
 	end
 
 	movedata:SetVelocity(ply:GetDParkourRollDir())
@@ -125,7 +131,12 @@ function DParkour.RollingCMD(ply, cmd, data)
 	cmd:SetMouseY(0)
 end
 
+local ROLL_MIN_VELOCITY = DLib.util.CreateSharedConvar('sv_dparkour_roll_minvel', '300', 'Minimal velocity vector required for rolling start')
+local ROLL_SPEED = DLib.util.CreateSharedConvar('sv_dparkour_roll_speed', '400', 'Speed at which player rolls')
+local ROLLS_DIVIER = DLib.util.CreateSharedConvar('sv_dparkour_roll_divier', '1400', 'Inernal divider to determine roll count')
+
 function DParkour.HandleRollFall(ply, movedata, data)
+	if not ENABLE_ROLLING:GetBool() then return end
 	if ply:GetDParkourRolling() then return end
 
 	if not ply:KeyDown(IN_DUCK) then return end
@@ -133,7 +144,7 @@ function DParkour.HandleRollFall(ply, movedata, data)
 	if ply:EyeAngles().p < 40 then return end
 	local velocity = ply:GetDParkourLastVelocity()
 
-	if velocity:Length() < 300 then return end
+	if velocity:Length() < ROLL_MIN_VELOCITY:GetFloat() then return end
 
 	local direction
 
@@ -145,9 +156,9 @@ function DParkour.HandleRollFall(ply, movedata, data)
 		direction = Vector(velocity.x, velocity.y):Angle()
 	end
 
-	local rolls = (velocity:Length() / 1400):ceil():max(1)
+	local rolls = (velocity:Length() / ROLLS_DIVIER:GetFloat()):ceil():max(1)
 
 	ply:SetDParkourRolls(rolls)
-	ply:SetDParkourRollDir(direction:Forward() * 400)
+	ply:SetDParkourRollDir(direction:Forward() * ROLL_SPEED:GetFloat())
 	ply:SetDParkourRollAng(direction)
 end

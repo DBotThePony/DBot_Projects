@@ -60,13 +60,18 @@ local CurTime = CurTime
 local CurTimeL = CurTimeL
 local FrameNumberL = FrameNumberL
 
-DLib.pred.Define('DParkourAvailableClimbs', 'Int', 3)
+local ENABLED = DLib.util.CreateSharedConvar('sv_dparkour_wallclimb', '1', 'Enable wall climbing')
+local WALL_CLIMBS = DLib.util.CreateSharedConvar('sv_dparkour_wallclimb_num', '3', 'Maximum wall climbs')
+local INBETWEEN = DLib.util.CreateSharedConvar('sv_dparkour_wallclimb_timing', '0.24', 'Time between climbs')
+local CLIMB_STRENGTH = DLib.util.CreateSharedConvar('sv_dparkour_wallclimb_str', '180', 'Wall climb velocity strength')
+
+DLib.pred.Define('DParkourAvailableClimbs', 'Int', WALL_CLIMBS:GetInt())
 DLib.pred.Define('DParkourClimbHeatup', 'Float', 0)
 DLib.pred.Define('DParkourNextWallClimb', 'Float', 0)
 
 function DParkour.WallClimbLoop(ply, movedata, data)
 	if data.last_on_ground or not data.alive then
-		ply:SetDParkourAvailableClimbs(3)
+		ply:SetDParkourAvailableClimbs(WALL_CLIMBS:GetInt())
 	end
 
 	if not data.alive then return end
@@ -111,7 +116,7 @@ function DParkour.WallClimbLoop(ply, movedata, data)
 	if ply:GetDParkourAvailableClimbs() <= 0 then return end
 
 	ply:SetDParkourAvailableClimbs(ply:GetDParkourAvailableClimbs() - 1)
-	ply:SetDParkourNextWallClimb(CurTime() + 0.24)
+	ply:SetDParkourNextWallClimb(CurTime() + INBETWEEN:GetFloat())
 	ply:EmitSoundPredicted('DParkour.WallStep')
-	movedata:SetVelocity(movedata:GetVelocity() + Vector(0, 0, 180))
+	movedata:SetVelocity(movedata:GetVelocity() + Vector(0, 0, CLIMB_STRENGTH:GetFloat()))
 end

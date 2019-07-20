@@ -59,17 +59,23 @@ local LocalToWorld = LocalToWorld
 local CurTimeL = CurTimeL
 local FrameNumberL = FrameNumberL
 
-DLib.pred.Define('DParkourAvailableWallJumps', 'Int', 3)
+local ENABLED = DLib.util.CreateSharedConvar('sv_dparkour_walljumps', '1', 'Enable wall jumps')
+local MAX_JUMPS = DLib.util.CreateSharedConvar('sv_dparkour_walljumps_num', '3', 'Max wall jumps')
+local STRENGTH = DLib.util.CreateSharedConvar('sv_dparkour_walljumps_strength', '400', 'Wall jumps strength')
+
+DLib.pred.Define('DParkourAvailableWallJumps', 'Int', MAX_JUMPS:GetInt())
 
 function DParkour.WallJumpLoop(ply, movedata, data)
+	if not ENABLED:GetBool() then return end
+
 	if data.last_on_ground or not data.alive then
-		ply:SetDParkourAvailableWallJumps(3)
+		ply:SetDParkourAvailableWallJumps(MAX_JUMPS:GetInt())
 	end
 
 	if not data.alive then return end
 	if not ply:KeyPressed(IN_JUMP) then return end
 
-	if data.avaliable_jumps < 0 then return end
+	if ply:GetDParkourAvailableWallJumps() < 0 then return end
 
 	local eang = movedata:GetAngles()
 	eang.p = 0
@@ -98,5 +104,5 @@ function DParkour.WallJumpLoop(ply, movedata, data)
 
 	ply:AddDParkourAvailableWallJumps(-1)
 	ply:EmitSoundPredicted('DParkour.WallStep')
-	movedata:SetVelocity(eang:Forward() * 400)
+	movedata:SetVelocity(eang:Forward() * STRENGTH:GetFloat())
 end
