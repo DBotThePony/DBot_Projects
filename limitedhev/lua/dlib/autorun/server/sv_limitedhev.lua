@@ -21,16 +21,30 @@
 net.pool('LimitedHEVPower')
 net.pool('LimitedHEV.SyncFlashLight')
 
-local FLASHLIGHT = CreateConVar('sv_limited_flashlight', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Enable limited flashlight')
+local FLASHLIGHT = GetConVar('sv_limited_flashlight')
 
 local function PlayerSwitchFlashlight(ply, enabled)
 	if not FLASHLIGHT:GetBool() then return end
 	if not enabled then return end
 	if not ply:IsSuitEquipped() then return false end
-	local fldata = ply._fldata
-	if not fldata then return end
-	if fldata.fl_Value == 0 then return false end
-	if fldata.fl_EWait and fldata.fl_EWait > CurTimeL() then return false end
+	if ply:GetFlashlightCharge() == 0 then return false end
+	if ply:GetFlashlightENext() > CurTime() then return false end
 end
 
 hook.Add('PlayerSwitchFlashlight', 'LimitedHEVPower', PlayerSwitchFlashlight)
+
+local function PlayerDeath(ply)
+	ply:ResetLimitedHEVPower()
+	ply:ResetLimitedHEVPowerRestoreStart()
+	ply:ResetLimitedHEVSuitLastPower()
+
+	ply:ResetLimitedHEVOxygenNextChoke()
+	ply:ResetLimitedHEVHPLost()
+	ply:ResetLimitedHEVHPNext()
+
+	ply:ResetFlashlightCharge()
+	ply:ResetFlashlightNext()
+end
+
+hook.Add('PlayerSwitchFlashlight', 'LimitedHEVPower', PlayerSwitchFlashlight)
+hook.Add('PlayerDeath', 'LimitedHEVPower', PlayerDeath)

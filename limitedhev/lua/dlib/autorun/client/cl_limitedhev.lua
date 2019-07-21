@@ -39,23 +39,6 @@ surface.DLibCreateFont('LimitedHEVPowerFont', {
 	extended = true,
 })
 
-net.Receive('LimitedHEVPower', function()
-	LocalPlayer():LimitedHEVSetPower(net.ReadFloat())
-	LocalPlayer():LimitedHEVSetFlashlight(net.ReadFloat())
-end)
-
-net.Receive('LimitedHEV.SyncFlashLight', function()
-	local status = net.ReadBool()
-	local ply = LocalPlayer()
-	ply._fldata = ply._fldata or {}
-	local fldata = ply._fldata
-
-	if not status then
-		fldata.fl_EWait = fldata.fl_Wait + LIMITEDHEV_FLASHLIGHT_EPAUSE:GetFloat()
-		fldata.fl_Value = 0
-	end
-end)
-
 local DEFINED_POSITION = DLib.HUDCommons.Position2.DefinePosition('limitedhev', 0.5, 0.4)
 local BAR_WIDTH = 120
 
@@ -112,11 +95,11 @@ local function HUDPaint()
 
 	local x, y = DEFINED_POSITION()
 
-	if LocalPlayer():LimitedHEVGetFlashlight() ~= 100 then
+	if LocalPlayer():GetFlashlightCharge() ~= 100 then
 		x, y = FlashlightFunc(x, y)
 	end
 
-	if LocalPlayer():LimitedHEVGetPower() ~= 100 then
+	if LocalPlayer():GetLimitedHEVPower() ~= 100 then
 		PowerFunc(x, y)
 	end
 end

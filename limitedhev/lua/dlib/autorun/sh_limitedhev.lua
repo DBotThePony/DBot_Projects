@@ -51,65 +51,55 @@ local FLASHLIGHT_EPAUSE = CreateConVar('sv_limited_flashlight_epause', '2', 'Sec
 
 LIMITEDHEV_FLASHLIGHT_EPAUSE = FLASHLIGHT_EPAUSE
 
-local lastCommandCall = CurTime()
+DLib.pred.Define('LimitedHEVPower', 'Float', 100)
+DLib.pred.Define('LimitedHEVPowerRestoreStart', 'Float', 0)
+DLib.pred.Define('LimitedHEVSuitLastPower', 'Bool', true)
+
+DLib.pred.Define('LimitedHEVOxygenNextChoke', 'Float', 0)
+DLib.pred.Define('LimitedHEVHPLost', 'Int', 0)
+DLib.pred.Define('LimitedHEVHPNext', 'Float', 0)
+DLib.pred.Define('FlashlightCharge', 'Float', 100)
+DLib.pred.Define('FlashlightNext', 'Float', 0)
+DLib.pred.Define('FlashlightENext', 'Float', 0)
 
 -- IsFirstTimePredicted is always false on client realm
 -- in this hook, so
-local function StartCommand(ply, cmd)
-	local delta
-
-	if CLIENT then
-		delta = CurTime() - lastCommandCall
-		lastCommandCall = CurTime()
-	end
-
+local function SetupMove(ply, movedata, cmd)
 	if not SPRINT:GetBool() then return end
 	if not ply:Alive() or (not ply:OnGround() and ply:WaterLevel() == 0) or ply:GetMoveType() ~= MOVETYPE_WALK then return end
 
-	if cmd:GetButtons():band(IN_FORWARD:bor(IN_BACK, IN_MOVELEFT, IN_MOVERIGHT)) == 0 then
-		ply.__lastPressHEV = false
-		ply.__lastPressHEV2 = false
+	if movedata:GetButtons():band(IN_FORWARD:bor(IN_BACK, IN_MOVELEFT, IN_MOVERIGHT)) == 0 then
 		return
 	end
 
-	local newHev = cmd:GetButtons():band(IN_SPEED) ~= 0
-	local statusChanged = newHev ~= ply.__lastPressHEV
-	local statusChanged2 = newHev ~= ply.__lastPressHEV2
-	ply.__lastPressHEV = newHev
-	ply.__lastPressHEV2 = newHev
+	local whut = movedata:KeyPressed(IN_SPEED) ~= ply.__lsp_whut
+	ply.__lsp_whut = movedata:KeyPressed(IN_SPEED)
 
-	if newHev and ply:LimitedHEVGetPower() <= SPRINT_LIMIT_ACT:GetFloat() and statusChanged then
-		cmd:SetButtons(cmd:GetButtons():band(IN_SPEED:bnot()))
-		ply.__lastPressHEV = false
+	if movedata:KeyPressed(IN_SPEED) and ply:GetLimitedHEVPower() <= SPRINT_LIMIT_ACT:GetFloat() then
+		movedata:SetButtons(movedata:GetButtons():band(IN_SPEED:bnot()))
+		movedata:SetMaxClientSpeed(ply:GetWalkSpeed())
 
-		if statusChanged2 then
+		if whut then
 			ply:EmitSoundPredicted('HL2Player.SprintNoPower')
 		end
 
 		return
 	end
 
-	if not ply:IsSuitEquipped() and not ply:InVehicle() then
-		cmd:SetButtons(cmd:GetButtons():band(IN_SPEED:bnot()))
+	if (not ply:IsSuitEquipped() or ply:GetLimitedHEVPower() <= 0) and not ply:InVehicle() then
+		movedata:SetButtons(movedata:GetButtons():band(IN_SPEED:bnot()))
+		movedata:SetMaxClientSpeed(ply:GetWalkSpeed())
 		return
 	end
 
-	if ply:LimitedHEVGetPower() <= 0 then
-		cmd:SetButtons(cmd:GetButtons():band(IN_SPEED:bnot()))
-		ply.__lastPressHEV = false
-		ply.__lastPressHEV2 = true
-		return
-	end
-
-	if newHev then
-		if statusChanged then
-			ply:EmitSoundPredictedR('HL2Player.SprintStart')
+	if movedata:KeyDown(IN_SPEED) then
+		if movedata:KeyPressed(IN_SPEED) then
+			ply:EmitSoundPredicted('HL2Player.SprintStart')
 		end
 
-		local fldata = ply._fldata
-		fldata.suit_power = (fldata.suit_power - (delta or FrameTime()) * 10 * SPRINT_MUL:GetFloat()):clamp(0, 100)
-		fldata.suit_last_frame = false
-		fldata.suit_restore_start = CurTimeL() + POWER_RESTORE_DELAY:GetFloat()
+		ply:AddLimitedHEVPower(-FrameTime() * 10 * SPRINT_MUL:GetFloat(), 0, 100)
+		ply:SetLimitedHEVSuitLastPower(false)
+		ply:SetLimitedHEVPowerRestoreStart(CurTime() + POWER_RESTORE_DELAY:GetFloat())
 	end
 end
 
@@ -121,24 +111,19 @@ local function ProcessWater(ply, fldata, ctime, toRemove)
 	local waterLevel = ply:InVehicle() and ply:GetVehicle():WaterLevel() or ply:WaterLevel()
 	local restoring = waterLevel <= 2
 
-	fldata.ox_Value = (fldata.ox_Value or 100):clamp(0, 100)
-	fldata.oxygen_next_choke = fldata.oxygen_next_choke or 0
-	fldata.oxygen_hp_lost = fldata.oxygen_hp_lost or 0
-	fldata.oxygen_hp_restore_next = fldata.oxygen_hp_restore_next or 0
-
 	if restoring then
-		if SERVER and WATER_RESTORE:GetBool() and fldata.oxygen_hp_lost > 0 and fldata.oxygen_hp_restore_next < CurTimeL() then
+		if SERVER and WATER_RESTORE:GetBool() and ply:GetLimitedHEVHPLost() > 0 and ply:GetLimitedHEVHPNext() < CurTimeL() then
 			local hp, mhp = ply:Health(), ply:GetMaxHealth()
-			local toRestore = fldata.oxygen_hp_lost:min(WATER_RESTORE_SPEED:GetFloat(), mhp - hp):max(0)
+			local toRestore = ply:GetLimitedHEVHPLost():min(WATER_RESTORE_SPEED:GetFloat(), mhp - hp):max(0)
 
 			if toRestore > 0 then
 				if hook.Run('CanRestoreOxygenHealth', ply, fldata.oxygen_hp_lost, toRestore) ~= false then
-					fldata.oxygen_hp_restore_next = CurTimeL() + 1
-					fldata.oxygen_hp_lost = fldata.oxygen_hp_lost - toRestore
+					ply:SetLimitedHEVHPNext(CurTimeL() + 1)
+					ply:AddLimitedHEVHPLost(-toRestore)
 					ply:SetHealth(mhp:min(hp + toRestore))
 				end
 			else
-				fldata.oxygen_hp_lost = 0
+				ply:SetLimitedHEVHPLost(0)
 			end
 		end
 
@@ -151,25 +136,24 @@ local function ProcessWater(ply, fldata, ctime, toRemove)
 		toRemove = toRemove * WATER_RATIO_MUL:GetFloat()
 	end
 
-	toRemove = toRemove:min(fldata.suit_power)
+	toRemove = toRemove:min(ply:GetLimitedHEVPower())
 
-	if fldata.suit_power > 0 then
-		if hook.Run('CanLoseHEVPower', ply, fldata.suit_power, toRemove) == false then return end
+	if ply:GetLimitedHEVPower() > 0 then
+		if hook.Run('CanLoseHEVPower', ply, ply:GetLimitedHEVPower(), toRemove) == false then return end
 	end
 
-	fldata.suit_last_frame = false
-	fldata.suit_restore_start = ctime + POWER_RESTORE_DELAY:GetFloat()
-	fldata.oxygen_hp_restore_next = ctime + WATER_RESTORE_PAUSE:GetFloat()
-	fldata.suit_power = (fldata.suit_power - toRemove):clamp(0, 100)
+	ply:SetLimitedHEVSuitLastPower(false)
+	ply:SetLimitedHEVPowerRestoreStart(ctime + POWER_RESTORE_DELAY:GetFloat())
+	ply:SetLimitedHEVHPNext(ctime + WATER_RESTORE_PAUSE:GetFloat())
+	ply:AddLimitedHEVPower(-toRemove, 0, 100)
 
-	if fldata.suit_power > 0 then return end
-	if fldata.oxygen_next_choke > ctime then return end
+	if ply:GetLimitedHEVPower() > 0 or ply:GetLimitedHEVOxygenNextChoke() > ctime then return end
 
-	local can = hook.Run('CanChoke', ply)
+	local can = hook.Run('CanChoke', ply, toRemove)
 	if can == false then return end
 
 	ply:EmitSound('player/pl_drown' .. math.random(1, 3) .. '.wav', 55)
-	fldata.oxygen_next_choke = ctime + WATER_CHOKE_RATIO:GetFloat()
+	ply:SetLimitedHEVOxygenNextChoke(fldata.oxygen_next_choke)
 	if CLIENT then return end
 
 	local dmg = DamageInfo()
@@ -183,57 +167,49 @@ local function ProcessWater(ply, fldata, ctime, toRemove)
 	local newhp = ply:Health()
 
 	if WATER_RESTORE:GetBool() then
-		fldata.oxygen_hp_lost = fldata.oxygen_hp_lost + math.max(0, oldhp - newhp) * WATER_RESTORE_RATIO:GetFloat()
+		ply:AddLimitedHEVHPLost(math.max(0, oldhp - newhp) * WATER_RESTORE_RATIO:GetFloat())
 	end
 end
 
 local function ProcessSuit(ply, fldata, ctime, toAdd)
-	fldata.suit_power = (fldata.suit_power or 100):clamp(0, 100)
-	fldata.suit_restore_start = fldata.suit_restore_start or 0
-
-	if fldata.suit_restore_start < ctime and fldata.suit_last_frame and (ply:OnGround() or ply:GetMoveType() ~= MOVETYPE_WALK) then
-		fldata.suit_power = (fldata.suit_power + FrameTime() * POWER_RESTORE_MUL:GetFloat() * 7):clamp(0, 100)
+	if ply:GetLimitedHEVPowerRestoreStart() < ctime and ply:GetLimitedHEVSuitLastPower() and (ply:OnGround() or ply:GetMoveType() ~= MOVETYPE_WALK) then
+		ply:AddLimitedHEVPower(FrameTime() * POWER_RESTORE_MUL:GetFloat() * 7, 0, 100)
 	end
 
-	fldata.suit_last_frame = true
+	ply:SetLimitedHEVSuitLastPower(true)
 end
 
 local function ProcessFlashlight(ply, fldata, ctime, toAdd)
-	fldata.fl_Value = (fldata.fl_Value or 100):clamp(0, 100)
-	fldata.fl_Wait = fldata.fl_Wait or 0
+	if ply:FlashlightIsOn() then
+		toAdd = toAdd * FLASHLIGHT_RATIO:GetFloat() / 50 * (1 + math.pow((100 - ply:GetFlashlightCharge()) / 75, 2))
 
-	local isOn = ply:FlashlightIsOn()
-
-	if isOn then
-		toAdd = -toAdd * FLASHLIGHT_RATIO:GetFloat() / 50 * (1 + math.pow((100 - fldata.fl_Value) / 75, 2))
-
-		if fldata.fl_Value ~= 0 then
-			local can = hook.Run('CanDischargeFlashlight', ply, fldata.fl_Value, toAdd)
+		if ply:GetFlashlightCharge() ~= 0 then
+			local can = hook.Run('CanDischargeFlashlight', ply, ply:GetFlashlightCharge(), toAdd)
 			if can == false then return end
 		end
 
-		fldata.fl_Wait = ctime + FLASHLIGHT_PAUSE:GetFloat()
-	else
-		if fldata.fl_Value >= 100 then return end
-		if fldata.fl_Wait > ctime then return end
-		toAdd = toAdd * FLASHLIGHT_RRATIO:GetFloat() / 200 * math.pow(fldata.fl_Value / 35 + 1, 2)
+		ply:SetFlashlightNext(ctime + FLASHLIGHT_PAUSE:GetFloat())
+		ply:SetFlashlightENext(ctime + FLASHLIGHT_PAUSE:GetFloat() + FLASHLIGHT_EPAUSE:GetFloat())
+		ply:AddFlashlightCharge(-toAdd, 0, 100)
 
-		local can = hook.Run('CanChargeFlashlight', ply, fldata.fl_Value, toAdd)
-		if can == false then return end
-	end
+		if ply:GetFlashlightCharge() == 0 and ply:FlashlightIsOn() then
+			if SERVER then
+				ply:Flashlight(false)
+			end
 
-	fldata.fl_Value = (fldata.fl_Value + toAdd):clamp(0, 100)
-
-	if fldata.fl_Value == 0 and ply:FlashlightIsOn() then
-		if SERVER then
-			ply:Flashlight(false)
-			net.Start('LimitedHEV.SyncFlashLight')
-			net.WriteBool(false)
-			net.Send(ply)
+			fldata.fl_EWait = fldata.fl_Wait + FLASHLIGHT_EPAUSE:GetFloat()
 		end
 
-		fldata.fl_EWait = fldata.fl_Wait + FLASHLIGHT_EPAUSE:GetFloat()
+		return
 	end
+
+	if ply:GetFlashlightCharge() >= 100 or ply:GetFlashlightNext() > ctime then return end
+	toAdd = toAdd * FLASHLIGHT_RRATIO:GetFloat() / 200 * math.pow(ply:GetFlashlightCharge() / 35 + 1, 2)
+
+	local can = hook.Run('CanChargeFlashlight', ply, ply:GetFlashlightCharge(), toAdd)
+	if can == false then return end
+
+	ply:AddFlashlightCharge(toAdd, 0, 100)
 end
 
 local _PlayerPostThink
@@ -250,81 +226,43 @@ function _PlayerPostThink(ply)
 	local ctime = CurTimeL()
 
 	if not ply:Alive() then
-		fldata.suit_power = 100
-		fldata.suit_restore_start = 0
-		fldata.suit_last_frame = true
+		ply:ResetLimitedHEVPower()
+		ply:ResetLimitedHEVPowerRestoreStart()
+		ply:ResetLimitedHEVSuitLastPower()
 
-		fldata.oxygen_next_choke = 0
-		fldata.oxygen_hp_lost = 0
-		fldata.oxygen_hp_restore_next = 0
+		ply:ResetLimitedHEVOxygenNextChoke()
+		ply:ResetLimitedHEVHPLost()
+		ply:ResetLimitedHEVHPNext()
 
-		fldata.fl_Value = 100
-		fldata.fl_Wait = 0
-		fldata.fl_EWait = 0
+		ply:ResetFlashlightCharge()
+		ply:ResetFlashlightNext()
 		return
 	end
 
-	ply._fldata.last = ply._fldata.last or ctime
-	local delta = ctime - ply._fldata.last
-	ply._fldata.last = ctime
-
 	if WATER:GetBool() then
-		ProcessWater(ply, fldata, ctime, delta)
+		ProcessWater(ply, fldata, ctime, FrameTime())
 	end
 
-	ProcessSuit(ply, fldata, ctime, delta)
+	ProcessSuit(ply, fldata, ctime, FrameTime())
 
 	if FLASHLIGHT:GetBool() then
-		ProcessFlashlight(ply, fldata, ctime, delta)
+		ProcessFlashlight(ply, fldata, ctime, FrameTime())
 	end
-
-	--[[if fldata._suit_power == fldata.suit_power and fldata.fl_Value_Send == fldata.fl_Value then return end
-
-	net.Start('LimitedHEVPower', true)
-	net.WriteFloat(fldata.suit_power or 100)
-	net.WriteFloat(fldata.fl_Value or 100)
-	net.Send(ply)
-
-	fldata._suit_power = fldata.suit_power
-	fldata.fl_Value_Send = fldata.fl_Value]]
 end
 
 local plyMeta = FindMetaTable('Player')
 
 function plyMeta:LimitedHEVGetPowerFillage()
-	if not self._fldata then return 1 end
-	return self._fldata.suit_power / 100
+	return self:GetLimitedHEVPower():progression(0, 100)
 end
 
 function plyMeta:LimitedHEVGetFlashlightFillage()
-	if not self._fldata then return 1 end
-	return self._fldata.fl_Value / 100
-end
-
-function plyMeta:LimitedHEVGetPower()
-	if not self._fldata then return 100 end
-	return self._fldata.suit_power
-end
-
-function plyMeta:LimitedHEVGetFlashlight()
-	if not self._fldata then return 100 end
-	return self._fldata.fl_Value
-end
-
-function plyMeta:LimitedHEVSetPower(value)
-	assert(SERVER or self == LocalPlayer(), 'Tried to use a non local player!')
-	if not self._fldata then self._fldata = {} end
-	self._fldata.suit_power = assert(type(value) == 'number' and value, 'Value must be a number!'):floor():clamp(0, 100)
-end
-
-function plyMeta:LimitedHEVSetFlashlight(value)
-	assert(SERVER or self == LocalPlayer(), 'Tried to use a non local player!')
-	if not self._fldata then self._fldata = {} end
-	self._fldata.fl_Value = assert(type(value) == 'number' and value, 'Value must be a number!'):floor():clamp(0, 100)
+	return self:GetFlashlightCharge():progression(0, 100)
 end
 
 hook.Add('PlayerPostThink', 'LimitedHEVPower', PlayerPostThink, 2)
-hook.Add('StartCommand', 'LimitedHEV', StartCommand, 3)
+hook.Add('SetupMove', 'LimitedHEV', SetupMove, 3)
+hook.Remove('StartCommand', 'LimitedHEV', StartCommand, 3)
 
 if CLIENT and game.SinglePlayer() then
 	hook.Remove('PlayerPostThink', 'LimitedHEVPower')
