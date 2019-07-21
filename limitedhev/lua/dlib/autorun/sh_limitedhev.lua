@@ -54,6 +54,7 @@ LIMITEDHEV_FLASHLIGHT_EPAUSE = FLASHLIGHT_EPAUSE
 DLib.pred.Define('LimitedHEVPower', 'Float', 100)
 DLib.pred.Define('LimitedHEVPowerRestoreStart', 'Float', 0)
 DLib.pred.Define('LimitedHEVSuitLastPower', 'Bool', true)
+DLib.pred.Define('LimitedHEVSuitDarn', 'Bool', false)
 
 DLib.pred.Define('LimitedHEVOxygenNextChoke', 'Float', 0)
 DLib.pred.Define('LimitedHEVHPLost', 'Int', 0)
@@ -75,7 +76,7 @@ local function SetupMove(ply, movedata, cmd)
 	local whut = movedata:KeyPressed(IN_SPEED) ~= ply.__lsp_whut
 	ply.__lsp_whut = movedata:KeyPressed(IN_SPEED)
 
-	if movedata:KeyPressed(IN_SPEED) and ply:GetLimitedHEVPower() <= SPRINT_LIMIT_ACT:GetFloat() then
+	if movedata:KeyPressed(IN_SPEED) and (ply:GetLimitedHEVPower() <= SPRINT_LIMIT_ACT:GetFloat() or ply:GetLimitedHEVSuitDarn()) then
 		movedata:SetButtons(movedata:GetButtons():band(IN_SPEED:bnot()))
 		movedata:SetMaxClientSpeed(ply:GetWalkSpeed())
 
@@ -89,6 +90,12 @@ local function SetupMove(ply, movedata, cmd)
 	if (not ply:IsSuitEquipped() or ply:GetLimitedHEVPower() <= 0) and not ply:InVehicle() then
 		movedata:SetButtons(movedata:GetButtons():band(IN_SPEED:bnot()))
 		movedata:SetMaxClientSpeed(ply:GetWalkSpeed())
+
+		if ply:GetLimitedHEVPower() <= 0 then
+			ply:SetLimitedHEVSuitDarn(true)
+			hook.Run('LimitedHEVPlayerExhausted', ply, IsFirstTimePredicted())
+		end
+
 		return
 	end
 
@@ -97,7 +104,7 @@ local function SetupMove(ply, movedata, cmd)
 			ply:EmitSoundPredicted('HL2Player.SprintStart')
 		end
 
-		ply:AddLimitedHEVPower(-FrameTime() * 10 * SPRINT_MUL:GetFloat(), 0, 100)
+		ply:AddLimitedHEVPower(-FrameTime() * 15 * SPRINT_MUL:GetFloat(), 0, 100)
 		ply:SetLimitedHEVSuitLastPower(false)
 		ply:SetLimitedHEVPowerRestoreStart(CurTime() + POWER_RESTORE_DELAY:GetFloat())
 	end
@@ -174,6 +181,11 @@ end
 local function ProcessSuit(ply, fldata, ctime, toAdd)
 	if ply:GetLimitedHEVPowerRestoreStart() < ctime and ply:GetLimitedHEVSuitLastPower() and (ply:OnGround() or ply:GetMoveType() ~= MOVETYPE_WALK) then
 		ply:AddLimitedHEVPower(FrameTime() * POWER_RESTORE_MUL:GetFloat() * 7, 0, 100)
+
+		if ply:GetLimitedHEVPower() >= 100 then
+			ply:SetLimitedHEVSuitDarn(false)
+			hook.Run('LimitedHEVPlayerRecovered', ply, IsFirstTimePredicted())
+		end
 	end
 
 	ply:SetLimitedHEVSuitLastPower(true)
