@@ -43,7 +43,7 @@ end
 
 local function CalcViewSinglePlayer(self, origin, angles, fov, znear, zfar)
 	if not ply:GetDParkourRolling() then end
-	local roll = CurTime():progression(ply:GetDParkourRollStart(), ply:GetDParkourRollEnd())
+	local roll = CurTime():progression(self:GetDParkourRollStart(), self:GetDParkourRollEnd())
 
 	local ang = Angle((roll * 360 + 90):normalizeAngle(), self:GetDParkourRollAng().y, 0)
 

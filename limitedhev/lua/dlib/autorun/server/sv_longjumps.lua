@@ -22,7 +22,6 @@ local function Reset(ply)
 	ply:RemoveLongJumpsModule()
 	ply:ResetMaxLongJumps()
 	ply:ResetLongJumpValues()
-	ply:SyncLongJump()
 end
 
 hook.Add('PlayerSpawn', 'LimitedHEV_LongJumps', Reset)
