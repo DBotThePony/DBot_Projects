@@ -176,7 +176,6 @@ local function SetupMove(self, movedata)
 	local jump = movedata:KeyPressed(IN_JUMP)
 
 	if self:GetLongJumpIsRecharging() and self:GetLongJumpNextR() < CurTime() then
-		self:PredictLongJump(true)
 		self:SetLongJumpCount(self:GetLongJumpCount() + 1)
 		self:EmitSoundPredicted('LimitedHEV.LongJumpReady')
 
@@ -199,7 +198,6 @@ local function SetupMove(self, movedata)
 	end
 
 	self:DLibInvalidatePrediction(true)
-	self:PredictLongJump(true)
 
 	if onground then
 		self:SetLongJumpKey(0)
