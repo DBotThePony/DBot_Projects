@@ -201,7 +201,6 @@ local function ProcessFlashlight(ply, fldata, ctime, toAdd)
 		end
 
 		ply:SetFlashlightNext(ctime + FLASHLIGHT_PAUSE:GetFloat())
-		ply:SetFlashlightENext(ctime + FLASHLIGHT_PAUSE:GetFloat() + FLASHLIGHT_EPAUSE:GetFloat())
 		ply:AddFlashlightCharge(-toAdd, 0, 100)
 
 		if ply:GetFlashlightCharge() == 0 and ply:FlashlightIsOn() then
@@ -209,7 +208,7 @@ local function ProcessFlashlight(ply, fldata, ctime, toAdd)
 				ply:Flashlight(false)
 			end
 
-			fldata.fl_EWait = fldata.fl_Wait + FLASHLIGHT_EPAUSE:GetFloat()
+			ply:SetFlashlightENext(ctime + FLASHLIGHT_PAUSE:GetFloat() + FLASHLIGHT_EPAUSE:GetFloat())
 		end
 
 		return
