@@ -160,7 +160,7 @@ local function ProcessWater(ply, fldata, ctime, toRemove)
 	if can == false then return end
 
 	ply:EmitSound('player/pl_drown' .. math.random(1, 3) .. '.wav', 55)
-	ply:SetLimitedHEVOxygenNextChoke(fldata.oxygen_next_choke)
+	ply:SetLimitedHEVOxygenNextChoke(CurTime() + WATER_CHOKE_RATIO:GetFloat())
 	if CLIENT then return end
 
 	local dmg = DamageInfo()
