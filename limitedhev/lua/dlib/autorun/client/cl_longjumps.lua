@@ -19,8 +19,12 @@
 -- DEALINGS IN THE SOFTWARE.
 
 local LONG_JUMPS_POS = DLib.HUDCommons.Position2.DefinePosition('longjumps', 0.7, 0.91, false)
+local LONG_JUMPS_POS_FX = DLib.HUDCommons.Position2.DefinePosition('longjumps_fx', 0.8, 0.91, false)
 local DASH_COLOR = DLib.HUDCommons.CreateColor('longjumps', 'Long Jumps Ready', 228, 218, 56)
 local DASH_RECHARGING_COLOR = DLib.HUDCommons.CreateColor('longjumps_r', 'Long Jumps Recharging', 240, 81, 81)
+
+local DASH_COLOR_FX = DLib.HUDCommons.CreateColor('longjumps_fx', 'Long Jumps Ready (BAHUDFX)', 255, 176, 0)
+local DASH_RECHARGING_COLOR_FX = DLib.HUDCommons.CreateColor('longjumps_fx_r', 'Long Jumps Recharging (BAHUDFX)', 185, 45, 45)
 
 local DASH_HEIGHT = 24
 local DASH_WIDTH = 5
@@ -47,15 +51,26 @@ surface.DLibCreateFont('MaxLongJumpsCounter', {
 	font = 'Roboto'
 })
 
-local function HUDPaint()
+local function HUDPaint(inside)
+	if not inside and BOREAL_ALYPH_HUD and BOREAL_ALYPH_HUD:IsEnabled() then return end
 	local ply = LocalPlayer()
 	if not ply:Alive() then return end
 	if not ply:IsLongJumpsModuleEquipped() then return end
 
-	local x, y = LONG_JUMPS_POS()
+	local x, y, color, color2
+
+	if inside then
+		x, y = LONG_JUMPS_POS_FX()
+		color = DASH_COLOR_FX()
+		color2 = DASH_RECHARGING_COLOR_FX()
+	else
+		x, y = LONG_JUMPS_POS()
+		color = DASH_COLOR()
+		color2 = DASH_RECHARGING_COLOR()
+	end
+
 	x, y = x:floor(), y:floor()
-	local color = DASH_COLOR()
-	local color2 = DASH_RECHARGING_COLOR()
+
 	local num = ply:GetMaxLongJumps() - ply:GetLongJumpCount()
 	local pr = ply:LongJumpRechargeProgress()
 	local w, h = ScreenSize(DASH_WIDTH):floor(), ScreenSize(DASH_HEIGHT):floor()
@@ -116,4 +131,14 @@ local function HUDPaint()
 	end
 end
 
-hook.Add('HUDPaint', 'LimitedHEVJumps', HUDPaint)
+hook.Add('HUDPaint', 'LimitedHEVJumps', function()
+	HUDPaint(false)
+end)
+
+timer.Simple(0, function()
+	if not BOREAL_ALYPH_HUD then return end
+
+	BOREAL_ALYPH_HUD:AddFXPaintHook('LongJumpsModule', function()
+		HUDPaint(true)
+	end)
+end)
