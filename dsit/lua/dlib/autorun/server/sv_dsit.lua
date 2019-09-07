@@ -83,22 +83,16 @@ local function checkNormal(ply, normal)
 	return true
 end
 
-local function request(ply)
-	if not DSitConVars:getBool('enable') then return end
-	if not IsValid(ply) then return end
+-- this is stupid
+local function PlayerPostThink(ply)
+	if not ply.__dsit_request then return end
+	ply.__dsit_request = nil
+	local maxVelocity = DSitConVars:getFloat('speed_val')
+
 	if not ply:Alive() then return end
 	-- if ply.dsit_pickup then return end
 
 	if ply:InVehicle() then return end
-
-	local maxVelocity = DSitConVars:getFloat('speed_val')
-
-	if maxVelocity > 0 then
-		if ply:GetVelocity():Length() >= maxVelocity then
-			messaging.LChatPlayer2(ply, 'message.dsit.sit.toofast')
-			return
-		end
-	end
 
 	local mins, maxs = ply:GetHull()
 	local eyes = ply:EyePos()
@@ -122,8 +116,10 @@ local function request(ply)
 		maxs = maxs,
 	}
 
+	ply:LagCompensation(true)
 	local tr = util.TraceLine(trDataLine)
 	local trh = util.TraceHull(trDataHull)
+	ply:LagCompensation(false)
 
 	if not tr.Hit then
 		return
@@ -396,6 +392,26 @@ local function request(ply)
 	ply:SetNWEntity('dsit_entity', vehicle)
 end
 
+local function request(ply)
+	if not DSitConVars:getBool('enable') then return end
+	if not IsValid(ply) then return end
+	if not ply:Alive() then return end
+	-- if ply.dsit_pickup then return end
+
+	if ply:InVehicle() then return end
+
+	local maxVelocity = DSitConVars:getFloat('speed_val')
+
+	if maxVelocity > 0 then
+		if ply:GetVelocity():Length() >= maxVelocity then
+			messaging.LChatPlayer2(ply, 'message.dsit.sit.toofast')
+			return
+		end
+	end
+
+	ply.__dsit_request = true
+end
+
 local tonumber = tonumber
 
 local function dsit_getoff(ply, cmd, args)
@@ -519,3 +535,4 @@ end
 hook.Add('PlayerLeaveVehicle', 'DSit', PlayerLeaveVehicle)
 hook.Add('PlayerDeath', 'DSit', PlayerDeath)
 hook.Add('PlayerSay', 'DSit', PlayerSay)
+hook.Add('PlayerPostThink', 'DSit', PlayerPostThink)
