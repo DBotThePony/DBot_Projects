@@ -25,6 +25,7 @@ local function CreateConVar(name, def, desc)
 end
 
 local SPRINT = CreateConVar('sv_limited_sprint', '1', 'Enable limited sprint')
+local SPRINT_MMOD = CreateConVar('sv_limited_sprint_mmod', '0', 'Enable limited sprint in MMod style (unable to sprint after its depletion until it fully restore)')
 local WATER = CreateConVar('sv_limited_oxygen', '1', 'Enable limited oxygen')
 local WATER_RESTORE = CreateConVar('sv_limited_oxygen_restore', '1', 'Restore health that player lost while drowing')
 
@@ -182,7 +183,7 @@ local function ProcessSuit(ply, fldata, ctime, toAdd)
 	if ply:GetLimitedHEVPowerRestoreStart() < ctime and ply:GetLimitedHEVSuitLastPower() and (ply:OnGround() or ply:GetMoveType() ~= MOVETYPE_WALK) then
 		ply:AddLimitedHEVPower(FrameTime() * POWER_RESTORE_MUL:GetFloat() * 7, 0, 100)
 
-		if ply:GetLimitedHEVPower() >= 100 then
+		if ply:GetLimitedHEVPower() >= (SPRINT_MMOD:GetBool() and 100 or 10) then
 			ply:SetLimitedHEVSuitDarn(false)
 			hook.Run('LimitedHEVPlayerRecovered', ply, IsFirstTimePredicted())
 		end
