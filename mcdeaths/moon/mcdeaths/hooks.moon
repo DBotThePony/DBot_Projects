@@ -61,6 +61,8 @@ hook.Add 'PlayerDeath', 'MCDeaths.PlayerDeath', (inflictor, attacker) =>
 	MsgC(color_white, unpack(rebuild, 1, #rebuild))
 	MsgC('\n')
 
+	hook.Run('MCDeaths_PlayerDeath', @, inflictor, attacker, rebuild)
+
 	return
 
 color_npc = Color(200, 200, 200)
@@ -82,6 +84,8 @@ hook.Add 'OnNPCKilled', 'MCDeaths.PlayerDeath', (attacker, inflictor) =>
 
 	MsgC(color_npc, unpack(rebuild, 1, #rebuild))
 	MsgC('\n')
+
+	hook.Run('MCDeaths_OnNPCKilled', @, attacker, inflictor, rebuild)
 
 	return
 
