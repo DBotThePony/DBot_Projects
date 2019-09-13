@@ -21,19 +21,24 @@
 import DLib, color_white, hook, MCDeaths, type from _G
 import i18n from DLib
 
+DISPLAY_PLAYER_DEATHS = CreateConVar('sv_mcdeaths_player', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Display player death messages')
+DISPLAY_NPC_DEATHS = CreateConVar('sv_mcdeaths_npc', '0', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Display NPC death messages')
+
 hook.Add 'EntityTakeDamage', 'MCDeaths.EntityTakeDamage', (dmg) =>
+	return if not DISPLAY_PLAYER_DEATHS\GetBool() and not DISPLAY_NPC_DEATHS\GetBool()
 	return if not @IsPlayer() and not @IsNPC() and type(@) ~= 'NextBot'
 	@__mc_tracker = MCDeaths.CombatTracker(@) if not @__mc_tracker
 	@__mc_tracker\Track(dmg)
 	return
 
 hook.Add 'PlayerSpawn', 'MCDeaths.PlayerSpawn', =>
-	@__mc_tracker = MCDeaths.CombatTracker(@) if not @__mc_tracker
+	return if not DISPLAY_PLAYER_DEATHS\GetBool()
+	return if not @__mc_tracker
 	@__mc_tracker\ForceClear()
 	return
 
-
 hook.Add 'PlayerDeath', 'MCDeaths.PlayerDeath', (inflictor, attacker) =>
+	return if not DISPLAY_PLAYER_DEATHS\GetBool()
 	@__mc_tracker = MCDeaths.CombatTracker(@) if not @__mc_tracker
 
 	if inflictor == @ and attacker == @
@@ -68,6 +73,7 @@ hook.Add 'PlayerDeath', 'MCDeaths.PlayerDeath', (inflictor, attacker) =>
 color_npc = Color(200, 200, 200)
 
 hook.Add 'OnNPCKilled', 'MCDeaths.PlayerDeath', (attacker, inflictor) =>
+	return if not DISPLAY_NPC_DEATHS\GetBool()
 	return if not @__mc_tracker
 	strategy = @__mc_tracker\GetStrategy()
 	return if not strategy

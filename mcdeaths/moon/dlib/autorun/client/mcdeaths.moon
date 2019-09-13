@@ -21,9 +21,13 @@
 import net, DLib from _G
 import i18n from DLib
 
+DISPLAY_PLAYER_DEATHS = CreateConVar('cl_mcdeaths_player', '1', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'Display player death messages if enabled by server')
+DISPLAY_NPC_DEATHS = CreateConVar('cl_mcdeaths_npc', '1', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'Display NPC death messages if enabled by server')
+
 color_npc = Color(200, 200, 200)
 
 net.receive 'mcdeaths_npcdeath', ->
+	return if not DISPLAY_NPC_DEATHS\GetBool()
 	point = net.ReadVector()
 	text = net.ReadStringArray()
 
@@ -33,6 +37,7 @@ net.receive 'mcdeaths_npcdeath', ->
 	MsgC('\n')
 
 net.receive 'mcdeaths_death', ->
+	return if not DISPLAY_PLAYER_DEATHS\GetBool()
 	point = net.ReadVector()
 	ply = net.ReadEntity()
 	text = net.ReadStringArray()
