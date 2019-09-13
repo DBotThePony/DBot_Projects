@@ -71,23 +71,25 @@ class MCDeaths.StrategyFellAfterAttack extends MCDeaths.StrategyFell
 	new: (tracker, search = true) =>
 		super(tracker)
 		@dmgFatal = tracker\Last()
-		@dmgLastAttack = tracker\FindPushDamageFrom(1) or tracker\FirstNonSelfFigher() or tracker\Last(1)
+		@dmgLastAttack = @FindPushDamageFrom(1) or tracker\FirstNonSelfFigher() or tracker\Last(1)
 
 	GetText: =>
 		if @@__with_attacker
 			component1 = {@GetComponentPush(@dmgLastAttack)}
 			component2 = {@GetComponent(@dmgFatal)}
+			name1 = table.remove(component1, 1)
+			name2 = table.remove(component2, 1)
 			issmall = @@__use_small
 
 			if issmall
 				small = @DetermineLimits()
 				issmall = @dmgFatal\GetDamage() <= small
 
-			rebuild = {'attack.mcdeaths.component.' .. @@__component .. '.' .. component1[1] .. '_' .. component2[1] .. '.' .. (issmall and 'small' or 'regular'), @ent\GetPrintNameDLib(true)}
-			table.remove(component1, 1)
-			table.remove(component2, 1)
+			rebuild = {'attack.mcdeaths.component.' .. @@__component .. '.' .. name1 .. '_' .. name2 .. '.' .. (issmall and 'small' or 'regular'), @ent\GetPrintNameDLib(true)}
+
 			table.append(rebuild, component1)
 			table.append(rebuild, component2)
+
 			return unpack(rebuild, 1, #rebuild)
 		else
 			component = {@GetComponentPush(@dmgLastAttack)}
@@ -156,10 +158,12 @@ class MCDeaths.StrategyFellAndFinishedOff extends MCDeaths.StrategyFellAfterAtta
 			component2 = {@GetComponent(@dmgFatal)}
 			component3 = {@GetComponent(@dmgFinish)}
 
-			rebuild = {'attack.mcdeaths.component.' .. @@__component .. '_finished.' .. component1[1] .. '_' .. component2[1] .. '_' .. component2[1], @ent\GetPrintNameDLib(true)}
-			table.remove(component1, 1)
-			table.remove(component2, 1)
-			table.remove(component3, 1)
+			name1 = table.remove(component1, 1)
+			name2 = table.remove(component2, 1)
+			name3 = table.remove(component3, 1)
+
+			rebuild = {'attack.mcdeaths.component.' .. @@__component .. '_finished.' .. name1 .. '_' .. name2 .. '_' .. name3, @ent\GetPrintNameDLib(true)}
+
 			table.append(rebuild, component1)
 			table.append(rebuild, component2)
 			table.append(rebuild, component3)
@@ -168,9 +172,11 @@ class MCDeaths.StrategyFellAndFinishedOff extends MCDeaths.StrategyFellAfterAtta
 			component1 = {@GetComponentPush(@dmgLastAttack)}
 			component2 = {@GetComponent(@dmgFinish)}
 
-			rebuild = {'attack.mcdeaths.component.' .. @@__component .. '_finished.' .. component1[1] .. '_' .. component2[1], @ent\GetPrintNameDLib(true)}
-			table.remove(component1, 1)
-			table.remove(component2, 1)
+			name1 = table.remove(component1, 1)
+			name2 = table.remove(component2, 1)
+
+			rebuild = {'attack.mcdeaths.component.' .. @@__component .. '_finished.' .. name1 .. '_' .. name2, @ent\GetPrintNameDLib(true)}
+
 			table.append(rebuild, component1)
 			table.append(rebuild, component2)
 			return unpack(rebuild, 1, #rebuild)

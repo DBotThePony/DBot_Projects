@@ -41,10 +41,18 @@ hook.Add 'PlayerDeath', 'MCDeaths.PlayerDeath', (inflictor, attacker) =>
 	return if text[1] == false
 	rebuild = i18n.rebuildTable(text, color_white, true)
 
+	net.Start('mcdeaths_death')
+	net.WriteVector(@EyePos())
+	net.WriteVector(@)
+	net.WriteStringArray(text)
+	net.Broadcast()
+
 	MsgC(color_white, unpack(rebuild, 1, #rebuild))
 	MsgC('\n')
 
 	return
+
+color_npc = Color(200, 200, 200)
 
 hook.Add 'OnNPCKilled', 'MCDeaths.PlayerDeath', (attacker, inflictor) =>
 	return if not @__mc_tracker
@@ -52,9 +60,16 @@ hook.Add 'OnNPCKilled', 'MCDeaths.PlayerDeath', (attacker, inflictor) =>
 	return if not strategy
 	text = {strategy\GetText()}
 	return if text[1] == false
-	rebuild = i18n.rebuildTable(text, color_white, true)
 
-	MsgC(color_white, unpack(rebuild, 1, #rebuild))
+	if player.GetCount() > 0
+		net.Start('mcdeaths_npcdeath')
+		net.WriteVector(@EyePos())
+		net.WriteStringArray(text)
+		net.Broadcast()
+
+	rebuild = i18n.rebuildTable(text, color_npc, true)
+
+	MsgC(color_npc, unpack(rebuild, 1, #rebuild))
 	MsgC('\n')
 
 	return

@@ -18,30 +18,28 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-import type from _G
+import net, DLib from _G
+import i18n from DLib
 
-_G.MCDeaths = MCDeaths or {}
+color_npc = Color(200, 200, 200)
 
-net.pool('mcdeaths_death')
-net.pool('mcdeaths_npcdeath')
+net.receive 'mcdeaths_npcdeath', ->
+	point = net.ReadVector()
+	text = net.ReadStringArray()
 
-MCDeaths = MCDeaths
-MCDeaths.DMG_ATTACK = DMG_CRUSH\bor(DMG_BULLET, DMG_SLASH, DMG_VEHICLE, DMG_BLAST, DMG_SHOCK, DMG_SONIC)
-MCDeaths.DMG_ANY = 0xFFFFFFFF - DMG_DROWNRECOVER - DMG_REMOVENORAGDOLL - DMG_PREVENT_PHYSICS_FORCE - DMG_NEVERGIB - DMG_ALWAYSGIB
+	rebuild = i18n.rebuildTable(text, color_npc, true)
 
--- damage entries can have at least one of types of each test in chain
-MCDeaths.CHAIN_TEST_WEAK = 0
--- damage entries must have exact type in each test in chain
-MCDeaths.CHAIN_TEST_EXACT = 1
--- damage entries before last - MCDeaths.CHAIN_TEST_WEAK, rest - MCDeaths.CHAIN_TEST_EXACT
-MCDeaths.CHAIN_TEST_MAYBE = 2
--- damage entries before last - MCDeaths.CHAIN_TEST_EXACT, rest - MCDeaths.CHAIN_TEST_WEAK
-MCDeaths.CHAIN_TEST_LAST = 3
+	MsgC(color_npc, unpack(rebuild, 1, #rebuild))
+	MsgC('\n')
 
-MCDeaths.IsFigher = => IsValid(@) and (@IsNPC() or @IsPlayer() or type(@) == 'NextBot')
+net.receive 'mcdeaths_death', ->
+	point = net.ReadVector()
+	ply = net.ReadEntity()
+	text = net.ReadStringArray()
 
-include 'mcdeaths/hooks.lua'
-include 'mcdeaths/tracker.lua'
-include 'mcdeaths/strategies.lua'
+	rebuild = i18n.rebuildTable(text, color_white, true)
+
+	MsgC(color_white, unpack(rebuild, 1, #rebuild))
+	MsgC('\n')
 
 return
