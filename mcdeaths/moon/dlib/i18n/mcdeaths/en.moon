@@ -201,3 +201,13 @@ attack.mcdeaths.component.laser_finished.using_by_using = '%s was %s by %s with 
 attack.mcdeaths.component.laser_finished.using_using_plain = '%s was %s by %s with help of %s then experienced thermal cut of %s\'s %s and were finished off'
 attack.mcdeaths.component.laser_finished.using_using_by = '%s was %s by %s with help of %s then experienced thermal cut of %s\'s %s and were finished off by %s'
 attack.mcdeaths.component.laser_finished.using_using_using = '%s was %s by %s with help of %s then experienced thermal cut of %s\'s %s and were finished off by %s using %s'
+
+attack.mcdeaths.component.outofworld.plain_plain = '%s was %s then fell out of world'
+attack.mcdeaths.component.outofworld.plain_by = '%s was %s then fell out of world due to %s'
+attack.mcdeaths.component.outofworld.plain_using = '%s was %s then fell out of world due to %s with help of %s'
+attack.mcdeaths.component.outofworld.by_plain = '%s was %s by %s then fell out of world'
+attack.mcdeaths.component.outofworld.by_by = '%s was %s by %s then fell out of world due to %s'
+attack.mcdeaths.component.outofworld.by_using = '%s was %s by %s then fell out of world due to %s with help of %s'
+attack.mcdeaths.component.outofworld.using_plain = '%s was %s by %s using %s then fell out of world'
+attack.mcdeaths.component.outofworld.using_by = '%s was %s by %s using %s then fell out of world due to %s'
+attack.mcdeaths.component.outofworld.using_using = '%s was %s by %s using %s then fell out of world due to %s with help of %s'

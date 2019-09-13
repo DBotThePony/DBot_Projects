@@ -96,11 +96,12 @@ class MCDeaths.StrategyVehicleAndFinishedOff extends MCDeaths.StrategyBase
 
 	GetText: =>
 		component1 = {@GetComponent(@dmgVehicle)}
-		component2 = {@GetComponent(@dmgLast or @lastFigher)}
+		component2 = {@GetComponent(@dmgLast or @lastFigher, true)}
+		name1 = table.remove(component1, 1)
+		name2 = table.splice(component2, 1, 2)[1]
 
-		rebuild = {'attack.mcdeaths.component.vehicle_finished.' .. component1[1] .. '_' .. component2[1], @ent\GetPrintNameDLib(true)}
-		table.splice(component1, 1, 2)
-		table.splice(component2, 1, 2)
+		rebuild = {'attack.mcdeaths.component.vehicle_finished.' .. name1 .. '_' .. name2}
+
 		table.append(rebuild, component1)
 		table.append(rebuild, component2)
 		return unpack(rebuild, 1, #rebuild)

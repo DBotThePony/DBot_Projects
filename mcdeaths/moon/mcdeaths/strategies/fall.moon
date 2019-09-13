@@ -155,8 +155,8 @@ class MCDeaths.StrategyFellAndFinishedOff extends MCDeaths.StrategyFellAfterAtta
 	GetText: =>
 		if @@__with_attacker
 			component1 = {@GetComponentPush(@dmgLastAttack)}
-			component2 = {@GetComponent(@dmgFatal)}
-			component3 = {@GetComponent(@dmgFinish)}
+			component2 = {@GetComponent(@dmgFatal, true)}
+			component3 = {@GetComponent(@dmgFinish, true)}
 
 			name1 = table.remove(component1, 1)
 			name2 = table.remove(component2, 1)
@@ -170,7 +170,7 @@ class MCDeaths.StrategyFellAndFinishedOff extends MCDeaths.StrategyFellAfterAtta
 			return unpack(rebuild, 1, #rebuild)
 		else
 			component1 = {@GetComponentPush(@dmgLastAttack)}
-			component2 = {@GetComponent(@dmgFinish)}
+			component2 = {@GetComponent(@dmgFinish, true)}
 
 			name1 = table.remove(component1, 1)
 			name2 = table.remove(component2, 1)

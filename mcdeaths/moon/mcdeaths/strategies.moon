@@ -30,26 +30,29 @@ class MCDeaths.StrategyBase
 
 	GetText: => 'attack.mcdeaths.full.generic.died', @ent\GetPrintNameDLib(true)
 
-	GetComponent: (dmginfo) =>
+	GetComponent: (dmginfo, last = false) =>
 		usePlain = not IsValid(dmginfo\GetAttacker())
 
 		if not usePlain and not (dmginfo\GetAttacker()\IsPlayer() or dmginfo\GetAttacker()\IsNPC() or type(dmginfo\GetAttacker()) == 'NextBot') or dmginfo\GetAttacker() == @ent
 			usePlain = true
 
 		if usePlain
-			return 'plain', @ent\GetPrintNameDLib(true)
+			return 'plain', @ent\GetPrintNameDLib(true) if not last
+			return 'plain'
 
 		local wepname
 
 		if dmginfo\GetInflictor()\IsWeapon()
 			wepname = dmginfo\GetInflictor()\GetPrintNameDLib(true)
-		elseif dmginfo\GetInflictor() == dmginfo\GetAttacker() and IsValid(dmginfo\GetAttacker()\GetActiveWeapon()) and @dmgLastAttack\GetAttacker()\GetActiveWeapon() ~= @dmgLastAttack\GetAttacker()
+		elseif dmginfo\GetInflictor() == dmginfo\GetAttacker() and dmginfo\GetAttacker().GetActiveWeapon and IsValid(dmginfo\GetAttacker()\GetActiveWeapon()) and dmginfo\GetAttacker()\GetActiveWeapon() ~= dmginfo\GetAttacker()
 			wepname = dmginfo\GetAttacker()\GetActiveWeapon()\GetPrintNameDLib(true)
 
 		if wepname
-			return 'using', @ent\GetPrintNameDLib(true), dmginfo\GetAttacker()\GetPrintNameDLib(true), wepname
+			return 'using', @ent\GetPrintNameDLib(true), dmginfo\GetAttacker()\GetPrintNameDLib(true), wepname if not last
+			return 'using', dmginfo\GetAttacker()\GetPrintNameDLib(true), wepname
 		else
-			return 'by', @ent\GetPrintNameDLib(true), dmginfo\GetAttacker()\GetPrintNameDLib(true)
+			return 'by', @ent\GetPrintNameDLib(true), dmginfo\GetAttacker()\GetPrintNameDLib(true) if not last
+			return 'by', dmginfo\GetAttacker()\GetPrintNameDLib(true)
 
 	@GetPushReasonComponent: (dmg) =>
 		switch dmg
@@ -119,7 +122,7 @@ class MCDeaths.StrategyBase
 
 		if dmginfo\GetInflictor()\IsWeapon()
 			wepname = dmginfo\GetInflictor()\GetPrintNameDLib(true)
-		elseif dmginfo\GetInflictor() == dmginfo\GetAttacker() and IsValid(dmginfo\GetAttacker()\GetActiveWeapon()) and @dmgLastAttack\GetAttacker()\GetActiveWeapon() ~= @dmgLastAttack\GetAttacker()
+		elseif dmginfo\GetInflictor() == dmginfo\GetAttacker() and dmginfo\GetAttacker().GetActiveWeapon and IsValid(dmginfo\GetAttacker()\GetActiveWeapon()) and dmginfo\GetAttacker()\GetActiveWeapon() ~= dmginfo\GetAttacker()
 			wepname = dmginfo\GetAttacker()\GetActiveWeapon()\GetPrintNameDLib(true)
 
 		if wepname

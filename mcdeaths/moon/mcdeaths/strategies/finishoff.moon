@@ -57,7 +57,7 @@ class MCDeaths.StrategyPropAndFinishedOff extends MCDeaths.StrategyBase
 	})
 
 	new: (tracker) =>
-		super(tracker, false)
+		super(tracker)
 		@dmgFatal = tracker\Last(1)
 		@dmgFinish = tracker\Last()
 
@@ -68,11 +68,39 @@ class MCDeaths.StrategyPropAndFinishedOff extends MCDeaths.StrategyBase
 
 	GetText: =>
 		component1 = {@GetComponent(@dmgFatal)}
-		component2 = {@GetComponent(@dmgFinish)}
+		component2 = {@GetComponent(@dmgFinish, true)}
+		name1 = table.remove(component1, 1)
+		name2 = table.remove(component2, 1)
 
-		rebuild = {'attack.mcdeaths.component.crush_finished.' .. component1[1] .. '_' .. component2[1], @ent\GetPrintNameDLib(true)}
-		table.remove(component1, 1)
-		table.remove(component2, 1)
+		rebuild = {'attack.mcdeaths.component.crush_finished.' .. name1 .. '_' .. name2}
+
+		table.append(rebuild, component1)
+		table.append(rebuild, component2)
+		return unpack(rebuild, 1, #rebuild)
+
+class MCDeaths.StrategyDirect extends MCDeaths.StrategySimple
+	@TESTER = MCDeaths.PredicateTester({
+		MCDeaths.BasicPredicate(DMG_DIRECT)
+	}, false)
+
+	@COMPONENT_NAME = 'outofworld'
+
+	new: (tracker) =>
+		super(tracker)
+		@lastFigher, @lastFigherIndex = tracker\FirstNonSelfFigher(1)
+
+	GetText: =>
+		if not @lastFigher
+			return super()
+
+		component1 = {@GetComponentPush(@lastFigher)}
+		component2 = {@GetComponent(@dmgLastAttack, true)}
+
+		name1 = table.remove(component1, 1)
+		name2 = table.remove(component2, 1)
+
+		rebuild = {'attack.mcdeaths.component.outofworld.' .. name1 .. '_' .. name2, @ent\GetPrintNameDLib(true)}
+
 		table.append(rebuild, component1)
 		table.append(rebuild, component2)
 		return unpack(rebuild, 1, #rebuild)

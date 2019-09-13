@@ -125,13 +125,6 @@ class MCDeaths.StrategyDissolve extends MCDeaths.StrategySimple
 
 	@COMPONENT_NAME = 'dissolve'
 
-class MCDeaths.StrategyDirect extends MCDeaths.StrategySimple
-	@TESTER = MCDeaths.PredicateTester({
-		MCDeaths.BasicPredicate(DMG_DIRECT)
-	}, false)
-
-	@COMPONENT_NAME = 'outofworld'
-
 class MCDeaths.StrategyDrown extends MCDeaths.StrategySimple
 	@TESTER = MCDeaths.PredicateTester({
 		MCDeaths.BasicPredicate(DMG_DROWN)
