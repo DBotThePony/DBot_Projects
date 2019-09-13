@@ -35,6 +35,17 @@ hook.Add 'PlayerSpawn', 'MCDeaths.PlayerSpawn', =>
 
 hook.Add 'PlayerDeath', 'MCDeaths.PlayerDeath', (inflictor, attacker) =>
 	@__mc_tracker = MCDeaths.CombatTracker(@) if not @__mc_tracker
+
+	if inflictor == @ and attacker == @
+		-- suecide
+		dmg = DLib.LTakeDamageInfo()
+		dmg\SetAttacker(Entity(0))
+		dmg\SetInflictor(Entity(0))
+		dmg\SetDamage(0xFFFFFFFF)
+		dmg\SetMaxDamage(0xFFFFFFFF)
+		dmg\SetDamageType(DMG_DIRECT)
+		@__mc_tracker\Track(dmg)
+
 	strategy = @__mc_tracker\GetStrategy()
 	return if not strategy
 	text = {strategy\GetText()}
@@ -43,7 +54,7 @@ hook.Add 'PlayerDeath', 'MCDeaths.PlayerDeath', (inflictor, attacker) =>
 
 	net.Start('mcdeaths_death')
 	net.WriteVector(@EyePos())
-	net.WriteVector(@)
+	net.WriteEntity(@)
 	net.WriteStringArray(text)
 	net.Broadcast()
 
