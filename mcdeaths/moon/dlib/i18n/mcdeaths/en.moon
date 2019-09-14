@@ -18,6 +18,10 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
+gui.mcdeaths.youdied = 'You Died!'
+gui.mcdeaths.at = 'You died at %s'
+gui.mcdeaths.ago = '%s ago'
+
 attack.mcdeaths.full.generic.died = '%s died.'
 
 attack.mcdeaths.full.generic.plain.slain = '%s was slain'

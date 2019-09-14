@@ -92,15 +92,13 @@ class MCDeaths.CombatTracker
 	FindTypeExact: (dmgType) => [@entries[i] for i = #@entries, 1, -1 when @entries[i]\GetDamageType() == dmgType]
 
 	PlanStrategy: =>
-		return false if #@entries == 0
+		return MCDeaths.StrategyUnknown if #@entries == 0
 
 		for entry in *MCDeaths.Strategies
 			if entry\Test(@)
 				return entry
 
-		print('Unable to find strategy for')
-		print(table.concat([entry\GetDamageType() for entry in *@entries], ' '))
-		return false
+		return MCDeaths.StrategyUnknown
 
 	ComputeStrategy: =>
 		plan = @PlanStrategy()

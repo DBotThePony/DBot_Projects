@@ -255,6 +255,9 @@ include 'mcdeaths/strategies/fall.lua'
 include 'mcdeaths/strategies/advanced.lua'
 include 'mcdeaths/strategies/finishoff.lua'
 
+class MCDeaths.StrategyUnknown extends MCDeaths.StrategyBase
+	@Test = => true
+
 MCDeaths.Strategies = {
 	MCDeaths.StrategyDirect
 	MCDeaths.StrategyFellOut
@@ -293,4 +296,6 @@ MCDeaths.Strategies = {
 	MCDeaths.StrategyPhysgun
 	MCDeaths.StrategyPlasma
 	MCDeaths.StrategyAirboat
+
+	MCDeaths.StrategyUnknown
 }
