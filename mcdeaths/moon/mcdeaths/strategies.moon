@@ -295,6 +295,7 @@ MCDeaths.Strategies = {
 	MCDeaths.StrategyAcid
 	MCDeaths.StrategyPhysgun
 	MCDeaths.StrategyPlasma
+	MCDeaths.StrategyRadiation
 	MCDeaths.StrategyAirboat
 
 	MCDeaths.StrategyUnknown
