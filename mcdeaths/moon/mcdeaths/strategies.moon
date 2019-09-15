@@ -258,6 +258,12 @@ include 'mcdeaths/strategies/finishoff.lua'
 class MCDeaths.StrategyUnknown extends MCDeaths.StrategyBase
 	@Test = => true
 
+	GetText: =>
+		component = {@GetComponent(@dmgLastAttack)}
+		componentType = table.remove(component, 1)
+
+		return 'attack.mcdeaths.full.generic.' .. componentType .. '.died', unpack(component, 1, #component)
+
 MCDeaths.Strategies = {
 	MCDeaths.StrategyDirect
 	MCDeaths.StrategyFellOut
