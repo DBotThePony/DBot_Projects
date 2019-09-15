@@ -45,8 +45,8 @@ class MCDeaths.StrategyFell extends MCDeaths.StrategyBase
 
 		table.insert(points, hook.Run('GetFallDamage', @ent, speed) or 0) for speed = 100, 2000, 100
 
-		@small = math.tbezier(0.15, points)\round()
-		@medium = math.tbezier(0.4, points)\round()
+		@small = math.tbezier(0.3, points)\round()
+		@medium = math.tbezier(0.55, points)\round()
 		@large = math.tbezier(0.8, points)\round()
 		return @small, @medium, @large
 
