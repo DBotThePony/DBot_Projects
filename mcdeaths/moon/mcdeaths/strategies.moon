@@ -258,6 +258,10 @@ include 'mcdeaths/strategies/finishoff.lua'
 class MCDeaths.StrategyUnknown extends MCDeaths.StrategyBase
 	@Test = => true
 
+	new: (tracker) =>
+		super(tracker)
+		@dmgLastAttack = tracker\Last()
+
 	GetText: =>
 		component = {@GetComponent(@dmgLastAttack)}
 		componentType = table.remove(component, 1)
