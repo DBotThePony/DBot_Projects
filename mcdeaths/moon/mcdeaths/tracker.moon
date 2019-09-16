@@ -30,7 +30,9 @@ class MCDeaths.CombatTracker
 
 	Track: (dmg) =>
 		return if dmg\GetDamage() <= 0
-		dmg = DLib.LTakeDamageInfo(dmg) if luatype(dmg) == 'CTakeDamageInfo'
+		if luatype(dmg) == 'CTakeDamageInfo'
+			dmg = DLib.LTakeDamageInfo(dmg)
+			dmg\RecordInflictor()
 		dmg.__mc_stamp = CurTimeL()
 		dmg.__mc_stampe = CurTimeL() + DMGINFO_TTL\GetFloat(10)
 		dmg.__mc_index = table.insert(@entries, dmg)

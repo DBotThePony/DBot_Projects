@@ -42,14 +42,8 @@ class MCDeaths.StrategyBase
 
 		local wepname
 
-		if IsValid(dmginfo\GetInflictor())
-			classname = dmginfo\GetInflictor()\GetClass()
-
-			if not classname\startsWith('prop_')
-				if dmginfo\GetInflictor()\IsWeapon() or dmginfo\GetInflictor() ~= dmginfo\GetAttacker()
-					wepname = dmginfo\GetInflictor()\GetPrintNameDLib(true)
-				elseif dmginfo\GetInflictor() == dmginfo\GetAttacker() and dmginfo\GetAttacker().GetActiveWeapon and IsValid(dmginfo\GetAttacker()\GetActiveWeapon()) and dmginfo\GetAttacker()\GetActiveWeapon() ~= dmginfo\GetAttacker()
-					wepname = dmginfo\GetAttacker()\GetActiveWeapon()\GetPrintNameDLib(true)
+		if IsValid(dmginfo\GetRecordedInflictor()) and not dmginfo\GetRecordedInflictor()\GetClass()\startsWith('prop_')
+			wepname = dmginfo\GetRecordedInflictor()\GetPrintNameDLib(true)
 
 		if wepname
 			return 'using', @ent\GetPrintNameDLib(true), dmginfo\GetAttacker()\GetPrintNameDLib(true), wepname if not last
@@ -124,14 +118,8 @@ class MCDeaths.StrategyBase
 
 		local wepname
 
-		if IsValid(dmginfo\GetInflictor())
-			classname = dmginfo\GetInflictor()\GetClass()
-
-			if not classname\startsWith('prop_')
-				if dmginfo\GetInflictor()\IsWeapon()
-					wepname = dmginfo\GetInflictor()\GetPrintNameDLib(true)
-				elseif dmginfo\GetInflictor() == dmginfo\GetAttacker() and dmginfo\GetAttacker().GetActiveWeapon and IsValid(dmginfo\GetAttacker()\GetActiveWeapon()) and dmginfo\GetAttacker()\GetActiveWeapon() ~= dmginfo\GetAttacker()
-					wepname = dmginfo\GetAttacker()\GetActiveWeapon()\GetPrintNameDLib(true)
+		if IsValid(dmginfo\GetRecordedInflictor()) and not dmginfo\GetRecordedInflictor()\GetClass()\startsWith('prop_')
+			wepname = dmginfo\GetRecordedInflictor()\GetPrintNameDLib(true)
 
 		if wepname
 			return 'using', @@GetPushReasonComponent(dmginfo\GetDamageType()), dmginfo\GetAttacker()\GetPrintNameDLib(true), wepname
