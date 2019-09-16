@@ -44,6 +44,7 @@ end
 local function CalcViewSinglePlayer(self, origin, angles, fov, znear, zfar)
 	if not self:GetDParkourRolling() then end
 	local roll = CurTime():progression(self:GetDParkourRollStart(), self:GetDParkourRollEnd())
+	if self:GetDParkourRollEnd() > CurTime() then return end
 
 	local ang = Angle((roll * 360 + 90):normalizeAngle(), self:GetDParkourRollAng().y, 0)
 
@@ -64,7 +65,7 @@ end
 if not game.SinglePlayer() then
 	hook.Add('CalcView', 'DParkour.Rolling', CalcView, -2)
 else
-	hook.Add('CalcView', 'DParkour.Rolling', CalcViewSinglePlayer, -2)
+	hook.Remove('CalcView', 'DParkour.Rolling', CalcViewSinglePlayer, -2)
 end
 
 hook.Add('PreDrawViewModel', 'DParkour.Rolling', PreDrawViewModel, 4)

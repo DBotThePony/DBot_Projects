@@ -49,7 +49,5 @@ client('dparkour/cl_sliding.lua')
 shared('dparkour/roll.lua')
 client('dparkour/cl_roll.lua')
 server('dparkour/sv_roll.lua')
-client('dparkour/cl_messaging.lua')
-server('dparkour/sv_messaging.lua')
 
 --_G.DParkour = nil
