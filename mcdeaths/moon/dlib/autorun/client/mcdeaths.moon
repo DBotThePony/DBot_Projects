@@ -101,7 +101,7 @@ hook.Add 'HUDPaint', 'MCDeaths.HUDPaint', ->
 	w, h = surface.GetTextSize(DIED_AT)
 	y += h * 1.1
 
-	stamp = i18n.localize('gui.mcdeaths.ago', i18n.tformat(RealTimeL() - DIED_AT_STAMP))
+	stamp = i18n.tformat(RealTimeL() - DIED_AT_STAMP, true)
 
 	draw.DrawText(stamp, 'MCDeaths_YouDied_Small', x + 2, y + 2, color_black, TEXT_ALIGN_CENTER)
 	draw.DrawText(stamp, 'MCDeaths_YouDied_Small', x, y, COLOR(), TEXT_ALIGN_CENTER)
