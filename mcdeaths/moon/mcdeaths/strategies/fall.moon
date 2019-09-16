@@ -76,7 +76,7 @@ class MCDeaths.StrategyFellAfterAttack extends MCDeaths.StrategyFell
 	GetText: =>
 		if @@__with_attacker
 			component1 = {@GetComponentPush(@dmgLastAttack)}
-			component2 = {@GetComponent(@dmgFatal)}
+			component2 = {@GetComponent(@dmgFatal, true)}
 			name1 = table.remove(component1, 1)
 			name2 = table.remove(component2, 1)
 			issmall = @@__use_small
