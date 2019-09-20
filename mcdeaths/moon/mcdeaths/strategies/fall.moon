@@ -162,10 +162,16 @@ class MCDeaths.StrategyFellAndFinishedOff extends MCDeaths.StrategyFellAfterAtta
 			name2 = table.remove(component2, 1)
 			name3 = table.remove(component3, 1)
 
+			turnback = false
+
+			if @dmgFinish\GetAttacker() == @dmgFatal\GetAttacker() and @dmgFatal\GetAttacker()\IsValid() and @dmgFatal\GetRecordedInflictor() == @dmgFinish\GetRecordedInflictor()
+				turnback = true
+				name2 = 'plain'
+
 			rebuild = {'attack.mcdeaths.component.' .. @@__component .. '_finished.' .. name1 .. '_' .. name2 .. '_' .. name3, @ent\GetPrintNameDLib(true)}
 
 			table.append(rebuild, component1)
-			table.append(rebuild, component2)
+			table.append(rebuild, component2) if not turnback
 			table.append(rebuild, component3)
 			return unpack(rebuild, 1, #rebuild)
 		else

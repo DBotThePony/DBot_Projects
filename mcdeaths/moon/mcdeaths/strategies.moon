@@ -42,7 +42,7 @@ class MCDeaths.StrategyBase
 
 		local wepname
 
-		if IsValid(dmginfo\GetRecordedInflictor()) and not dmginfo\GetRecordedInflictor()\GetClass()\startsWith('prop_')
+		if IsValid(dmginfo\GetRecordedInflictor()) and dmginfo\GetRecordedInflictor() ~= dmginfo\GetAttacker() and not dmginfo\GetRecordedInflictor()\GetClass()\startsWith('prop_')
 			wepname = dmginfo\GetRecordedInflictor()\GetPrintNameDLib(true)
 
 		if wepname
@@ -118,7 +118,7 @@ class MCDeaths.StrategyBase
 
 		local wepname
 
-		if IsValid(dmginfo\GetRecordedInflictor()) and not dmginfo\GetRecordedInflictor()\GetClass()\startsWith('prop_')
+		if IsValid(dmginfo\GetRecordedInflictor()) and dmginfo\GetRecordedInflictor() ~= dmginfo\GetAttacker() and not dmginfo\GetRecordedInflictor()\GetClass()\startsWith('prop_')
 			wepname = dmginfo\GetRecordedInflictor()\GetPrintNameDLib(true)
 
 		if wepname
