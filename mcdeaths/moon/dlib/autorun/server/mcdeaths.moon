@@ -52,6 +52,14 @@ loaded = () ->
 	fn = GAMEMODE and GAMEMODE.PlayerDeath
 	return if not fn
 	fenv = getfenv(fn)
+
+	if type(fenv) == 'table'
+		if meta = getmetatable(fenv)
+			if fn2 = meta.__index
+				if info = debug.getinfo(fn2)
+					if info.short_src\find('server/mcdeaths', 1, true)
+						return
+
 	setfenv(fn, setmetatable({}, {
 		__index: (key) =>
 			return emptyfn if MUTE_DEFAULT_MESSAGES\GetBool() and (key == 'Msg' or key == 'MsgC' or key == 'MsgN' or key == 'MsgAll')
