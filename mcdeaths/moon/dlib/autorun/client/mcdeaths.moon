@@ -25,6 +25,11 @@ DISPLAY_PLAYER_DEATHS = CreateConVar('cl_mcdeaths_player', '1', {FCVAR_ARCHIVE, 
 DISPLAY_NPC_DEATHS = CreateConVar('cl_mcdeaths_npc', '1', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'Display NPC death messages if enabled by server')
 DISPLAY_DRAW = CreateConVar('cl_mcdeaths_draw', '1', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'Draw death reason of local player on screen')
 
+PLAYER_CHAT = CreateConVar('sv_mcdeaths_player_chat', '0', {FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Write player death messages to chat when others are close enough')
+PLAYER_CHAT_RANGE = CreateConVar('sv_mcdeaths_player_range', '1512', {FCVAR_NOTIFY, FCVAR_REPLICATED}, 'How far from death point should death message appear in chat when a player dies')
+NPC_CHAT = CreateConVar('sv_mcdeaths_npc_chat', '0', {FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Write NPC death messages to chat when others are close enough')
+NPC_CHAT_RANGE = CreateConVar('sv_mcdeaths_npc_range', '786', {FCVAR_NOTIFY, FCVAR_REPLICATED}, 'How far from death point should death message appear in chat when a NPC dies')
+
 color_npc = Color(200, 200, 200)
 
 net.receive 'mcdeaths_npcdeath', ->
@@ -34,8 +39,11 @@ net.receive 'mcdeaths_npcdeath', ->
 
 	rebuild = i18n.rebuildTable(text, color_npc, true)
 
-	MsgC(color_npc, unpack(rebuild, 1, #rebuild))
-	MsgC('\n')
+	if NPC_CHAT\GetBool() and LocalPos()\Distance(point) <= NPC_CHAT_RANGE\GetBool()
+		chat.AddText(color_npc, unpack(rebuild, 1, #rebuild))
+	else
+		MsgC(color_npc, unpack(rebuild, 1, #rebuild))
+		MsgC('\n')
 
 local DEATH_REASON, DIED_AT, DIED_AT_STAMP
 
@@ -47,8 +55,11 @@ net.receive 'mcdeaths_death', ->
 
 	rebuild = i18n.rebuildTable(text, color_white, true)
 
-	MsgC(color_white, unpack(rebuild, 1, #rebuild))
-	MsgC('\n')
+	if PLAYER_CHAT\GetBool() and LocalPos()\Distance(point) <= PLAYER_CHAT_RANGE\GetBool()
+		chat.AddText(color_white, unpack(rebuild, 1, #rebuild))
+	else
+		MsgC(color_white, unpack(rebuild, 1, #rebuild))
+		MsgC('\n')
 
 	if DISPLAY_DRAW\GetBool() and ply == LocalPlayer()
 		DIED_AT = i18n.localize('gui.mcdeaths.at', os.date('%H:%M:%S - %d/%m/%Y'))

@@ -24,6 +24,13 @@ import i18n from DLib
 DISPLAY_PLAYER_DEATHS = CreateConVar('sv_mcdeaths_player', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Display player death messages')
 DISPLAY_NPC_DEATHS = CreateConVar('sv_mcdeaths_npc', '0', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Display NPC death messages')
 
+MCDeaths.DISPLAY_PLAYER_DEATHS = DISPLAY_PLAYER_DEATHS
+
+CreateConVar('sv_mcdeaths_player_chat', '0', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Write player death messages to chat when others are close enough')
+CreateConVar('sv_mcdeaths_player_range', '1512', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'How far from death point should death message appear in chat when a player dies')
+CreateConVar('sv_mcdeaths_npc_chat', '0', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Write NPC death messages to chat when others are close enough')
+CreateConVar('sv_mcdeaths_npc_range', '786', {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, 'How far from death point should death message appear in chat when a NPC dies')
+
 hook.Add 'EntityTakeDamage', 'MCDeaths.EntityTakeDamage', (dmg) =>
 	return if not DISPLAY_PLAYER_DEATHS\GetBool() and not DISPLAY_NPC_DEATHS\GetBool()
 	return if not @IsPlayer() and not @IsNPC() and type(@) ~= 'NextBot'
