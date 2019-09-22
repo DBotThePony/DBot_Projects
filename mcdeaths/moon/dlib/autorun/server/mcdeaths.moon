@@ -62,7 +62,7 @@ loaded = () ->
 
 	setfenv(fn, setmetatable({}, {
 		__index: (key) =>
-			return emptyfn if MUTE_DEFAULT_MESSAGES\GetBool() and (key == 'Msg' or key == 'MsgC' or key == 'MsgN' or key == 'MsgAll')
+			return emptyfn if MUTE_DEFAULT_MESSAGES\GetBool() and MCDeaths.DISPLAY_PLAYER_DEATHS\GetBool() and (key == 'Msg' or key == 'MsgC' or key == 'MsgN' or key == 'MsgAll')
 			return fenv[key]
 
 		__newindex: (key, value) =>
