@@ -44,4 +44,26 @@ include 'mcdeaths/hooks.lua'
 include 'mcdeaths/tracker.lua'
 include 'mcdeaths/strategies.lua'
 
+MUTE_DEFAULT_MESSAGES = CreateConVar('sv_mcdeaths_mute', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Mute default death messages (one which occur inside GM:PlayerDeath)')
+
+emptyfn = () ->
+
+loaded = () ->
+	fn = GAMEMODE and GAMEMODE.PlayerDeath
+	return if not fn
+	fenv = getfenv(fn)
+	setfenv(fn, setmetatable({}, {
+		__index: (key) =>
+			return emptyfn if MUTE_DEFAULT_MESSAGES\GetBool() and (key == 'Msg' or key == 'MsgC' or key == 'MsgN' or key == 'MsgAll')
+			return fenv[key]
+
+		__newindex: (key, value) =>
+			fenv[key] = value
+	}))
+
+if AreEntitiesAvailable()
+	loaded()
+else
+	hook.Add 'Initialize', 'MCDeaths.Mute', loaded
+
 return
