@@ -29,6 +29,8 @@ MCDeaths = MCDeaths
 MCDeaths.DMG_ATTACK = DMG_CRUSH\bor(DMG_BULLET, DMG_SLASH, DMG_VEHICLE, DMG_BLAST, DMG_SHOCK, DMG_SONIC)
 MCDeaths.DMG_ANY = 0xFFFFFFFF - DMG_DROWNRECOVER - DMG_REMOVENORAGDOLL - DMG_PREVENT_PHYSICS_FORCE - DMG_NEVERGIB - DMG_ALWAYSGIB
 
+MCDeaths.ENABLED = CreateConVar('sv_mcdeaths', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Enable Minecraft Styled Death Messages')
+
 -- damage entries can have at least one of types of each test in chain
 MCDeaths.CHAIN_TEST_WEAK = 0
 -- damage entries must have exact type in each test in chain
@@ -62,7 +64,7 @@ loaded = () ->
 
 	setfenv(fn, setmetatable({}, {
 		__index: (key) =>
-			return emptyfn if MUTE_DEFAULT_MESSAGES\GetBool() and MCDeaths.DISPLAY_PLAYER_DEATHS\GetBool() and (key == 'Msg' or key == 'MsgC' or key == 'MsgN' or key == 'MsgAll')
+			return emptyfn if MUTE_DEFAULT_MESSAGES\GetBool() and MCDeaths.DISPLAY_PLAYER_DEATHS\GetBool() and MCDeaths.ENABLED\GetBool() and (key == 'Msg' or key == 'MsgC' or key == 'MsgN' or key == 'MsgAll')
 			return fenv[key]
 
 		__newindex: (key, value) =>
