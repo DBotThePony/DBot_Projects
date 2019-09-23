@@ -18,7 +18,6 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-
 local ENABLE = CreateConVar('tdeaths_enable', '1', FCVAR_ARCHIVE, 'Enable Death Messages')
 local ENABLE_NPC = CreateConVar('tdeaths_enable_npc', '1', FCVAR_ARCHIVE, 'Enable Death Messages of NPCs')
 local RANGE_DEFAULT = CreateConVar('tdeaths_range', '4000', FCVAR_ARCHIVE, 'Broadcast range of default death message')
@@ -49,7 +48,7 @@ local red = Color(190, 50, 50)
 
 local Dict = {
 	Fall = {
-		'%s fell from high place',
+		'%s fell from a high place',
 		'%s hit the ground too hard',
 		"%s fell to their death",
 		"%s didn't bounce",
@@ -60,23 +59,22 @@ local Dict = {
 		'%s forgot to open his parachute',
 		'%s forgot to open his wings',
 		'%s became an angel',
-		'%s was falling too long',
+		'%s fell for too long',
 	},
 
 	Drowned = {
 		"%s forgot to breathe",
-		"%s is sleeping with the fishes",
+		"%s is sleeping with the fish",
 		"%s drowned",
-		"%s became a seapony",
-		"%s's lungs is filled with wrong liquid",
+		"%s's lungs got filled with liquid",
 		"%s is shark food",
 	},
 
 	Fire = {
-		'%s likes to play with fire',
-		'%s burned to the crisp',
+		'%s like to play with fire',
+		'%s burned to a crisp',
 		'%s burned to the death',
-		'%s became an ach',
+		'%s turned into an ach',
 		'%s was cooked alive',
 	},
 
@@ -112,7 +110,6 @@ local Dict = {
 		"%s become a useless body",
 		"%s gone to paradise",
 		"%s's life was finished",
-		"%s gone from this world",
 		"%s's game was overed",
 		"%s lost any of his blood",
 		"%s lost his life connection",
@@ -123,31 +120,28 @@ local Dict = {
 
 	Poison = {
 		'%s was poisoned to the death',
-		'%s\'s veins was poisoned',
+		'%s\'s veins turned green',
 		'%s blood were turned into water',
 	},
 
 	Acid = {
-		'%s disappeared',
+		'%s got digested',
 		'%s was digested',
 		'%s\'s vital organs were ruptured',
 		'%s got splitted',
-		'%s got disintegrated by acid',
-		'%s got disassembled',
 		'%s was oxidized',
-		'%s tried to swin in acid',
+		'%s likes to play in acid',
 	},
 
 	Suicide = {
-		'%s don\'t like his life',
-		'%s don\'t wants to live anymore',
-		'%s wrecks his head',
-		'%s hads gone to hell',
-		'%s likes to shoot his own head',
-		'%s feels upset and done suicide',
+		'%s took an easy way to quit',
+		'%s don\'t want to live anymore',
+		'%s wrecked his head',
+		'%s had gone to hell',
+		'%s like to shoot his own head',
+		'%s feels upset and did a bad thing',
 		'%s forgot to unbind kill button',
-		'%s swinged his sword and his head torn off his body',
-		'%s used suicide revolver',
+		'%s pointed his gun right next to his ear',
 		'%s had very nasty hallucinations',
 	},
 
@@ -155,80 +149,67 @@ local Dict = {
 		'%s got smashed',
 		'%s had their head removed',
 		'All %s\'s bones got broken',
-		'%s is crunching',
-		'%s likes to play with heavy things',
+		'%s got crushed',
+		'%s like to lift kilograms',
 		'%s tried to throw locomotive',
-		'%s\'s head was removed by throwned prop',
-		'%s got a thing stuck in his body',
+		'%s got his head removed',
+		'%s had their inners cut out',
 	},
 
 	Slash = {
 		'%s got snapped in half',
 		'%s was cut down the middle',
 		'%s was chopped up',
-		'%s was butchered by a knife',
 		'%s turned into meat steak',
 		'%s was butchered',
-		'%s catched a cleaver by his head',
+		'%s catched a cleaver using his own head',
 		"%s's face was torn off",
 		"%s was turned into a pile of flesh",
 		"%s had their head removed",
 		"%s was torn in half",
-		"%s got pulverizered",
 	},
 
 	Electricity = {
-		'%s was hit by lighting',
+		'%s was struck by lighting',
 		'%s played and died because of electricity',
-		'%s got shocked to the death',
+		'%s was shocked to death',
 		'%s was zapped like a bee',
-		'%s was cooked by electricity',
-		'%s became a live battery',
-		'%s was charged by electrons',
-		'%s got plus and minus polarity',
-		'%s loves to play with electricity',
-		"%s didn't wear gloves while working with electricity",
-		'%s got a heart attack because of electricity',
-		'%s\'s heart got wrong electricity',
-		'%s got cooked',
+		'%s forgot to not to touch powered wires',
+		'%s is pretty much dead now',
+		'%s had their electrons moved',
+		'%s forgot safety instructions',
+		"%s got exposed to current",
+		'%s got a heart attack because of voltage',
+		'%s couldn\'t contain the watts',
 	},
 
 	Laser = {
 		'%s got snapped in half',
-		'%s received much heat and melted',
-		'%s was melted',
-		'%s was perfectly cut',
-		'%s\'s body got splitted',
-		'%s fell at open laser',
-		'%s was cut by a laser',
+		'%s overheated',
+		'%s was perfectly cut in middle',
+		'%s was splitted in half',
+		'%s walked into a beam of light',
+		'%s was cut down by a laser',
 	},
 
 	Disintegrated = {
-		"%s gone from this world",
 		"%s was terminated",
 		"%s's body was removed from this server",
-		"%s disappeared",
+		"%s is pretty much gone now",
 		"%s was disintegrated",
-		"%s's body was divided into atoms",
-		"%s's atmos disintegrated",
+		"%s decayed",
 	},
 
 	Explosion = {
-		'%s was blown up',
 		'%s\' organs is flying around',
 		'%s got a grenade in his eye',
-		'%s catched a rocket in wrong way',
-		'%s was butchered',
-		"%s's meat was ripped off the bone",
+		'%s experienced quick energy expansion',
+		"%s's meat was blown off their bones",
 		'%s got impacted to second world',
 		'%s got dismembered',
-		'%s explodes',
-		'BOOM! Wee now can see %s\'s meat around',
+		'%s blew up',
+		'It looks like they are gonna glue %s back together',
 	},
-}
-
-local Names = {
-	worldspawn = 'WORLD',
 }
 
 local DamageSpecific = {
@@ -262,21 +243,16 @@ DamageSpecific[DMG_BLAST_SURFACE] = DamageSpecific[DMG_BLAST]
 DamageSpecific[DMG_PLASMA] = DamageSpecific[DMG_ENERGYBEAM]
 DamageSpecific[DMG_CLUB] = DamageSpecific[DMG_SLASH]
 
-local function GetName(ent)
-	local get = DLib.string.niceName(ent)
-	return Names[get] or get
-end
-
 local function GetWeapon(ent, weapon)
 	if IsValid(weapon) and weapon:GetClass() ~= ent:GetClass() then
-		return GetName(weapon)
+		return weapon:GetPrintNameDLib()
 	end
 
 	if ent.GetActiveWeapon and IsValid(ent:GetActiveWeapon()) then
-		return GetName(ent:GetActiveWeapon())
+		return ent:GetActiveWeapon():GetPrintNameDLib()
 	end
 
-	return GetName(ent)
+	return ent:GetPrintNameDLib()
 end
 
 local function format(tableIn, ...)
@@ -334,9 +310,9 @@ local function GenericDeath(victim, attacker, guessWeapon, guessDamage, rawWeapo
 		local targetDict = DamageSpecific[guessDamage] or DamageSpecific[DMG_GENERIC]
 
 		if validWeaponRaw then
-			say(format(targetDict, GetName(victim)) .. string.format(' by %s\'s %s', GetName(attacker), GetName(rawWeapon)))
+			say(format(targetDict, victim:GetPrintNameDLib()) .. string.format(' by %s\'s %s', attacker:GetPrintNameDLib(), rawWeapon:GetPrintNameDLib()))
 		else
-			say(format(Dict.Suicide, GetName(victim)))
+			say(format(Dict.Suicide, victim:GetPrintNameDLib()))
 		end
 
 		return
@@ -344,9 +320,9 @@ local function GenericDeath(victim, attacker, guessWeapon, guessDamage, rawWeapo
 
 	if isProp then
 		if attackerIsAlive then
-			say(format(Dict.Prop, GetName(victim)) .. ' by ' .. GetName(attacker))
+			say(format(Dict.Prop, victim:GetPrintNameDLib()) .. ' by ' .. attacker:GetPrintNameDLib())
 		else
-			say(format(Dict.Prop, GetName(victim)))
+			say(format(Dict.Prop, victim:GetPrintNameDLib()))
 		end
 
 		return
@@ -356,12 +332,12 @@ local function GenericDeath(victim, attacker, guessWeapon, guessDamage, rawWeapo
 
 	if valid then
 		if validWeapon then
-			say(format(targetDict, GetName(victim)) .. string.format(' by %s\'s %s', GetName(attacker), GetName(guessWeapon)))
+			say(format(targetDict, victim:GetPrintNameDLib()) .. string.format(' by %s\'s %s', attacker:GetPrintNameDLib(), guessWeapon:GetPrintNameDLib()))
 		else
-			say(format(targetDict, GetName(victim)) .. string.format(' by %s', GetName(attacker)))
+			say(format(targetDict, victim:GetPrintNameDLib()) .. string.format(' by %s', attacker:GetPrintNameDLib()))
 		end
 	else
-		say(format(targetDict, GetName(victim)))
+		say(format(targetDict, victim:GetPrintNameDLib()))
 	end
 end
 
@@ -393,14 +369,6 @@ local function EntityTakeDamage(self, dmginfo)
 	self.TDeaths_LatestInflictor = dmginfo:GetInflictor()
 	self.TDeaths_LatestDamage = dmginfo:TypesArray()
 end
-
-timer.Simple(0, function()
-	for k, v in pairs(list.Get('NPC')) do
-		if v.Name then
-			Names[k] = v.Name
-		end
-	end
-end)
 
 hook.Add('DoPlayerDeath', 'TDeaths', DoPlayerDeath)
 hook.Add('OnNPCKilled', 'TDeaths', OnNPCKilled)
