@@ -83,7 +83,7 @@ COLOR = DLib.HUDCommons.CreateColor('mcdeaths', 'MCDeaths Text', 255, 255, 255)
 
 import draw, surface, color_black, TEXT_ALIGN_CENTER from _G
 
-hook.Add 'HUDPaint', 'MCDeaths.HUDPaint', ->
+HUDPaint = ->
 	return if not DEATH_REASON
 
 	if LocalPlayer()\Alive()
@@ -116,5 +116,7 @@ hook.Add 'HUDPaint', 'MCDeaths.HUDPaint', ->
 
 	draw.DrawText(stamp, 'MCDeaths_YouDied_Small', x + 2, y + 2, color_black, TEXT_ALIGN_CENTER)
 	draw.DrawText(stamp, 'MCDeaths_YouDied_Small', x, y, COLOR(), TEXT_ALIGN_CENTER)
+
+hook.Add 'HUDPaint', 'MCDeaths.HUDPaint', HUDPaint, 6
 
 return
