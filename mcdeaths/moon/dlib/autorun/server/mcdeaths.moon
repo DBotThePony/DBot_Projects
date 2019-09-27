@@ -50,8 +50,7 @@ MUTE_DEFAULT_MESSAGES = CreateConVar('sv_mcdeaths_mute', '1', {FCVAR_ARCHIVE, FC
 
 emptyfn = () ->
 
-loaded = () ->
-	fn = GAMEMODE and GAMEMODE.PlayerDeath
+loaded = (fn) ->
 	return if not fn
 	fenv = getfenv(fn)
 
@@ -72,8 +71,11 @@ loaded = () ->
 	}))
 
 if AreEntitiesAvailable()
-	loaded()
+	loaded(GAMEMODE and GAMEMODE.PlayerDeath)
+	loaded(GAMEMODE and GAMEMODE.BaseClass and GAMEMODE.BaseClass.PlayerDeath)
 else
-	hook.Add 'Initialize', 'MCDeaths.Mute', loaded
+	hook.Add 'Initialize', 'MCDeaths.Mute', () ->
+		loaded(GAMEMODE and GAMEMODE.PlayerDeath)
+		loaded(GAMEMODE and GAMEMODE.BaseClass and GAMEMODE.BaseClass.PlayerDeath)
 
 return
