@@ -39,7 +39,7 @@ net.receive 'mcdeaths_npcdeath', ->
 
 	rebuild = i18n.rebuildTable(text, color_npc, true)
 
-	if NPC_CHAT\GetBool() and LocalPos()\Distance(point) <= NPC_CHAT_RANGE\GetBool()
+	if NPC_CHAT\GetBool() and LocalPos()\Distance(point) <= NPC_CHAT_RANGE\GetFloat()
 		chat.AddText(color_npc, unpack(rebuild, 1, #rebuild))
 	else
 		MsgC(color_npc, unpack(rebuild, 1, #rebuild))
@@ -55,7 +55,7 @@ net.receive 'mcdeaths_death', ->
 
 	rebuild = i18n.rebuildTable(text, color_white, true)
 
-	if PLAYER_CHAT\GetBool() and LocalPos()\Distance(point) <= PLAYER_CHAT_RANGE\GetBool()
+	if PLAYER_CHAT\GetBool() and LocalPos()\Distance(point) <= PLAYER_CHAT_RANGE\GetFloat()
 		chat.AddText(color_white, unpack(rebuild, 1, #rebuild))
 	else
 		MsgC(color_white, unpack(rebuild, 1, #rebuild))
