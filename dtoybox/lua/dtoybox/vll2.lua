@@ -251,19 +251,36 @@ do
   local _obj_0 = _G
   VLL2, baseclass, table, string, assert, type = _obj_0.VLL2, _obj_0.baseclass, _obj_0.table, _obj_0.string, _obj_0.assert, _obj_0.type
 end
+VLL2.WTFWithMetatables = function(base)
+  local output = { }
+  for classname, definition in pairs(scripted_ents.GetList()) do
+    if definition.Base == base then
+      table.append(output, VLL2.WTFWithMetatables(classname))
+    end
+  end
+  local _list_0 = weapons.GetList()
+  for _index_0 = 1, #_list_0 do
+    local aWEAPUN = _list_0[_index_0]
+    if aWEAPUN.ClassName and aWEAPUN.Base == base then
+      table.append(output, VLL2.WTFWithMetatables(aWEAPUN.ClassName))
+    end
+  end
+  if #output == 0 then
+    return {
+      base
+    }
+  end
+  return output
+end
 VLL2.RecursiveMergeBase = function(mergeMeta)
   if not mergeMeta then
     return 
   end
   local metaGet = baseclass.Get(mergeMeta)
-  if not metaGet.Base then
+  if not metaGet.Base or metaGet.Base == mergeMeta then
     return 
   end
-  if metaGet.Base == mergeMeta then
-    return 
-  end
-  VLL2.RecursiveMergeBase(metaGet.Base)
-  local metaBase = baseclass.Get(metaGet.Base)
+  local metaBase = baseclass.Get(metaGet.Base) or { }
   for key, value in pairs(metaBase) do
     if metaGet[key] == nil then
       metaGet[key] = value
@@ -3206,6 +3223,11 @@ do
         scripted_ents.Register(ENT, ename)
         baseclass.Set(ename, ENT)
         table.insert(pendingMeta, ename)
+        local _list_0 = VLL2.WTFWithMetatables(ename)
+        for _index_1 = 1, #_list_0 do
+          local _name = _list_0[_index_1]
+          table.insert(pendingMeta, _name)
+        end
         _G.ENT = nil
       end
       for _index_0 = 1, #dirs do
@@ -3226,13 +3248,33 @@ do
           scripted_ents.Register(ENT, _dir)
           baseclass.Set(_dir, ENT)
           table.insert(pendingMeta, _dir)
+          local _list_0 = VLL2.WTFWithMetatables(_dir)
+          for _index_1 = 1, #_list_0 do
+            local _name = _list_0[_index_1]
+            table.insert(pendingMeta, _name)
+          end
           _G.ENT = nil
         end
       end
-      local _list_0 = pendingMeta
+      local _dedup = { }
+      for _index_0 = 1, #pendingMeta do
+        local name = pendingMeta[_index_0]
+        local hit = false
+        for _index_1 = 1, #_dedup do
+          local name2 = _dedup[_index_1]
+          if name == name2 then
+            hit = true
+            break
+          end
+        end
+        if not hit then
+          table.insert(_dedup, name)
+        end
+      end
+      local _list_0 = _dedup
       for _index_0 = 1, #_list_0 do
         local _meta = _list_0[_index_0]
-        VLL2.RecursiveMergeBase(meta)
+        VLL2.RecursiveMergeBase(_meta)
       end
     end,
     LoadEffects = function(self)
@@ -3293,6 +3335,11 @@ do
         weapons.Register(SWEP, ename)
         baseclass.Set(ename, SWEP)
         table.insert(pendingMeta, ename)
+        local _list_0 = VLL2.WTFWithMetatables(ename)
+        for _index_1 = 1, #_list_0 do
+          local _name = _list_0[_index_1]
+          table.insert(pendingMeta, _name)
+        end
         _G.SWEP = nil
       end
       for _index_0 = 1, #dirs do
@@ -3315,13 +3362,33 @@ do
           weapons.Register(SWEP, _dir)
           baseclass.Set(_dir, SWEP)
           table.insert(pendingMeta, _dir)
+          local _list_0 = VLL2.WTFWithMetatables(_dir)
+          for _index_1 = 1, #_list_0 do
+            local _name = _list_0[_index_1]
+            table.insert(pendingMeta, _name)
+          end
           _G.SWEP = nil
         end
       end
-      local _list_0 = pendingMeta
+      local _dedup = { }
+      for _index_0 = 1, #pendingMeta do
+        local name = pendingMeta[_index_0]
+        local hit = false
+        for _index_1 = 1, #_dedup do
+          local name2 = _dedup[_index_1]
+          if name == name2 then
+            hit = true
+            break
+          end
+        end
+        if not hit then
+          table.insert(_dedup, name)
+        end
+      end
+      local _list_0 = _dedup
       for _index_0 = 1, #_list_0 do
         local _meta = _list_0[_index_0]
-        VLL2.RecursiveMergeBase(meta)
+        VLL2.RecursiveMergeBase(_meta)
       end
     end,
     __TFALoader = function(self, fpath)
