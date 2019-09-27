@@ -258,6 +258,14 @@ class MCDeaths.StrategyUnknown extends MCDeaths.StrategyBase
 		super(tracker)
 		@dmgLastAttack = tracker\Last()
 
+		if not @dmgLastAttack
+			with @dmgLastAttack = DLib.LTakeDamageInfo()
+				\SetAttacker(Entity(0))
+				\SetInflictor(Entity(0))
+				\SetDamage(0xFFFFFFFF)
+				\SetMaxDamage(0xFFFFFFFF)
+				\SetDamageType(DMG_DIRECT)
+
 	GetText: =>
 		component = {@GetComponent(@dmgLastAttack)}
 		componentType = table.remove(component, 1)
