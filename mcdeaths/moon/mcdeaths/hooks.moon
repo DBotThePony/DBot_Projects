@@ -23,6 +23,7 @@ import i18n from DLib
 
 DISPLAY_PLAYER_DEATHS = CreateConVar('sv_mcdeaths_player', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Display player death messages')
 DISPLAY_NPC_DEATHS = CreateConVar('sv_mcdeaths_npc', '0', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Display NPC death messages')
+DISPLAY_TO_PLAYERS = CreateConVar('sv_mcdeaths_send', '1', {FCVAR_ARCHIVE, FCVAR_NOTIFY}, 'Send death messages to players. Turn this off to only display messages in console and other addons which may rely on MCDeaths reasons. Useful in gamemodes like TTT')
 
 MCDeaths.DISPLAY_PLAYER_DEATHS = DISPLAY_PLAYER_DEATHS
 
@@ -64,11 +65,12 @@ hook.Add 'PlayerDeath', 'MCDeaths.PlayerDeath', (inflictor, attacker) =>
 	return if text[1] == false
 	rebuild = i18n.rebuildTable(text, color_white, true)
 
-	net.Start('mcdeaths_death')
-	net.WriteVector(@EyePos())
-	net.WriteEntity(@)
-	net.WriteStringArray(text)
-	net.Broadcast()
+	if DISPLAY_TO_PLAYERS\GetBool()
+		net.Start('mcdeaths_death')
+		net.WriteVector(@EyePos())
+		net.WriteEntity(@)
+		net.WriteStringArray(text)
+		net.Broadcast()
 
 	MsgC(color_white, unpack(rebuild, 1, #rebuild))
 	MsgC('\n')
@@ -87,7 +89,7 @@ hook.Add 'OnNPCKilled', 'MCDeaths.PlayerDeath', (attacker, inflictor) =>
 	text = {strategy\GetText()}
 	return if text[1] == false
 
-	if player.GetCount() > 0
+	if DISPLAY_TO_PLAYERS\GetBool() and player.GetCount() > 0
 		net.Start('mcdeaths_npcdeath')
 		net.WriteVector(@EyePos())
 		net.WriteStringArray(text)
