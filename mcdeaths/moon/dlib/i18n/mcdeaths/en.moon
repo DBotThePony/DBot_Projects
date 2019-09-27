@@ -45,7 +45,7 @@ attack.mcdeaths.full.generic.plain.drown = '%s drowned'
 attack.mcdeaths.full.generic.plain.paralyze = '%s experienced painful death'
 attack.mcdeaths.full.generic.plain.nervegas = '%s forgot how to breathe'
 attack.mcdeaths.full.generic.plain.crush = '%s hadn\'t see it coming'
-attack.mcdeaths.full.generic.plain.radiation = '%s got his atoms bombed up'
+attack.mcdeaths.full.generic.plain.radiation = '%s discovered atom decay'
 
 attack.mcdeaths.full.generic.by.slain = '%s was slain by %s'
 attack.mcdeaths.full.generic.by.shot = '%s was shot by %s'
