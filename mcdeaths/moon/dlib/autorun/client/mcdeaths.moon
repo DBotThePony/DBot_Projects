@@ -45,7 +45,10 @@ net.receive 'mcdeaths_npcdeath', ->
 		MsgC(color_npc, unpack(rebuild, 1, #rebuild))
 		MsgC('\n')
 
-local DEATH_REASON, DIED_AT, DIED_AT_STAMP
+local DEATH_REASON, DIED_AT, DIED_AT_STAMP, ALIVE_FOR
+
+ALIVE_FROM = 0
+DEATH_REASON = 'lol'
 
 net.receive 'mcdeaths_death', ->
 	return if not DISPLAY_PLAYER_DEATHS\GetBool()
@@ -63,6 +66,7 @@ net.receive 'mcdeaths_death', ->
 
 	if DISPLAY_DRAW\GetBool() and ply == LocalPlayer()
 		DIED_AT = i18n.localize('gui.mcdeaths.at', os.date('%H:%M:%S - %d/%m/%Y'))
+		ALIVE_FOR = i18n.localize('gui.mcdeaths.alivefor', i18n.tformat(RealTimeL() - ALIVE_FROM))
 		DIED_AT_STAMP = RealTimeL()
 		timer.Simple 0.5, -> DEATH_REASON = table.concat(rebuild, ' ')
 
@@ -88,6 +92,7 @@ HUDPaint = ->
 
 	if LocalPlayer()\Alive()
 		DEATH_REASON = nil
+		ALIVE_FROM = RealTimeL()
 		return
 
 	x, y = POS()
@@ -116,6 +121,12 @@ HUDPaint = ->
 
 	draw.DrawText(stamp, 'MCDeaths_YouDied_Small', x + 2, y + 2, color_black, TEXT_ALIGN_CENTER)
 	draw.DrawText(stamp, 'MCDeaths_YouDied_Small', x, y, COLOR(), TEXT_ALIGN_CENTER)
+
+	w, h = surface.GetTextSize(stamp)
+	y += h * 1.1
+
+	draw.DrawText(ALIVE_FOR, 'MCDeaths_YouDied_Small', x + 2, y + 2, color_black, TEXT_ALIGN_CENTER)
+	draw.DrawText(ALIVE_FOR, 'MCDeaths_YouDied_Small', x, y, COLOR(), TEXT_ALIGN_CENTER)
 
 hook.Add 'HUDPaint', 'MCDeaths.HUDPaint', HUDPaint, 6
 

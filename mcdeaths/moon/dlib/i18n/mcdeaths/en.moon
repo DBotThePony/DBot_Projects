@@ -20,6 +20,7 @@
 
 gui.mcdeaths.youdied = 'You Died!'
 gui.mcdeaths.at = 'You died at %s'
+gui.mcdeaths.alivefor = 'Were alive for %s'
 
 attack.mcdeaths.full.generic.plain.died = '%s died.'
 attack.mcdeaths.full.generic.by.died = '%s was slain by %s'
