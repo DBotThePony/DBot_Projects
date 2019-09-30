@@ -130,4 +130,21 @@ HUDPaint = ->
 
 hook.Add 'HUDPaint', 'MCDeaths.HUDPaint', HUDPaint, 6
 
+hook.Add 'PopulateToolMenu', 'MCDeaths.Settings', ->
+	spawnmenu.AddToolMenuOption 'Utilities', 'Admin', 'MCDeaths.Settings', 'MC Deaths', '', '', =>
+		@CheckBox('gui.mcdeaths.settings.sv_mcdeaths', 'sv_mcdeaths')
+		@CheckBox('gui.mcdeaths.settings.sv_mcdeaths_mute', 'sv_mcdeaths_mute')
+		@CheckBox('gui.mcdeaths.settings.sv_mcdeaths_player', 'sv_mcdeaths_player')
+		@CheckBox('gui.mcdeaths.settings.sv_mcdeaths_npc', 'sv_mcdeaths_npc')
+		@CheckBox('gui.mcdeaths.settings.sv_mcdeaths_send', 'sv_mcdeaths_send')
+		@CheckBox('gui.mcdeaths.settings.sv_mcdeaths_player_chat', 'sv_mcdeaths_player_chat')
+		@NumSlider('gui.mcdeaths.settings.sv_mcdeaths_player_range', 'sv_mcdeaths_player_range', 0, 0x2000, 0)
+		@CheckBox('gui.mcdeaths.settings.sv_mcdeaths_npc_chat', 'sv_mcdeaths_npc_chat')
+		@NumSlider('gui.mcdeaths.settings.sv_mcdeaths_npc_range', 'sv_mcdeaths_npc_range', 0, 0x2000, 0)
+
+	spawnmenu.AddToolMenuOption 'Utilities', 'User', 'MCDeaths.UserSettings', 'MC Deaths', '', '', =>
+		@CheckBox('gui.mcdeaths.settings.cl_mcdeaths_draw', 'cl_mcdeaths_draw')
+		@CheckBox('gui.mcdeaths.settings.cl_mcdeaths_player', 'cl_mcdeaths_player')
+		@CheckBox('gui.mcdeaths.settings.cl_mcdeaths_npc', 'cl_mcdeaths_npc')
+
 return
