@@ -30,19 +30,21 @@ PLAYER_CHAT_RANGE = CreateConVar('sv_mcdeaths_player_range', '1512', {FCVAR_NOTI
 NPC_CHAT = CreateConVar('sv_mcdeaths_npc_chat', '0', {FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Write NPC death messages to chat when others are close enough')
 NPC_CHAT_RANGE = CreateConVar('sv_mcdeaths_npc_range', '786', {FCVAR_NOTIFY, FCVAR_REPLICATED}, 'How far from death point should death message appear in chat when a NPC dies')
 
-color_npc = Color(200, 200, 200)
+COLOR_PLAYER = DLib.HUDCommons.CreateColor('mcdeaths_player', 'MCDeaths Player Text Color', 255, 255, 255)
+COLOR_NPC = DLib.HUDCommons.CreateColor('mcdeaths_player', 'MCDeaths Player Text Color', 200, 200, 200)
 
 net.receive 'mcdeaths_npcdeath', ->
 	return if not DISPLAY_NPC_DEATHS\GetBool()
 	point = net.ReadVector()
+	attacker = net.ReadEntity() if net.ReadBool()
 	text = net.ReadStringArray()
 
-	rebuild = i18n.rebuildTable(text, color_npc, true)
+	rebuild = i18n.rebuildTable(text, COLOR_NPC(), true)
 
-	if NPC_CHAT\GetBool() and LocalPos()\Distance(point) <= NPC_CHAT_RANGE\GetFloat()
-		chat.AddText(color_npc, unpack(rebuild, 1, #rebuild))
+	if NPC_CHAT\GetBool() and (LocalPos()\Distance(point) <= NPC_CHAT_RANGE\GetFloat() or attacker == LocalPlayer() or IsValid(attacker) and LocalPos()\Distance(attacker\EyePos()) <= NPC_CHAT_RANGE\GetFloat())
+		chat.AddText(COLOR_NPC(), unpack(rebuild, 1, #rebuild))
 	else
-		MsgC(color_npc, unpack(rebuild, 1, #rebuild))
+		MsgC(COLOR_NPC(), unpack(rebuild, 1, #rebuild))
 		MsgC('\n')
 
 local DEATH_REASON, DIED_AT, DIED_AT_STAMP, ALIVE_FOR
@@ -54,12 +56,13 @@ net.receive 'mcdeaths_death', ->
 	return if not DISPLAY_PLAYER_DEATHS\GetBool()
 	point = net.ReadVector()
 	ply = net.ReadEntity()
+	attacker = net.ReadEntity() if net.ReadBool()
 	text = net.ReadStringArray()
 
-	rebuild = i18n.rebuildTable(text, color_white, true)
+	rebuild = i18n.rebuildTable(text, COLOR_PLAYER(), true)
 
-	if PLAYER_CHAT\GetBool() and LocalPos()\Distance(point) <= PLAYER_CHAT_RANGE\GetFloat()
-		chat.AddText(color_white, unpack(rebuild, 1, #rebuild))
+	if PLAYER_CHAT\GetBool() and (LocalPos()\Distance(point) <= PLAYER_CHAT_RANGE\GetFloat() or attacker == LocalPlayer() or IsValid(attacker) and LocalPos()\Distance(attacker\EyePos()) <= PLAYER_CHAT_RANGE\GetFloat())
+		chat.AddText(COLOR_PLAYER(), unpack(rebuild, 1, #rebuild))
 	else
 		MsgC(color_white, unpack(rebuild, 1, #rebuild))
 		MsgC('\n')
@@ -82,7 +85,7 @@ surface.DLibCreateFont('MCDeaths_YouDied_Small', {
 	size: 14
 })
 
-POS = DLib.HUDCommons.DefinePosition('mcdeaths', 0.5, 0.23, false)
+POS = DLib.HUDCommons.Position2.DefinePosition('mcdeaths', 0.5, 0.23, false)
 COLOR = DLib.HUDCommons.CreateColor('mcdeaths', 'MCDeaths Text', 255, 255, 255)
 
 import draw, surface, color_black, TEXT_ALIGN_CENTER from _G

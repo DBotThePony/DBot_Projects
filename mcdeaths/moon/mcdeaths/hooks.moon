@@ -69,6 +69,8 @@ hook.Add 'PlayerDeath', 'MCDeaths.PlayerDeath', (inflictor, attacker) =>
 		net.Start('mcdeaths_death')
 		net.WriteVector(@EyePos())
 		net.WriteEntity(@)
+		net.WriteBool(IsValid(attacker))
+		net.WriteEntity(attacker) if IsValid(attacker)
 		net.WriteStringArray(text)
 		net.Broadcast()
 
@@ -92,6 +94,8 @@ hook.Add 'OnNPCKilled', 'MCDeaths.PlayerDeath', (attacker, inflictor) =>
 	if DISPLAY_TO_PLAYERS\GetBool() and player.GetCount() > 0
 		net.Start('mcdeaths_npcdeath')
 		net.WriteVector(@EyePos())
+		net.WriteBool(IsValid(attacker))
+		net.WriteEntity(attacker) if IsValid(attacker)
 		net.WriteStringArray(text)
 		net.Broadcast()
 
