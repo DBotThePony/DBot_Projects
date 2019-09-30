@@ -31,8 +31,8 @@ gui.mcdeaths.settings.sv_mcdeaths_player_chat = 'Enable chat messages for player
 gui.mcdeaths.settings.sv_mcdeaths_player_range = 'Chat message radius for players'
 gui.mcdeaths.settings.sv_mcdeaths_npc_chat = 'Enable chat messages for NPCs'
 gui.mcdeaths.settings.sv_mcdeaths_npc_range = 'Chat message radius for NPCs'
-gui.mcdeaths.settings.cl_mcdeaths_player = 'Display death messages in console for players'
-gui.mcdeaths.settings.cl_mcdeaths_npc = 'Display death messages in console for NPCs'
+gui.mcdeaths.settings.cl_mcdeaths_player = 'Display death messages for players'
+gui.mcdeaths.settings.cl_mcdeaths_npc = 'Display death messages for NPCs'
 gui.mcdeaths.settings.cl_mcdeaths_draw = 'Draw deathscreen'
 
 attack.mcdeaths.full.generic.plain.died = '%s died.'
