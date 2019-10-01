@@ -31,7 +31,7 @@ NPC_CHAT = CreateConVar('sv_mcdeaths_npc_chat', '0', {FCVAR_NOTIFY, FCVAR_REPLIC
 NPC_CHAT_RANGE = CreateConVar('sv_mcdeaths_npc_range', '786', {FCVAR_NOTIFY, FCVAR_REPLICATED}, 'How far from death point should death message appear in chat when a NPC dies')
 
 COLOR_PLAYER = DLib.HUDCommons.CreateColor('mcdeaths_player', 'MCDeaths Player Text Color', 255, 255, 255)
-COLOR_NPC = DLib.HUDCommons.CreateColor('mcdeaths_player', 'MCDeaths Player Text Color', 200, 200, 200)
+COLOR_NPC = DLib.HUDCommons.CreateColor('mcdeaths_npc', 'MCDeaths Player Text Color', 200, 200, 200)
 
 net.receive 'mcdeaths_npcdeath', ->
 	return if not DISPLAY_NPC_DEATHS\GetBool()
