@@ -283,13 +283,19 @@ local function PostDrawHUD()
 	local tX, tY = surface.GetTextSize(awayfor)
 	local tX2, tY2 = surface.GetTextSize(str)
 
-	surface.DrawRect(x - math.max(tX, tX2) / 2 - 20, y - 20, math.max(tX, tX2) + 20, tY * 2 + 30)
+	render.PushFilterMag(TEXFILTER.ANISOTROPIC)
+	render.PushFilterMin(TEXFILTER.ANISOTROPIC)
+
+	surface.DrawRect(x - math.max(tX, tX2) / 2 - 20, y - 20, math.max(tX, tX2) + 40, tY * 2 + 30)
 
 	surface.SetTextPos(x - tX / 2, y)
 	surface.DrawText(awayfor)
 
 	surface.SetTextPos(x - tX2 / 2, y + tY + 10)
 	surface.DrawText(str)
+
+	render.PopFilterMag()
+	render.PopFilterMin()
 end
 
 local LastMouseBeat = 0
