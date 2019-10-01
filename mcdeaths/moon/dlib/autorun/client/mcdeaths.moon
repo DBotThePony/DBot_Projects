@@ -98,6 +98,8 @@ HUDPaint = ->
 		ALIVE_FROM = RealTimeL()
 		return
 
+	return if not DIED_AT or not DIED_AT_STAMP or not ALIVE_FOR
+
 	x, y = POS()
 
 	youdied = i18n.localize('gui.mcdeaths.youdied')
