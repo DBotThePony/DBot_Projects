@@ -98,11 +98,12 @@ local function Think()
 		ang:Normalize()
 
 		if vehicle:GetPos() ~= pos then
+			local prevpos = vehicle:GetPos()
 			vehicle:SetPos(pos)
 			local driver = vehicle:GetDriver()
 
-			if IsValid(driver) then
-				driver:SetPos(vector_origin)
+			if IsValid(driver) and driver:GetPos():Distance(prevpos) > 70 then
+				driver:SetPos(vector_origin) -- aaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 			end
 		end
 
