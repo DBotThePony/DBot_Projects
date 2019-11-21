@@ -202,8 +202,11 @@ end
 
 function PANEL:BuildPlayerList()
     for k, v in pairs(self.infos) do
-        if not IsValid(v) or not IsValid(v.ply) then self.infos[k] = nil continue end
-        v:SetVisible(false)
+        if not IsValid(v) or not IsValid(v.ply) then
+            self.infos[k] = nil
+        else
+            v:SetVisible(false)
+        end
     end
 
     self.list:SetVisible(true)
@@ -214,8 +217,11 @@ function PANEL:OpenInfo(ply)
     self.list:SetVisible(false)
 
     for k, v in pairs(self.infos) do
-        if not IsValid(v) or not IsValid(v.ply) then self.infos[k] = nil continue end
-        v:SetVisible(false)
+        if not IsValid(v) or not IsValid(v.ply) then
+            self.infos[k] = nil
+        else
+            v:SetVisible(false)
+        end
     end
 
     if not IsValid(self.infos[ply]) then
@@ -253,6 +259,10 @@ function PANEL:Think()
 end
 
 function PANEL:Paint(w, h)
+    --[[if DLib.skin.ENABLE_BLUR:GetBool() then
+        DLib.blur.DrawPanel(w, h, self:LocalToScreen(0, 0))
+    end]]
+
     surface.SetDrawColor(DScoreBoard2.Colors.bg)
     draw.NoTexture()
     surface.DrawRect(0, 0, w, h)
