@@ -180,7 +180,7 @@ local function ProcessWater(ply, fldata, ctime, toRemove)
 end
 
 local function ProcessSuit(ply, fldata, ctime, toAdd)
-	if ply:GetLimitedHEVPowerRestoreStart() < ctime and ply:GetLimitedHEVSuitLastPower() and (ply:OnGround() or ply:GetMoveType() ~= MOVETYPE_WALK) then
+	if ply:GetLimitedHEVPowerRestoreStart() < ctime and ply:GetLimitedHEVSuitLastPower() and (ply:OnGround() or ply:WaterLevel() == 2 or ply:WaterLevel() == 1 or ply:GetMoveType() ~= MOVETYPE_WALK) then
 		ply:AddLimitedHEVPower(FrameTime() * POWER_RESTORE_MUL:GetFloat() * 7, 0, 100)
 
 		if ply:GetLimitedHEVPower() >= (SPRINT_MMOD:GetBool() and 100 or 10) then
