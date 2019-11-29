@@ -29,7 +29,7 @@ class DeathPointer extends EventPointer
 	@DefaultColor = Color(233, 89, 89)
 	@GetDefaultTime = => @DefaultLiveTime
 
-	-- https://git.dbot.serealia.ca/dbot/dbot_projects/tree/master/tdeaths
+	-- https://gitlab.com/DBotThePony/DBotProjects/tree/master/tdeaths
 	@DeathReasonsDict = {
 		Fall: {
 			'%s fell from high place'
