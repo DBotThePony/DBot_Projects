@@ -356,18 +356,19 @@ local function Draw()
 end
 
 local function UpdatePoseParams(ply)
-	DLibLegsModel:SetPoseParameter('move_x',       (ply:GetPoseParameter('move_x')     * 2) 	- 1)
-	DLibLegsModel:SetPoseParameter('move_y',       (ply:GetPoseParameter('move_y')     * 2) 	- 1)
-	DLibLegsModel:SetPoseParameter('move_yaw',     (ply:GetPoseParameter('move_yaw')   * 360) 	- 180)
-	DLibLegsModel:SetPoseParameter('body_yaw',     (ply:GetPoseParameter('body_yaw')   * 180) 	- 90)
-	DLibLegsModel:SetPoseParameter('spine_yaw',    (ply:GetPoseParameter('spine_yaw')  * 180) 	- 90)
+	DLibLegsModel:SetPoseParameter('move_x',       (ply:GetPoseParameter('move_x')     * 2)     - 1)
+	DLibLegsModel:SetPoseParameter('move_y',       (ply:GetPoseParameter('move_y')     * 2)     - 1)
+	DLibLegsModel:SetPoseParameter('head_yaw',     (ply:GetPoseParameter('head_yaw')   * 180)   - 90)
+	DLibLegsModel:SetPoseParameter('move_yaw',     (ply:GetPoseParameter('move_yaw')   * 360)   - 180)
+	DLibLegsModel:SetPoseParameter('body_yaw',     (ply:GetPoseParameter('body_yaw')   * 180)   - 90)
+	DLibLegsModel:SetPoseParameter('spine_yaw',    (ply:GetPoseParameter('spine_yaw')  * 180)   - 90)
 	DLibLegsModel:SetPoseParameter('vehicle_steer', ply:GetPoseParameter('vehicle_steer'))
 
-	DLibLegsModel2:SetPoseParameter('move_x',       (ply:GetPoseParameter('move_x')     * 2) 	- 1)
-	DLibLegsModel2:SetPoseParameter('move_y',       (ply:GetPoseParameter('move_y')     * 2) 	- 1)
-	DLibLegsModel2:SetPoseParameter('move_yaw',     (ply:GetPoseParameter('move_yaw')   * 360) 	- 180)
-	DLibLegsModel2:SetPoseParameter('body_yaw',     (ply:GetPoseParameter('body_yaw')   * 180) 	- 90)
-	DLibLegsModel2:SetPoseParameter('spine_yaw',    (ply:GetPoseParameter('spine_yaw')  * 180) 	- 90)
+	DLibLegsModel2:SetPoseParameter('move_x',       (ply:GetPoseParameter('move_x')     * 2)    - 1)
+	DLibLegsModel2:SetPoseParameter('move_y',       (ply:GetPoseParameter('move_y')     * 2)    - 1)
+	DLibLegsModel2:SetPoseParameter('move_yaw',     (ply:GetPoseParameter('move_yaw')   * 360)  - 180)
+	DLibLegsModel2:SetPoseParameter('body_yaw',     (ply:GetPoseParameter('body_yaw')   * 180)  - 90)
+	DLibLegsModel2:SetPoseParameter('spine_yaw',    (ply:GetPoseParameter('spine_yaw')  * 180)  - 90)
 	DLibLegsModel2:SetPoseParameter('vehicle_steer', ply:GetPoseParameter('vehicle_steer'))
 end
 
@@ -393,64 +394,64 @@ local function UpdateAnimation(ply)
 	end
 end
 
--- 0	ValveBiped.Bip01_Pelvis
--- 1	ValveBiped.Bip01_Spine
--- 2	ValveBiped.Bip01_Spine1
--- 3	ValveBiped.Bip01_Spine2
--- 4	ValveBiped.Bip01_Spine4
--- 5	ValveBiped.Bip01_Neck1
--- 6	ValveBiped.Bip01_Head1
--- 7	ValveBiped.forward
--- 8	ValveBiped.Bip01_R_Clavicle
--- 9	ValveBiped.Bip01_R_UpperArm
--- 10	ValveBiped.Bip01_R_Forearm
--- 11	ValveBiped.Bip01_R_Hand
--- 12	ValveBiped.Anim_Attachment_RH
--- 13	ValveBiped.Bip01_L_Clavicle
--- 14	ValveBiped.Bip01_L_UpperArm
--- 15	ValveBiped.Bip01_L_Forearm
--- 16	ValveBiped.Bip01_L_Hand
--- 17	ValveBiped.Anim_Attachment_LH
--- 18	ValveBiped.Bip01_R_Thigh
--- 19	ValveBiped.Bip01_R_Calf
--- 20	ValveBiped.Bip01_R_Foot
--- 21	ValveBiped.Bip01_L_Thigh
--- 22	ValveBiped.Bip01_L_Calf
--- 23	ValveBiped.Bip01_L_Foot
--- 24	ValveBiped.Bip01_R_Thigh_Jiggle
--- 25	ValveBiped.Bip01_L_Thigh_Jiggle
--- 26	ValveBiped.Bip01_R_Finger0
--- 27	ValveBiped.Bip01_R_Finger01
--- 28	ValveBiped.Bip01_R_Finger02
--- 29	ValveBiped.Bip01_R_Finger1
--- 30	ValveBiped.Bip01_R_Finger11
--- 31	ValveBiped.Bip01_R_Finger12
--- 32	ValveBiped.Bip01_R_Finger2
--- 33	ValveBiped.Bip01_R_Finger21
--- 34	ValveBiped.Bip01_R_Finger22
--- 35	ValveBiped.Bip01_R_Finger3
--- 36	ValveBiped.Bip01_R_Finger31
--- 37	ValveBiped.Bip01_R_Finger32
--- 38	ValveBiped.Bip01_R_Finger4
--- 39	ValveBiped.Bip01_R_Finger41
--- 40	ValveBiped.Bip01_R_Finger42
--- 41	ValveBiped.Bip01_L_Finger0
--- 42	ValveBiped.Bip01_L_Finger01
--- 43	ValveBiped.Bip01_L_Finger02
--- 44	ValveBiped.Bip01_L_Finger1
--- 45	ValveBiped.Bip01_L_Finger11
--- 46	ValveBiped.Bip01_L_Finger12
--- 47	ValveBiped.Bip01_L_Finger2
--- 48	ValveBiped.Bip01_L_Finger21
--- 49	ValveBiped.Bip01_L_Finger22
--- 50	ValveBiped.Bip01_L_Finger3
--- 51	ValveBiped.Bip01_L_Finger31
--- 52	ValveBiped.Bip01_L_Finger32
--- 53	ValveBiped.Bip01_L_Finger4
--- 54	ValveBiped.Bip01_L_Finger41
--- 55	ValveBiped.Bip01_L_Finger42
--- 56	ValveBiped.Bip01_R_Toe0
--- 57	ValveBiped.Bip01_L_Toe0
+-- 0    ValveBiped.Bip01_Pelvis
+-- 1    ValveBiped.Bip01_Spine
+-- 2    ValveBiped.Bip01_Spine1
+-- 3    ValveBiped.Bip01_Spine2
+-- 4    ValveBiped.Bip01_Spine4
+-- 5    ValveBiped.Bip01_Neck1
+-- 6    ValveBiped.Bip01_Head1
+-- 7    ValveBiped.forward
+-- 8    ValveBiped.Bip01_R_Clavicle
+-- 9    ValveBiped.Bip01_R_UpperArm
+-- 10   ValveBiped.Bip01_R_Forearm
+-- 11   ValveBiped.Bip01_R_Hand
+-- 12   ValveBiped.Anim_Attachment_RH
+-- 13   ValveBiped.Bip01_L_Clavicle
+-- 14   ValveBiped.Bip01_L_UpperArm
+-- 15   ValveBiped.Bip01_L_Forearm
+-- 16   ValveBiped.Bip01_L_Hand
+-- 17   ValveBiped.Anim_Attachment_LH
+-- 18   ValveBiped.Bip01_R_Thigh
+-- 19   ValveBiped.Bip01_R_Calf
+-- 20   ValveBiped.Bip01_R_Foot
+-- 21   ValveBiped.Bip01_L_Thigh
+-- 22   ValveBiped.Bip01_L_Calf
+-- 23   ValveBiped.Bip01_L_Foot
+-- 24   ValveBiped.Bip01_R_Thigh_Jiggle
+-- 25   ValveBiped.Bip01_L_Thigh_Jiggle
+-- 26   ValveBiped.Bip01_R_Finger0
+-- 27   ValveBiped.Bip01_R_Finger01
+-- 28   ValveBiped.Bip01_R_Finger02
+-- 29   ValveBiped.Bip01_R_Finger1
+-- 30   ValveBiped.Bip01_R_Finger11
+-- 31   ValveBiped.Bip01_R_Finger12
+-- 32   ValveBiped.Bip01_R_Finger2
+-- 33   ValveBiped.Bip01_R_Finger21
+-- 34   ValveBiped.Bip01_R_Finger22
+-- 35   ValveBiped.Bip01_R_Finger3
+-- 36   ValveBiped.Bip01_R_Finger31
+-- 37   ValveBiped.Bip01_R_Finger32
+-- 38   ValveBiped.Bip01_R_Finger4
+-- 39   ValveBiped.Bip01_R_Finger41
+-- 40   ValveBiped.Bip01_R_Finger42
+-- 41   ValveBiped.Bip01_L_Finger0
+-- 42   ValveBiped.Bip01_L_Finger01
+-- 43   ValveBiped.Bip01_L_Finger02
+-- 44   ValveBiped.Bip01_L_Finger1
+-- 45   ValveBiped.Bip01_L_Finger11
+-- 46   ValveBiped.Bip01_L_Finger12
+-- 47   ValveBiped.Bip01_L_Finger2
+-- 48   ValveBiped.Bip01_L_Finger21
+-- 49   ValveBiped.Bip01_L_Finger22
+-- 50   ValveBiped.Bip01_L_Finger3
+-- 51   ValveBiped.Bip01_L_Finger31
+-- 52   ValveBiped.Bip01_L_Finger32
+-- 53   ValveBiped.Bip01_L_Finger4
+-- 54   ValveBiped.Bip01_L_Finger41
+-- 55   ValveBiped.Bip01_L_Finger42
+-- 56   ValveBiped.Bip01_R_Toe0
+-- 57   ValveBiped.Bip01_L_Toe0
 
 local function UpdateBones(ply)
 	for boneid = 0, ply:GetBoneCount() - 1 do
