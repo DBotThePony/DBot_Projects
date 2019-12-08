@@ -1,0 +1,21 @@
+
+{
+    "title"     :   "dlib_legs - first person legs",
+    "type"      :   "effects",
+    "tags"      :   ["fun"],
+    "ignore"    :   [
+        "*.psd",
+        "*.vcproj",
+        "*.svn*",
+        "*.git*",
+        ".gitlab-ci.yml",
+        "moon*",
+        "lua_src*",
+        "build.sh",
+        "README.md",
+        "lint.sh",
+        ".vscode*",
+        "LICENSE",
+        "*.md"
+    ]
+}
