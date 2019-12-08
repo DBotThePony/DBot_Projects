@@ -20,6 +20,7 @@
 
 local ENABLE = CreateConVar('dlib_legs_enabled', '1', {FCVAR_ARCHIVE}, 'Enable first person legs')
 local RENDER_OVERRIDE = CreateConVar('dlib_legs_ro', '1', {FCVAR_ARCHIVE}, 'Enable RenderOverride usage instead of manual drawing. Can be buggy, but visually it is better')
+local TRY_TO_FIX_SHADOWS = CreateConVar('dlib_legs_fix_shadows', '1', {FCVAR_ARCHIVE}, 'Has effect only when renderoverride is enabled. Might be buggy.')
 
 local LocalPlayer = LocalPlayer
 
@@ -243,17 +244,21 @@ function DrawOverrideOne()
 
 	if ply == LocalPlayer() and ply:ShouldDrawLocalPlayer() or not ply:Alive() then return end
 
-	local firstperson = ply:InVehicle() or EyePos():Distance(ply:EyePos()) < 20
-	local shouldClip = shouldClip and firstperson
+	local shouldClip = shouldClip
 
-	if not firstperson and owouchmyspine and owouchmyspine >= 0 then
-		DLibLegsModel:ManipulateBonePosition(owouchmyspine, ply:GetManipulateBonePosition(owouchmyspine))
-		DLibLegsModel:SetPos(Vector(realLegsPos.x, realLegsPos.y, realLegsPos.z - 8))
-		DLibLegsModel:SetupBones()
-	elseif not ply:InVehicle() then
-		DLibLegsModel:ManipulateBonePosition(owouchmyspine, spine4_stretch)
-		DLibLegsModel:SetPos(realLegsPos)
-		DLibLegsModel:SetupBones()
+	if TRY_TO_FIX_SHADOWS:GetBool() then
+		local firstperson = ply:InVehicle() or EyePos():Distance(ply:EyePos()) < 20
+		shouldClip = shouldClip and firstperson
+
+		if not firstperson and owouchmyspine and owouchmyspine >= 0 then
+			DLibLegsModel:ManipulateBonePosition(owouchmyspine, ply:GetManipulateBonePosition(owouchmyspine))
+			DLibLegsModel:SetPos(Vector(realLegsPos.x, realLegsPos.y, realLegsPos.z - 8))
+			DLibLegsModel:SetupBones()
+		elseif not ply:InVehicle() then
+			DLibLegsModel:ManipulateBonePosition(owouchmyspine, spine4_stretch)
+			DLibLegsModel:SetPos(realLegsPos)
+			DLibLegsModel:SetupBones()
+		end
 	end
 
 	if shouldDrawSecond then
