@@ -111,6 +111,9 @@ local function MoveModel(ply, inRender)
 	local posFor2, angFor2
 
 	if vehicle then
+		DLibLegsModel:SetNoDraw(true)
+		DLibLegsModel2:SetNoDraw(true)
+
 		local act = ply:GetSequenceActivity(ply:GetSequence())
 
 		ang = ply:GetVehicle():GetAngles()
@@ -184,6 +187,9 @@ local function MoveModel(ply, inRender)
 		pos2.z = pos2.z - 8
 		clipPlaneDot = clipPlane:Dot(pos2)
 	else
+		DLibLegsModel:SetNoDraw(not RENDER_OVERRIDE:GetBool())
+		DLibLegsModel2:SetNoDraw(not RENDER_OVERRIDE:GetBool())
+
 		clipPlane = clipPlaneStraight
 		local offset, duck = ply:GetViewOffset(), ply:GetViewOffsetDucked()
 
@@ -521,7 +527,7 @@ local function PostDrawTranslucentRenderables(a, b)
 		MoveModel(ply, false)
 	end
 
-	if RENDER_OVERRIDE:GetBool() then return end
+	if RENDER_OVERRIDE:GetBool() and not vehicle then return end
 
 	if vehicle or ang.p > 25 or not IsValid(ply:GetActiveWeapon()) and ang.p > 0 then
 		Draw()
