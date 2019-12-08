@@ -18,6 +18,9 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
+local ENABLE = CreateConVar('dlib_legs_enabled', '1', {FCVAR_ARCHIVE}, 'Enable first person legs')
+local RENDER_OVERRIDE = CreateConVar('dlib_legs_ro', '1', {FCVAR_ARCHIVE}, 'Enable RenderOverride usage instead of manual drawing. Can be buggy, but visually it is better')
+
 local LocalPlayer = LocalPlayer
 
 if IsValid(DLibLegsModel) then
@@ -29,6 +32,20 @@ if IsValid(DLibLegsModel2) then
 end
 
 local DLibLegsModel, DLibLegsModel2, lastModel
+local DrawOverrideOne, DrawOverrideTwo
+
+local function InvalidateLegs()
+	if IsValid(DLibLegsModel) then
+		DLibLegsModel:Remove()
+	end
+
+	if IsValid(DLibLegsModel2) then
+		DLibLegsModel2:Remove()
+	end
+end
+
+cvars.AddChangeCallback('dlib_legs_enabled', InvalidateLegs, 'dlib_legs')
+cvars.AddChangeCallback('dlib_legs_ro', InvalidateLegs, 'dlib_legs')
 
 local function CreateNewLegs(ply)
 	if IsValid(DLibLegsModel) then
@@ -45,14 +62,20 @@ local function CreateNewLegs(ply)
 
 	lastModel = ply:GetModel()
 
-	DLibLegsModel = ClientsideModel(lastModel)
+	DLibLegsModel = ClientsideModel(lastModel, RENDERGROUP_BOTH)
 	_G.DLibLegsModel = DLibLegsModel
 
-	DLibLegsModel2 = ClientsideModel(lastModel)
+	DLibLegsModel2 = ClientsideModel(lastModel, RENDERGROUP_BOTH)
 	_G.DLibLegsModel2 = DLibLegsModel2
 
-	DLibLegsModel:SetNoDraw(true)
-	DLibLegsModel2:SetNoDraw(true)
+	if RENDER_OVERRIDE:GetBool() then
+		DLibLegsModel.RenderOverride = DrawOverrideOne
+		DLibLegsModel2.RenderOverride = DrawOverrideTwo
+	else
+		DLibLegsModel:SetNoDraw(true)
+		DLibLegsModel2:SetNoDraw(true)
+	end
+
 	DLibLegsModel.GetPlayerColor = GetPlayerColor
 	DLibLegsModel2.GetPlayerColor = GetPlayerColor
 
@@ -71,6 +94,7 @@ local clipPlaneStraightInv = Vector(0, 0, 1)
 local clipPlaneDot = 0
 local shouldClip = true
 local shouldDrawSecond = false
+local realLegsPos = Vector()
 
 local clipPlane2_1, clipPlane2_2 = Vector(0, 0, -1), Vector(0, 0, 1)
 local clipPlane2_1Plane, clipPlane2_2Plane, clipPlane2_3Plane = 0, 0, 0
@@ -186,17 +210,97 @@ local function MoveModel(ply, inRender)
 		local sin, cos = yaw:rad():sin(), yaw:rad():cos()
 		pos.x = pos.x - cos * sincosalign
 		pos.y = pos.y - sin * sincosalign
-		pos.z = pos.z + 7
+		pos.z = pos.z + 8
 
 		clipPlaneDot = clipPlane:Dot(pos2)
 	end
 
+	realLegsPos = pos
 	DLibLegsModel:SetPos(pos)
 	local fang = Angle(pitch, yaw, roll)
 	DLibLegsModel:SetAngles(fang)
 
 	DLibLegsModel2:SetPos(posFor2 or pos)
 	DLibLegsModel2:SetAngles(angFor2 or fang)
+end
+
+local counter = 0
+local lastmost = 0
+local frame = 0
+local owouchmyspine = -1
+
+local spine4_stretch = Vector(200, -100, 0)
+local spine4_stretch_veh = Vector(20, -10, 0)
+
+function DrawOverrideOne()
+	local ply = DLib.HUDCommons.SelectPlayer()
+
+	if ply == LocalPlayer() and ply:ShouldDrawLocalPlayer() or not ply:Alive() then return end
+
+	local firstperson = ply:InVehicle() or EyePos():Distance(ply:EyePos()) < 10
+	local shouldClip = shouldClip and firstperson
+
+	if not firstperson and owouchmyspine and owouchmyspine >= 0 then
+		DLibLegsModel:ManipulateBonePosition(owouchmyspine, ply:GetManipulateBonePosition(owouchmyspine))
+		DLibLegsModel:SetPos(Vector(realLegsPos.x, realLegsPos.y, realLegsPos.z - 8))
+		DLibLegsModel:SetupBones()
+	elseif not ply:InVehicle() then
+		DLibLegsModel:ManipulateBonePosition(owouchmyspine, spine4_stretch)
+		DLibLegsModel:SetPos(realLegsPos)
+		DLibLegsModel:SetupBones()
+	end
+
+	if shouldDrawSecond then
+		local oldClip
+
+		if shouldClip then
+			oldClip = render.EnableClipping(true)
+			render.PushCustomClipPlane(clipPlane2_1, clipPlane2_1Plane)
+		end
+
+		DLibLegsModel:DrawModel()
+
+		if shouldClip then
+			render.PopCustomClipPlane()
+			render.EnableClipping(oldClip)
+		end
+
+		return
+	end
+
+	local oldClip
+
+	if shouldClip then
+		oldClip = render.EnableClipping(true)
+		render.PushCustomClipPlane(clipPlane, clipPlaneDot)
+	end
+
+	DLibLegsModel:DrawModel()
+
+	if shouldClip then
+		render.PopCustomClipPlane()
+		render.EnableClipping(oldClip)
+	end
+end
+
+function DrawOverrideTwo()
+	if not shouldDrawSecond then return end
+
+	local oldClip
+
+	if shouldClip then
+		oldClip = render.EnableClipping(true)
+		render.PushCustomClipPlane(clipPlane2_1, clipPlane2_3Plane)
+		render.PushCustomClipPlane(clipPlane2_2, clipPlane2_2Plane)
+	end
+
+	DLibLegsModel2:DrawModel()
+
+	if shouldClip then
+		render.PopCustomClipPlane()
+		render.PopCustomClipPlane()
+		render.EnableClipping(oldClip)
+	end
 end
 
 local function Draw()
@@ -337,9 +441,6 @@ end
 -- 56	ValveBiped.Bip01_R_Toe0
 -- 57	ValveBiped.Bip01_L_Toe0
 
-local spine4_stretch = Vector(200, -60, 0)
-local spine4_stretch_veh = Vector(20, -10, 0)
-
 local function UpdateBones(ply)
 	for boneid = 0, ply:GetBoneCount() - 1 do
 		DLibLegsModel:ManipulateBonePosition(boneid, ply:GetManipulateBonePosition(boneid))
@@ -352,10 +453,10 @@ local function UpdateBones(ply)
 
 	-- stretch bones anyway lol
 	if not IsValid(ply:GetActiveWeapon()) or not shouldClip then return end
-	local findBone = ply:LookupBone('ValveBiped.Bip01_Spine4')
-	if not findBone or findBone < 0 then return end
+	owouchmyspine = ply:LookupBone('ValveBiped.Bip01_Spine4')
+	if not owouchmyspine or owouchmyspine < 0 then return end
 
-	DLibLegsModel:ManipulateBonePosition(findBone, ply:InVehicle() and spine4_stretch_veh or spine4_stretch)
+	DLibLegsModel:ManipulateBonePosition(owouchmyspine, ply:InVehicle() and spine4_stretch_veh or spine4_stretch)
 end
 
 local function UpdateBodygroups(ply)
@@ -419,6 +520,8 @@ local function PostDrawTranslucentRenderables(a, b)
 	if vehicle then
 		MoveModel(ply, false)
 	end
+
+	if RENDER_OVERRIDE:GetBool() then return end
 
 	if vehicle or ang.p > 25 or not IsValid(ply:GetActiveWeapon()) and ang.p > 0 then
 		Draw()
