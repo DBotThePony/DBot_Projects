@@ -337,7 +337,7 @@ end
 -- 56	ValveBiped.Bip01_R_Toe0
 -- 57	ValveBiped.Bip01_L_Toe0
 
-local spine4_stretch = Vector(200, 0, 0)
+local spine4_stretch = Vector(200, -60, 0)
 local spine4_stretch_veh = Vector(20, -10, 0)
 
 local function UpdateBones(ply)
