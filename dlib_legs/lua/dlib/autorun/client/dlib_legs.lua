@@ -243,7 +243,7 @@ function DrawOverrideOne()
 
 	if ply == LocalPlayer() and ply:ShouldDrawLocalPlayer() or not ply:Alive() then return end
 
-	local firstperson = ply:InVehicle() or EyePos():Distance(ply:EyePos()) < 10
+	local firstperson = ply:InVehicle() or EyePos():Distance(ply:EyePos()) < 20
 	local shouldClip = shouldClip and firstperson
 
 	if not firstperson and owouchmyspine and owouchmyspine >= 0 then
