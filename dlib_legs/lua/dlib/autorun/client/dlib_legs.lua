@@ -254,7 +254,7 @@ function DrawOverrideOne()
 			DLibLegsModel:ManipulateBonePosition(owouchmyspine, ply:GetManipulateBonePosition(owouchmyspine))
 			DLibLegsModel:SetPos(Vector(realLegsPos.x, realLegsPos.y, realLegsPos.z - 8))
 			DLibLegsModel:SetupBones()
-		elseif not ply:InVehicle() then
+		elseif not ply:InVehicle() and ply:GetActiveWeapon():IsValid() then
 			DLibLegsModel:ManipulateBonePosition(owouchmyspine, spine4_stretch)
 			DLibLegsModel:SetPos(realLegsPos)
 			DLibLegsModel:SetupBones()
