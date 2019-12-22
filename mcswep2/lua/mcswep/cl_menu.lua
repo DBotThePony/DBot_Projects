@@ -39,7 +39,7 @@ end
 
 function self.CloseMenu()
 	if not IsValid(self.MENU) then self.MENU = self.BuildMenu() end
-	self.MouseX, self.MouseY = gui.MousePos()
+	self.MouseX, self.MouseY = input.GetCursorPos()
 	self.MENU:Close()
 end
 
@@ -125,7 +125,7 @@ local Meta = {
 	OnMousePressed = function(self, key)
 		if key ~= MOUSE_LEFT then return end
 		self.Trap = true
-		self.StartX, self.StartY = gui.MousePos()
+		self.StartX, self.StartY = input.GetCursorPos()
 		self.WindowX, self.WindowY = self.pnl:GetPos()
 	end,
 
@@ -143,7 +143,7 @@ local Meta = {
 
 		local pnl = self.pnl
 
-		local cx, cy = gui.MousePos()
+		local cx, cy = input.GetCursorPos()
 		local x, y = cx - self.WindowX + 16, cy - self.WindowY + 16
 
 		pnl:SetSize(x, y)
@@ -207,7 +207,7 @@ function self.BuildMenu()
 	local button = right:Add('DButton')
 	button:SetText('Rebuild this menu')
 	button.DoClick = function()
-		mc.MouseX, mc.MouseY = gui.MousePos()
+		mc.MouseX, mc.MouseY = input.GetCursorPos()
 		self:Remove()
 		mc.OpenMenu()
 	end
@@ -281,7 +281,7 @@ function self.BuildMenu()
 	self.canvas = canvas
 
 	function self:OnClose()
-		local x, y = gui.MousePos()
+		local x, y = input.GetCursorPos()
 		if x == 0 and y == 0 then return end
 		mc.MouseX, mc.MouseY = x, y
 	end

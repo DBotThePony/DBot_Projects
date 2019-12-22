@@ -83,7 +83,7 @@ MINIMAP_DISPLAY_PANEL =
 		@W, @H = newW, newH
 		@SetSize(newW, newH)
 	OnMousePressed: =>
-		@mPosX, @mPosY = gui.MousePos()
+		@mPosX, @mPosY = input.GetCursorPos()
 		@hold = true
 		@SetCursor('sizeall')
 	OnMouseReleased: =>
@@ -103,7 +103,7 @@ MINIMAP_DISPLAY_PANEL =
 			deltaW /= 2
 			deltaH /= 2
 			lX, lY = @LocalToScreen(deltaW, deltaH)
-			x, y = gui.MousePos()
+			x, y = input.GetCursorPos()
 			multX = math.Clamp(x - lX + @size + 10, 0, @W) / @W
 			multY = math.Clamp(y - lY + 10, 0, @H) / @H
 			RunConsoleCommand('cl_dmaps_minimap_pos_x', "#{math.floor multX * 100}")

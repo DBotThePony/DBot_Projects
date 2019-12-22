@@ -239,7 +239,7 @@ end
 
 function PANEL:Think()
     if self.FOCUSED then
-        local x, y = gui.MousePos()
+        local x, y = input.GetCursorPos()
         self.MouseX = x
         self.MouseY = y
     end

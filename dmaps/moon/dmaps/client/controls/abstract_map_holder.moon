@@ -256,7 +256,7 @@ PANEL.OnMousePressed = (code) =>
 				\Open()
 	elseif code == MOUSE_LEFT
 		@hold = true
-		x, y = gui.MousePos()
+		x, y = input.GetCursorPos()
 		@SetCursor('sizeall')
 
 		@cursor_lastX = x
@@ -291,7 +291,7 @@ PANEL.OnMouseWheeled = (deltaWheel) =>
 
 	yaw = math.rad(-yawDeg)
 	sin, cos = math.sin(yaw), math.cos(yaw)
-	x, y = gui.MousePos()
+	x, y = input.GetCursorPos()
 
 	deltaX = x - centerX
 	deltaY = y - centerY
@@ -347,7 +347,7 @@ PANEL.Think = =>
 	if not @IsHovered!
 		@Release!
 
-	mouseX, mouseY = gui.MousePos()
+	mouseX, mouseY = input.GetCursorPos()
 	w, h = @GetSize!
 	cX, cY = @LocalToScreen(w / 2, h / 2)
 

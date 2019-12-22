@@ -87,7 +87,7 @@ PANEL =
 
 		mouse = (p) ->
 			return hook.Remove('VGUIMousePressed', hookID) if not @IsValid()
-			x, y  = gui.MousePos()
+			x, y  = input.GetCursorPos()
 			condX = x > @x + @w or x < @x
 			condY = y > @y + @h or y < @y
 			@Close() if condX or condY

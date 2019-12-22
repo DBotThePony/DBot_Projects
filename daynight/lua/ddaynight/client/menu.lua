@@ -362,7 +362,7 @@ hook.Add('ContextMenuCreated', 'DDayNight', function(self)
 	local hoveralpha = 0
 
 	function sunstatus:Think()
-		local mx, my = gui.MousePos()
+		local mx, my = input.GetCursorPos()
 		sunstatus:SetAlpha(80 + hoveralpha * 175)
 
 		if mx >= x and my >= y and mx <= x + w and my <= h + y then

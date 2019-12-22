@@ -191,7 +191,7 @@ function PANEL:Think()
         return
     end
 
-    local x, y = gui.MousePos()
+    local x, y = input.GetCursorPos()
     self:SetPos(x + 20, y + 10)
 
     self:UpdateVars()

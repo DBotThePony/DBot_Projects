@@ -94,7 +94,7 @@ PANEL.Think = =>
 			hw, hh = w / 2, h / 2
 
 			centerX, centerY = @LocalToScreen(hw, h)
-			x, y = gui.MousePos()
+			x, y = input.GetCursorPos()
 
 			deltaX = x - centerX
 			deltaY = centerY - y
