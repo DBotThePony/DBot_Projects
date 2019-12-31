@@ -488,6 +488,8 @@ end
 local lastPly
 
 local function Think()
+	if not ENABLE:GetBool() then return end
+
 	local ply = DLib.HUDCommons.SelectPlayer()
 
 	if not IsValid(ply) or ply.IsPony and ply:IsPony() then
@@ -520,6 +522,7 @@ end
 local function PostDrawTranslucentRenderables(a, b)
 	if a or b then return end
 	if not IsValid(DLibLegsModel) then return end
+	if not ENABLE:GetBool() then return end
 
 	local ply = DLib.HUDCommons.SelectPlayer()
 
