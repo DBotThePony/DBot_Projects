@@ -128,7 +128,7 @@ function DParkour.HandleSlide(ply, movedata, data)
 				info:SetAttacker(ply)
 				info:SetInflictor(ply)
 				info:SetDamageType(DMG_CRUSH:bor(DMG_CLUB))
-				info:SetDamage((data.slide_velocity_start:Length() - 300) / 20)
+				info:SetDamage((ply:GetDParkourSlideVelStart():Length() - 300) / 20)
 				tr.Entity:TakeDamageInfo(info)
 			end
 
