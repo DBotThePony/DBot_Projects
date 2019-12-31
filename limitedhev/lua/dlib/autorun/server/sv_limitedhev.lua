@@ -41,7 +41,7 @@ local function PlayerDeath(ply)
 	ply:ResetLimitedHEVOxygenNextChoke()
 	ply:ResetLimitedHEVHPLost()
 	ply:ResetLimitedHEVHPNext()
-	ply:ResetLimitedHEVHPENext()
+	ply:ResetFlashlightENext()
 
 	ply:ResetFlashlightCharge()
 	ply:ResetFlashlightNext()
