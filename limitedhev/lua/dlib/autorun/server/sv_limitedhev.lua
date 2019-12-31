@@ -41,6 +41,7 @@ local function PlayerDeath(ply)
 	ply:ResetLimitedHEVOxygenNextChoke()
 	ply:ResetLimitedHEVHPLost()
 	ply:ResetLimitedHEVHPNext()
+	ply:ResetLimitedHEVHPENext()
 
 	ply:ResetFlashlightCharge()
 	ply:ResetFlashlightNext()
@@ -48,3 +49,11 @@ end
 
 hook.Add('PlayerSwitchFlashlight', 'LimitedHEVPower', PlayerSwitchFlashlight)
 hook.Add('PlayerDeath', 'LimitedHEVPower', PlayerDeath)
+
+if game.SinglePlayer() then
+	timer.Simple(0, function()
+		if Entity(1):IsPlayer() then
+			PlayerDeath(Entity(1))
+		end
+	end)
+end
