@@ -52,9 +52,8 @@ local function GetDroppableWeapons(ply)
 	return weaponArray
 end
 
-local function TryDrop(ply)
-	local weaponArray = GetDroppableWeapons(ply)
-
+local function TryDrop(ply, weaponArray)
+	local weaponArray = weaponArray or GetDroppableWeapons(ply)
 	if #weaponArray == 0 then return end
 
 	local crate = ents.Create('dbot_wcrate')
@@ -74,11 +73,13 @@ local function TryDrop(ply)
 
 		if not checkedAmmo[type1] then
 			ammo1 = math.max(ply:GetAmmoCount(type1), 0)
+			ply:RemoveAmmo(ammo1, type1)
 			checkedAmmo[type1] = true
 		end
 
 		if not checkedAmmo[type2] then
 			ammo2 = math.max(ply:GetAmmoCount(type2), 0)
+			ply:RemoveAmmo(ammo2, type2)
 			checkedAmmo[type2] = true
 		end
 
@@ -107,28 +108,30 @@ end
 local empty = function() end
 
 local function Command(ply)
-	if #GetDroppableWeapons(ply) == 0 then
+	local weapons = GetDroppableWeapons(ply)
+
+	if #weapons == 0 then
 		DarkRP.notify(ply, 1, 4, 'You have no weapons that you can drop!')
 		return ''
 	end
 
-	umsg.Start("anim_dropitem")
-		umsg.Entity(ply)
-	umsg.End()
-
-	ply.anim_DroppingItem = true
+    ply:DoAnimationEvent(ACT_GMOD_GESTURE_ITEM_DROP)
 
 	timer.Simple(1, function()
-		if not IsValid(ply) or not ply:Alive() or ply:GetObserverTarget() then return end
-		local crate = TryDrop(ply)
+		if not IsValid(ply) or not ply:Alive() or IsValid(ply:GetObserverTarget()) then return end
+		local crate = TryDrop(ply, weapons)
 		if not crate then return end
 		crate:SetPos(crate:GetPos() + ply:GetAimVector() * 60)
+		-- crate:SetOwner(ply)
+		-- crate:DropToFloor()
 	end)
 
 	return ''
 end
 
 timer.Simple(0, function()
+	if not DarkRP then return end
+
 	DarkRP.defineChatCommand('dropweapons', Command, 1.5)
 	hook.Add('DoPlayerDeath', 'DBot.DeathWeaponCrate', DoPlayerDeath)
 end)
