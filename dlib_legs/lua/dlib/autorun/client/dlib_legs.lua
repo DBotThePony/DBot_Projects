@@ -97,8 +97,8 @@ local shouldClip = true
 local shouldDrawSecond = false
 local realLegsPos = Vector()
 
-local clipPlane2_1, clipPlane2_2 = Vector(0, 0, -1), Vector(0, 0, 1)
-local clipPlane2_1Plane, clipPlane2_2Plane, clipPlane2_3Plane = 0, 0, 0
+local clipPlane2_1, clipPlane2_2, clipPlane2_3 = Vector(0, 0, -1), Vector(0, 0, 1), Vector(1, 0, 0)
+local clipPlane2_1Plane, clipPlane2_2Plane, clipPlane2_3Plane, clipPlane2_4Plane = 0, 0, 0, 0
 
 local function MoveModel(ply, inRender)
 	local pos = inRender and EyePos() or ply:EyePos()
@@ -167,9 +167,10 @@ local function MoveModel(ply, inRender)
 			add:Rotate(ang)
 			posFor2:Add(add)
 
-			clipPlane2_1, clipPlane2_2 = Vector(0, 0, -1), Vector(1, 0, 0)
+			clipPlane2_1, clipPlane2_2, clipPlane2_3 = Vector(0, 0, -1), Vector(0, 0, 1), Vector(1, 0, 0)
 			clipPlane2_1:Rotate(ang)
 			clipPlane2_2:Rotate(ang)
+			clipPlane2_3:Rotate(ang)
 
 			local cpos = Vector(pos2)
 			cpos.z = cpos.z - 13
@@ -177,6 +178,7 @@ local function MoveModel(ply, inRender)
 			clipPlane2_2Plane = clipPlane2_2:Dot(cpos)
 			cpos.z = cpos.z + 10
 			clipPlane2_3Plane = clipPlane2_1:Dot(cpos)
+			clipPlane2_4Plane = clipPlane2_3:Dot(cpos)
 
 			pos.x = pos.x - cos * sincosalign_boat
 			pos.y = pos.y - sin * sincosalign_boat
@@ -303,11 +305,13 @@ function DrawOverrideTwo()
 		oldClip = render.EnableClipping(true)
 		render.PushCustomClipPlane(clipPlane2_1, clipPlane2_3Plane)
 		render.PushCustomClipPlane(clipPlane2_2, clipPlane2_2Plane)
+		render.PushCustomClipPlane(clipPlane2_3, clipPlane2_4Plane)
 	end
 
 	DLibLegsModel2:DrawModel()
 
 	if shouldClip then
+		render.PopCustomClipPlane()
 		render.PopCustomClipPlane()
 		render.PopCustomClipPlane()
 		render.EnableClipping(oldClip)
@@ -329,11 +333,13 @@ local function Draw()
 			render.PopCustomClipPlane()
 			render.PushCustomClipPlane(clipPlane2_1, clipPlane2_3Plane)
 			render.PushCustomClipPlane(clipPlane2_2, clipPlane2_2Plane)
+			render.PushCustomClipPlane(clipPlane2_3, clipPlane2_4Plane)
 		end
 
 		DLibLegsModel2:DrawModel()
 
 		if shouldClip then
+			render.PopCustomClipPlane()
 			render.PopCustomClipPlane()
 			render.PopCustomClipPlane()
 			render.EnableClipping(oldClip)
