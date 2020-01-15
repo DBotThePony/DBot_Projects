@@ -83,6 +83,10 @@ local function CreateNewLegs(ply)
 	return DLibLegsModel, DLibLegsModel2
 end
 
+local function drawRegularHands(wep)
+	return not IsValid(wep) or wep:GetClass() == 'none'
+end
+
 local sincosalign = 16
 local sincosalign_vehicle = 6
 local sincosalign_boat = 4
@@ -256,7 +260,7 @@ function DrawOverrideOne()
 			DLibLegsModel:ManipulateBonePosition(owouchmyspine, ply:GetManipulateBonePosition(owouchmyspine))
 			DLibLegsModel:SetPos(Vector(realLegsPos.x, realLegsPos.y, realLegsPos.z - 8))
 			DLibLegsModel:SetupBones()
-		elseif not ply:InVehicle() and ply:GetActiveWeapon():IsValid() then
+		elseif not ply:InVehicle() and not drawRegularHands(ply:GetActiveWeapon()) then
 			DLibLegsModel:ManipulateBonePosition(owouchmyspine, spine4_stretch)
 			DLibLegsModel:SetPos(realLegsPos)
 			DLibLegsModel:SetupBones()
@@ -470,7 +474,7 @@ local function UpdateBones(ply)
 	end
 
 	-- stretch bones anyway lol
-	if not IsValid(ply:GetActiveWeapon()) or not shouldClip then return end
+	if drawRegularHands(ply:GetActiveWeapon()) or not shouldClip then return end
 	owouchmyspine = ply:LookupBone('ValveBiped.Bip01_Spine4')
 	if not owouchmyspine or owouchmyspine < 0 then return end
 
@@ -544,7 +548,7 @@ local function PostDrawTranslucentRenderables(a, b)
 
 	if RENDER_OVERRIDE:GetBool() and not vehicle then return end
 
-	if vehicle or ang.p > 25 or not IsValid(ply:GetActiveWeapon()) and ang.p > 0 then
+	if vehicle or ang.p > 25 or drawRegularHands(ply:GetActiveWeapon()) and ang.p > 0 then
 		Draw()
 	end
 end
