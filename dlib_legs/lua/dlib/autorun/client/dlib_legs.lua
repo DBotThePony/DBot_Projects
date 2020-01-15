@@ -167,7 +167,7 @@ local function MoveModel(ply, inRender)
 			add:Rotate(ang)
 			posFor2:Add(add)
 
-			clipPlane2_1, clipPlane2_2 = Vector(0, 0, -1), Vector(0, 0, 1)
+			clipPlane2_1, clipPlane2_2 = Vector(0, 0, -1), Vector(1, 0, 0)
 			clipPlane2_1:Rotate(ang)
 			clipPlane2_2:Rotate(ang)
 
