@@ -19,6 +19,7 @@
 -- DEALINGS IN THE SOFTWARE.
 
 local ENABLE = CreateConVar('dlib_legs_enabled', '1', {FCVAR_ARCHIVE}, 'Enable first person legs')
+local ENABLE_VEHICLE = CreateConVar('dlib_legs_vehicle', '1', {FCVAR_ARCHIVE}, 'Enable first person legs inside vehicle')
 local RENDER_OVERRIDE = CreateConVar('dlib_legs_ro', '1', {FCVAR_ARCHIVE}, 'Enable RenderOverride usage instead of manual drawing. Can be buggy, but visually it is better')
 local TRY_TO_FIX_SHADOWS = CreateConVar('dlib_legs_fix_shadows', '1', {FCVAR_ARCHIVE}, 'Has effect only when renderoverride is enabled. Might be buggy.')
 
@@ -520,6 +521,15 @@ local function Think()
 		return
 	end
 
+	if not ENABLE_VEHICLE:GetBool() and ply:InVehicle() then
+		DLibLegsModel:SetNoDraw(true)
+		DLibLegsModel2:SetNoDraw(true)
+		return
+	end
+
+	DLibLegsModel:SetNoDraw(false)
+	DLibLegsModel2:SetNoDraw(false)
+
 	MoveModel(ply, false)
 	UpdatePoseParams(ply)
 	UpdateBones(ply)
@@ -547,6 +557,7 @@ local function PostDrawTranslucentRenderables(a, b)
 	end
 
 	if RENDER_OVERRIDE:GetBool() and not vehicle then return end
+	if not ENABLE_VEHICLE:GetBool() and vehicle then return end
 
 	if vehicle or ang.p > 25 or drawRegularHands(ply:GetActiveWeapon()) and ang.p > 0 then
 		Draw()
