@@ -382,7 +382,7 @@ local function PlayerPostThink(ply)
 	end
 
 	if vehicle.dsit_player_root then
-		vehicle.dsit_player_root.dsit_root_sitting_on = vehicle.dsit_player_root.dsit_root_sitting_on + 1
+		vehicle.dsit_player_root.dsit_root_sitting_on = (vehicle.dsit_player_root.dsit_root_sitting_on or 0) + 1
 		vehicle:SetNWEntity('dsit_player_root', vehicle.dsit_player_root)
 	end
 
@@ -503,7 +503,7 @@ local function PlayerLeaveVehicle(ply, vehicle)
 	if not vehicle:GetNWBool('dsit_flag') then return end
 
 	if IsValid(vehicle.dsit_player_root) then
-		vehicle.dsit_player_root.dsit_root_sitting_on = vehicle.dsit_player_root.dsit_root_sitting_on - 1
+		vehicle.dsit_player_root.dsit_root_sitting_on = (vehicle.dsit_player_root.dsit_root_sitting_on or 1) - 1
 	else
 		if ply.dsit_old_eyes then ply:SetEyeAngles(ply.dsit_old_eyes) end
 	end
