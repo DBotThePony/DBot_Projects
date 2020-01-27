@@ -89,17 +89,17 @@ local function SetupMove(ply, movedata, cmd)
 	ply:SetDParkourLastGround(ground)
 	data.last_on_ground = ground
 
-	if not ground and (movedata:KeyDown(IN_DUCK) or movedata:KeyDown(IN_JUMP)) then
+	if not ground and (movedata:KeyDown(IN_DUCK) or movedata:KeyDown(IN_JUMP)) and data.alive then
 		DParkour.HandleWallHang(ply, movedata, data)
 	end
 
-	if ground and movedata:KeyDown(IN_DUCK) and movedata:KeyDown(IN_SPEED) then
+	if ground and movedata:KeyDown(IN_DUCK) and movedata:KeyDown(IN_SPEED) and data.alive then
 		DParkour.HandleSlide(ply, movedata, data)
 	else
 		DParkour.HandleSlideStop(ply, movedata, data, true)
 	end
 
-	if ground and groundChange then
+	if ground and groundChange and data.alive then
 		DParkour.HandleRollFall(ply, movedata, data)
 	end
 
