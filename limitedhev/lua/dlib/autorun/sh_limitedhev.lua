@@ -26,6 +26,7 @@ end
 
 local SPRINT = CreateConVar('sv_limited_sprint', '1', 'Enable limited sprint')
 local SPRINT_MMOD = CreateConVar('sv_limited_sprint_mmod', '0', 'Enable limited sprint in MMod style (unable to sprint after its depletion until it fully restore)')
+local SPRINT_WATER = CreateConVar('sv_limited_sprint_jesus', '1', 'Allows to SPRINT inside water')
 local WATER = CreateConVar('sv_limited_oxygen', '1', 'Enable limited oxygen')
 local WATER_RESTORE = CreateConVar('sv_limited_oxygen_restore', '1', 'Restore health that player lost while drowing')
 
@@ -77,12 +78,18 @@ local function SetupMove(ply, movedata, cmd)
 	local whut = movedata:KeyPressed(IN_SPEED) ~= ply.__lsp_whut
 	ply.__lsp_whut = movedata:KeyPressed(IN_SPEED)
 
-	if movedata:KeyPressed(IN_SPEED) and (ply:GetLimitedHEVPower() <= SPRINT_LIMIT_ACT:GetFloat() or ply:GetLimitedHEVSuitDarn()) then
+	if movedata:KeyPressed(IN_SPEED) and (ply:GetLimitedHEVPower() <= SPRINT_LIMIT_ACT:GetFloat() or ply:GetLimitedHEVSuitDarn()) or (not SPRINT_WATER:GetBool() and ply:WaterLevel() ~= 0) then
 		movedata:SetButtons(movedata:GetButtons():band(IN_SPEED:bnot()))
 		movedata:SetMaxClientSpeed(ply:GetWalkSpeed())
 
-		if whut then
-			ply:EmitSoundPredicted('HL2Player.SprintNoPower')
+		if SPRINT_WATER:GetBool() then
+			if whut then
+				ply:EmitSoundPredicted('HL2Player.SprintNoPower')
+			end
+		else
+			if whut and ply:WaterLevel() == 0 then
+				ply:EmitSoundPredicted('HL2Player.SprintNoPower')
+			end
 		end
 
 		return
