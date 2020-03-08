@@ -55,7 +55,7 @@ function self.Hook(id, func, p)
 end
 
 function self.ForatToday()
-	return os.date('%d_%m_%y', os.time())
+	return os.date('%Y-%m-%d', os.time())
 end
 
 function self.Load(ply, steamid)

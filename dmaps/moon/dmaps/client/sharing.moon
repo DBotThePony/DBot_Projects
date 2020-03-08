@@ -107,7 +107,7 @@ net.Receive 'DMaps.Sharing', ->
 		:x, :y, :z, :sharer, :nick, :steamid, :steamid64, :uniqueid, :steamname
 		time: RealTime()
 		stamp: os.time()
-		stampText: os.date('%H:%M:%S - %d/%m/%Y', os.time())
+		stampText: DLib.string.qdate()
 	}
 	id = table.insert(SHARING_DATABASE, data)
 	data.id = id

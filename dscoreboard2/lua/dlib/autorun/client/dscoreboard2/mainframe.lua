@@ -24,15 +24,15 @@ local board = DScoreBoard2
 
 local MiscFunctions = {
     CurTimeLThink = function(self)
-        self:SetText('Your time: ' .. os.date('%H:%M:%S - %d/%m/%y', os.time()))
+        self:SetText('Your time: ' .. DLib.string.qdate())
     end,
 
     ServerTime = function(self)
-        self:SetText('Server time: ' .. os.date('%H:%M:%S - %d/%m/%y', board.ServerTime))
+        self:SetText('Server time: ' .. DLib.string.qdate(board.ServerTime))
     end,
 
     SteamTime = function(self)
-        self:SetText('Steam time: ' .. os.date('%H:%M:%S - %d/%m/%y', system.SteamTime()))
+        self:SetText('Steam time: ' .. DLib.string.qdate(system.SteamTime()))
     end,
 
     UpTimeThink = function(self)

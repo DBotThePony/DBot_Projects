@@ -250,7 +250,7 @@ concommand.Add('stripper_export', function(ply, cmd, args)
 		return
 	end
 
-	local fpath = 'stripper/export_' .. game.GetMap() .. '_' .. os.date('%H-%M-%S_%d_%m_%Y', os.time()) .. '.txt'
+	local fpath = 'stripper/export_' .. game.GetMap() .. '_' .. os.date('%H_%M_%S-%Y-%m-%d', os.time()) .. '.txt'
 	local writable = file.Open(fpath, 'wb', 'DATA')
 
 	for i, propStruct in ipairs(stripper.ListFromArray(entlist)) do

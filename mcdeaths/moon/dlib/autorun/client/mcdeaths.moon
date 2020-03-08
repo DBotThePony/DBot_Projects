@@ -68,7 +68,7 @@ net.receive 'mcdeaths_death', ->
 		MsgC('\n')
 
 	if DISPLAY_DRAW\GetBool() and ply == LocalPlayer()
-		DIED_AT = i18n.localize('gui.mcdeaths.at', os.date('%H:%M:%S - %d/%m/%Y'))
+		DIED_AT = i18n.localize('gui.mcdeaths.at', DLib.string.qdate())
 		ALIVE_FOR = i18n.localize('gui.mcdeaths.alivefor', i18n.tformat(RealTimeL() - ALIVE_FROM))
 		DIED_AT_STAMP = RealTimeL()
 		timer.Simple 0.5, -> DEATH_REASON = table.concat(rebuild, ' ')

@@ -220,7 +220,7 @@ class EventPointer extends DMapPointer
 				time = os.time()
 				delta = math.floor(CurTime() - @start)
 				timeStamp = time - delta
-				SetClipboardText(os.date('%H:%M:%S - %d/%m/%Y', timeStamp))
+				SetClipboardText(DLib.string.qdate(timeStamp))
 			)\SetIcon(table.Random(DMaps.TAGS_ICONS))
 			\AddOption('Copy point data string', -> SetClipboardText("Name: #{@dName}, X: #{@x}, Y: #{@y}, Z: #{@z}"))\SetIcon(table.Random(DMaps.TAGS_ICONS))
 			\AddOption('Look At', -> LocalPlayer()\SetEyeAngles((@GetPos() - LocalPlayer()\EyePos())\Angle()))\SetIcon('icon16/arrow_in.png')
