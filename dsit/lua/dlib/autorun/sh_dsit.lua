@@ -33,6 +33,7 @@ DSitConVars:create('anyangle', '0', {FCVAR_NOTIFY}, 'Letting players have fun')
 DSitConVars:create('allow_ceiling', '1', {FCVAR_NOTIFY}, 'Allow players to sit on ceiling')
 
 DSitConVars:create('entities', '1', {FCVAR_NOTIFY}, 'Allow to sit on entities')
+DSitConVars:create('npcs', '1', {FCVAR_NOTIFY}, 'Allow to sit on NPCs')
 DSitConVars:create('entities_owner', '0', {FCVAR_NOTIFY}, 'Allow to sit on entities owned only by that player')
 DSitConVars:create('entities_world', '0', {FCVAR_NOTIFY}, 'Allow to sit on non-owned entities only')
 
@@ -74,7 +75,7 @@ local function Think()
 
 		local ent = vehicle:GetNWEntity('dsit_target')
 
-		if not IsValid(ent) or not ent:Alive() then
+		if not IsValid(ent) or ent.Alive and not ent:Alive() then
 			if SERVER then
 				vehicle:Remove()
 				table.remove(DSIT_TRACKED_VEHICLES, i)
@@ -89,12 +90,21 @@ local function Think()
 			ang = ang + lang
 		end
 
-		local pos = ent:EyePos()
+		local pos, isNPC
+
+		if type(ent) == 'NextBot' then
+			pos = ent:GetPos()
+			isNPC = true
+			pos.z = pos.z + ent:OBBMax().z
+		else
+			pos = ent:EyePos()
+			isNPC = ent:IsNPC()
+			pos.z = pos.z + 10
+		end
 
 		ang.p = 0
 		ang.r = 0
 		ang.y = math.floor(ang.y - 90)
-		pos.z = pos.z + 10
 		ang:Normalize()
 
 		if vehicle:GetPos() ~= pos then

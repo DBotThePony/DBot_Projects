@@ -86,6 +86,7 @@ end
 -- this is stupid
 local function PlayerPostThink(ply)
 	if not ply.__dsit_request then return end
+	local args = ply.__dsit_request
 	ply.__dsit_request = nil
 	local maxVelocity = DSitConVars:getFloat('speed_val')
 
@@ -136,7 +137,7 @@ local function PlayerPostThink(ply)
 		end
 	end
 
-	local isPlayer, isEntity, isSitting, entSit, parent = false, false, false, NULL, false
+	local isPlayer, isEntity, isNPC, isSitting, entSit, parent = false, false, false, false, NULL, false
 	local ent = tr.Entity
 
 	if IsValid(ent) then
@@ -146,8 +147,12 @@ local function PlayerPostThink(ply)
 		end
 
 		if type(ent) == 'NPC' or type(ent) == 'NextBot' then
-			messaging.LChatPlayer2(ply, 'message.dsit.status.npc')
-			return
+			if not DSitConVars:getBool('npcs') then
+				messaging.LChatPlayer2(ply, 'message.dsit.status.npc')
+				return
+			end
+
+			isNPC = true
 		end
 
 		if maxVelocity > 0 then
@@ -168,6 +173,8 @@ local function PlayerPostThink(ply)
 			end
 
 			parent = false
+		--elseif isNPC then
+		--	parent = false
 		else
 			isSitting = ent:GetNWBool('dsit_flag')
 			entSit = ent
@@ -186,6 +193,8 @@ local function PlayerPostThink(ply)
 
 	local targetPos, targetAngles
 	local upsideDown = false
+
+	print(isPlayer, isEntity, isNPC, isSitting)
 
 	if isSitting then
 		if not DSitConVars:getBool('players_legs') then
@@ -223,6 +232,18 @@ local function PlayerPostThink(ply)
 
 		targetAngles = ent:EyeAngles()
 		targetPos = ent:EyePos()
+
+		targetAngles.p = 0
+		targetAngles.r = 0
+	elseif isNPC then
+		targetAngles = ent:EyeAngles()
+		targetAngles.y = targetAngles.y - 90
+		targetPos = ent:EyePos()
+
+		if type(ent) == 'NextBot' then
+			targetPos = ent:GetPos()
+			targetPos.z = targetPos.z + ent:OBBMaxs().z
+		end
 
 		targetAngles.p = 0
 		targetAngles.r = 0
@@ -367,6 +388,16 @@ local function PlayerPostThink(ply)
 	elseif isSitting then
 		vehicle.dsit_player_root = ent.dsit_player_root
 		vehicle:SetParent(entSit)
+	--[==[elseif isNPC then
+		vehicle:SetNWEntity('dsit_target', ent)
+
+		--[[timer.Simple(0.5, function()
+			net.Start('DSit.VehicleTick')
+			net.WriteEntity(vehicle)
+			net.Broadcast()
+		end)]]
+
+		table.insert(DSIT_TRACKED_VEHICLES, vehicle)]==]
 	elseif isPlayer then
 		ply.dsit_player_root = ent.dsit_player_root or ent
 		vehicle:SetNWEntity('dsit_target', ent)
@@ -392,7 +423,7 @@ local function PlayerPostThink(ply)
 	ply:SetNWEntity('dsit_entity', vehicle)
 end
 
-local function request(ply)
+local function request(ply, args)
 	if not DSitConVars:getBool('enable') then return end
 	if not IsValid(ply) then return end
 	if not ply:Alive() then return end
@@ -409,7 +440,7 @@ local function request(ply)
 		end
 	end
 
-	ply.__dsit_request = true
+	ply.__dsit_request = args or {}
 end
 
 local tonumber = tonumber
@@ -442,7 +473,7 @@ local function dsit_getoff(ply, cmd, args)
 	end
 end
 
-concommand.Add('dsit', request)
+concommand.Add('dsit', function(a, b, c) request(a, c) end)
 concommand.Add('dsit_getoff', dsit_getoff)
 
 _G.DSIT_REQUEST_DEBUG = request
