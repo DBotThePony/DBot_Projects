@@ -148,11 +148,19 @@ function DSit_FindSnappyAngle(ply, tr1, targetAngle)
 		return false, 'tr2.Hit', tr2
 	end
 
-	local tr3 = util.TraceLine({
-		filter = ply,
-		start = tr2.HitPos,
-		endpos = tr2.HitPos + targetAngle:Forward() * 30
-	})
+	local tr3
+
+	for i = 30, 10, -10 do
+		tr3 = util.TraceLine({
+			filter = ply,
+			start = tr2.HitPos,
+			endpos = tr2.HitPos + targetAngle:Forward() * 30
+		})
+
+		if not tr3.Hit then
+			break
+		end
+	end
 
 	if tr3.Hit then
 		-- not gonna be able to do much here
