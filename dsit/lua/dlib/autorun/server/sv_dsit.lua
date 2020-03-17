@@ -99,7 +99,7 @@ local function PlayerPostThink(ply)
 	local eyes = ply:EyePos()
 	local spos = ply:GetPos()
 	local ppos = spos + ply:OBBCenter()
-	local fwd = ply:EyeAngles():Forward()
+	local fwd = ply:GetAimVector()
 	maxs.z = 0
 	mins.z = 0
 
@@ -139,6 +139,9 @@ local function PlayerPostThink(ply)
 
 	local isPlayer, isEntity, isNPC, isSitting, entSit, parent = false, false, false, false, NULL, false
 	local ent = tr.Entity
+	local preferForward, preferBackward, preferSnap, noSnap = table.qhasValue(args, 'prefer-forward'), table.qhasValue(args, 'prefer-backward'), table.qhasValue(args, 'prefer-snap'), table.qhasValue(args, 'no-snap')
+	local noPreferDirection = preferForward == false and preferBackward == false
+	local shouldSnap = preferSnap or not noSnap
 
 	if IsValid(ent) then
 		if not DSitConVars:getBool('entities') then
@@ -193,8 +196,6 @@ local function PlayerPostThink(ply)
 
 	local targetPos, targetAngles
 	local upsideDown = false
-
-	print(isPlayer, isEntity, isNPC, isSitting)
 
 	if isSitting then
 		if not DSitConVars:getBool('players_legs') then
@@ -264,7 +265,7 @@ local function PlayerPostThink(ply)
 
 		targetAngles = ply:EyeAngles()
 
-		if tr.HitPos:Distance(ply:GetPos()) < 30 then
+		if not preferForward and (tr.HitPos:Distance(ply:GetPos()) < 30 or preferBackward) then
 			targetAngles.y = targetAngles.y + 90
 		else
 			targetAngles.y = targetAngles.y - 90
@@ -273,7 +274,35 @@ local function PlayerPostThink(ply)
 		targetAngles.r = 0
 		targetAngles.p = 0
 
-		targetPos = tr.HitPos + tr.HitNormal * 2
+		if shouldSnap then
+			local checkAngle = ply:EyeAngles()
+
+			if not preferForward and not preferBackward then
+				-- let's guess, probably forward
+				local checkAngle = ply:EyeAngles()
+				checkAngle.p = 0
+				checkAngle.y = checkAngle.y - 180
+				checkAngle.r = 0
+
+				foundSnap, snapNormal = DSit_FindSnappyAngle(ply, tr, checkAngle)
+
+				if not foundSnap then
+					checkAngle.y = checkAngle.y + 180
+					foundSnap, snapNormal = DSit_FindSnappyAngle(ply, tr, checkAngle)
+				end
+			else
+				foundSnap, snapNormal = DSit_FindSnappyAngle(ply, tr, targetAngles)
+			end
+
+			if foundSnap then
+				targetAngles = snapNormal:Angle()
+				targetAngles.r = 0
+				targetAngles.y = targetAngles.y - 90
+				targetAngles.p = 0
+			end
+		end
+
+		targetPos = tr.HitPos - tr.HitNormal * 4
 	else
 		if not DSitConVars:getBool('anyangle') and not checkNormal(ply, tr.HitNormal) then
 			return
@@ -284,9 +313,42 @@ local function PlayerPostThink(ply)
 
 		targetPos = tr.HitPos - tr.HitNormal * 2
 
-		if tr.HitPos:Distance(ply:GetPos()) < 30 then
+		local foundSnap, snapNormal
+
+		if shouldSnap then
+			local checkAngle = ply:EyeAngles()
+
+			if not preferForward and not preferBackward then
+				-- let's guess, probably forward
+				local checkAngle = ply:EyeAngles()
+				checkAngle.p = 0
+				checkAngle.y = checkAngle.y - 180
+				checkAngle.r = 0
+
+				foundSnap, snapNormal = DSit_FindSnappyAngle(ply, tr, checkAngle)
+
+				if not foundSnap then
+					checkAngle.y = checkAngle.y + 180
+					foundSnap, snapNormal = DSit_FindSnappyAngle(ply, tr, checkAngle)
+				end
+			else
+				foundSnap, snapNormal = DSit_FindSnappyAngle(ply, tr, targetAngles)
+			end
+		end
+
+		if foundSnap then
+			targetAngles = snapNormal:Angle()
+			targetAngles.r = 0
+			targetAngles.y = targetAngles.y - 180
+			targetAngles.p = 0
+		elseif not preferForward and (tr.HitPos:Distance(ply:GetPos()) < 30 or preferBackward) then
 			targetAngles = ply:EyeAngles()
 			targetAngles.y = targetAngles.y
+			targetAngles.r = 0
+			targetAngles.p = 0
+		elseif preferForward then
+			targetAngles = ply:EyeAngles()
+			targetAngles.y = targetAngles.y - 180
 			targetAngles.r = 0
 			targetAngles.p = 0
 		else
