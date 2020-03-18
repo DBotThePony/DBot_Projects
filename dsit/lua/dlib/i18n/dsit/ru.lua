@@ -50,3 +50,4 @@ gui.dsit.menu.max = 'Максимальное кол-во игроков на в
 gui.dsit.menu.hide = 'Прятать игроков над вами'
 gui.dsit.menu.getoff = 'Скинуть игрока(-ов) над вами'
 gui.dsit.menu.getoff_e = 'Скинуть определённого игрока над вами'
+gui.dsit.menu.interactive = 'Активный выбор угла'

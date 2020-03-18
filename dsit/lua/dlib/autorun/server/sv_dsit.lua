@@ -103,6 +103,26 @@ local function PlayerPostThink(ply)
 	maxs.z = 0
 	mins.z = 0
 
+	local preferTargetPos = false
+
+	for i, arg in ipairs(args) do
+		if arg:startsWith('pos:') then
+			preferTargetPos = arg:sub(5)
+		end
+	end
+
+	if preferTargetPos then
+		local split = preferTargetPos:split(',')
+
+		if #split == 3 then
+			local x, y, z = tonumber(split[1]), tonumber(split[2]), tonumber(split[3])
+
+			if x and y and z then
+				fwd = (Vector(x, y, z) - eyes):GetNormalized()
+			end
+		end
+	end
+
 	local trDataLine = {
 		start = eyes,
 		endpos = eyes + fwd * DSitConVars:getFloat('distance'),
@@ -142,6 +162,18 @@ local function PlayerPostThink(ply)
 	local preferForward, preferBackward, preferSnap, noSnap = table.qhasValue(args, 'prefer-forward'), table.qhasValue(args, 'prefer-backward'), table.qhasValue(args, 'prefer-snap'), table.qhasValue(args, 'no-snap')
 	local noPreferDirection = preferForward == false and preferBackward == false
 	local shouldSnap = preferSnap or not noSnap
+
+	local preferAngle = false
+
+	for i, arg in ipairs(args) do
+		if arg:startsWith('angle:') then
+			preferAngle = tonumber(arg:sub(7)) or false
+		end
+	end
+
+	if preferAngle then
+		preferAngle = preferAngle:normalizeAngle()
+	end
 
 	if IsValid(ent) then
 		if not DSitConVars:getBool('entities') then
@@ -263,42 +295,46 @@ local function PlayerPostThink(ply)
 			return
 		end
 
-		targetAngles = ply:EyeAngles()
-
-		if not preferForward and (tr.HitPos:Distance(ply:GetPos()) < 30 or preferBackward) then
-			targetAngles.y = targetAngles.y + 90
+		if preferAngle then
+			targetAngles = Angle(0, preferAngle, 0)
 		else
-			targetAngles.y = targetAngles.y - 90
-		end
+			targetAngles = ply:EyeAngles()
 
-		targetAngles.r = 0
-		targetAngles.p = 0
-
-		if shouldSnap then
-			local checkAngle = ply:EyeAngles()
-
-			if not preferForward and not preferBackward then
-				-- let's guess, probably forward
-				local checkAngle = ply:EyeAngles()
-				checkAngle.p = 0
-				checkAngle.y = checkAngle.y - 180
-				checkAngle.r = 0
-
-				foundSnap, snapNormal = DSit_FindSnappyAngle(ply, tr, checkAngle)
-
-				if not foundSnap then
-					checkAngle.y = checkAngle.y + 180
-					foundSnap, snapNormal = DSit_FindSnappyAngle(ply, tr, checkAngle)
-				end
+			if not preferForward and (tr.HitPos:Distance(ply:GetPos()) < 30 or preferBackward) then
+				targetAngles.y = targetAngles.y + 90
 			else
-				foundSnap, snapNormal = DSit_FindSnappyAngle(ply, tr, targetAngles)
+				targetAngles.y = targetAngles.y - 90
 			end
 
-			if foundSnap then
-				targetAngles = snapNormal:Angle()
-				targetAngles.r = 0
-				targetAngles.y = targetAngles.y - 90
-				targetAngles.p = 0
+			targetAngles.r = 0
+			targetAngles.p = 0
+
+			if shouldSnap then
+				local checkAngle = ply:EyeAngles()
+
+				if not preferForward and not preferBackward then
+					-- let's guess, probably forward
+					local checkAngle = ply:EyeAngles()
+					checkAngle.p = 0
+					checkAngle.y = checkAngle.y - 180
+					checkAngle.r = 0
+
+					foundSnap, snapNormal = DSit_FindSnappyAngle(ply, tr, checkAngle)
+
+					if not foundSnap then
+						checkAngle.y = checkAngle.y + 180
+						foundSnap, snapNormal = DSit_FindSnappyAngle(ply, tr, checkAngle)
+					end
+				else
+					foundSnap, snapNormal = DSit_FindSnappyAngle(ply, tr, targetAngles)
+				end
+
+				if foundSnap then
+					targetAngles = snapNormal:Angle()
+					targetAngles.r = 0
+					targetAngles.y = targetAngles.y - 90
+					targetAngles.p = 0
+				end
 			end
 		end
 
@@ -313,82 +349,86 @@ local function PlayerPostThink(ply)
 
 		targetPos = tr.HitPos - tr.HitNormal * 2
 
-		local foundSnap, snapNormal
-
-		if shouldSnap then
-			local checkAngle = ply:EyeAngles()
-
-			if not preferForward and not preferBackward then
-				-- let's guess, probably forward
-				local checkAngle = ply:EyeAngles()
-				checkAngle.p = 0
-				checkAngle.y = checkAngle.y - 180
-				checkAngle.r = 0
-
-				foundSnap, snapNormal = DSit_FindSnappyAngle(ply, tr, checkAngle)
-
-				if not foundSnap then
-					checkAngle.y = checkAngle.y + 180
-					foundSnap, snapNormal = DSit_FindSnappyAngle(ply, tr, checkAngle)
-				end
-			else
-				foundSnap, snapNormal = DSit_FindSnappyAngle(ply, tr, targetAngles)
-			end
-		end
-
-		if foundSnap then
-			targetAngles = snapNormal:Angle()
-			targetAngles.r = 0
-			targetAngles.y = targetAngles.y - 180
-			targetAngles.p = 0
-		elseif not preferForward and (tr.HitPos:Distance(ply:GetPos()) < 30 or preferBackward) then
-			targetAngles = ply:EyeAngles()
-			targetAngles.y = targetAngles.y
-			targetAngles.r = 0
-			targetAngles.p = 0
-		elseif preferForward then
-			targetAngles = ply:EyeAngles()
-			targetAngles.y = targetAngles.y - 180
-			targetAngles.r = 0
-			targetAngles.p = 0
+		if preferAngle then
+			targetAngles = Angle(0, preferAngle, 0)
 		else
-			local fwdang = ply:EyeAngles()
-			fwdang.p = 0
-			fwdang.r = 0
+			local foundSnap, snapNormal
 
-			local trForward = util.TraceLine({
-				start = tr.HitPos + tr.HitNormal * 2,
-				endpos = tr.HitPos + tr.HitNormal * 2 + fwdang:Forward() * 40,
-				filter = ply
-			})
+			if shouldSnap then
+				local checkAngle = ply:EyeAngles()
 
-			local unhit = true
+				if not preferForward and not preferBackward then
+					-- let's guess, probably forward
+					local checkAngle = ply:EyeAngles()
+					checkAngle.p = 0
+					checkAngle.y = checkAngle.y - 180
+					checkAngle.r = 0
 
-			if not trForward.Hit then
-				local newTr2 = util.TraceLine({
-					start = trForward.HitPos + tr.HitNormal * 10,
-					endpos = trForward.HitPos - tr.HitNormal * 10,
-					filter = ply
-				})
+					foundSnap, snapNormal = DSit_FindSnappyAngle(ply, tr, checkAngle)
 
-				if not newTr2.Hit or newTr2.Fraction > 0.65 then
-					unhit = false
-					targetAngles = ply:EyeAngles()
-					targetAngles.r = 0
-					targetAngles.p = 0
-					targetAngles.y = targetAngles.y - 180
+					if not foundSnap then
+						checkAngle.y = checkAngle.y + 180
+						foundSnap, snapNormal = DSit_FindSnappyAngle(ply, tr, checkAngle)
+					end
+				else
+					foundSnap, snapNormal = DSit_FindSnappyAngle(ply, tr, targetAngles)
 				end
 			end
 
-			if unhit then
+			if foundSnap then
+				targetAngles = snapNormal:Angle()
+				targetAngles.r = 0
+				targetAngles.y = targetAngles.y - 180
+				targetAngles.p = 0
+			elseif not preferForward and (tr.HitPos:Distance(ply:GetPos()) < 30 or preferBackward) then
 				targetAngles = ply:EyeAngles()
 				targetAngles.y = targetAngles.y
 				targetAngles.r = 0
 				targetAngles.p = 0
-			end
-		end
+			elseif preferForward then
+				targetAngles = ply:EyeAngles()
+				targetAngles.y = targetAngles.y - 180
+				targetAngles.r = 0
+				targetAngles.p = 0
+			else
+				local fwdang = ply:EyeAngles()
+				fwdang.p = 0
+				fwdang.r = 0
 
-		targetAngles.y = targetAngles.y + 90
+				local trForward = util.TraceLine({
+					start = tr.HitPos + tr.HitNormal * 2,
+					endpos = tr.HitPos + tr.HitNormal * 2 + fwdang:Forward() * 40,
+					filter = ply
+				})
+
+				local unhit = true
+
+				if not trForward.Hit then
+					local newTr2 = util.TraceLine({
+						start = trForward.HitPos + tr.HitNormal * 10,
+						endpos = trForward.HitPos - tr.HitNormal * 10,
+						filter = ply
+					})
+
+					if not newTr2.Hit or newTr2.Fraction > 0.65 then
+						unhit = false
+						targetAngles = ply:EyeAngles()
+						targetAngles.r = 0
+						targetAngles.p = 0
+						targetAngles.y = targetAngles.y - 180
+					end
+				end
+
+				if unhit then
+					targetAngles = ply:EyeAngles()
+					targetAngles.y = targetAngles.y
+					targetAngles.r = 0
+					targetAngles.p = 0
+				end
+			end
+
+			targetAngles.y = targetAngles.y + 90
+		end
 
 		if normalAngle.p > 170 or normalAngle.p < -170 then
 			targetAngles.y = targetAngles.y - 180
