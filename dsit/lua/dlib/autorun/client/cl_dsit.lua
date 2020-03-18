@@ -242,6 +242,7 @@ end
 
 local ARROW_WIDTH = 24
 local ARROW_BODY_WIDTH = 6
+local ARROW_TIP_HEIGHT = 12
 
 local function PostDrawHUD()
 	if not pressed then return end
@@ -343,10 +344,7 @@ local function PostDrawHUD()
 	cam.Start3D()
 
 	if chosenAngle then
-		local x, y = 0, 0
-		local tipheight = 12
-		local height = math.max(dist - tipheight, 0)
-
+		local height = math.max(dist - ARROW_TIP_HEIGHT, 0)
 		local renderpos = fixedTrace.HitPos + chosenAngle:Forward() * math.sqrt(math.pow(fixedTrace.HitPos.x - tr.HitPos.x, 2) + math.pow(fixedTrace.HitPos.y - tr.HitPos.y, 2)) / 2
 		local renderang = Angle(0, chosenAngle.y - 90, 0)
 
@@ -359,13 +357,13 @@ local function PostDrawHUD()
 		renderpos:Add(add)
 
 		local arrow = {
-			{x = x + ARROW_WIDTH / 2, y = y},
-			{x = x + ARROW_WIDTH, y = y + tipheight},
-			{x = x + ARROW_WIDTH / 2 + ARROW_BODY_WIDTH / 2, y = y + tipheight},
-			{x = x + ARROW_WIDTH / 2 + ARROW_BODY_WIDTH / 2, y = y + height + tipheight},
-			{x = x + ARROW_WIDTH / 2 - ARROW_BODY_WIDTH / 2, y = y + height + tipheight},
-			{x = x + ARROW_WIDTH / 2 - ARROW_BODY_WIDTH / 2, y = y + tipheight},
-			{x = x, y = y + tipheight},
+			{x = ARROW_WIDTH / 2, y = 0},
+			{x = ARROW_WIDTH, y = ARROW_TIP_HEIGHT},
+			{x = ARROW_WIDTH / 2 + ARROW_BODY_WIDTH / 2, y = ARROW_TIP_HEIGHT},
+			{x = ARROW_WIDTH / 2 + ARROW_BODY_WIDTH / 2, y = height + ARROW_TIP_HEIGHT},
+			{x = ARROW_WIDTH / 2 - ARROW_BODY_WIDTH / 2, y = height + ARROW_TIP_HEIGHT},
+			{x = ARROW_WIDTH / 2 - ARROW_BODY_WIDTH / 2, y = ARROW_TIP_HEIGHT},
+			{x = 0, y = ARROW_TIP_HEIGHT},
 		}
 
 		draw.NoTexture()
@@ -390,23 +388,6 @@ local function PostDrawHUD()
 	else
 		render.DrawLine(tr.HitPos, tr.HitPos + tr.HitNormal * 10)
 	end
-
-	--[[if chosenAngle then
-		local start, endpos = Vector(fixedTrace.HitPos), fixedTrace.HitPos + fixedTrace.HitNormal * 10
-		local add = Vector(0, -ARROW_BODY_WIDTH / 2, 0)
-		add:Rotate(chosenAngle)
-		start:Add(add)
-		endpos:Add(add)
-		render.DrawLine(start, endpos, color_red)
-
-		start:Sub(add)
-		start:Sub(add)
-		endpos:Sub(add)
-		endpos:Sub(add)
-		render.DrawLine(start, endpos, color_red)
-
-		render.DrawLine(fixedTrace.HitPos + fixedTrace.HitNormal * 10, fixedTrace.HitPos + fixedTrace.HitNormal * 10 + chosenAngle:Forward() * math.sqrt(math.pow(fixedTrace.HitPos.x - tr.HitPos.x, 2) + math.pow(fixedTrace.HitPos.y - tr.HitPos.y, 2)), chosenSnap and color_yellow or color_blue)
-	end]]
 
 	cam.End3D()
 end
