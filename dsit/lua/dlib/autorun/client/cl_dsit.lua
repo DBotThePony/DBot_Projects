@@ -260,23 +260,20 @@ local function PostDrawHUD()
 		filter = ply
 	}
 
-	local trDataHull = {
-		start = ppos,
-		endpos = trDataLine.endpos,
-		filter = ply,
-		mins = mins,
-		maxs = maxs,
-	}
+	if fixedTrace and fixedTrace.Hit then
+		trDataLine.filter = function(ent)
+			if ent == ply then return false end
+			if ent == fixedTrace.Entity then return true end
+			return false
+		end
+	elseif fixedTrace then
+		trDataLine.mask = MASK_BLOCKLOS
+	end
 
 	local tr = util.TraceLine(trDataLine)
-	local trh = util.TraceHull(trDataHull)
 
 	if not fixedTrace then
 		if not tr.Hit then
-			return
-		end
-
-		if tr.Entity ~= trh.Entity then
 			return
 		end
 
