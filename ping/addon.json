@@ -1,0 +1,14 @@
+{
+	"title"		:	"CS:GO Pinging",
+	"type"		:	"effects",
+	"tags"		:	[ "fun" ],
+	"ignore"	:
+	[
+		"*.psd",
+		"*.vcproj",
+		"*.svn*",
+		"*.git*",
+		"README.md",
+		"LICENSE"
+	]
+}
