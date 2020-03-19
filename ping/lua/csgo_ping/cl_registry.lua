@@ -241,6 +241,10 @@ local barnacle_vector = Vector(0, 0, -20)
 local function HandleDefaultNPC(ply, hitpos, ent, class)
 	if not class then return end
 
+	if class == 'npc_tripmine' then
+		return CSGOPinging.Materials.explosive2, false
+	end
+
 	if class == 'npc_turret_floor' or class == 'monster_sentry' then
 		return CSGOPinging.Materials.turret
 	end
