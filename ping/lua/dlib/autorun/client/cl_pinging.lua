@@ -112,6 +112,8 @@ local function ping_position(ply, position)
 		h2 = h * size,
 		size = size,
 		icon = icon,
+		should_lerp = true,
+		next_lerp = false,
 	})
 
 	surface.PlaySound(hook.Run('CSGOPinging_ChoosePositionPingSound', ply, position) or CSGOPinging.Sound)
@@ -183,6 +185,8 @@ net.receive('csgoping_ping_entity', function()
 		h2 = h * size,
 		size = size,
 		icon = icon,
+		should_lerp = true,
+		next_lerp = false,
 	})
 
 	surface.PlaySound(hook.Run('CSGOPinging_ChoosePositionPingSound', ply, position) or CSGOPinging.Sound)
@@ -233,32 +237,28 @@ hook.Add('HUDPaint', 'CSGOPinging.Draw', function()
 
 	draw.NoTexture()
 
+	local ftime = RealFrameTime() * 22
+
 	local w, h = ScrW(), ScrH()
-	local ply = DLib.HUDCommons.SelectPlayer()
-	local epos = ply:EyePos()
-	local eang = ply:EyeAngles()
-	local fov = ply:GetFOV()
-	local aspect = w / h
-	local fovd = fov / 2
+	local wide, high = w / 2.1, h / 2.1
+	local w2, h2 = w / 2, h / 2
 
 	for i, entry in ipairs(CSGOPinging.Pings) do
-		surface.SetMaterial(entry.icon)
 		local pos = entry.pos:ToScreen()
 		local x, y = pos.x, pos.y
 		local arrow
 
-		if x < 30 or y < 30 or x > w - 30 or y > h - 30 then
-			local diff = (entry.pos - epos):Angle()
-			diff:Normalize()
+		local aX, aY = w2 - x, h2 - y
+		local deg = (aX / (aX:pow(2) + aY:pow(2)):sqrt()):acos()
+		local len = math.sqrt(math.pow(aX, 2) + math.pow(aY, 2))
+		local normalizeX = aX / len
+		local normalizeY = aY / len
 
-			local diffP, diffY = diff.p:angleDifference(eang.p), diff.y:angleDifference(eang.y)
+		local px = w2 - normalizeX * wide
+		local py = h2 - normalizeY * high
 
-			y = h / 2 + diffP:clamp(-fovd, fovd) / (fovd) * h / 2.1
-			x = w / 2 - diffY:clamp(-fovd, fovd) / (fovd) * w / 2.1
-
-			if diffY < -fov or diffY > fov then
-				--y = h / 2 - diff.p:clamp(-fovd, fovd) / (fovd) * h / 2.1
-			end
+		if x < w2 - wide or y < h2 - high or x > w2 + wide or y > h2 + high then
+			x, y = px, py
 
 			local size = entry.w2:min(entry.h2) / 2
 			local sizeh = size * 1.35
@@ -271,33 +271,54 @@ hook.Add('HUDPaint', 'CSGOPinging.Draw', function()
 				{x = 0, y = sizeh / 1.4 + entry.w2:max(entry.h2)},
 			}
 
-			local aX, aY = w / 2 - x, h / 2 - y
-			local deg = (aX / (aX:pow(2) + aY:pow(2)):sqrt()):acos():deg()
+			local deg = deg:deg()
 
 			if aY < 0 then
 				deg = -deg
 			end
 
 			DLib.HUDCommons.RotatePolyMatrix(arrow, deg - 90)
+
+			if entry.next_lerp then
+				entry.should_lerp = true
+				entry.next_lerp = false
+			end
+		else
+			entry.next_lerp = true
+		end
+
+		if entry.should_lerp then
+			entry.p_x = Lerp(ftime, entry.p_x or x, x)
+			entry.p_y = Lerp(ftime, entry.p_y or y, y)
+			entry.should_lerp = math.floor(entry.p_x * 1000) ~= math.floor(x * 1000) or  math.floor(entry.p_y * 1000) ~=  math.floor(y * 1000)
+		else
+			entry.p_x = x
+			entry.p_y = y
+		end
+
+		x, y = entry.p_x, entry.p_y
+
+		if arrow then
 			DLib.HUDCommons.TranslatePolyMatrix(arrow, x, y)
 			local last = table.remove(arrow)
 			x, y = last.x, last.y
-		end
 
-		surface.SetDrawColor(0, 0, 0, entry.alpha / 2)
-		surface.DrawTexturedRect(x - entry.w2 / 2 + 2, y - entry.h2 / 2 + 2, entry.w2, entry.h2)
-
-		surface.SetDrawColor(entry.color.r, entry.color.g, entry.color.b, entry.alpha)
-		surface.DrawTexturedRect(x - entry.w2 / 2, y - entry.h2 / 2, entry.w2, entry.h2)
-
-		if arrow then
 			draw.NoTexture()
+
 			surface.SetDrawColor(0, 0, 0, entry.alpha / 2)
 			surface.DrawPoly(arrow)
 			DLib.HUDCommons.TranslatePolyMatrix(arrow, -2, -2)
 			surface.SetDrawColor(entry.color.r, entry.color.g, entry.color.b, entry.alpha)
 			surface.DrawPoly(arrow)
 		end
+
+		surface.SetMaterial(entry.icon)
+
+		surface.SetDrawColor(0, 0, 0, entry.alpha / 2)
+		surface.DrawTexturedRect(x - entry.w2 / 2 + 2, y - entry.h2 / 2 + 2, entry.w2, entry.h2)
+
+		surface.SetDrawColor(entry.color.r, entry.color.g, entry.color.b, entry.alpha)
+		surface.DrawTexturedRect(x - entry.w2 / 2, y - entry.h2 / 2, entry.w2, entry.h2)
 
 		if entry.arrow_poly then
 
