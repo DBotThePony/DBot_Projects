@@ -233,15 +233,66 @@ hook.Add('HUDPaint', 'CSGOPinging.Draw', function()
 
 	draw.NoTexture()
 
+	local w, h = ScrW(), ScrH()
+	local ply = DLib.HUDCommons.SelectPlayer()
+	local epos = ply:EyePos()
+	local eang = ply:EyeAngles()
+	local fov = ply:GetFOV()
+	local aspect = w / h
+	local fovd = fov / 2
+
 	for i, entry in ipairs(CSGOPinging.Pings) do
 		surface.SetMaterial(entry.icon)
 		local pos = entry.pos:ToScreen()
+		local x, y = pos.x, pos.y
+		local arrow
+
+		if x < 30 or y < 30 or x > w - 30 or y > h - 30 then
+			local diff = (entry.pos - epos):Angle()
+			diff:Normalize()
+			diff:Sub(eang)
+			diff:Normalize()
+
+			y = h / 2 + diff.p:clamp(-fovd, fovd) / (fovd) * h / 2.1
+			x = w / 2 - diff.y:clamp(-fovd, fovd) / (fovd) * w / 2.1
+			local size = entry.w2:min(entry.h2) / 2
+			local sizeh = size * 1.35
+
+			arrow = {
+				{x = 0, y = -sizeh / 2},
+				{x = size / 2, y = sizeh / 1.4},
+				{x = 0, y = sizeh / 2},
+				{x = -size / 2, y = sizeh / 1.4},
+				{x = 0, y = sizeh / 1.4 + entry.w2:max(entry.h2)},
+			}
+
+			local aX, aY = w / 2 - x, h / 2 - y
+			local deg = (aX / (aX:pow(2) + aY:pow(2)):sqrt()):acos():deg()
+
+			if aY < 0 then
+				deg = -deg
+			end
+
+			DLib.HUDCommons.RotatePolyMatrix(arrow, deg - 90)
+			DLib.HUDCommons.TranslatePolyMatrix(arrow, x, y)
+			local last = table.remove(arrow)
+			x, y = last.x, last.y
+		end
 
 		surface.SetDrawColor(0, 0, 0, entry.alpha / 2)
-		surface.DrawTexturedRect(pos.x - entry.w2 / 2 + 2, pos.y - entry.h2 / 2 + 2, entry.w2, entry.h2)
+		surface.DrawTexturedRect(x - entry.w2 / 2 + 2, y - entry.h2 / 2 + 2, entry.w2, entry.h2)
 
 		surface.SetDrawColor(entry.color.r, entry.color.g, entry.color.b, entry.alpha)
-		surface.DrawTexturedRect(pos.x - entry.w2 / 2, pos.y - entry.h2 / 2, entry.w2, entry.h2)
+		surface.DrawTexturedRect(x - entry.w2 / 2, y - entry.h2 / 2, entry.w2, entry.h2)
+
+		if arrow then
+			draw.NoTexture()
+			surface.SetDrawColor(0, 0, 0, entry.alpha / 2)
+			surface.DrawPoly(arrow)
+			DLib.HUDCommons.TranslatePolyMatrix(arrow, -2, -2)
+			surface.SetDrawColor(entry.color.r, entry.color.g, entry.color.b, entry.alpha)
+			surface.DrawPoly(arrow)
+		end
 
 		if entry.arrow_poly then
 
