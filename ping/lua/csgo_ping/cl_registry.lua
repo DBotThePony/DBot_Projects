@@ -82,6 +82,7 @@ CSGOPinging.Materials.watch = m('watch')
 CSGOPinging.Materials.watch_mag = m('watchhighlights')
 CSGOPinging.Materials.x = m('exit')
 CSGOPinging.Materials.yes = m('favorite_yes')
+CSGOPinging.Materials.npc = m('player')
 
 local function HandleDoors(ply, hitpos, ent, class)
 	if class == "func_door" or
@@ -282,10 +283,19 @@ local function HandleDefaultNPC(ply, hitpos, ent, class)
 	end
 end
 
+local function HandleNoneNPC(ply, hitpos, ent, class)
+	if not class then return end
+
+	if ent:IsNPC() then
+		return CSGOPinging.Materials.npc
+	end
+end
+
 hook.Add('CSGOPing_HandleEntity', 'Default.Doors', HandleDoors, 1)
 hook.Add('CSGOPing_HandleEntity', 'Default.TFA', HandleTFA, 1)
 hook.Add('CSGOPing_HandleEntity', 'Default.DefaultAmmo', HandleDefaultAmmo, 4)
 hook.Add('CSGOPing_HandleEntity', 'Default.DefaultItems', HandleDefaultItems, 4)
 hook.Add('CSGOPing_HandleEntity', 'Default.TFAAmmo', HandleTFAAmmo, 1)
 hook.Add('CSGOPing_HandleEntity', 'Default.DefaultNPC', HandleDefaultNPC, 4)
+hook.Add('CSGOPing_HandleEntity', 'Default.NoneNPC', HandleNoneNPC, 10)
 hook.Add('CSGOPing_HandleEntity', 'Default.DefaultMisc', HandleDefaultMisc, 3)
