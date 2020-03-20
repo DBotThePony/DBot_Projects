@@ -250,14 +250,14 @@ hook.Add('HUDPaint', 'CSGOPinging.Draw', function()
 		if x < 30 or y < 30 or x > w - 30 or y > h - 30 then
 			local diff = (entry.pos - epos):Angle()
 			diff:Normalize()
-			diff:Sub(eang)
-			diff:Normalize()
 
-			y = h / 2 + diff.p:clamp(-fovd, fovd) / (fovd) * h / 2.1
-			x = w / 2 - diff.y:clamp(-fovd, fovd) / (fovd) * w / 2.1
+			local diffP, diffY = diff.p:angleDifference(eang.p), diff.y:angleDifference(eang.y)
 
-			if diff.y < -fov or diff.y > fov then
-				y = h / 2 - diff.p:clamp(-fovd, fovd) / (fovd) * h / 2.1
+			y = h / 2 + diffP:clamp(-fovd, fovd) / (fovd) * h / 2.1
+			x = w / 2 - diffY:clamp(-fovd, fovd) / (fovd) * w / 2.1
+
+			if diffY < -fov or diffY > fov then
+				--y = h / 2 - diff.p:clamp(-fovd, fovd) / (fovd) * h / 2.1
 			end
 
 			local size = entry.w2:min(entry.h2) / 2
