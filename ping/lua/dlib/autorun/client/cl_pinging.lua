@@ -150,22 +150,40 @@ net.receive('csgoping_ping_entity', function()
 	end
 
 	if shouldPutArrow == nil then
-		shouldPutArrow = goup
+		shouldPutArrow = goup or addPos ~= nil
 	end
+
+	local arrow_target
 
 	if goup2 then
 		local center = ent:OBBCenter()
+		center:Rotate(ent:EyeAngles())
 		local mins, maxs = ent:WorldSpaceAABB()
-		position = ent:GetPos() + center
+		local epos = ent:GetPos()
+		position = epos + center
 		position.z = math.max(position.z + center.z:abs() + 10, maxs.z + 3)
+		arrow_target = position + center
 	end
+
+	local flip_arrow = false
 
 	if addPos then
 		position = position + addPos
 	end
 
+	if not arrow_target and shouldPutArrow then
+		local center = ent:OBBCenter()
+		center:Rotate(ent:EyeAngles())
+		arrow_target = position + center
+	end
+
+	if arrow_target then
+		flip_arrow = arrow_target.z < position.z
+	end
+
 	local w, h = get_size(icon:Width(), icon:Height())
-	local size = get_mult(DLib.HUDCommons.SelectPlayer():EyePos():Distance(position))
+	local dist = DLib.HUDCommons.SelectPlayer():EyePos():Distance(position)
+	local size = get_mult(dist)
 
 	table.insert(CSGOPinging.Pings, {
 		type = CSGOPinging.TYPE_ENTITY,
@@ -187,6 +205,9 @@ net.receive('csgoping_ping_entity', function()
 		icon = icon,
 		should_lerp = true,
 		next_lerp = false,
+		arrow_target = arrow_target,
+		flip_arrow = flip_arrow,
+		dist = dist,
 	})
 
 	surface.PlaySound(hook.Run('CSGOPinging_ChoosePositionPingSound', ply, position) or CSGOPinging.Sound)
@@ -211,13 +232,8 @@ hook.Add('Think', 'CSGOPinging.Think', function()
 			goto CONTINUE
 		end
 
-		--[[if entry.arrow then
-			entry.arrow_poly = {
-				{}
-			}
-		end]]
-
-		entry.size = _Lerp(entry.size, get_mult(entry.pos:Distance(pos)), ftime)
+		entry.dist = entry.pos:Distance(pos)
+		entry.size = _Lerp(entry.size, get_mult(entry.dist), ftime)
 		entry.w2 = entry.w * entry.size
 		entry.h2 = entry.h * entry.size
 		::CONTINUE::
@@ -230,6 +246,9 @@ end)
 
 local render = render
 local TEXFILTER = TEXFILTER
+local ARROW_WIDE = 4
+local ARROW_POINTER_WIDE = 16
+local ARROW_POINTER_HIGH = 8
 
 hook.Add('HUDPaint', 'CSGOPinging.Draw', function()
 	render.PushFilterMag(TEXFILTER.ANISOTROPIC)
@@ -256,8 +275,9 @@ hook.Add('HUDPaint', 'CSGOPinging.Draw', function()
 
 		local px = w2 - normalizeX * wide
 		local py = h2 - normalizeY * high
+		local offscreen = x < w2 - wide or y < h2 - high or x > w2 + wide or y > h2 + high
 
-		if x < w2 - wide or y < h2 - high or x > w2 + wide or y > h2 + high then
+		if offscreen then
 			x, y = px, py
 
 			local size = entry.w2:min(entry.h2) / 2
@@ -314,9 +334,44 @@ hook.Add('HUDPaint', 'CSGOPinging.Draw', function()
 		surface.SetDrawColor(entry.color.r, entry.color.g, entry.color.b, entry.alpha)
 		surface.DrawTexturedRect(x - entry.w2 / 2, y - entry.h2 / 2, entry.w2, entry.h2)
 
-		if entry.arrow_poly then
+		--[[if entry.arrow and entry.arrow_target and not offscreen then
+			y = entry.flip_arrow and (y + entry.h2 * 0.77) or (y + entry.h2 / 2)
+			local pos = entry.arrow_target:ToScreen()
+			local x2, y2 = pos.x, pos.y
+			local arrow_len = entry.flip_arrow and (y2 - y):abs() or (y - y2)
 
-		end
+			if arrow_len > 1 then
+				draw.NoTexture()
+				surface.SetDrawColor(0, 0, 0, entry.alpha / 2)
+				local _h = arrow_len - ARROW_POINTER_HIGH
+
+				if entry.flip_arrow then
+
+					local arrow = {
+						{x = x + ARROW_POINTER_WIDE / 2 * entry.size - 2, y = y - (arrow_len * 2 - ARROW_POINTER_HIGH)},
+						{x = x - ARROW_POINTER_WIDE / 2 * entry.size - 2, y = y - (arrow_len * 2 - ARROW_POINTER_HIGH)},
+						{x = x - 2, y = y - arrow_len * 2},
+					}
+
+					surface.SetDrawColor(entry.color.r, entry.color.g, entry.color.b, entry.alpha)
+					surface.DrawPoly(arrow)
+					surface.DrawRect(x - (ARROW_WIDE / 2) * entry.size - 2, y - 2 - _h * 2 - 8, ARROW_WIDE * entry.size, _h + 4)
+				else
+					local arrow = {
+						{x = x + ARROW_POINTER_WIDE / 2 * entry.size, y = y + _h},
+						{x = x - 1, y = y + arrow_len},
+						{x = x - ARROW_POINTER_WIDE / 2 * entry.size - 1, y = y + _h},
+					}
+
+					surface.DrawPoly(arrow)
+					surface.DrawRect(x - (ARROW_WIDE / 2) * entry.size, y, ARROW_WIDE * entry.size, (_h + 4))
+					DLib.HUDCommons.TranslatePolyMatrix(arrow, -2, -2)
+					surface.SetDrawColor(entry.color.r, entry.color.g, entry.color.b, entry.alpha)
+					surface.DrawPoly(arrow)
+					surface.DrawRect(x - (ARROW_WIDE / 2) * entry.size - 2, y - 2, ARROW_WIDE * entry.size, (_h + 4))
+				end
+			end
+		end]]
 	end
 
 	render.PopFilterMag()
