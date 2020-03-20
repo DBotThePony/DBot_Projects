@@ -242,7 +242,11 @@ local function HandleDefaultNPC(ply, hitpos, ent, class)
 	if not class then return end
 
 	if class == 'npc_tripmine' then
-		return CSGOPinging.Materials.explosive2, false
+		return CSGOPinging.Materials.danger, true, ammo_add
+	end
+
+	if class == 'npc_satchel' then
+		return CSGOPinging.Materials.explosive2, true
 	end
 
 	if class == 'npc_turret_floor' or class == 'monster_sentry' then
