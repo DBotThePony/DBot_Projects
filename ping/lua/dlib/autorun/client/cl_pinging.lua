@@ -255,6 +255,11 @@ hook.Add('HUDPaint', 'CSGOPinging.Draw', function()
 
 			y = h / 2 + diff.p:clamp(-fovd, fovd) / (fovd) * h / 2.1
 			x = w / 2 - diff.y:clamp(-fovd, fovd) / (fovd) * w / 2.1
+
+			if diff.y < -fov or diff.y > fov then
+				y = h / 2 - diff.p:clamp(-fovd, fovd) / (fovd) * h / 2.1
+			end
+
 			local size = entry.w2:min(entry.h2) / 2
 			local sizeh = size * 1.35
 
