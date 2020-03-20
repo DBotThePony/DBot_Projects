@@ -44,6 +44,7 @@ net.receive('csgoping_ping_position', function(len, ply)
 		net.WritePlayer(ply)
 		net.WriteVectorDouble(pos)
 		net.Broadcast()
+		return
 	end
 
 	net.Start('csgoping_ping_entity')
