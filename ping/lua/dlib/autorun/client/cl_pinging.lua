@@ -278,23 +278,17 @@ hook.Add('HUDPaint', 'CSGOPinging.Draw', function()
 			end
 
 			DLib.HUDCommons.RotatePolyMatrix(arrow, deg - 90)
-
-			if entry.next_lerp then
-				entry.should_lerp = true
-				entry.next_lerp = false
-			end
-		else
-			entry.next_lerp = true
+			--entry.should_lerp = true
 		end
 
-		if entry.should_lerp then
+		--if entry.should_lerp then
 			entry.p_x = Lerp(ftime, entry.p_x or x, x)
 			entry.p_y = Lerp(ftime, entry.p_y or y, y)
-			entry.should_lerp = math.floor(entry.p_x * 1000) ~= math.floor(x * 1000) or  math.floor(entry.p_y * 1000) ~=  math.floor(y * 1000)
-		else
+			--entry.should_lerp = math.floor(entry.p_x * 1000) ~= math.floor(x * 1000) or  math.floor(entry.p_y * 1000) ~=  math.floor(y * 1000)
+		--[[else
 			entry.p_x = x
 			entry.p_y = y
-		end
+		end]]
 
 		x, y = entry.p_x, entry.p_y
 
