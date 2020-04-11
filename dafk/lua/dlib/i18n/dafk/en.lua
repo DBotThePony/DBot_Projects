@@ -22,8 +22,8 @@
 message.dafk.status.now = ' is now '
 message.dafk.status.back = 'BACK'
 message.dafk.status.away = 'AWAY'
-message.dafk.status.from = ' from his keyboard!'
-message.dafk.status.to = ' to his keyboard! Was AFK for %s'
+message.dafk.status.from = ' from their keyboard!'
+message.dafk.status.to = ' to their keyboard! Was AFK for %s'
 
 player.dafk.status.tabbed = 'Tabbed out - Game window is not focused'
 player.dafk.status.afk = 'AFK for: %s'
