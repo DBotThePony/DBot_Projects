@@ -18,21 +18,17 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
+message.dafk.status.player_away = '#E is now #C AWAY #C from keyboard!'
+message.dafk.status.player_back = '#E is now #C BACK #C to keyboard! Was AFK for #C %s'
 
-message.dafk.status.now = ' is now '
-message.dafk.status.back = 'BACK'
-message.dafk.status.away = 'AWAY'
-message.dafk.status.from = ' from their keyboard!'
-message.dafk.status.to = ' to their keyboard! Was AFK for %s'
-
-player.dafk.status.tabbed = 'Tabbed out - Game window is not focused'
-player.dafk.status.afk = 'AFK for: %s'
+player.dafk.status.tabbed = 'Tabbed Out / Game window has no focus'
+player.dafk.status.afk = 'AFK for %s'
 player.dafk.status.awayfor = 'AWAY FOR'
 
 gui.dafk.menu.about = 'DAFK were created by DBotThePony'
-gui.dafk.menu.cl_dafk_zzz = 'Draw "Zzz" effect'
-gui.dafk.menu.cl_dafk_screen = 'AFK time on screen'
-gui.dafk.menu.cl_dafk_chat = 'Enable chat notifications'
+gui.dafk.menu.cl_dafk_zzz = 'Enable "Zzz" effect'
+gui.dafk.menu.cl_dafk_screen = 'Display AFK time on screen'
+gui.dafk.menu.cl_dafk_chat = 'Clientside in-chat notifications'
 gui.dafk.menu.cl_dafk_text = 'Draw text above player head'
 gui.dafk.menu.cl_dafk_hide = 'Hide DAFK when camera is deployed'
-gui.dafk.menu.cl_dafk_focus = 'Display whatever your game window is focused\nto other players'
+gui.dafk.menu.cl_dafk_focus = 'Display whatever your game window is not focused\nto other players'

@@ -18,21 +18,17 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-
-message.dafk.status.now = ' теперь '
-message.dafk.status.back = 'ВЕРНУЛСЯ'
-message.dafk.status.away = 'ОТОШЕЛ'
-message.dafk.status.from = ' от своей клавиатуры!'
-message.dafk.status.to = ' к своей клавиатуре! Был в АФК %s'
+message.dafk.status.player_away = '#E #C ОТОШЁЛ #C от клавиатуры!'
+message.dafk.status.player_back = '#E #C ВЕРНУЛСЯ #C к клавиатуре! Находился АФК #C %s'
 
 player.dafk.status.tabbed = 'Вне игры - окно игры неактивно'
 player.dafk.status.afk = 'АФК: %s'
 player.dafk.status.awayfor = 'АФК'
 
 gui.dafk.menu.about = 'DAFK был создан DBotThePony'
-gui.dafk.menu.cl_dafk_zzz = 'Рисовать эффект "Zzz"'
+gui.dafk.menu.cl_dafk_zzz = 'Отображать эффект "Zzz"'
 gui.dafk.menu.cl_dafk_screen = 'Отображать время АФК на экране'
-gui.dafk.menu.cl_dafk_chat = 'Включить уведомления в чате'
-gui.dafk.menu.cl_dafk_text = 'Рисовать текст над игроком'
-gui.dafk.menu.cl_dafk_hide = 'Прятать DAFK когда в руках камера'
-gui.dafk.menu.cl_dafk_focus = 'Отображать ли другим игрокам о активности\nокна вашей игры другим игрокам'
+gui.dafk.menu.cl_dafk_chat = 'Включить клиентские уведомления в чате'
+gui.dafk.menu.cl_dafk_text = 'Отображать текст над игроком'
+gui.dafk.menu.cl_dafk_hide = 'Не отображать DAFK когда активна камера'
+gui.dafk.menu.cl_dafk_focus = 'Отображать ли другим игрокам о неактивности\nокна вашей игры другим игрокам'
