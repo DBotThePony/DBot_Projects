@@ -54,6 +54,36 @@ local function nextCondition(line)
 	end
 end
 
+local function mergeLiterals(mergeInto, mergeFrom)
+	local typeIn, typeFrom = type(mergeInto), type(mergeFrom)
+
+	if typeFrom == 'nil' then
+		return mergeInto
+	elseif typeIn == 'table' and typeFrom ~= 'table' then
+		table.insert(mergeInto, mergeFrom)
+		return mergeInto
+	elseif typeIn ~= 'table' and typeFrom == 'table' then
+		table.insert(mergeFrom, mergeInto)
+		return mergeFrom
+	elseif typeIn == typeFrom and typeIn == 'table' then
+		local copy = {}
+
+		for k, v in pairs(mergeInto) do
+			copy[k] = mergeLiterals(v, mergeFrom[k])
+		end
+
+		for k, v in pairs(mergeFrom) do
+			if mergeInto[k] == nil then
+				copy[k] = v
+			end
+		end
+
+		return copy
+	else
+		return {mergeInto, mergeFrom}
+	end
+end
+
 local function decode(lines, isPC, isWindows, isOSX, isLinux, isPOSIX, isXBox)
 	if isPC == nil then isPC = true end
 	if isWindows == nil then isWindows = true end
@@ -342,11 +372,22 @@ local function decode(lines, isPC, isWindows, isOSX, isLinux, isPOSIX, isXBox)
 			table.insert(stack, currentData)
 			table.insert(stackLiterals, literalName)
 			currentData = {}
-			stack[#stack][literalName] = currentData
 		elseif trim == '}' then
+			local previousData = currentData
 			currentData = table.remove(stack)
+
+			if currentData[literalName] == nil then
+				currentData[literalName] = previousData
+			else
+				if type(currentData[literalName]) ~= 'table' then
+					currentData[literalName] = {currentData[literalName]}
+				end
+
+				currentData[literalName] = mergeLiterals(currentData[literalName], previousData)
+			end
+
 			table.remove(stackLiterals)
-			literalName = nil
+			literalName = stackLiterals[#stackLiterals]
 		elseif trim ~= '' and not currentLineCommentary then
 			error('junk data at line ' .. i)
 		end
