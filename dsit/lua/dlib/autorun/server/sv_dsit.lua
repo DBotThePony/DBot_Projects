@@ -281,12 +281,12 @@ local function PlayerPostThink(ply)
 		targetAngles.p = 0
 		targetAngles.r = 0
 	elseif isEntity then
-		if DSitConVars:getBool('entities_world') and IsValid(ent:CPPIGetOwner()) then
+		if DSitConVars:getBool('entities_world') and ent.CPPIGetOwner and IsValid(ent:CPPIGetOwner()) then
 			messaging.LChatPlayer2(ply, 'message.dsit.status.nonowned')
 			return
 		end
 
-		if DSitConVars:getBool('entities_owner') and ent:CPPIGetOwner() ~= ply then
+		if DSitConVars:getBool('entities_owner') and (ent.CPPIGetOwner and ent:CPPIGetOwner() or NULL) ~= ply then
 			messaging.LChatPlayer2(ply, 'message.dsit.status.onlyowned')
 			return
 		end
