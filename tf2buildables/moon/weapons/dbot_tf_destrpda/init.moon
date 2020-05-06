@@ -36,8 +36,8 @@ net.Receive 'DTF2.DestroyRequest', (len = 0, ply = NULL) ->
 	ent\TriggerDestructionRequest(slot)
 
 holster = (ply, wep) =>
-	ply\SetActiveWeapon(wep)
 	ply\SelectWeapon(wep)
+	ply\SetActiveWeapon(ply\GetWeapon(wep))
 	@Holster()
 
 SWEP.SwitchToWrench = =>

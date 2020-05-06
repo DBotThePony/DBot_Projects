@@ -57,8 +57,8 @@ net.Receive 'DTF2.BuildRequest', (len = 0, ply = NULL) ->
 	ent\TriggerBuildRequest(slot)
 
 holster = (ply, wep) =>
-	ply\SetActiveWeapon(wep)
 	ply\SelectWeapon(wep)
+	ply\SetActiveWeapon(ply\GetWeapon(wep))
 	@Holster()
 
 SWEP.SwitchToWrench = =>
