@@ -126,3 +126,30 @@ end
 hook.Add('DoPlayerDeath', 'DCSGO_Killfeed', DoPlayerDeath, 4)
 hook.Add('OnNPCKilled', 'DCSGO_Killfeed', OnNPCKilled, 4)
 hook.Add('EntityTakeDamage', 'DCSGO_Killfeed', EntityTakeDamage, 2)
+
+local function DCSGO_IsKillNoscope(victim, attacker, dmginfo, _, inflictor)
+	if IsValid(inflictor) and inflictor.IsTFA and inflictor:IsTFA() then
+		if not inflictor.DrawCrosshair and inflictor.IronSightsProgress < 0.5 then
+			return true
+		end
+	end
+end
+
+local function DCSGO_IsBlindVictim(victim, attacker, dmginfo, _, inflictor)
+	if TFA_CSGO_FlashIntensity and TFA_CSGO_FlashIntensity(victim) > 0.5 then
+		return true, victim:GetNWEntity('TFACSGO_LastFlashBy')
+	end
+end
+
+local function DCSGO_IsBlindAttacker(victim, attacker, dmginfo, _, inflictor)
+	if IsValid(attacker) and TFA_CSGO_FlashIntensity and TFA_CSGO_FlashIntensity(attacker) > 0.5 then
+		return true
+	end
+end
+
+hook.Add('DCSGO_IsKillNoscope', 'DCSGO_Defaults', DCSGO_IsKillNoscope, 5)
+hook.Add('DCSGO_IsKillNoscope_NPC', 'DCSGO_Defaults', DCSGO_IsKillNoscope, 5)
+hook.Add('DCSGO_IsBlindVictim', 'DCSGO_Defaults', DCSGO_IsBlindVictim, 5)
+hook.Add('DCSGO_IsBlindVictim_NPC', 'DCSGO_Defaults', DCSGO_IsBlindVictim, 5)
+hook.Add('DCSGO_IsBlindAttacker', 'DCSGO_Defaults', DCSGO_IsBlindAttacker, 5)
+hook.Add('DCSGO_IsBlindAttacker_NPC', 'DCSGO_Defaults', DCSGO_IsBlindAttacker, 5)

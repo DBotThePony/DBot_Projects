@@ -1,0 +1,20 @@
+{
+	"title"		:	"CS:GO Killfeed",
+	"type"		:	"effects",
+	"tags"		:	[],
+	"ignore"	:
+	[
+		"*.psd",
+		"*.vcproj",
+		"*.vscode*",
+		"*.svn*",
+		"*.git*",
+		"moon*",
+		"lua_src*",
+		"build.sh",
+		"allclass_melee.py",
+		"README.md",
+		"INFOS.md",
+		"LICENSE"
+	]
+}

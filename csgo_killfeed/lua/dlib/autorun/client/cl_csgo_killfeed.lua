@@ -95,6 +95,10 @@ local function HUDPaint()
 			total_wide = total_wide + fontspace + SPACING_BETWEEN
 		end
 
+		if entry.is_noscope then
+			total_wide = total_wide + fontspace + SPACING_BETWEEN
+		end
+
 		if entry.pattacker then
 			total_wide = total_wide + entry.pattacker_w + SPACING_BETWEEN
 		end
@@ -102,7 +106,7 @@ local function HUDPaint()
 		if entry.pis_assisted_by then
 			total_wide = total_wide + entry.pis_assisted_by_w + SPACING_BETWEEN
 		elseif entry.pblind_by_who then
-			total_wide = total_wide + entry.pblind_by_who_w + SPACING_BETWEEN * 2 + fontspace
+			total_wide = total_wide + entry.pblind_by_who_w + SPACING_BETWEEN * 3 + fontspace * 2
 		end
 
 		if entry.display_skull then
@@ -242,6 +246,13 @@ local function HUDPaint()
 			surface.SetFont('CSGOKillfeed')
 		end
 
+		if entry.is_noscope then
+			surface.SetMaterial(noscope)
+			surface.SetDrawColor(255, 255, 255, entry.alpha)
+			surface.DrawTexturedRect(x, Y + SPACING_TOP, fontspace * 1.1, fontspace * 1.1)
+			x = x + fontspace + SPACING_BETWEEN
+		end
+
 		if entry.is_through_smoke then
 			surface.SetMaterial(smoke_kill)
 			surface.SetDrawColor(255, 255, 255, entry.alpha)
@@ -355,7 +366,13 @@ local function csgo_killfeed()
 		pinflictor = net.ReadString()
 	end
 
+	if is_blind and blind_by_who == attacker then
+		blind_by_who = nil
+		is_blind = false
+	end
+
 	local ttl = victim ~= lply and attacker ~= lply and inflictor ~= lply and TTL_DEFAULT or TTL_SELF
+	local highlight = victim ~= lply and attacker == lply or inflictor == lply or blind_by_who == lply or is_assisted_by == lply
 
 	local entry = {
 		is_headshot = is_headshot,
@@ -386,7 +403,7 @@ local function csgo_killfeed()
 		end_fade = RealTime() + ttl + END_FADE,
 		suicide = not is_not_suicide,
 
-		highlight = victim ~= lply and ttl == TTL_SELF,
+		highlight = highlight,
 
 		alpha = 255,
 		perc = 1,
@@ -399,7 +416,7 @@ local function csgo_killfeed()
 		--display_skull = true,
 
 		color = victim == lply and Color(BACKGROUND_DEAD) or Color(BACKGROUND),
-		outline = ttl == TTL_SELF and Color(OUTLINE),
+		outline = highlight and Color(OUTLINE),
 
 		pattacker = IsValid(attacker) and attacker:GetPrintNameDLib() or pattacker,
 		pvictim = IsValid(victim) and victim:GetPrintNameDLib() or pvictim,
