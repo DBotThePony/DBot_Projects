@@ -247,10 +247,10 @@ local function HUDPaint()
 		else
 			_matrix = Matrix()
 			_matrix:Scale(entry.vec_mul)
-			_matrix:Translate(Vector(x * (1 / entry.mul), (Y + SPACING_TOP) * (1 / entry.mul)))
+			_matrix:Translate(Vector(x * (1 / entry.mul), Y * (1 / entry.mul)))
 
 			cam.PushModelMatrix(_matrix)
-			killicon.Draw(_w / 2, _h * 0.2, entry.inflictor_class, entry.alpha)
+			killicon.Draw(_w / 2, _h * 0.3, entry.inflictor_class, entry.alpha)
 			cam.PopModelMatrix()
 
 			x = x + entry.icon_w_mul + SPACING_BETWEEN
