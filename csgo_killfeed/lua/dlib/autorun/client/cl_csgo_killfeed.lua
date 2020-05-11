@@ -25,7 +25,7 @@ local TEXFILTER = TEXFILTER
 
 local TTL_DEFAULT = 5
 local TTL_SELF = 10
-local END_FADE = 0.3
+local END_FADE = 0.7
 local NPC_COLOR = Color(204, 214, 42)
 local ENV_COLOR = Color(143, 0, 0)
 
