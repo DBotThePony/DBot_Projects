@@ -65,7 +65,7 @@ local function HUDPaint()
 
 	for i, entry in ipairs(history) do
 		local total_wide = SPACING_INITIAL * 2
-		local _w, _h
+		local _w, _h = entry.icon_w, entry.icon_h
 
 		if entry.is_revenge then
 			total_wide = total_wide + fontspace + SPACING_BETWEEN
@@ -108,8 +108,7 @@ local function HUDPaint()
 		if entry.display_skull then
 			total_wide = total_wide + fontspace + SPACING_BETWEEN
 		else
-			_w, _h = killicon.GetSize(entry.inflictor_class)
-			total_wide = total_wide + _w + SPACING_BETWEEN
+			total_wide = total_wide + entry.icon_w_mul + SPACING_BETWEEN
 		end
 
 		if entry.pvictim then
@@ -231,8 +230,15 @@ local function HUDPaint()
 			surface.DrawTexturedRect(x, Y + SPACING_TOP, fontspace * 1.1, fontspace * 1.1)
 			x = x + fontspace + SPACING_BETWEEN
 		else
-			killicon.Draw(x + _w / 2, Y + SPACING_TOP, entry.inflictor_class, entry.alpha)
-			x = x + _w + SPACING_BETWEEN
+			_matrix = Matrix()
+			_matrix:Scale(entry.vec_mul)
+			_matrix:Translate(Vector(x * (1 / entry.mul), (Y + SPACING_TOP) * (1 / entry.mul)))
+
+			cam.PushModelMatrix(_matrix)
+			killicon.Draw(_w / 2, _h * 0.25, entry.inflictor_class, entry.alpha)
+			cam.PopModelMatrix()
+
+			x = x + entry.icon_w_mul + SPACING_BETWEEN
 			surface.SetFont('CSGOKillfeed')
 		end
 
@@ -312,16 +318,6 @@ local function doset(name, entry)
 	if entry[name] then
 		entry[name .. '_w'], entry[name .. '_h'] = surface.GetTextSize(entry[name])
 	end
-end
-
-local function refresh_text_size(entry)
-	surface.SetFont('CSGOKillfeed')
-
-	doset('pattacker', entry)
-	doset('pvictim', entry)
-	doset('pinflictor', entry)
-	doset('pis_assisted_by', entry)
-	doset('pblind_by_who', entry)
 end
 
 local function csgo_killfeed()
@@ -422,7 +418,31 @@ local function csgo_killfeed()
 		-- cinflictor = IsValid(inflictor) and inflictor:GetPrintNameDLib(),
 	}
 
-	refresh_text_size(entry)
+	surface.SetFont('CSGOKillfeed')
+
+	doset('pattacker', entry)
+	doset('pvictim', entry)
+	doset('pinflictor', entry)
+	doset('pis_assisted_by', entry)
+	doset('pblind_by_who', entry)
+
+	if not entry.display_skull then
+		local _, h = surface.GetTextSize('+')
+		local desired_size = h + ScreenSize(SPACING_TOP) * 2
+		local _w, _h = killicon.GetSize(inflictor_class)
+		local mul = 1
+
+		if _w >= _h then
+			mul = desired_size / _w
+		else
+			mul = desired_size / _h
+		end
+
+		entry.vec_mul = Vector(mul, mul)
+		entry.mul = mul
+		entry.icon_w, entry.icon_h = _w, _h
+		entry.icon_w_mul, entry.icon_h_mul = _w * mul, _h * mul
+	end
 
 	table.insert(history, entry)
 end
