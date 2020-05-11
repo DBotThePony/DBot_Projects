@@ -21,13 +21,14 @@ local ipairs = ipairs
 local surface = surface
 local draw = draw
 
-local TTL_DEFAULT = 3
-local TTL_SELF = 6
+local TTL_DEFAULT = 5
+local TTL_SELF = 10
 local END_FADE = 0.7
 local NPC_COLOR = Color(204, 214, 42)
 local ENV_COLOR = Color(143, 0, 0)
 
 local BACKGROUND = Color(0, 0, 0, 190)
+local BACKGROUND_DEAD = Color(255, 0, 0, 170)
 local OUTLINE = Color(233, 94, 94)
 local ASSIST_COLOR = Color(color_white)
 
@@ -43,7 +44,7 @@ local history = {}
 -- local POS = DLib.HUDCommons.Position2.DefinePosition('csgokillfeed', .92, .8)
 local POS_X, POS_Y = .92, .08
 local SPACING_TOP = 3
-local SPACING_BETWEEN = 2
+local SPACING_BETWEEN = 3
 local SPACING_INITIAL = 4
 local SPACING_LINES = 1
 
@@ -112,9 +113,20 @@ local function HUDPaint()
 			total_wide = total_wide + entry.pvictim_w
 		end
 
-		draw.RoundedBox(4, X - total_wide, Y, total_wide, fontspace + SPACING_TOP * 2, entry.color)
-		--surface.SetDrawColor(entry.color)
-		--surface.DrawRect(X - total_wide, Y, total_wide, fontspace + SPACING_TOP * 2)
+		total_wide = total_wide:floor()
+
+		-- draw.RoundedBox(4, X - total_wide, Y, total_wide, fontspace + SPACING_TOP * 2, entry.color)
+		surface.SetDrawColor(entry.color)
+		local bh = fontspace + SPACING_TOP * 2
+		surface.DrawRect(X - total_wide, Y, total_wide, bh)
+
+		if entry.highlight then
+			surface.SetDrawColor(200, 0, 0, entry.alpha)
+			surface.DrawLine(X - total_wide, Y, X, Y)
+			surface.DrawLine(X - total_wide, Y + bh, X - total_wide, Y)
+			surface.DrawLine(X - total_wide, Y + bh, X, Y + bh)
+			surface.DrawLine(X, Y, X, Y + bh)
+		end
 
 		surface.SetFont('CSGOKillfeed')
 
@@ -340,7 +352,7 @@ local function csgo_killfeed()
 		end_fade = RealTime() + ttl + END_FADE,
 		suicide = not is_not_suicide,
 
-		highlight = ttl == TTL_SELF,
+		highlight = victim ~= lply and ttl == TTL_SELF,
 
 		alpha = 255,
 		perc = 1,
@@ -352,7 +364,7 @@ local function csgo_killfeed()
 		display_skull = not attacker or not inflictor_class or not killicon.Exists(inflictor_class),
 		--display_skull = true,
 
-		color = Color(BACKGROUND),
+		color = victim == lply and Color(BACKGROUND_DEAD) or Color(BACKGROUND),
 		outline = ttl == TTL_SELF and Color(OUTLINE),
 
 		pattacker = IsValid(attacker) and attacker:GetPrintNameDLib() or pattacker,
