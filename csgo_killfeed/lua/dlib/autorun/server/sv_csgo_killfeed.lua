@@ -39,33 +39,35 @@ end
 local function DoPlayerDeath(ply, attacker, dmginfo)
 	local dmginfo2 = DLib.LTakeDamageInfo(dmginfo)
 
-	net.Start('csgo_killfeed', true)
-	gather('', ply, attacker, dmginfo2, dmginfo)
-	net.WriteEntity(ply)
-	net.WriteString('player')
-	net.WriteString(ply:GetPrintNameDLib())
+	timer.Simple(0, function()
+		net.Start('csgo_killfeed', true)
+		gather('', ply, attacker, dmginfo2, dmginfo)
+		net.WriteEntity(ply)
+		net.WriteString('player')
+		net.WriteString(ply:GetPrintNameDLib())
 
-	if IsValid(attacker) and attacker ~= ply then
-		net.WriteBool(true)
-		net.WriteEntity(attacker)
-		net.WriteString(attacker.GetClass and attacker:GetClass() or '')
-		net.WriteString(attacker:GetPrintNameDLib())
-	else
-		net.WriteBool(false)
-	end
+		if IsValid(attacker) and attacker ~= ply then
+			net.WriteBool(true)
+			net.WriteEntity(attacker)
+			net.WriteString(attacker.GetClass and attacker:GetClass() or '')
+			net.WriteString(attacker:GetPrintNameDLib())
+		else
+			net.WriteBool(false)
+		end
 
-	local inflictor = dmginfo2:GetInflictor()
+		local inflictor = dmginfo2:GetInflictor()
 
-	if IsValid(inflictor) and inflictor ~= ply then
-		net.WriteBool(true)
-		net.WriteEntity(inflictor)
-		net.WriteString(inflictor.GetClass and inflictor:GetClass() or '')
-		net.WriteString(inflictor:GetPrintNameDLib())
-	else
-		net.WriteBool(false)
-	end
+		if IsValid(inflictor) and inflictor ~= ply then
+			net.WriteBool(true)
+			net.WriteEntity(inflictor)
+			net.WriteString(inflictor.GetClass and inflictor:GetClass() or '')
+			net.WriteString(inflictor:GetPrintNameDLib())
+		else
+			net.WriteBool(false)
+		end
 
-	net.Broadcast()
+		net.Broadcast()
+	end)
 end
 
 local lastdmginfo, lastent, lasttime
@@ -95,32 +97,34 @@ local function OnNPCKilled(npc, attacker, inflictor)
 		inflictor = attacker.GetActiveWeapon and attacker:GetActiveWeapon()
 	end
 
-	net.Start('csgo_killfeed', true)
-	gather('_NPC', npc, attacker, dmginfo2, dmginfo, inflictor)
+	timer.Simple(0, function()
+		net.Start('csgo_killfeed', true)
+		gather('_NPC', npc, attacker, dmginfo2, dmginfo, inflictor)
 
-	net.WriteEntity(npc)
-	net.WriteString(npc:GetClass() or '')
-	net.WriteString(npc:GetPrintNameDLib())
+		net.WriteEntity(npc)
+		net.WriteString(npc:GetClass() or '')
+		net.WriteString(npc:GetPrintNameDLib())
 
-	if IsValid(attacker) and attacker ~= npc then
-		net.WriteBool(true)
-		net.WriteEntity(attacker)
-		net.WriteString(attacker.GetClass and attacker:GetClass() or '')
-		net.WriteString(attacker:GetPrintNameDLib())
-	else
-		net.WriteBool(false)
-	end
+		if IsValid(attacker) and attacker ~= npc then
+			net.WriteBool(true)
+			net.WriteEntity(attacker)
+			net.WriteString(attacker.GetClass and attacker:GetClass() or '')
+			net.WriteString(attacker:GetPrintNameDLib())
+		else
+			net.WriteBool(false)
+		end
 
-	if IsValid(inflictor) and inflictor ~= npc and inflictor ~= attacker then
-		net.WriteBool(true)
-		net.WriteEntity(inflictor)
-		net.WriteString(inflictor.GetClass and inflictor:GetClass() or '')
-		net.WriteString(inflictor:GetPrintNameDLib())
-	else
-		net.WriteBool(false)
-	end
+		if IsValid(inflictor) and inflictor ~= npc and inflictor ~= attacker then
+			net.WriteBool(true)
+			net.WriteEntity(inflictor)
+			net.WriteString(inflictor.GetClass and inflictor:GetClass() or '')
+			net.WriteString(inflictor:GetPrintNameDLib())
+		else
+			net.WriteBool(false)
+		end
 
-	net.Broadcast()
+		net.Broadcast()
+	end)
 end
 
 hook.Add('DoPlayerDeath', 'DCSGO_Killfeed', DoPlayerDeath, 4)
@@ -147,9 +151,33 @@ local function DCSGO_IsBlindAttacker(victim, attacker, dmginfo, _, inflictor)
 	end
 end
 
+local function DCSGO_IsWallPenetrated(victim, attacker, dmginfo, _, inflictor)
+	if not IsValid(victim.DCSGO_LastPenetrationBy) or victim.DCSGO_LastPenetrationBy ~= attacker then return end
+
+	local cond =
+		victim.DCSGO_LastPenetrationDmg:GetAttacker() == dmginfo:GetAttacker() and
+		victim.DCSGO_LastPenetrationDmg:GetInflictor() == inflictor
+
+	if cond then
+		return true
+	end
+end
+
+local function TFA_BulletPenetration(self, attacker, tr, dmginfo)
+	print(attacker, dmginfo:GetInflictor())
+	if tr.Hit and IsValid(tr.Entity) then
+		tr.Entity.DCSGO_LastPenetrationBy = attacker
+		tr.Entity.DCSGO_LastPenetrationAt = CurTime()
+		tr.Entity.DCSGO_LastPenetrationDmg = DLib.LTakeDamageInfo(dmginfo)
+	end
+end
+
 hook.Add('DCSGO_IsKillNoscope', 'DCSGO_Defaults', DCSGO_IsKillNoscope, 5)
 hook.Add('DCSGO_IsKillNoscope_NPC', 'DCSGO_Defaults', DCSGO_IsKillNoscope, 5)
 hook.Add('DCSGO_IsBlindVictim', 'DCSGO_Defaults', DCSGO_IsBlindVictim, 5)
 hook.Add('DCSGO_IsBlindVictim_NPC', 'DCSGO_Defaults', DCSGO_IsBlindVictim, 5)
 hook.Add('DCSGO_IsBlindAttacker', 'DCSGO_Defaults', DCSGO_IsBlindAttacker, 5)
 hook.Add('DCSGO_IsBlindAttacker_NPC', 'DCSGO_Defaults', DCSGO_IsBlindAttacker, 5)
+hook.Add('DCSGO_IsWallPenetrated', 'DCSGO_Defaults', DCSGO_IsWallPenetrated, 5)
+hook.Add('DCSGO_IsWallPenetrated_NPC', 'DCSGO_Defaults', DCSGO_IsWallPenetrated, 5)
+hook.Add('TFA_BulletPenetration', 'DCSGO_Defaults', TFA_BulletPenetration)
