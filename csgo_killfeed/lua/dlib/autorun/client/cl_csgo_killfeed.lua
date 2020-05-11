@@ -135,9 +135,10 @@ local function HUDPaint()
 		local bh = fontspace + SPACING_TOP * 2
 
 		if entry.highlight then
-			render.SetStencilReferenceValue(120)
-			render.SetStencilTestMask(120)
-			render.SetStencilWriteMask(120)
+			local i = math.min(i, 255)
+			render.SetStencilReferenceValue(i)
+			render.SetStencilTestMask(i)
+			render.SetStencilWriteMask(i)
 
 			render.SetStencilEnable(true)
 
@@ -291,7 +292,9 @@ local function HUDPaint()
 			x = x + entry.pvictim_w
 		end
 
-		Y = math.ceil(Y + fontspace + SPACING_TOP * 2 + SPACING_LINES)
+		local add = math.ceil(fontspace + SPACING_TOP * 2 + SPACING_LINES)
+
+		Y = math.ceil(Y + add * entry.perc)
 	end
 
 	render.PopFilterMag()
