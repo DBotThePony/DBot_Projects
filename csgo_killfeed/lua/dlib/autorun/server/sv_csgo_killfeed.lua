@@ -141,7 +141,7 @@ hook.Add('EntityTakeDamage', 'DCSGO_Killfeed', EntityTakeDamage, 2)
 
 local function DCSGO_IsKillNoscope(victim, attacker, dmginfo, _, inflictor)
 	if IsValid(inflictor) and inflictor.IsTFA and inflictor:IsTFA() then
-		if not inflictor.DrawCrosshair and inflictor.IronSightsProgress < 0.5 then
+		if not inflictor.DrawCrosshair and inflictor.IronSightsProgress < 0.5 and (not inflictor.data or not inflictor.data.ironsights or inflictor.data.ironsights ~= 0) then
 			return true
 		end
 	end
@@ -172,7 +172,6 @@ local function DCSGO_IsWallPenetrated(victim, attacker, dmginfo, _, inflictor)
 end
 
 local function TFA_BulletPenetration(self, attacker, tr, dmginfo)
-	print(attacker, dmginfo:GetInflictor())
 	if tr.Hit and IsValid(tr.Entity) then
 		tr.Entity.DCSGO_LastPenetrationBy = attacker
 		tr.Entity.DCSGO_LastPenetrationAt = CurTime()
