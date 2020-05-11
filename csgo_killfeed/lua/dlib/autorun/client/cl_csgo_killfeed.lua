@@ -20,16 +20,17 @@ local ScreenSize = ScreenSize
 local ipairs = ipairs
 local surface = surface
 local draw = draw
+local render = render
 
 local TTL_DEFAULT = 5
 local TTL_SELF = 10
-local END_FADE = 0.7
+local END_FADE = 0.3
 local NPC_COLOR = Color(204, 214, 42)
 local ENV_COLOR = Color(143, 0, 0)
 
-local BACKGROUND = Color(0, 0, 0, 190)
-local BACKGROUND_DEAD = Color(255, 0, 0, 170)
-local OUTLINE = Color(233, 94, 94)
+local BACKGROUND = Color(0, 0, 0, 165)
+local BACKGROUND_DEAD = ColorBE(0xa81313):SetAlpha(178)
+local OUTLINE = ColorBE(0xe10000)
 local ASSIST_COLOR = Color(color_white)
 
 surface.DLibCreateFont('CSGOKillfeed', {
@@ -46,7 +47,8 @@ local POS_X, POS_Y = .92, .08
 local SPACING_TOP = 3
 local SPACING_BETWEEN = 3
 local SPACING_INITIAL = 4
-local SPACING_LINES = 1
+local SPACING_LINES = 3
+local SPACING_OUTLINE = 1
 
 local function HUDPaint()
 	--local X, Y = POS()
@@ -56,6 +58,7 @@ local function HUDPaint()
 	local SPACING_BETWEEN = ScreenSize(SPACING_BETWEEN)
 	local SPACING_INITIAL = ScreenSize(SPACING_INITIAL)
 	local SPACING_LINES = ScreenSize(SPACING_LINES)
+	local SPACING_OUTLINE = ScreenSize(SPACING_OUTLINE)
 	--local fontspace = draw.GetFontHeight('CSGOKillfeed')
 	surface.SetFont('CSGOKillfeed')
 	local pluss, fontspace = surface.GetTextSize('+')
@@ -116,17 +119,27 @@ local function HUDPaint()
 		total_wide = total_wide:floor()
 
 		-- draw.RoundedBox(4, X - total_wide, Y, total_wide, fontspace + SPACING_TOP * 2, entry.color)
-		surface.SetDrawColor(entry.color)
 		local bh = fontspace + SPACING_TOP * 2
+
+		render.SetStencilReferenceValue(120)
+		render.SetStencilTestMask(120)
+		render.SetStencilWriteMask(120)
+
+		render.SetStencilEnable(true)
+
+		render.SetStencilFailOperation(STENCIL_REPLACE)
+		render.SetStencilPassOperation(STENCIL_REPLACE)
+		render.SetStencilCompareFunction(STENCIL_ALWAYS)
+
+		-- draw.RoundedBox(4, X - total_wide, Y, total_wide, bh, entry.color)
+		surface.SetDrawColor(entry.color)
 		surface.DrawRect(X - total_wide, Y, total_wide, bh)
 
-		if entry.highlight then
-			surface.SetDrawColor(200, 0, 0, entry.alpha)
-			surface.DrawLine(X - total_wide, Y, X, Y)
-			surface.DrawLine(X - total_wide, Y + bh, X - total_wide, Y)
-			surface.DrawLine(X - total_wide, Y + bh, X, Y + bh)
-			surface.DrawLine(X, Y, X, Y + bh)
-		end
+		render.SetStencilCompareFunction(STENCIL_NOTEQUAL)
+
+		draw.RoundedBox(4, X - total_wide - SPACING_OUTLINE, Y - SPACING_OUTLINE, total_wide + SPACING_OUTLINE * 2, bh + SPACING_OUTLINE * 2, entry.highlight and entry.outline or color_black)
+
+		render.SetStencilEnable(false)
 
 		surface.SetFont('CSGOKillfeed')
 
@@ -226,7 +239,7 @@ local function HUDPaint()
 			x = x + entry.pvictim_w
 		end
 
-		Y = Y + fontspace + SPACING_TOP * 2 + SPACING_LINES
+		Y = math.ceil(Y + fontspace + SPACING_TOP * 2 + SPACING_LINES)
 	end
 end
 
