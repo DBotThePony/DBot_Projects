@@ -35,7 +35,7 @@ local OUTLINE = ColorBE(0xe10000)
 local ASSIST_COLOR = Color(color_white)
 
 local function ScreenResolutionChanged()
-	local size = ScreenSize(12):max(14):floor()
+	local size = ScreenSize(9):max(18):floor()
 
 	surface.CreateFont('CSGOKillfeed', {
 		font = 'Roboto',
