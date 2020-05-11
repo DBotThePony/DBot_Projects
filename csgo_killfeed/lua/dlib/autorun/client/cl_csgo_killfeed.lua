@@ -249,7 +249,7 @@ local function HUDPaint()
 			_matrix:Translate(Vector(x * (1 / entry.mul), (Y + SPACING_TOP) * (1 / entry.mul)))
 
 			cam.PushModelMatrix(_matrix)
-			killicon.Draw(_w / 2, _h * 0.25, entry.inflictor_class, entry.alpha)
+			killicon.Draw(_w / 2, _h * 0.2, entry.inflictor_class, entry.alpha)
 			cam.PopModelMatrix()
 
 			x = x + entry.icon_w_mul + SPACING_BETWEEN
@@ -463,9 +463,9 @@ local function csgo_killfeed()
 		local mul = 1
 
 		if _w >= _h then
-			mul = desired_size / _w
-		else
 			mul = desired_size / _h
+		else
+			mul = desired_size / _w
 		end
 
 		entry.vec_mul = Vector(mul, mul)
