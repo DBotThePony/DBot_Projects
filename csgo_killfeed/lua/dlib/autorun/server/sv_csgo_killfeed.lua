@@ -57,6 +57,14 @@ local function DoPlayerDeath(ply, attacker, dmginfo)
 
 		local inflictor = dmginfo2:GetInflictor()
 
+		if not IsValid(inflictor) or inflictor == attacker then
+			inflictor = dmginfo2:GetInflictor()
+		end
+
+		if not IsValid(inflictor) or inflictor == attacker then
+			inflictor = attacker.GetActiveWeapon and attacker:GetActiveWeapon()
+		end
+
 		if IsValid(inflictor) and inflictor ~= ply then
 			net.WriteBool(true)
 			net.WriteEntity(inflictor)

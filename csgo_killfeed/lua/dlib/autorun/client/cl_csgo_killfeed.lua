@@ -428,7 +428,8 @@ local function csgo_killfeed()
 		victim = victim,
 		inflictor = inflictor,
 		inflictor_class = inflictor_class,
-		display_skull = not attacker or not inflictor_class or not killicon.Exists(inflictor_class),
+		-- display_skull = not attacker or not inflictor_class or not killicon.Exists(inflictor_class),
+		display_skull = not inflictor_class or not killicon.Exists(inflictor_class),
 		--display_skull = true,
 
 		color = victim == lply and Color(BACKGROUND_DEAD) or Color(BACKGROUND),
