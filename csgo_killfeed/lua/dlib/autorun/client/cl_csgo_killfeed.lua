@@ -1,13 +1,13 @@
 
-local blind_kill = Material('gui/csgo_killfeed/blind_kill.png')
-local domination = Material('gui/csgo_killfeed/domination.png')
-local headshot = Material('gui/csgo_killfeed/icon_headshot.png')
-local suicide = Material('gui/csgo_killfeed/icon_suicide.png')
-local noscope = Material('gui/csgo_killfeed/noscope.png')
-local penetrate = Material('gui/csgo_killfeed/penetrate.png')
-local revenge = Material('gui/csgo_killfeed/revenge.png')
-local smoke_kill = Material('gui/csgo_killfeed/smoke_kill.png')
-local flashbang_assist = Material('gui/csgo_killfeed/flashbang_assist.png')
+local blind_kill = Material('gui/csgo_killfeed/blind_kill.png', 'noclamp smooth mips')
+local domination = Material('gui/csgo_killfeed/domination.png', 'noclamp smooth mips')
+local headshot = Material('gui/csgo_killfeed/icon_headshot.png', 'noclamp smooth mips')
+local suicide = Material('gui/csgo_killfeed/icon_suicide.png', 'noclamp smooth mips')
+local noscope = Material('gui/csgo_killfeed/noscope.png', 'noclamp smooth mips')
+local penetrate = Material('gui/csgo_killfeed/penetrate.png', 'noclamp smooth mips')
+local revenge = Material('gui/csgo_killfeed/revenge.png', 'noclamp smooth mips')
+local smoke_kill = Material('gui/csgo_killfeed/smoke_kill.png', 'noclamp smooth mips')
+local flashbang_assist = Material('gui/csgo_killfeed/flashbang_assist.png', 'noclamp smooth mips')
 
 local RealTime = RealTimeL
 local DLib = DLib
@@ -21,6 +21,7 @@ local ipairs = ipairs
 local surface = surface
 local draw = draw
 local render = render
+local TEXFILTER = TEXFILTER
 
 local TTL_DEFAULT = 5
 local TTL_SELF = 10
@@ -33,12 +34,18 @@ local BACKGROUND_DEAD = ColorBE(0xa81313):SetAlpha(178)
 local OUTLINE = ColorBE(0xe10000)
 local ASSIST_COLOR = Color(color_white)
 
-surface.DLibCreateFont('CSGOKillfeed', {
-	font = 'Roboto',
-	size = 9,
-	weight = 500,
-	extended = true,
-})
+local function ScreenResolutionChanged()
+	local size = ScreenSize(12):max(14):floor()
+
+	surface.CreateFont('CSGOKillfeed', {
+		font = 'Roboto',
+		size = size,
+		weight = 500,
+		extended = true,
+	})
+end
+
+ScreenResolutionChanged()
 
 local history = {}
 
@@ -62,6 +69,9 @@ local function HUDPaint()
 	--local fontspace = draw.GetFontHeight('CSGOKillfeed')
 	surface.SetFont('CSGOKillfeed')
 	local pluss, fontspace = surface.GetTextSize('+')
+
+	render.PushFilterMag(TEXFILTER.ANISOTROPIC)
+	render.PushFilterMin(TEXFILTER.ANISOTROPIC)
 
 	for i, entry in ipairs(history) do
 		local total_wide = SPACING_INITIAL * 2
@@ -283,6 +293,9 @@ local function HUDPaint()
 
 		Y = math.ceil(Y + fontspace + SPACING_TOP * 2 + SPACING_LINES)
 	end
+
+	render.PopFilterMag()
+	render.PopFilterMin()
 end
 
 local function Think()
@@ -471,5 +484,6 @@ end
 net.receive('csgo_killfeed', csgo_killfeed)
 hook.Add('Think', 'CSGOKillfeed', Think)
 hook.Add('HUDPaint', 'CSGOKillfeed', HUDPaint)
+hook.Add('ScreenResolutionChanged', 'CSGOKillfeed', ScreenResolutionChanged)
 hook.Add('AddDeathNotice', 'CSGOKillfeed', AddDeathNotice, -2)
 hook.Add('DrawDeathNotice', 'CSGOKillfeed', AddDeathNotice, -2)
