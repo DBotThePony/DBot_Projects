@@ -121,25 +121,50 @@ local function HUDPaint()
 		-- draw.RoundedBox(4, X - total_wide, Y, total_wide, fontspace + SPACING_TOP * 2, entry.color)
 		local bh = fontspace + SPACING_TOP * 2
 
-		render.SetStencilReferenceValue(120)
-		render.SetStencilTestMask(120)
-		render.SetStencilWriteMask(120)
+		if entry.highlight then
+			render.SetStencilReferenceValue(120)
+			render.SetStencilTestMask(120)
+			render.SetStencilWriteMask(120)
 
-		render.SetStencilEnable(true)
+			render.SetStencilEnable(true)
 
-		render.SetStencilFailOperation(STENCIL_REPLACE)
-		render.SetStencilPassOperation(STENCIL_REPLACE)
-		render.SetStencilCompareFunction(STENCIL_ALWAYS)
+			render.SetStencilFailOperation(STENCIL_REPLACE)
+			render.SetStencilPassOperation(STENCIL_REPLACE)
+			render.SetStencilCompareFunction(STENCIL_ALWAYS)
 
-		-- draw.RoundedBox(4, X - total_wide, Y, total_wide, bh, entry.color)
-		surface.SetDrawColor(entry.color)
-		surface.DrawRect(X - total_wide, Y, total_wide, bh)
+			surface.SetDrawColor(entry.color)
+			surface.DrawRect(X - total_wide, Y, total_wide, bh)
 
-		render.SetStencilCompareFunction(STENCIL_NOTEQUAL)
+			render.SetStencilCompareFunction(STENCIL_NOTEQUAL)
+		else
+			draw.RoundedBox(4, X - total_wide, Y, total_wide, bh, entry.color)
+		end
 
-		draw.RoundedBox(4, X - total_wide - SPACING_OUTLINE, Y - SPACING_OUTLINE, total_wide + SPACING_OUTLINE * 2, bh + SPACING_OUTLINE * 2, entry.highlight and entry.outline or color_black)
+		-- wtf?
+		-- this looks like there should always be a border, but it does appear only
+		-- when getting kills as killer
+		--[[
+			.DeathNoticeBGBorder
+			{
+				border-radius: 3px;
+				width: 100%;
+				height: 100%;
 
-		render.SetStencilEnable(false)
+				transition-property: opacity;
+				transition-timing-function: ease-out;
+				transition-duration: DeathNoticeFadeOutTime;
+			}
+
+			.DeathNotice_Killer .DeathNoticeBGBorder
+			{
+				border: 2px solid #e10000;
+			}
+		]]
+		if entry.highlight then
+			draw.RoundedBox(4, X - total_wide - SPACING_OUTLINE, Y - SPACING_OUTLINE, total_wide + SPACING_OUTLINE * 2, bh + SPACING_OUTLINE * 2, entry.highlight and entry.outline or color_black)
+
+			render.SetStencilEnable(false)
+		end
 
 		surface.SetFont('CSGOKillfeed')
 
