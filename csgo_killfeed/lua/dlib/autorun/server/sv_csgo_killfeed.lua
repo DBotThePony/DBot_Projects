@@ -75,6 +75,8 @@ local function DoPlayerDeath(ply, attacker, dmginfo)
 	end
 
 	timer.Simple(0, function()
+		if not IsValid(ply) then return end
+
 		if updategroup then
 			ply.__DCSGO_LastGroupAt = CurTime()
 		end
@@ -142,6 +144,8 @@ local function OnNPCKilled(npc, attacker, inflictor)
 	end
 
 	timer.Simple(0, function()
+		if not IsValid(npc) then return end
+
 		if updategroup then
 			npc.__DCSGO_LastGroupAt = CurTime()
 		end
