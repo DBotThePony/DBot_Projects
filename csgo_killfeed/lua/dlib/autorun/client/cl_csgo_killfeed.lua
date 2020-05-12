@@ -22,6 +22,7 @@ local surface = surface
 local draw = draw
 local render = render
 local TEXFILTER = TEXFILTER
+local Cubic = Cubic
 
 local TTL_DEFAULT = 5
 local TTL_SELF = 10
@@ -306,7 +307,7 @@ local function Think()
 	local time = RealTime()
 
 	for i, entry in ipairs(history) do
-		local perc = 1 - time:progression(entry.start_fade, entry.end_fade)
+		local perc = Cubic(1 - time:progression(entry.start_fade, entry.end_fade))
 		entry.perc = perc
 		entry.alpha = math.floor(255 * perc)
 
