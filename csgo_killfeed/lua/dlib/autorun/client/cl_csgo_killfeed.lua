@@ -56,8 +56,8 @@ local ICON_COLOR = DLib.HUDCommons.CreateColor('csgok_icon', 'CSGO Killfeed Icon
 
 local function PopulateToolMenu()
 	spawnmenu.AddToolMenuOption('Utilities', 'User', 'gui.csgokillfeed.menu', 'gui.csgokillfeed.menu', '', '', function(self)
-		self:NumSlider('gui.csgokillfeed.cvar.cl_csgokillfeed_ttl_def', 'cl_csgokillfeed_ttl_def', 0, 60)
-		self:NumSlider('gui.csgokillfeed.cvar.cl_csgokillfeed_ttl_self', 'cl_csgokillfeed_ttl_self', 0, 60)
+		self:NumSlider('gui.csgokillfeed.cvar.cl_csgokillfeed_ttl_def', 'cl_csgokillfeed_ttl_def', 0, 60, 1)
+		self:NumSlider('gui.csgokillfeed.cvar.cl_csgokillfeed_ttl_self', 'cl_csgokillfeed_ttl_self', 0, 60, 1)
 		self:NumSlider('gui.csgokillfeed.cvar.cl_csgokillfeed_fadespeed', 'cl_csgokillfeed_fadespeed', 0, 5, 3)
 	end)
 end
