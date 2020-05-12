@@ -93,7 +93,16 @@ local function ping_position(ply, position)
 	clear_ply(ply)
 
 	local icon = hook.Run('CSGOPinging_ChoosePositionPingIcon', ply, position) or CSGOPinging.Materials.info
-	local w, h = get_size(icon:Width(), icon:Height())
+
+	local w, h
+
+	if istable(icon) then
+		w, h = get_size(icon[2], icon[3])
+		icon = icon[1]
+	else
+		w, h = get_size(icon:Width(), icon:Height())
+	end
+
 	local size = get_mult(DLib.HUDCommons.SelectPlayer():EyePos():Distance(position))
 
 	table.insert(CSGOPinging.Pings, {
@@ -181,7 +190,15 @@ net.receive('csgoping_ping_entity', function()
 		flip_arrow = arrow_target.z < position.z
 	end
 
-	local w, h = get_size(icon:Width(), icon:Height())
+	local w, h
+
+	if istable(icon) then
+		w, h = get_size(icon[2], icon[3])
+		icon = icon[1]
+	else
+		w, h = get_size(icon:Width(), icon:Height())
+	end
+
 	local dist = DLib.HUDCommons.SelectPlayer():EyePos():Distance(position)
 	local size = get_mult(dist)
 

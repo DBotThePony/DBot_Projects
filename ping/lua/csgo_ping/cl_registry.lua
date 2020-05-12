@@ -23,7 +23,76 @@ local CSGOPinging = CSGOPinging
 CSGOPinging.Materials = {}
 
 local function m(name)
+	if CSGOPinging.Materials.sizes[name] then
+		return {Material('gui/ping/' .. name .. '.png', 'noclamp smooth mips'), CSGOPinging.Materials.sizes[name][1], CSGOPinging.Materials.sizes[name][2]}
+	end
+
 	return Material('gui/ping/' .. name .. '.png', 'noclamp smooth mips')
+end
+
+local idef = [[ak47.png PNG 1024x368 1024x368+0+0 16-bit Grayscale Gray 22280B 0.000u 0:00.002
+alert.png PNG 1024x1024 1024x1024+0+0 16-bit Grayscale Gray 42371B 0.000u 0:00.000
+ammobox.png PNG 1024x1024 1024x1024+0+0 8-bit Grayscale Gray 13577B 0.000u 0:00.000
+ammobox_threepack.png PNG 1024x819 1024x819+0+0 8-bit Grayscale Gray 13973B 0.000u 0:00.000
+armor_helmet.png PNG 1024x668 1024x668+0+0 8-bit Grayscale Gray 35244B 0.000u 0:00.000
+awp.png PNG 1024x298 1024x298+0+0 16-bit Grayscale Gray 14908B 0.000u 0:00.000
+bomb.png PNG 1024x1024 1024x1024+0+0 16-bit Grayscale Gray 122899B 0.000u 0:00.000
+bomb_icon.png PNG 1024x1024 1024x1024+0+0 8-bit Grayscale Gray 22176B 0.000u 0:00.000
+breachcharge.png PNG 1024x690 1024x690+0+0 16-bit Grayscale Gray 41508B 0.000u 0:00.000
+broadcast.png PNG 1024x1024 1024x1024+0+0 16-bit Grayscale Gray 94847B 0.000u 0:00.000
+bullet.png PNG 1024x1024 1024x1024+0+0 16-bit Grayscale Gray 80538B 0.000u 0:00.000
+bumpmine.png PNG 1024x989 1024x989+0+0 16-bit Grayscale Gray 201708B 0.000u 0:00.000
+check.png PNG 1024x1024 1024x1024+0+0 16-bit Grayscale Gray 47933B 0.000u 0:00.000
+clock.png PNG 1024x1024 1024x1024+0+0 16-bit Grayscale Gray 90317B 0.000u 0:00.000
+controldrone.png PNG 1024x1024 1024x1024+0+0 16-bit Grayscale Gray 72615B 0.000u 0:00.000
+deagle.png PNG 1024x642 1024x642+0+0 8-bit Grayscale Gray 15126B 0.000u 0:00.000
+decoy.png PNG 1024x1364 1024x1364+0+0 16-bit Grayscale Gray 94510B 0.000u 0:00.000
+defuser.png PNG 1024x992 1024x992+0+0 16-bit sRGB 178802B 0.000u 0:00.000
+dollar_sign.png PNG 1024x1024 1024x1024+0+0 8-bit Grayscale Gray 17195B 0.000u 0:00.000
+dronegun.png PNG 1024x839 1024x839+0+0 8-bit Grayscale Gray 32874B 0.000u 0:00.000
+exit.png PNG 1024x1024 1024x1024+0+0 16-bit Grayscale Gray 70290B 0.000u 0:00.000
+favorite_no.png PNG 1024x1024 1024x1024+0+0 16-bit Grayscale Gray 87235B 0.000u 0:00.000
+favorite_yes.png PNG 1024x1024 1024x1024+0+0 16-bit Grayscale Gray 51428B 0.000u 0:00.000
+find.png PNG 1024x1024 1024x1024+0+0 16-bit Grayscale Gray 99556B 0.000u 0:00.000
+flashbang.png PNG 1024x1310 1024x1310+0+0 16-bit Grayscale Gray 118137B 0.000u 0:00.000
+frag_grenade.png PNG 1024x1724 1024x1724+0+0 16-bit Grayscale Gray 99871B 0.000u 0:00.000
+gift.png PNG 1024x1024 1024x1024+0+0 16-bit sRGB 101569B 0.000u 0:00.000
+health.png PNG 1024x1024 1024x1024+0+0 16-bit sRGB 14902B 0.000u 0:00.000
+healthshot.png PNG 1024x774 1024x774+0+0 16-bit Grayscale Gray 72525B 0.000u 0:00.000
+heavy_armor.png PNG 1024x668 1024x668+0+0 16-bit Grayscale Gray 67965B 0.000u 0:00.000
+helmet.png PNG 1024x1024 1024x1024+0+0 8-bit Grayscale Gray 15236B 0.000u 0:00.000
+home.png PNG 1024x1024 1024x1024+0+0 8-bit Grayscale Gray 15894B 0.000u 0:00.000
+inferno.png PNG 1024x989 1024x989+0+0 16-bit Grayscale Gray 70541B 0.000u 0:00.000
+info.png PNG 1024x1024 1024x1024+0+0 16-bit Grayscale Gray 52648B 0.000u 0:00.000
+kevlar.png PNG 1024x1261 1024x1261+0+0 16-bit Grayscale Gray 115291B 0.000u 0:00.000
+key.png PNG 1024x1024 1024x1024+0+0 16-bit Grayscale Gray 56238B 0.000u 0:00.000
+knife.png PNG 1024x425 1024x425+0+0 16-bit Grayscale Gray 20904B 0.000u 0:00.000
+leave.png PNG 1024x1024 1024x1024+0+0 16-bit Grayscale Gray 55456B 0.000u 0:00.000
+locked.png PNG 1024x1024 1024x1024+0+0 8-bit Grayscale Gray 18144B 0.000u 0:00.000
+missle.png PNG 1024x1024 1024x1024+0+0 8-bit Grayscale Gray 16331B 0.000u 0:00.000
+molotov.png PNG 1024x1724 1024x1724+0+0 16-bit Grayscale Gray 129052B 0.000u 0:00.000
+negev.png PNG 1024x404 1024x404+0+0 16-bit Grayscale Gray 22436B 0.000u 0:00.000
+nova.png PNG 1024x327 1024x327+0+0 8-bit Grayscale Gray 8627B 0.000u 0:00.000
+outofammo.png PNG 1024x1024 1024x1024+0+0 16-bit Grayscale Gray 91323B 0.000u 0:00.000
+player.png PNG 1024x1024 1024x1024+0+0 16-bit Grayscale Gray 39855B 0.000u 0:00.000
+survival_safe.png PNG 1024x1024 1024x1024+0+0 8-bit Grayscale Gray 17727B 0.000u 0:00.000
+tablet.png PNG 1024x719 1024x719+0+0 16-bit Grayscale Gray 79468B 0.000u 0:00.000
+tagrenade.png PNG 1024x1724 1024x1724+0+0 16-bit Grayscale Gray 92112B 0.000u 0:00.000
+unlocked.png PNG 1024x1024 1024x1024+0+0 8-bit Grayscale Gray 18029B 0.000u 0:00.000
+unlockedwide.png PNG 1024x862 1024x862+0+0 8-bit Grayscale Gray 14413B 0.000u 0:00.000
+unmuted.png PNG 1024x1024 1024x1024+0+0 16-bit Grayscale Gray 58907B 0.000u 0:00.000
+votenotreadyformatch.png PNG 1024x1024 1024x1024+0+0 8-bit Grayscale Gray 29195B 0.000u 0:00.000
+votereadyformatch.png PNG 1024x1024 1024x1024+0+0 16-bit Grayscale Gray 35934B 0.000u 0:00.000
+watch.png PNG 1024x1024 1024x1024+0+0 16-bit Grayscale Gray 88673B 0.000u 0:00.000
+watchhighlights.png PNG 1024x1024 1024x1024+0+0 16-bit Grayscale Gray 105101B 0.000u 0:00.000
+zoo.png PNG 1024x1024 1024x1024+0+0 16-bit Grayscale Gray 91571B 0.000u 0:00.000]]
+
+CSGOPinging.Materials.sizes = {}
+CSGOPinging.Materials.sizes2 = {}
+
+for i, line in ipairs(idef:split('\n')) do
+	local name, format, w, h = line:trim():match('(%S+)%.png%s+(%S+)%s+(%d+)x(%d+)')
+	CSGOPinging.Materials.sizes[name] = {tonumber(w), tonumber(h)}
 end
 
 CSGOPinging.Sound = Sound('gui/ping/playerping.wav')
