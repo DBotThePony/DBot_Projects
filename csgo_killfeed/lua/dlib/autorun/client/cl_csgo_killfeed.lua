@@ -78,35 +78,35 @@ local function HUDPaint()
 		local _w, _h = entry.icon_w, entry.icon_h
 
 		if entry.is_revenge then
-			total_wide = total_wide + fontspace + SPACING_BETWEEN
+			total_wide = total_wide + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		end
 
 		if entry.is_headshot then
-			total_wide = total_wide + fontspace + SPACING_BETWEEN
+			total_wide = total_wide + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		end
 
 		if entry.is_through_smoke then
-			total_wide = total_wide + fontspace + SPACING_BETWEEN
+			total_wide = total_wide + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		end
 
 		if entry.is_penetrated_wall then
-			total_wide = total_wide + fontspace + SPACING_BETWEEN
+			total_wide = total_wide + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		end
 
 		if entry.is_through_smoke then
-			total_wide = total_wide + fontspace + SPACING_BETWEEN
+			total_wide = total_wide + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		end
 
 		if entry.is_domination then
-			total_wide = total_wide + fontspace + SPACING_BETWEEN
+			total_wide = total_wide + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		end
 
 		if entry.is_blind_attacker then
-			total_wide = total_wide + fontspace + SPACING_BETWEEN
+			total_wide = total_wide + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		end
 
 		if entry.is_noscope then
-			total_wide = total_wide + fontspace + SPACING_BETWEEN
+			total_wide = total_wide + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		end
 
 		if entry.pattacker then
@@ -120,7 +120,7 @@ local function HUDPaint()
 		end
 
 		if entry.display_skull then
-			total_wide = total_wide + fontspace + SPACING_BETWEEN
+			total_wide = total_wide + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		else
 			total_wide = total_wide + entry.icon_w_mul + SPACING_BETWEEN
 		end
@@ -187,22 +187,22 @@ local function HUDPaint()
 		if entry.is_revenge then
 			surface.SetMaterial(revenge)
 			surface.SetDrawColor(255, 255, 255, entry.alpha)
-			surface.DrawTexturedRect(x, Y + SPACING_TOP, fontspace * 1.1, fontspace * 1.1)
-			x = x + fontspace + SPACING_BETWEEN
+			surface.DrawTexturedRect(x, Y, fontspace + SPACING_TOP * 2, fontspace + SPACING_TOP * 2)
+			x = x + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		end
 
 		if entry.is_domination then
 			surface.SetMaterial(domination)
 			surface.SetDrawColor(255, 255, 255, entry.alpha)
-			surface.DrawTexturedRect(x, Y + SPACING_TOP, fontspace * 1.1, fontspace * 1.1)
-			x = x + fontspace + SPACING_BETWEEN
+			surface.DrawTexturedRect(x, Y, fontspace + SPACING_TOP * 2, fontspace + SPACING_TOP * 2)
+			x = x + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		end
 
 		if entry.is_blind_attacker then
 			surface.SetMaterial(blind_kill)
 			surface.SetDrawColor(255, 255, 255, entry.alpha)
-			surface.DrawTexturedRect(x, Y + SPACING_TOP, fontspace * 1.1, fontspace * 1.1)
-			x = x + fontspace + SPACING_BETWEEN
+			surface.DrawTexturedRect(x, Y, fontspace + SPACING_TOP * 2, fontspace + SPACING_TOP * 2)
+			x = x + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		end
 
 		if entry.pattacker then
@@ -230,8 +230,8 @@ local function HUDPaint()
 
 			surface.SetMaterial(flashbang_assist)
 			surface.SetDrawColor(255, 255, 255, entry.alpha)
-			surface.DrawTexturedRect(x, Y + SPACING_TOP, fontspace * 1.1, fontspace * 1.1)
-			x = x + fontspace + SPACING_BETWEEN * 2
+			surface.DrawTexturedRect(x, Y, fontspace + SPACING_TOP * 2, fontspace + SPACING_TOP * 2)
+			x = x + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN * 2
 
 			surface.SetTextPos(x, Y + SPACING_TOP)
 			surface.SetTextColor(entry.cblind_by_who)
@@ -242,8 +242,8 @@ local function HUDPaint()
 		if entry.display_skull then
 			surface.SetMaterial(suicide)
 			surface.SetDrawColor(255, 255, 255, entry.alpha)
-			surface.DrawTexturedRect(x, Y + SPACING_TOP, fontspace * 1.1, fontspace * 1.1)
-			x = x + fontspace + SPACING_BETWEEN
+			surface.DrawTexturedRect(x, Y, fontspace + SPACING_TOP * 2, fontspace + SPACING_TOP * 2)
+			x = x + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		else
 			_matrix = Matrix()
 			_matrix:Scale(entry.vec_mul)
@@ -260,29 +260,29 @@ local function HUDPaint()
 		if entry.is_noscope then
 			surface.SetMaterial(noscope)
 			surface.SetDrawColor(255, 255, 255, entry.alpha)
-			surface.DrawTexturedRect(x, Y + SPACING_TOP, fontspace * 1.1, fontspace * 1.1)
-			x = x + fontspace + SPACING_BETWEEN
+			surface.DrawTexturedRect(x, Y, fontspace + SPACING_TOP * 2, fontspace + SPACING_TOP * 2)
+			x = x + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		end
 
 		if entry.is_through_smoke then
 			surface.SetMaterial(smoke_kill)
 			surface.SetDrawColor(255, 255, 255, entry.alpha)
-			surface.DrawTexturedRect(x, Y + SPACING_TOP, fontspace * 1.1, fontspace * 1.1)
-			x = x + fontspace + SPACING_BETWEEN
+			surface.DrawTexturedRect(x, Y, fontspace + SPACING_TOP * 2, fontspace + SPACING_TOP * 2)
+			x = x + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		end
 
 		if entry.is_penetrated_wall then
 			surface.SetMaterial(penetrate)
 			surface.SetDrawColor(255, 255, 255, entry.alpha)
-			surface.DrawTexturedRect(x, Y + SPACING_TOP, fontspace * 1.1, fontspace * 1.1)
-			x = x + fontspace + SPACING_BETWEEN
+			surface.DrawTexturedRect(x, Y, fontspace + SPACING_TOP * 2, fontspace + SPACING_TOP * 2)
+			x = x + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		end
 
 		if entry.is_headshot then
 			surface.SetMaterial(headshot)
 			surface.SetDrawColor(255, 255, 255, entry.alpha)
-			surface.DrawTexturedRect(x, Y + SPACING_TOP, fontspace * 1.1, fontspace * 1.1)
-			x = x + fontspace + SPACING_BETWEEN
+			surface.DrawTexturedRect(x, Y, fontspace + SPACING_TOP * 2, fontspace + SPACING_TOP * 2)
+			x = x + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		end
 
 		if entry.pvictim then
@@ -462,7 +462,7 @@ local function csgo_killfeed()
 
 	if not entry.display_skull then
 		local _, h = surface.GetTextSize('+')
-		local desired_size = h + ScreenSize(SPACING_TOP) * 2
+		local desired_size = h * 1.5 + ScreenSize(SPACING_TOP)
 		local _w, _h = killicon.GetSize(inflictor_class)
 		local mul = 1
 

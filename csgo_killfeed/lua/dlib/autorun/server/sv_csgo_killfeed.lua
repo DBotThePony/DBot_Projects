@@ -49,7 +49,17 @@ local function DoPlayerDeath(ply, attacker, dmginfo)
 		inflictor = attacker.GetActiveWeapon and attacker:GetActiveWeapon()
 	end
 
+	local updategroup = false
+
+	if ply.__DCSGO_LastGroupAt == CurTime() then
+		updategroup = true
+	end
+
 	timer.Simple(0, function()
+		if updategroup then
+			ply.__DCSGO_LastGroupAt = CurTime()
+		end
+
 		net.Start('csgo_killfeed', true)
 		gather('', ply, attacker, dmginfo2, dmginfo, inflictor)
 
@@ -106,7 +116,17 @@ local function OnNPCKilled(npc, attacker, inflictor)
 		inflictor = attacker.GetActiveWeapon and attacker:GetActiveWeapon()
 	end
 
+	local updategroup = false
+
+	if npc.__DCSGO_LastGroupAt == CurTime() then
+		updategroup = true
+	end
+
 	timer.Simple(0, function()
+		if updategroup then
+			npc.__DCSGO_LastGroupAt = CurTime()
+		end
+
 		net.Start('csgo_killfeed', true)
 		gather('_NPC', npc, attacker, dmginfo2, dmginfo, inflictor)
 
@@ -136,12 +156,22 @@ local function OnNPCKilled(npc, attacker, inflictor)
 	end)
 end
 
+local function ScaleNPCDamage(self, group, dmginfo)
+	if self.__DCSGO_LastGroupAt == CurTime() and self.__DCSGO_LastGroup ~= HITGROUP_HEAD and group == HITGROUP_HEAD then
+		self.__DCSGO_LastGroup = group
+	elseif self.__DCSGO_LastGroupAt ~= CurTime() then
+		self.__DCSGO_LastGroup = group
+		self.__DCSGO_LastGroupAt = CurTime()
+	end
+end
+
 hook.Add('DoPlayerDeath', 'DCSGO_Killfeed', DoPlayerDeath, 4)
 hook.Add('OnNPCKilled', 'DCSGO_Killfeed', OnNPCKilled, 4)
+hook.Add('ScaleNPCDamage', 'DCSGO_Killfeed', ScaleNPCDamage, -1)
+hook.Add('ScalePlayerDamage', 'DCSGO_Killfeed', ScaleNPCDamage, -1)
 hook.Add('EntityTakeDamage', 'DCSGO_Killfeed', EntityTakeDamage, 2)
 
 local function DCSGO_IsKillNoscope(victim, attacker, dmginfo, _, inflictor)
-	print(victim, attacker, dmginfo, _, inflictor)
 	if IsValid(inflictor) and inflictor.IsTFA and inflictor:IsTFA() then
 		if not inflictor.DrawCrosshair and inflictor.IronSightsProgress < 0.5 and (not inflictor.data or not inflictor.data.ironsights or inflictor.data.ironsights ~= 0) then
 			return true
@@ -181,6 +211,12 @@ local function TFA_BulletPenetration(self, attacker, tr, dmginfo)
 	end
 end
 
+local function DCSGO_IsHeadshot(self, attacker, tr, dmginfo)
+	if self.__DCSGO_LastGroup == HITGROUP_HEAD and self.__DCSGO_LastGroupAt == CurTime() then
+		return true
+	end
+end
+
 hook.Add('DCSGO_IsKillNoscope', 'DCSGO_Defaults', DCSGO_IsKillNoscope, 5)
 hook.Add('DCSGO_IsKillNoscope_NPC', 'DCSGO_Defaults', DCSGO_IsKillNoscope, 5)
 hook.Add('DCSGO_IsBlindVictim', 'DCSGO_Defaults', DCSGO_IsBlindVictim, 5)
@@ -189,4 +225,6 @@ hook.Add('DCSGO_IsBlindAttacker', 'DCSGO_Defaults', DCSGO_IsBlindAttacker, 5)
 hook.Add('DCSGO_IsBlindAttacker_NPC', 'DCSGO_Defaults', DCSGO_IsBlindAttacker, 5)
 hook.Add('DCSGO_IsWallPenetrated', 'DCSGO_Defaults', DCSGO_IsWallPenetrated, 5)
 hook.Add('DCSGO_IsWallPenetrated_NPC', 'DCSGO_Defaults', DCSGO_IsWallPenetrated, 5)
+hook.Add('DCSGO_IsHeadshot', 'DCSGO_Defaults', DCSGO_IsHeadshot, 5)
+hook.Add('DCSGO_IsHeadshot_NPC', 'DCSGO_Defaults', DCSGO_IsHeadshot, 5)
 hook.Add('TFA_BulletPenetration', 'DCSGO_Defaults', TFA_BulletPenetration)
