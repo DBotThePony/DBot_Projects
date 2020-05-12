@@ -23,7 +23,7 @@ local CSGOPinging = CSGOPinging
 CSGOPinging.Materials = {}
 
 local function m(name)
-	return Material('gui/ping/' .. name .. '.png')
+	return Material('gui/ping/' .. name .. '.png', 'noclamp smooth mips')
 end
 
 CSGOPinging.Sound = Sound('gui/ping/playerping.wav')
