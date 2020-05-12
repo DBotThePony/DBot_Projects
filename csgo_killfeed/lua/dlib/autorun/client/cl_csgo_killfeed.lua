@@ -59,13 +59,13 @@ local SPACING_OUTLINE = 1
 
 local function HUDPaint()
 	--local X, Y = POS()
-	local X, Y = POS_X * ScrW(), POS_Y * ScrH()
+	local X, Y = (POS_X * ScrW()):round(), (POS_Y * ScrH()):round()
 
-	local SPACING_TOP = ScreenSize(SPACING_TOP)
-	local SPACING_BETWEEN = ScreenSize(SPACING_BETWEEN)
-	local SPACING_INITIAL = ScreenSize(SPACING_INITIAL)
-	local SPACING_LINES = ScreenSize(SPACING_LINES)
-	local SPACING_OUTLINE = ScreenSize(SPACING_OUTLINE)
+	local SPACING_TOP = ScreenSize(SPACING_TOP):round()
+	local SPACING_BETWEEN = ScreenSize(SPACING_BETWEEN):round()
+	local SPACING_INITIAL = ScreenSize(SPACING_INITIAL):round()
+	local SPACING_LINES = ScreenSize(SPACING_LINES):round()
+	local SPACING_OUTLINE = ScreenSize(SPACING_OUTLINE):round()
 	--local fontspace = draw.GetFontHeight('CSGOKillfeed')
 	surface.SetFont('CSGOKillfeed')
 	local pluss, fontspace = surface.GetTextSize('+')
@@ -129,10 +129,10 @@ local function HUDPaint()
 			total_wide = total_wide + entry.pvictim_w
 		end
 
-		total_wide = total_wide:floor()
+		total_wide = total_wide:round()
 
 		-- draw.RoundedBox(4, X - total_wide, Y, total_wide, fontspace + SPACING_TOP * 2, entry.color)
-		local bh = fontspace + SPACING_TOP * 2
+		local bh = math.round(fontspace + SPACING_TOP * 2)
 
 		if entry.highlight then
 			local i = math.min(i, 255)
@@ -474,8 +474,8 @@ local function csgo_killfeed()
 
 		entry.vec_mul = Vector(mul, mul)
 		entry.mul = mul
-		entry.icon_w, entry.icon_h = _w, _h
-		entry.icon_w_mul, entry.icon_h_mul = _w * mul, _h * mul
+		entry.icon_w, entry.icon_h = _w:round(), _h:round()
+		entry.icon_w_mul, entry.icon_h_mul = (_w * mul):round(), (_h * mul):round()
 	end
 
 	table.insert(history, entry)
