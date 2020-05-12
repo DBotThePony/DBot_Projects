@@ -30,6 +30,7 @@ local function goup(ent)
 end
 
 net.receive('csgoping_ping_position', function(len, ply)
+	if not ply:Alive() then return end
 	local pos, start, endpos = net.ReadVectorDouble(), net.ReadVectorDouble(), net.ReadVectorDouble()
 
 	local tr = util.TraceLine({
@@ -63,6 +64,7 @@ local skip = {
 }
 
 net.receive('csgoping_ping_entity', function(len, ply)
+	if not ply:Alive() then return end
 	local pos = net.ReadVectorDouble()
 	local ent = net.ReadEntity()
 	if not IsValid(ent) then return end
