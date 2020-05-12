@@ -1,7 +1,7 @@
 {
 	"title"		:	"CS:GO Pinging",
-	"type"		:	"effects",
-	"tags"		:	[ "fun" ],
+	"type"		:	"tool",
+	"tags"		:	[],
 	"ignore"	:
 	[
 		"*.psd",
