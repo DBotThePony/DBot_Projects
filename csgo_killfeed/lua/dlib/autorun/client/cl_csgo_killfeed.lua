@@ -24,16 +24,24 @@ local render = render
 local TEXFILTER = TEXFILTER
 local Cubic = Cubic
 
-local TTL_DEFAULT = 5
-local TTL_SELF = 10
-local END_FADE = 0.7
-local NPC_COLOR = Color(204, 214, 42)
-local ENV_COLOR = Color(143, 0, 0)
+local TTL_DEFAULT = CreateConVar('cl_csgokillfeed_ttl_def', '5', {FCVAR_ARCHIVE}, 'Default kill notification TTL')
+local TTL_SELF = CreateConVar('cl_csgokillfeed_ttl_self', '10', {FCVAR_ARCHIVE}, 'Kill notification TTL involving local player')
+local END_FADE = CreateConVar('cl_csgokillfeed_fadespeed', '0.7', {FCVAR_ARCHIVE}, 'Time in seconds for fadeout period')
+local NPC_COLOR = DLib.HUDCommons.CreateColor('csgok_npc_col', 'CSGO Killfeed NPC Color', 204, 214, 42)
+local ENV_COLOR = DLib.HUDCommons.CreateColor('csgok_def_col', 'CSGO Killfeed Default Color', 143, 0, 0)
 
-local BACKGROUND = Color(0, 0, 0, 165)
-local BACKGROUND_DEAD = ColorBE(0xa81313):SetAlpha(178)
-local OUTLINE = ColorBE(0xe10000)
-local ASSIST_COLOR = Color(color_white)
+local BACKGROUND = DLib.HUDCommons.CreateColor('csgok_bg', 'CSGO Killfeed Background Color', 0, 0, 0, 165)
+local BACKGROUND_DEAD = DLib.HUDCommons.CreateColor('csgok_bgd', 'CSGO Killfeed Dead Background Color', ColorBE(0xa81313):SetAlpha(178))
+local OUTLINE = DLib.HUDCommons.CreateColor('csgok_bgd', 'CSGO Killfeed Outline Color', ColorBE(0xe10000))
+local ICON_COLOR = DLib.HUDCommons.CreateColor('csgok_icon', 'CSGO Killfeed Icons Color', 255, 255, 255, 255)
+
+local function PopulateToolMenu()
+	spawnmenu.AddToolMenuOption('Utilities', 'User', 'gui.csgokillfeed.menu', 'gui.csgokillfeed.menu', '', '', function(self)
+		self:NumSlider('gui.csgokillfeed.cvar.cl_csgokillfeed_ttl_def', 'cl_csgokillfeed_ttl_def', 0, 60)
+		self:NumSlider('gui.csgokillfeed.cvar.cl_csgokillfeed_ttl_self', 'cl_csgokillfeed_ttl_self', 0, 60)
+		self:NumSlider('gui.csgokillfeed.cvar.cl_csgokillfeed_fadespeed', 'cl_csgokillfeed_fadespeed', 0, 5, 3)
+	end)
+end
 
 local function ScreenResolutionChanged()
 	local size = ScreenSize(9):max(18):floor()
@@ -75,6 +83,7 @@ local function HUDPaint()
 	render.PushFilterMin(TEXFILTER.ANISOTROPIC)
 
 	for i, entry in ipairs(history) do
+		local ICON_COLOR = ICON_COLOR():ModifyAlpha(ICON_COLOR().a * entry.perc)
 		local total_wide = SPACING_INITIAL * 2
 		local _w, _h = entry.icon_w, entry.icon_h
 
@@ -187,21 +196,21 @@ local function HUDPaint()
 
 		if entry.is_revenge then
 			surface.SetMaterial(revenge)
-			surface.SetDrawColor(255, 255, 255, entry.alpha)
+			surface.SetDrawColor(ICON_COLOR)
 			surface.DrawTexturedRect(x, Y, fontspace + SPACING_TOP * 2, fontspace + SPACING_TOP * 2)
 			x = x + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		end
 
 		if entry.is_domination then
 			surface.SetMaterial(domination)
-			surface.SetDrawColor(255, 255, 255, entry.alpha)
+			surface.SetDrawColor(ICON_COLOR)
 			surface.DrawTexturedRect(x, Y, fontspace + SPACING_TOP * 2, fontspace + SPACING_TOP * 2)
 			x = x + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		end
 
 		if entry.is_blind_attacker then
 			surface.SetMaterial(blind_kill)
-			surface.SetDrawColor(255, 255, 255, entry.alpha)
+			surface.SetDrawColor(ICON_COLOR)
 			surface.DrawTexturedRect(x, Y, fontspace + SPACING_TOP * 2, fontspace + SPACING_TOP * 2)
 			x = x + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		end
@@ -215,7 +224,7 @@ local function HUDPaint()
 
 		if entry.pis_assisted_by then
 			surface.SetTextPos(x, Y + SPACING_TOP)
-			surface.SetTextColor(255, 255, 255, entry.alpha)
+			surface.SetTextColor(ICON_COLOR)
 			surface.DrawText('+')
 			x = x + pluss + SPACING_BETWEEN
 
@@ -225,12 +234,12 @@ local function HUDPaint()
 			x = x + entry.pis_assisted_by_w + SPACING_BETWEEN
 		elseif entry.pblind_by_who then
 			surface.SetTextPos(x, Y + SPACING_TOP)
-			surface.SetTextColor(255, 255, 255, entry.alpha)
+			surface.SetTextColor(ICON_COLOR)
 			surface.DrawText('+')
 			x = x + pluss + SPACING_BETWEEN
 
 			surface.SetMaterial(flashbang_assist)
-			surface.SetDrawColor(255, 255, 255, entry.alpha)
+			surface.SetDrawColor(ICON_COLOR)
 			surface.DrawTexturedRect(x, Y, fontspace + SPACING_TOP * 2, fontspace + SPACING_TOP * 2)
 			x = x + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN * 2
 
@@ -242,7 +251,7 @@ local function HUDPaint()
 
 		if entry.display_skull then
 			surface.SetMaterial(suicide)
-			surface.SetDrawColor(255, 255, 255, entry.alpha)
+			surface.SetDrawColor(ICON_COLOR)
 			surface.DrawTexturedRect(x, Y, fontspace + SPACING_TOP * 2, fontspace + SPACING_TOP * 2)
 			x = x + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		else
@@ -260,28 +269,28 @@ local function HUDPaint()
 
 		if entry.is_noscope then
 			surface.SetMaterial(noscope)
-			surface.SetDrawColor(255, 255, 255, entry.alpha)
+			surface.SetDrawColor(ICON_COLOR)
 			surface.DrawTexturedRect(x, Y, fontspace + SPACING_TOP * 2, fontspace + SPACING_TOP * 2)
 			x = x + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		end
 
 		if entry.is_through_smoke then
 			surface.SetMaterial(smoke_kill)
-			surface.SetDrawColor(255, 255, 255, entry.alpha)
+			surface.SetDrawColor(ICON_COLOR)
 			surface.DrawTexturedRect(x, Y, fontspace + SPACING_TOP * 2, fontspace + SPACING_TOP * 2)
 			x = x + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		end
 
 		if entry.is_penetrated_wall then
 			surface.SetMaterial(penetrate)
-			surface.SetDrawColor(255, 255, 255, entry.alpha)
+			surface.SetDrawColor(ICON_COLOR)
 			surface.DrawTexturedRect(x, Y, fontspace + SPACING_TOP * 2, fontspace + SPACING_TOP * 2)
 			x = x + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		end
 
 		if entry.is_headshot then
 			surface.SetMaterial(headshot)
-			surface.SetDrawColor(255, 255, 255, entry.alpha)
+			surface.SetDrawColor(ICON_COLOR)
 			surface.DrawTexturedRect(x, Y, fontspace + SPACING_TOP * 2, fontspace + SPACING_TOP * 2)
 			x = x + fontspace + SPACING_TOP * 2 + SPACING_BETWEEN
 		end
@@ -317,7 +326,7 @@ local function Think()
 
 		entry.cattacker:SetAlpha(entry.alpha)
 		entry.cvictim:SetAlpha(entry.alpha)
-		entry.color:SetAlpha(BACKGROUND.a * perc)
+		entry.color:SetAlpha(BACKGROUND().a * perc)
 
 		if time > entry.end_fade then
 			toremove = toremove or {}
@@ -332,14 +341,14 @@ end
 
 local function getcolor(is_valid, entity_in)
 	if not IsValid(entity_in) then
-		return is_valid and NPC_COLOR or ENV_COLOR
+		return is_valid and NPC_COLOR() or ENV_COLOR()
 	end
 
 	if entity_in:IsPlayer() then
 		return team.GetColor(entity_in:Team() or 1000) or color_white
 	end
 
-	return NPC_COLOR
+	return NPC_COLOR()
 end
 
 local function doset(name, entry)
@@ -388,7 +397,7 @@ local function csgo_killfeed()
 		is_blind = false
 	end
 
-	local ttl = victim ~= lply and attacker ~= lply and inflictor ~= lply and TTL_DEFAULT or TTL_SELF
+	local ttl = victim ~= lply and attacker ~= lply and inflictor ~= lply and TTL_DEFAULT:GetFloat() or TTL_SELF:GetFloat()
 	local highlight = victim ~= lply and attacker == lply or inflictor == lply or blind_by_who == lply or is_assisted_by == lply
 
 	local entry = {
@@ -417,7 +426,7 @@ local function csgo_killfeed()
 		-- is_domination = true,
 
 		start_fade = RealTime() + ttl,
-		end_fade = RealTime() + ttl + END_FADE,
+		end_fade = RealTime() + ttl + END_FADE:GetFloat(),
 		suicide = not is_not_suicide,
 
 		highlight = highlight,
@@ -433,8 +442,8 @@ local function csgo_killfeed()
 		display_skull = not inflictor_class or not killicon.Exists(inflictor_class),
 		--display_skull = true,
 
-		color = victim == lply and Color(BACKGROUND_DEAD) or Color(BACKGROUND),
-		outline = highlight and Color(OUTLINE),
+		color = victim == lply and Color(BACKGROUND_DEAD()) or Color(BACKGROUND()),
+		outline = highlight and Color(OUTLINE()),
 
 		pattacker = IsValid(attacker) and attacker:GetPrintNameDLib() or pattacker,
 		pvictim = IsValid(victim) and victim:GetPrintNameDLib() or pvictim,
@@ -492,3 +501,4 @@ hook.Add('HUDPaint', 'CSGOKillfeed', HUDPaint)
 hook.Add('ScreenResolutionChanged', 'CSGOKillfeed', ScreenResolutionChanged)
 hook.Add('AddDeathNotice', 'CSGOKillfeed', AddDeathNotice, -2)
 hook.Add('DrawDeathNotice', 'CSGOKillfeed', AddDeathNotice, -2)
+hook.Add('PopulateToolMenu', 'CSGOKillfeed', PopulateToolMenu)
