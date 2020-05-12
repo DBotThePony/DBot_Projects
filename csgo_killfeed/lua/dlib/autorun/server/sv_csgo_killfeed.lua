@@ -39,9 +39,20 @@ end
 local function DoPlayerDeath(ply, attacker, dmginfo)
 	local dmginfo2 = DLib.LTakeDamageInfo(dmginfo)
 
+	local inflictor = dmginfo2:GetInflictor()
+
+	if not IsValid(inflictor) or inflictor == attacker then
+		inflictor = dmginfo2:GetInflictor()
+	end
+
+	if not IsValid(inflictor) or inflictor == attacker then
+		inflictor = attacker.GetActiveWeapon and attacker:GetActiveWeapon()
+	end
+
 	timer.Simple(0, function()
 		net.Start('csgo_killfeed', true)
-		gather('', ply, attacker, dmginfo2, dmginfo)
+		gather('', ply, attacker, dmginfo2, dmginfo, inflictor)
+
 		net.WriteEntity(ply)
 		net.WriteString('player')
 		net.WriteString(ply:GetPrintNameDLib())
@@ -53,16 +64,6 @@ local function DoPlayerDeath(ply, attacker, dmginfo)
 			net.WriteString(attacker:GetPrintNameDLib())
 		else
 			net.WriteBool(false)
-		end
-
-		local inflictor = dmginfo2:GetInflictor()
-
-		if not IsValid(inflictor) or inflictor == attacker then
-			inflictor = dmginfo2:GetInflictor()
-		end
-
-		if not IsValid(inflictor) or inflictor == attacker then
-			inflictor = attacker.GetActiveWeapon and attacker:GetActiveWeapon()
 		end
 
 		if IsValid(inflictor) and inflictor ~= ply then
@@ -140,6 +141,7 @@ hook.Add('OnNPCKilled', 'DCSGO_Killfeed', OnNPCKilled, 4)
 hook.Add('EntityTakeDamage', 'DCSGO_Killfeed', EntityTakeDamage, 2)
 
 local function DCSGO_IsKillNoscope(victim, attacker, dmginfo, _, inflictor)
+	print(victim, attacker, dmginfo, _, inflictor)
 	if IsValid(inflictor) and inflictor.IsTFA and inflictor:IsTFA() then
 		if not inflictor.DrawCrosshair and inflictor.IronSightsProgress < 0.5 and (not inflictor.data or not inflictor.data.ironsights or inflictor.data.ironsights ~= 0) then
 			return true
