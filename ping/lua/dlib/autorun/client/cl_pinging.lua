@@ -85,7 +85,7 @@ local function clear_ply(ply)
 	end
 
 	if toremove then
-		table.remove(CSGOPinging.Pings, i)
+		table.remove(CSGOPinging.Pings, toremove)
 	end
 end
 
