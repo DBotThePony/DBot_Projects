@@ -43,6 +43,9 @@ local render = render
 local TEXFILTER = TEXFILTER
 local Cubic = Cubic
 
+local ENABLED = CreateConVar('cl_csgokillfeed', '1', {FCVAR_ARCHIVE}, 'Enable CS:GO Killfeed')
+local ENABLED_SV = CreateConVar('sv_csgokillfeed', '1', {FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Enable CS:GO Killfeed')
+
 local TTL_DEFAULT = CreateConVar('cl_csgokillfeed_ttl_def', '5', {FCVAR_ARCHIVE}, 'Default kill notification TTL')
 local TTL_SELF = CreateConVar('cl_csgokillfeed_ttl_self', '10', {FCVAR_ARCHIVE}, 'Kill notification TTL involving local player')
 local END_FADE = CreateConVar('cl_csgokillfeed_fadespeed', '0.7', {FCVAR_ARCHIVE}, 'Time in seconds for fadeout period')
@@ -56,6 +59,7 @@ local ICON_COLOR = DLib.HUDCommons.CreateColor('csgok_icon', 'CSGO Killfeed Icon
 
 local function PopulateToolMenu()
 	spawnmenu.AddToolMenuOption('Utilities', 'User', 'gui.csgokillfeed.menu', 'gui.csgokillfeed.menu', '', '', function(self)
+		self:CheckBox('cl_csgokillfeed', 'gui.csgokillfeed.cvar.cl_csgokillfeed')
 		self:NumSlider('gui.csgokillfeed.cvar.cl_csgokillfeed_ttl_def', 'cl_csgokillfeed_ttl_def', 0, 60, 1)
 		self:NumSlider('gui.csgokillfeed.cvar.cl_csgokillfeed_ttl_self', 'cl_csgokillfeed_ttl_self', 0, 60, 1)
 		self:NumSlider('gui.csgokillfeed.cvar.cl_csgokillfeed_fadespeed', 'cl_csgokillfeed_fadespeed', 0, 5, 3)
@@ -377,6 +381,8 @@ local function doset(name, entry)
 end
 
 local function csgo_killfeed()
+	if not ENABLED_SV:GetBool() or not ENABLED:GetBool() then return end
+
 	local is_headshot = net.ReadBool()
 	local is_blind = net.ReadBool()
 	local blind_by_who = is_blind and net.ReadEntity()
@@ -511,6 +517,7 @@ local function csgo_killfeed()
 end
 
 local function AddDeathNotice()
+	if not ENABLED_SV:GetBool() or not ENABLED:GetBool() then return end
 	return false
 end
 

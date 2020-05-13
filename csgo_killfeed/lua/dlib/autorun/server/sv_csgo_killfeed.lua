@@ -18,6 +18,8 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
+local ENABLED_SV = CreateConVar('sv_csgokillfeed', '1', {FCVAR_REPLICATED, FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Enable CS:GO Killfeed')
+
 net.pool('csgo_killfeed')
 
 local function gather(prefix, ...)
@@ -56,6 +58,8 @@ local function gather(prefix, ...)
 end
 
 local function DoPlayerDeath(ply, attacker, dmginfo)
+	if not ENABLED_SV:GetBool() then return end
+
 	local dmginfo2 = DLib.LTakeDamageInfo(dmginfo)
 
 	local inflictor = dmginfo2:GetInflictor()
@@ -119,6 +123,8 @@ local function EntityTakeDamage(self, dmginfo)
 end
 
 local function OnNPCKilled(npc, attacker, inflictor)
+	if not ENABLED_SV:GetBool() then return end
+
 	local dmginfo
 
 	if lastent == npc and lasttime == CurTime() then
