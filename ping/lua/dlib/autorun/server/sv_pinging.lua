@@ -19,6 +19,7 @@
 -- DEALINGS IN THE SOFTWARE.
 
 local CSGOPinging = CSGOPinging
+local ENABLE = CreateConVar('sv_csgoping', '1', {FCVAR_NOTIFY, FCVAR_REPLICATED, FCVAR_ARCHIVE}, 'Enable CS:GO Pinging')
 
 AddCSLuaFile('csgo_ping/cl_registry.lua')
 
@@ -30,7 +31,9 @@ local function goup(ent)
 end
 
 net.receive('csgoping_ping_position', function(len, ply)
+	if not ENABLE:GetBool() then return end
 	if not ply:Alive() then return end
+
 	local pos, start, endpos = net.ReadVectorDouble(), net.ReadVectorDouble(), net.ReadVectorDouble()
 
 	local tr = util.TraceLine({
@@ -64,7 +67,9 @@ local skip = {
 }
 
 net.receive('csgoping_ping_entity', function(len, ply)
+	if not ENABLE:GetBool() then return end
 	if not ply:Alive() then return end
+
 	local pos = net.ReadVectorDouble()
 	local ent = net.ReadEntity()
 	if not IsValid(ent) then return end

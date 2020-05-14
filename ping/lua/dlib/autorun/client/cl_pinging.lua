@@ -18,6 +18,9 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
+local ENABLE = CreateConVar('cl_csgoping', '1', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'Enable CS:GO Pinging')
+local ENABLE_SV = CreateConVar('sv_csgoping', '1', {FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Enable CS:GO Pinging')
+
 local CSGOPinging = CSGOPinging
 local DLib = DLib
 local surface = surface
@@ -129,12 +132,14 @@ local function ping_position(ply, position)
 end
 
 net.receive('csgoping_ping_position', function()
+	if not ENABLE:GetBool() or not ENABLE_SV:GetBool() then return end
 	local ply = net.ReadPlayer()
 	if not IsValid(ply) then return end
 	ping_position(ply, net.ReadVectorDouble())
 end)
 
 net.receive('csgoping_ping_entity', function()
+	if not ENABLE:GetBool() or not ENABLE_SV:GetBool() then return end
 	local ply = net.ReadPlayer()
 	if not IsValid(ply) then return end
 	local position = net.ReadVectorDouble()
@@ -231,6 +236,8 @@ net.receive('csgoping_ping_entity', function()
 end)
 
 hook.Add('Think', 'CSGOPinging.Think', function()
+	if not ENABLE:GetBool() or not ENABLE_SV:GetBool() then return end
+
 	local toremove
 	local rtime = RealTime()
 	local ply = DLib.HUDCommons.SelectPlayer()
@@ -268,6 +275,8 @@ local ARROW_POINTER_WIDE = 16
 local ARROW_POINTER_HIGH = 8
 
 hook.Add('HUDPaint', 'CSGOPinging.Draw', function()
+	if not ENABLE:GetBool() or not ENABLE_SV:GetBool() then return end
+
 	render.PushFilterMag(TEXFILTER.ANISOTROPIC)
 	render.PushFilterMin(TEXFILTER.ANISOTROPIC)
 
@@ -396,6 +405,8 @@ hook.Add('HUDPaint', 'CSGOPinging.Draw', function()
 end)
 
 concommand.Add('csgo_ping', function(ply)
+	if not ENABLE:GetBool() or not ENABLE_SV:GetBool() then return end
+
 	local tr = ply:GetEyeTrace()
 
 	if not IsValid(tr.Entity) then
