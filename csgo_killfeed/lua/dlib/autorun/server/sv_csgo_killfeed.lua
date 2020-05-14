@@ -85,7 +85,7 @@ local function DoPlayerDeath(ply, attacker, dmginfo)
 		local playerlist = RecipientFilter()
 		playerlist:AddAllPlayers()
 
-		hook.Run('DCSGO_ChooseKillfeedPlayers', playerlist, ply, attacker, inflictor, dmginfo2)
+		hook.Run('DCSGO_Killfeed_ChoosePlayerList', playerlist, ply, attacker, inflictor, dmginfo2)
 		if playerlist:GetCount() == 0 then return end
 
 		if updategroup then
@@ -163,7 +163,7 @@ local function OnNPCKilled(npc, attacker, inflictor)
 		local playerlist = RecipientFilter()
 		playerlist:AddAllPlayers()
 
-		hook.Run('DCSGO_ChooseKillfeedPlayers_NPC', playerlist, npc, attacker, inflictor, dmginfo2)
+		hook.Run('DCSGO_Killfeed_ChoosePlayerList_NPC', playerlist, npc, attacker, inflictor, dmginfo2)
 		if playerlist:GetCount() == 0 then return end
 
 		if updategroup then

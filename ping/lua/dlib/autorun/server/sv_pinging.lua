@@ -44,19 +44,32 @@ net.receive('csgoping_ping_position', function(len, ply)
 	})
 
 	if not IsValid(tr.Entity) or tr.Entity:EntIndex() <= 0 then
+		local playerlist = RecipientFilter()
+		playerlist:AddAllPlayers()
+
+		hook.Run('DCSGO_Pinging_ChoosePlayerList_Ent', playerlist, ply, tr.Entity)
+		if playerlist:GetCount() == 0 then return end
+
 		net.Start('csgoping_ping_position')
 		net.WritePlayer(ply)
 		net.WriteVectorDouble(pos)
-		net.Broadcast()
+		net.Send(playerlist)
+
 		return
 	end
+
+	local playerlist = RecipientFilter()
+	playerlist:AddAllPlayers()
+
+	hook.Run('DCSGO_Pinging_ChoosePlayerList_Pos', playerlist, ply, tr)
+	if playerlist:GetCount() == 0 then return end
 
 	net.Start('csgoping_ping_entity')
 	net.WritePlayer(ply)
 	net.WriteVectorDouble(tr.HitPos)
 	net.WriteEntity(tr.Entity)
 	net.WriteBool(goup(tr.Entity))
-	net.Broadcast()
+	net.Send(playerlist)
 end)
 
 local skip = {
@@ -82,10 +95,16 @@ net.receive('csgoping_ping_entity', function(len, ply)
 		return
 	end]]
 
+	local playerlist = RecipientFilter()
+	playerlist:AddAllPlayers()
+
+	hook.Run('DCSGO_Pinging_ChoosePlayerList_Ent', playerlist, ply, ent)
+	if playerlist:GetCount() == 0 then return end
+
 	net.Start('csgoping_ping_entity')
 	net.WritePlayer(ply)
 	net.WriteVectorDouble(pos)
 	net.WriteEntity(ent)
 	net.WriteBool(goup(ent))
-	net.Broadcast()
+	net.Send(playerlist)
 end)

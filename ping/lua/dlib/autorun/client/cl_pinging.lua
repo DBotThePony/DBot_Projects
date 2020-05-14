@@ -19,6 +19,7 @@
 -- DEALINGS IN THE SOFTWARE.
 
 local ENABLE = CreateConVar('cl_csgoping', '1', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'Enable CS:GO Pinging')
+local ENABLE_SOUND = CreateConVar('cl_csgoping_sound', '1', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'Enable CS:GO Pinging sound')
 local ENABLE_SV = CreateConVar('sv_csgoping', '1', {FCVAR_NOTIFY, FCVAR_REPLICATED}, 'Enable CS:GO Pinging')
 
 local CSGOPinging = CSGOPinging
@@ -128,7 +129,11 @@ local function ping_position(ply, position)
 		next_lerp = false,
 	})
 
-	surface.PlaySound(hook.Run('CSGOPinging_ChoosePositionPingSound', ply, position) or CSGOPinging.Sound)
+	if ENABLE_SOUND:GetBool() then
+		local soundp = hook.Run('DCSGO_Pinging_ChoosePositionPingSound', ply, position)
+		if soundp == false then return end
+		surface.PlaySound(soundp or CSGOPinging.Sound)
+	end
 end
 
 net.receive('csgoping_ping_position', function()
@@ -232,7 +237,11 @@ net.receive('csgoping_ping_entity', function()
 		dist = dist,
 	})
 
-	surface.PlaySound(hook.Run('CSGOPinging_ChoosePositionPingSound', ply, position) or CSGOPinging.Sound)
+	if ENABLE_SOUND:GetBool() then
+		local soundp = hook.Run('DCSGO_Pinging_ChooseEntityPingSound', ply, position, ent)
+		if soundp == false then return end
+		surface.PlaySound(soundp or CSGOPinging.Sound)
+	end
 end)
 
 hook.Add('Think', 'CSGOPinging.Think', function()
