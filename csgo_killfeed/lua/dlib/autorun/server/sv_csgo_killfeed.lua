@@ -59,6 +59,7 @@ end
 
 local function DoPlayerDeath(ply, attacker, dmginfo)
 	if not ENABLED_SV:GetBool() then return end
+	if player.GetCount() == 0 then return end
 
 	local dmginfo2 = DLib.LTakeDamageInfo(dmginfo)
 
@@ -81,8 +82,11 @@ local function DoPlayerDeath(ply, attacker, dmginfo)
 	timer.Simple(0, function()
 		if not IsValid(ply) then return end
 
-		local playerlist = hook.Run('DCSGO_ChooseKillfeedPlayers', ply, attacker, inflictor, dmginfo2) or player.GetHumans()
-		if not playerlist or (not istable(playerlist) and (not isentity(playerlist) or not playerlist:IsPlayer())) or istable(playerlist) and #playerlist == 0 then return end
+		local playerlist = RecipientFilter()
+		playerlist:AddAllPlayers()
+
+		hook.Run('DCSGO_ChooseKillfeedPlayers', playerlist, ply, attacker, inflictor, dmginfo2)
+		if playerlist:GetCount() == 0 then return end
 
 		if updategroup then
 			ply.__DCSGO_LastGroupAt = CurTime()
@@ -127,6 +131,7 @@ end
 
 local function OnNPCKilled(npc, attacker, inflictor)
 	if not ENABLED_SV:GetBool() then return end
+	if player.GetCount() == 0 then return end
 
 	local dmginfo
 
@@ -155,8 +160,11 @@ local function OnNPCKilled(npc, attacker, inflictor)
 	timer.Simple(0, function()
 		if not IsValid(npc) then return end
 
-		local playerlist = hook.Run('DCSGO_ChooseKillfeedPlayers_NPC', npc, attacker, inflictor, dmginfo2) or player.GetHumans()
-		if not playerlist or (not istable(playerlist) and (not isentity(playerlist) or not playerlist:IsPlayer())) or istable(playerlist) and #playerlist == 0 then return end
+		local playerlist = RecipientFilter()
+		playerlist:AddAllPlayers()
+
+		hook.Run('DCSGO_ChooseKillfeedPlayers_NPC', playerlist, npc, attacker, inflictor, dmginfo2)
+		if playerlist:GetCount() == 0 then return end
 
 		if updategroup then
 			npc.__DCSGO_LastGroupAt = CurTime()

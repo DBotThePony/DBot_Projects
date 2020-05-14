@@ -43,7 +43,7 @@ local render = render
 local TEXFILTER = TEXFILTER
 local Cubic = Cubic
 
-local ENABLED = CreateConVar('cl_csgokillfeed', '1', {FCVAR_ARCHIVE}, 'Enable CS:GO Killfeed')
+local ENABLED = CreateConVar('cl_csgokillfeed', '1', {FCVAR_ARCHIVE, FCVAR_USERINFO}, 'Enable CS:GO Killfeed')
 local ENABLED_SV = CreateConVar('sv_csgokillfeed', '1', {FCVAR_REPLICATED, FCVAR_NOTIFY}, 'Enable CS:GO Killfeed')
 
 local TTL_DEFAULT = CreateConVar('cl_csgokillfeed_ttl_def', '5', {FCVAR_ARCHIVE}, 'Default kill notification TTL')
